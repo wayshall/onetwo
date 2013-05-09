@@ -15,6 +15,8 @@ import org.onetwo.common.nutz.NutzBaseDao;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.test.spring.SpringTxJUnitTestCase;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.TimeCounter;
+import org.onetwo.common.utils.Timeit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -31,7 +33,7 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 	private DataSource dataSource;
 	private NutzBaseDao nutzDao;
 	
-	private int insertCount = 100;
+	private int insertCount = 100000;
 	
 
 	@Before
@@ -51,6 +53,9 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 
 	@Test
 	public void testJFishSave(){
+//		Timeit it = new Timeit();
+		TimeCounter t = new TimeCounter("testJFishSave");
+//		t.start();
 		String name = "testJFishSave";
 		UtilTimerStack.push(name);
 		for(int i=0; i<insertCount; i++){
@@ -60,6 +65,7 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 //			Assert.assertNotNull(user.getId());
 		}
 		UtilTimerStack.pop(name);
+		
 	}
 	
 	protected UserEntity createUserEntity(int i, String userName){
