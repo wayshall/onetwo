@@ -18,7 +18,7 @@ abstract public class AbstractBaseEntity<PK extends Serializable> {
 	private Date lastUpdateTime;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="CREATE_TIME")
+	@Column(name="CREATE_TIME") 
 	public Date getCreateTime() {
 		return createTime;
 	}

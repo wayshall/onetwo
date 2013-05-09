@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.MutiDelegate;
 
 public class DelegateTest {
@@ -29,15 +31,15 @@ public class DelegateTest {
 	
 	@Test
 	public void testOne(){
-		MutiDelegate delegate = MutiDelegate.define(String.class, int.class);
+		MutiDelegate delegate = DelegateFactory.define(String.class, int.class);
 		PrintTest pt = new PrintTest();
 		CreateStringTest cst = new CreateStringTest();
 		
 		delegate.add(pt, "print");
 		delegate.add(cst, "createStringList");
 		
-		delegate.invoke("test delegate", 3);
-		Assert.assertNull(delegate.getReturnValue(0));
-		Assert.assertEquals(3, delegate.getReturnValue(1, List.class).size());
+		List<?> results = delegate.invokeAsList("test", 3);
+		Assert.assertNull(LangUtils.getFirst(results));
+		Assert.assertEquals(3, ((List<?>)results.get(1)).size());
 	}
 }

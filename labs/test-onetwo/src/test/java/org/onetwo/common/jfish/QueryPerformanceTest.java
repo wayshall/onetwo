@@ -118,7 +118,7 @@ public class QueryPerformanceTest extends SpringTxJUnitTestCase {
 		String name = "testJFishSquery";
 		UtilTimerStack.push(name);
 		
-		QueryBuilder sq = QueryBuilderImpl.where().debug()
+		QueryBuilder sq = QueryBuilderImpl.from(UserEntity.class).debug()
 				.field("userName").like("%jdbc%")
 				.limit(0, size);
 		List<UserEntity> userlist = this.jFishEntityManagerForTest.findByProperties(UserEntity.class, sq);

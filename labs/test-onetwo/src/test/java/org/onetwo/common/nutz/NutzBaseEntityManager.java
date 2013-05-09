@@ -12,7 +12,9 @@ import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ILogicDeleteEntity;
+import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
+import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -154,10 +156,35 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 		
 	}
 
+
 	@Override
-	public <T extends ILogicDeleteEntity> T deleteById(Class<? extends ILogicDeleteEntity> entityClass, Serializable id) {
+	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public SQLSymbolManager getSQLSymbolManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> findList(JFishQueryValue queryValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T findUnique(JFishQueryValue queryValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> void findPage(Page<T> page, JFishQueryValue squery) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -224,24 +251,6 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	public EntityManagerProvider getEntityManagerProvider() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public <T> T findUnique(QueryBuilder squery) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> List<T> findList(QueryBuilder squery) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void findPage(Page page, QueryBuilder squery) {
-		// TODO Auto-generated method stub
-		
 	}
 
 

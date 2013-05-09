@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 
 @SuppressWarnings({"rawtypes"})
@@ -35,6 +36,10 @@ public class MutiDelegate {
 			resultList.add(result);
 		}
 		return resultList;
+	}
+	
+	public List<Object> invokeAsList(Object...args){
+		return CUtils.tolist(invoke(args), false);
 	}
 	
 	/*public <T> T getReturnValue(int index){

@@ -539,22 +539,6 @@ public class ExtQueryImplTest {
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
 	}
 	
-	@Test
-	public void testSqlQuery(){
-		this.properties.put("supplierName", "supplierNameTestValue");
-		this.properties.put("newRoute:>=", 1l);
-		properties.put(K.SQL_QUERY, true);
-		ExtQuery q = sqlSymbolManagerFactory.getJPA().createQuery(LogSupplierEntity.class, "ent",  properties);
-		q.build();
-		
-//		String sql = "select ent.DELETE_ROUTE as deleteRoute, ent.FAIL_ROUTE as failRoute, ent.ID as id, ent.LAST_UPDATE_TIME as lastUpdateTime, ent.NEW_ROUTE as newRoute, ent.STATE as state, ent.SUPPLIER_CODE as supplierCode, ent.SUPPLIER_NAME as supplierName, ent.SYN_END_TIME as synEndTime, ent.SYN_START_TIME as synStartTime, ent.SYN_TYPE as synType, ent.UPDATE_ROUTE as updateRoute, ent.YOOYO_SUPPLIER_ID as yooyoSupplierId from SYN_LOG_SUPPLIER ent where ent.SUPPLIER_NAME = :ent_SUPPLIER_NAME0 and ent.NEW_ROUTE >= :ent_NEW_ROUTE1 order by ent.ID desc";
-		String sql = "select ent.DELETE_ROUTE, ent.FAIL_ROUTE, ent.ID, ent.LAST_UPDATE_TIME, ent.NEW_ROUTE, ent.STATE, ent.SUPPLIER_CODE, ent.SUPPLIER_NAME, ent.SYN_END_TIME, ent.SYN_START_TIME, ent.SYN_TYPE, ent.UPDATE_ROUTE, ent.YOOYO_SUPPLIER_ID from SYN_LOG_SUPPLIER ent where ent.SUPPLIER_NAME = ?1 and ent.NEW_ROUTE >= ?2 order by ent.ID desc";
-		String paramsting = "[supplierNameTestValue, 1]";
-//		System.out.println("testSqlQuery: " + q.getSql().trim());
-//		System.out.println("testSqlQuery: " + q.getParamsValue().getValues().toString());
-		Assert.assertEquals(sql.trim(), q.getSql().trim());
-		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
-	}
 	
 	@Test
 	public void testSqlQueryJoin(){
@@ -607,19 +591,6 @@ public class ExtQueryImplTest {
 		System.out.println("testJFishExtQuery:"+tsql);
 		String expected = "select magazine.* from magazine magazine left join t_user_role tur on (magazine.id = tur.magazin_id) where magazine.nickname = :magazine_nickname0";
 		Assert.assertEquals(expected, tsql.trim());
-	}
-	
-//	@Test
-	public void testA(){
-		PropertyDescriptor[] props = ReflectUtils.desribProperties(LogSupplierEntity.class);
-		System.out.println("testA");
-		for(PropertyDescriptor pd : props){
-			System.out.println("pd: " + pd.getReadMethod());
-		}
-		System.out.println("=================================");
-		for(Method m : LogSupplierEntity.class.getDeclaredMethods()){
-			System.out.println("method: " + m);
-		}
 	}
 	
 	

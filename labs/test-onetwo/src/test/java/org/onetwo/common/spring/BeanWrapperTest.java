@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.testng.Assert;
 
 import test.entity.RoleEntity;
 import test.entity.UserEntity;

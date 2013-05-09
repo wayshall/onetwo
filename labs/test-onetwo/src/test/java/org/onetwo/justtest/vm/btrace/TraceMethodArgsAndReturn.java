@@ -1,12 +1,12 @@
 package org.onetwo.justtest.vm.btrace;
 
-import static com.sun.btrace.BTraceUtils.*;
-import com.sun.btrace.annotations.*;
+//import static com.sun.btrace.BTraceUtils.*;
+//import com.sun.btrace.annotations.*;
 
 
-@BTrace
+//@BTrace
 public class TraceMethodArgsAndReturn{
-	   @OnMethod(
+	  /* @OnMethod(
 	      clazz="org.onetwo.justtest.vm.btrace.CaseObject",
 	      method="execute",
 	      location=@Location(Kind.RETURN)
@@ -17,6 +17,6 @@ public class TraceMethodArgsAndReturn{
 	     println(strcat("sleepTotalTime is:",str(get(field("org.onetwo.justtest.vm.btrace.CaseObject","sleepTotalTime"),instance))));
 	     println(strcat("return value is:",str(result)));
 	     jstack();
-	   }
+	   }*/
 	}
 
