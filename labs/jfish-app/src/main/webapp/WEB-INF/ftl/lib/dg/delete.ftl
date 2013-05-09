@@ -1,0 +1,1 @@
+<input value=" 自定义批量删除 " type="submit" class="dg-toolbar-button-delete"/>

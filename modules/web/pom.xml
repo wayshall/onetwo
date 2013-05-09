@@ -1,0 +1,154 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.onetwo</groupId>
+		<artifactId>onetwo-parent</artifactId>
+		<version>1.5.0-SNAPSHOT</version>
+		<relativePath>../parent</relativePath>
+	</parent>
+	
+  <artifactId>onetwo-web</artifactId>
+  <packaging>jar</packaging>
+
+  <name>onetwo-web</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <urlrewrite.version>3.2.0</urlrewrite.version>
+  </properties>
+
+  <dependencies>
+     
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+     
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<!-- spring begin -->
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-core</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-context</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-jdbc</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-beans</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-tx</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-test</artifactId>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-orm</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-web</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-context-support</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-ejbcontext</artifactId>
+	</dependency>
+	<!-- spring end -->
+	<dependency>
+	  <groupId>org.freemarker</groupId>
+	  <artifactId>freemarker</artifactId>
+	</dependency>
+     
+	<dependency>
+	  <groupId>commons-net</groupId>
+	  <artifactId>commons-net</artifactId>
+	</dependency>
+     <!-- 
+    <dependency>
+    	<groupId>com.sun</groupId>
+    	<artifactId>tools</artifactId>
+    </dependency>
+	 -->
+
+	<dependency>
+	  <groupId>javax.servlet</groupId>
+	  <artifactId>servlet-api</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>net.htmlparser.jericho</groupId>
+	  <artifactId>jericho-html</artifactId>
+	  <version>3.1</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.thoughtworks.xstream</groupId>
+	  <artifactId>xstream</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>c3p0</groupId>
+	  <artifactId>c3p0</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>javaee</groupId>
+	  <artifactId>javaee-api</artifactId>
+	</dependency>
+	
+    <dependency>
+	  <groupId>org.tuckey</groupId>
+	  <artifactId>urlrewritefilter</artifactId>
+	  <version>${urlrewrite.version}</version>
+    </dependency>
+    
+  </dependencies>
+  
+  
+  <build>
+  	<plugins>
+	    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+		</plugin>
+  	</plugins>
+  </build>
+  
+</project>

@@ -1,0 +1,619 @@
+package org.onetwo.common.fish.orm;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.fish.annotation.JFishEntityListeners;
+import org.onetwo.common.fish.annotation.JFishFieldListeners;
+import org.onetwo.common.fish.event.JFishEntityFieldListener;
+import org.onetwo.common.fish.event.JFishEntityListener;
+import org.onetwo.common.fish.event.JFishEventAction;
+import org.onetwo.common.fish.exception.JFishOrmException;
+import org.onetwo.common.fish.orm.SQLBuilderFactory.SqlBuilderType;
+import org.onetwo.common.fish.relation.CascadeCollectionMappedField;
+import org.onetwo.common.fish.relation.CascadeMappedField;
+import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
+import org.slf4j.Logger;
+
+@SuppressWarnings({"unchecked", "rawtypes"})
+abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
+	public static final Comparator SORT_BY_LENGTH = new Comparator<AbstractMappedField>() {
+
+		@Override
+		public int compare(AbstractMappedField o1, AbstractMappedField o2) {
+			return (o1.getName().length()-o2.getName().length());
+		}
+		
+	};
+	
+	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
+	private Class entityClass;
+	private String entityName;
+	private boolean dynamic;
+	private TableInfo tableInfo;
+//	private boolean queryableOnly;
+	private AnnotationInfo annotationInfo;
+
+	private Map<String, AbstractMappedField> mappedFields = new LinkedHashMap<String, AbstractMappedField>();
+	private Map<String, AbstractMappedField> mappedColumns = new HashMap<String, AbstractMappedField>();
+	private JFishMappedField identifyField;
+	
+	private SQLBuilderFactory sqlBuilderFactory;
+	
+	private DataHolder<String, Object> dataHolder = new DataHolder<String, Object>();
+
+	private boolean freezing;
+	
+	private List<JFishEntityListener> entityListeners = Collections.EMPTY_LIST;
+	private List<JFishEntityFieldListener> fieldListeners;
+	
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
+		this(annotationInfo, null);
+	}
+	
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
+		this.entityClass = annotationInfo.getSourceClass();
+		this.annotationInfo = annotationInfo;
+		this.entityName = this.entityClass.getName();
+		this.tableInfo = tableInfo;
+		if(Map.class.isAssignableFrom(entityClass)){
+			this.setDynamic(true);
+		}
+		JFishEntityListeners listenersAnntation = annotationInfo.getAnnotation(JFishEntityListeners.class);
+		if(listenersAnntation!=null){
+			Class<? extends JFishEntityListener>[] listenerClasses = listenersAnntation.value();
+			entityListeners = LangUtils.newArrayList(listenerClasses.length);
+			for(Class<? extends JFishEntityListener> lcs : listenerClasses){
+				if(lcs==null)
+					continue;
+				JFishEntityListener listener = ReflectUtils.newInstance(lcs);
+				entityListeners.add(listener);
+			}
+		}
+
+		JFishFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(JFishFieldListeners.class);
+		this.fieldListeners = OrmUtils.initJFishEntityFieldListeners(fieldListenersAnntation);
+	}
+
+	public Collection<AbstractMappedField> getFields(){
+		return this.mappedFields.values();
+	}
+	
+	public Collection<AbstractMappedField> getFields(JFishMappedFieldType... types){
+		List<AbstractMappedField> flist = new ArrayList<AbstractMappedField>(mappedFields.values().size());
+		if(LangUtils.isEmpty(types)){
+			Collections.sort(flist, SORT_BY_LENGTH);
+			return flist;
+		}
+		for(AbstractMappedField field : mappedFields.values()){
+			if(ArrayUtils.contains(types, field.getMappedFieldType())){
+				flist.add(field);
+			}
+		}
+		Collections.sort(flist, SORT_BY_LENGTH);
+		return flist;
+	}
+	
+	public boolean isInstance(Object entity){
+		return entityClass.isInstance(entity);
+	}
+	
+	public boolean hasIdentifyValue(Object entity){
+		return getId(entity)!=null;
+	}
+	
+	void setTableInfo(TableInfo tableInfo) {
+		this.tableInfo = tableInfo;
+	}
+
+	@Override
+	public void setId(Object entity, Object value){
+		getIdentifyField().setValue(entity, value);
+	}
+	
+	@Override
+	public Object getId(Object entity){
+		if(getIdentifyField()==null)
+			return null;
+		return getIdentifyField().getValue(entity);
+	}
+	
+	@Override
+	public void setFieldValue(Object entity, String fieldName, Object value){
+		getField(fieldName).setValue(entity, value);
+	}
+	
+	@Override
+	public JFishMappedField getField(String fieldName){
+		JFishMappedField field = mappedFields.get(fieldName);
+		if(field==null)
+			throw new JFishOrmException(getEntityName()+" no field mapped : " + fieldName);
+		return field;
+	}
+	
+	@Override
+	public boolean contains(String field){
+		return this.mappedFields.containsKey(field);
+	}
+	
+	@Override
+	public boolean containsColumn(String col){
+		Assert.hasText(col, "column name can not be empty");
+		return this.mappedColumns.containsKey(col.toLowerCase());
+	}
+	
+	@Override
+	public String getColumnName(String field){
+		return getField(field).getColumn().getName();
+	}
+	
+	@Override
+	public JFishMappedField getFieldByColumnName(String columnName){
+		columnName = columnName.toLowerCase();
+		JFishMappedField field = mappedColumns.get(columnName);
+		if(field==null)
+			throw new JFishOrmException(getEntityName() + " no column mapped : " + columnName);
+		return field;
+	}
+	
+	@Override
+	public Object getFieldValue(Object entity, String fieldName){
+		return getField(fieldName).getValue(entity);
+	}
+	
+	protected void checkEntry(){
+		if(getMappedType()!=MappedType.ENTITY)
+			return ;
+		if(getIdentifyField()==null){
+			throw new BaseException("the entity must has a identify : " + getEntityClass());
+		}
+	}
+
+	/*@Override
+	public void build(TableInfo tableInfo) {
+		this.checkEntry();
+//		buildTableInfo();
+		this.tableInfo = tableInfo;
+		buildStaticSQL(tableInfo);
+		
+		for(AbstractMappedField field : this.mappedFields.values()){
+			this.mappedColumns.put(field.getColumn().getName().toLowerCase(), field);
+		}
+
+		this.mappedFields = Collections.unmodifiableMap(this.mappedFields);
+		this.mappedColumns = Collections.unmodifiableMap(this.mappedColumns);
+	}*/
+
+	/**********
+	 * 此方法会延迟调用，会设置各种属性和manager的事件回调后，才会调用，
+	 * 所以，如果没有实现扫描和构建所有实体，而在运行时才build，就要注意多线程的问题
+	 */
+	@Override
+	public void buildEntry() {
+		this.checkEntry();
+		
+		for(AbstractMappedField field : this.mappedFields.values()){
+			if(field.getColumn()!=null)
+				this.mappedColumns.put(field.getColumn().getName().toLowerCase(), field);
+		}
+
+		this.mappedFields = Collections.unmodifiableMap(this.mappedFields);
+		this.mappedColumns = Collections.unmodifiableMap(this.mappedColumns);
+		
+//		buildTableInfo();
+		buildStaticSQL(tableInfo);
+		
+//		freezing();
+	}
+
+	protected void buildStaticSQL(TableInfo taboleInfo){
+	}
+	
+	public EntrySQLBuilder createSQLBuilder(SqlBuilderType type){
+//		SQLBuilder sqlb = SQLBuilder.createNamed(tableInfo.getName(), tableInfo.getAlias(), type);
+		EntrySQLBuilder sqlb = sqlBuilderFactory.createQMark(this, tableInfo.getAlias(), type);
+		return sqlb;
+	}
+	
+	public JdbcStatementContextBuilder createJdbcStatementContextBuilder(SqlBuilderType type){
+		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), type);
+		JdbcStatementContextBuilder sqlb = JdbcStatementContextBuilder.create(null, this, sb);
+		return sqlb;
+	}
+	
+	@Override
+	public JFishMappedEntry addMappedField(AbstractMappedField field){
+		Assert.notNull(field);
+		
+		this.mappedFields.put(field.getName(), field);
+		
+		if(field.isIdentify())
+			this.identifyField = field;
+
+		/*if(field.isJoinTable()){
+			addJoinableField((JoinableMappedField)field);
+		}*/
+		if(field.getMappedFieldType()==JFishMappedFieldType.TO_ONE){
+			Assert.isInstanceOf(CascadeMappedField.class, field);
+			addToOneField((CascadeMappedField)field);
+			
+		}else if(field.getMappedFieldType()==JFishMappedFieldType.ONE_TO_MANY){
+			Assert.isInstanceOf(CascadeCollectionMappedField.class, field);
+			addOneToManyField((CascadeCollectionMappedField)field);
+			
+		}else if(field.getMappedFieldType()==JFishMappedFieldType.MANY_TO_MANY){
+			Assert.isInstanceOf(CascadeCollectionMappedField.class, field);
+			addManyToManyField((CascadeCollectionMappedField)field);
+		}
+		
+		return this;
+	}
+	
+	public void addToOneField(CascadeMappedField manyToOne){
+		throw new UnsupportedOperationException("unsupported this operation : " + getClass());
+	}
+	
+	public void addOneToManyField(CascadeCollectionMappedField oneToMany){
+		throw new UnsupportedOperationException("unsupported this operation : " + getClass());
+	}
+	
+	public void addManyToManyField(CascadeCollectionMappedField oneToMany){
+		throw new UnsupportedOperationException("unsupported this operation : " + getClass());
+	}
+	
+	/*public void addManyToManyField(AbstractMappedField oneToMany){
+		throw new UnsupportedOperationException("unsupported this operation : " + getClass());
+	}*/
+	
+	/*public void addJoinableField(JoinableMappedField joinalbe){
+		throw new UnsupportedOperationException("unsupported this operation : " + getClass());
+	}*/
+
+	@Override
+	public Class<?> getEntityClass() {
+		return entityClass;
+	}
+
+	@Override
+	public <T> T newInstance() {
+		return (T)ReflectUtils.newInstance(entityClass);
+	}
+
+	@Override
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	@Override
+	public void setDynamic(boolean dynamic) {
+		this.checkFreezing("setDynamic");
+		this.dynamic = dynamic;
+	}
+
+	@Override
+	public TableInfo getTableInfo() {
+		return tableInfo;
+	}
+
+	@Override
+	public JFishMappedField getIdentifyField() {
+		return identifyField;
+	}
+
+	protected void throwIfQueryableOnly(){
+		if(isQueryableOnly()){
+			LangUtils.throwBaseException("this entity is only for query  : " + this.entityClass);
+		}
+	}
+
+	abstract protected EntrySQLBuilder getStaticInsertSqlBuilder();
+	abstract protected EntrySQLBuilder getStaticUpdateSqlBuilder();
+	abstract protected EntrySQLBuilder getStaticDeleteSqlBuilder();
+	abstract protected EntrySQLBuilder getStaticFetchSqlBuilder();
+	abstract protected EntrySQLBuilder getStaticFetchAllSqlBuilder();
+	
+	protected EntrySQLBuilder getStaticDeleteAllSqlBuilder(){
+		throw new UnsupportedOperationException("the "+getMappedType()+" entity unsupported this operation!");
+	}
+
+	@Override
+	public JdbcStatementContext<Object[]> makeFetchAll(){
+		EntrySQLBuilder sqlb = getStaticFetchAllSqlBuilder();
+		String sql = sqlb.build();
+//		KVEntry<String, Object[]> kv = new KVEntry<String, Object[]>(sql, (Object[])null);
+		JdbcStatementContext<Object[]> kv = SimpleJdbcStatementContext.create(sql, (Object[])null);
+		return kv;
+	}
+
+	@Override
+	public JdbcStatementContext<Object[]> makeDeleteAll(){
+		EntrySQLBuilder sqlb = getStaticDeleteAllSqlBuilder();
+		String sql = sqlb.build();
+//		KVEntry<String, Object[]> kv = new KVEntry<String, Object[]>(sql, (Object[])null);
+		JdbcStatementContext<Object[]> kv = SimpleJdbcStatementContext.create(sql, (Object[])null);
+		return kv;
+	}
+	
+	@Override
+	public JdbcStatementContext<List<Object[]>> makeFetch(Object objects, boolean isIdentify){
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.find, this, getStaticFetchSqlBuilder());
+		
+		if(LangUtils.isMultiple(objects)){
+			List<Object> list = LangUtils.asList(objects);
+			for(Object id : list){
+				if(isIdentify)
+					dsb.addCauseValue(id);
+				else
+					dsb.setCauseValuesFromEntity(id);
+				dsb.addBatch();
+			}
+		}else{
+			if(isIdentify)
+				dsb.addCauseValue(objects);
+			else
+				dsb.setCauseValuesFromEntity(objects);
+		}
+		
+		dsb.build();
+//		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
+		JdbcStatementContext<List<Object[]>> kv = SimpleJdbcStatementContext.create(dsb.getSql(), dsb.getValues());
+		return kv;
+	}
+	
+	@Override
+	public JdbcStatementContext<List<Object[]>> makeInsert(Object entity){
+		this.throwIfQueryableOnly();
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.insert, this, getStaticInsertSqlBuilder());
+		if(LangUtils.isMultiple(entity)){
+			List<Object> list = LangUtils.asList(entity);
+			if(LangUtils.isEmpty(list))
+				return null;
+			for(Object en : list){
+				this.processIBaseEntity(en, true);
+				dsb.setColumnValuesFromEntity(en).addBatch();
+			}
+		}else{
+			this.processIBaseEntity(entity, true);
+			dsb.setColumnValuesFromEntity(entity);
+		}
+		dsb.build();
+//		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
+		JdbcStatementContext<List<Object[]>> context = SqlBuilderJdbcStatementContext.create(dsb.getSql(), dsb); 
+		return context;
+	}
+	
+	
+	private void processIBaseEntity(Object entity, boolean create){
+		if(!(entity instanceof IBaseEntity))
+			return ;
+		Date now = new Date();
+		IBaseEntity ib = (IBaseEntity) entity;
+		if(create){
+			ib.setCreateTime(now);
+		}
+		ib.setLastUpdateTime(now);
+	}
+	
+	@Override
+	public JdbcStatementContext<List<Object[]>> makeDelete(Object objects, boolean isIdentify){
+		this.throwIfQueryableOnly();
+		
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.delete, this, getStaticDeleteSqlBuilder());
+		
+		if(LangUtils.isMultiple(objects)){
+			List<Object> list = LangUtils.asList(objects);
+			for(Object obj : list){
+				if(isIdentify){
+					Object idValue = obj;
+					if(isInstance(idValue)){
+						idValue = getId(idValue);
+					}
+					dsb.addCauseValue(idValue);
+				}else{
+					dsb.setCauseValuesFromEntity(obj);
+				}
+				dsb.addBatch();
+			}
+		}else{
+			if(isIdentify){
+				Object idValue = objects;
+				if(isInstance(idValue)){
+					idValue = getId(idValue);
+				}
+				dsb.addCauseValue(idValue);
+			}else{
+				dsb.setCauseValuesFromEntity(objects);
+			}
+		}
+		
+		dsb.build();
+//		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
+		JdbcStatementContext<List<Object[]>> kv = SimpleJdbcStatementContext.create(dsb.getSql(), dsb.getValues());
+		return kv;
+	}
+	
+	@Override
+	public JdbcStatementContext<List<Object[]>> makeUpdate(Object entity){
+		this.throwIfQueryableOnly();
+		
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.update, this, getStaticUpdateSqlBuilder());
+		
+		if(LangUtils.isMultiple(entity)){
+			List<Object> list = LangUtils.asList(entity);
+			for(Object en : list){
+				this.checkIdValue(en);
+				this.processIBaseEntity(en, false);
+				dsb.setColumnValuesFromEntity(en)
+					.setCauseValuesFromEntity(en)
+					.addBatch();
+			}
+		}else{
+			this.checkIdValue(entity);
+			this.processIBaseEntity(entity, false);
+			dsb.setColumnValuesFromEntity(entity);
+			dsb.setCauseValuesFromEntity(entity);
+		}
+		
+		dsb.build();
+//		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
+		JdbcStatementContext<List<Object[]>> kv = SimpleJdbcStatementContext.create(dsb.getSql(), dsb.getValues());
+		return kv;
+	}
+	
+	protected void checkIdValue(Object entity){
+		if(!hasIdentifyValue(entity))
+			throw new JFishOrmException("entity["+entity+"] id can not be null");
+	}
+	
+	@Override
+	public JdbcStatementContext<List<Object[]>> makeDymanicUpdate(Object entity){//single entity
+		this.throwIfQueryableOnly();
+
+		this.checkIdValue(entity);
+		this.processIBaseEntity(entity, false);
+		JdbcStatementContextBuilder dsb = makeDymanicUpdateJdbcStatementContextBuilder(entity);
+		dsb.build();
+//		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
+		JdbcStatementContext<List<Object[]>> kv = SimpleJdbcStatementContext.create(dsb.getSql(), dsb.getValues());
+		return kv;
+	}
+
+	protected JdbcStatementContextBuilder makeDymanicUpdateJdbcStatementContextBuilder(Object entity){
+		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
+		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(JFishEventAction.update, this, sb);
+		Object val = null;
+		for(JFishMappedField mfield : this.mappedColumns.values()){
+			
+//			val = mfield.getColumnValue(entity);
+			val = mfield.getColumnValueWithJFishEventAction(entity, JFishEventAction.update);
+			if(mfield.isIdentify()){
+				Assert.notNull(val, "id can not be null " + entity);
+				sqlBuilder.appendWhere(mfield, val);
+			}else if(val!=null){
+				sqlBuilder.append(mfield, val);
+			}
+		}
+		return sqlBuilder;
+	}
+/*
+	public Object getColumnValueWithJFishEventAction(JFishMappedField field, Object entity, JFishEventAction eventAction){
+		Object oldValue = field.getColumnValue(entity);
+		Object newValue = oldValue;
+		boolean doListener = false;
+		if(JFishEventAction.insert==eventAction){
+			if(!field.getFieldListeners().isEmpty()){
+				for(JFishEntityFieldListener fl : field.getFieldListeners()){
+					newValue = fl.beforeFieldInsert(field.getName(), newValue);
+					doListener = true;
+				}
+			}
+		}else if(JFishEventAction.update==eventAction){
+			if(!field.getFieldListeners().isEmpty()){
+				for(JFishEntityFieldListener fl : field.getFieldListeners()){
+					newValue = fl.beforeFieldUpdate(field.getName(), newValue);
+					doListener = true;
+				}
+			}
+		}
+		if(doListener){
+			field.setColumnValue(entity, newValue);
+		}
+		return newValue;
+	}*/
+	
+	@Override
+	public Map<String, AbstractMappedField> getMappedFields() {
+		return mappedFields;
+	}
+	
+
+	public Map<String, AbstractMappedField> getMappedColumns() {
+		return mappedColumns;
+	}
+
+	//	@Override
+	public boolean isQueryableOnly() {
+		return getMappedType()==MappedType.QUERYABLE_ONLY;
+	}
+
+	@Override
+	public MappedType getMappedType() {
+		return MappedType.ENTITY;
+	}
+
+	@Override
+	public boolean isJoined() {
+		return getMappedType()==MappedType.JOINED;
+	}
+
+	@Override
+	public boolean isEntity() {
+		return getMappedType()==MappedType.ENTITY;
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public AnnotationInfo getAnnotationInfo() {
+		return annotationInfo;
+	}
+
+	public void freezing() {
+		for(JFishMappedField field : mappedFields.values()){
+			field.freezing();
+		}
+		freezing = true;
+		logger.info("mapped entry["+getEntityName()+"] has built and freezing!");
+	}
+
+	protected void checkFreezing(String name) {
+		if(isFreezing()){
+			throw new UnsupportedOperationException("the entry["+getEntityName()+"] is freezing now, don not supported this operation : " + name);
+		}
+	}
+
+	public boolean isFreezing() {
+		return freezing;
+	}
+
+	public SQLBuilderFactory getSqlBuilderFactory() {
+		return sqlBuilderFactory;
+	}
+
+	public void setSqlBuilderFactory(SQLBuilderFactory sqlBuilderFactory) {
+		this.sqlBuilderFactory = sqlBuilderFactory;
+	}
+
+	public DataHolder<String, Object> getDataHolder() {
+		return dataHolder;
+	}
+	
+	public String toString(){
+		return LangUtils.append(getEntityName());
+	}
+
+	public List<JFishEntityListener> getEntityListeners() {
+		return entityListeners;
+	}
+
+	public List<JFishEntityFieldListener> getFieldListeners() {
+		return fieldListeners;
+	}
+
+}

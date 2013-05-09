@@ -1,0 +1,1 @@
+<a <@helper.html_attributes __this__.component/> data-method="${__this__.component.dataMethod.toString()}" data-params="${__this__.component.dataParamJson}" data-confirm="${__this__.dataConfirm}" href="${siteConfig.baseURL+helper.getUIValue(__this__)}"> ${helper.getUILabel(__this__)}  </a>

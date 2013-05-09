@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template name="测试excel">
+	<rows>
+		<row>
+			<fields>
+				<field style="alignment:ALIGN_CENTER" value="'测试excel'"></field>
+			</fields>
+		</row>
+		<row type="iterator" datasource="#page.result" index="index" renderHeader="true">
+			<fields>
+				<field name="序号" value="#index+1"></field>
+				<field name="用户名" value="userName"></field>
+			</fields>
+		</row>
+		
+	</rows>
+</template>

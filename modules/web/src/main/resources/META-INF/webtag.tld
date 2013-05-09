@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+  <description>base struts2 page tag</description>
+  <display-name>"struts page tags"</display-name>
+  <tlib-version>2.2</tlib-version>
+  <short-name>web</short-name>
+  <uri>/webtag</uri>
+  
+  
+  <tag>
+    <description><![CDATA[Iterate over a iterable value]]></description>
+    <name>fetchData</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.FetchDataTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description><![CDATA[if specified the iteration will start on that index]]></description>
+      <name>begin</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration will end on that index(inclusive)]]></description>
+      <name>end</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration will end on that index(inclusive)]]></description>
+      <name>index</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Deprecated. Use 'var' instead]]></description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[data source]]></description>
+      <name>dataSource</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[params]]></description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[params]]></description>
+      <name>params</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[firstResult]]></description>
+      <name>firstResult</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[maxResults]]></description>
+      <name>maxResults</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[orderAsc]]></description>
+      <name>orderAsc</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute><attribute>
+      <description><![CDATA[orderDesc]]></description>
+      <name>orderDesc</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[If specified, an instanceof IteratorStatus will be pushed into stack upon each iteration]]></description>
+      <name>status</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration index will be increased by this value on each iteration. It can be a negative value, in which case 'begin' must be greater than 'end']]></description>
+      <name>step</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Name used to reference the value pushed into the Value Stack]]></description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>page</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.PageTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>dataSource</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>params</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template (other than default) to use for rendering the element]]></description>
+      <name>template</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template directory.]]></description>
+      <name>templateDir</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The theme (other than default) to use for rendering the element]]></description>
+      <name>theme</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html title attribute on rendered html element]]></description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html accesskey attribute on rendered html element]]></description>
+      <name>accesskey</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css class to use for element]]></description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error class to use for element]]></description>
+      <name>cssErrorClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error style definitions for element to use]]></description>
+      <name>cssErrorStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css style definitions for element to use]]></description>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html disabled attribute on rendered html element]]></description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[ Set the html onblur attribute on rendered html element]]></description>
+      <name>onblur</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onchange attribute on rendered html element]]></description>
+      <name>onchange</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>onclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html ondblclick attribute on rendered html element]]></description>
+      <name>ondblclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onfocus attribute on rendered html element]]></description>
+      <name>onfocus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeydown attribute on rendered html element]]></description>
+      <name>onkeydown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeypress attribute on rendered html element]]></description>
+      <name>onkeypress</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeyup attribute on rendered html element]]></description>
+      <name>onkeyup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousedown attribute on rendered html element]]></description>
+      <name>onmousedown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousemove attribute on rendered html element]]></description>
+      <name>onmousemove</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseout attribute on rendered html element]]></description>
+      <name>onmouseout</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseover attribute on rendered html element]]></description>
+      <name>onmouseover</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseup attribute on rendered html element]]></description>
+      <name>onmouseup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onselect attribute on rendered html element]]></description>
+      <name>onselect</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>openTemplate</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>image</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.ImageTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>dataIndex</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>src</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>lazy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>location</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>params</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template (other than default) to use for rendering the element]]></description>
+      <name>template</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template directory.]]></description>
+      <name>templateDir</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The theme (other than default) to use for rendering the element]]></description>
+      <name>theme</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html alt attribute on rendered html element]]></description>
+      <name>alt</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html title attribute on rendered html element]]></description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html accesskey attribute on rendered html element]]></description>
+      <name>accesskey</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css class to use for element]]></description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error class to use for element]]></description>
+      <name>cssErrorClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error style definitions for element to use]]></description>
+      <name>cssErrorStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css style definitions for element to use]]></description>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html disabled attribute on rendered html element]]></description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[ Set the html onblur attribute on rendered html element]]></description>
+      <name>onblur</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onchange attribute on rendered html element]]></description>
+      <name>onchange</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>onclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html ondblclick attribute on rendered html element]]></description>
+      <name>ondblclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onfocus attribute on rendered html element]]></description>
+      <name>onfocus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeydown attribute on rendered html element]]></description>
+      <name>onkeydown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeypress attribute on rendered html element]]></description>
+      <name>onkeypress</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeyup attribute on rendered html element]]></description>
+      <name>onkeyup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousedown attribute on rendered html element]]></description>
+      <name>onmousedown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousemove attribute on rendered html element]]></description>
+      <name>onmousemove</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseout attribute on rendered html element]]></description>
+      <name>onmouseout</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseover attribute on rendered html element]]></description>
+      <name>onmouseover</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseup attribute on rendered html element]]></description>
+      <name>onmouseup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onselect attribute on rendered html element]]></description>
+      <name>onselect</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>openTemplate</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>ajax</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.AjaxTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration will start on that index]]></description>
+      <name>begin</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration will end on that index(inclusive)]]></description>
+      <name>end</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[if specified the iteration index will be increased by this value on each iteration. It can be a negative value, in which case 'begin' must be greater than 'end']]></description>
+      <name>step</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[If specified, an instanceof IteratorStatus will be pushed into stack upon each iteration]]></description>
+      <name>status</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>link</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.LinkTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>dataIndex</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>condition</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>image</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>text</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>params</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template (other than default) to use for rendering the element]]></description>
+      <name>template</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template directory.]]></description>
+      <name>templateDir</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The theme (other than default) to use for rendering the element]]></description>
+      <name>theme</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html title attribute on rendered html element]]></description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html accesskey attribute on rendered html element]]></description>
+      <name>accesskey</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css class to use for element]]></description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error class to use for element]]></description>
+      <name>cssErrorClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error style definitions for element to use]]></description>
+      <name>cssErrorStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css style definitions for element to use]]></description>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html disabled attribute on rendered html element]]></description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[ Set the html onblur attribute on rendered html element]]></description>
+      <name>onblur</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onchange attribute on rendered html element]]></description>
+      <name>onchange</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>onclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html ondblclick attribute on rendered html element]]></description>
+      <name>ondblclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onfocus attribute on rendered html element]]></description>
+      <name>onfocus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeydown attribute on rendered html element]]></description>
+      <name>onkeydown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeypress attribute on rendered html element]]></description>
+      <name>onkeypress</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeyup attribute on rendered html element]]></description>
+      <name>onkeyup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousedown attribute on rendered html element]]></description>
+      <name>onmousedown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousemove attribute on rendered html element]]></description>
+      <name>onmousemove</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseout attribute on rendered html element]]></description>
+      <name>onmouseout</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseover attribute on rendered html element]]></description>
+      <name>onmouseover</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseup attribute on rendered html element]]></description>
+      <name>onmouseup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onselect attribute on rendered html element]]></description>
+      <name>onselect</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>openTemplate</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>tree</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.TreeTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>dataSource</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>treeType</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>params</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>treePath</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template (other than default) to use for rendering the element]]></description>
+      <name>template</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The template directory.]]></description>
+      <name>templateDir</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The theme (other than default) to use for rendering the element]]></description>
+      <name>theme</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html title attribute on rendered html element]]></description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <description><![CDATA[Set the html accesskey attribute on rendered html element]]></description>
+      <name>accesskey</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css class to use for element]]></description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error class to use for element]]></description>
+      <name>cssErrorClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css error style definitions for element to use]]></description>
+      <name>cssErrorStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css style definitions for element to use]]></description>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html disabled attribute on rendered html element]]></description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[ Set the html onblur attribute on rendered html element]]></description>
+      <name>onblur</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onchange attribute on rendered html element]]></description>
+      <name>onchange</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onclick attribute on rendered html element]]></description>
+      <name>onclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html ondblclick attribute on rendered html element]]></description>
+      <name>ondblclick</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onfocus attribute on rendered html element]]></description>
+      <name>onfocus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeydown attribute on rendered html element]]></description>
+      <name>onkeydown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeypress attribute on rendered html element]]></description>
+      <name>onkeypress</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onkeyup attribute on rendered html element]]></description>
+      <name>onkeyup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousedown attribute on rendered html element]]></description>
+      <name>onmousedown</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmousemove attribute on rendered html element]]></description>
+      <name>onmousemove</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseout attribute on rendered html element]]></description>
+      <name>onmouseout</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseover attribute on rendered html element]]></description>
+      <name>onmouseover</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onmouseup attribute on rendered html element]]></description>
+      <name>onmouseup</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html onselect attribute on rendered html element]]></description>
+      <name>onselect</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>openTemplate</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <description><![CDATA[Print out expression which evaluates against the stack]]></description>
+    <name>out</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.OutTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>dataIndex</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>filterHTML</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>textLength</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>condition</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>otherwise</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Deprecated. Use 'escapeHtml'. Whether to escape HTML]]></description>
+      <name>escape</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Whether to escape CSV (useful to escape a value for a column)]]></description>
+      <name>escapeCsv</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Whether to escape HTML]]></description>
+      <name>escapeHtml</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Whether to escape Javascript]]></description>
+      <name>escapeJavaScript</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Whether to escape XML]]></description>
+      <name>escapeXml</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Value to be displayed]]></description>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <description><![CDATA[Print out expression which evaluates against the stack]]></description>
+    <name>set</name>
+    <tag-class>org.onetwo.common.web.s2.tag.webtag.SetVarTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The default value to be used if <u>value</u> attribute is null]]></description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    </tag>
+  
+  
+</taglib>

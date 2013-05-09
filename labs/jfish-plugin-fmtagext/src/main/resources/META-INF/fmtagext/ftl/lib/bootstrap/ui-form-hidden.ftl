@@ -1,0 +1,1 @@
+<input id="${__this__.component.id?html}" name="${__this__.component.name?html}" type="hidden" value="${helper.getUIValue(__this__)}"/>

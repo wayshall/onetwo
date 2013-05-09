@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xsi:noNamespaceSchemaLocation="ehcache.xsd" 
+		updateCheck="true">
+
+	<diskStore path="e:/test/ehcache" />
+
+	<!-- DefaultCache setting. -->
+	<defaultCache maxEntriesLocalHeap="10000" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
+		overflowToDisk="true" maxEntriesLocalDisk="100000" />
+
+	<!-- Special objects setting. -->
+	<!-- Refresh demoCache every hour，
+	如果用 maxBytesLocalHeap="10M" 代替maxEntriesLocalHeap
+	按Cache实际大小而不是Element数量进行限制，超过限制后不保存到磁盘。 
+	-->
+	<cache name="dynamicDataMethodCache" maxEntriesLocalHeap="10000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" overflowToDisk="true" memoryStoreEvictionPolicy="LRU" statistics="true"/>
+		
+	<cache name="eternalCache" maxEntriesLocalHeap="1000" eternal="true" timeToIdleSeconds="0"
+		timeToLiveSeconds="0" overflowToDisk="false" statistics="true"/>
+		
+
+	<!-- 监控配置 -->
+	<cacheManagerPeerListenerFactory
+        class="org.terracotta.ehcachedx.monitor.probe.ProbePeerListenerFactory"
+        properties="monitorAddress=localhost, monitorPort=9889, memoryMeasurement=true" />
+</ehcache>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ 
+  <modelVersion>4.0.0</modelVersion>
+  
+	<parent>
+		<groupId>org.onetwo</groupId>
+		<artifactId>onetwo-parent</artifactId>
+		<version>1.5.0-SNAPSHOT</version>
+	</parent>
+	
+	
+  <groupId>org.example.app</groupId>
+  <artifactId>onetwo-jfish-app</artifactId>
+  <packaging>war</packaging>
+  <name>jfish-example-app Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hibernate.validator.version>4.3.0.Final</hibernate.validator.version>
+	<onetwo.plugin.version>2.0-SNAPSHOT</onetwo.plugin.version>
+	<onetwo.jfish.version>2.0-SNAPSHOT</onetwo.jfish.version>
+  </properties>
+  
+  <dependencies>
+  	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-rest</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-web</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-poi</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-security</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-orm</artifactId>
+	  <version>${onetwo.jfish.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-jfish</artifactId>
+	  <version>${onetwo.jfish.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-jackson</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-codegen</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	 
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-fmtag</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	 
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-richmodel</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	 
+	<dependency>
+	  <groupId>org.terracotta</groupId>
+	  <artifactId>ehcache-probe</artifactId>
+	  <version>1.0.3</version> 
+	</dependency>
+	
+	<dependency>
+	  <groupId>javax.persistence</groupId>
+	  <artifactId>com.springsource.javax.persistence</artifactId>
+	  <scope>compile</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>c3p0</groupId>
+	  <artifactId>c3p0</artifactId>
+	</dependency>
+  
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+	  <groupId>org.nutz</groupId>
+	  <artifactId>nutz</artifactId>
+	  <version>1.b.42</version>
+	</dependency>
+	
+	
+	<dependency>
+	  <groupId>com.oracle</groupId>
+	  <artifactId>ojdbc5</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>mysql</groupId>
+	  <artifactId>mysql-connector-java</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.eclipse.jetty.aggregate</groupId>
+	  <artifactId>jetty-all-server</artifactId>
+	  <version>8.1.5.v20120716</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>javax.servlet</groupId>
+	  <artifactId>servlet-api</artifactId>
+	</dependency>
+
+	<dependency>
+	  <groupId>javax.servlet.jsp</groupId>
+	  <artifactId>jsp-api</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-core</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-logging-log4j</artifactId>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-jasper</artifactId>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.testng</groupId>
+	  <artifactId>testng</artifactId>
+	  <scope>test</scope>
+	  <version>6.7</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework</groupId>
+	  <artifactId>spring-test</artifactId>
+	  <scope>test</scope>
+	</dependency>
+    
+  </dependencies>
+  
+  
+  <build>
+    <finalName>${artifactId}</finalName>
+    
+    <plugins>
+	   <plugin>
+	        <groupId>org.mortbay.jetty</groupId>
+	        <artifactId>maven-jetty-plugin</artifactId>
+	        <version>6.1.10</version>
+	        <configuration>
+	                <scanIntervalSeconds>10</scanIntervalSeconds>
+	                <stopKey>foo</stopKey>
+	                <stopPort>9999</stopPort>
+	        </configuration>
+	        <executions>
+	                <execution>
+	                        <id>start-jetty</id>
+	                        <phase>pre-integration-test</phase>
+	                        <goals>
+	                                <goal>run</goal>
+	                        </goals>
+	                        <configuration>
+	                                <scanIntervalSeconds>0</scanIntervalSeconds>
+	                                <daemon>true</daemon>
+	                        </configuration>
+	                </execution>
+	                <execution>
+	                        <id>stop-jetty</id>
+	                        <phase>post-integration-test</phase>
+	                        <goals>
+	                                <goal>stop</goal>
+	                        </goals>
+	                </execution>
+	        </executions>
+		</plugin>
+	</plugins>
+  </build>
+  
+  
+</project>

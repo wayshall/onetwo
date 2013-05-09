@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite" parallel="none">
+  <test name="JFishDaoTest">
+    <classes>
+      <class name="org.onetwo.common.jfish.JFishDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <test name="JFishEntityManagerTest">
+    <classes>
+      <class name="org.onetwo.common.jfish.JFishEntityManagerTest" />
+    </classes>
+  </test> 
+  
+  <test name="JFishFileQueryDaoTest">
+    <classes>
+      <class name="org.onetwo.common.jfish.JFishFileQueryDaoTest" />
+    </classes>
+  </test> 
+</suite> <!-- Suite -->

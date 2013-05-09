@@ -1,0 +1,1 @@
+<a data-method="post" class="dg-toolbar-button-batch" data-confirm="确定要为这些表生成实体？" href="${siteConfig.baseURL+pluginConfig.contextPath}/gencode"> 生成实体  </a>

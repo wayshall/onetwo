@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.onetwo</groupId>
+  <artifactId>onetwo</artifactId>
+  <version>1.5.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Onetwo</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <distributionManagement>
+	<snapshotRepository>
+		<id>Snapshots</id>
+		<name>Snapshots</name>
+		<url>http://172.20.81.220:8088/nexus/content/repositories/snapshots</url>
+	</snapshotRepository>
+  </distributionManagement>
+  
+	<profiles>
+	  
+	  <profile>
+    	<id>modules</id>
+    	<modules>
+				<module>modules/parent</module>
+				<module>modules/common</module>
+				<module>modules/entity</module>
+				<module>modules/ejb</module>
+				<module>modules/spring</module>
+				<module>modules/hibernate</module>
+				<module>modules/hibernate3</module>
+				<module>modules/web</module>
+				<module>modules/security</module>
+				<module>modules/security-spring</module>
+				<module>modules/s2-json</module>
+				<module>modules/jackson</module>
+				<module>modules/struts2</module>
+				<module>modules/poi</module>
+				<module>modules/orm</module>
+				<module>modules/jfish</module>
+	  	</modules>
+	  </profile>
+	</profiles>
+
+
+</project>
