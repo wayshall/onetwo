@@ -7,20 +7,20 @@ public class TestEntityListener implements JFishEntityListener, JFishEntityField
 
 	@Override
 	public Object beforeFieldInsert(String fieldName, Object value) {
-		System.out.println("=============>>>>beforeFieldInsert["+fieldName+"]: "+value);
+//		System.out.println("=============>>>>beforeFieldInsert["+fieldName+"]: "+value);
 		return value;
 	}
 
 	@Override
 	public Object beforeFieldUpdate(String fieldName, Object value) {
-		System.out.println("=============>>>>beforeFieldUpdate["+fieldName+"]: "+value);
+//		System.out.println("=============>>>>beforeFieldUpdate["+fieldName+"]: "+value);
 		return value;
 	}
 
 	
 	@Override
 	public void beforeInsert(Object entity) {
-		System.out.println(this.getClass()+"=============>>>>beforeInsert ");
+//		System.out.println(this.getClass()+"=============>>>>beforeInsert ");
 		
 	}
 

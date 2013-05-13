@@ -22,8 +22,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.example.app.model.utils.BaseEntity;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.fish.annotation.JFishEntityListeners;
-import org.onetwo.common.fish.annotation.JFishFieldListeners;
 
 @SuppressWarnings("serial")
 @Entity
@@ -31,8 +29,8 @@ import org.onetwo.common.fish.annotation.JFishFieldListeners;
 @org.nutz.dao.entity.annotation.Table("T_USER")
 @SequenceGenerator(name="seqUser", sequenceName="SEQ_T_USER")
 @XmlRootElement
-@JFishEntityListeners(TestEntityListener.class)
-@JFishFieldListeners(TestEntityListener.class)
+//@JFishEntityListeners(TestEntityListener.class)
+//@JFishFieldListeners(TestEntityListener.class)
 public class UserEntity extends BaseEntity<Long>  {
 
 	public static interface PasswordOnly {
