@@ -55,7 +55,8 @@ public class ControllerRestPatherBeanPostProcessor implements BeanPostProcessor 
 		try {
 			entry = this.mappedEntryManager.getEntry(rc.getEntityClass());
 		} catch (Exception e) {
-			throw new JFishException("build rest pather error for controller["+rc.getClass()+"]", e);
+			logger.error("build rest pather error for controller[{}]", rc.getClass());
+			return bean;
 		}
 //		this.restPather.addEntityPathInfo(rc.getClass(), entityPath, entry.getIdentifyField().getName());
 		EntityPathInfo info = this.restPather.addEntityPathInfo(rc.getClass(), entityPath, entry.getIdentifyField().getName());
