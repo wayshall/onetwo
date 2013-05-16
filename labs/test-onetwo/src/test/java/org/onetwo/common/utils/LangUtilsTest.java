@@ -117,5 +117,17 @@ public class LangUtilsTest {
 		
 		System.out.println("token:" + LangUtils.generateToken("wayshall"));
 	}
+	
+	@Test
+	public void testHex(){
+		String str = "北";
+		byte[] bytes = str.getBytes();
+		char[] chars = new char[]{0xE5, 0x8C, 0x97};
+		String hexstr = LangUtils.toHex(bytes);
+		System.out.println("hexstr: " + hexstr);
+		
+		bytes = LangUtils.hex2Bytes(hexstr);
+		System.out.println("hex2Bytes: " + new String(bytes));
+	}
 
 }

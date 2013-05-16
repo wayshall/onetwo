@@ -9,6 +9,11 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
+/*****
+ * service上下文初始化
+ * @author wayshall
+ *
+ */
 public class JFishWebApplicationContext extends AbstractJFishAnnotationConfig {
 	
 	public JFishWebApplicationContext(){

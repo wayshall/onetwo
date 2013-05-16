@@ -12,6 +12,12 @@ import org.onetwo.common.spring.cache.SimpleCacheWrapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
+/*****
+ * 功能与DefaultExcelGeneratorFactory类似，
+ * 把bean配置到spring context，提供spring支持的excel生成器工厂。
+ * @author wayshall
+ *
+ */
 public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFactory, InitializingBean {
 	private static final String DEFAULT_BASE_TEMPLATE_DIR = "/WEB-INF/excel/";
 	

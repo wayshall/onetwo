@@ -8,6 +8,11 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.slf4j.Logger;
 
+/******
+ * mvc上下问初始化
+ * @author wayshall
+ *
+ */
 public class JFishMvcApplicationContext extends AbstractJFishAnnotationConfig {
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());

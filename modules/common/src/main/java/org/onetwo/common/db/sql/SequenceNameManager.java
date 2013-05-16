@@ -1,7 +1,7 @@
 package org.onetwo.common.db.sql;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
@@ -23,7 +23,7 @@ public class SequenceNameManager {
 		return instance;
 	}*/
 
-	protected Map<String, String> sequenceSqlCache = new HashMap<String, String>();
+	protected Map<String, String> sequenceSqlCache = new ConcurrentHashMap<String, String>();
 	
 	public <T> String getSequenceName(Class<T> entityClass){
 		String seqName = "SEQ_" + entityClass.getSimpleName().toUpperCase();

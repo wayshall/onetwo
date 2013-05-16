@@ -1,14 +1,19 @@
 package org.onetwo.common.excel;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
 
+/******
+ * excel生成器工厂类
+ * @author wayshall
+ *
+ */
 @SuppressWarnings("rawtypes")
 abstract public class DefaultExcelGeneratorFactory {
 	
-	private static Map<String, TemplateModel> TemplateModelCache = new HashMap<String, TemplateModel>();
+	private static Map<String, TemplateModel> TemplateModelCache = new ConcurrentHashMap<String, TemplateModel>();
 
 	public static PoiExcelGenerator createExcelGenerator(TemplateModel template, Map context){
 		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);

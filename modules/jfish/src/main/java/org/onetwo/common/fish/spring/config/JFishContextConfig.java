@@ -28,6 +28,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
+/*******
+ * 负责orm和applicationContext.xml上下文初始化
+ * 
+ * @author wayshall
+ *
+ */
 @Configuration
 @JFishOrm
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })

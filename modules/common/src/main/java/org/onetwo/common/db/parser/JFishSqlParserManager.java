@@ -11,7 +11,7 @@ public class JFishSqlParserManager {
 		return instance;
 	}
 	
-	private Map<Integer, SqlStatment> sqlCaches = new ConcurrentHashMap<Integer, SqlStatment>();
+	private Map<String, SqlStatment> sqlCaches = new ConcurrentHashMap<String, SqlStatment>();
 	private boolean debug;
 	
 	private JFishSqlParserManager(){
@@ -19,8 +19,8 @@ public class JFishSqlParserManager {
 	}
 	
 	public SqlStatment getSqlStatment(String sql){
-		int hc = sql.hashCode();
-		SqlStatment statments = this.sqlCaches.get(hc);
+//		int hc = sql.hashCode();
+		SqlStatment statments = this.sqlCaches.get(sql);
 		if(statments!=null){
 //			this.printSqlStaments(statments);
 			return statments;
@@ -31,7 +31,7 @@ public class JFishSqlParserManager {
 		if(debug){
 			this.printSqlStaments(statments);
 		}
-		this.sqlCaches.put(hc, statments);
+		this.sqlCaches.put(sql, statments);
 		
 		return statments;
 	}
@@ -50,6 +50,10 @@ public class JFishSqlParserManager {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+	
+	public String toString(){
+		return sqlCaches.toString();
 	}
 
 }

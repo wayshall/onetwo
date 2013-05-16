@@ -64,6 +64,11 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.xml.MarshallingView;
 
+/*******
+ * 扩展mvc配置
+ * @author wayshall
+ *
+ */
 @Configuration
 @JFishMvc
 @ComponentScan(basePackageClasses = { JFishMvcConfig.class, SpringAuthenticationInvocation.class })
