@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.db.sqlext.SQLKeys;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.test.BaseTest;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
@@ -312,6 +313,36 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 		expected = "select * from t_user t where t.age = ? and t.birth_day is not null and t.user_name is null order by id, userName desc, t.age, t.birth_day asc";
 		Assert.assertEquals(expected, q.getTransitionSql());
 		Assert.assertEquals("[11]", q.getValues().toString());
+		
+
+		try {
+			q = DynamicQueryFactory.createJFishDynamicQuery(sql);
+			q.setParameter(0, 11l);
+			q.setParameter("userName", SQLKeys.Null);
+			q.setParameter(1, SQLKeys.Null);
+			q.desc("insert");
+			
+			q.ignoreIfNull().compile();
+			Assert.fail("should be failed!");
+		} catch (Exception e) {
+			System.out.println("order by error: " + e.getMessage());
+			Assert.assertTrue(BaseException.class.isAssignableFrom(e.getClass()));
+		}
+		
+
+		try {
+			q = DynamicQueryFactory.createJFishDynamicQuery(sql);
+			q.setParameter(0, 11l);
+			q.setParameter("userName", SQLKeys.Null);
+			q.setParameter(1, SQLKeys.Null);
+			q.desc(";");
+			
+			q.ignoreIfNull().compile();
+			Assert.fail("should be failed!");
+		} catch (Exception e) {
+			System.out.println("order by error: " + e.getMessage());
+			Assert.assertTrue(BaseException.class.isAssignableFrom(e.getClass()));
+		}
 	}
 	
 	@Test

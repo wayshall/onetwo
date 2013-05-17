@@ -5,9 +5,11 @@ import java.util.List;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.parser.JFishConditon;
 import org.onetwo.common.db.parser.QueryContext;
+import org.onetwo.common.db.parser.SqlKeywords;
 import org.onetwo.common.db.parser.SqlObject;
 import org.onetwo.common.db.parser.SqlVarObject;
 import org.onetwo.common.db.parser.QueryContext.QValue;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -80,9 +82,12 @@ public class DefaultDynamicQueryInterceptor extends DynamicQueryInterceptorAdapt
 
 	protected void checkFieldNameValid(String field){
 		Assert.hasText(field);
-		for(String str : SQL_KEY_WORKDS){
+		/*for(String str : SQL_KEY_WORKDS){
 			if(field.indexOf(str)!=-1)
 				LangUtils.throwBaseException("the field is inValid : " + field);
+		}*/
+		if(SqlKeywords.ALL.isKeyWord(field.trim())){
+			throw new BaseException("the field is inValid : " + field);
 		}
 	}
 	

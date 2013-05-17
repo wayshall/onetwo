@@ -56,5 +56,9 @@ public class JKeyWords implements LexerKeywords<JToken>{
 	public List<JToken> getKeyWordTokens(){
 		return JFishList.wrap(this.keyWords.values());
 	}
+	@Override
+	public boolean isKeyWord(String tokenString) {
+		return this.keyWords.containsKey(tokenString);
+	}
 	
 }

@@ -514,7 +514,7 @@ public class LangUtils {
 		println(debug, str, objects);
 	}
 	
-	private static Expression PRINT_SE = SimpleExpression.newExpression("${", "}");
+	private static Expression PRINT_SE = ExpressionFacotry.newExpression("${", "}");
 	
 
 	public static void printlnNamedArgs(String str, Object...objects){

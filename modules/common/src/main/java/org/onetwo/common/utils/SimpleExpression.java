@@ -13,9 +13,6 @@ public class SimpleExpression implements Expression {
 	public static final Expression DOLOR_INSTANCE = DOLOR;
 	public static final Expression WELL_INSTANCE = WELL;
 	
-	public static Expression newExpression(String start, String end){
-		return new SimpleExpression(start, end);
-	}
 
 	public static class Context {
 		public static Context create(String str){
@@ -41,30 +38,41 @@ public class SimpleExpression implements Expression {
 		}
 	}
 
-	protected String start;
-	protected String end;
-	protected boolean throwIfVarNotfound = false;
+	private final static String NULL_VALUE = "NULL";
+	
+	private final String start;
+	private final String end;
+	private final boolean throwIfVarNotfound;
 //	protected String text;
 //	protected Map<String, Integer> varIndexMap = new LinkedHashMap<String, Integer>();
-
-	protected Object valueProvider;
-	public SimpleExpression(String start, String end, Object valueProvider) {
-		this(start, end);
-		this.valueProvider = valueProvider;
-	}
-
-	public SimpleExpression(String start, String end) {
+	protected final Object valueProvider;
+	
+	private final String nullValue;
+	
+	SimpleExpression(String start, String end, Object valueProvider, String nullValue) {
 		this.start = start;
 		this.end = end;
+		this.valueProvider = valueProvider;
+		this.nullValue = nullValue;
+		this.throwIfVarNotfound = ":throw".equalsIgnoreCase(nullValue);
+	}
+	
+
+	SimpleExpression(String start, String end, Object valueProvider) {
+		this(start, end, valueProvider, NULL_VALUE);
+	}
+
+	SimpleExpression(String start, String end) {
+		this(start, end, null, NULL_VALUE);
 	}
 
 	public boolean isThrowIfVarNotfound() {
 		return throwIfVarNotfound;
 	}
-
+/*
 	public void setThrowIfVarNotfound(boolean throwIfVarNotfound) {
 		this.throwIfVarNotfound = throwIfVarNotfound;
-	}
+	}*/
 
 	public boolean isExpresstion(String text) {
 		return StringUtils.isNotBlank(text) && text.indexOf(start) != -1 && text.indexOf(end) != -1;
@@ -87,8 +95,14 @@ public class SimpleExpression implements Expression {
 		if (!isExpresstion(text))
 			return Context.createWithEmptyVarIndex(text);
 
-		final Map context = MyUtils.convertParamMap(objects);
-		Context ctx = parseWithContext(text, context);
+		Context ctx = null;
+		
+		if(objects.length==1 && objects[0]!=null){
+			ctx = parseWithContextByProvider(text, objects[0]);
+		}else{
+			final Map context = MyUtils.convertParamMap(objects);
+			ctx = parseWithContextByProvider(text, context);
+		}
 
 		return ctx;
 	}
@@ -98,10 +112,10 @@ public class SimpleExpression implements Expression {
 	}*/
 
 	public String parseByProvider(String text, Object provider){
-		return parseWithContext(text, provider).result;
+		return parseWithContextByProvider(text, provider).result;
 	}
 	
-	public Context parseWithContext(String text, Object provider) {
+	public Context parseWithContextByProvider(String text, Object provider) {
 //		Assert.notNull(provider, "provider can not be null!");
 		if(provider==null)
 			return Context.createWithEmptyVarIndex(text);
@@ -193,7 +207,7 @@ public class SimpleExpression implements Expression {
 	protected String throwVarNotfoundOrNullString(String var){
 		if(isThrowIfVarNotfound())
 			LangUtils.throwBaseException("can not find the value of varname: " + var);
-		return "NULL";
+		return nullValue;
 	}
 
 	/*public Integer getVarIndex(String var) {

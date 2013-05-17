@@ -17,8 +17,8 @@ import net.sf.json.util.PropertyFilter;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DateConverter;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.annotation.IgnoreJson;
@@ -42,7 +42,7 @@ public abstract class JSONUtils {
 		ConvertUtils.register(new DateConverter(), Timestamp.class);
 		ConvertUtils.register(new DateConverter(), String.class);
 		
-		Set formats = DateUtil.values.keySet();
+		Set formats = CUtils.asSet("yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm");
 		net.sf.json.util.JSONUtils.getMorpherRegistry().registerMorpher(new DateMorpher((String[])formats.toArray(new String[formats.size()])));
 	}
 	

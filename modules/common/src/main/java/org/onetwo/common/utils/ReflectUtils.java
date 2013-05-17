@@ -1312,7 +1312,7 @@ public class ReflectUtils {
 				.getParameterTypes().length == 0);
 	}
 
-	private static Expression METHOD_EXP = new SimpleExpression("(", ")",
+	private static Expression METHOD_EXP = ExpressionFacotry.newExpression("(", ")",
 			new ValueProvider() {
 
 				@Override

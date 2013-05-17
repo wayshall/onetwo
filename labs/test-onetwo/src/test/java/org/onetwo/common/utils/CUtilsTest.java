@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,5 +34,7 @@ public class CUtilsTest {
 		fields = CUtils.asStringArray("aa");
 		Assert.assertEquals(strs[0], fields[0]);
 
+		Set<String> formats = CUtils.asSet("yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm");
+		Assert.assertEquals(formats.size(), 4);
 	}
 }

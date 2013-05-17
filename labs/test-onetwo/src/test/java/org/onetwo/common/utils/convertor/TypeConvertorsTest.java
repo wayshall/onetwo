@@ -42,6 +42,8 @@ public class TypeConvertorsTest {
 		Assert.assertTrue(Types.convertValue(111.11, boolean.class));
 		Assert.assertFalse(Types.convertValue(false, boolean.class));
 		Assert.assertFalse(Types.convertValue(null, boolean.class));
+		Assert.assertFalse(Types.convertValue("false", boolean.class));
+		Assert.assertFalse(Types.convertValue("no", boolean.class));
 	}
 	
 	@Test

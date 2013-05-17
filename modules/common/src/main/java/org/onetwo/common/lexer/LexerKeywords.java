@@ -12,5 +12,7 @@ public interface LexerKeywords<T> {
 	public T getTokenByKeyWord(String kw);
 
 	public boolean isKeyWord(T token);
+	
+	public boolean isKeyWord(String tokenString);
 
 }

@@ -2,9 +2,10 @@ package org.onetwo.common.utils.propconf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.utils.Expression;
-import org.onetwo.common.utils.SimpleExpression;
+import org.onetwo.common.utils.ExpressionFacotry;
 import org.onetwo.common.utils.ValueProvider;
 import org.onetwo.common.utils.VariableSupporterProvider;
 
@@ -15,7 +16,7 @@ public class VariableExpositor {
 //	private static final String POST_FIX = "}";
 //	private static final Pattern PATTERN = Pattern.compile("\\$\\{[\\w\\.]+\\}", Pattern.CASE_INSENSITIVE);
 
-	protected Expression expression = new SimpleExpression("${", "}");
+	protected Expression expression = ExpressionFacotry.newExpression("${", "}");
 //	private VariableSupporter variabler;
 	private Map<String, String> cache;
 	private boolean cacheable;
@@ -26,7 +27,7 @@ public class VariableExpositor {
 	}
 
 	public VariableExpositor(VariableSupporter variabler, boolean cacheable) {
-		this.cache = new HashMap<String, String>();
+		this.cache = new ConcurrentHashMap<String, String>();
 		this.valueProvider = new VariableSupporterProvider(variabler);
 		this.cacheable = cacheable;
 	}

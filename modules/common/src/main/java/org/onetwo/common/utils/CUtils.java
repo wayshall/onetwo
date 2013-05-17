@@ -199,6 +199,14 @@ final public class CUtils {
 	public static <T> HashSet<T> newHashSet(){
 		return new HashSet<T>();
 	}
+
+	public static <T> HashSet<T> asSet(T...objs){
+		HashSet<T> set = new HashSet<T>();
+		for(T obj : objs){
+			set.add(obj);
+		}
+		return set;
+	}
 	public static <T> HashSet<T> newHashSet(int size){
 		HashSet<T> sets = null;
 		if(size<=0)

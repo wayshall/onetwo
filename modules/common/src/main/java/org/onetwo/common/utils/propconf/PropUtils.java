@@ -8,8 +8,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.LangUtils;
 
 public abstract class PropUtils {
 	private static final Logger LOGGER = Logger.getLogger(PropUtils.class);
@@ -37,10 +37,21 @@ public abstract class PropUtils {
 	}
 
 	public static Properties loadProperties(String configName) {
-		File file = parseResource(configName);
+		/*File file = parseResource(configName);
 		if(file==null)
 			LangUtils.throwBaseException("can not find config file : " + configName);
-		return loadProperties(file);
+		return loadProperties(file);*/
+		
+		try {
+			InputStream inStream = FileUtils.getResourceAsStream(configName);
+			if(inStream==null)
+				throw new IOException("can load as stream with : " +configName );
+			Properties properties = new Properties();
+			properties.load(inStream);
+			return properties;
+		} catch (Exception e) {
+			throw new ServiceException("load config error : " + configName, e);
+		}
 	}
 
 	public static Properties loadProperties(File file) {
@@ -95,5 +106,10 @@ public abstract class PropUtils {
 
 	public static PropConfig loadPropConfig(String configName) {
 		return loadPropConfig(configName, true);
+	}
+	
+
+	public static SimpleProperties loadAsSimpleProperties(String configName) {
+		return new SimpleProperties(configName);
 	}
 }

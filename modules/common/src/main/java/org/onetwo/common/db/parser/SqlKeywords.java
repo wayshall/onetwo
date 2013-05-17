@@ -10,6 +10,9 @@ import org.onetwo.common.utils.list.JFishList;
 public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 
 	public final static SqlKeywords KEYWORDS;
+	public final static SqlKeywords SYMBOLS;
+	public final static SqlKeywords OPERATORS;
+	public final static SqlKeywords ALL;
 	static {
 		KEYWORDS = new SqlKeywords();
 		KEYWORDS.addKeyWord(SqlTokenKey.DELETE)
@@ -46,9 +49,7 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 				.addKeyWord(SqlTokenKey.LIKE)
 				.addKeyWord(SqlTokenKey.OR)
 				.addKeyWord(SqlTokenKey.AND);
-	}
-	public final static SqlKeywords OPERATORS;
-	static {
+		
 		OPERATORS = new SqlKeywords();
 		OPERATORS.addKeyWord(SqlTokenKey.EQ)
 				.addKeyWord(SqlTokenKey.GT)
@@ -61,10 +62,7 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 				.addKeyWord(SqlTokenKey.IN)
 				.addKeyWord(SqlTokenKey.IS)
 				.addKeyWord(SqlTokenKey.LIKE);
-	}
-
-	public final static SqlKeywords SYMBOLS;
-	static {
+		
 		SYMBOLS = new SqlKeywords();
 		SYMBOLS.addKeyWord(SqlTokenKey.SEMI)
 				.addKeyWord(SqlTokenKey.COMMA)
@@ -73,17 +71,27 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 //				.addKeyWord(SqlTokenKey.VARNAME)
 				.addKeyWord(SqlTokenKey.LPARENT)
 				.addKeyWord(SqlTokenKey.RPARENT);
+
+		ALL = new SqlKeywords().addAll(KEYWORDS).addAll(OPERATORS).addAll(SYMBOLS);
 	}
 	
-	private Map<String, SqlTokenKey> keyWords = LangUtils.newMap();
 
-	private SqlKeywords(){}
+	private final Map<String, SqlTokenKey> keyWords;
+
+	private SqlKeywords(){ 
+		keyWords = LangUtils.newMap();
+	}
 	private SqlKeywords(Map<String, SqlTokenKey> kws){
 		this.keyWords = kws;
 	}
 	
 	private SqlKeywords addKeyWord(SqlTokenKey token){
 		this.keyWords.put(token.getName(), token);
+		return this;
+	}
+	
+	private SqlKeywords addAll(SqlKeywords kws){
+		this.keyWords.putAll(kws.keyWords);
 		return this;
 	}
 
@@ -104,5 +112,10 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 	@Override
 	public boolean isKeyWord(SqlTokenKey token){
 		return this.keyWords.containsKey(token.getName());
+	}
+	
+	@Override
+	public boolean isKeyWord(String tokenString){
+		return this.keyWords.containsKey(tokenString);
 	}
 }
