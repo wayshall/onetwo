@@ -3,6 +3,7 @@ package org.onetwo.common.fish.event;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.JdbcStatementContext;
 import org.onetwo.common.utils.CUtils;
@@ -14,37 +15,35 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 	protected void doUpdate(JFishUpdateEvent event, JFishMappedEntry entry){
 		Object entity = event.getObject();
 		JFishEventSource es = event.getEventSource();
-		JdbcStatementContext<List<Object[]>> update = null;
+//		JdbcStatementContext<List<Object[]>> update = null;
 		int count = 0;
 		if(event.isDynamicUpdate()){
 			if(LangUtils.isMultiple(entity)){
 				Collection<Object> entityCol = CUtils.toCollection(entity);
 				for(Object e : entityCol){
-					update = entry.makeDymanicUpdate(e);
-					count += this.executeJdbcUpdate(event, es, update);
+					throwIfMultiple(entity, e);
+					count += updateSingleEntity(true, es, entry, e);
 				}
 			}else{
-				update = entry.makeDymanicUpdate(entity);
-				count = this.executeJdbcUpdate(event, es, update);
+				count += this.updateSingleEntity(true, es, entry, entity);
 			}
 		}else{
-			update = entry.makeUpdate(entity);
-//			count = this.updateValues(es, update);
-			count = LangUtils.sum(es.getJFishJdbcTemplate().batchUpdate(update.getSql(), update.getValue()));
+			if(event.isBatchUpdate()){
+				count = this.executeJdbcUpdate(es, entry.makeUpdate(entity));
+			}else{
+				count = this.updateSingleEntity(false, es, entry, entity);
+			}
 		}
 		event.setUpdateCount(count);
 	}
-	
-	/*protected int updateValues(JFishEventSource es, KVEntry<String, List<Object[]>> update){
-		int count = 0;
-		for(Object[] args : update.getValue()){
-			count += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(update.getKey(), args), null);
-			if(count==0){
-				//may be try to insert
-				LangUtils.throwBaseException(LangUtils.toString("no data updated: sql:[${0}],  value:${1}", update.getKey(), LangUtils.toString(args)));
-			}
-		}
+
+	private int updateSingleEntity(boolean dymanic, JFishEventSource es, JFishMappedEntry entry, Object entity){
+		JdbcStatementContext<List<Object[]>> update = dymanic?entry.makeDymanicUpdate(entity):entry.makeUpdate(entity);
+		int count = this.executeJdbcUpdate(false, update.getSql(), update.getValue(), es);
+		
+		if(count<1)
+			throw new JFishEntityNotFoundException("update count is " + count + ".", entity.getClass(), entry.getId(entity));
 		return count;
-	}*/
+	}
 
 }

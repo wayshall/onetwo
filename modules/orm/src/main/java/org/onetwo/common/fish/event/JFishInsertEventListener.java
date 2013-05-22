@@ -43,10 +43,10 @@ public class JFishInsertEventListener extends InsertEventListener{
 						entry.setId(objects.get(index++), keyHolder.getKey());
 				}
 			}else{
-				updateCount += executeJdbcUpdate(event, sql, args, es);
+				updateCount += executeJdbcUpdate(sql, args, es);
 			}
 		}else{
-			updateCount += executeJdbcUpdate(event, sql, args, es);
+			updateCount += executeJdbcUpdate(sql, args, es);
 		}
 
 		/*if(updateCount<1)

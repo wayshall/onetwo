@@ -33,7 +33,7 @@ public class JFishBatchInsertEventListener extends JFishInsertEventListener{
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);
 //		int[] counts = es.getJFishJdbcTemplate().batchUpdate(insert.getKey(), insert.getValue());
 //		int total = LangUtils.sum(counts);
-		int total = this.executeJdbcUpdate(true, event, insert.getSql(), insert.getValue(), es);
+		int total = this.executeJdbcUpdate(true, insert.getSql(), insert.getValue(), es);
 		event.setUpdateCount(total);
 	}
 

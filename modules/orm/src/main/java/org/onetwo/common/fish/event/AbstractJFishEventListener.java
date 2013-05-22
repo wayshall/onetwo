@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.DataBaseConfig;
 import org.onetwo.common.fish.orm.JFishMappedField;
 import org.onetwo.common.fish.orm.JdbcStatementContext;
@@ -39,6 +40,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 			for(Object obj : entities){
 				if(obj==null)
 					continue;
+				throwIfMultiple(entities, obj);
 				updateCount += this.onInnerEventWithSingle(obj, insertOrUpdate);
 			}
 		}else{
@@ -49,6 +51,13 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	
 	protected int onInnerEventWithSingle(Object entity, JFishEvent event){
 		throw new UnsupportedOperationException();
+	}
+	
+	protected void throwIfMultiple(Object parent, Object entity){
+		if(LangUtils.isMultiple(entity)){
+			String msg = "element of "+(parent==null?"container":parent)+" can not be a multiple object, element: " + entity;
+			throw new JFishOrmException(msg);
+		}
 	}
 
 	
@@ -66,8 +75,8 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	}
 	
 
-	protected int executeJdbcUpdate(JFishEvent event, JFishEventSource es, JdbcStatementContext<List<Object[]>> update){
-		return executeJdbcUpdate(event, update.getSql(), update.getValue(), es);
+	protected int executeJdbcUpdate(JFishEventSource es, JdbcStatementContext<List<Object[]>> update){
+		return executeJdbcUpdate(update.getSql(), update.getValue(), es);
 	}
 	
 	/********
@@ -78,11 +87,19 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	 * @param es
 	 * @return
 	 */
-	protected int executeJdbcUpdate(JFishEvent event, String sql, List<Object[]> args, JFishEventSource es){
-		return executeJdbcUpdate(isUseBatchUpdate(args, es), event, sql, args, es);
+	protected int executeJdbcUpdate(String sql, List<Object[]> args, JFishEventSource es){
+		return executeJdbcUpdate(isUseBatchUpdate(args, es), sql, args, es);
 	}
 	
-	protected int executeJdbcUpdate(boolean userBatch, JFishEvent event, String sql, List<Object[]> args, JFishEventSource es){
+	/******
+	 * 如果使用批量处理，因为某些驱动的实现机制，比如oracle，不能根据返回值来判断是否更新成功
+	 * @param userBatch
+	 * @param sql
+	 * @param args
+	 * @param es
+	 * @return
+	 */
+	protected int executeJdbcUpdate(boolean userBatch, String sql, List<Object[]> args, JFishEventSource es){
 		int count = 0;
 		if(userBatch){
 //			int[] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args);

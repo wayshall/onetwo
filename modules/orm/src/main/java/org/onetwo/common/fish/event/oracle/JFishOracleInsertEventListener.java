@@ -45,7 +45,7 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 		List<Object[]> args = insert.getValue();
 		
 		int count = executeJdbcUpdate(event, sql, args, es);*/
-		int count = this.executeJdbcUpdate(event, es, insert);
+		int count = this.executeJdbcUpdate(es, insert);
 		
 		event.setUpdateCount(count);
 	}

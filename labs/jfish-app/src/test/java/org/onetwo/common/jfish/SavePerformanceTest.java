@@ -33,7 +33,7 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 	private DataSource dataSource;
 	private NutzBaseDao nutzDao;
 	
-	private int insertCount = 10000;
+	private int insertCount = 1001;
 	
 
 	@Before

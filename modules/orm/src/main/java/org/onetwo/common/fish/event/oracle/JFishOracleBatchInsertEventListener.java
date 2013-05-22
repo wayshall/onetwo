@@ -43,7 +43,7 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(event.getObject());
 		TimeCounter counter = new TimeCounter("batch insert "+insert.getValue().size()+"...");
 		counter.start();
-		int count = this.executeJdbcUpdate(true, event, insert.getSql(), insert.getValue(), event.getEventSource());
+		int count = this.executeJdbcUpdate(true, insert.getSql(), insert.getValue(), event.getEventSource());
 		counter.stop();
 		
 		event.setUpdateCount(count);

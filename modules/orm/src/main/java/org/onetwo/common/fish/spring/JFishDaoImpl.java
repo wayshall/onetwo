@@ -241,6 +241,14 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return event.getUpdateCount();
 	}
 	
+	public <T> int batchUpdate(Collection<T> entities){
+		JFishUpdateEvent event = new JFishUpdateEvent(entities, this);
+		event.setDynamicUpdate(false);
+		event.setBatchUpdate(true);
+		this.fireEvents(event);
+		return event.getUpdateCount();
+	}
+	
 	/*protected void fireEvents(JFishEventListener[] listeners, JFishEvent event){
 		for(JFishEventListener listern : listeners){
 			listern.doEvent(event);

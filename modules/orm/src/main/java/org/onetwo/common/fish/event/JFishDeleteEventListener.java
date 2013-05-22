@@ -32,7 +32,7 @@ public class JFishDeleteEventListener extends AbstractJFishEventListener {
 			count = es.getJFishJdbcTemplate().update(delete.getSql(), delete.getValue());
 		}else{
 			JdbcStatementContext<List<Object[]>> delete = entry.makeDelete(entity, deleteEvent.isDeleteByIdentify());
-			count = this.executeJdbcUpdate(deleteEvent, delete.getSql(), delete.getValue(), es);
+			count = this.executeJdbcUpdate(delete.getSql(), delete.getValue(), es);
 		}
 		/*if(count<1)
 			throw new JFishOrmException("can not delete any entity["+entry.getEntityClass()+"] : " + count);*/
