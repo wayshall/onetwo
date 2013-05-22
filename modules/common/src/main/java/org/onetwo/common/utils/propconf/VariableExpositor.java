@@ -33,7 +33,7 @@ public class VariableExpositor {
 	}
 
 	public VariableExpositor(VariableSupporterProvider vp, boolean cacheable) {
-		this.cache = new HashMap<String, String>();
+		this.cache = new ConcurrentHashMap<String, String>();
 		this.cacheable = cacheable;
 		this.valueProvider = vp;
 	}

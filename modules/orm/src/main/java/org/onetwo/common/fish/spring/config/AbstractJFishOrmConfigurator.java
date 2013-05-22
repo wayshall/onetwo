@@ -1,23 +1,17 @@
-package org.onetwo.common.spring.web.mvc.config;
+package org.onetwo.common.fish.spring.config;
 
 import org.onetwo.common.fish.orm.DataBaseConfig;
 import org.onetwo.common.fish.orm.DefaultDataBaseConfig;
-import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
-import org.onetwo.common.web.config.BaseSiteConfig;
 
 
-abstract public class BaseAppConfigurator implements JFishAppConfigrator {
+abstract public class AbstractJFishOrmConfigurator implements JFishOrmConfigurator {
 
 	private DataBaseConfig dataBaseConfig;
 	
-	public BaseAppConfigurator(){
+	public AbstractJFishOrmConfigurator(){
 		this.dataBaseConfig = new DefaultDataBaseConfig();
 	}
 
-	@Override
-	public String[] getXmlBasePackages() {
-		return getModelBasePackages();
-	}
 
 	/*@Override
 	public String[] getModelBasePackages() {
@@ -26,12 +20,12 @@ abstract public class BaseAppConfigurator implements JFishAppConfigrator {
 
 	@Override
 	public boolean isLogJdbcSql() {
-		return BaseSiteConfig.getInstance().isJdbcSqlLog();
+		return false;
 	}
 
 	@Override
 	public boolean isWatchSqlFile() {
-		return BaseSiteConfig.getInstance().isJdbcSqlLog();
+		return false;
 	}
 
 	@Override

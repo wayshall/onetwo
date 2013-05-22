@@ -9,7 +9,7 @@ import org.onetwo.common.utils.list.L;
 @SuppressWarnings("unchecked")
 public class StringerTest {
 	private static final List<String> OPERATORS = L.aslist("=", "<", ">", ">=", "<=", "!=", "<>", "in", "like");
-	private static final List<String> RETAIN_SEPS = L.aslist(false, " ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
+	private static final List<String> RETAIN_SEPS = L.aslistIfNull(false, " ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
 	
 	@Test
 	public void testSql(){

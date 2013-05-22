@@ -6,6 +6,10 @@ import org.onetwo.common.utils.StringUtils;
 
 public class OracleDialect extends AbstractDBDialect {
 
+	public OracleDialect(DataBaseConfig dataBaseConfig) {
+		super(dataBaseConfig);
+	}
+
 	public void registerIdStrategy(){
 		this.getIdStrategy().add(StrategyType.seq);
 	}

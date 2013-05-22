@@ -13,11 +13,9 @@ public class TimeCounter {
 		this.target = target;
 	}
 
-	@SuppressWarnings("deprecation")
 	public Date start() {
 		long start = System.currentTimeMillis();
 		this.start = new Date(start);
-		System.out.print(this.target + " ----->>> start time : " + this.start.toLocaleString());
 		return this.start;
 	}
 	
@@ -38,8 +36,9 @@ public class TimeCounter {
 		long stop = System.currentTimeMillis();
 		this.stop = new Date(stop);
 		this.costTime = this.stop.getTime() - this.start.getTime();
-		System.out.print(this.target + " ----->>> stop time : " + this.start.toLocaleString()+" ");
-		System.out.println(" cost total time : " + this.costTime+", (second): " + (this.costTime / 1000));
+		System.out.println(this.target + " ----->>> start time : " + this.start.toLocaleString()
+				+ ", stop time : " + this.start.toLocaleString()
+				+ ", cost total time : " + this.costTime+", (second): " + (this.costTime / 1000));
 		return this.stop;
 	}
 

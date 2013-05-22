@@ -41,7 +41,7 @@ public class ColumnInfo extends BaseColumnInfo {
 	}
 	
 	public String toString(){
-		return LangUtils.toString(false, "name:${0}, javaName:${1}", false, getName(), javaName);
+		return LangUtils.toStringWith(false, "name:${0}, javaName:${1}", false, getName(), javaName);
 	}
 	
 	public TableInfo getTable() {

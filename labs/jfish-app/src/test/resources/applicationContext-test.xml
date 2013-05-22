@@ -24,6 +24,7 @@
 	<!-- 
 	<bean class="org.onetwo.plugins.richmodel.RichModelContext"></bean>
 	 -->
+	 <bean class="org.onetwo.common.jfish.TestOrmConfigurator"></bean>
 	<bean class="org.onetwo.common.fish.spring.config.JFishContextConfig"/>
 	<!-- 
 	<bean class="org.onetwo.common.spring.web.mvc.config.JFishMvcConfig"/>

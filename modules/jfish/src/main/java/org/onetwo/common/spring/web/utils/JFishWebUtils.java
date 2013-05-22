@@ -205,4 +205,11 @@ public final class JFishWebUtils {
 		return viewName!=null && viewName.startsWith(BaseController.REDIRECT);
 	}
 
+	public static String redirectUrl(String redirectUrl, String defaultUrl){
+		if(StringUtils.isBlank(redirectUrl)){
+			return "redirect:" + defaultUrl;
+		}else{
+			return "redirect:" + redirectUrl;
+		}
+	}
 }

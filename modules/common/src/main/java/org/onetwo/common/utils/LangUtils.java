@@ -518,7 +518,7 @@ public class LangUtils {
 	
 
 	public static void printlnNamedArgs(String str, Object...objects){
-		toString(true, str, true, objects);
+		toStringWith(true, str, true, objects);
 	}
 
 	public static void comment(String str, Object...objects){
@@ -528,18 +528,18 @@ public class LangUtils {
 	public static void comment(boolean print, String str, Object...objects){
 		if(!print)
 			return ;
-		toString(print, str, false, objects);
+		toStringWith(print, str, false, objects);
 	}
 	
 	public static void println(boolean print, String str, Object...objects){
-		toString(print, str, false, objects);
+		toStringWith(print, str, false, objects);
 	}
 	
 	public static String toString(String str, Object...objects){
-		return toString(false, str, false, objects);
+		return toStringWith(false, str, false, objects);
 	}
 	
-	public static String toString(boolean print, String str, boolean named, Object...objects){
+	public static String toStringWith(boolean print, String str, boolean named, Object...objects){
 		StringBuilder sb = new StringBuilder();
 		if(objects==null){
 			sb.append(str).append("NULL");
@@ -1213,7 +1213,7 @@ public class LangUtils {
 		return map;
 	}
 	
-	public static <T> List<T> asList(Class<T> clazz, Object...objects){
+	public static <T> List<T> asListWithType(Class<T> clazz, Object...objects){
 		if(LangUtils.isEmpty(objects))
 			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>(objects.length);
@@ -1315,7 +1315,7 @@ public class LangUtils {
 		return s;
 	}
 
-	public static int sum(int[] counts){
+	public static int sum(int... counts){
 		int total = 0;
 		for(int c : counts){
 			total += c;

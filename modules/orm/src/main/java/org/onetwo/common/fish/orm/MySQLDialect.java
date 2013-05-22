@@ -4,8 +4,8 @@ import org.onetwo.common.utils.StringUtils;
 
 public class MySQLDialect extends AbstractDBDialect {
 
-	public MySQLDialect(){
-		super();
+	public MySQLDialect(DataBaseConfig dataBaseConfig){
+		super(dataBaseConfig);
 	}
 
 	public void registerIdStrategy(){

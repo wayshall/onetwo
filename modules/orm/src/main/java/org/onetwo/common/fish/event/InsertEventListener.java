@@ -35,8 +35,8 @@ abstract public class InsertEventListener extends AbstractJFishEventListener {
 	abstract protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry);
 
 	
-	protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){
+	/*protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){
 		return executeJdbcUpdate(event, sql, args, es);
-	}
+	}*/
 	
 }
