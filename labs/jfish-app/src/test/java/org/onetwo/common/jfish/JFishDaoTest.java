@@ -150,6 +150,8 @@ public class JFishDaoTest extends JFishBaseNGTest {
 	public void testJFishBatchInsert(){
 		String name = "testJFishBatchInsert";
 		UtilTimerStack.push(name);
+
+		Assert.assertTrue(jdao.batchInsert(new ArrayList())==0);
 		
 		List<UserEntity> list = new ArrayList<UserEntity>();
 		for(int i=0; i<insertCount; i++){
@@ -165,6 +167,8 @@ public class JFishDaoTest extends JFishBaseNGTest {
 	public void testJFishBatchUpdate(){
 		String name = "testJFishBatchUpdate";
 		UtilTimerStack.push(name);
+
+		Assert.assertTrue(jdao.batchUpdate(new ArrayList())==0);
 		
 		String sql = "select * from T_USER t where t.user_name like :userName";
 		JFishQuery query = this.jdao.createJFishQuery(sql);

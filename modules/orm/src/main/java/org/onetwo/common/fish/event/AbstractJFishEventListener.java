@@ -103,7 +103,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 		int count = 0;
 		if(userBatch){
 //			int[] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args);
-			int batchSize = es.getDialect().getDataBaseConfig().getBatchSizeForUpdate();
+			int batchSize = es.getDialect().getDataBaseConfig().getProcessSizePerBatch();
 			int[][] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args, batchSize, new ParameterizedPreparedStatementSetter<Object[]>(){
 
 				@Override

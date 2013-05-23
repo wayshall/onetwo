@@ -4,9 +4,13 @@
   <test name="JFishDaoBaseTest">
     <classes>
       <class name="org.onetwo.common.jfish.JFishDaoTest"/>
+    </classes>
+  </test> 
+  <test name="JFishRelatedTest">
+    <classes>
       <class name="org.onetwo.common.jfish.JFishRelatedTest"/>
     </classes>
-  </test> <!-- Test -->
+  </test> 
   
   
   <test name="JFishEntityManagerTest">

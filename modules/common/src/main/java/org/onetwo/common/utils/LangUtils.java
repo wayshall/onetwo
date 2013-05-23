@@ -788,6 +788,18 @@ public class LangUtils {
 		}
 	}
 	
+	public static boolean isMultipleAndNotEmpty(Object obj){
+		if(obj==null)
+			return false;
+		if(obj instanceof Collection){
+			return !isEmpty((Collection)obj);
+		}else if(obj.getClass().isArray()){
+			return !isEmpty((Object[])obj);
+		}else {
+			return false;
+		}
+	}
+	
 	public static boolean isMultipleObjectClass(Class clazz){
 		return isCollectionClass(clazz) || isArrayClass(clazz);
 	}
@@ -875,7 +887,8 @@ public class LangUtils {
 	
 	public static <T> List<T> asList(Object array) {
 //		return L.exclude(array);
-		return L.tolist(array, true);
+//		return L.tolist(array, true);
+		return CUtils.tolist(array, true, CUtils.NULL_LIST);
 	}
 
 	public static <T> List<T> asList(Object array, boolean trimNull) {

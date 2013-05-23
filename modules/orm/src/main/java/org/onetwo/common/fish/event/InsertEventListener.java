@@ -1,7 +1,6 @@
 package org.onetwo.common.fish.event;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;

@@ -2,6 +2,8 @@ package org.onetwo.common.jfish;
 
 import javax.annotation.Resource;
 
+import org.example.app.model.member.entity.AddressEntity;
+import org.example.app.model.member.entity.ArticleEntity;
 import org.example.app.model.member.entity.UserEntity;
 import org.junit.Before;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
@@ -47,5 +49,21 @@ public class JFishBaseNGTest extends SpringTestNGTestCase {
 		user.setHeight(3.3f);
 		
 		return user;
+	}
+	
+	protected ArticleEntity createArticle(int i, String title){
+		ArticleEntity newArticle = new ArticleEntity();
+		newArticle.setTitle(title+" title " + i);
+		newArticle.setContent(title + " content " + i);
+		
+		return newArticle;
+	}
+	
+	protected AddressEntity createAddress(int i, String detail){
+		AddressEntity address = new AddressEntity();
+		address.setDetail(detail+"-"+i);
+		address.setPostCode("PostCode-"+i);
+		
+		return address;
 	}
 }

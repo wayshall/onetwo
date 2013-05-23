@@ -12,7 +12,7 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 		return true;
 	}
 
-	public int getBatchSizeForUpdate() {
+	public int getProcessSizePerBatch() {
 		return 1000;
 	}
 

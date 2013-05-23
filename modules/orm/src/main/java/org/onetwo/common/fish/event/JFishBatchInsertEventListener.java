@@ -16,6 +16,17 @@ import org.onetwo.common.utils.LangUtils;
  */
 public class JFishBatchInsertEventListener extends JFishInsertEventListener{
 
+
+	@Override
+	public void onInsert(JFishInsertEvent event) {
+		JFishMappedEntry entry = event.getEventSource().getMappedEntryManager().findEntry(event.getObject());
+		if(entry==null){
+			event.setUpdateCount(0);
+			return ;
+		}
+		super.onInsert(event);
+	}
+	
 	@Override
 	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
 		Object entity = event.getObject();
@@ -31,8 +42,6 @@ public class JFishBatchInsertEventListener extends JFishInsertEventListener{
 		Object entity = event.getObject();
 		
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);
-//		int[] counts = es.getJFishJdbcTemplate().batchUpdate(insert.getKey(), insert.getValue());
-//		int total = LangUtils.sum(counts);
 		int total = this.executeJdbcUpdate(true, insert.getSql(), insert.getValue(), es);
 		event.setUpdateCount(total);
 	}

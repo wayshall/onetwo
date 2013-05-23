@@ -1,21 +1,13 @@
-package org.onetwo.common.web.utils.asyn;
+package org.onetwo.common.web.asyn2;
 
-/********
- * 使用新的 {@link org.onetwo.common.web.asyn2.DeamonTask DeamonTask} 代替
- * @see org.onetwo.common.web.asyn2.DeamonTask
- * @author wayshall
- *
- * @param <T>
- */
-@Deprecated
-abstract public class DeamonTask<T> {
+
+abstract public class DeamonTask {
 	
 	private String name;
 //	private Tasker<T> tasker;
 	private int threadPriority = Thread.NORM_PRIORITY;
 	
 	private boolean finished;
-	private T result;
 	private Exception exception;
 	
 	private int taskIndex;
@@ -36,7 +28,7 @@ abstract public class DeamonTask<T> {
 				@Override
 				public void run() {
 					try {
-						result = execute();
+						execute();
 					} catch (Exception e) {
 						exception = e;
 					}
@@ -52,7 +44,7 @@ abstract public class DeamonTask<T> {
 		}
 	}
 	
-	abstract public T execute() throws Exception; 
+	abstract public void execute() throws Exception; 
 
 	public String getName() {
 		return name;
@@ -60,10 +52,6 @@ abstract public class DeamonTask<T> {
 
 	public boolean isFinished() {
 		return finished;
-	}
-
-	public T getResult() {
-		return result;
 	}
 
 	public Exception getException() {

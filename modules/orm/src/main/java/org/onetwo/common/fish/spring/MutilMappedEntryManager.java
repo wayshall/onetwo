@@ -167,6 +167,9 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		JFishMappedEntry entry = null;
 		
 		Object object = LangUtils.getFirst(objects);
+		if(object==null)
+			throw new JFishNoMappedEntryException("object can not null or emtpty, objects:"+objects);
+		
 		if(String.class.isInstance(object) && object.toString().indexOf('.')!=-1){
 			object = ReflectUtils.loadClass(object.toString());
 		}
