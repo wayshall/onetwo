@@ -31,7 +31,11 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 		
 	}
 	
-
+	/********
+	 * 不可以根据更新数量的数目来确定是否成功
+	 * oracle如果使用了不符合jdbc3.0规范的本地批量更新机制（BatchPerformanceWorkaround=true），
+	 * 每次插入的返回值都是{@linkplain java.sql.Statement#SUCCESS_NO_INFO -2}
+	 */
 	@Override
 	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
 		if(!LangUtils.isMultiple(event.getObject())){
@@ -44,6 +48,9 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 		TimeCounter counter = new TimeCounter("batch insert "+insert.getValue().size()+"...");
 		counter.start();
 		int count = this.executeJdbcUpdate(true, insert.getSql(), insert.getValue(), event.getEventSource());
+		if(count<0){
+			count = Math.abs(count)/2;
+		}
 		counter.stop();
 		
 		event.setUpdateCount(count);

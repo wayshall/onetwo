@@ -848,11 +848,11 @@ public class ReflectUtils {
 		}
 	}
 	
-	public static void copy(Object source, Object target) {
-		copy(source, target, true);
+	public static void copy(Object source, Object target, String...excludeNames) {
+		copy(source, target, true, excludeNames);
 	}
 
-	public static void copy(Object source, Object target, boolean throwIfError) {
+	public static void copy(Object source, Object target, boolean throwIfError, String...excludeNames) {
 		if (source == null)
 			return;
 		Collection<String> propNames = null;
@@ -864,6 +864,9 @@ public class ReflectUtils {
 		Object value = null;
 		try {
 			for (String prop : propNames) {
+				if(ArrayUtils.contains(excludeNames, prop)){
+					continue;//ignore
+				}
 				value = getProperty(source, prop);
 				setProperty(target, prop, value);
 			}
