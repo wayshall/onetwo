@@ -38,6 +38,15 @@ abstract public class DateUtil {
 
 	}
 
+    public static final int MILLIS_PER_SECOND = 1000;
+	public static final int SECONDS_PER_MINUTE = 60;
+    public static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60;
+    public static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * 24;
+
+    public static final int MILLIS_PER_DAY = SECONDS_PER_DAY * MILLIS_PER_SECOND;
+    public static final int MILLIS_PER_HOUR = SECONDS_PER_HOUR * MILLIS_PER_SECOND;
+    public static final int MILLIS_PER_MINUTE = SECONDS_PER_MINUTE * MILLIS_PER_SECOND;
+
 	public static final String Date_Only = "yyyy-MM-dd";
 	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
@@ -359,7 +368,7 @@ abstract public class DateUtil {
 	public static Date addSeconds(Date date, int amount) {
 		return add(date, Calendar.SECOND, amount);
 	}
-
+	
 	public static Date add(Date date, int calendarField, int amount) {
 		if (date == null) {
 			throw new IllegalArgumentException("The date must not be null");
@@ -378,6 +387,11 @@ abstract public class DateUtil {
 		return c.getTime();
 	}
 
+	public static void addByDateType(Calendar calendar, DateType dt, int numb) {
+		Assert.notNull(calendar, "calendar can not be null");
+		calendar.add(dt.getField(), numb);
+	}
+	
 	public static Date setDateStart(Date date) {
 		Assert.notNull(date, "date can not be null");
 		Calendar calendar = Calendar.getInstance();
@@ -591,6 +605,70 @@ abstract public class DateUtil {
 
 	public static String formatTime(Date date) {
 		return formatDateByPattern(date, Time_Only);
+	}
+	
+	public static int compareAtField(Date d1, Date d2, int field){
+		return compareAtField(asCalendar(d1), asCalendar(d2), field);
+	}
+
+	/*******
+	 * 比较且只比较两个Calendar 的某个字段上的值是否相等
+	 * @param c1
+	 * @param c2
+	 * @param field
+	 * @return
+	 */
+	public static int compareAtField(Calendar c1, Calendar c2, int field){
+		return c1.get(field) - c2.get(field);
+	}
+	
+	public static boolean isSameYear(Calendar c1, Calendar c2){
+		return compareAtField(c1, c2, Calendar.YEAR)==0;
+	}
+	
+	public static boolean isSameMonth(Calendar c1, Calendar c2){
+		return compareAtField(c1, c2, Calendar.MONTH)==0;
+	}
+	
+	public static boolean isSameDate(Calendar c1, Calendar c2){
+		return compareAtField(c1, c2, Calendar.DAY_OF_MONTH)==0;
+	}
+
+	/******
+	 * 比较两个Calendar在DateType精度上是否相等
+	 * @param c1
+	 * @param c2
+	 * @param dt
+	 * @return
+	 */
+	public static boolean isSameAccurateAt(Calendar c1, Calendar c2, DateType dt) {
+		if(c1==null || c2==null || dt==null)
+			return false;
+
+		boolean rs = false;
+		for (DateType d : DateType.values()) {
+			if (d.getField() > dt.getField() || (rs = c1.get(d.getField()) == c2.get(d.getField()))==false)
+				return rs;
+		}
+		return rs;
+	}
+	public static int compareAccurateAt(Calendar c1, Calendar c2, DateType dt) {
+		Assert.notNull(c1, "c1 can not be null");
+		Assert.notNull(c2, "c2 can not be null");
+		Assert.notNull(dt, "dt can not be null");
+
+		int rs = 0;
+		for (DateType d : DateType.values()) {
+			if (d.getField() > dt.getField() || (rs = c1.get(d.getField()) - c2.get(d.getField()))!=0)
+				return rs==0?0:(rs>0?1:-1);
+		}
+		return rs;
+	}
+
+	public static Calendar asCalendar(Date date){
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal;
 	}
 
 	public static void main(String[] args) {

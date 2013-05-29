@@ -276,8 +276,9 @@ final public class CUtils {
 			int length = Array.getLength(object);
 			list = new ArrayList(length);
 //			appendToList(object, list);
-			for(Object o : (Object[])object)
-				list.add(o);
+			for (int i = 0; i < length; i++) {
+				list.add(Array.get(object, i));
+			}
 		} else {
 			list = new ArrayList(5);
 			list.add(object);

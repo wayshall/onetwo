@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.SimpleBlock;
@@ -172,13 +171,13 @@ public class JFishList<E> implements List<E>, Serializable {
 		c.total = size();
 		c.index = 0;
 		for(E e : list){
-			try {
-				if(!it.doIt(e, c.index)){
-					break;
-				}
-			} catch (Exception e2) {
-				throw new BaseException("iterator has breaked. ", e2);
+//			try {
+			if(!it.doIt(e, c.index)){
+				break;
 			}
+			/*} catch (Exception e2) {
+				throw new BaseException("iterator has breaked. ", e2);
+			}*/
 			c.index++;
 		}
 		return c;

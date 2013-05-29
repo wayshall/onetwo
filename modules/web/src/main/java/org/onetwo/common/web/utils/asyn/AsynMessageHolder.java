@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 
+@Deprecated
 abstract public class AsynMessageHolder<T> implements Serializable {
 
 	

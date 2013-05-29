@@ -628,7 +628,8 @@ public class LangUtils {
 			}
 			result += "["+StringUtils.join(strs, ", ")+"]";
 		}else if(obj.getClass().isArray()){
-			result += "["+StringUtils.join((Object[])obj, ", ")+"]";
+			List<?> list = CUtils.tolist(obj, false);
+			result += "["+StringUtils.join(list, ", ")+"]";
 		}else if(obj.getClass()==Object.class){
 			return obj.toString();
 		}else{
