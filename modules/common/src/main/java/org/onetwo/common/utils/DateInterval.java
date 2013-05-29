@@ -38,15 +38,15 @@ public class DateInterval {
 	}
 	
 
-	public void eachDate(It<Date> it){
-		eachDate(1, false, it);
+	public int eachDate(It<Date> it){
+		return eachDate(1, false, it);
 	}
 	
-	public void eachDate(int intevalNumb, boolean includeEnd, It<Date> it){
-		each(DateType.date, intevalNumb, includeEnd, it);
+	public int eachDate(int intevalNumb, boolean includeEnd, It<Date> it){
+		return each(DateType.date, intevalNumb, includeEnd, it);
 	}
 
-	public void each(DateType dt, int intevalNumb, boolean includeEnd, It<Date> it){
+	public int each(DateType dt, int intevalNumb, boolean includeEnd, It<Date> it){
 		Calendar start = getStartCalendar();
 		Calendar end = getEndCalendar();
 
@@ -61,6 +61,7 @@ public class DateInterval {
 				break;
 			}
 		}
+		return index;
 	}
 
 	public JFishList<Date> getIntervalByDate(int intevalNumb, boolean includeEnd){

@@ -38,6 +38,10 @@ public class DateUtilTest {
 		
 		Date parseDate = DateUtil.parse("20121029102501", "yyyyMMddHHmmss");
 		System.out.println("parseDate:" + parseDate.toLocaleString());
+		
+
+		Calendar cal = Calendar.getInstance();
+		System.out.println("day: " + cal.get(Calendar.DAY_OF_WEEK));
 	}
 	
 	@Test
