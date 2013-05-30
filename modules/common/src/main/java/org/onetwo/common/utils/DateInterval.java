@@ -7,6 +7,11 @@ import org.onetwo.common.utils.DateUtil.DateType;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
 
+/**********
+ * 表示时间段
+ * @author wayshall
+ *
+ */
 public class DateInterval {
 	
 	public static DateInterval in(String date1, String date2){
@@ -42,10 +47,26 @@ public class DateInterval {
 		return eachDate(1, false, it);
 	}
 	
+	/********
+	 * 则表示从开始时间开始，每次递增intevalNumb天，直到结束时间。
+	 * @param intevalNumb
+	 * @param includeEnd 是否包含结束时间在内
+	 * @param it
+	 * @return
+	 */
 	public int eachDate(int intevalNumb, boolean includeEnd, It<Date> it){
 		return each(DateType.date, intevalNumb, includeEnd, it);
 	}
 
+	/****
+	 * 根据DateType类型逐渐增加intevalNumb。
+	 * 比如如果DateType是DateType#date，intervalNumb是1，则表示从开始时间开始，每次递增1天，直到结束时间。
+	 * @param dt
+	 * @param intevalNumb
+	 * @param includeEnd 是否包含结束时间在内
+	 * @param it
+	 * @return
+	 */
 	public int each(DateType dt, int intevalNumb, boolean includeEnd, It<Date> it){
 		Calendar start = getStartCalendar();
 		Calendar end = getEndCalendar();

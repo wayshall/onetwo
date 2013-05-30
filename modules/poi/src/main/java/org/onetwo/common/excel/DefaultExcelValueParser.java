@@ -12,8 +12,9 @@ import org.onetwo.common.utils.TheFunction;
 
 @SuppressWarnings("rawtypes")
 public class DefaultExcelValueParser implements ExcelValueParser {
+	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
 	
-	private Map context;
+	private Map<String, Object> context;
 	
 	public DefaultExcelValueParser(){
 		this(null);
@@ -31,7 +32,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		}
 	}
 
-	public Map getContext() {
+	public Map<String, Object> getContext() {
 		return context;
 	} 
 
@@ -82,7 +83,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			return 0;
 		}
 		
-		if(FieldModel.IS_DIGIT.matcher(expr).matches()){
+		if(IS_DIGIT.matcher(expr).matches()){
 			return Integer.parseInt(expr);
 		}
 		

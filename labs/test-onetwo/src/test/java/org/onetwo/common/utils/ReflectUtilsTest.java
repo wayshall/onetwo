@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.utils.ReflectUtils.CopyConf;
+import org.onetwo.common.utils.ReflectUtils.CopyConfig;
 
 import com.opensymphony.xwork2.util.profiling.UtilTimerStack;
 
@@ -128,7 +130,36 @@ public class ReflectUtilsTest {
 		map.put("name2", "name2");
 		User user = new User();
 		ReflectUtils.copy(map, user, true);
-		System.out.println("username: " + user.getUserName());
+		Assert.assertEquals("namevalu", user.getUserName());
+	}
+
+	
+	@Test
+	public void testCopyWithConf(){
+		Map map = new HashMap();
+		map.put("userName", "namevalu");
+		map.put("desc", "  ");
+		map.put("age", 111);
+		map.put("height", null);
+		map.put("name2", "name2");
+		
+		User user = new User();
+		user.setHeight(11);
+		
+		ReflectUtils.copy(map, user, CopyConfig.create());
+		Assert.assertEquals("namevalu", user.getUserName());
+		Assert.assertEquals("  ", user.getDesc());
+		Assert.assertEquals(111, user.getAge());
+		Assert.assertTrue(user.getHeight()==null);
+		
+
+		user = new User();
+		user.setHeight(11);
+		ReflectUtils.copy(map, user, CopyConfig.create().ignoreNull().ignoreBlank().ignoreFields("age"));
+		Assert.assertEquals("namevalu", user.getUserName());
+		Assert.assertEquals(0, user.getAge());
+		Assert.assertEquals(Integer.valueOf(11), user.getHeight());
+		Assert.assertTrue(user.getDesc()==null);
 	}
 	
 	public static class UserSeperator {

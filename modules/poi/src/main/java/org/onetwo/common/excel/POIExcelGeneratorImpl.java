@@ -99,7 +99,7 @@ public class POIExcelGeneratorImpl implements PoiExcelGenerator {
 		Assert.notEmpty(rows);
 		sheet = workbook.createSheet(tempalte.getName());
 		//for (RowModel row : this.tempalte.getRows()) {
-		int columns = 0;
+//		int columns = 0;
 		boolean printTime = UtilTimerStack.isActive();
 		String rowname = "";
 		for (int i = 0; i < rows.size(); i++) {

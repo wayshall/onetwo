@@ -3,7 +3,6 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
 import org.onetwo.common.utils.ReflectUtils;
@@ -148,7 +147,6 @@ public class FieldModel {
 		return colspan==null?"1":colspan;
 	}
 
-	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
 	
 	public int getColspanValue(CellContext context) {
 		/*if(colspanValue!=null)
