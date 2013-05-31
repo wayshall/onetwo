@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.TimeCounter;
 import org.onetwo.common.utils.User;
 import org.onetwo.common.utils.map.IncreaseMap;
 

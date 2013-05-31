@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.onetwo.common.excel.CardEntity;
-import org.onetwo.common.utils.TimeCounter;
+import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.map.M;
 
 public class MapTest {

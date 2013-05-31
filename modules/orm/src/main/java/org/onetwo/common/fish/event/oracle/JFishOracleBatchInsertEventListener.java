@@ -6,9 +6,9 @@ import org.onetwo.common.fish.event.JFishInsertEvent;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.JdbcStatementContext;
+import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.TimeCounter;
 
 public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventListener {
 	

@@ -49,6 +49,7 @@ abstract public class DateUtil {
 
 	public static final String Date_Only = "yyyy-MM-dd";
 	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss SSS";
 	public static final String DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
 	public static final String Time_Only = "HH:mm:ss";
 	public static final String SHORT_TIME_ONLY = "HH:mm";
@@ -202,7 +203,7 @@ abstract public class DateUtil {
 		try {
 			rs = sdf.format(date);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("format error : {}", e.getMessage());
 		}
 		return rs;
 	}
@@ -211,6 +212,11 @@ abstract public class DateUtil {
 		if(date==null)
 			return "";
 		return formatDateByPattern(date, Date_Time);
+	}
+	public static String formatDateTimeMillis(Date date) {
+		if(date==null)
+			return "";
+		return formatDateByPattern(date, DATE_TIME_MILLS);
 	}
 
 	public static String format(String pattern, Date date) {

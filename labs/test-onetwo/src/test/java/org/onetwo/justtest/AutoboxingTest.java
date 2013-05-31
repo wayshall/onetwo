@@ -1,6 +1,6 @@
 package org.onetwo.justtest;
 
-import org.onetwo.common.utils.TimeCounter;
+import org.onetwo.common.profiling.TimeCounter;
 
 public class AutoboxingTest {
 	

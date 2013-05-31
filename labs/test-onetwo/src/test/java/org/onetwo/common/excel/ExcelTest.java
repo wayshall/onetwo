@@ -12,9 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.Timeit;
 
 public class ExcelTest {
 	
@@ -46,7 +46,7 @@ public class ExcelTest {
 		
 //		UtilTimerStack.setActive(true);
 //		UtilTimerStack.setNanoTime(true);
-		Timeit.timer
+		Timeit.create()
 		.timeit(this, "testRawPoi")
 		.timeit(this, "testTemplateWithReflectOgnl")
 		.timeit(this, "testTemplateWithReflect")
