@@ -7,6 +7,7 @@ import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.fish.event.DbEventListenerManager;
 import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -107,10 +108,19 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 	protected ApplicationContext applicationContext;
 	private boolean printSql = false;
 	
+	
+	public AbstractDBDialect(DataBaseConfig dataBaseConfig) {
+		super();
+		this.dataBaseConfig = dataBaseConfig;
+	}
+
 	public void afterPropertiesSet() throws Exception {
-		if(this.dataBaseConfig==null){
-			this.dataBaseConfig = new DataBaseConfig();
-		}
+		/*if(this.dataBaseConfig==null){
+			this.dataBaseConfig = SpringUtils.getHighestOrder(applicationContext, DataBaseConfig.class);
+			this.dataBaseConfig = dataBaseConfig!=null?dataBaseConfig:new DefaultDataBaseConfig();
+		}*/
+		Assert.notNull(dataBaseConfig, "dataBaseConfig can't be null!");
+		
 		this.registerIdStrategy();
 		if(this.dbEventListenerManager==null)
 			this.dbEventListenerManager = this.findDbEventListenerManagerFromContext(applicationContext);

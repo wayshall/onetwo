@@ -38,13 +38,15 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
 		JFishEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
-		
 		Object entity = event.getObject();
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);
+		/*
 		String sql = insert.getSql();
 		List<Object[]> args = insert.getValue();
 		
-		int count = invokeInsert(event, sql, args, es);
+		int count = executeJdbcUpdate(event, sql, args, es);*/
+		int count = this.executeJdbcUpdate(es, insert);
+		
 		event.setUpdateCount(count);
 	}
 	

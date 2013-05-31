@@ -9,6 +9,11 @@ import org.onetwo.common.utils.LangUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+/*******
+ * 
+ * @author wayshall
+ *
+ */
 public class JFishInsertEventListener extends InsertEventListener{
 
 	protected void beforeDoInsert(JFishInsertEvent event, JFishMappedEntry entry){
@@ -38,10 +43,10 @@ public class JFishInsertEventListener extends InsertEventListener{
 						entry.setId(objects.get(index++), keyHolder.getKey());
 				}
 			}else{
-				updateCount += invokeInsert(event, sql, args, es);
+				updateCount += executeJdbcUpdate(sql, args, es);
 			}
 		}else{
-			updateCount += invokeInsert(event, sql, args, es);
+			updateCount += executeJdbcUpdate(sql, args, es);
 		}
 
 		/*if(updateCount<1)

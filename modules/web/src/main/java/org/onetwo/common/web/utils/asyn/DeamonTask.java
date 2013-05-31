@@ -1,6 +1,13 @@
 package org.onetwo.common.web.utils.asyn;
 
-
+/********
+ * 使用新的 {@link org.onetwo.common.web.asyn2.DeamonTask DeamonTask} 代替
+ * @see org.onetwo.common.web.asyn2.DeamonTask
+ * @author wayshall
+ *
+ * @param <T>
+ */
+@Deprecated
 abstract public class DeamonTask<T> {
 	
 	private String name;

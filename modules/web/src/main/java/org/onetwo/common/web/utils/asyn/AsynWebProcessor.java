@@ -14,6 +14,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
 
+@Deprecated
 public class AsynWebProcessor {
 	private static final Logger logger = MyLoggerFactory.getLogger(AsynWebProcessor.class);
 	private static final String DEFAULT_ASYNCALLBACK = "parent.jfishAsynCallback";

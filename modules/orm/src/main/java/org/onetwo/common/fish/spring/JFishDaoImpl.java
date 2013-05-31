@@ -233,10 +233,18 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	 */
 	@Override
 	public <T> int batchInsert(Collection<T> entities){
-		Assert.notNull(entities);
+//		Assert.notNull(entities);
 		JFishInsertEvent event = new JFishInsertEvent(entities, this);
 		event.setAction(JFishEventAction.batchInsert);
 //		this.fireBatchInsertEvent(event);
+		this.fireEvents(event);
+		return event.getUpdateCount();
+	}
+	
+	public <T> int batchUpdate(Collection<T> entities){
+		JFishUpdateEvent event = new JFishUpdateEvent(entities, this);
+		event.setDynamicUpdate(false);
+		event.setAction(JFishEventAction.batchUpdate);
 		this.fireEvents(event);
 		return event.getUpdateCount();
 	}

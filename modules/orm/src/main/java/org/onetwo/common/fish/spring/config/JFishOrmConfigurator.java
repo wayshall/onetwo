@@ -1,5 +1,7 @@
 package org.onetwo.common.fish.spring.config;
 
+import org.onetwo.common.fish.orm.DataBaseConfig;
+
 
 public interface JFishOrmConfigurator {
 
@@ -8,4 +10,6 @@ public interface JFishOrmConfigurator {
 	public boolean isLogJdbcSql();
 	
 	public boolean isWatchSqlFile();
+	
+	public DataBaseConfig getDataBaseConfig();
 }

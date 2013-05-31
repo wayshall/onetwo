@@ -1,7 +1,6 @@
 package org.onetwo.common.fish.event;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;
@@ -35,8 +34,8 @@ abstract public class InsertEventListener extends AbstractJFishEventListener {
 	abstract protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry);
 
 	
-	protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){
+	/*protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){
 		return executeJdbcUpdate(event, sql, args, es);
-	}
+	}*/
 	
 }

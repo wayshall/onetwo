@@ -7,6 +7,7 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 	protected JFishInsertOrUpdateListener[] insertOrUpdateEventListeners;
 	protected InsertEventListener[] insertEventListeners;
 	protected InsertEventListener[] batchInsertEventListeners;
+	protected UpdateEventListener[] batchUpdateEventListeners;
 	protected UpdateEventListener[] updateEventListeners;
 	protected JFishDeleteEventListener[] deleteEventListeners;
 	protected JFishFindEventListener[] findEventListeners;
@@ -27,6 +28,9 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 		}
 		if(this.updateEventListeners==null){
 			this.updateEventListeners = new UpdateEventListener[]{getDefaultUpdateEventListener()};
+		}
+		if(this.batchUpdateEventListeners==null){
+			this.batchUpdateEventListeners = new UpdateEventListener[]{getDefaultBatchUpdateEventListener()};
 		}
 		if(this.deleteEventListeners==null){
 			this.deleteEventListeners = new JFishDeleteEventListener[]{getDefaultDeleteEventListener()};
@@ -60,6 +64,10 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 		return new JFishUpdateEventListener();
 	}
 	
+	protected UpdateEventListener getDefaultBatchUpdateEventListener(){
+		return new JFishBatchUpdateEventListener();
+	}
+	
 	protected JFishDeleteEventListener getDefaultDeleteEventListener(){
 		return new JFishDeleteEventListener();
 	}
@@ -78,6 +86,8 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 			listeners = getInsertOrUpdateEventListeners();
 		}else if(eventAction==JFishEventAction.batchInsert){
 			listeners = getBatchInsertEventListeners();
+		}else if(eventAction==JFishEventAction.batchUpdate){
+			listeners = getBatchUpdateEventListeners();
 		}else if(eventAction==JFishEventAction.delete){
 			listeners = getDeleteEventListeners();
 		}else if(eventAction==JFishEventAction.find){
@@ -156,6 +166,14 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 
 	public void setInsertOrUpdateEventListeners(JFishInsertOrUpdateListener[] insertOrUpdateEventListeners) {
 		this.insertOrUpdateEventListeners = insertOrUpdateEventListeners;
+	}
+
+	public UpdateEventListener[] getBatchUpdateEventListeners() {
+		return batchUpdateEventListeners;
+	}
+
+	public void setBatchUpdateEventListeners(UpdateEventListener[] batchUpdateEventListeners) {
+		this.batchUpdateEventListeners = batchUpdateEventListeners;
 	}
 	
 }

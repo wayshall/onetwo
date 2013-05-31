@@ -251,7 +251,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		viewResolver.setUseNotAcceptableStatusCode(true);
 		viewResolver.setOrder(0);
 		viewResolver.setMediaTypes(mediaType());
-		List<View> views = LangUtils.asList(View.class, xmlView(), jsonView());
+		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
 		viewResolver.setDefaultViews(views);
 		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
 		viewResolver.setIgnoreAcceptHeader(true);

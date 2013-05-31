@@ -3,6 +3,7 @@ package org.onetwo.common.json;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,18 @@ public class JsonMapperTest {
 //		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 	
+	
+	@Test
+	public void testMapListToJson(){
+		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put("name1", "value1");
+		map1.put("name2", "value2");
+		list.add(map1);
+		
+		String json = JsonMapper.defaultMapper().toJson(list);
+		System.out.println("json: " + json);
+	}
 
 	@Test
 	public void testTestJsonData() throws Exception{

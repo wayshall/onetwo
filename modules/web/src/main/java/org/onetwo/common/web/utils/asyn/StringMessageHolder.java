@@ -1,5 +1,6 @@
 package org.onetwo.common.web.utils.asyn;
 
+@Deprecated
 public class StringMessageHolder extends AsynMessageHolder<String>{
 
 	/**

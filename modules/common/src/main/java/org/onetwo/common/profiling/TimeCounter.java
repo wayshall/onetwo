@@ -1,6 +1,8 @@
-package org.onetwo.common.utils;
+package org.onetwo.common.profiling;
 
 import java.util.Date;
+
+import org.onetwo.common.utils.DateUtil;
 
 public class TimeCounter {
 
@@ -13,11 +15,9 @@ public class TimeCounter {
 		this.target = target;
 	}
 
-	@SuppressWarnings("deprecation")
 	public Date start() {
 		long start = System.currentTimeMillis();
 		this.start = new Date(start);
-		System.out.print(this.target + " ----->>> start time : " + this.start.toLocaleString());
 		return this.start;
 	}
 	
@@ -33,13 +33,13 @@ public class TimeCounter {
 		return start();
 	}
 
-	@SuppressWarnings("deprecation")
 	public Date stop() {
-		long stop = System.currentTimeMillis();
-		this.stop = new Date(stop);
+		long stopMills = System.currentTimeMillis();
+		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
-		System.out.print(this.target + " ----->>> stop time : " + this.start.toLocaleString()+" ");
-		System.out.println(" cost total time : " + this.costTime+", (second): " + (this.costTime / 1000));
+		System.out.println(this.target + " ----->>> start time[" + DateUtil.formatDateTimeMillis(start)
+				+ "], stop time[" + DateUtil.formatDateTimeMillis(this.stop)
+				+ "], cost time[" + this.costTime+" (millis), " + (this.costTime / 1000) + " (second)]");
 		return this.stop;
 	}
 

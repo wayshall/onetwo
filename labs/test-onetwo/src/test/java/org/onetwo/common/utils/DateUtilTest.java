@@ -38,6 +38,10 @@ public class DateUtilTest {
 		
 		Date parseDate = DateUtil.parse("20121029102501", "yyyyMMddHHmmss");
 		System.out.println("parseDate:" + parseDate.toLocaleString());
+		
+
+		Calendar cal = Calendar.getInstance();
+		System.out.println("day: " + cal.get(Calendar.DAY_OF_WEEK));
 	}
 	
 	@Test
@@ -84,6 +88,44 @@ public class DateUtilTest {
 			String str = String.valueOf(System.nanoTime());
 //			System.out.println(str.length()+":"+str);
 		}
+	}
+
+	@Test
+	public void testIsSameAccurateAt(){
+		Calendar start = DateUtil.asCalendar(DateUtil.parse("2012-5-08 22:30"));
+		Calendar end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
+		Assert.assertFalse(DateUtil.isSameAccurateAt(start, end, DateType.date));
+		
+		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 21:30"));
+		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
+		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.date));
+		
+		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:32"));
+		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:33"));
+		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.year));
+		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.date));
+		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.hour));
+		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.min));
+		Assert.assertFalse(DateUtil.isSameAccurateAt(start, end, DateType.sec));
+	}
+	@Test
+	public void testCompareAccurateAt(){
+		Calendar start = DateUtil.asCalendar(DateUtil.parse("2012-5-08 22:30"));
+		Calendar end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
+		Assert.assertEquals(-1, DateUtil.compareAccurateAt(start, end, DateType.date));
+		Assert.assertEquals(1, DateUtil.compareAccurateAt(end, start, DateType.date));
+		
+		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 21:30"));
+		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
+		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.date));
+		
+		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:32"));
+		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:33"));
+		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.year));
+		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.date));
+		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.hour));
+		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.min));
+		Assert.assertEquals(-1, DateUtil.compareAccurateAt(start, end, DateType.sec));
 	}
 	
 	public static void main(String[] args){

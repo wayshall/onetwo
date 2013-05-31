@@ -16,6 +16,11 @@ public class LangUtilsTest {
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);
+		
+		List<String> list = LangUtils.newArrayList("aa", "bb", "cc");
+		List<String> sublist = list.subList(0, 2);
+		System.out.println("sublist: " + sublist);
+		
 	}
 	
 	@Test

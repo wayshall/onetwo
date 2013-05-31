@@ -23,7 +23,7 @@ public class SimpleSqlCauseParser implements SqlCauseParser {
 
 	public static final List<String> KEYWORDS = L.aslist("and", "or", "where");
 	public static final List<String> OPERATORS = L.aslist("=", "<", ">", ">=", "<=", "!=", "<>", "in", "like");
-	public static final List<String> RETAIN_SEPS = L.aslist(false, " ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
+	public static final List<String> RETAIN_SEPS = L.aslistIfNull(false, " ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
 
 //	public static final int DEFAULT_CACHE_LIMIT = 256;
 	

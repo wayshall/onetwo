@@ -11,15 +11,15 @@ import org.example.app.model.member.entity.ArticleEntity;
 import org.example.app.model.member.entity.ItemEntity;
 import org.example.app.model.member.entity.OrderEntity;
 import org.example.app.model.member.entity.UserEntity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.exception.JFishEntityNotSavedException;
 import org.onetwo.common.fish.spring.JFishDaoImpl;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-public class JFishRelatedTest extends JFishBaseJUnitTest {
+public class JFishRelatedTest extends JFishBaseNGTest {
 	public static final String JFISH_RELATED_CRUD = "JFishRelatedTest.crud";
 	public static final String JFISH_RELATED_QUERY = "JFishRelatedTest.query";
 
@@ -31,7 +31,7 @@ public class JFishRelatedTest extends JFishBaseJUnitTest {
 //	ArticleEntity article;
 //	UserEntity user;
 
-	@Before
+	@BeforeClass
 	public void setup(){
 		
 		jdao.insert(createAddress(100, "扰乱插入"));

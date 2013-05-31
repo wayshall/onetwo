@@ -110,7 +110,7 @@ public abstract class L {
 		return list(true, array);
 	}
 
-	public static List aslist(boolean createIfNull, Object... array) {
+	public static List aslistIfNull(boolean createIfNull, Object... array) {
 		List rs = list(createIfNull, array);
 		if(rs==null)
 			rs = newList();

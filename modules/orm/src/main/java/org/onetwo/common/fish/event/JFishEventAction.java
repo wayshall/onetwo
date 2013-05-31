@@ -5,6 +5,7 @@ public enum JFishEventAction {
 	insertOrUpdate,
 	insert,
 	batchInsert,
+	batchUpdate,
 	update,
 	delete,
 	find,

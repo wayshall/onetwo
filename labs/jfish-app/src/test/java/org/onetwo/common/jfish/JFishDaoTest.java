@@ -133,7 +133,6 @@ public class JFishDaoTest extends JFishBaseNGTest {
 
 	@Test(dependsOnGroups=JFISH_CRUD, groups=JFISH_QUERY)
 	public void testJFishSaveList(){
-		UtilTimerStack.setActive(true);
 		String name = "testJFishSaveList";
 		UtilTimerStack.push(name);
 		
@@ -149,9 +148,10 @@ public class JFishDaoTest extends JFishBaseNGTest {
 
 	@Test(dependsOnGroups=JFISH_CRUD, groups=JFISH_QUERY)
 	public void testJFishBatchInsert(){
-		UtilTimerStack.setActive(true);
 		String name = "testJFishBatchInsert";
 		UtilTimerStack.push(name);
+
+		Assert.assertTrue(jdao.batchInsert(new ArrayList())==0);
 		
 		List<UserEntity> list = new ArrayList<UserEntity>();
 		for(int i=0; i<insertCount; i++){
@@ -159,6 +159,35 @@ public class JFishDaoTest extends JFishBaseNGTest {
 			list.add(user);
 		}
 		jdao.batchInsert(list);
+		UtilTimerStack.pop(name);
+		
+	}
+
+	@Test(groups=JFISH_QUERY, dependsOnMethods="testJFishSaveList")
+	public void testJFishBatchUpdate(){
+		String name = "testJFishBatchUpdate";
+		UtilTimerStack.push(name);
+
+		Assert.assertTrue(jdao.batchUpdate(new ArrayList())==0);
+		
+		String sql = "select * from T_USER t where t.user_name like :userName";
+		JFishQuery query = this.jdao.createJFishQuery(sql);
+		query.setParameter("userName", "%testJFishBatchInsert%");
+		query.setResultClass(UserEntity.class);
+		List<UserEntity> users = query.getResultList();
+		Assert.assertTrue(users.size()>=insertCount);
+		
+		int index = 0;
+		for(UserEntity u : users){
+			u.setUserName("testJFishBatchUpdate"+(index++));
+		}
+		jdao.batchUpdate(users);
+		
+		query = this.jdao.createJFishQuery(sql);
+		query.setParameter("userName", "%testJFishBatchUpdate%");
+		users = query.getResultList();
+		Assert.assertTrue(users.size()>=insertCount);
+		
 		UtilTimerStack.pop(name);
 		
 	}

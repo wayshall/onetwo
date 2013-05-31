@@ -13,10 +13,10 @@ public abstract class TestUtils {
 
 
 	public static <T> List<T> times(int count, Object delegate, String method, Object... args) {
-		return times(count, delegate, method, false, args);
+		return timesWithCount(count, delegate, method, false, args);
 	}
 	
-	public static <T> List<T> times(int count, Object delegate, String method, boolean passCountByParams, Object... args) {
+	public static <T> List<T> timesWithCount(int count, Object delegate, String method, boolean passCountByParams, Object... args) {
 		return ReflectUtils.times(delegate, method, count, passCountByParams, args);
 	}
 	

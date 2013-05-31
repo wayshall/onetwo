@@ -7,6 +7,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.map.ConstantMap;
 
 
+@Deprecated
 public class SimpleMessage implements Serializable {
 
 	/**

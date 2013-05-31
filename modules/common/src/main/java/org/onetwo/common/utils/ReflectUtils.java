@@ -42,7 +42,105 @@ import org.onetwo.common.utils.map.M;
 @SuppressWarnings( { "rawtypes", "unchecked" })
 public class ReflectUtils {
 
-	private static Logger logger = Logger.getLogger(ReflectUtils.class);
+	private final static Logger logger = Logger.getLogger(ReflectUtils.class);
+	
+
+	public static interface PropertyDescriptorCallback {
+		void doWithProperty(PropertyDescriptor propertyDescriptor);
+	}
+
+	public static interface CopyConf {
+		/****
+		 * 是否忽略null值，默认false
+		 * @return
+		 */
+		public boolean isIgnoreNull();
+		public boolean isIgnoreBlank();
+		public boolean isIgnoreOther(String property, Object value);
+		
+		/*******
+		 * 是否自动复制，默认false，如果返回true，则所有复制策略失效，通过CopyConf#copy方法来执行复制，
+		 * @return
+		 */
+		public boolean isIgnoreAutoCopy();
+		public boolean isThrowIfError();
+		public String[] getIgnoreFields();
+		public void copy(Object source, Object target, String property);
+	}
+	
+	public static class CopyConfig implements CopyConf {
+		
+		public static CopyConfig create() {
+			return new CopyConfig();
+		};
+
+		private boolean ignoreNull = false;
+		private boolean ignoreBlank = false;
+		private boolean ignoreOther = false;
+		private boolean ignoreAutoCopy = false;
+		private boolean throwIfError = false;
+		private String[] ignoreFields;
+		
+		@Override
+		public boolean isIgnoreNull() {
+			return ignoreNull;
+		}
+
+		@Override
+		public boolean isIgnoreBlank() {
+			return ignoreBlank;
+		}
+
+		@Override
+		public boolean isIgnoreOther(String property, Object value) {
+			return ignoreOther;
+		}
+
+		@Override
+		public boolean isIgnoreAutoCopy() {
+			return ignoreAutoCopy;
+		}
+
+		@Override
+		public void copy(Object source, Object target, String property) {
+			throw new UnsupportedOperationException();
+		}
+
+		public CopyConfig ignoreNull() {
+			this.ignoreNull = true;
+			return this;
+		}
+
+		public CopyConfig ignoreBlank() {
+			this.ignoreBlank = true;
+			return this;
+		}
+
+		public CopyConfig ignoreAutoCopy() {
+			this.ignoreAutoCopy = true;
+			return this;
+		}
+
+		public String[] getIgnoreFields() {
+			return ignoreFields;
+		}
+
+		public CopyConfig ignoreFields(String... ignoreFields) {
+			this.ignoreFields = ignoreFields;
+			return this;
+		}
+
+		public boolean isThrowIfError() {
+			return throwIfError;
+		}
+
+		public CopyConfig throwIfError() {
+			this.throwIfError = throwIfError;
+			return this;
+		}
+		
+		
+	}
 
 	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
@@ -68,10 +166,6 @@ public class ReflectUtils {
 	}
 
 	private ReflectUtils() {
-	}
-	
-	public static interface PropertyDescriptorCallback {
-		void doWithProperty(PropertyDescriptor propertyDescriptor);
 	}
 	
 	public static <T, ID> void mergeByCheckedIds(
@@ -847,7 +941,7 @@ public class ReflectUtils {
 			setFieldValue(field.getValue(), dest, fvalue);
 		}
 	}
-	
+
 	public static void copy(Object source, Object target) {
 		copy(source, target, true);
 	}
@@ -869,6 +963,45 @@ public class ReflectUtils {
 			}
 		} catch (Exception e) {
 			if (throwIfError)
+				LangUtils.throwBaseException(e);
+		}
+	}
+	
+	public static void copyExcludes(Object source, Object target, String...excludeNames) {
+		copy(source, target, CopyConfig.create().throwIfError().ignoreFields(excludeNames));
+	}
+	
+	public static void copy(Object source, Object target, CopyConf conf) {
+		if (source == null)
+			return;
+		Collection<String> propNames = null;
+		if (target instanceof Map) {
+			propNames = getPropertiesName(source);
+		} else {
+			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
+		}
+		Object value = null;
+		try {
+			for (String prop : propNames) {
+				if(conf.isIgnoreAutoCopy()){
+					conf.copy(source, target, prop);
+				}else{
+					if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
+						continue;//ignore
+					}
+					value = getProperty(source, prop);
+					if(conf.isIgnoreNull() && value==null)
+						continue;
+					if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
+						continue;
+					if(conf.isIgnoreOther(prop, value)){
+						continue;
+					}
+					setProperty(target, prop, value);
+				}
+			}
+		} catch (Exception e) {
+			if (conf.isThrowIfError())
 				LangUtils.throwBaseException(e);
 		}
 	}

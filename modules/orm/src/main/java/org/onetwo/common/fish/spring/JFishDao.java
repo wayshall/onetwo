@@ -42,7 +42,7 @@ public interface JFishDao {
 	 * 
 	 * 执行update语句
 	 * 关联更新的所有实体也是执行update语句
-	 * 如果id为null，即被认为是新建实体，忽略，不执行任何操作；否则为已保存过的实体，执行update操作
+	 * 如果关联的实体id为null，即被认为是新建实体，忽略，不执行任何操作；否则为已保存过的实体，执行update操作
 	 * 
 	 * @param entity
 	 * @param relatedFields
@@ -108,6 +108,14 @@ public interface JFishDao {
 	 * @return
 	 */
 	public <T> int batchInsert(Collection<T> entities);
+	
+	/*****
+	 * 批量更新<br/>
+	 * 更新实体的所有字段，非动态更新。
+	 * @param entities
+	 * @return
+	 */
+	public <T> int batchUpdate(Collection<T> entities);
 
 	/*******
 	 * 动态更新（忽略null值），用对象的id作为条件，根据对象的属性更新数据库记录

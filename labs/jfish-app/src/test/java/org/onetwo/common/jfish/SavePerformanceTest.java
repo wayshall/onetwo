@@ -12,11 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.fish.spring.JFishDaoImpl;
 import org.onetwo.common.nutz.NutzBaseDao;
+import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.test.spring.SpringTxJUnitTestCase;
 import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.TimeCounter;
-import org.onetwo.common.utils.Timeit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -33,7 +33,7 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 	private DataSource dataSource;
 	private NutzBaseDao nutzDao;
 	
-	private int insertCount = 100000;
+	private int insertCount = 1001;
 	
 
 	@Before
@@ -83,14 +83,14 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 		UtilTimerStack.setActive(true);
 		String name = "testJFishSaveList";
 		UtilTimerStack.push(name);
+		
 		List<UserEntity> list = new ArrayList<UserEntity>();
 		for(int i=0; i<insertCount; i++){
 			UserEntity user = createUserEntity(i, "testJFishSaveList");
 			list.add(user);
-//			System.out.println("id:"+user.getId());
-//			Assert.assertNotNull(user.getId());
 		}
 		jdao.insert(list);
+		
 		UtilTimerStack.pop(name);
 	}
 	
@@ -108,6 +108,7 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 		}
 		int total = jdao.batchInsert(list);
 		UtilTimerStack.pop(name);
+//		System.out.println("testJFishBatchSave count: " + total);
 		Assert.assertTrue(total==insertCount);
 	}
 
@@ -116,20 +117,23 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 		UtilTimerStack.setActive(true);
 		String name = "testNutzSave";
 		UtilTimerStack.push(name);
+
+		List<UserEntity> list = new ArrayList<UserEntity>();
 		for(int i=0; i<insertCount; i++){
 			UserEntity user = createUserEntity(i, "testNutzSave");
-			nutzDao.insert(user);
-			
+			list.add(user);
 		}
+		nutzDao.insert(list);
+		
 		UtilTimerStack.pop(name);
 	}
 
 	@Test
 	public void testAll(){
 		this.testJFishBatchSave();
-		this.testJFishSaveList();
+//		this.testJFishSaveList();
 		this.testNutzSave();
-		this.testJFishSave();
+//		this.testJFishSave();
 		System.out.println("---------------------------------------------------------------------");
 
 		/*this.testJFishBatchSave();

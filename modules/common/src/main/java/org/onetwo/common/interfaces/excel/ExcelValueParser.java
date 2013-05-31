@@ -2,9 +2,8 @@ package org.onetwo.common.interfaces.excel;
 
 import java.util.Map;
 
-@SuppressWarnings("rawtypes")
 public interface ExcelValueParser {
-	public Map getContext();
+	public Map<String, Object> getContext();
 	public Object parseValue(String expr, Object rootForExpr, Object objForSymbol);
 	
 	public int parseIntValue(String expr, Object root);
