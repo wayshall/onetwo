@@ -44,6 +44,7 @@ public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
+	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -1343,6 +1344,10 @@ public class LangUtils {
 			total += c.longValue();
 		}
 		return total;
+	}
+	
+	public static boolean isWord(String str){
+		return AWORD.matcher(str).matches();
 	}
 	
 }
