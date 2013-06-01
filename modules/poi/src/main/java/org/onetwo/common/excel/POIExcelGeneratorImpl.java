@@ -20,7 +20,7 @@ public class POIExcelGeneratorImpl implements PoiExcelGenerator {
 	// protected Object root;
 //	protected Map context;
 	protected HSSFWorkbook workbook;
-	protected HSSFSheet sheet;
+//	protected HSSFSheet sheet;
 //	protected int rowIndex;
 //	protected int cellIndex;
 
@@ -92,12 +92,42 @@ public class POIExcelGeneratorImpl implements PoiExcelGenerator {
 		}
 	}
 
+
+	public static class SheetData {
+		private final HSSFSheet sheet;
+		private final Object dataSourceValue;
+		private SheetData(HSSFSheet sheet, Object dataSourceValue) {
+			super();
+			this.sheet = sheet;
+			this.dataSourceValue = dataSourceValue;
+		}
+		
+	}
 	@Override
 	public void generateIt() {
+		List<?> datalist = LangUtils.asList(getExcelValueParser().parseValue(tempalte.getDatasource(), null, null));
+		int sheetCount = datalist.size()/tempalte.getSizePerSheet();
+		sheetCount = sheetCount==0?sheetCount:(sheetCount+1);
+		int toIndex = 0;
+		for (int i = 0; i < sheetCount; i++) {
+			toIndex = tempalte.getSizePerSheet()*(i+1);
+			if(toIndex>datalist.size())
+				toIndex = datalist.size();
+			HSSFSheet sheet = workbook.createSheet(tempalte.getLabel()+i);
+			SheetData sdata = new SheetData(sheet, datalist.subList(tempalte.getSizePerSheet()*i, toIndex));
+			this.excelValueParser.getContext().put(tempalte.getVarName(), sdata);
+			
+			this.generateSheet(sdata);
+			
+			this.excelValueParser.getContext().remove(tempalte.getVarName());
+		}
+	}
+	
+	public void generateSheet(SheetData sheetData) {
 		Assert.notNull(this.tempalte);
 		final List<RowModel> rows = this.tempalte.getRows();
 		Assert.notEmpty(rows);
-		sheet = workbook.createSheet(tempalte.getName());
+//		sheet = workbook.createSheet(tempalte.getName());
 		//for (RowModel row : this.tempalte.getRows()) {
 //		int columns = 0;
 		boolean printTime = UtilTimerStack.isActive();
@@ -109,6 +139,7 @@ public class POIExcelGeneratorImpl implements PoiExcelGenerator {
 				rowname = row.getType()+"-"+row.getName()+i;
 				UtilTimerStack.push(rowname);
 			}
+//			Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
 			this.rowProcessors.get(row.getType()).processRow(sheet, row);
 			if(printTime){
 				UtilTimerStack.pop(rowname);

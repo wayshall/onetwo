@@ -35,7 +35,9 @@ public class DefaultRowProcessor implements RowProcessor {
 		this.generator = generator;
 	}
 
-	public void processRow(HSSFSheet sheet, RowModel rowModel) {
+	public void processRow(RowDataContext rowContext) {
+		HSSFSheet sheet = rowContext.getSheet();
+		RowModel rowModel = rowContext.getRowModel();
 		Row row = createRow(sheet, rowModel, null);
 		if(rowModel.getFields()==null)
 			return ;

@@ -135,4 +135,12 @@ public class LangUtilsTest {
 		System.out.println("hex2Bytes: " + new String(bytes));
 	}
 
+	@Test
+	public void testReg(){
+		Assert.assertTrue(LangUtils.isWord("word"));
+		Assert.assertTrue(LangUtils.isWord("hello_word"));
+		Assert.assertTrue(LangUtils.isWord("hello_word_2"));
+		Assert.assertFalse(LangUtils.isWord("hello@word"));
+		Assert.assertFalse(LangUtils.isWord("中文"));
+	}
 }
