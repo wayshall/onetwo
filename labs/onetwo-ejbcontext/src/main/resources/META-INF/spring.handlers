@@ -1,0 +1,2 @@
+http\://www.springframework.org/schema/ejbcontext=org.onetwo.common.spring.ejbcontext.ExtContextNamespaceHandler
+
