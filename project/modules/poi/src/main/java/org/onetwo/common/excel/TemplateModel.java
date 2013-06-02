@@ -7,6 +7,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class TemplateModel {
+	private static final String DEFAULLT_VARNAME = "_sheet";
 
 	private String name;
 	private String varname;
@@ -18,7 +19,7 @@ public class TemplateModel {
 	//new
 	private String label;
 	private String datasource;
-	private int sizePerSheet;
+	private Integer sizePerSheet;
 	
 	public TemplateModel(){
 	}
@@ -55,7 +56,7 @@ public class TemplateModel {
 		if(StringUtils.isBlank(varname))
 			varname = name;
 		if(StringUtils.isBlank(varname) || !LangUtils.isWord(varname))
-			varname = "sheet";
+			varname = DEFAULLT_VARNAME;
 		return varname;
 	}
 
@@ -71,12 +72,16 @@ public class TemplateModel {
 		this.datasource = datasource;
 	}
 
-	public int getSizePerSheet() {
+	public Integer getSizePerSheet() {
 		return sizePerSheet;
 	}
 
-	public void setSizePerSheet(int sizePerSheet) {
+	public void setSizePerSheet(Integer sizePerSheet) {
 		this.sizePerSheet = sizePerSheet;
 	} 
+	
+	public boolean isMultiSheet(){
+		return this.sizePerSheet!=null && this.sizePerSheet>0;
+	}
 
 }

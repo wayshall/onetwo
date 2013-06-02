@@ -19,7 +19,7 @@ import org.onetwo.common.utils.FileUtils;
 public class ExcelTest {
 	
 	private List<CityCompainInfo> list;
-	private int count = 10000;
+	private int count = 100;
 	
 	private String outputPath = "org/onetwo/common/excel/";
 	@Before
@@ -110,6 +110,17 @@ public class ExcelTest {
 			e.printStackTrace();
 		}
 		System.out.println("raw path: " + path);
+	}
+	
+	@Test
+	public void testTemplateWithMutilSheet(){
+		System.out.println("===========================>>>>>testTemplateWithMutilSheet ");
+		Map<String, Object> context = new HashMap<String, Object>();
+		context.put("data", list);
+		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_test.xls";
+		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_test.xml", context);
+		g.generateIt();
+		g.write(path);
 	}
 	
 //	@Test
