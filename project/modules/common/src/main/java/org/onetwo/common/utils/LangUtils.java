@@ -347,6 +347,9 @@ public class LangUtils {
 	private static final boolean debug = true;
 	
 
+	public static List<Class<?>> getBaseTypeClass(){
+		return BASE_CLASS;
+	}
 	public static boolean isPrimitive(Class<?> clazz){
 		return clazz!=null && clazz.isPrimitive();
 	}

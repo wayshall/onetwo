@@ -34,8 +34,8 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		HSSFSheet sheet = rowContext.getSheet();
 		RowModel iterator = rowContext.getRowModel();
 		
-//		Object dataSourceValue = this.getGenerator().getExcelValueParser().parseValue(iterator.getDatasource(), null, null);
-		Object dataSourceValue = rowContext.getSheetDatas();
+		Object dataSourceValue = this.getGenerator().getExcelValueParser().parseValue(iterator.getDatasource(), null, null);
+//		Object dataSourceValue = rowContext.getSheetDatas();
 		Iterator it = LangUtils.convertIterator(dataSourceValue);
 		if(it==null)
 			return ;

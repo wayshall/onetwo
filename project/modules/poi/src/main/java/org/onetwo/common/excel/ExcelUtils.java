@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -39,10 +40,15 @@ abstract public class ExcelUtils {
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);
-		xstream.useAttributeFor(Number.class);
-		xstream.useAttributeFor(boolean.class);
-		xstream.useAttributeFor(String.class); 
-		xstream.useAttributeFor(int.class); 
+//		xstream.useAttributeFor(Number.class);
+//		xstream.useAttributeFor(boolean.class);
+//		xstream.useAttributeFor(String.class); 
+//		xstream.useAttributeFor(int.class); 
+		xstream.useAttributeFor(String.class);
+		for(Class<?> btype : LangUtils.getBaseTypeClass()){
+			xstream.useAttributeFor(btype);
+		}
+		
 		
 		TemplateModel template = null;
 		try {
