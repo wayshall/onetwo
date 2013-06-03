@@ -2,7 +2,6 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 
-import org.onetwo.common.utils.Freezer;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -14,10 +13,11 @@ public class TemplateModel {
 	
 	private List<RowModel> rows;
 	
-	private final Freezer freezer = new Freezer(TemplateModel.class.getSimpleName());
+//	private final Freezer freezer = new Freezer(TemplateModel.class.getSimpleName());
 	
 	//new
 	private String label;
+	private boolean multiSheet;
 	private String datasource;
 	private Integer sizePerSheet;
 	
@@ -38,12 +38,8 @@ public class TemplateModel {
 	}
 
 	public void setRows(List<RowModel> rows) {
-		this.freezer.checkOperation("setRows");
+//		this.freezer.checkOperation("setRows");
 		this.rows = rows;
-	}
-
-	public Freezer getFreezer() {
-		return freezer;
 	}
 
 	public String getLabel() {
@@ -78,10 +74,18 @@ public class TemplateModel {
 
 	public void setSizePerSheet(Integer sizePerSheet) {
 		this.sizePerSheet = sizePerSheet;
+	}
+
+	public boolean isMultiSheet() {
+		return multiSheet;
+	}
+
+	public void setMultiSheet(boolean multiSheet) {
+		this.multiSheet = multiSheet;
 	} 
 	
-	public boolean isMultiSheet(){
-		return this.sizePerSheet!=null && this.sizePerSheet>0;
-	}
+	/*public boolean isMultiSheet(){
+		return this.sizePerSheet!=null && this.sizePerSheet>0 && StringUtils.isNotBlank(datasource);
+	}*/
 
 }

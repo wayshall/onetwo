@@ -3,11 +3,11 @@ package org.onetwo.common.excel;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
 public class IteratorRowProcessor extends DefaultRowProcessor {
@@ -44,6 +44,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		Map context = this.generator.getExcelValueParser().getContext();
 		String indexName = StringUtils.isBlank(iterator.getIndex())?"rowIndex":iterator.getIndex();
 
+//		FieldProcessor fieldProcessor = getFieldProcessor(iterator, context);
 		for (Object ele = null; it.hasNext(); index++) {
 			UtilTimerStack.push(iterator.getName());
 			

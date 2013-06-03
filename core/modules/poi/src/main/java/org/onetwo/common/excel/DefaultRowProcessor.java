@@ -1,6 +1,7 @@
 package org.onetwo.common.excel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -11,6 +12,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.profiling.UtilTimerStack;
@@ -48,6 +50,24 @@ public class DefaultRowProcessor implements RowProcessor {
 			//cell = createCell(sheet, row, field);
 			this.processField(getFieldRootValue(null, field), row, field, getDefaultFieldValue(field));
 		}
+	}
+	
+	/******
+	 * 待用
+	 * @param iterator
+	 * @param context
+	 * @return
+	 */
+	protected FieldProcessor getFieldProcessor(RowModel iterator, Map<?, ?> context){
+		FieldProcessor fieldProcessor = null;
+		if(iterator.hasFieldProcessor()){
+			Object fv = ExcelUtils.getValue(iterator.getFieldProcessor(), context, null);
+			if(!(fv instanceof FieldProcessor)){
+				throw new BaseException(iterator.getName()+" is not a FieldProcessor");
+			}
+			fieldProcessor = (FieldProcessor) fv;
+		}
+		return fieldProcessor;
 	}
 	
 	protected Object getFieldRootValue(Object rowRoot, FieldModel field){
@@ -238,8 +258,8 @@ public class DefaultRowProcessor implements RowProcessor {
 	
 	
 	protected void processField(Object root, Row row, FieldModel field, Object defValue){
-		String pname = "processField";
-		UtilTimerStack.push(pname);
+//		String pname = "processField";
+//		UtilTimerStack.push(pname);
 		int cellIndex = row.getLastCellNum();
 		if(root==null){
 			CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex, defValue);
@@ -249,22 +269,23 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
 
 			int rowCount = row.getRowNum();
-			for(Object val : rootList){
-				CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), val, rowCount, row, field, cellIndex, defValue);
+//			for(Object val : rootList){
+			for (int i = 0; i < rootList.size(); i++) {
+				CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
 				this.processSingleField(cellContext);
 				rowCount += cellContext.getRowSpanCount();
 			}
 		}
-		UtilTimerStack.pop(pname);
+//		UtilTimerStack.pop(pname);
 	}
 	
 //	protected void processSingleField(Object root, Row row, FieldModel field, Object defValue, int cellIndex){
 	protected void processSingleField(CellContext cellContext){
 //		Row row = cellContext.row;
+		Cell cell = createCell(cellContext);
 		FieldModel field = cellContext.field;
 		Object v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
 
-		Cell cell = createCell(cellContext);
 		for(FieldListener fl : field.getListeners()){
 			v = fl.getCellValue(cell, v);
 		}

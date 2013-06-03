@@ -101,29 +101,30 @@ public class POIExcelGeneratorImpl implements PoiExcelGenerator {
 
 	@Override
 	public void generateIt() {
-		List<?> datalist = null;
+		ExportDatasource ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
-			datalist = Collections.EMPTY_LIST;
+			ds = new ListExportDatasource(tempalte, Collections.EMPTY_LIST);
 		}else{
-			datalist = LangUtils.asList(getExcelValueParser().parseValue(tempalte.getDatasource(), null, null));
+			Object dsObj = getExcelValueParser().parseValue(tempalte.getDatasource(), null, null);
+			if(dsObj instanceof ExportDatasource){
+				ds = (ExportDatasource) dsObj;
+			}else{
+				List<?> datalist = LangUtils.asList(dsObj);
+				ds = new ListExportDatasource(tempalte, datalist);
+			}
 		}
 		
+		
 		if(tempalte.isMultiSheet()){
-			int sheetCount = datalist.size()/tempalte.getSizePerSheet();
-			logger.info("multisheet model, sheetcount: " + sheetCount);
-			sheetCount = sheetCount==0?sheetCount:(sheetCount+1);
-			int toIndex = 0;
-			for (int i = 0; i < sheetCount; i++) {
-				toIndex = tempalte.getSizePerSheet()*(i+1);
-				if(toIndex>datalist.size())
-					toIndex = datalist.size();
-				
-				List<?> shetDaataList = datalist.subList(tempalte.getSizePerSheet()*i, toIndex);
-				logger.info("sheet data size: {}", shetDaataList.size());
-				this.generateSheet(tempalte.getLabel()+i, shetDaataList);
+			List<?> datalist = null;
+			int i = 0;
+			while(LangUtils.isNotEmpty( (datalist = ds.getSheetDataList(i)) )){
+				logger.info("{} sheet, data size: {}", i, datalist.size());
+				this.generateSheet(ds.getSheetLabel(i), datalist);
+				i++;
 			}
 		}else{
-			this.generateSheet(tempalte.getLabel(), datalist);
+			this.generateSheet(ds.getSheetLabel(0), ds.getSheetDataList(0));
 		}
 		
 	}

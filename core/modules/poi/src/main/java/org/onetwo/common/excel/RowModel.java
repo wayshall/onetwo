@@ -28,6 +28,8 @@ public class RowModel {
 	private String fieldHeaderFont;
 	private String fieldHeaderStyle;
 	
+	private String fieldProcessor;
+	
 //	private String executorClass;
 	
 	private List<FieldModel> fields = new ArrayList<FieldModel>();
@@ -173,6 +175,18 @@ public class RowModel {
 
 	public void setFieldHeaderStyle(String fieldHeaderStyle) {
 		this.fieldHeaderStyle = fieldHeaderStyle;
+	}
+
+	public String getFieldProcessor() {
+		return fieldProcessor;
+	}
+
+	public void setFieldProcessor(String fieldProcessor) {
+		this.fieldProcessor = fieldProcessor;
+	}
+	
+	public boolean hasFieldProcessor(){
+		return StringUtils.isNotBlank(fieldProcessor);
 	}
 	
 	/*public RowExecutor getExecutorInstance() {

@@ -9,7 +9,7 @@
 				</fields>
 			</row>
 			
-			<row name="element" type="iterator" datasource="#sheet.datasource" renderHeader="true" > 
+			<row name="element" type="iterator" datasource="#sheet.datasource" renderHeader="true" fieldProcessor="#fieldProcessor"> 
 				<fields>
 					<field name=":id" label="主键" />
 					<field name=":name" label="名称" />

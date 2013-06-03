@@ -46,7 +46,7 @@ abstract public class DefaultExcelGeneratorFactory {
 			model = TemplateModelCache.get(path);
 		if(model==null){
 			model = ExcelUtils.readTemplate(path);
-			model.getFreezer().freezing();
+//			model.getFreezer().freezing();
 			TemplateModelCache.put(path, model);
 		}
 		return model;
