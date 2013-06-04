@@ -51,7 +51,8 @@ public class ModelAndViewPostProcessInterceptor extends WebInterceptorAdapter  {
 		//append url postfix
 		if(BaseSiteConfig.getInstance().hasAppUrlPostfix() && mv.getViewName()!=null && JFishWebUtils.isRedirect(mv) && !mv.getViewName().contains("?")){
 			if(mv.isReference()){
-				mv.setViewName(BaseSiteConfig.getInstance().appendAppUrlPostfix(mv.getViewName()));
+				String url = mv.getViewName().substring(JFishWebUtils.REDIRECT_KEY.length());
+				mv.setViewName(JFishWebUtils.REDIRECT_KEY+BaseSiteConfig.getInstance().appendAppUrlPostfix(url));
 			}
 		}
 	}
