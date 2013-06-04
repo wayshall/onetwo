@@ -9,6 +9,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 
 public class BaseSiteConfig extends AppConfig { 
@@ -261,7 +262,10 @@ public class BaseSiteConfig extends AppConfig {
 		return StringUtils.isNotBlank(appUrlPostfix);
 	}
 	public String appendAppUrlPostfix(String url){
-		if(url.endsWith(appUrlPostfix)){
+		String lowerurl = url.toLowerCase();
+		if(lowerurl.startsWith(RequestUtils.HTTP_KEY) || lowerurl.startsWith(RequestUtils.HTTPS_KEY))
+			return url;
+		if(lowerurl.endsWith(appUrlPostfix)){
 			return url;
 		}
 		return url+appUrlPostfix;

@@ -13,6 +13,9 @@ import org.onetwo.common.utils.map.CasualMap;
 @SuppressWarnings("rawtypes")
 public abstract class RequestUtils {
 	
+	public static final String HTTP_KEY = "http://";
+	public static final String HTTPS_KEY = "https://";
+	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
 		{
