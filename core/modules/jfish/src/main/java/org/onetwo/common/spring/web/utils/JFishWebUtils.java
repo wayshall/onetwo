@@ -30,6 +30,9 @@ public final class JFishWebUtils {
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
+
+	public static final String REDIRECT_KEY = "redirect:";
+	
 	private JFishWebUtils(){
 	}
 	
@@ -48,7 +51,7 @@ public final class JFishWebUtils {
 	}
 	
 	public static boolean isRedirect(ModelAndView mv){
-		return mv.getViewName().startsWith(AbstractBaseController.REDIRECT);
+		return mv.getViewName().startsWith(REDIRECT_KEY);
 	}
 	
 	public static void req(String name, Object value){
