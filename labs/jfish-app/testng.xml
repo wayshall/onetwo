@@ -19,9 +19,10 @@
     </classes>
   </test> 
   
-  <test name="JFishFileQueryDaoTest">
+  <test name="JFishFileQueryTest">
     <classes>
       <class name="org.onetwo.common.jfish.JFishFileQueryDaoTest" />
+      <class name="org.onetwo.common.fish.spring.JFishNamedFileQueryManagerTest" />
     </classes>
   </test> 
 </suite> <!-- Suite -->

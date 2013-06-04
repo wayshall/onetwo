@@ -2,10 +2,10 @@ package org.onetwo.common.fish.spring;
 
 import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.propconf.JFishPropertiesManagerImpl;
+import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl;
 
 
-public class JFishNamedFileQueryManagerImpl extends JFishPropertiesManagerImpl<JFishNamedFileQueryInfo> implements JFishNamedFileQueryManager{
+public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerImpl<JFishNamedFileQueryInfo> implements JFishNamedFileQueryManager{
 
 	public static final String SQL_POSTFIX = ".sql";
 	
