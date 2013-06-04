@@ -15,11 +15,14 @@ public class ListExportDatasource implements ExportDatasource {
 	@Override
 	public List<?> getSheetDataList(int i) {
 		if(tempalte.isMultiSheet()){
+			int fromIndex = tempalte.getSizePerSheet()*i;
 			int toIndex = tempalte.getSizePerSheet()*(i+1);
 			if(toIndex>datalist.size())
 				toIndex = datalist.size();
-			
-			return datalist.subList(tempalte.getSizePerSheet()*i, toIndex);
+
+			if(fromIndex>toIndex)
+				return null;
+			return datalist.subList(fromIndex, toIndex);
 		}else{
 			return datalist;
 		}
