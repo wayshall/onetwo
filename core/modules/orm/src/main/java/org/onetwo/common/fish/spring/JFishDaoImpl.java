@@ -33,7 +33,6 @@ import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.jpa.JFishSequenceNameManager;
 import org.onetwo.common.fish.orm.AbstractDBDialect.DBMeta;
 import org.onetwo.common.fish.orm.DBDialect;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jdbc.JdbcDaoSupport;
@@ -46,7 +45,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -73,6 +71,8 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	
 	private EntityManagerOperationImpl entityManagerWraper;
 	private SequenceNameManager sequenceNameManager;
+	
+	private RowMapperFactory rowMapperFactory;
 	
 	public JFishDaoImpl(){
 	}
@@ -517,23 +517,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		RowMapper<T> rowMapper = null;
-		if(type==null || type==Object.class){
-//			rowMapper = new SingleColumnRowMapper(Object.class);
-			rowMapper = (RowMapper<T>)new UnknowTypeRowMapper();
-		}else if(LangUtils.isBaseType(type) || LangUtils.isTimeClass(type)){
-			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
-			rowMapper = new SingleColumnRowMapper<T>(type);
-		}else if(LangUtils.isMapClass(type)){
-			rowMapper = (RowMapper<T>)new ColumnMapRowMapper();
-		}else{
-			JFishMappedEntry entry = this.getMappedEntryManager().findEntry(type);
-			if(entry!=null)
-				rowMapper = new EntryRowMapper(entry);
-			else
-				rowMapper = getBeanPropertyRowMapper(type);
-		}
-		return rowMapper;
+		return this.rowMapperFactory.createDefaultRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {
@@ -550,10 +534,6 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 
 	protected RowMapper getColumnMapRowMapper() {
 		return new ColumnMapRowMapper();
-	}
-	
-	protected RowMapper getBeanPropertyRowMapper(Class entityClass) {
-		return new BeanPropertyRowMapper(entityClass);
 	}
 
 	public MappedEntryManager getMappedEntryManager() {
@@ -600,6 +580,8 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);
 			this.jfishFileQueryFactory.build();
 		}
+		
+		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
 
 		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
 		newSqlSymbolManager.setDialect(dialect);
@@ -646,5 +628,6 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 		return this.namedParameterJdbcTemplate;
 	}
+
 
 }
