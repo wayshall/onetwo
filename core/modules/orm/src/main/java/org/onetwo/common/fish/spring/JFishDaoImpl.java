@@ -517,7 +517,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return this.rowMapperFactory.createDefaultRowMapper(type);
+		return (RowMapper<T>)this.rowMapperFactory.createDefaultRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {

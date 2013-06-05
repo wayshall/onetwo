@@ -1,5 +1,8 @@
 package org.onetwo.common.fish.spring;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.utils.LangUtils;
@@ -18,16 +21,22 @@ public class DefaultRowMapperFactory implements RowMapperFactory {
 	}
 
 	@Override
-	public <T> RowMapper<T> createDefaultRowMapper(Class<T> type) {
-		RowMapper<T> rowMapper = null;
+	public RowMapper<?> createDefaultRowMapper(Class<?> type) {
+		RowMapper<?> rowMapper = null;
 		if(type==null || type==Object.class){
 //			rowMapper = new SingleColumnRowMapper(Object.class);
-			rowMapper = (RowMapper<T>)new UnknowTypeRowMapper();
+			rowMapper = new UnknowTypeRowMapper();
 		}else if(LangUtils.isBaseType(type) || LangUtils.isTimeClass(type)){
 			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
-			rowMapper = new SingleColumnRowMapper<T>(type);
+			rowMapper = new SingleColumnRowMapper(type);
 		}else if(LangUtils.isMapClass(type)){
-			rowMapper = (RowMapper<T>)new ColumnMapRowMapper();
+			rowMapper = new ColumnMapRowMapper();
+		}else if(Object[].class==type){
+			rowMapper = new ObjectArrayRowMapper();
+		}else if(List.class.isAssignableFrom(type)){
+			rowMapper = new ListRowMapper();
+		}else if(Collection.class.isAssignableFrom(type)){
+			rowMapper = new HashsetRowMapper();
 		}else{
 			JFishMappedEntry entry = this.getMappedEntryManager().findEntry(type);
 			if(entry!=null)

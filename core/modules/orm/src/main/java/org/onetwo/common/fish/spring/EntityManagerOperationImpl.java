@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.ILogicDeleteEntity;
-import org.onetwo.common.db.IdEntity;
 import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
