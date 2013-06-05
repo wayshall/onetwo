@@ -49,6 +49,9 @@ public class JFishList<E> implements List<E>, Serializable {
 		return new JFishList<T>(e);
 	}
 	public static <T> JFishList<T> wrapObject(Object e){
+		if(JFishList.class.isInstance(e))
+			return (JFishList<T>)e;
+		
 		List<T> list = LangUtils.asList(e);
 		return new JFishList<T>(list);
 	}

@@ -122,6 +122,7 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 		Assert.notNull(dataBaseConfig, "dataBaseConfig can't be null!");
 		
 		this.registerIdStrategy();
+		//优先使用自定义的 DbEventListenerManager
 		if(this.dbEventListenerManager==null)
 			this.dbEventListenerManager = this.findDbEventListenerManagerFromContext(applicationContext);
 		
@@ -134,6 +135,9 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 		this.initOtherComponents();
 	}
 	
+	/****
+	 * 注册id策略
+	 */
 	protected void registerIdStrategy(){
 	}
 	

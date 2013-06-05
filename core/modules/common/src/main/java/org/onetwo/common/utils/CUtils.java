@@ -269,8 +269,12 @@ final public class CUtils {
 				list = (List) object;
 			else {
 				Collection col = (Collection) object;
-				list = new ArrayList(col.size());
-				list.addAll(col);
+				if(col.isEmpty()){
+					list = new ArrayList(5);
+				}else{
+					list = new ArrayList(col.size());
+					list.addAll(col);
+				}
 			}
 		} else if (object.getClass().isArray()) {
 			int length = Array.getLength(object);

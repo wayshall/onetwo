@@ -41,7 +41,10 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.list.NoIndexIt;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,7 +61,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JFishDao, JFishFileQueryDao, ApplicationContextAware {
+public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JFishDao, JFishFileQueryDao, ApplicationContextAware, DisposableBean {
 
 	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
@@ -74,12 +77,14 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	
 	private RowMapperFactory rowMapperFactory;
 	
+	private JFishList<JFishDaoLifeCycleListener> daoListeners;
+	
 	public JFishDaoImpl(){
 	}
 
 	public JFishDaoImpl(DataSource dataSource){
 		this.setDataSource(dataSource);
-		this.afterPropertiesSet();
+//		this.afterPropertiesSet();
 	}
 	
 	public JFishQuery createJFishQueryByQName(String queryName, PlaceHolder type, Object... args){
@@ -566,8 +571,9 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return dbmeta;
 	}
 
-	protected void checkDaoConfig() {
-		super.checkDaoConfig();
+	@Override
+	protected void initDao() throws Exception {
+		super.initDao();
 		if(this.dialect==null){
 			DBMeta dbmeta = getDBMeta();
 			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
@@ -576,11 +582,11 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			}
 		}
 		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
+		
 		if(jfishFileQueryFactory==null){
 			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);
 			this.jfishFileQueryFactory.build();
 		}
-		
 		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
 
 		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
@@ -592,6 +598,23 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			this.sequenceNameManager = new JFishSequenceNameManager();
 		}
 		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
+		
+		List<JFishDaoLifeCycleListener> jlisteners = SpringUtils.getBeans(applicationContext, JFishDaoLifeCycleListener.class);
+		this.daoListeners = JFishList.wrapObject(jlisteners);
+		
+		this.daoListeners.each(new NoIndexIt<JFishDaoLifeCycleListener>() {
+
+			@Override
+			protected void doIt(JFishDaoLifeCycleListener element) throws Exception {
+				element.onInit(JFishDaoImpl.this);
+			}
+			
+		});
+	}
+
+	@Override
+	protected void checkDaoConfig() {
+		super.checkDaoConfig();
 	}
 	
 	@Override
@@ -627,6 +650,18 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	@Override
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 		return this.namedParameterJdbcTemplate;
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		this.daoListeners.each(new NoIndexIt<JFishDaoLifeCycleListener>() {
+
+			@Override
+			protected void doIt(JFishDaoLifeCycleListener element) throws Exception {
+				element.onDestroy(JFishDaoImpl.this);
+			}
+			
+		});
 	}
 
 
