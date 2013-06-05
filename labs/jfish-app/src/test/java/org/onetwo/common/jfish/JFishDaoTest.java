@@ -64,6 +64,7 @@ public class JFishDaoTest extends JFishBaseNGTest {
 		Assert.assertEquals(user.getId(), quser.getId());
 		Assert.assertEquals(user.getUserName(), quser.getUserName());
 		Assert.assertNull(quser.getReadOnlyField());
+		
 	}
 
 	@Test(dependsOnMethods="testQuery",groups=JFISH_CRUD)

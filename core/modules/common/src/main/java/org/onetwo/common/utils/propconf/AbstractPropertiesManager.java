@@ -1,8 +1,6 @@
 package org.onetwo.common.utils.propconf;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -15,15 +13,37 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.onetwo.common.utils.watch.FileChangeListener;
 import org.onetwo.common.utils.watch.FileMonitor;
 import org.slf4j.Logger;
 
-
-public class JFishPropertiesManagerImpl<T extends JFishNameValuePair> implements JFishPropertiesManager<T>{
-	
+abstract public class AbstractPropertiesManager<T extends NamespaceProperty> implements JFishPropertiesManager<T> {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+
+	public static final String GLOBAL_NS_KEY = "global";
+	public static class NamespaceProperty extends JFishNameValuePair {
+		private String namespace;
 	
+		public String getNamespace() {
+			return namespace;
+		}
+	
+		public void setNamespace(String namespace) {
+			this.namespace = namespace;
+		}
+		
+		public String getFullName(){
+			if(GLOBAL_NS_KEY.equals(namespace))
+				return getName();
+			return namespace+"."+getName();
+		}
+		
+		public String toString(){
+			return LangUtils.append("{ namespace:", namespace, ", name: ", getName(), "}");
+		}
+		
+	}
 	public static class JFishPropertyConf {
 		private String dir;
 		private String overrideDir;
@@ -82,101 +102,54 @@ public class JFishPropertiesManagerImpl<T extends JFishNameValuePair> implements
 	public static final String NAME_PREFIX = "@";
 	public static final String EQUALS_MARK = "=";
 	public static final String IGNORE_NULL_KEY = "ignore.null";
-	public static final String JFISH_SQL_POSTFIX = ".jfish";
-	
-	private List<Properties> sqlfiles;
-//	private PropertiesWraper wrapper;
-	private Map<String, T> namedQueryCache;
+	public static final String JFISH_SQL_POSTFIX = ".jfish.sql";
+
 	private FileMonitor fileMonitor;
+	protected JFishPropertyConf conf;
 	private long period = 1;
-
-	private JFishPropertyConf conf;
+	private boolean debug;// = true;
 	
-	
-	public JFishPropertiesManagerImpl(JFishPropertyConf conf) {
-		super();
+	public AbstractPropertiesManager(JFishPropertyConf conf){
 		this.conf = conf;
-		if(conf.getPropertyBeanClass()==null){
-			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), JFishPropertiesManagerImpl.class);
-			conf.setPropertyBeanClass(clz);
-		}
 	}
 	
-	protected JFishPropertyConf getConf() {
-		return conf;
-	}
-
-	public void build(){
-		if(conf.watchSqlFile){
+	protected void buildSqlFileMonitor(File[] sqlfileArray){
+		if(conf.isWatchSqlFile() && fileMonitor==null){
 			fileMonitor = new FileMonitor();
+			this.watchFiles(sqlfileArray);
 		}
-		if(this.sqlfiles==null){
-			this.sqlfiles = autoScanSqlDir();
-		}
-		Assert.notEmpty(sqlfiles);
-		PropertiesWraper wrapper = new PropertiesWraper(sqlfiles.toArray(new Properties[sqlfiles.size()]));
-		this.namedQueryCache = new HashMap<String, T>(wrapper.size());
-		this.buildNamedInfos(wrapper);
 	}
-	
-	public void reloadFile(File file){
-		Properties pf = loadSqlFile(file);
-		if(pf==null){
-			logger.warn("no file relaoded : " + file.getPath());
-			return ;
-		}
-		PropertiesWraper wrapper = new PropertiesWraper(pf);
-		buildNamedInfos(wrapper);
-		logger.warn("file relaoded : " + file.getPath());
-	}
-	
-	protected List<Properties> autoScanSqlDir(){
-		String sqldirPath = FileUtils.getResourcePath(conf.classLoader, conf.dir);
+	protected File[] scanMatchSqlFiles(JFishPropertyConf conf){
+		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
-		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.postfix);
-		if(StringUtils.isNotBlank(conf.overrideDir)){
-			File[] dbsqlfiles = FileUtils.listFiles(sqldirPath+"/"+conf.overrideDir, conf.postfix);
+		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
+		if(StringUtils.isNotBlank(conf.getOverrideDir())){
+			File[] dbsqlfiles = FileUtils.listFiles(sqldirPath+"/"+conf.getOverrideDir(), conf.getPostfix());
 			if(!LangUtils.isEmpty(dbsqlfiles)){
 				sqlfileArray = (File[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
 			}
 		}
-		
-		if(LangUtils.isEmpty(sqlfileArray))
-			return null;
-		
-		List<Properties> sqlfiles = null;
-		sqlfiles = new ArrayList<Properties>(sqlfileArray.length);
-		Properties pf = null;
-		for(File f : sqlfileArray){
-			pf = loadSqlFile(f);
-			if(pf==null){
-				continue;
-			}
-			sqlfiles.add(pf);
-			if(conf.watchSqlFile){
-				this.fileMonitor.addFileChangeListener(new FileChangeListener() {
-					
-					@Override
-					public void fileChanged(File file) {
-						reloadFile(file);
-					}
-				}, f, period);
-			}
+		return sqlfileArray;
+	}
+	
+	protected String getFileNameNoJfishSqlPostfix(File f){
+		String fname = f.getName();
+		if(!fname.endsWith(JFISH_SQL_POSTFIX)){
+			return fname;
+		}else{
+			return fname.substring(0, fname.length()-JFISH_SQL_POSTFIX.length());
 		}
-		return sqlfiles;
 	}
 	
 	protected Properties loadSqlFile(File f){
-		String fname = FileUtils.getFileNameWithoutExt(f.getName());
-		if(!fname.endsWith(JFISH_SQL_POSTFIX)){
+//		String fname = FileUtils.getFileNameWithoutExt(f.getName());
+		if(!f.getName().endsWith(JFISH_SQL_POSTFIX)){
 			logger.info("file["+f.getName()+" is not a jfish file, ignore it.");
 			return null;
 		}
 		
-		Properties pf = null;
+		Properties pf = new Properties();
 		try {
-			
-			pf = new Properties();
 			List<String> fdatas = FileUtils.readAsList(f);
 			String key = null;
 			StringBuilder value = null;
@@ -220,10 +193,10 @@ public class JFishPropertiesManagerImpl<T extends JFishNameValuePair> implements
 	}
 	
 	
-	protected JFishPropertiesManager<T> buildNamedInfos(PropertiesWraper wrapper){
+	protected Map<String, T> buildPropertiesAsNamedInfos(final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
 		List<String> keyNames = wrapper.sortedKeys();
-		if(logger.isInfoEnabled()){
-			logger.info("================>>> build file named query");
+		if(isDebug()){
+			logger.info("================>>> buildPropertiesAsNamedInfos");
 			for(String str : wrapper.sortedKeys()){
 				logger.info(str);
 			}
@@ -232,20 +205,22 @@ public class JFishPropertiesManagerImpl<T extends JFishNameValuePair> implements
 		boolean newBean = true;
 		String preKey = null;
 		String val = "";
+		Map<String, T> namedProperties = LangUtils.newHashMap();
 		for(String key : keyNames){
 			if(preKey!=null)
 				newBean = !key.startsWith(preKey);
 			if(newBean){
 				if(propBean!=null){
-					namedQueryCache.put(propBean.getName(), propBean);
+					namedProperties.put(propBean.getName(), propBean);
 				}
-				propBean = (T)ReflectUtils.newInstance(conf.propertyBeanClass);
+				propBean = ReflectUtils.newInstance(beanClassOfProperty);
 				val = wrapper.getAndThrowIfEmpty(key);
 				if(key.endsWith(IGNORE_NULL_KEY)){
 					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
 				}
 				propBean.setName(key);
 				propBean.setValue(val);
+				propBean.setNamespace(namespace);
 				newBean = false;
 				preKey = key+".";
 			}else{
@@ -263,34 +238,37 @@ public class JFishPropertiesManagerImpl<T extends JFishNameValuePair> implements
 			}
 		}
 		if(propBean!=null){
-			namedQueryCache.put(propBean.getName(), propBean);
+			namedProperties.put(propBean.getName(), propBean);
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("================>>> builded file query:");
-			for(JFishNameValuePair prop : namedQueryCache.values()){
-				logger.info(prop.getName()+": \t"+LangUtils.toString(prop));
+			logger.info("================>>> builded named query:");
+			for(JFishNameValuePair prop : namedProperties.values()){
+				logger.info(prop.getName()+": \t"+prop);
 			}
 		}
 		
-		return this;
+		return namedProperties;
+	}
+
+	protected void watchFiles(File[] sqlfileArray){
+		for(File f : sqlfileArray){
+			this.fileMonitor.addFileChangeListener(new FileChangeListener() {
+				
+				@Override
+				public void fileChanged(File file) {
+					reloadFile(file);
+				}
+			}, f, period);
+		}
 	}
 	
-
-	public T getJFishProperty(String name) {
-		T info = namedQueryCache.get(name);
-		return info;
+	public boolean isDebug() {
+		return debug;
 	}
 
-	public void setSqlfiles(List<Properties> sqlfiles) {
-		this.sqlfiles = sqlfiles;
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
-	public String toString(){
-		StringBuilder sb = new StringBuilder("named query : \n");
-		for(T info : this.namedQueryCache.values()){
-			sb.append(info).append(",\n");
-		}
-		return sb.toString();
-	}
-
+	abstract protected void reloadFile(File file);
 }

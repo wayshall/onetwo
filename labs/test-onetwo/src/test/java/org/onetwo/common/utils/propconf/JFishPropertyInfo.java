@@ -3,8 +3,9 @@ package org.onetwo.common.utils.propconf;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
-public class JFishPropertyInfo extends JFishNameValuePair {
+public class JFishPropertyInfo extends NamespaceProperty {
 	private String mappedEntity;
 	private String countSql;
 	private boolean ignoreNull;
@@ -55,6 +56,6 @@ public class JFishPropertyInfo extends JFishNameValuePair {
 	}
 
 	public String toString() {
-		return LangUtils.append("{name:", getName(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", countSql, "}");
+		return LangUtils.append("{namespace: ", getNamespace(), ", name:", getName(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", countSql, "}");
 	}
 }
