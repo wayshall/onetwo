@@ -60,6 +60,14 @@ public class JFishList<E> implements List<E>, Serializable {
 		return new JFishList<T>();
 	}
 	
+	public static <T> JFishList<T> newList(){
+		return new JFishList<T>();
+	}
+	
+	public static <T> JFishList<T> newList(int size){
+		return new JFishList<T>(size);
+	}
+	
 	
 	/**
 	 * 

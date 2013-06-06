@@ -19,3 +19,6 @@ WHERE\
 searchPageListSupplier.ignore.null=true
 searchPageListSupplier.mapped.entity=com.yooyo.ymcard.model.common.vo.SearchPageListSupplierVo
 searchPageListSupplier.count.sql=select count(*) from zjk_supplier_discount
+
+--test check exist
+--@UcUserDao.find.all = select t.*, t.rowid from uc_user t order by t.create_time desc
