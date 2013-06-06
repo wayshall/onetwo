@@ -410,8 +410,13 @@ public class ReflectUtils {
 
 	public static Class getGenricType(final Object obj, final int index) {
 
-		Class clazz = obj.getClass();
-		Type genType = (Type) clazz;
+		Class clazz = getObjectClass(obj);
+		Type genType = null;
+		if(obj instanceof Type){
+			genType = (Type) obj;
+		}else{
+			genType = (Type) clazz;
+		}
 
 		if (!(genType instanceof ParameterizedType)) {
 			logger.warn(clazz.getSimpleName()

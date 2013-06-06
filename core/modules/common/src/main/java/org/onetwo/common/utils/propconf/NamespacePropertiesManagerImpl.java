@@ -184,9 +184,17 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 	
 
-	public T getJFishProperty(String name) {
-		T info = namedQueryCache.get(name);
+	public T getJFishProperty(String fullname) {
+		T info = namedQueryCache.get(fullname);
 		return info;
+	}
+	
+	public boolean contains(String fullname){
+		return namedQueryCache.containsKey(fullname);
+	}
+	
+	public boolean containsNamespace(String namespace){
+		return namespaceProperties.containsKey(namespace);
 	}
 
 	public String toString(){

@@ -20,7 +20,7 @@ public class DqPlugin extends AbstractJFishPlugin<DqPlugin> {
 	}
 	
 	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(DqPluginContext.class);
 	}
 

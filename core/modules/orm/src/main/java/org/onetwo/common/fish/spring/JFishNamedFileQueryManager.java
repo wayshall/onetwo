@@ -8,6 +8,8 @@ public interface JFishNamedFileQueryManager {
 //	public JFishNamedFileQueryInfo getNamedQueryInfo(String name);
 	public void build();
 
+	public boolean containsQuery(String queryName);
+	
 	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName);
 	
 	public JFishQuery createCountQuery(JFishDaoImplementor jfishFishDao, String queryName);

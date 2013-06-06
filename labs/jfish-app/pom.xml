@@ -99,6 +99,12 @@
 	</dependency>
 	 
 	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-dq</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	 
+	<dependency>
 	  <groupId>org.terracotta</groupId>
 	  <artifactId>ehcache-probe</artifactId>
 	  <version>1.0.3</version> 
