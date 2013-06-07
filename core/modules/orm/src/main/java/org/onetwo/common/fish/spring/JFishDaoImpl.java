@@ -664,5 +664,9 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		});
 	}
 
+	public JFishNamedFileQueryManager getJfishFileQueryFactory() {
+		return jfishFileQueryFactory;
+	}
+
 
 }

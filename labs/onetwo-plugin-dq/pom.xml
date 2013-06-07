@@ -10,12 +10,10 @@
 	
   <artifactId>onetwo-plugin-dq</artifactId>
 	
-  <groupId>org.onetwo.plugins</groupId>
   <packaging>jar</packaging>
 
   <name>onetwo-plugin-dq</name>
 
-  <version>2.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
 
  
@@ -26,6 +24,11 @@
  
   <dependencies>
 	 
+	<dependency>
+	  <groupId>javassist</groupId>
+	  <artifactId>javassist</artifactId>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

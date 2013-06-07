@@ -1,56 +1,46 @@
 package org.onetwo.plugins.dq;
 
-import org.onetwo.common.fish.spring.JFishDao;
+import java.util.Collection;
+
+import javassist.ClassPool;
+
+import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.JFishDaoLifeCycleListener;
+import org.onetwo.common.fish.spring.JFishNamedFileQueryInfo;
 import org.onetwo.common.fish.spring.JFishNamedFileQueryManager;
-import org.onetwo.common.spring.utils.JFishResourcesScanner;
-import org.onetwo.common.spring.utils.ResourcesScanner;
-import org.onetwo.common.spring.utils.ScanResourcesCallback;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.dq.annotations.QueryInterface;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.type.classreading.MetadataReader;
+import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
+import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl.NamespaceProperties;
+import org.slf4j.Logger;
 
 public class DefaultDynamicNamedQueryDaoFactory implements JFishDaoLifeCycleListener {
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-	private String packageToScan;
+//	private String packageToScan;
 	
-	private ResourcesScanner scanner = new JFishResourcesScanner();
-	
-	@Autowired
 	private JFishNamedFileQueryManager jfishNamedFileQueryManager;
+	private ClassPool classPool;
 	
 	@Override
-	public void onInit(JFishDao dao) {
-		Assert.hasText(packageToScan);
-		this.scanner.scan(new ScanResourcesCallback<Class<?>>() {
-
-			@Override
-			public boolean isCandidate(MetadataReader metadataReader) {
-				return metadataReader.getAnnotationMetadata().hasAnnotation(QueryInterface.class.getName());
-			}
-
-			@Override
-			public Class<?> doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
-				return ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
-			}
-			
-		}, packageToScan);
+	public void onInit(JFishDaoImplementor dao) {
+		classPool = ClassPool.getDefault();
+		this.jfishNamedFileQueryManager = dao.getJfishFileQueryFactory();
+		if(!(jfishNamedFileQueryManager instanceof NamespacePropertiesManager)){
+			logger.warn("jfishNamedFileQueryManager is not a instance of NamespacePropertiesManager, ignore generate dynamic query class.");
+			return ;
+		}
+		NamespacePropertiesManager<JFishNamedFileQueryInfo> namespaceManager = (NamespacePropertiesManager<JFishNamedFileQueryInfo>)this.jfishNamedFileQueryManager;
+		Collection<NamespaceProperties<JFishNamedFileQueryInfo>> namespacelist = namespaceManager.getAllNamespaceProperties();
+		
+		Class<?> dqInterface = null;
+		for(NamespaceProperties<JFishNamedFileQueryInfo> nsp : namespacelist){
+			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());
+		}
 	}
 
 	@Override
-	public void onDestroy(JFishDao dao) {
+	public void onDestroy(JFishDaoImplementor dao) {
 		
 	}
-
-	public String getPackageToScan() {
-		return packageToScan;
-	}
-
-	public void setPackageToScan(String packageToScan) {
-		this.packageToScan = packageToScan;
-	}
-
 }

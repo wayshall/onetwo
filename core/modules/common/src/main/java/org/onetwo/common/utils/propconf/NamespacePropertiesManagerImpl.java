@@ -210,4 +210,9 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		return namespaceProperties.get(namespace);
 	}
 
+	public Collection<NamespaceProperties<T>> getAllNamespaceProperties() {
+		return namespaceProperties.values();
+	}
+	
+
 }
