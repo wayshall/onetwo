@@ -192,6 +192,12 @@
 	  <groupId>net.sf.dozer</groupId>
 	  <artifactId>dozer</artifactId>
 	</dependency>
+	
+	<dependency>
+	  <groupId>com.carrotsearch</groupId>
+	  <artifactId>java-sizeof</artifactId>
+	  <version>0.0.3</version>
+	</dependency>
     
   </dependencies>
 </project>
