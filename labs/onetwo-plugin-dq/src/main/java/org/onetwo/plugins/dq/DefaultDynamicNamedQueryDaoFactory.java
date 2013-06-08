@@ -18,9 +18,10 @@ public class DefaultDynamicNamedQueryDaoFactory implements JFishDaoLifeCycleList
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 //	private String packageToScan;
+	private static final String PROXY_POSTFIX = "$proxy";
 	
 	private JFishNamedFileQueryManager jfishNamedFileQueryManager;
-	private ClassPool classPool;
+	private ClassPool classPool = ClassPool.getDefault();;
 	
 	@Override
 	public void onInit(JFishDaoImplementor dao) {
@@ -36,6 +37,7 @@ public class DefaultDynamicNamedQueryDaoFactory implements JFishDaoLifeCycleList
 		Class<?> dqInterface = null;
 		for(NamespaceProperties<JFishNamedFileQueryInfo> nsp : namespacelist){
 			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());
+			this.classPool.makeClass(dqInterface.getName()+PROXY_POSTFIX);
 		}
 	}
 
