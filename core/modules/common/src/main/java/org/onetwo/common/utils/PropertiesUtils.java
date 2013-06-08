@@ -1,7 +1,11 @@
 package org.onetwo.common.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -108,8 +112,10 @@ public class PropertiesUtils {
 	
 	public static String getPath(){
 		String classPath = PropertiesUtils.class.getClassLoader().getResource("").getPath();
-		String path = classPath.substring(1,classPath.indexOf("WEB-INF"));
-		return path; 
+		if (classPath.indexOf("WEB-INF") > -1) {
+			classPath = classPath.substring(1,classPath.indexOf("WEB-INF"));
+		}
+		return classPath; 
 	}
 	
 	private static Properties instance;
@@ -119,19 +125,34 @@ public class PropertiesUtils {
 	}
 	
 	public static void createProperty(String propertyFileName, ClassLoader classLoader){
+		Assert.hasLength(propertyFileName);
 		instance = new Properties(); 
-        InputStream in = classLoader.getResourceAsStream("/" + propertyFileName + ".properties"); 
+        final String name = propertyFileName.endsWith(".properties") ? propertyFileName : (propertyFileName + ".properties");
+		final String fileNames = "/" + name;
+		InputStream in = classLoader.getResourceAsStream(fileNames); 
         try { 
-        	if (in == null) {
-        		in = classLoader.getResourceAsStream(propertyFileName + ".properties"); 
-        		if (in == null) {
-        			throw new ServiceException("读取Properties文件错误");
-        		}
-        	}
+    		if (in == null) {
+    			in = getClassLoader().getResourceAsStream(name);
+				if (in == null) {
+	    			try {
+						in = new FileInputStream(getPath() + name);
+					} catch (Exception e) {
+						throw new ServiceException("读取Properties文件错误");
+					}
+				}
+    		}
         	instance.load(in); 
         } catch (IOException e) { 
         	throw new ServiceException("读取Properties文件错误", e);
-        } 
+        } finally {
+        	if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					throw new ServiceException("关闭Properties文件错误", e);
+				}
+        	}
+		}
 	}
 	
 	public static String getProperty(String key){
@@ -171,6 +192,38 @@ public class PropertiesUtils {
 			return "";
 		}
 		return msg = MessageFormat.format(msg, args);
+	}
+	
+	public static void setProperty(String propertyFileName, ClassLoader classLoader, String key, String value){
+		createProperty(propertyFileName, classLoader);
+		setProperty(propertyFileName, key, value);
+	}
+	
+	public static void setProperty(String propertyFileName, String key, String value) {
+		OutputStream out = null;
+		if (instance == null) {
+			throw new ServiceException("未初始化Properties属性");
+		}
+		instance.setProperty(key, value);
+		try {
+			String path = ClassLoader.getSystemResource(".").getPath();
+			final String name = propertyFileName.endsWith(".properties") ? propertyFileName : (propertyFileName + ".properties");
+			//final String fileNames = "/" + name;
+			out = new FileOutputStream(path + name);
+			instance.store(out, "");
+		} catch (FileNotFoundException e) {
+			throw new ServiceException("未找到Properties属性文件");
+		} catch (IOException e) {
+			throw new ServiceException("写入Properties属性文件出错");
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					throw new ServiceException("关闭Properties文件错误", e);
+				}
+			}
+		}
 	}
 
 	public static void main(String[] args) {
