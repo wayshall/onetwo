@@ -26,6 +26,7 @@ public abstract class RequestUtils {
 			put("msie 6.0", "MSIE 6.0");
 			put("msie 5.0", "MSIE 5.0");
 			put("msie 4.0", "MSIE 4.0");
+			put("opera", "Opera");
 			put("mozilla/5.0", "Netscape");
 		}
 	};
@@ -46,6 +47,8 @@ public abstract class RequestUtils {
 			put("sunos", "SunOS");
 			put("android", "Android");
 			put("linux", "Linux");
+			put("mac os", "Mac OS");
+			put("iphone os", "iPhone OS");
 		}
 	};
 
