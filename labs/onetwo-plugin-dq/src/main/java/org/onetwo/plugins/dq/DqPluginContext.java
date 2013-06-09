@@ -1,6 +1,6 @@
 package org.onetwo.plugins.dq;
 
-import org.onetwo.common.fish.spring.JFishDaoLifeCycleListener;
+import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class DqPluginContext {
 	
 	@Bean
-	public JFishDaoLifeCycleListener dynamicNamedQueryDaoFactory(){
+	public JFishEntityManagerLifeCycleListener dynamicNamedQueryDaoFactory(){
 		return new DefaultDynamicNamedQueryDaoFactory();
 	}
 	

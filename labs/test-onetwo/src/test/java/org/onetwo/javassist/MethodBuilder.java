@@ -1,4 +1,4 @@
-package org.onetwo.plugins.dq;
+package org.onetwo.javassist;
 
 import java.lang.reflect.Type;
 

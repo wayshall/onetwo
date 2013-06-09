@@ -1,6 +1,8 @@
 package org.onetwo.javassist;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -14,7 +16,7 @@ import org.onetwo.common.TestController;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.dq.MethodBuilder;
+import org.onetwo.common.utils.SimpleBlock;
 import org.slf4j.Logger;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
@@ -66,24 +68,43 @@ public class JavassistTest {
 			LocalVariableAttribute attrInfo = (LocalVariableAttribute) ctMethod.getMethodInfo().getCodeAttribute().getAttribute(LocalVariableAttribute.tag);
 			
 			MethodBuilder mb = MethodBuilder.newPublicMethod()._return(method.getGenericReturnType()).name(method.getName());
-			int index = 0;
+//			int index = 0;
 			for(Class<?> ptype : method.getParameterTypes()){
-				MethodParameter mp = new MethodParameter(method, index);
 				System.out.println("method name: "+attrInfo.variableName(1));
 //				mb.arg("arg"+(index++), ptype);
-				mb.arg(mp.getParameterName(), ptype);
-				index++;
+				mb.arg(attrInfo.variableName(1), ptype);
+//				index++;
 			}
 			mb.body("return null;");
 			System.out.println("mb:"+mb);
 		}
 	}
-
 	
-	@Test
-	public void testMakeClass() throws Exception{
+	public static class JavassistJDynamicProxy {
+		private static final String PROXY_POSTFIX = "$proxy";
+		private ClassPool classPool = ClassPool.getDefault();
+		private CtClass implCtClass;
+		private List<Method> proxyMethods = new ArrayList<Method>();
+		
+		public JavassistJDynamicProxy(Class<?>...proxiedInterfaces){
+			for (int i = 0; i < proxiedInterfaces.length; i++) {
+				Class<?> proxiedInterface = proxiedInterfaces[i];
+				Method[] methods = proxiedInterface.getDeclaredMethods();
+				for (int j = 0; j < methods.length; j++) {
+					Method method = methods[j];
+					proxyMethods.add(method);
+				}
+			}
+			implCtClass = this.classPool.makeClass(TestInterface.class.getName()+PROXY_POSTFIX);
+		}
+	}
+	
+
+
+//	@Test
+	public void testRawMakeClass() throws Exception{
 		CtClass intefaceCtClass = this.classPool.getCtClass(TestInterface.class.getName());
-		CtClass ctclass = this.classPool.makeClass(TestController.class.getName()+PROXY_POSTFIX);
+		CtClass ctclass = this.classPool.makeClass(TestInterface.class.getName()+PROXY_POSTFIX);
 		ctclass.addInterface(intefaceCtClass);
 		for(CtMethod method : intefaceCtClass.getDeclaredMethods()){
 			logger.info("method: " + method);
@@ -96,6 +117,20 @@ public class JavassistTest {
 			ctclass.addMethod(ctMethod);
 		}
 		TestInterface obj = (TestInterface)ctclass.toClass().newInstance();
+		obj.test1("test");
+	}
+
+	JavassistProxyFacotory facotry = new JavassistProxyFacotory();
+	@Test
+	public void testProxyFactoryMakeClass() throws Exception{
+		TestInterface obj = (TestInterface)facotry.createProxy(new String[]{TestInterface.class.getName()}, new SimpleBlock<CtMethod, String>() {
+			
+			@Override
+			public String execute(CtMethod object) {
+				return LangUtils.append("{System.out.println($0.getClass().getName()+\"-\" + $1);",
+										"return null;}");
+			}
+		});
 		obj.test1("test");
 	}
 }
