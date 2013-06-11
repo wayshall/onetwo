@@ -419,22 +419,18 @@ public class ReflectUtils {
 		}
 
 		if (!(genType instanceof ParameterizedType)) {
-			logger.warn(clazz.getSimpleName()
-					+ "'s class not ParameterizedType");
+//			logger.warn(clazz.getSimpleName() + "'s class not ParameterizedType");
 			return Object.class;
 		}
 
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 
 		if (index >= params.length || index < 0) {
-			logger.warn("Index: " + index + ", Size of "
-					+ clazz.getSimpleName() + "'s Parameterized Type: "
-					+ params.length);
+//			logger.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: " + params.length);
 			return Object.class;
 		}
 		if (!(params[index] instanceof Class)) {
-			logger.warn(clazz.getSimpleName()
-					+ " not set the actual class on class generic parameter");
+//			logger.warn(clazz.getSimpleName() + " not set the actual class on class generic parameter");
 			return Object.class;
 		}
 

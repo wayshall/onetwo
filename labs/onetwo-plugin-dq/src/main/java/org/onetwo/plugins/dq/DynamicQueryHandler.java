@@ -5,38 +5,35 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishQuery;
-import org.onetwo.common.fish.spring.JNamedQueryKey;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.ClassUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.dq.annotations.Name;
 import org.slf4j.Logger;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 
 public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxyFactory {
 	
 	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
+	private Cache methodCache;
 	private JFishEntityManager em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
-	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
+//	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	
-	public DynamicQueryHandler(JFishEntityManager em, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(JFishEntityManager em, Cache methodCache, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
+		this.methodCache = methodCache;
 		Method[] methods = Object.class.getDeclaredMethods();
 		for (int j = 0; j < methods.length; j++) {
 			Method method = methods[j];
@@ -51,7 +48,7 @@ public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxy
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if(excludeMethods.contains(method)){
-			logger.info("ignore...");
+			logger.info("ignore method {} ...", method.toString());
 			return ReflectUtils.invokeMethod(method, this, args);
 		}
 
@@ -63,82 +60,50 @@ public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxy
 		
 	}
 	
-	public List<MethodParameterValue> asMethodParameters(Method method, Object[] args){
-		List<MethodParameterValue> methodList = LangUtils.newArrayList(args.length);
-		MethodParameter mp = null;
-		int index = 0;
-		for(Object arg : args){
-			mp = new MethodParameter(method, index++);
-			mp.initParameterNameDiscovery(pnd);
-			System.out.println(method.toGenericString()+", name: " + mp.getParameterName());
-			methodList.add(new MethodParameterValue(mp, arg));
+	protected DynamicMethod getDynamicMethod(Method method){
+		if(methodCache!=null){
+			ValueWrapper value = methodCache.get(method);
+			if(value!=null)
+				return (DynamicMethod) value.get();
+			DynamicMethod dm = new DynamicMethod(method);
+			methodCache.put(method, dm);
+			return dm;
+		}else{
+			return new DynamicMethod(method);
 		}
-		return methodList;
-	}
-	
-	public Object[] methodListAsArray(List<MethodParameterValue> methodParameterList, Class<?> componentClass){
-		List<Object> values = LangUtils.newArrayList(methodParameterList.size()*2);
-		for(MethodParameterValue mpv : methodParameterList){
-			if(!LangUtils.isSimpleTypeObject(mpv.value)){
-				Map<?, ?> map = ReflectUtils.toMap(mpv.value);
-				for(Entry<?, ?> entry : map.entrySet()){
-					values.add(entry.getKey());
-					values.add(entry.getValue());
-				}
-			}else{
-				Name name = mpv.methodParameter.getParameterAnnotation(Name.class);
-//				Name name = AnnotationUtils.findAnnotation(mpv.methodParameter.getMethod(), Name.class);
-				if(name!=null){
-					values.add(name.value());
-				}else{
-					values.add(String.valueOf(mpv.methodParameter.getParameterIndex()));
-				}
-				values.add(mpv.value);
-			}
-		}
-		if(componentClass!=null){
-			values.add(JNamedQueryKey.ResultClass);
-			values.add(componentClass);
-		}
-		return values.toArray();
 	}
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
-		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
-		String queryName = method.getDeclaringClass().getName()+"."+method.getName();
-		Class<?> resultClass = method.getReturnType();
-		Class<?> componentClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
-		if(componentClass==Object.class)
-			componentClass = resultClass;
-		LangUtils.println("resultClass: ${0}, componentClass:${1}", resultClass, componentClass);
-		
-		List<MethodParameterValue> mplist = asMethodParameters(method, args);
+//		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
+		TimeCounter t = new TimeCounter("doproxy");
+		t.start();
+		DynamicMethod dmethod = getDynamicMethod(method);
+		Class<?> resultClass = dmethod.getResultClass();
+		Class<?> componentClass = dmethod.getComponentClass();
+		String queryName = dmethod.getQueryName();
 		
 		Object result = null;
-		//for test
-//		if(em==null)
-//			return LangUtils.isBaseType(resultClass)?Types.convertValue(result, resultClass):null;
-		
 		if(Page.class.isAssignableFrom(resultClass)){
-			if(!Page.class.isInstance(mplist.get(0).value)){
-				throw new BaseException("the first arg of method must be a Page object: " + method.toGenericString());
-			}
-			Page<?> page = (Page<?>)mplist.remove(0).value;
-			Object[] methodArgs = methodListAsArray(mplist, componentClass);
+			Page<?> page = (Page<?>)args[0];
+			
+			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
 //			methodArgs = appendEntityClass(componentClass, methodArgs);
+			t.stop();
 			result = em.findPageByQName(queryName, page, methodArgs);
 			
 		}else if(List.class.isAssignableFrom(resultClass)){
-			Object[] methodArgs = methodListAsArray(mplist, componentClass);
+			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			t.stop();
 			result = em.findListByQName(queryName, methodArgs);
 			
 		}else if(JFishQuery.class.isAssignableFrom(resultClass)){
-			Object[] methodArgs = methodListAsArray(mplist, null);
+			Object[] methodArgs = dmethod.toArrayByArgs(args, null);
+			t.stop();
 			JFishQuery dq = em.createJFishQueryByQName(queryName, methodArgs);
 			return dq;
 			
 		}else{
-			Object[] methodArgs = methodListAsArray(mplist, componentClass);
+			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
 			result = em.findUniqueByQName(queryName, methodArgs);
 		}
 		return result;
@@ -156,16 +121,4 @@ public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxy
 		return this.proxyObject;
 	}
 	
-	private static class MethodParameterValue {
-		private MethodParameter methodParameter;
-		private Object value;
-		public MethodParameterValue(MethodParameter methodParameter,
-				Object value) {
-			super();
-			this.methodParameter = methodParameter;
-			this.value = value;
-		}
-		
-	}
-
 }

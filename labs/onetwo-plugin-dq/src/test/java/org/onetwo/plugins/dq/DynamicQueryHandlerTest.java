@@ -8,7 +8,7 @@ public class DynamicQueryHandlerTest {
 
 	@Test
 	public void testDqh(){
-		DynamicQueryHandler dqh = new DynamicQueryHandler(new NullJFishEntityManagerImpl(), TestQueryInterface.class);
+		DynamicQueryHandler dqh = new DynamicQueryHandler(new NullJFishEntityManagerImpl(), null, TestQueryInterface.class);
 		TestQueryInterface i = (TestQueryInterface)dqh.getProxyObject();
 		System.out.println("page: " + i.findPage(new Page(), "page"));
 		System.out.println("list: " + i.findList("list"));

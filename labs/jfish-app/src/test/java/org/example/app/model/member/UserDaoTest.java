@@ -1,10 +1,13 @@
 package org.example.app.model.member;
 
+import java.util.List;
+
 import org.example.app.model.member.dao.UserDao;
 import org.example.app.model.member.entity.UserEntity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.jfish.JFishBaseJUnitTest;
+import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserDaoTest extends JFishBaseJUnitTest {
@@ -15,8 +18,15 @@ public class UserDaoTest extends JFishBaseJUnitTest {
 	private int insertCount = 10;
 	
 	@Test
+	public void testAll(){
+		testSave();
+		testQuery();
+	}
+
+	@Test
 	public void testSave(){
-		for (int j = 1; j < insertCount; j++) {
+		testDelete();
+		for (int j = 1; j <= insertCount; j++) {
 			UserEntity user = this.createUserEntity(j, "test");
 			user.setId(Long.valueOf(j));
 			int rs = userDao.save(user).executeUpdate();
@@ -24,8 +34,9 @@ public class UserDaoTest extends JFishBaseJUnitTest {
 		}
 	}
 	
-	@Test
-	public void query(){
+//	@Test
+	public void testQuery(){
+		
 		UserEntity user = userDao.queryById(1L);
 		Assert.assertNotNull(user);
 
@@ -35,6 +46,18 @@ public class UserDaoTest extends JFishBaseJUnitTest {
 		UserEntity quser = userDao.createUserNameQuery("test1").setResultClass(UserEntity.class).getSingleResult(); 
 		Assert.assertNotNull(quser);
 		Assert.assertEquals(user.getUserName(), quser.getUserName());
+		
+		List<UserEntity> users = userDao.queryListByUserName("test%");
+		Assert.assertEquals(insertCount, users.size());
+		
+		Page<UserEntity> page = userDao.queryPageByUserName(new Page<UserEntity>(), "test%");
+		Assert.assertEquals(insertCount, page.getResult().size());
+	}
+	
+//	@Test
+	public void testDelete(){
+		int deleteCount = userDao.deleteByUserName("test%").executeUpdate();
+		Assert.assertEquals(insertCount, deleteCount);
 	}
 
 }

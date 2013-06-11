@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 
 import test.entity.UserEntity;
@@ -23,6 +24,7 @@ public class GenericTypeTest {
 		public UserEntity findById(Long id);
 		public UserEntity[] findList(String userName);
 		public List<UserEntity> findList(Object...params);
+		public void findPage(Page<UserEntity> page);
 		
 		
 	}
@@ -59,6 +61,9 @@ public class GenericTypeTest {
 				Assert.assertEquals(List.class, ptype.getRawType());
 				Assert.assertEquals(UserEntity.class, ReflectUtils.getGenricType(type, 0));
 			}
+			Type ptype = method.getGenericParameterTypes()[0];
+			Class<?> pclass = method.getParameterTypes()[0];
+			logger.info("parameter type: {}, {}", (ptype.equals(pclass)), (ptype instanceof ParameterizedType));
 		}
 	}
 

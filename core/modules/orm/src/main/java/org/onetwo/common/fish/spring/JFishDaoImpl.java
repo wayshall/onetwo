@@ -115,7 +115,8 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	public JFishQuery createCountJFishQueryByQName(String queryName, Object... args) {
 //		JFishNamedFileQueryInfo nameInfo = jfishFileQueryFactory.getNamedQueryInfo(queryName);
 		JFishQuery jq = jfishFileQueryFactory.createCountQuery(this, queryName);
-		jq.setParameters(LangUtils.asMap(args));
+//		jq.setParameters(LangUtils.asMap(args));
+		jq.setQueryAttributes(LangUtils.asMap(args));
 //		jq.setResultClass(Long.class);
 		return jq;
 	}
