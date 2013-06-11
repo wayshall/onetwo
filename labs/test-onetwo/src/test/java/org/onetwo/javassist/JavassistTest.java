@@ -42,8 +42,9 @@ public class JavassistTest {
 		classPool.insertClassPath(new ClassClassPath(this.getClass()));
 	}
 	
-//	@Test
+	@Test
 	public void testGetMethodNamesBySpring(){
+		//TestInterface
 		Method[] methods = TestController.class.getDeclaredMethods();
 		for(Method method : methods){
 			MyLoggerFactory.getLogger(this.getClass()).info(method.toGenericString());
@@ -123,6 +124,9 @@ public class JavassistTest {
 	JavassistProxyFacotory facotry = new JavassistProxyFacotory();
 	@Test
 	public void testProxyFactoryMakeClass() throws Exception{
+		//返回所有内部类？
+		System.out.println("class: " + LangUtils.toString(this.getClass().getDeclaredClasses()));
+		
 		TestInterface obj = (TestInterface)facotry.createProxy(new String[]{TestInterface.class.getName()}, new SimpleBlock<CtMethod, String>() {
 			
 			@Override

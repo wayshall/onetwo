@@ -19,6 +19,10 @@ public class DefaultRowMapperFactory implements RowMapperFactory {
 		super();
 		this.mappedEntryManager = mappedEntryManager;
 	}
+	
+	public boolean isSimpleType(Class<?> type){
+		return LangUtils.isSimpleType(type);
+	}
 
 	@Override
 	public RowMapper<?> createDefaultRowMapper(Class<?> type) {
@@ -26,7 +30,7 @@ public class DefaultRowMapperFactory implements RowMapperFactory {
 		if(type==null || type==Object.class){
 //			rowMapper = new SingleColumnRowMapper(Object.class);
 			rowMapper = new UnknowTypeRowMapper();
-		}else if(LangUtils.isBaseType(type) || LangUtils.isTimeClass(type)){
+		}else if(isSimpleType(type) || LangUtils.isTimeClass(type)){
 			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
 			rowMapper = new SingleColumnRowMapper(type);
 		}else if(LangUtils.isMapClass(type)){

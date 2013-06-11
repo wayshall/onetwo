@@ -16,12 +16,6 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 
 public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends AbstractPropertiesManager<T> implements NamespacePropertiesManager<T>{
 
-	public static interface NamespaceProperties<T> {
-		public String getNamespace();
-		public Collection<T> getNamedProperties();
-		public T getNamedProperty(String name);
-		public void addAll(Map<String, T> namedInfos, boolean throwIfExist);
-	}
 	public class CommonNamespaceProperties implements NamespaceProperties<T> {
 		private final String namespace;
 		private File source;
@@ -64,6 +58,10 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 				this.namedProperties.put(entry.getKey(), entry.getValue());
 			}
 		}
+		@Override
+		public boolean isGlobal() {
+			return false;
+		}
 		
 	}
 
@@ -78,7 +76,10 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		public List<File> getSources() {
 			return sources;
 		}
-		
+		@Override
+		public boolean isGlobal() {
+			return true;
+		}
 	}
 
 	

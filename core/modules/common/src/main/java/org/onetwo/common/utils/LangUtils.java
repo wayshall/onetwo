@@ -55,6 +55,7 @@ public class LangUtils {
 	public static final Consoler CONSOLE;
 
 	private static final List<Class<?>> BASE_CLASS;
+	private static final List<Class<?>> SIMPLE_CLASS;
 
 	static {
 		CONSOLE = Consoler.create(asBufferedReader(System.in));
@@ -77,11 +78,15 @@ public class LangUtils {
 		cls.add(float.class);
 		cls.add(Double.class);
 		cls.add(double.class);
-//		cls.add(String.class);
-//		cls.add(Date.class);
-//		cls.add(Number.class);
-//		cls.add(BigDecimal.class);
 		BASE_CLASS = Collections.unmodifiableList(cls);
+		
+		List<Class<?>> simples = new ArrayList<Class<?>>(cls);
+		simples.add(String.class);
+		simples.add(Date.class);
+		simples.add(Calendar.class);
+		simples.add(Number.class);
+		
+		SIMPLE_CLASS = Collections.unmodifiableList(simples);
 	}
 	
 	public static final char[] takeArr = {  '1', '2', '3', '4', '5', '6', '7', 
@@ -360,6 +365,14 @@ public class LangUtils {
 		if(obj==null)
 			return false;
 		return BASE_CLASS.contains(obj.getClass());
+	}
+	public static boolean isSimpleType(Class<?> clazz){
+		return SIMPLE_CLASS.contains(clazz);
+	}
+	public static boolean isSimpleTypeObject(Object obj){
+		if(obj==null)
+			return false;
+		return SIMPLE_CLASS.contains(obj.getClass());
 	}
 	
 	public static boolean isTimeClass(Class clazz){

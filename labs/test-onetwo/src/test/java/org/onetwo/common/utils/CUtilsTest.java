@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -37,4 +38,16 @@ public class CUtilsTest {
 		Set<String> formats = CUtils.asSet("yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "HH:mm:ss", "yyyy-MM-dd HH:mm");
 		Assert.assertEquals(formats.size(), 4);
 	}
+	
+	@Test
+	public void testMap2Array(){
+		Object[] values = new Object[]{"aa", "aavalue", "bb", 2L, "cc", new Object()};
+		Map<Object, Object> map = CUtils.asMap(values);
+		Object[] array = CUtils.map2Array(map);
+		Assert.assertEquals(values.length, array.length);
+		for (int i = 0; i < array.length; i++) {
+			Assert.assertEquals(values[i], array[i]);
+		}
+	}
+	
 }

@@ -8,17 +8,25 @@ import org.onetwo.common.fish.spring.JFishNamedFileQueryInfo;
 import org.onetwo.common.fish.spring.JFishNamedFileQueryManager;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.NamespaceProperties;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl.NamespaceProperties;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.AbstractApplicationContext;
 
-public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLifeCycleListener {
+public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLifeCycleListener, ApplicationContextAware {
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 //	private String packageToScan;
 	
 	private JFishNamedFileQueryManager jfishNamedFileQueryManager;
 //	private ClassPool classPool = ClassPool.getDefault();
+	private ApplicationContext applicationContext;
 	
 	@Override
 	public void onInit(JFishEntityManager em) {
@@ -28,14 +36,30 @@ public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLif
 			return ;
 		}
 		
+		BeanFactory bf = null;
+		if(applicationContext instanceof AbstractApplicationContext){
+			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
+		}
+		if(bf==null || !SingletonBeanRegistry.class.isInstance(bf)){
+			logger.warn("not SingletonBeanRegistry, ignore...");
+			return ;
+		}
+		
+		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		NamespacePropertiesManager<JFishNamedFileQueryInfo> namespaceManager = (NamespacePropertiesManager<JFishNamedFileQueryInfo>)this.jfishNamedFileQueryManager;
 		Collection<NamespaceProperties<JFishNamedFileQueryInfo>> namespacelist = namespaceManager.getAllNamespaceProperties();
 		
 		Class<?> dqInterface = null;
 		DynamicQueryProxyFactory factory = null;
+		String beanName = null;
 		for(NamespaceProperties<JFishNamedFileQueryInfo> nsp : namespacelist){
+			if(nsp.isGlobal())
+				continue;
 			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());
-			factory = new DynamicQueryHandler(object, proxiedInterfaces);
+			factory = new DynamicQueryHandler(em, dqInterface);
+			beanName = StringUtils.toClassName(dqInterface.getSimpleName());
+			sbr.registerSingleton(beanName, factory.getProxyObject());
+			logger.info("register dynamic query {} ", beanName);
 		}
 	}
 
@@ -43,4 +67,12 @@ public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLif
 	public void onDestroy(JFishEntityManager dao) {
 		
 	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+	
+	
 }

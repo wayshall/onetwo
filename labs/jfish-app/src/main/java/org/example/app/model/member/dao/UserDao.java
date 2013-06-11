@@ -3,21 +3,18 @@ package org.example.app.model.member.dao;
 import java.util.List;
 
 import org.example.app.model.member.entity.UserEntity;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.dq.annotations.QueryInterface;
+import org.onetwo.plugins.dq.annotations.Name;
 
-@QueryInterface
 public interface UserDao {
 
-	/*@DynamicQuery
-	public UserEntity findById(Long userId);
-	@DynamicQuery
-	public UserEntity findByIdAndUserName(Long userId, String userName);*/
+	abstract public JFishQuery save(UserEntity user);
 	
-	public UserEntity queryById(Long userId);
-	public List<UserEntity> queryListByUserName(String userName);
-	public Page<UserEntity> queryPageByUserName(String userName);
-	public DataQuery queryByUserName(String userName);
+	abstract public UserEntity queryById(Long id);
+	abstract public List<UserEntity> queryListByUserName(String userName);
+	abstract public Page<UserEntity> queryPageByUserName(String userName);
+	abstract public UserEntity queryByUserName(@Name("userName") String userName);
+	abstract public JFishQuery createUserNameQuery(@Name("userName") String userName);
 
 }

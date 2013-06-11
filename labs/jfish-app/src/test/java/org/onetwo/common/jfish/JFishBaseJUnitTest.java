@@ -14,7 +14,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 
 
 @ActiveProfiles(Environment.TEST)
-@ContextConfiguration(locations = { "/applicationContext-test.xml" })
+//@ContextConfiguration(locations = { "/applicationContext-test.xml" })
+@ContextConfiguration(loader=JFishAppContextLoaderForTest.class)
 @TransactionConfiguration(defaultRollback = false)
 public class JFishBaseJUnitTest extends SpringTxJUnitTestCase {
 	

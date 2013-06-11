@@ -48,7 +48,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		private String dir;
 		private String overrideDir;
 		private ClassLoader classLoader = FileUtils.getClassLoader();
-		private Class<?> propertyBeanClass;
+		private Class<? extends JFishNameValuePair> propertyBeanClass;
 		private boolean watchSqlFile;
 		private String postfix;
 		
@@ -78,7 +78,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		public Class<?> getPropertyBeanClass() {
 			return propertyBeanClass;
 		}
-		public void setPropertyBeanClass(Class<?> propertyBeanClass) {
+		public void setPropertyBeanClass(Class<? extends JFishNameValuePair> propertyBeanClass) {
 			Assert.notNull(propertyBeanClass);
 			this.propertyBeanClass = propertyBeanClass;
 		}

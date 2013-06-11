@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
+import org.onetwo.common.db.parser.SqlKeywords.SqlType;
 import org.onetwo.common.db.parser.interceptors.DefaultDynamicQueryInterceptor;
 import org.onetwo.common.db.parser.interceptors.DynamicQueryInterceptor;
 import org.onetwo.common.db.sql.DynamicQuery;
@@ -50,6 +51,8 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 	private DynamicQueryInterceptor interceptor;
 	
 	private QueryContext context = new QueryContext(this);
+	
+	private SqlType sqlType;
 
 	public JFishDynamicQueryImpl(String sql) {
 		this(sql, null);
@@ -80,6 +83,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 	}
 	
 	private void parseQuery() {
+		this.sqlType = this.statments.getSqlType();
 //		int index = 0;
 		for(SqlObject sqlObj : this.statments.getSqlObjects()){
 			//onParse
@@ -341,4 +345,12 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 		this.context.desc(fields);
 	}
 
+	public boolean isQuerySql(){
+		return sqlType!=null && sqlType==SqlType.SELECT;
+	}
+
+	public SqlType getSqlType() {
+		return sqlType;
+	}
+	
 }

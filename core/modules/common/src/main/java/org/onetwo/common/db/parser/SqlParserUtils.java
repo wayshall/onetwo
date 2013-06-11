@@ -1,9 +1,10 @@
 package org.onetwo.common.db.parser;
 
+import org.onetwo.common.db.parser.SqlKeywords.SqlType;
 import org.onetwo.common.lexer.AbstractParser.JTokenValue;
 import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 
-public class SqlParserUtils {
+public final class SqlParserUtils {
 
 //	public static final String JDBC_HOLDER = "?";
 	
@@ -92,6 +93,36 @@ public class SqlParserUtils {
 		}
 		if(value.charAt(value.length()-1)!=' ')
 			value.append(' ');
+	}
+	
+	public static SqlType getSqlType(SqlObject sqlobj){
+		if(!SqlKeywordObject.class.isInstance(sqlobj))
+			return SqlType.OTHER;
+		SqlKeywordObject key = (SqlKeywordObject) sqlobj;
+		SqlTokenKey token = key.getToken();
+		SqlType type = null;
+		switch (token) {
+			case SELECT:
+				type = SqlType.SELECT;
+				break;
+				
+			case INSERT:
+				type = SqlType.INSERT;
+				break;
+			
+			case UPDATE:
+				type = SqlType.UPDATE;
+				break;
+			
+			case DELETE:
+				type = SqlType.DELETE;
+				break;
+	
+			default:
+				type = SqlType.OTHER;
+				break;
+		}
+		return type;
 	}
 	
 	private SqlParserUtils(){

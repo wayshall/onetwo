@@ -3,6 +3,8 @@ package org.onetwo.common.db.sql;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.parser.SqlKeywords.SqlType;
+
 /***
  * 对sql查询语句的封装
  * 可解释含有命名参数的sql语句
@@ -72,6 +74,8 @@ public interface DynamicQuery extends QueryOrderByable {
 	public boolean isPage();
 	
 	public void setEntityClass(Class<?> entityClass);
+	
+	public SqlType getSqlType();
 	
 //	public QueryContext getContext();
 }
