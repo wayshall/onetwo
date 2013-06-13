@@ -26,11 +26,11 @@ public class UserDaoDqTest extends JFishBaseJUnitTest {
 
 //	@Test
 	public void testSave(){
-//		testDelete();
+		int deleteCount = userDao.deleteByUserName("test%").executeUpdate();
 		for (int j = 1; j <= insertCount; j++) {
 			UserEntity user = this.createUserEntity(j, "test");
 			user.setId(Long.valueOf(j));
-			int rs = userDao.save(user).executeUpdate();
+			int rs = userDao.save(user);
 			Assert.assertEquals(1, rs);
 		}
 	}
@@ -38,7 +38,7 @@ public class UserDaoDqTest extends JFishBaseJUnitTest {
 //	@Test
 	public void testQuery(){
 		
-		UserEntity user = userDao.queryById(1L);
+		UserEntity user = userDao.queryWithId(1L);
 		Assert.assertNotNull(user);
 
 		user = userDao.queryByUserName("test1"); 
@@ -48,7 +48,7 @@ public class UserDaoDqTest extends JFishBaseJUnitTest {
 		Assert.assertNotNull(quser);
 		Assert.assertEquals(user.getUserName(), quser.getUserName());
 		
-		List<UserEntity> users = userDao.queryListByUserName("test%");
+		List<UserEntity> users = userDao.queryListByUserNameByAge("test%", 10);
 		Assert.assertEquals(insertCount, users.size());
 		
 		Page<UserEntity> page = userDao.queryPageByUserName(new Page<UserEntity>(), "test%");

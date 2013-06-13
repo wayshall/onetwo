@@ -31,6 +31,7 @@ public class JFishBaseJUnitTest extends SpringTxJUnitTestCase {
 		user.setBirthDay(DateUtil.now());
 		user.setEmail(i+"username@qq.com");
 		user.setHeight(3.3f);
+		user.setAge(11);
 		
 		return user;
 	}

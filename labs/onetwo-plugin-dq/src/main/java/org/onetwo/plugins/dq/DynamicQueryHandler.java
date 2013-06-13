@@ -75,8 +75,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
 //		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
-		TimeCounter t = new TimeCounter("doproxy", true);
-		t.start();
+//		TimeCounter t = new TimeCounter("doproxy", true);
+//		t.start();
 		DynamicMethod dmethod = getDynamicMethod(method);
 		Class<?> resultClass = dmethod.getResultClass();
 		Class<?> componentClass = dmethod.getComponentClass();
@@ -88,23 +88,28 @@ public class DynamicQueryHandler implements InvocationHandler {
 			
 			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
 //			methodArgs = appendEntityClass(componentClass, methodArgs);
-			t.stop();
+//			t.stop();
 			result = em.findPageByQName(queryName, page, methodArgs);
 			
 		}else if(List.class.isAssignableFrom(resultClass)){
 			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
-			t.stop();
+//			t.stop();
 			result = em.findListByQName(queryName, methodArgs);
 			
 		}else if(JFishQuery.class.isAssignableFrom(resultClass)){
 			Object[] methodArgs = dmethod.toArrayByArgs(args, null);
-			t.stop();
+//			t.stop();
 			JFishQuery dq = em.createJFishQueryByQName(queryName, methodArgs);
 			return dq;
 			
 		}else{
 			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
-			result = em.findUniqueByQName(queryName, methodArgs);
+			if(dmethod.isExecuteUpdate()){
+				JFishQuery dq = em.createJFishQueryByQName(queryName, methodArgs);
+				result = dq.executeUpdate();
+			}else{
+				result = em.findUniqueByQName(queryName, methodArgs);
+			}
 		}
 		return result;
 	}

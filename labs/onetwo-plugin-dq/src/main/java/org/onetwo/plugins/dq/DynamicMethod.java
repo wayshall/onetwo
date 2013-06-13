@@ -12,11 +12,15 @@ import org.onetwo.common.fish.spring.JNamedQueryKey;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.dq.annotations.Name;
 import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
+	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "delete", "insert");
+	private static final String FIELD_NAME_SPERATOR = "By";
+	
 	private final Method method;
 	private final List<MethodParameter> parameters;
 	private final Class<?> resultClass;
@@ -30,6 +34,13 @@ public class DynamicMethod {
 		parameters = LangUtils.newArrayList(psize+2);
 		this.parameterNames = LangUtils.newArrayList(psize);
 		MethodParameter mp = null;
+		
+		String methodName = method.getName();
+		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
+		String[] pnames = LangUtils.EMPTY_STRING_ARRAY;
+		if(byIndex!=-1){
+			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
+		}
 		for(int index=0; index<psize; index++){
 			mp = new MethodParameter(method, index);
 			parameters.add(mp);
@@ -37,12 +48,14 @@ public class DynamicMethod {
 			Name name = mp.getParameterAnnotation(Name.class);
 			if(name!=null){
 				parameterNames.add(name.value());
+			}else if(pnames.length>index){
+				parameterNames.add(StringUtils.uncapitalize(pnames[index]));
 			}else{
 				parameterNames.add(String.valueOf(mp.getParameterIndex()));
 			}
 		}
 		
-		queryName = method.getDeclaringClass().getName()+"."+method.getName();
+		queryName = method.getDeclaringClass().getName()+"."+methodName;
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
@@ -112,5 +125,9 @@ public class DynamicMethod {
 		return queryName;
 	}
 	
+	public boolean isExecuteUpdate(){
+		String name = StringUtils.getFirstWord(this.method.getName());
+		return EXECUTE_UPDATE_PREFIX.contains(name);
+	}
 	
 }

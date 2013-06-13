@@ -62,6 +62,22 @@ public abstract class StringUtils {
 		else
 			return clsName;
 	}
+	public static String getFirstWord(String str) {
+		if(StringUtils.isBlank(str))
+			return LangUtils.EMPTY_STRING;
+		
+		char[] chars = str.toCharArray();
+		StringBuilder first = new StringBuilder();
+		first.append(chars[0]);
+		for (int i = 1; i < chars.length; i++) {
+			if(Character.isUpperCase(chars[i])){
+				break;
+			}else{
+				first.append(chars[i]);
+			}
+		}
+		return first.toString();
+	}
 
 	public static boolean hasText(CharSequence str) {
 		if (!hasLength(str)) {
