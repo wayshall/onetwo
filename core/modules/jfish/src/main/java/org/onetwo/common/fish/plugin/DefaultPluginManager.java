@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.spring.config.JFishContextConfigurerListener;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
@@ -22,13 +21,8 @@ import org.onetwo.common.utils.propconf.PropUtils;
 import org.onetwo.common.utils.propconf.VariablePropConifg;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrar;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -36,7 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
-public class DefaultPluginManager implements JFishPluginManager, JFishContextConfigurerListener, JFishMvcConfigurerListener, ApplicationContextAware, InitializingBean {
+public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigurerListener {
 	
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
 
@@ -53,7 +47,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishContextCon
 	private String pluginPath;
 	private PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 	
-	private ApplicationContext applicationContext;
+//	private ApplicationContext applicationContext;
 
 	public DefaultPluginManager(){
 		this(PLUGIN_PATH);
@@ -63,14 +57,14 @@ public class DefaultPluginManager implements JFishPluginManager, JFishContextCon
 		this.pluginPath = pluginPath;
 	}
 	
-	@Override
+	/*@Override
 	public void afterPropertiesSet() throws Exception {
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-	}
+	}*/
 
 	/********
 	 * on initWebApplicationContext
@@ -173,7 +167,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishContextCon
 	}
 	
 
-	@Override
+	/*@Override
 	public void onCreateCacheManager(final CacheManager cacheManager, final boolean isJfishCache) {
 		// TODO Auto-generated method stub
 		getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
@@ -184,7 +178,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishContextCon
 			}
 			
 		});
-	}
+	}*/
 
 	//	@Override
 	public JFishList<JFishPluginMeta> getPluginMetas() {

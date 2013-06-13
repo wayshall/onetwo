@@ -102,6 +102,12 @@
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-dq</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
 	
 	<dependency>
 	  <groupId>org.apache.openejb</groupId>
@@ -191,6 +197,12 @@
 	<dependency>
 	  <groupId>net.sf.dozer</groupId>
 	  <artifactId>dozer</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.carrotsearch</groupId>
+	  <artifactId>java-sizeof</artifactId>
+	  <version>0.0.3</version>
 	</dependency>
     
   </dependencies>

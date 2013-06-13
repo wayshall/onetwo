@@ -1,7 +1,7 @@
 package org.onetwo.common.fish.spring;
 
 import org.onetwo.common.fish.JFishQuery;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl;
 
 
@@ -23,7 +23,7 @@ public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerIm
 	public JFishNamedFileQueryInfo getNamedQueryInfo(String name) {
 		JFishNamedFileQueryInfo info = super.getJFishProperty(name);
 		if(info==null)
-			LangUtils.throwBaseException("no query found : " + name);
+			throw new JFishOrmException("namedQuery not found : " + name);
 		return info;
 	}
 	
@@ -35,6 +35,11 @@ public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerIm
 	public JFishQuery createCountQuery(JFishDaoImplementor jfishFishDao, String queryName){
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
 		return new JFishFileQueryImpl(jfishFishDao, nameInfo, true);
+	}
+
+	@Override
+	public boolean containsQuery(String queryName) {
+		return super.contains(queryName);
 	}
 
 }

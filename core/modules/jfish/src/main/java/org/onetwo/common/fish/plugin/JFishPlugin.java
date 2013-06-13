@@ -2,7 +2,6 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.fish.spring.config.JFishContextConfigurerListener;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 
 public interface JFishPlugin extends JFishPluginLifeCycleListener {
@@ -12,7 +11,7 @@ public interface JFishPlugin extends JFishPluginLifeCycleListener {
 	
 	JFishMvcConfigurerListener getJFishMvcConfigurerListener();
 	
-	JFishContextConfigurerListener getJFishContextConfigurerListener();
+//	JFishContextConfigurerListener getJFishContextConfigurerListener();
 	
 	public JFishPluginMeta getPluginMeta();
 }

@@ -3,6 +3,7 @@ package org.onetwo.common.profiling;
 import java.util.Date;
 
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.LangUtils;
 
 public class TimeCounter {
 
@@ -10,9 +11,15 @@ public class TimeCounter {
 	private Date start;
 	private Date stop;
 	private long costTime;
+	private boolean printMemory;
+
 
 	public TimeCounter(Object target) {
+		this(target, false);
+	}
+	public TimeCounter(Object target, boolean printMemory) {
 		this.target = target;
+		this.printMemory = printMemory;
 	}
 
 	public Date start() {
@@ -37,10 +44,19 @@ public class TimeCounter {
 		long stopMills = System.currentTimeMillis();
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
-		System.out.println(this.target + " ----->>> start time[" + DateUtil.formatDateTimeMillis(start)
+		String msg = this.target + " ----->>> start time[" + DateUtil.formatDateTimeMillis(start)
 				+ "], stop time[" + DateUtil.formatDateTimeMillis(this.stop)
-				+ "], cost time[" + this.costTime+" (millis), " + (this.costTime / 1000) + " (second)]");
+				+ "], cost time[" + this.costTime+" (millis), " + (this.costTime / 1000) + " (second)]";
+		if(printMemory){
+			msg += "\n" + LangUtils.statisticsMemory("");
+		}
+		System.out.println(msg);
 		return this.stop;
+	}
+	
+	public void printMemory(){
+		LangUtils.printMemory();
+		System.out.println();
 	}
 
 }

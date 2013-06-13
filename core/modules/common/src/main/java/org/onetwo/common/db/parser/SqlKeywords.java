@@ -8,6 +8,14 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 
 public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
+	
+	public static enum SqlType {
+		SELECT,
+		UPDATE,
+		INSERT,
+		DELETE,
+		OTHER;
+	}
 
 	public final static SqlKeywords KEYWORDS;
 	public final static SqlKeywords SYMBOLS;

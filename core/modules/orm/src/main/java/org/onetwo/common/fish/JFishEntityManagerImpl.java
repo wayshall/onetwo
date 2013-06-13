@@ -14,25 +14,66 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.spring.EntityManagerOperationImpl;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
+import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
 import org.onetwo.common.fish.spring.JFishFileQueryDao;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.list.NoIndexIt;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 
 @SuppressWarnings("rawtypes")
-public class JFishEntityManagerImpl implements JFishEntityManager, InitializingBean {
+public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
 //	private SQLSymbolManager SQLSymbolManager;
 
 	private JFishDaoImplementor jfishDao;
 	private EntityManagerOperationImpl entityManagerWraper;
+	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
+	private ApplicationContext applicationContext;
 	
 	public JFishEntityManagerImpl(){
 		super();
 	}
 	
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+
 	public void afterPropertiesSet() throws Exception{
 		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
+		
+		List<JFishEntityManagerLifeCycleListener> jlisteners = SpringUtils.getBeans(applicationContext, JFishEntityManagerLifeCycleListener.class);
+		this.emListeners = JFishList.wrapObject(jlisteners);
+		
+		this.emListeners.each(new NoIndexIt<JFishEntityManagerLifeCycleListener>() {
+
+			@Override
+			protected void doIt(JFishEntityManagerLifeCycleListener element) throws Exception {
+				element.onInit(JFishEntityManagerImpl.this);
+			}
+			
+		});
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		this.emListeners.each(new NoIndexIt<JFishEntityManagerLifeCycleListener>() {
+
+			@Override
+			protected void doIt(JFishEntityManagerLifeCycleListener element) throws Exception {
+				element.onDestroy(JFishEntityManagerImpl.this);
+			}
+			
+		});
 	}
 	
 	public <T> List<T> findAll(Class<T> entityClass){

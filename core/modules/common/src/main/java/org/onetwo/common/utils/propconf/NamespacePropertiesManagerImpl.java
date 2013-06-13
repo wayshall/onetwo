@@ -1,9 +1,11 @@
 package org.onetwo.common.utils.propconf;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
@@ -14,11 +16,6 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 
 public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends AbstractPropertiesManager<T> implements NamespacePropertiesManager<T>{
 
-	public static interface NamespaceProperties<T> {
-		public String getNamespace();
-		public Map<String, T> getNamedProperties();
-		public T getNamedProperty(String name);
-	}
 	public class CommonNamespaceProperties implements NamespaceProperties<T> {
 		private final String namespace;
 		private File source;
@@ -41,8 +38,8 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		}
 
 		@Override
-		public Map<String, T> getNamedProperties() {
-			return namedProperties;
+		public Collection<T> getNamedProperties() {
+			return namedProperties.values();
 		}
 
 		public File getSource() {
@@ -51,6 +48,19 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		@Override
 		public T getNamedProperty(String name) {
 			return namedProperties.get(name);
+		}
+		@Override
+		public void addAll(Map<String, T> namedInfos, boolean throwIfExist) {
+			for(Entry<String, T> entry : namedInfos.entrySet()){
+				if(throwIfExist && this.namedProperties.containsKey(entry.getKey())){
+					throw new BaseException("sql key["+entry.getKey()+"] has already exist in namespace: " + namespace);
+				}
+				this.namedProperties.put(entry.getKey(), entry.getValue());
+			}
+		}
+		@Override
+		public boolean isGlobal() {
+			return false;
 		}
 		
 	}
@@ -66,7 +76,10 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		public List<File> getSources() {
 			return sources;
 		}
-		
+		@Override
+		public boolean isGlobal() {
+			return true;
+		}
 	}
 
 	
@@ -106,7 +119,7 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 			logger.warn("no file relaoded : " + file.getPath());
 			return ;
 		}
-		this.scanAndParseSqlFile(this.namespaceProperties, file);
+		this.scanAndParseSqlFile(this.namespaceProperties, file, false);
 		logger.warn("file relaoded : " + file.getPath());
 	}
 	
@@ -120,41 +133,41 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		
 		Map<String, NamespaceProperties<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
 		for(File f : sqlfileArray){
-			this.scanAndParseSqlFile(nsproperties, f);
+			this.scanAndParseSqlFile(nsproperties, f, true);
 		}
 		return nsproperties;
 	}
 
 
-	protected NamespaceProperties<T> scanAndParseSqlFile(Map<String, NamespaceProperties<T>> nsproperties, File f){
+	protected NamespaceProperties<T> scanAndParseSqlFile(Map<String, NamespaceProperties<T>> nsproperties, File f, boolean throwIfExist){
 		logger.info("scan and parse sql file : " + f.getPath());
 		
-		String ns = getFileNameNoJfishSqlPostfix(f);
-		if(isGlobalNamespace(ns)){
-			ns = GLOBAL_NS_KEY;
+		String namespace = getFileNameNoJfishSqlPostfix(f);
+		if(isGlobalNamespace(namespace)){
+			namespace = GLOBAL_NS_KEY;
 		}
 		
-		Map<String, T> namedinfos = buildNamedInfos(ns, f);
+		Map<String, T> namedinfos = buildNamedInfos(namespace, f);
 		if(namedinfos.isEmpty())
 			return null;
 
 		NamespaceProperties<T> np = null;
-		if(isGlobalNamespace(ns)){
-			np = nsproperties.get(ns);
+		if(isGlobalNamespace(namespace)){
+			np = nsproperties.get(namespace);
 			if(np==null){
 				np = new GlobalNamespaceProperties();
 				nsproperties.put(np.getNamespace(), np);
 			}
-			np.getNamedProperties().putAll(namedinfos);
+			np.addAll(namedinfos, throwIfExist);
 		}else{
-			if(nsproperties.containsKey(ns)){
-				throw new BaseException("sql namespace has already exist : " + ns);
+			if(throwIfExist && nsproperties.containsKey(namespace)){
+				throw new BaseException("sql namespace has already exist : " + namespace);
 			}
-			np = new CommonNamespaceProperties(ns, f, namedinfos);
+			np = new CommonNamespaceProperties(namespace, f, namedinfos);
 		}
-		nsproperties.put(ns, np);
+		nsproperties.put(namespace, np);
 		
-		for(T nsp : np.getNamedProperties().values()){
+		for(T nsp : np.getNamedProperties()){
 			this.namedQueryCache.put(nsp.getFullName(), nsp);
 		}
 		
@@ -172,9 +185,17 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 	
 
-	public T getJFishProperty(String name) {
-		T info = namedQueryCache.get(name);
+	public T getJFishProperty(String fullname) {
+		T info = namedQueryCache.get(fullname);
 		return info;
+	}
+	
+	public boolean contains(String fullname){
+		return namedQueryCache.containsKey(fullname);
+	}
+	
+	public boolean containsNamespace(String namespace){
+		return namespaceProperties.containsKey(namespace);
 	}
 
 	public String toString(){
@@ -189,5 +210,10 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	public NamespaceProperties<T> getNamespaceProperties(String namespace) {
 		return namespaceProperties.get(namespace);
 	}
+
+	public Collection<NamespaceProperties<T>> getAllNamespaceProperties() {
+		return namespaceProperties.values();
+	}
+	
 
 }

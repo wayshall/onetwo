@@ -2,6 +2,7 @@ package org.onetwo.common.db.parser;
 
 import java.util.List;
 
+import org.onetwo.common.db.parser.SqlKeywords.SqlType;
 import org.onetwo.common.utils.LangUtils;
 
 public class SqlStatment {
@@ -22,6 +23,11 @@ public class SqlStatment {
 			sql.append(sqlobj.toFragmentSql());
 		}
 		return sql.toString().trim();
+	}
+	
+	public SqlType getSqlType(){
+		SqlObject sqlobj = LangUtils.getFirst(sqlObjects);
+		return SqlParserUtils.getSqlType(sqlobj);
 	}
 
 }

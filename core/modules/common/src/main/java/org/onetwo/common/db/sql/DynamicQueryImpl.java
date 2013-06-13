@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
+import org.onetwo.common.db.parser.SqlKeywords.SqlType;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
@@ -334,6 +335,11 @@ public class DynamicQueryImpl implements DynamicQuery {
 
 	@Override
 	public void desc(String... fields) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SqlType getSqlType() {
 		throw new UnsupportedOperationException();
 	}
 

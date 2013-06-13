@@ -71,7 +71,7 @@ public class SqlLexer extends AbstractLexer<SqlTokenKey> {
 				setToken(SqlTokenKey.SEMI);
 			}else if(ch=='\''){
 				setToken(SqlTokenKey.SINGLE_QUOTE);
-				scanSqlString();
+				scanSqlString('\'');
 				return true;
 			}else if(ch==','){
 				setToken(SqlTokenKey.COMMA);
@@ -115,15 +115,15 @@ public class SqlLexer extends AbstractLexer<SqlTokenKey> {
 		}
 	}
 
-	protected void scanSqlString(){
-		if(ch!='\''){
-			throw new JLexerException("not a string start : " + ch);
+	protected void scanSqlString(char endChar){
+		if(ch!=endChar){
+			throw new JLexerException("must a char end with " + ch +", actual is " + endChar);
 		}
 		saveChar();
 		while(true){
 			scanNextChar();
 			saveChar();
-			if(ch=='\''){
+			if(ch==endChar){
 				break;
 			}
 		}

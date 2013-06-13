@@ -15,7 +15,7 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.onetwo.common.utils.watch.FileChangeListener;
-import org.onetwo.common.utils.watch.FileMonitor;
+import org.onetwo.common.utils.watch.FileWatcher;
 import org.slf4j.Logger;
 
 abstract public class AbstractPropertiesManager<T extends NamespaceProperty> implements JFishPropertiesManager<T> {
@@ -48,7 +48,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		private String dir;
 		private String overrideDir;
 		private ClassLoader classLoader = FileUtils.getClassLoader();
-		private Class<?> propertyBeanClass;
+		private Class<? extends JFishNameValuePair> propertyBeanClass;
 		private boolean watchSqlFile;
 		private String postfix;
 		
@@ -78,7 +78,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		public Class<?> getPropertyBeanClass() {
 			return propertyBeanClass;
 		}
-		public void setPropertyBeanClass(Class<?> propertyBeanClass) {
+		public void setPropertyBeanClass(Class<? extends JFishNameValuePair> propertyBeanClass) {
 			Assert.notNull(propertyBeanClass);
 			this.propertyBeanClass = propertyBeanClass;
 		}
@@ -104,7 +104,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	public static final String IGNORE_NULL_KEY = "ignore.null";
 	public static final String JFISH_SQL_POSTFIX = ".jfish.sql";
 
-	private FileMonitor fileMonitor;
+	private FileWatcher fileMonitor;
 	protected JFishPropertyConf conf;
 	private long period = 1;
 	private boolean debug;// = true;
@@ -115,7 +115,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	
 	protected void buildSqlFileMonitor(File[] sqlfileArray){
 		if(conf.isWatchSqlFile() && fileMonitor==null){
-			fileMonitor = new FileMonitor();
+			fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
 		}
 	}
@@ -251,15 +251,13 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	}
 
 	protected void watchFiles(File[] sqlfileArray){
-		for(File f : sqlfileArray){
-			this.fileMonitor.addFileChangeListener(new FileChangeListener() {
-				
-				@Override
-				public void fileChanged(File file) {
-					reloadFile(file);
-				}
-			}, f, period);
-		}
+		this.fileMonitor.watchFile(period, new FileChangeListener() {
+			
+			@Override
+			public void fileChanged(File file) {
+				reloadFile(file);
+			}
+		}, sqlfileArray);
 	}
 	
 	public boolean isDebug() {

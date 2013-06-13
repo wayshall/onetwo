@@ -2,7 +2,6 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.fish.spring.config.JFishContextConfigurerListener;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -41,10 +40,10 @@ public abstract class AbstractJFishPlugin<T extends JFishPlugin> implements JFis
 	}
 
 
-	@Override
+	/*@Override
 	public JFishContextConfigurerListener getJFishContextConfigurerListener() {
 		return new JFishContextConfigurerListenerAdapter();
-	}
+	}*/
 
 
 	@Override

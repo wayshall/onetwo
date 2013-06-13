@@ -49,12 +49,23 @@ public class JFishList<E> implements List<E>, Serializable {
 		return new JFishList<T>(e);
 	}
 	public static <T> JFishList<T> wrapObject(Object e){
+		if(JFishList.class.isInstance(e))
+			return (JFishList<T>)e;
+		
 		List<T> list = LangUtils.asList(e);
 		return new JFishList<T>(list);
 	}
 	
 	public static <T> JFishList<T> create(){
 		return new JFishList<T>();
+	}
+	
+	public static <T> JFishList<T> newList(){
+		return new JFishList<T>();
+	}
+	
+	public static <T> JFishList<T> newList(int size){
+		return new JFishList<T>(size);
 	}
 	
 	

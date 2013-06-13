@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
@@ -269,8 +270,12 @@ final public class CUtils {
 				list = (List) object;
 			else {
 				Collection col = (Collection) object;
-				list = new ArrayList(col.size());
-				list.addAll(col);
+				if(col.isEmpty()){
+					list = new ArrayList(5);
+				}else{
+					list = new ArrayList(col.size());
+					list.addAll(col);
+				}
 			}
 		} else if (object.getClass().isArray()) {
 			int length = Array.getLength(object);
@@ -352,6 +357,16 @@ final public class CUtils {
 		}else{
 			return new String[]{obj.toString()};
 		}
+	}
+	
+	public static Object[] map2Array(Map<?, ?> map){
+		Object[] array = new Object[map.size()*2];
+		int index = 0;
+		for(Entry<?, ?> entry : map.entrySet()){
+			array[index++] = entry.getKey();
+			array[index++] = entry.getValue();
+		}
+		return array;
 	}
 	
 	private CUtils(){

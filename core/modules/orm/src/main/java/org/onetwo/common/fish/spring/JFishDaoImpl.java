@@ -74,12 +74,13 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	
 	private RowMapperFactory rowMapperFactory;
 	
+	
 	public JFishDaoImpl(){
 	}
 
 	public JFishDaoImpl(DataSource dataSource){
 		this.setDataSource(dataSource);
-		this.afterPropertiesSet();
+//		this.afterPropertiesSet();
 	}
 	
 	public JFishQuery createJFishQueryByQName(String queryName, PlaceHolder type, Object... args){
@@ -114,7 +115,8 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	public JFishQuery createCountJFishQueryByQName(String queryName, Object... args) {
 //		JFishNamedFileQueryInfo nameInfo = jfishFileQueryFactory.getNamedQueryInfo(queryName);
 		JFishQuery jq = jfishFileQueryFactory.createCountQuery(this, queryName);
-		jq.setParameters(LangUtils.asMap(args));
+//		jq.setParameters(LangUtils.asMap(args));
+		jq.setQueryAttributes(LangUtils.asMap(args));
 //		jq.setResultClass(Long.class);
 		return jq;
 	}
@@ -566,8 +568,9 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return dbmeta;
 	}
 
-	protected void checkDaoConfig() {
-		super.checkDaoConfig();
+	@Override
+	protected void initDao() throws Exception {
+		super.initDao();
 		if(this.dialect==null){
 			DBMeta dbmeta = getDBMeta();
 			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
@@ -576,11 +579,11 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			}
 		}
 		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
+		
 		if(jfishFileQueryFactory==null){
 			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);
 			this.jfishFileQueryFactory.build();
 		}
-		
 		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
 
 		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
@@ -592,6 +595,12 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			this.sequenceNameManager = new JFishSequenceNameManager();
 		}
 		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
+		
+	}
+
+	@Override
+	protected void checkDaoConfig() {
+		super.checkDaoConfig();
 	}
 	
 	@Override
@@ -627,6 +636,10 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	@Override
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 		return this.namedParameterJdbcTemplate;
+	}
+
+	public JFishNamedFileQueryManager getJfishFileQueryFactory() {
+		return jfishFileQueryFactory;
 	}
 
 
