@@ -934,23 +934,27 @@ public class LangUtils {
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
 	
 	public static void printMemory(String unit){
+		println(statisticsMemory(unit));
+	}
+
+	public static String statisticsMemory(String unit){
+		unit = unit.toLowerCase();
 		long total = Runtime.getRuntime().totalMemory();
 		long free = Runtime.getRuntime().freeMemory();
 		long used = total-free;
-		if("mb".equalsIgnoreCase(unit)){
+		if("mb".equals(unit)){
 			total = Math.round(total/MB_SIZE);
 			free = Math.round(free/MB_SIZE);
 			used = Math.round(used/MB_SIZE);
-		}else if("kb".equalsIgnoreCase(unit)){
+		}else if("kb".equals(unit)){
 			total = Math.round(total/KB_SIZE);
 			free = Math.round(free/KB_SIZE);
 			used = Math.round(used/KB_SIZE);
 		}else{
 			unit = "b";
 		}
-		println("system memory status (unit:${0}) { total: ${1} , free: ${2} , used: ${3} }", unit, NUMBER_FORMAT.format(total), NUMBER_FORMAT.format(free), NUMBER_FORMAT.format(used));
+		return toString("system memory status (unit:${0}) { total: ${1} , free: ${2} , used: ${3} }", unit, NUMBER_FORMAT.format(total), NUMBER_FORMAT.format(free), NUMBER_FORMAT.format(used));
 	}
-	
 	public static void closeIO(Closeable io){
 		try {
 			if(io!=null)

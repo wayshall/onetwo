@@ -7,6 +7,7 @@ import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
 import org.onetwo.common.fish.spring.JFishNamedFileQueryInfo;
 import org.onetwo.common.fish.spring.JFishNamedFileQueryManager;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.NamespaceProperties;
@@ -15,26 +16,22 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
-import org.springframework.cache.Cache;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 
-public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLifeCycleListener, ApplicationContextAware {
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+public class DefaultQueryObjectFactoryManager implements JFishEntityManagerLifeCycleListener, ApplicationContextAware {
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-//	private String packageToScan;
-	
 	private JFishNamedFileQueryManager jfishNamedFileQueryManager;
-//	private ClassPool classPool = ClassPool.getDefault();
 	private ApplicationContext applicationContext;
+	private QueryObjectFactory queryObjectFactory;
 	
-//	@Resource
-//	private JFishSimpleCacheManagerImpl jfishSimpleCacheManager;
-	private Cache methodCache;
-	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onInit(JFishEntityManager em) {
+		Assert.notNull(queryObjectFactory);
+		
 		this.jfishNamedFileQueryManager = em.getJfishDao().getJfishFileQueryFactory();
 		if(!(jfishNamedFileQueryManager instanceof NamespacePropertiesManager)){
 			logger.warn("jfishNamedFileQueryManager is not a instance of NamespacePropertiesManager, ignore generate dynamic query class.");
@@ -55,33 +52,36 @@ public class DefaultDynamicNamedQueryDaoFactory implements JFishEntityManagerLif
 		Collection<NamespaceProperties<JFishNamedFileQueryInfo>> namespacelist = namespaceManager.getAllNamespaceProperties();
 		
 		Class<?> dqInterface = null;
-		DynamicQueryProxyFactory factory = null;
 		String beanName = null;
 		for(NamespaceProperties<JFishNamedFileQueryInfo> nsp : namespacelist){
 			if(nsp.isGlobal())
 				continue;
 			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());
-			factory = new DynamicQueryHandler(em, methodCache, dqInterface);
 			beanName = StringUtils.toClassName(dqInterface.getSimpleName());
-			sbr.registerSingleton(beanName, factory.getProxyObject());
-			logger.info("register dynamic query {} ", beanName);
+			sbr.registerSingleton(beanName, this.queryObjectFactory.createQueryObject(em, dqInterface));
+			logger.info("register dynamic query dao {} ", beanName);
 		}
 	}
-
+	
+	
 	@Override
 	public void onDestroy(JFishEntityManager dao) {
 		
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
-	public void setMethodCache(Cache methodCache) {
-		this.methodCache = methodCache;
+
+	public QueryObjectFactory getQueryObjectFactory() {
+		return queryObjectFactory;
 	}
 
-	
+
+	public void setQueryObjectFactory(QueryObjectFactory queryObjectFactory) {
+		this.queryObjectFactory = queryObjectFactory;
+	}
+
 }

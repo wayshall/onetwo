@@ -10,7 +10,7 @@ import org.onetwo.common.jfish.JFishBaseJUnitTest;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserDaoTest extends JFishBaseJUnitTest {
+public class UserDaoDqTest extends JFishBaseJUnitTest {
 	
 	@Autowired
 	private UserDao userDao;
@@ -21,11 +21,12 @@ public class UserDaoTest extends JFishBaseJUnitTest {
 	public void testAll(){
 		testSave();
 		testQuery();
+		testDelete();
 	}
 
-	@Test
+//	@Test
 	public void testSave(){
-		testDelete();
+//		testDelete();
 		for (int j = 1; j <= insertCount; j++) {
 			UserEntity user = this.createUserEntity(j, "test");
 			user.setId(Long.valueOf(j));

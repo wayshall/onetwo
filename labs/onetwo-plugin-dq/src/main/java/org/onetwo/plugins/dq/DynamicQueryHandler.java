@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 
-public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxyFactory {
+public class DynamicQueryHandler implements InvocationHandler {
 	
 	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
@@ -75,7 +75,7 @@ public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxy
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
 //		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
-		TimeCounter t = new TimeCounter("doproxy");
+		TimeCounter t = new TimeCounter("doproxy", true);
 		t.start();
 		DynamicMethod dmethod = getDynamicMethod(method);
 		Class<?> resultClass = dmethod.getResultClass();
@@ -116,8 +116,7 @@ public class DynamicQueryHandler implements InvocationHandler, DynamicQueryProxy
 //		return result;
 //	}
 	
-	@Override
-	public Object getProxyObject(){
+	public Object getQueryObject(){
 		return this.proxyObject;
 	}
 	
