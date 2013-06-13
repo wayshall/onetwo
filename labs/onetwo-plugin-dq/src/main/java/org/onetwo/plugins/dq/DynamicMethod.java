@@ -22,18 +22,18 @@ public class DynamicMethod {
 	private static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;
-	private final List<MethodParameter> parameters;
+	private final List<DynamicMethodParameter> parameters;
 	private final Class<?> resultClass;
 	private final Class<?> componentClass;
 	private final String queryName;
-	private List<String> parameterNames;
+//	private List<String> parameterNames;
 	
 	public DynamicMethod(Method method){
 		this.method = method;
 		int psize = method.getParameterTypes().length;
 		parameters = LangUtils.newArrayList(psize+2);
-		this.parameterNames = LangUtils.newArrayList(psize);
-		MethodParameter mp = null;
+//		this.parameterNames = LangUtils.newArrayList(psize);
+		DynamicMethodParameter mp = null;
 		
 		String methodName = method.getName();
 		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
@@ -42,17 +42,8 @@ public class DynamicMethod {
 			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
 		}
 		for(int index=0; index<psize; index++){
-			mp = new MethodParameter(method, index);
+			mp = new DynamicMethodParameter(method, index, pnames);
 			parameters.add(mp);
-			
-			Name name = mp.getParameterAnnotation(Name.class);
-			if(name!=null){
-				parameterNames.add(name.value());
-			}else if(pnames.length>index){
-				parameterNames.add(StringUtils.uncapitalize(pnames[index]));
-			}else{
-				parameterNames.add(String.valueOf(mp.getParameterIndex()));
-			}
 		}
 		
 		queryName = method.getDeclaringClass().getName()+"."+methodName;
@@ -85,16 +76,20 @@ public class DynamicMethod {
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
 		
 		Object pvalue = null;
-		for(MethodParameter mp : parameters){
+		for(DynamicMethodParameter mp : parameters){
 			pvalue = args[mp.getParameterIndex()];
 			if(!LangUtils.isSimpleTypeObject(pvalue)){
 				Map<?, ?> map = ReflectUtils.toMap(pvalue);
+				String prefix = "";
+				if(mp.hasParameterAnnotation(Name.class)){
+					prefix = mp.getParameterName();
+				}
 				for(Entry<?, ?> entry : map.entrySet()){
-					values.add(entry.getKey());
+					values.add(prefix+entry.getKey());
 					values.add(entry.getValue());
 				}
 			}else{
-				values.add(parameterNames.get(mp.getParameterIndex()));
+				values.add(mp.getParameterName());
 				values.add(pvalue);
 			}
 		}
@@ -109,7 +104,7 @@ public class DynamicMethod {
 		return method;
 	}
 
-	public List<MethodParameter> getParameters() {
+	public List<DynamicMethodParameter> getParameters() {
 		return parameters;
 	}
 
@@ -130,4 +125,30 @@ public class DynamicMethod {
 		return EXECUTE_UPDATE_PREFIX.contains(name);
 	}
 	
+	private static class DynamicMethodParameter extends MethodParameter {
+
+		private String[] condidateParameterNames;
+		private String parameterName;
+		
+		public DynamicMethodParameter(Method method, int parameterIndex, String[] parameterNamesByMethodName) {
+			super(method, parameterIndex);
+			this.condidateParameterNames = parameterNamesByMethodName;
+		}
+
+		public String getParameterName() {
+			if(StringUtils.isNotBlank(parameterName))
+				return parameterName;
+			
+			Name name = getParameterAnnotation(Name.class);
+			if(name!=null){
+				parameterName = name.value();
+			}else if(condidateParameterNames.length>getParameterIndex()){
+				parameterName = StringUtils.uncapitalize(condidateParameterNames[getParameterIndex()]);
+			}else{
+				parameterName = String.valueOf(getParameterIndex());
+			}
+			return parameterName;
+		}
+		
+	}
 }

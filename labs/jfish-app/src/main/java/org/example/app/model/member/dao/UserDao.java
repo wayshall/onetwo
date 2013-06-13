@@ -9,14 +9,18 @@ import org.onetwo.plugins.dq.annotations.Name;
 
 public interface UserDao {
 
-	abstract public int save(UserEntity user);
+	public int save(UserEntity user);
 	
-	abstract public UserEntity queryWithId(Long id);
-	abstract public List<UserEntity> queryListByUserNameByAge(String userName, int age);
-	abstract public Page<UserEntity> queryPageByUserName(Page<UserEntity> page, @Name("userName") String userName);
-	abstract public UserEntity queryByUserName(@Name("userName") String userName);
+	public UserEntity queryWithId(Long id);
 	
-	abstract public JFishQuery createUserNameQuery(@Name("userName") String userName);
-	abstract public JFishQuery deleteByUserName(@Name("userName") String userName);
+	public List<UserEntity> queryListByUserNameByAge(String userName, int age);
+	
+	public Page<UserEntity> queryPageByUserName(Page<UserEntity> page, @Name("userName") String userName);
+	
+	public UserEntity queryByUserName(@Name("userName") String userName);
+	
+	
+	public JFishQuery createUserNameQuery(@Name("userName") String userName);
+	public JFishQuery deleteByUserName(@Name("userName") String userName);
 
 }
