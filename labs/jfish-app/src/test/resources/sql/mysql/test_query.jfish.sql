@@ -1,7 +1,7 @@
 
---@BmRegionDTO.find.10 =  select t.* from BM_REGION t order by ? limit 0, 10
---@BmRegionDTO.find.10.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
---@BmRegionDTO.find.10.ignore.null = true
+@BmRegionDTO.find.10 =  select t.* from BM_REGION t order by ? limit 0, 10
+@BmRegionDTO.find.10.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
+@BmRegionDTO.find.10.ignore.null = true
 
 --searchPageListSupplier_json sql 
 

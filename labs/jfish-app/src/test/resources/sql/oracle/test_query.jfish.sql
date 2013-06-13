@@ -123,3 +123,9 @@
 											     AND t.state = :state
 											     
 @param.like.sql.ignore.null=true
+
+
+@BmRegionDTO.find.10 = select * from ( 
+						select t.* from BM_REGION t 
+					) where rownum <= 10
+@BmRegionDTO.find.10.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
