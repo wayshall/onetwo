@@ -8,11 +8,13 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.map.ListMap;
 
 
 @SuppressWarnings("unchecked")
@@ -192,6 +194,20 @@ public class JFishList<E> implements List<E>, Serializable {
 			c.index++;
 		}
 		return c;
+	}
+	
+	public <K> Map<K, List<E>> groupBy(final SimpleBlock<E, K> block){
+		final ListMap<K, E> maps = new ListMap<K, E>();
+		each(new NoIndexIt<E>() {
+
+			@Override
+			protected void doIt(E element) throws Exception {
+				K rs = block.execute(element);
+				maps.putElement(rs, element);
+			}
+			
+		});
+		return maps;
 	}
 	
 	/*public void doInResult(It<E> it, final List<?> result){

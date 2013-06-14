@@ -1,10 +1,19 @@
 package org.onetwo.common.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.TestUtils;
+import org.onetwo.common.utils.list.JFishList;
+
+import test.entity.UserEntity;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimaps;
 
 public class CUtilsTest {
 
@@ -49,5 +58,32 @@ public class CUtilsTest {
 			Assert.assertEquals(values[i], array[i]);
 		}
 	}
+	
+
+	@Test
+	public void testGroupBy(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = TestUtils.createUserList("aa", 3);
+		List<UserEntity> bb = TestUtils.createUserList("bb", 1);
+		List<UserEntity> cc = TestUtils.createUserList("cc", 2);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		Map<String, List<UserEntity>> groups = CUtils.groupBy(all, new SimpleBlock<UserEntity, String>() {
+
+			@Override
+			public String execute(UserEntity object) {
+				return object.getUserName();
+			}
+			
+		});
+		
+		System.out.println("groups:" + groups);
+		Assert.assertEquals(3, groups.get("aa").size());
+		Assert.assertEquals(1, groups.get("bb").size());
+		Assert.assertEquals(2, groups.get("cc").size());
+	}
+
 	
 }

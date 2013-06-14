@@ -83,49 +83,7 @@ public class ListTest {
 		Assert.assertEquals((100*100+200*(100/10)), result);
 	}
 	
-	@Test
-	public void testAllAndAny(){
-		List list = L.nList(1, 10);
-		boolean rs = JFishList.wrap(list).all(new PredicateBlock<Integer>(){
-
-			@Override
-			public boolean evaluate(Integer element, int index) {
-				return element>0;
-			}
-			
-		});
-		Assert.assertEquals(true, rs);
-		
-		rs = JFishList.wrap(list).all(new PredicateBlock<Integer>(){
-
-			@Override
-			public boolean evaluate(Integer element, int index) {
-				return element>1;
-			}
-			
-		});
-		Assert.assertEquals(false, rs);
-		
-		rs =JFishList.wrap(list).any(new PredicateBlock<Integer>(){
-
-			@Override
-			public boolean evaluate(Integer element, int index) {
-				return element>5;
-			}
-			
-		});
-		Assert.assertEquals(true, rs);
-		
-		rs = JFishList.wrap(list).any(new PredicateBlock<Integer>(){
-
-			@Override
-			public boolean evaluate(Integer element, int index) {
-				return element>15;
-			}
-			
-		});
-		Assert.assertEquals(false, rs);
-	}
+	
 	
 	@Test
 	public void testCompareList(){
@@ -141,27 +99,6 @@ public class ListTest {
 		t1.restart();
 		L.wrapNum(0, count);
 		t1.stop();
-	}
-	
-	@Test
-	public void testGetList(){
-		Map map1 = new HashMap();
-		map1.put("name", "mapName1");
-		List<Integer> list = L.nList(0, 10);
-		map1.put("list", list);
-		
-		Map map2 = new HashMap();
-		map2.put("name", "mapName2");
-		List<Integer> list2 = L.nList(11, 20);
-		map2.put("list", list2);
-		
-		Map map3 = new HashMap();
-		map3.put("name", "mapName2");
-		List<Integer> list3 = L.nList(11, 20);
-		map3.put("list", list3);
-		
-		List<String> rs = JFishList.wrap(map1, map2, map3).getPropertyList("name");
-		Assert.assertArrayEquals(rs.toArray(), new String[]{"mapName1", "mapName2", "mapName2"});
 	}
 	
 	@Test

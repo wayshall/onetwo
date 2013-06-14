@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.utils.list.L;
 
+@Deprecated
 @SuppressWarnings({ "unchecked", "serial" })
 public class IncreaseMap extends BaseMap{
 	

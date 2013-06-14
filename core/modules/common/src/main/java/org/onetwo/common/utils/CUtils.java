@@ -18,6 +18,7 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.map.BaseMap;
 
@@ -367,6 +368,10 @@ final public class CUtils {
 			array[index++] = entry.getValue();
 		}
 		return array;
+	}
+	
+	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
+		return JFishList.wrap(datas).groupBy(block);
 	}
 	
 	private CUtils(){
