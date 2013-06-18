@@ -52,6 +52,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	private Map<String, AbstractMappedField> mappedFields = new LinkedHashMap<String, AbstractMappedField>();
 	private Map<String, AbstractMappedField> mappedColumns = new HashMap<String, AbstractMappedField>();
 	private JFishMappedField identifyField;
+	private JFishMappedField versionField;
 	
 	private SQLBuilderFactory sqlBuilderFactory;
 	
@@ -242,8 +243,13 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		
 		this.mappedFields.put(field.getName(), field);
 		
-		if(field.isIdentify())
+		if(field.isIdentify()){
 			this.identifyField = field;
+		}else if(field.isVersionControll()){
+			if(versionField!=null)
+				throw new JFishOrmException("a version field has already exist : " + versionField.getName());
+			this.versionField = field;
+		}
 
 		/*if(field.isJoinTable()){
 			addJoinableField((JoinableMappedField)field);
@@ -315,6 +321,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return identifyField;
 	}
 
+	@Override
+	public JFishMappedField getVersionField() {
+		return versionField;
+	}
+
 	protected void throwIfQueryableOnly(){
 		if(isQueryableOnly()){
 			LangUtils.throwBaseException("this entity is only for query  : " + this.entityClass);
@@ -378,18 +389,22 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	@Override
 	public JdbcStatementContext<List<Object[]>> makeInsert(Object entity){
 		this.throwIfQueryableOnly();
-		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.insert, this, getStaticInsertSqlBuilder());
+		EntrySQLBuilder insertSqlBuilder = getStaticInsertSqlBuilder();
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.insert, this, insertSqlBuilder);
 		if(LangUtils.isMultiple(entity)){
 			List<Object> list = LangUtils.asList(entity);
 			if(LangUtils.isEmpty(list))
 				return null;
 			for(Object en : list){
 				this.processIBaseEntity(en, true);
-				dsb.setColumnValuesFromEntity(en).addBatch();
+//				dsb.setColumnValuesFromEntity(en).addBatch();
+//				doEveryMappedFieldInStatementContext(dsb, en).addBatch();
+				dsb.processColumnValues(en).addBatch();
 			}
 		}else{
 			this.processIBaseEntity(entity, true);
-			dsb.setColumnValuesFromEntity(entity);
+//			dsb.setColumnValuesFromEntity(entity);
+			doEveryMappedFieldInStatementContext(dsb, entity).addBatch();
 		}
 		dsb.build();
 //		KVEntry<String, List<Object[]>> kv = new KVEntry<String, List<Object[]>>(dsb.getSql(), dsb.getValues());
@@ -397,6 +412,26 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return context;
 	}
 	
+	private JdbcStatementContextBuilder doEveryMappedFieldInStatementContext(JdbcStatementContextBuilder statement, Object entity){
+		Assert.notNull(entity);
+		Object val = null;
+		EntrySQLBuilder builder = statement.getSqlBuilder();
+		for(JFishMappedField field : builder.getFields()){
+			val = field.getColumnValueWithJFishEventAction(entity, statement.getEventAction());
+			if(field.isVersionControll()){
+				if(JFishEventAction.insert==statement.getEventAction()){
+					val = field.getVersionValule(val);
+					field.setValue(entity, val);//write the version value into the entity
+				}else if(JFishEventAction.update==statement.getEventAction()){
+					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + getEntityName());
+					val = field.getVersionValule(val);
+					field.setValue(entity, val);a
+				}
+			}
+			statement.putColumnValue(field, val);
+		}
+		return statement;
+	}
 	
 	private void processIBaseEntity(Object entity, boolean create){
 		if(!(entity instanceof IBaseEntity))
@@ -502,10 +537,16 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 //			val = mfield.getColumnValue(entity);
 			val = mfield.getColumnValueWithJFishEventAction(entity, JFishEventAction.update);
 			if(mfield.isIdentify()){
-				Assert.notNull(val, "id can not be null " + entity);
+				Assert.notNull(val, "id can not be null : " + entity);
 				sqlBuilder.appendWhere(mfield, val);
-			}else if(val!=null){
-				sqlBuilder.append(mfield, val);
+			}else{
+				if(mfield.isVersionControll()){
+					Assert.notNull(val, "version field["+mfield.getName()+"] can not be null : " + entity);
+					sqlBuilder.appendWhere(mfield, val);
+					val = mfield.getVersionValule(val);
+				}
+				if(val!=null)
+					sqlBuilder.append(mfield, val);
 			}
 		}
 		return sqlBuilder;
@@ -614,6 +655,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	public List<JFishEntityFieldListener> getFieldListeners() {
 		return fieldListeners;
+	}
+
+	@Override
+	public boolean isVersionControll() {
+		return getVersionField()!=null;
 	}
 
 }

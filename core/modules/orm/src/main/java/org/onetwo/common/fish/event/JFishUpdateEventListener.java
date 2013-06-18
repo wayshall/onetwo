@@ -59,6 +59,9 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 	 * @return
 	 */
 	private int updateSingleEntity(boolean dymanic, JFishEventSource es, JFishMappedEntry entry, Object singleEntity){
+		if(entry.isVersionControll()){
+			
+		}
 		JdbcStatementContext<List<Object[]>> update = dymanic?entry.makeDymanicUpdate(singleEntity):entry.makeUpdate(singleEntity);
 		int count = this.executeJdbcUpdate(false, update.getSql(), update.getValue(), es);
 		

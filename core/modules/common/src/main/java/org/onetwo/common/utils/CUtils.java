@@ -209,6 +209,7 @@ final public class CUtils {
 		}
 		return set;
 	}
+
 	public static <T> HashSet<T> newHashSet(int size){
 		HashSet<T> sets = null;
 		if(size<=0)

@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.onetwo.common.fish.orm.AbstractDBDialect.StrategyType;
 import org.onetwo.common.fish.orm.AbstractMappedField;
@@ -116,10 +117,14 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		return sname;
 	}
 
+	@Override
 	protected void buildMappedField(JFishMappedField mfield){
 		if(mfield.getPropertyInfo().hasAnnotation(Id.class)){
 			mfield.setIdentify(true);
 			this.buildIdMappedField(mfield);
+		}
+		if(mfield.getPropertyInfo().hasAnnotation(Version.class)){
+			mfield.setVersionControll(true);
 		}
 	}
 	

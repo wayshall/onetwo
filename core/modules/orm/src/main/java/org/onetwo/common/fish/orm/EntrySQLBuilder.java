@@ -68,22 +68,26 @@ public class EntrySQLBuilder {
 	}
 	
 	public EntrySQLBuilder append(JFishMappedField column){
-		this.fields.add(column);
+		if(column!=null)
+			this.fields.add(column);
 		return this;
 	}
 	
 	public EntrySQLBuilder appendWhere(JFishMappedField column){
-		this.whereCauseFields.add(column);
+		if(column!=null)
+			this.whereCauseFields.add(column);
 		return this;
 	}
 	
 	public EntrySQLBuilder append(Collection<? extends JFishMappedField> columns){
-		this.fields.addAll(columns);
+		if(columns!=null)
+			this.fields.addAll(columns);
 		return this;
 	}
 	
 	public EntrySQLBuilder appendWhere(Collection<? extends JFishMappedField> columns){
-		this.whereCauseFields.addAll(columns);
+		if(columns!=null)
+			this.whereCauseFields.addAll(columns);
 		return this;
 	}
 	

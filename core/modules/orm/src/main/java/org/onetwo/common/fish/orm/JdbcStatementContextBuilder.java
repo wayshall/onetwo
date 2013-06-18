@@ -79,16 +79,52 @@ public class JdbcStatementContextBuilder {
 		return this.sqlBuilder.getType();
 	}
 	
-	public JdbcStatementContextBuilder setColumnValuesFromEntity(Object entity){
+	/*public JdbcStatementContextBuilder setColumnValuesFromEntity(Object entity){
 		Assert.notNull(entity);
 		Object val = null;
 		for(JFishMappedField field : this.sqlBuilder.getFields()){
 //			val = field.getColumnValue(entity);
 			val = field.getColumnValueWithJFishEventAction(entity, eventAction);
+			
+			if(field.isVersionControll()){
+				if(SqlBuilderType.insert==getSqlType()){
+					this.columnValues.put(field, field.getVersionValule(val));
+				}else if(SqlBuilderType.update==getSqlType()){
+					this.columnValues.put(field, field.getVersionValule(val));
+				}
+			}else{
+				this.columnValues.put(field, val);
+			}
+			this.columnValues.put(field, val);
+		}
+		return this;
+	}*/
+	
+	public JdbcStatementContextBuilder processColumnValues(Object entity){
+		Assert.notNull(entity);
+		Object val = null;
+		EntrySQLBuilder builder = getSqlBuilder();
+		for(JFishMappedField field : builder.getFields()){
+			val = field.getColumnValueWithJFishEventAction(entity, getEventAction());
+			if(field.isVersionControll()){
+				if(JFishEventAction.insert==getEventAction()){
+					val = field.getVersionValule(val);
+					field.setValue(entity, val);//write the version value into the entity
+				}else if(JFishEventAction.update==getEventAction()){
+					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + entry.getEntityName());
+					val = field.getVersionValule(val);
+					field.setValue(entity, val);
+				}
+			}
 			this.columnValues.put(field, val);
 		}
 		return this;
 	}
+	
+	/*public JdbcStatementContextBuilder putColumnValue(JFishMappedField field, Object val){
+		this.columnValues.put(field, val);
+		return this;
+	}*/
 	
 	public JdbcStatementContextBuilder addBatch(){
 		Object[] batchValues = null;

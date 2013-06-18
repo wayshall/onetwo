@@ -71,4 +71,7 @@ public interface JFishMappedField {
 	
 	public Object getColumnValueWithJFishEventAction(Object entity, JFishEventAction eventAction);
 
+	public boolean isVersionControll();
+	public void setVersionControll(boolean versionControll);
+	public Object getVersionValule(Object oldVersion);
 }

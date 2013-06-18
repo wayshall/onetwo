@@ -1,4 +1,4 @@
-package org.onetwo.common.jfish;
+package org.onetwo.common.fish.orm;
 
 import org.junit.Assert;
 import org.junit.Test;

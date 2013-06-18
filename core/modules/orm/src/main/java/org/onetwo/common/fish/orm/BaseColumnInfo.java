@@ -23,7 +23,7 @@ public class BaseColumnInfo extends Propertable{
 	protected FetchType fetchType;
 	
 	private String comment;
-
+	
 	public BaseColumnInfo(){
 	}
 
@@ -118,4 +118,5 @@ public class BaseColumnInfo extends Propertable{
 	public boolean isLazy(){
 		return FetchType.LAZY.equals(this.fetchType);
 	}
+	
 }

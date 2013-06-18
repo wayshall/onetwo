@@ -63,6 +63,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 		staticUpdateSqlBuilder = createSQLBuilder(SqlBuilderType.update);
 		staticUpdateSqlBuilder.append(getUpdateableFields());
 		staticUpdateSqlBuilder.appendWhere(getIdentifyField());
+		staticUpdateSqlBuilder.appendWhere(getVersionField());
 		staticUpdateSqlBuilder.build();
 		
 		staticDeleteSqlBuilder = createSQLBuilder(SqlBuilderType.delete);
