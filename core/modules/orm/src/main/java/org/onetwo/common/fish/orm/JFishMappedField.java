@@ -5,6 +5,7 @@ import java.util.List;
 import org.onetwo.common.fish.event.JFishEntityFieldListener;
 import org.onetwo.common.fish.event.JFishEventAction;
 import org.onetwo.common.fish.orm.AbstractDBDialect.StrategyType;
+import org.onetwo.common.fish.orm.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
 
 public interface JFishMappedField {
@@ -72,6 +73,6 @@ public interface JFishMappedField {
 	public Object getColumnValueWithJFishEventAction(Object entity, JFishEventAction eventAction);
 
 	public boolean isVersionControll();
-	public void setVersionControll(boolean versionControll);
-	public Object getVersionValule(Object oldVersion);
+	public <T> VersionableType<T> getVersionableType();
+	public void setVersionableType(VersionableType<?> versionableType);
 }

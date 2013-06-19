@@ -30,8 +30,8 @@ public class EntrySQLBuilder {
 	protected JFishMappedEntryMeta entry;
 	protected String tableName;
 	protected JFishMappedField identifyField;
-	protected Collection<JFishMappedField> fields = LangUtils.newArrayList();
-	protected Collection<JFishMappedField> whereCauseFields = LangUtils.newArrayList();
+	protected List<JFishMappedField> fields = LangUtils.newArrayList();
+	protected List<JFishMappedField> whereCauseFields = LangUtils.newArrayList();
 	
 	private boolean debug;
 //	private String placeHoder;
@@ -278,11 +278,11 @@ public class EntrySQLBuilder {
 		return type;
 	}
 
-	public Collection<JFishMappedField> getFields() {
+	public List<JFishMappedField> getFields() {
 		return fields;
 	}
 
-	public Collection<JFishMappedField> getWhereCauseFields() {
+	public List<JFishMappedField> getWhereCauseFields() {
 		return whereCauseFields;
 	}
 
@@ -293,4 +293,14 @@ public class EntrySQLBuilder {
 	public void setNamedPlaceHoder(boolean namedPlaceHoder) {
 		this.namedPlaceHoder = namedPlaceHoder;
 	}
+	
+	public Object getVersionValue(Object[] updateValues){
+		int valueIndex = fields.indexOf(entry.getVersionField());
+		return updateValues[valueIndex];
+	}
+
+	public JFishMappedEntryMeta getEntry() {
+		return entry;
+	}
+	
 }

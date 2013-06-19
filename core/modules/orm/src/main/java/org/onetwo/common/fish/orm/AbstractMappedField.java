@@ -2,16 +2,13 @@ package org.onetwo.common.fish.orm;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.onetwo.common.fish.annotation.JFishFieldListeners;
 import org.onetwo.common.fish.event.JFishEntityFieldListener;
 import org.onetwo.common.fish.event.JFishEventAction;
-import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.AbstractDBDialect.StrategyType;
+import org.onetwo.common.fish.orm.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -19,19 +16,6 @@ import org.onetwo.common.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
 abstract public class AbstractMappedField implements JFishMappedField{
-
-	private static final Set<Class<?>> VERSION_SUPPORT_TYPES; 
-	
-	static {
-		Set<Class<?>> cls = new HashSet<Class<?>>();
-		cls.add(int.class);
-		cls.add(Integer.class);
-		cls.add(long.class);
-		cls.add(Long.class);
-		cls.add(Date.class);
-		
-		VERSION_SUPPORT_TYPES = Collections.unmodifiableSet(cls);
-	}
 	
 	private final JFishMappedEntry entry;
 	
@@ -52,7 +36,7 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	
 	private List<JFishEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
 	
-	private boolean versionControll;
+	private VersionableType<? extends Object> versionableType;
 	
 	public AbstractMappedField(JFishMappedEntry entry, JFishProperty propertyInfo) {
 		super();
@@ -260,30 +244,15 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	}
 
 	public boolean isVersionControll() {
-		return versionControll;
+		return versionableType!=null;
 	}
 
-	public void setVersionControll(boolean versionControll) {
-		this.versionControll = versionControll;
+	public VersionableType<? extends Object> getVersionableType() {
+		return versionableType;
 	}
 
-	@Override
-	public Object getVersionValule(Object oldVersion) {
-		Class<?> ftype = getPropertyInfo().getType();
-		if(ftype==int.class || ftype==Integer.class){
-			if(oldVersion==null)
-				return 1;
-			else
-				return ((Integer)oldVersion) + 1;
-		}else if(ftype==long.class || ftype==Long.class){
-			if(oldVersion==null)
-				return 1L;
-			else
-				return ((Long)oldVersion) + 1L;
-		}else if(Date.class.isAssignableFrom(ftype)){
-			return new Date();
-		}else{
-			throw new JFishOrmException("the type of field["+getName()+"] is not a supported version type. supported types: " + VERSION_SUPPORT_TYPES);
-		}
+	public void setVersionableType(VersionableType<? extends Object> versionableType) {
+		this.versionableType = versionableType;
 	}
+
 }

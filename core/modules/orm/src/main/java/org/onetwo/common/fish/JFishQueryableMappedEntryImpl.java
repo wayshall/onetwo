@@ -84,4 +84,9 @@ public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl 
 	protected EntrySQLBuilder getStaticFetchAllSqlBuilder() {
 		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
 	}
+
+	@Override
+	protected EntrySQLBuilder getStaticSelectVersionSqlBuilder() {
+		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
+	}
 }

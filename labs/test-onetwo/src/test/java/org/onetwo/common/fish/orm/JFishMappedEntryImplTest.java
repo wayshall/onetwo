@@ -8,8 +8,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.fish.jpa.JPARelatedMappedEntryBuilder;
-import org.onetwo.common.fish.orm.AbstractDBDialect.DBMeta;
-import org.onetwo.common.utils.LangUtils;
 
 import test.entity.RoleEntity;
 import test.entity.UserEntity;
@@ -80,6 +78,10 @@ public class JFishMappedEntryImplTest {
 		
 		sql = roleEntry.getStaticUpdateSqlBuilder().getSql();
 		exepted = "update t_role set id = ?, LAST_UPDATE_TIME = ?, name = ?, CREATE_TIME = ?, version = ? where id = ? and version = ?";
+		Assert.assertEquals(exepted, sql);
+		
+		sql = roleEntry.getStaticSelectVersionSqlBuilder().getSql();
+		exepted = "select this_.version from t_role this_ where this_.id = ?";
 		Assert.assertEquals(exepted, sql);
 		
 		/*sql = roleEntry.getStaticDeleteSqlBuilder().getSql();

@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.DataBaseConfig;
+import org.onetwo.common.fish.orm.EntrySQLBuilder;
+import org.onetwo.common.fish.orm.JFishMappedEntryMeta;
 import org.onetwo.common.fish.orm.JFishMappedField;
 import org.onetwo.common.fish.orm.JdbcStatementContext;
 import org.onetwo.common.jdbc.JdbcUtils;
@@ -159,6 +161,15 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 					jel.afterUpdate(entity);
 				}
 			}
+		}
+	}
+	
+
+	protected void updateEntityVersionIfNecessary(EntrySQLBuilder builder, Object[] updateValues, Object singleEntity){
+		JFishMappedEntryMeta entry = builder.getEntry();
+		if(entry.isVersionControll()){
+			Object versionValue = builder.getVersionValue(updateValues);
+			entry.getVersionField().setValue(singleEntity, versionValue);
 		}
 	}
 }

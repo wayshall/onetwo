@@ -18,6 +18,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	private EntrySQLBuilder staticDeleteSqlBuilder;
 	private EntrySQLBuilder staticDeleteAllSqlBuilder;
 	private EntrySQLBuilder staticSeqSqlBuilder;
+	private EntrySQLBuilder staticSelectVersionSqlBuilder;
 	
 	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
 		super(annotationInfo, tableInfo);
@@ -90,6 +91,11 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 		staticDeleteAllSqlBuilder = createSQLBuilder(SqlBuilderType.delete);
 		staticDeleteAllSqlBuilder.setNamedPlaceHoder(false);
 		staticDeleteAllSqlBuilder.build();
+		
+		staticSelectVersionSqlBuilder = createSQLBuilder(SqlBuilderType.query);
+		staticSelectVersionSqlBuilder.append(getVersionField());
+		staticSelectVersionSqlBuilder.appendWhere(getIdentifyField());
+		staticSelectVersionSqlBuilder.build();
 	}
 	
 	/*
@@ -142,6 +148,11 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	@Override
 	protected EntrySQLBuilder getStaticDeleteAllSqlBuilder() {
 		return staticDeleteAllSqlBuilder;
+	}
+
+	@Override
+	protected EntrySQLBuilder getStaticSelectVersionSqlBuilder() {
+		return staticSelectVersionSqlBuilder;
 	}
 	
 }

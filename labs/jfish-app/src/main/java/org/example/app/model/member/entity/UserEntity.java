@@ -75,7 +75,7 @@ public class UserEntity extends BaseEntity<Long>  {
 	
 	private List<AddressEntity> address;
 	
-	private long version;
+	private Long version;
 	
 //	@Override
 	@Id
@@ -192,11 +192,11 @@ public class UserEntity extends BaseEntity<Long>  {
 	}
 
 	@Version
-	public long getVersion() {
+	public Long getVersion() {
 		return version;
 	}
 
-	public void setVersion(long version) {
+	public void setVersion(Long version) {
 		this.version = version;
 	}
 	

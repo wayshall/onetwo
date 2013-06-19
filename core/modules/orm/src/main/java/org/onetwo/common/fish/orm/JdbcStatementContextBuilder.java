@@ -11,7 +11,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 
-public class JdbcStatementContextBuilder {
+public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Object[]>> {
 /*
 	public static DymanicSQLBuilder create(JFishMappedEntry entry, DSqlType dtype){
 		SQLBuilder sb = sqlBuilderFactory.createQMark(entry.getTableInfo().getName(), entry.getTableInfo().getAlias(), dtype);
@@ -37,32 +37,6 @@ public class JdbcStatementContextBuilder {
 		this.eventAction = eventAction;
 	}
 	
-	/*public Map<JFishMappedField, Object> getColumnValues() {
-		if(this.columnValues==null){
-			this.columnValues = CUtils.newLinkedHashMap();
-		}
-		return columnValues;
-	}*/
-	
-	
-	/*public void setColumnValue(JFishMappedField field, Object value){
-		if(JFishEventAction.insert==this.eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					value = fl.beforeFieldInsert(field.getName(), value);
-				}
-			}
-		}
-		if(JFishEventAction.update==this.eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					value = fl.beforeFieldUpdate(field.getName(), value);
-				}
-			}
-		}
-		this.columnValues.put(field, value);
-	}*/
-
 	public JdbcStatementContextBuilder append(JFishMappedField field, Object val){
 		this.sqlBuilder.append(field);
 		this.columnValues.put(field, val);
@@ -79,27 +53,6 @@ public class JdbcStatementContextBuilder {
 		return this.sqlBuilder.getType();
 	}
 	
-	/*public JdbcStatementContextBuilder setColumnValuesFromEntity(Object entity){
-		Assert.notNull(entity);
-		Object val = null;
-		for(JFishMappedField field : this.sqlBuilder.getFields()){
-//			val = field.getColumnValue(entity);
-			val = field.getColumnValueWithJFishEventAction(entity, eventAction);
-			
-			if(field.isVersionControll()){
-				if(SqlBuilderType.insert==getSqlType()){
-					this.columnValues.put(field, field.getVersionValule(val));
-				}else if(SqlBuilderType.update==getSqlType()){
-					this.columnValues.put(field, field.getVersionValule(val));
-				}
-			}else{
-				this.columnValues.put(field, val);
-			}
-			this.columnValues.put(field, val);
-		}
-		return this;
-	}*/
-	
 	public JdbcStatementContextBuilder processColumnValues(Object entity){
 		Assert.notNull(entity);
 		Object val = null;
@@ -108,23 +61,18 @@ public class JdbcStatementContextBuilder {
 			val = field.getColumnValueWithJFishEventAction(entity, getEventAction());
 			if(field.isVersionControll()){
 				if(JFishEventAction.insert==getEventAction()){
-					val = field.getVersionValule(val);
+					val = field.getVersionableType().getVersionValule(val);
 					field.setValue(entity, val);//write the version value into the entity
 				}else if(JFishEventAction.update==getEventAction()){
 					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + entry.getEntityName());
-					val = field.getVersionValule(val);
-					field.setValue(entity, val);
+					val = field.getVersionableType().getVersionValule(val);
+//					field.setValue(entity, val);
 				}
 			}
 			this.columnValues.put(field, val);
 		}
 		return this;
 	}
-	
-	/*public JdbcStatementContextBuilder putColumnValue(JFishMappedField field, Object val){
-		this.columnValues.put(field, val);
-		return this;
-	}*/
 	
 	public JdbcStatementContextBuilder addBatch(){
 		Object[] batchValues = null;
@@ -154,7 +102,7 @@ public class JdbcStatementContextBuilder {
 		return this;
 	}
 	
-	public JdbcStatementContextBuilder setCauseValuesFromEntity(Object entity){
+	public JdbcStatementContextBuilder processWhereCauseValuesFromEntity(Object entity){
 		Assert.notNull(entity);
 		Object val = null;
 		for(JFishMappedField field : this.sqlBuilder.getWhereCauseFields()){
@@ -168,12 +116,6 @@ public class JdbcStatementContextBuilder {
 		causeValues.add(value);
 		return this;
 	}
-	
-	/*public DymanicSQLBuilder addColumnValue(Object value){
-		getColumnValues().add(value);
-		return this;
-	}*/
-	
 	public JdbcStatementContextBuilder build(){
 		sqlBuilder.build();
 		addBatch();
@@ -184,7 +126,7 @@ public class JdbcStatementContextBuilder {
 		return sqlBuilder.getSql();
 	}
 
-	public List<Object[]> getValues() {
+	public List<Object[]> getValue() {
 		return values;
 	}
 

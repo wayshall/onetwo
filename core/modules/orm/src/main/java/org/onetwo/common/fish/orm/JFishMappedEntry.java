@@ -46,6 +46,8 @@ public interface JFishMappedEntry extends JFishMappedEntryMeta {
 
 	public String getStaticSeqSql();
 	
+	public JdbcStatementContext<Object[]> makeSelectVersion(Object object);
+	
 	public JdbcStatementContext<Object[]> makeFetchAll();
 	
 	public JdbcStatementContext<Object[]> makeDeleteAll();
