@@ -40,9 +40,6 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 	public void setup(){
 		nutzDao = new NutzBaseDao(dataSource);
 		UtilTimerStack.setActive(true);
-		String pname = "test";
-		UtilTimerStack.push(pname);
-		UtilTimerStack.pop(pname);
 
 		UserEntity setup = createUserEntity(0, "setup");
 		this.nutzDao.insert(setup);

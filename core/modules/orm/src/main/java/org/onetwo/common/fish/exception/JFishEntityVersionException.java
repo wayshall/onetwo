@@ -9,8 +9,8 @@ public class JFishEntityVersionException extends JFishOrmException{
 		super("entity["+obj+"] version has changed !");
 	}
 
-	public JFishEntityVersionException(Class<?> entityClass, Object id, Object entityVersion, Object dbversion) {
-		super("entity["+entityClass+"] versioh has changed, id: " + id + ", entity version: " + entityVersion + ", db version: " + dbversion);
+	public JFishEntityVersionException(Class<?> entityClass, Object id, Object currentVersion) {
+		super("entity["+entityClass+"] version has changed, id: " + id + ", entity session version: " + currentVersion + ".");
 	}
 
 	

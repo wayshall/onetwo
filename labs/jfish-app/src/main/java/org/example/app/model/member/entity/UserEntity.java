@@ -13,7 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.Version;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -75,7 +74,6 @@ public class UserEntity extends BaseEntity<Long>  {
 	
 	private List<AddressEntity> address;
 	
-	private Long version;
 	
 //	@Override
 	@Id
@@ -191,13 +189,5 @@ public class UserEntity extends BaseEntity<Long>  {
 		this.address = address;
 	}
 
-	@Version
-	public Long getVersion() {
-		return version;
-	}
-
-	public void setVersion(Long version) {
-		this.version = version;
-	}
 	
 }
