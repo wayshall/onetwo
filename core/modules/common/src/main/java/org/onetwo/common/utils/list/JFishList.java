@@ -197,7 +197,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 	
 	public <K> Map<K, List<E>> groupBy(final SimpleBlock<E, K> block){
-		final ListMap<K, E> maps = new ListMap<K, E>();
+		final ListMap<K, E> maps = ListMap.newLinkedListMap();
 		each(new NoIndexIt<E>() {
 
 			@Override

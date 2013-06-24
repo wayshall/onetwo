@@ -18,10 +18,14 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 	public static <K, V> ListMap<K, V> newLinkedListMap(){
 		return new ListMap<K, V>(new LinkedHashMap<K, List<V>>());
 	}
+	
+	public static <K, V> ListMap<K, V> newListMap(Map<K, List<V>> map){
+		return new ListMap<K, V>(map);
+	}
 
 	private Map<K, List<V>> map;
 	
-	public ListMap(){
+	private ListMap(){
 		this(new LinkedHashMap<K, List<V>>());
 	}
 	
