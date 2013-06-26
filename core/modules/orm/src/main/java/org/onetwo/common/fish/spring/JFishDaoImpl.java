@@ -13,6 +13,7 @@ import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
+import org.onetwo.common.db.sqlext.HqlSymbolParser;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.fish.JFishQueryImpl;
@@ -579,23 +580,31 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			}
 		}
 		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
+		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
 		
 		if(jfishFileQueryFactory==null){
 			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);
 			this.jfishFileQueryFactory.build();
 		}
-		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
 
-		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
-		newSqlSymbolManager.setDialect(dialect);
-		newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
-		this.sqlSymbolManager = newSqlSymbolManager;
+		this.initSQLSymbolManager();
 		
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();
 		}
 		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
 		
+	}
+	
+	private void initSQLSymbolManager(){
+		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
+		newSqlSymbolManager.setDialect(dialect);
+		newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
+		List<HqlSymbolParser> sqlSymbolParsers = SpringUtils.getBeans(applicationContext, HqlSymbolParser.class);
+		for(HqlSymbolParser parser : sqlSymbolParsers){
+			newSqlSymbolManager.register(parser);
+		}
+		this.sqlSymbolManager = newSqlSymbolManager;
 	}
 
 	@Override

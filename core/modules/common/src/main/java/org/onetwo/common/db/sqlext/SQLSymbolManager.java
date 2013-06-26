@@ -45,8 +45,9 @@ public interface SQLSymbolManager {
 	}
 
 	public SQLDialet getSqlDialet();
-	
+
 	public SQLSymbolManager register(String symbol, HqlSymbolParser parser);
+	public SQLSymbolManager register(HqlSymbolParser parser);
 	
 	public HqlSymbolParser getHqlSymbolParser(String symbol);
 //	public String createHql(Map<Object, Object> properties, List<Object> values) ;

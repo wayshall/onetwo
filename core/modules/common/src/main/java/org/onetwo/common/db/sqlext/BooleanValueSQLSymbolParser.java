@@ -4,13 +4,13 @@ import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 import org.onetwo.common.utils.LangUtils;
 
-public class BooleanValueSQLSymbolParser extends AbstractSQLSymbolParser {
+public class BooleanValueSQLSymbolParser extends AbstractSupportedSubQuerySQLSymbolParser {
 
 	private String whenTrue;
 	private String whenFalse;
 	
-	public BooleanValueSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String whenTrue, String whenFalse) {
-		super(sqlSymbolManager);
+	public BooleanValueSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol, String whenTrue, String whenFalse) {
+		super(sqlSymbolManager, symbol);
 		this.whenTrue = whenTrue;
 		this.whenFalse = whenFalse;
 	}

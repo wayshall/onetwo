@@ -26,7 +26,7 @@ public class QueryBuilderJoin {
 		}
 
 		public String toSql(){
-			return LangUtils.append(left, " = ", right);
+			return LangUtils.append(getFieldName(left), " = ", right);
 		}
 
 		public String toString(){
