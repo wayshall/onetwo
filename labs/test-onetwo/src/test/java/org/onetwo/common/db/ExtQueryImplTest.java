@@ -127,7 +127,7 @@ public class ExtQueryImplTest {
 //		System.out.println("testCommon:" + q.getSql().trim());
 //		System.out.println("testCommon:" + q.getParamsValue().getValues().toString());
 		
-		String sql = "select object from Object object left join fetch object.bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.id <> ( select sub_long.id from Long sub_long where sub_long.aa = :sub_long_aa4 and sub_long.bb = :sub_long_bb5 ) order by object.name desc, object.text desc, object.nameid desc, object.textid asc";
+		String sql = "select object from Object object left join fetch object.bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.id != ( select sub_long.id from Long sub_long where sub_long.aa = :sub_long_aa4 and sub_long.bb = :sub_long_bb5 ) order by object.name desc, object.text desc, object.nameid desc, object.textid asc";
 		String paramsting = "{object_id0=11, object_name1=2, object_column_id2=222, object_column_id3=111, sub_long_aa4=1, sub_long_bb5=cc}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());

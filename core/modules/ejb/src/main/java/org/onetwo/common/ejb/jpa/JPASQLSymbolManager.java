@@ -27,7 +27,7 @@ public class JPASQLSymbolManager extends DefaultSQLSymbolManagerImpl {
 	
 	public SQLSymbolManager initParser() {
 		super.initParser();
-		register("is empty", new BooleanValueSQLSymbolParser(this, "is empty", "is not empty"))
+		register(new BooleanValueSQLSymbolParser(this, "is empty", "is empty", "is not empty"))
 		.register("has", new HasSymbolParser(this));
 		return this;
 	}

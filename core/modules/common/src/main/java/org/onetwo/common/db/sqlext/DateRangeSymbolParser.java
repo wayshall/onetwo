@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 import org.onetwo.common.exception.ServiceException;
@@ -18,8 +17,8 @@ import org.onetwo.common.utils.DateUtil;
  */
 public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlSymbolParser {
 	
-	public DateRangeSymbolParser(SQLSymbolManager sqlSymbolManager){
-		super(sqlSymbolManager, "date-in");
+	public DateRangeSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol){
+		super(sqlSymbolManager, symbol);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -37,7 +36,7 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 		if(paramlist==null || paramlist.isEmpty())
 			return null;*/
 		
-		List paramlist = ExtQueryUtils.processValue(field, value, ifNull);
+		List paramlist = processValue(field, value, ifNull);
 
 		if(paramlist.size()>2)
 			throw new ServiceException("the parameters of "+symbol+" can not greater than 2, acutal: " + paramlist.size());

@@ -11,7 +11,7 @@ public class SQLFunctionTemplateTest {
 		Assert.assertEquals("lower(field)", rs);
 		
 		rs = DefaultSQLFunctionManager.get().exec("substring", "field", 5, 3);
-		Assert.assertEquals("substring(field, 5, 3)", rs);
+		Assert.assertEquals("substring(field,5,3)", rs);
 	}
 
 }

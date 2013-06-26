@@ -3,17 +3,15 @@ package org.onetwo.common.db.sqlext;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.onetwo.common.db.ExtQuery;
-import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
+import org.slf4j.Logger;
 
 
 /***
@@ -21,17 +19,21 @@ import org.onetwo.common.utils.MyUtils;
  * @author weishao
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
-	protected SQLSymbolManager sqlSymbolManager;
 	protected boolean like;
+	protected final String symbol;
 	
-	AbstractSQLSymbolParser(SQLSymbolManager sqlSymbolManager){
-		this.sqlSymbolManager = sqlSymbolManager;
+	AbstractSQLSymbolParser(String symbol){
+		this.symbol = symbol;
 	}
 	
+	public String getSymbol() {
+		return symbol;
+	}
+
 	@Override
 	public String parse(QueryField field) {
 		return parse(getSymbol(field), field);
@@ -70,7 +72,7 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 			return null;
 		}*/
 		
-		List list = ExtQueryUtils.processValue(field, value, ifNull, true);
+		List list = processValue(field, value, ifNull, true);
 		
 		field = getFieldName(field);
 		StringBuilder hql = new StringBuilder();
@@ -114,49 +116,19 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 		paramValues.addValue(field, value, sqlScript);
 		sqlScript.append(" ");
 	}
-
-	/************
-	 * map.put("userName:in", new Object[]{UserEntity.class, "userName", "age:>=", 25});
-	 * ==>
-	 * map.put("userName:in", new Object[]{UserEntity.class, K.select, "userName", "age:>=", 25});
-	 * 
-	 * @param field
-	 * @param symbol
-	 * @param paramlist
-	 * @param paramValues
-	 * @param hql
-	 * @return
-	 */
+	
+	public List processValue(Object fields, Object values, IfNull ifNull){
+		return ExtQueryUtils.processValue(fields, values, ifNull, false);
+	}
+	
+	public List processValue(Object fields, Object values, IfNull ifNull, boolean trimNull){
+		return ExtQueryUtils.processValue(fields, values, ifNull, trimNull);
+	}
+	
 	protected boolean subQuery(String field, String symbol, List paramlist, ParamValues paramValues, StringBuilder hql){
-		Object value1 = paramlist.get(0);
-		if(value1 instanceof Class){
-			if(paramlist.size()<2)
-				throw new ServiceException("sub select is not enough args! it must great than 1.");
-			
-			hql.append(field).append(" ").append(symbol).append(" ( ");
-			paramlist.remove(value1);
-			Class subEntity = (Class)value1;
-			ExtQuery subQuery = this.createSubQuery(subEntity, paramlist);
-			paramValues.joinToQuery(subQuery);
-			hql.append(subQuery.getSql());
-			hql.append(") ");
-			return true;
-		}
 		return false;
 	}
 	
-	protected ExtQuery createSubQuery(Class subEntity, List paramlist){
-		ExtQuery subQuery = null;
-		String subAlias = "sub_"+StringUtils.uncapitalize(subEntity.getSimpleName());
-		if(paramlist.size()%2==0)
-			subQuery = this.sqlSymbolManager.createQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
-		else{
-			paramlist.add(0, K.SELECT);//entity后第一个str为要select的字段
-			subQuery = this.sqlSymbolManager.createQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
-		}
-		subQuery.setSubQuery(true);
-		return subQuery;
-	}
 	
 	protected String getFieldName(String f){
 		return f;

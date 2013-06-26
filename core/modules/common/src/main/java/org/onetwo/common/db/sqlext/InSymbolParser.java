@@ -3,7 +3,6 @@ package org.onetwo.common.db.sqlext;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 
@@ -35,7 +34,7 @@ public class InSymbolParser extends CommonSQLSymbolParser implements HqlSymbolPa
 			return null;
 		}*/
 
-		List paramlist = ExtQueryUtils.processValue(field, value, ifNull);
+		List paramlist = processValue(field, value, ifNull);
 
 		field = this.getFieldName(field);
 		StringBuilder hql = new StringBuilder();
