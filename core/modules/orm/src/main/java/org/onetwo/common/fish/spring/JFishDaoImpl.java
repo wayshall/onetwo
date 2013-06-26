@@ -587,7 +587,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			this.jfishFileQueryFactory.build();
 		}
 
-		this.initSQLSymbolManager();
+		this.initSQLSymbolManager(dialect, mappedEntryManager);
 		
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();
@@ -596,7 +596,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		
 	}
 	
-	private void initSQLSymbolManager(){
+	private void initSQLSymbolManager(DBDialect dialect, MappedEntryManager mappedEntryManager){
 		JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
 		newSqlSymbolManager.setDialect(dialect);
 		newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
