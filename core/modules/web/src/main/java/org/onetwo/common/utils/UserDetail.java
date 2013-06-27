@@ -1,7 +1,6 @@
 package org.onetwo.common.utils;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /****
  * 用户会话信息接口

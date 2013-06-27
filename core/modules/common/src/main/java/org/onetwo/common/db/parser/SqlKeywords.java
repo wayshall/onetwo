@@ -54,6 +54,7 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 				.addKeyWord(SqlTokenKey.WHERE)
 				.addKeyWord(SqlTokenKey.IN)
 				.addKeyWord(SqlTokenKey.IS)
+//				.addKeyWord(SqlTokenKey.BETWEEN)
 				.addKeyWord(SqlTokenKey.LIKE)
 				.addKeyWord(SqlTokenKey.OR)
 				.addKeyWord(SqlTokenKey.AND);
@@ -69,6 +70,7 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 				.addKeyWord(SqlTokenKey.GTEQ)
 				.addKeyWord(SqlTokenKey.IN)
 				.addKeyWord(SqlTokenKey.IS)
+//				.addKeyWord(SqlTokenKey.BETWEEN)
 				.addKeyWord(SqlTokenKey.LIKE);
 		
 		SYMBOLS = new SqlKeywords();

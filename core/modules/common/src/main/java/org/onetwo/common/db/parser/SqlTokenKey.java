@@ -51,6 +51,7 @@ public enum SqlTokenKey {
     NEQ("!="), 
     LTGT("<>"), 
     GTEQ(">="), 
+    BETWEEN("between"), 
 
 //    COLON(":"),
 	SEMI(";"), 

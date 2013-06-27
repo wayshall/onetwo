@@ -140,8 +140,9 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	public <T> Page<T> findPageByQName(String queryName, Page<T> page, Object... params) {
 		JFishQuery jq = this.createCountJFishQueryByQName(queryName, params);
 		Long total = jq.getSingleResult();
+		total = (total==null?0:total);
 		page.setTotalCount(total);
-		if(total!=null && total>0){
+		if(total>0){
 			jq = this.createJFishQueryByQName(queryName, params);
 			jq.setFirstResult(page.getFirst()-1);
 			jq.setMaxResults(page.getPageSize());
