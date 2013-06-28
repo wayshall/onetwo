@@ -8,6 +8,7 @@ import org.onetwo.common.fish.plugin.JFishPluginMeta;
 import org.onetwo.common.fish.plugin.PluginConfig;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -404,6 +405,15 @@ abstract public class BaseController<E> extends AbstractBaseController implement
 		return REDIRECT + path;
 	}
 
+	/****
+	 * 历史原因存在的方法，去掉
+	 * @param value
+	 * @return
+	 */
+	@Deprecated
+	protected SingleReturnWrapper json(Object value){
+		return SingleReturnWrapper.wrap(value);
+	}
 
 	public void addCreateMessage(RedirectAttributes redirectAttributes){
 		addFlashMessage(redirectAttributes, "保存成功！");

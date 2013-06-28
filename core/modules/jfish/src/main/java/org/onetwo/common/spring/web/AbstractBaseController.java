@@ -50,9 +50,6 @@ abstract public class AbstractBaseController {
 		redirectAttributes.addFlashAttribute(MESSAGE, StringUtils.trimToEmpty(msg));
 	}
 
-	protected SingleReturnWrapper json(Object value){
-		return SingleReturnWrapper.wrap(value);
-	}
 	
 	/*****
 	 * 根据model返回一个ModelAndView
