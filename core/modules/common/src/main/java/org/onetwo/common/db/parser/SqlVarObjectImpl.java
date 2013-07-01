@@ -44,4 +44,19 @@ public class SqlVarObjectImpl extends SqlObjectImpl implements SqlVarObject{
 		return getActualPlaceHolder(varCount);
 	}
 
+	/*@Override
+	public String getVarname(int varIndex) {
+		return getVarname();
+	}
+
+	@Override
+	public int getVarCount() {
+		return 1;
+	}*/
+
+	@Override
+	public String parseSql(SqlCondition condition){
+		return toJdbcSql(1);
+	}
+
 }

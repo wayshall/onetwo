@@ -1,5 +1,10 @@
 package org.onetwo.common.db.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.lexer.AbstractParser.JTokenValue;
 import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
@@ -96,6 +101,69 @@ public class SqlInfixVarConditionExpr extends SqlInfixConditionExpr implements S
 		sql.append(getLeftString(varCount)).append(getOperatorString()).append(" ").append(getRightString(varCount));
 		return sql.toString();
 	}
+
+	@Override
+	public String parseSql(SqlCondition condition){
+		StringBuilder sql = new StringBuilder();
+		if (condition.isMutiValue()) {
+			sql.append("( ");
+			int vindex = 0;
+			List<?> values = new ArrayList<Object>(condition.getValue(List.class));
+			for (Object val : values) {
+				if (vindex != 0)
+					sql.append("or ");
+				parseSingleValue(sql, condition, val, vindex);
+				vindex++;
+			}
+			sql.append(")");
+		} else {
+			parseSingleValue(sql, condition, condition.getValue(), 0);
+		}
+		return sql.toString();
+	}
+	
+	protected void parseSingleValue(StringBuilder sql, SqlCondition condition, Object val, int valueIndex) {
+		if (SQLKeys.Null.equals(val)) {
+			SQLKeys sk = (SQLKeys)val;
+			String name = getLeftString();
+			if (SqlTokenKey.NEQ==getOperator() || SqlTokenKey.LTGT==getOperator()) {
+				sql.append(name).append("is not null ");
+			}else {
+				sql.append(name).append("is null ");
+//				sql.append(toJdbcSql(1));
+			}
+			if (condition.isMutiValue()) {
+				condition.getValue(List.class).set(valueIndex, sk.getJavaValue());
+			} else {
+				condition.setValue(sk.getJavaValue());// set to null, ignore
+			}
+		} else {
+			if (SqlTokenKey.LIKE==getOperator()) {
+				String valStr = val == null ? "" : val.toString();
+				
+				if(isRightVar()){
+					valStr = ExtQueryUtils.getLikeString(valStr);
+				}
+				if (condition.isMutiValue()) {
+					condition.getValue(List.class).set(valueIndex, valStr);
+				} else {
+					condition.setValue(valStr);
+				}
+			}
+			sql.append(this.toJdbcSql(1));
+		}
+	}
+	
+	
+	/*@Override
+	public String getVarname(int varIndex) {
+		return getVarname();
+	}
+
+	@Override
+	public int getVarCount() {
+		return 1;
+	}*/
 
 
 }

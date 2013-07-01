@@ -8,29 +8,63 @@ import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.utils.LangUtils;
 
-public class JFishConditon {
+public class JFishConditonImpl implements SqlCondition {
 	protected SqlVarObject sqlObject;
 	protected Object value;
 	protected int index;
 
 	private boolean mutiValue;
+	
+	private boolean ignore;
 
 	// private boolean ignore;
 
 	// private int endStrIndex;
 
+	public <T> T getValue(Class<T> type) {
+		/*if (SQLKeys.class.isInstance(value)) {
+			return ((SQLKeys) value).getJavaValue();
+		}*/
+		return type.cast(value);
+	}
+	
+	@Override
 	public Object getValue() {
+		return value;
+	}
+
+	public Object getActualValue() {
 		if (SQLKeys.class.isInstance(value)) {
 			return ((SQLKeys) value).getJavaValue();
 		}
 		return value;
 	}
 
-	public JFishConditon(SqlVarObject sqlObject, int index) {
+	public List<?> getActualValueAsList() {
+		if(isMutiValue()){
+			List<?> list = getValue(List.class);
+			List<Object> actualValues = new ArrayList<Object>(list.size());
+//			int index = 0;
+			for(Object obj : list){
+				if (SQLKeys.class.isInstance(obj)) {
+					obj = ((SQLKeys) value).getJavaValue();
+				}
+				if(obj!=null)
+					actualValues.add(obj);
+//				index++;
+			}
+			return actualValues;
+		}else{
+			return LangUtils.asList(getActualValue());
+		}
+	}
+
+	public JFishConditonImpl(SqlVarObject sqlObject, int index) {
 		this.sqlObject = sqlObject;
 		this.index = index;
 	}
 
+	@Override
 	public void setValue(Object value) {
 		if (LangUtils.isMultiple(value)) {
 			this.mutiValue = true;
@@ -48,10 +82,11 @@ public class JFishConditon {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	/*public void setIndex(int index) {
 		this.index = index;
-	}
+	}*/
 
+	@Override
 	public boolean isAvailable() {
 		return !isNullOrBlank();
 	}
@@ -61,14 +96,17 @@ public class JFishConditon {
 	}
 
 	public boolean isIgnore() {
-		return isNullOrBlank();
+		return ignore || isNullOrBlank();
 	}
 	
 	protected SqlInfixVarConditionExpr getSqlInfixVarCondition(){
 		return (SqlInfixVarConditionExpr) sqlObject;
 	}
 
+	@Override
 	public String toSqlString() {
+		return sqlObject.parseSql(this);
+		/*
 		if(!sqlObject.isInfix()){
 			return toSqlStringWithOr();
 		}else{
@@ -77,7 +115,7 @@ public class JFishConditon {
 			} else {
 				return toSqlStringWithOr();
 			}
-		}
+		}*/
 	}
 
 	/*public String getOp() {
@@ -192,6 +230,7 @@ public class JFishConditon {
 		return isMutiValue();
 	}
 
+	@Override
 	public String getVarname() {
 		return sqlObject.getVarname();
 	}
@@ -206,6 +245,9 @@ public class JFishConditon {
 
 	public boolean isInfixOperator() {
 		return this.sqlObject.isInfix();
+	}
+	public void setIgnore(boolean ignore) {
+		this.ignore = ignore;
 	}
 
 }

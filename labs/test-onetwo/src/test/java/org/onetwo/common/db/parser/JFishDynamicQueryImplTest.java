@@ -100,20 +100,21 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 	}
 	
 	@Test
-	public void testNullValue2(){
-		String sql = "select * from t_user t where t.age = ? and t.birth_day=? and t.user_name =:userName";
+	public void testSqlNullWithIn(){
+		String sql = "select * from t_user t where t.age in (?) and t.birth_day=? and t.user_name in :userName";
 		DynamicQuery q = DynamicQueryFactory.createJFishDynamicQuery(sql);
-		q.setParameter(0, 1);
-		q.setParameter(1, null);
-		q.setParameter(2, "wayshall");
+		q.setParameter(0, SQLKeys.Null);
+		q.setParameter(1, SQLKeys.Empty);
+		q.setParameter(2, SQLKeys.Null);
 		q.ignoreIfNull().compile();
 		
 //		System.out.println("testNullValue2 sql: " + q.getTransitionSql());
 //		System.out.println("values: " + q.getValues());
 		
-		String expected = "select * from t_user t where t.age = ? and 1=1 and t.user_name = ?";
+		String expected = "select * from t_user t where t.age is null and t.birth_day = ? and t.user_name is null";
 		Assert.assertEquals(expected, q.getTransitionSql());
-		Assert.assertEquals("[1, wayshall]", q.getValues().toString());
+		Assert.assertEquals(1, q.getValues().size());
+		Assert.assertEquals("[]", q.getValues().toString());
 	}
 	
 	@Test
@@ -385,12 +386,12 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 		q.setParameter(0, 11l);
 		q.setParameter("userName", "wayshall");
 		
-//		q.ignoreIfNull().compile();
+		q.ignoreIfNull().compile();
 		
 //		System.out.println("testSqlFuntionInValue sql: " + q.getTransitionSql());
 		String expected = "select * from t_user t where lower( t.age ) = ? and 1=1 and t.user_name = to_char( ? )";
-//		Assert.assertEquals(expected, q.getTransitionSql());
-//		Assert.assertEquals("[11, wayshall]", q.getValues().toString());
+		Assert.assertEquals(expected, q.getTransitionSql());
+		Assert.assertEquals("[11, wayshall]", q.getValues().toString());
 		
 		sql = "select count(route_id) as visit_count,ro.route_id,ri.name as route_name from " +
 				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id=ri.id " +

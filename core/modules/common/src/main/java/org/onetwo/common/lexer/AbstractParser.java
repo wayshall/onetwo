@@ -3,6 +3,7 @@ package org.onetwo.common.lexer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.db.parser.SqlTokenKey;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -184,6 +185,14 @@ public abstract class AbstractParser<T> {
 			if(LangUtils.isEmpty(tokenValues))
 				return null;
 			return this.tokenValues.get(0);
+		}
+		
+		public boolean startWith(SqlTokenKey token){
+			return  isEmpty()?false:(token == getFirst().getToken());
+		}
+		
+		public boolean endWith(SqlTokenKey token){
+			return isEmpty()?false:( token == getLast().getToken() );
 		}
 		
 		public JTokenValue<T> remove(int index){

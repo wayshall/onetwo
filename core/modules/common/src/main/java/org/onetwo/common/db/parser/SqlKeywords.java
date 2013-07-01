@@ -70,7 +70,7 @@ public class SqlKeywords implements LexerKeywords<SqlTokenKey> {
 				.addKeyWord(SqlTokenKey.GTEQ)
 				.addKeyWord(SqlTokenKey.IN)
 				.addKeyWord(SqlTokenKey.IS)
-//				.addKeyWord(SqlTokenKey.BETWEEN)
+				.addKeyWord(SqlTokenKey.BETWEEN)
 				.addKeyWord(SqlTokenKey.LIKE);
 		
 		SYMBOLS = new SqlKeywords();

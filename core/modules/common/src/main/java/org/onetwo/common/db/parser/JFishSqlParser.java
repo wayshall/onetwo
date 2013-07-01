@@ -1,14 +1,18 @@
 package org.onetwo.common.db.parser;
 
+import java.util.Map;
+
 import org.onetwo.common.lexer.AbstractParser;
 import org.onetwo.common.lexer.StringSourceReader;
 import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.LangUtils;
 
 public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlParser {
 
 	private SqlTokenKey[] keywords;
 	private SqlTokenKey[] operators;
 	private boolean debug;
+	private Map<SqlTokenKey, OperatorParser> operatorParsers = LangUtils.newHashMap();
 	
 	public JFishSqlParser(String sql) {
 		super(new SqlLexer(new StringSourceReader(sql)));
@@ -16,6 +20,9 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 		keywords = (SqlTokenKey[])ArrayUtils.add(keywords, SqlTokenKey.EOF);
 		
 		operators = getSqlLexer().getOperators().getKeyWordTokenAsArray();
+		
+		this.registerOperatorParser(new InOperatorParser());
+		this.registerOperatorParser(new BetweenOperatorParser());
 	}
 	
 	public SqlLexer getSqlLexer(){
@@ -24,6 +31,11 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 	
 	public boolean isDebug() {
 		return debug;
+	}
+	
+	public final JFishSqlParser registerOperatorParser(OperatorParser parser){
+		this.operatorParsers.put(parser.getOperator(), parser);
+		return this;
 	}
 
 	public void setDebug(boolean debug) {
@@ -87,17 +99,18 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 					JTokenValueCollection<SqlTokenKey> rightIds = nextAllTokensUntil(keywords);
 					
 					//(m.login_code=:loginCode or m.mobile=:loginCode or m.email=:email)
-					if(jtokens!=null && !jtokens.isEmpty() && SqlTokenKey.LPARENT==jtokens.getFirst().getToken() && !jtokens.contains(SqlTokenKey.RPARENT)){
+					if(jtokens.startWith(SqlTokenKey.LPARENT) && !jtokens.contains(SqlTokenKey.RPARENT)){
 						statment.addSqlObject(new SqlSymbolObject(jtokens.remove(0)));
 						
 						sqlObj = createSqlInfixCondition(jtokens, token, rightIds);
 						statment.addSqlObject(sqlObj);
 						
-					}else if(rightIds!=null && !rightIds.isEmpty() && SqlTokenKey.RPARENT==rightIds.getLast().getToken() && !rightIds.contains(SqlTokenKey.LPARENT)){
+					}else if(rightIds.endWith(SqlTokenKey.RPARENT) && !rightIds.contains(SqlTokenKey.LPARENT)){
+						JTokenValue<SqlTokenKey> rparentToken = rightIds.removeLast();
 						sqlObj = createSqlInfixCondition(jtokens, token, rightIds);
 						statment.addSqlObject(sqlObj);
 						
-						statment.addSqlObject(new SqlSymbolObject(rightIds.removeLast()));
+						statment.addSqlObject(new SqlSymbolObject(rparentToken));
 					}else{
 						sqlObj = createSqlInfixCondition(jtokens, token, rightIds);
 						statment.addSqlObject(sqlObj);
@@ -143,12 +156,16 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 	private SqlObject createSqlInfixCondition(JTokenValueCollection<SqlTokenKey> jtokens, SqlTokenKey token, JTokenValueCollection<SqlTokenKey> rightIds){
 		SqlObject sqlObj = null;
 		
-		if(jtokens.contains(SqlTokenKey.VARNAME) || jtokens.contains(SqlTokenKey.QUESTION)){
+		if(operatorParsers.containsKey(token)){
+			sqlObj = operatorParsers.get(token).parse(this, jtokens, rightIds);
+		}else if(jtokens.contains(SqlTokenKey.VARNAME) || jtokens.contains(SqlTokenKey.QUESTION)){
 			SqlInfixVarConditionExpr cond = new SqlInfixVarConditionExpr(jtokens.clone(), token, rightIds, false);
 			sqlObj = cond;
 		}else if(rightIds.contains(SqlTokenKey.VARNAME) || rightIds.contains(SqlTokenKey.QUESTION)){
 			sqlObj = new SqlInfixVarConditionExpr(jtokens.clone(), token, rightIds, true);
-		}else{
+		}
+		
+		if(sqlObj==null){
 			sqlObj = new SqlInfixConditionExpr(jtokens.clone(), token, rightIds);
 		}
 		jtokens.clear();

@@ -10,6 +10,7 @@ public enum SQLKeys {
 	
 	SQLKeys(String value, Object javaValue){
 		this.value = value;
+		this.javaValue = javaValue;
 	}
 
 	public String getValue() {

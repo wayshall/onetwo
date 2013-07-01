@@ -3,8 +3,8 @@ package org.onetwo.common.db.parser.interceptors;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.parser.JFishConditon;
 import org.onetwo.common.db.parser.QueryContext;
+import org.onetwo.common.db.parser.SqlCondition;
 import org.onetwo.common.db.parser.SqlObject;
 import org.onetwo.common.utils.LangUtils;
 
@@ -25,7 +25,7 @@ public class ListDynamicQueryInterceptor implements DynamicQueryInterceptor {
 		return this;
 	}
 
-	public void onParse(SqlObject sqlObject, List<JFishConditon> conditions){
+	public void onParse(SqlObject sqlObject, List<SqlCondition> conditions){
 		if(interceptors==null)
 			return ;
 		for(DynamicQueryInterceptor dy : interceptors){
@@ -33,7 +33,7 @@ public class ListDynamicQueryInterceptor implements DynamicQueryInterceptor {
 		}
 	}
 	
-	public void onCompile(SqlObject sqlObject, JFishConditon cond, IfNull ifNull, StringBuilder segment, QueryContext qcontext){
+	public void onCompile(SqlObject sqlObject, SqlCondition cond, IfNull ifNull, StringBuilder segment, QueryContext qcontext){
 		if(interceptors==null)
 			return ;
 		for(DynamicQueryInterceptor dy : interceptors){
