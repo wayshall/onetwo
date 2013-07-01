@@ -7,6 +7,8 @@ import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 
 
 public class BetweenVarConditionExpr implements SqlVarObject {
+	
+	final private SqlTokenKey operator = SqlTokenKey.BETWEEN;
 
 	public BetweenVarConditionExpr(JTokenValueCollection<SqlTokenKey> left, SqlTokenKey operator, JTokenValueCollection<SqlTokenKey> right, boolean rightVar) {
 		super(left, operator, right, rightVar);
