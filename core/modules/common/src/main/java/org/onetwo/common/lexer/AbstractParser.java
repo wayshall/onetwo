@@ -260,5 +260,9 @@ public abstract class AbstractParser<T> {
 			return c;
 		}
 		
+		public String toString(){
+			return getValues(" ");
+		}
+		
 	}
 }

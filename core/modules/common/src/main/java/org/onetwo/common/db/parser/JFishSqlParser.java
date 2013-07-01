@@ -63,7 +63,7 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 			if(ArrayUtils.contains(operators, token)){
 				JTokenValue<SqlTokenKey> op = new JTokenValue<SqlTokenKey>(token, stringValue());
 				this.throwIfNoNextToken();
-				if(tokenIs(SqlTokenKey.LPARENT)){//sub
+				if(tokenIs(SqlTokenKey.LPARENT)){
 					/*jtokens.addJTokenValue(op);
 					jtokens.addJTokenValue(lexer.getToken(), stringValue());
 					this.throwIfNoNextToken();*/
@@ -71,7 +71,7 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 					JTokenValue<SqlTokenKey> lparent = new JTokenValue<SqlTokenKey>(lexer.getToken(), stringValue());
 					
 					this.throwIfNoNextToken();
-					if(tokenIs(SqlTokenKey.SELECT)){
+					if(tokenIs(SqlTokenKey.SELECT)){//sub query
 						this.addJTokenValuesToStatments(statment, jtokens);
 						sqlObj = new SqlKeywordObject(op);
 						statment.addSqlObject(sqlObj);
