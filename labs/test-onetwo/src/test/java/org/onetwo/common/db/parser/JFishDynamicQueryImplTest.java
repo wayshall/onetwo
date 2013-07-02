@@ -397,9 +397,9 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id=ri.id " +
 				"where ro.company_id=:company_id and " +
 				"ro.click_time between to_date(:date, 'yyyy-mm-dd') " +
-				"and to_date(:date, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
+				"and to_date(:date_any_name, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
 		
-		JFishSqlParserManager.getInstance().setDebug(true);
+//		JFishSqlParserManager.getInstance().setDebug(true);
 		q = DynamicQueryFactory.createJFishDynamicQuery(sql);
 		q.setParameter(0, 11l);
 		String dateStr = "2013-06-27";
@@ -412,11 +412,29 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 		expected = "select count( route_id ) as visit_count, ro.route_id, ri.name as route_name from " +
 				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id = ri.id " +
 				"where ro.company_id = ? and " +
-				"ro.click_time between to_date( ?, 'yyyy-mm-dd') " +
-				"and to_date( ?, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
+				"ro.click_time between to_date( ?, 'yyyy-mm-dd' ) " +
+				"and to_date( ?, 'yyyy-mm-dd' ) group by ro.route_id, ri.name order by total desc";
+		
+//		System.out.println("q.getTransitionSql(): " + q.getTransitionSql());
+		Assert.assertEquals(expected, q.getTransitionSql());
+//		System.out.println("q.getValues().toString():" + q.getValues().toString());
+		Assert.assertEquals("[11, Thu Jun 27 00:00:00 CST 2013, Fri Jun 28 00:00:00 CST 2013]", q.getValues().toString());
+		
+		q = DynamicQueryFactory.createJFishDynamicQuery(sql);
+		q.setParameter(0, 11l);
+		q.ignoreIfNull().compile();
+		
+//		System.out.println("testSqlFuntionInValue sql: " + q.getTransitionSql());
+		expected = "select count( route_id ) as visit_count, ro.route_id, ri.name as route_name from " +
+				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id = ri.id " +
+				"where ro.company_id = ? " +
+//				"and ro.click_time between to_date( ?, 'yyyy-mm-dd' ) and to_date( ?, 'yyyy-mm-dd' ) " +
+				"and 1=1 " +
+				"group by ro.route_id, ri.name order by total desc";
 		System.out.println("q.getTransitionSql(): " + q.getTransitionSql());
 		Assert.assertEquals(expected, q.getTransitionSql());
-		Assert.assertEquals("[11, 2013-06-27, 2013-06-28]", q.getValues().toString());
+		System.out.println("q.getValues().toString():" + q.getValues().toString());
+		Assert.assertEquals("[11]", q.getValues().toString());
 	}
 	
 	@Test

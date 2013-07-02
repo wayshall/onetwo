@@ -9,8 +9,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.lexer.AbstractParser.JTokenValue;
 import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 
-
-
+@SuppressWarnings("unchecked")
 public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements SqlVarObject {
 
 	private SqlInfixConditionExpr expr;
@@ -145,7 +144,23 @@ public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements Sq
 		}
 	}
 
-	
+	public JTokenValueCollection<SqlTokenKey> getRight() {
+		return expr.getRight();
+	}
+
+	public JTokenValueCollection<SqlTokenKey> getLeft() {
+		return expr.getLeft();
+	}
+
+	public SqlTokenKey getOperator() {
+		return expr.getOperator();
+	}
+
+
+	@Override
+	public String toFragmentSql(){
+		return this.expr.toFragmentSql();
+	}
 	
 	/*@Override
 	public String getVarname(int varIndex) {

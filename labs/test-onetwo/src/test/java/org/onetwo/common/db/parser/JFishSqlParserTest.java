@@ -60,11 +60,11 @@ public class JFishSqlParserTest {
 			if(varIndex==5){
 				SqlInfixVarConditionExpr infix = (SqlInfixVarConditionExpr) sqlobj;
 				Assert.assertEquals("birth_day", infix.getVarname());
-				Assert.assertEquals(">=", infix.getOperatorString());
+				Assert.assertEquals(">=", infix.getOperator().getName());
 			}else if(varIndex==8){
 				SqlInfixVarConditionExpr infix = (SqlInfixVarConditionExpr) sqlobj;
 				Assert.assertEquals("user_name", infix.getVarname());
-				Assert.assertEquals("=", infix.getOperatorString());
+				Assert.assertEquals("=", infix.getOperator().getName());
 			}
 			varIndex++;
 		}
