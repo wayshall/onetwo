@@ -15,8 +15,6 @@ public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements Sq
 
 	private SqlInfixConditionExpr expr;
 	private boolean rightVar = true;
-	private String varname = null;
-	private boolean named = false;
 	public SqlInfixVarConditionExpr() {
 		super();
 	}
@@ -42,15 +40,6 @@ public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements Sq
 		}
 	}
 
-	@Override
-	public String getVarname() {
-		return varname;
-	}
-
-//	@Override
-	public boolean isNamed() {
-		return named;
-	}
 
 	public boolean isRightVar() {
 		return rightVar;

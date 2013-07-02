@@ -1,8 +1,13 @@
 package org.onetwo.common.db.parser;
 
+import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
+
 
 abstract public class AbstractSqlVarObject extends SqlObjectImpl implements SqlVarObject{
 
+	protected String varname = null;
+	protected boolean named = false;
+	
 	public AbstractSqlVarObject() {
 		super();
 	}
@@ -11,14 +16,21 @@ abstract public class AbstractSqlVarObject extends SqlObjectImpl implements SqlV
 		super(fragmentSql);
 	}
 	
-	/*@Override
-	public String[] getVarnames() {
-		return new String[]{getVarname()};
+	@Override
+	public String getVarname() {
+		return varname;
 	}
 
-	@Override
-	public int getVarsize() {
-		return getVarnames().length;
-	}*/
+//	@Override
+	public boolean isNamed() {
+		return named;
+	}
 
+	protected String getString(JTokenValueCollection<SqlTokenKey> tokens, int varCount){
+		if(isNamed()){
+			return SqlParserUtils.toSqlWithReplace(tokens, SqlTokenKey.VARNAME, varCount);
+		}else{
+			return SqlParserUtils.toSqlWithReplace(tokens, SqlTokenKey.QUESTION, varCount);
+		}
+	}
 }

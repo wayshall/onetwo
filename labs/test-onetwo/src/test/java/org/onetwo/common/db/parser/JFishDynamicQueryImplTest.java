@@ -396,28 +396,27 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 		sql = "select count(route_id) as visit_count,ro.route_id,ri.name as route_name from " +
 				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id=ri.id " +
 				"where ro.company_id=:company_id and " +
-				"ro.click_time between to_date(:start_date, 'yyyy-mm-dd') " +
-				"and to_date(:end_date, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
+				"ro.click_time between to_date(:date, 'yyyy-mm-dd') " +
+				"and to_date(:date, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
 		
 		JFishSqlParserManager.getInstance().setDebug(true);
 		q = DynamicQueryFactory.createJFishDynamicQuery(sql);
 		q.setParameter(0, 11l);
 		String dateStr = "2013-06-27";
 		Date date = DateUtil.parse(dateStr);
-		q.setParameter("start_date", date);
-		q.setParameter("end_date", date);
+		q.setParameter("date", new Object[]{date, DateUtil.addDay(date, 1)});
 		
 		q.ignoreIfNull().compile();
 		
 //		System.out.println("testSqlFuntionInValue sql: " + q.getTransitionSql());
-		expected = "select count( route_id ) as visit_count,ro.route_id,ri.name as route_name from " +
-				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id=ri.id " +
+		expected = "select count( route_id ) as visit_count, ro.route_id, ri.name as route_name from " +
+				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id = ri.id " +
 				"where ro.company_id = ? and " +
 				"ro.click_time between to_date( ?, 'yyyy-mm-dd') " +
 				"and to_date( ?, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
 		System.out.println("q.getTransitionSql(): " + q.getTransitionSql());
 		Assert.assertEquals(expected, q.getTransitionSql());
-		Assert.assertEquals("[11, 2013-06-27, 2013-06-27]", q.getValues().toString());
+		Assert.assertEquals("[11, 2013-06-27, 2013-06-28]", q.getValues().toString());
 	}
 	
 	@Test

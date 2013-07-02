@@ -16,7 +16,7 @@ public class BetweenOperatorParser implements OperatorParser {
 		parser.nextTokenIs(SqlTokenKey.AND);
 		JTokenValueCollection<SqlTokenKey> endTokens = parser.nextAllTokensUntilKeywords();
 		
-		BetweenVarConditionExpr between = new BetweenVarConditionExpr(fieldTokens, startTokens, endTokens);
+		BetweenVarConditionExpr between = new BetweenVarConditionExpr(fieldTokens.clone(), startTokens.clone(), endTokens.clone());
 		return between;
 	}
 
