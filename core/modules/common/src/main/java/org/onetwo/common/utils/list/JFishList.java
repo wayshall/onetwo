@@ -137,13 +137,13 @@ public class JFishList<E> implements List<E>, Serializable {
 	} 
 	
 	public JFishList(Collection<E> col){
-		Assert.notEmpty(col);
+		Assert.notNull(col);
 		list = new ArrayList<E>(col.size()+5);
 		list.addAll(col);
 	}
 	
 	public JFishList(Collection<?> col, SimpleBlock<Object, E> block){
-		Assert.notEmpty(col);
+		Assert.notNull(col);
 		Assert.notNull(block);
 		list = new ArrayList<E>(col.size()+5);
 		for(Object ele : col){
