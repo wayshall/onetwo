@@ -11,7 +11,7 @@ public class InOperatorParser implements OperatorParser {
 	}
 
 	@Override
-	public SqlObject parse(SqlParser parser, JTokenValueCollection<SqlTokenKey> leftOperatorTokens, JTokenValueCollection<SqlTokenKey> rigthOperatorTokens) {
+	public SqlObject parse(JFishSqlParser parser, JTokenValueCollection<SqlTokenKey> leftOperatorTokens, JTokenValueCollection<SqlTokenKey> rigthOperatorTokens) {
 		InVarConditionExpr inVar = null;
 		if(leftOperatorTokens.contains(SqlTokenKey.VARNAME) || leftOperatorTokens.contains(SqlTokenKey.QUESTION)){
 			inVar = new InVarConditionExpr(leftOperatorTokens.clone(), getOperator(), rigthOperatorTokens, false);

@@ -89,14 +89,14 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 						statment.addSqlObject(sqlObj);
 						jtokens.addJTokenValue(lparent);
 					}else{
-						JTokenValueCollection<SqlTokenKey> rightIds = nextAllTokensUntil(keywords);
+						JTokenValueCollection<SqlTokenKey> rightIds = nextAllTokensUntilKeywords();
 						rightIds.addJTokenValue(0, lparent);
 						sqlObj = createSqlInfixCondition(jtokens, token, rightIds);
 						statment.addSqlObject(sqlObj);
 						
 					}
 				}else{
-					JTokenValueCollection<SqlTokenKey> rightIds = nextAllTokensUntil(keywords);
+					JTokenValueCollection<SqlTokenKey> rightIds = nextAllTokensUntilKeywords();
 					
 					//(m.login_code=:loginCode or m.mobile=:loginCode or m.email=:email)
 					if(jtokens.startWith(SqlTokenKey.LPARENT) && !jtokens.contains(SqlTokenKey.RPARENT)){
@@ -174,6 +174,11 @@ public class JFishSqlParser extends AbstractParser<SqlTokenKey> implements SqlPa
 		sqlObj = new SqlObjectImpl(stringValue());*/
 		
 		return sqlObj;
+	}
+	
+
+	public JTokenValueCollection<SqlTokenKey> nextAllTokensUntilKeywords(){
+		return nextAllTokensUntil(keywords);
 	}
 	
 	private boolean tokenIsSqlVarSymbol(){

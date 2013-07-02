@@ -6,6 +6,9 @@ public class SqlObjectImpl implements SqlObject {
 
 	protected String fragmentSql;
 	
+	public SqlObjectImpl(){
+	}
+	
 	public SqlObjectImpl(String fragmentSql) {
 		this.fragmentSql = fragmentSql;
 	}

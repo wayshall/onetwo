@@ -6,6 +6,6 @@ public interface OperatorParser {
 	
 	public SqlTokenKey getOperator();
 	
-	public SqlObject parse(SqlParser parser, JTokenValueCollection<SqlTokenKey> leftOperatorTokens, JTokenValueCollection<SqlTokenKey> rigthOperatorTokens); 
+	public SqlObject parse(JFishSqlParser parser, JTokenValueCollection<SqlTokenKey> leftOperatorTokens, JTokenValueCollection<SqlTokenKey> rigthOperatorTokens); 
 
 }

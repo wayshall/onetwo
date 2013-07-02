@@ -1,6 +1,7 @@
 package org.onetwo.common.db.parser;
 
 import org.onetwo.common.db.parser.SqlKeywords.SqlType;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.lexer.AbstractParser.JTokenValue;
 import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 
@@ -28,6 +29,19 @@ public final class SqlParserUtils {
 	/*public static boolean isNotLeftParent(SqlTokenKey token){
 		return SqlTokenKey.LPARENT!=token;
 	}*/
+	
+	public static String parseVarname(JTokenValueCollection<SqlTokenKey> varIds){
+		String varname;
+		if(varIds.contains(SqlTokenKey.VARNAME)){
+			JTokenValue<SqlTokenKey> tv = varIds.getTokenValue(SqlTokenKey.VARNAME);
+			if(tv==null)
+				throw new BaseException("not found var name in : " + varIds);
+			varname = tv.getValue().substring(1);
+		}else{
+			varname = SqlTokenKey.QUESTION.getName();
+		}
+		return varname;
+	}
 
 	public static String getActualPlaceHolder(int count, boolean hasParent) {
 		if(count<=1)

@@ -11,9 +11,13 @@ public class BetweenOperatorParser implements OperatorParser {
 	}
 
 	@Override
-	public SqlObject parse(SqlParser parser, JTokenValueCollection<SqlTokenKey> leftOperatorTokens, JTokenValueCollection<SqlTokenKey> rigthOperatorTokens) {
-		System.out.println("left: " + leftOperatorTokens);
-		return null;
+	public SqlObject parse(JFishSqlParser parser, JTokenValueCollection<SqlTokenKey> fieldTokens, JTokenValueCollection<SqlTokenKey> startTokens) {
+		System.out.println("left: " + startTokens);
+		parser.nextTokenIs(SqlTokenKey.AND);
+		JTokenValueCollection<SqlTokenKey> endTokens = parser.nextAllTokensUntilKeywords();
+		
+		BetweenVarConditionExpr between = new BetweenVarConditionExpr(fieldTokens, startTokens, endTokens);
+		return between;
 	}
 
 

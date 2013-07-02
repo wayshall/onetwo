@@ -17,6 +17,8 @@ public interface SqlCondition {
 	public String toSqlString();
 
 	public String getVarname();
+//	public int getVarsize();
+//	public String[] getVarnames();
 
 	public Object getValue();
 	public <T> T getValue(Class<T> type);
