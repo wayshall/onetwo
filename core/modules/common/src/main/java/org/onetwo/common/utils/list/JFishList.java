@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.SimpleBlock;
@@ -39,11 +40,15 @@ public class JFishList<E> implements List<E>, Serializable {
 	public static <T> JFishList<T> wrap(Collection<T> list){
 		if(JFishList.class.isInstance(list))
 			return (JFishList<T>)list;
+		if(list==null)
+			return newList();
 		return new JFishList<T>(list);
 	}
 	
 
 	public static <T> JFishList<T> wrap(Collection<?> list, SimpleBlock<Object, T> block){
+		if(list==null)
+			return newList();
 		return new JFishList<T>(list, block);
 	}
 	
@@ -132,11 +137,14 @@ public class JFishList<E> implements List<E>, Serializable {
 	} 
 	
 	public JFishList(Collection<E> col){
+		Assert.notEmpty(col);
 		list = new ArrayList<E>(col.size()+5);
 		list.addAll(col);
 	}
 	
 	public JFishList(Collection<?> col, SimpleBlock<Object, E> block){
+		Assert.notEmpty(col);
+		Assert.notNull(block);
 		list = new ArrayList<E>(col.size()+5);
 		for(Object ele : col){
 			E e = block.execute(ele);
