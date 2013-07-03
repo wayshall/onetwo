@@ -3,7 +3,6 @@ package org.onetwo.common.db.parser.interceptors;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.parser.JFishConditonImpl;
 import org.onetwo.common.db.parser.QueryContext;
 import org.onetwo.common.db.parser.SqlCondition;
 import org.onetwo.common.db.parser.SqlObject;

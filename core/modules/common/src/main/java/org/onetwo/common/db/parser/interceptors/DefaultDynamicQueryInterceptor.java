@@ -17,7 +17,6 @@ import org.onetwo.common.utils.StringUtils;
 
 public class DefaultDynamicQueryInterceptor extends DynamicQueryInterceptorAdaptor {
 
-	public static final String[] SQL_KEY_WORKDS = new String[]{" ", "-", "'", ";", ",", "(", ")"};
 	private static final String REPLACE_SQL = "1=1 ";
 
 	
@@ -83,11 +82,7 @@ public class DefaultDynamicQueryInterceptor extends DynamicQueryInterceptorAdapt
 
 	protected void checkFieldNameValid(String field){
 		Assert.hasText(field);
-		/*for(String str : SQL_KEY_WORKDS){
-			if(field.indexOf(str)!=-1)
-				LangUtils.throwBaseException("the field is inValid : " + field);
-		}*/
-		if(SqlKeywords.ALL.isKeyWord(field.trim())){
+		if(field.contains(" ") || SqlKeywords.ALL.isKeyWord(field.trim())){
 			throw new BaseException("the field is inValid : " + field);
 		}
 	}
