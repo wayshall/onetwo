@@ -29,7 +29,7 @@ public class SqlLexerTest {
 			}else if(index==2){
 				Assert.assertEquals(lexer.getToken(), SqlTokenKey.LPARENT);
 			}else if(index==3){
-				Assert.assertEquals(lexer.getToken(), SqlTokenKey.UNKNOW);
+				Assert.assertEquals(lexer.getToken(), SqlTokenKey.START);
 				Assert.assertEquals("*", lexer.getStringValue());
 			}else if(index==4){
 				Assert.assertEquals(lexer.getToken(), SqlTokenKey.RPARENT);

@@ -9,14 +9,13 @@ import java.util.List;
 import org.onetwo.common.ioc.proxy.BFInterceptor;
 import org.onetwo.common.ioc.proxy.BFProxyHandler;
 import org.onetwo.common.ioc.proxy.InvocationContext;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("unchecked")
 public class DynamicProxyHandler implements BFProxyHandler {
 	
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private Object srcObject;
 	private List<BFInterceptor> intercptors;
@@ -24,13 +23,13 @@ public class DynamicProxyHandler implements BFProxyHandler {
 	private List<Method> proxyMethods = new ArrayList<Method>();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	
-	public DynamicProxyHandler(Object object, Class[] proxiedInterfaces, List<BFInterceptor> intercptors){
+	public DynamicProxyHandler(Object object, Class<?>[] proxiedInterfaces, List<BFInterceptor> intercptors){
 		this.srcObject = object;
 		this.intercptors = intercptors;
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 
 		for (int i = 0; i < proxiedInterfaces.length; i++) {
-			Class proxiedInterface = proxiedInterfaces[i];
+			Class<?> proxiedInterface = proxiedInterfaces[i];
 			Method[] methods = proxiedInterface.getDeclaredMethods();
 			for (int j = 0; j < methods.length; j++) {
 				Method method = methods[j];

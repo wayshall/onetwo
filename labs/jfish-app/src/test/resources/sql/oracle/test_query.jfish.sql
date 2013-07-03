@@ -63,7 +63,7 @@
 											                 END AS TYPE,
 											                 l.state
 											            FROM yzl_lottery_list l LEFT JOIN uc_user u
-											                 ON l.mobile = u.user_moblie
+											                 ON l.mobile = u.mobile
 											                 LEFT JOIN yzl_lottery_result_prize p
 											                 ON l.lottery_result_id = p.lottery_result_id
 											                 ) t
@@ -82,7 +82,7 @@
 @select.insert.sql = INSERT INTO sms_message
 									            (ID, phone_nos, title, MESSAGE, plan_send_time, from_app, state,
 									             sms_type, create_time)
-									   SELECT seq_sms_message.NEXTVAL, u.user_moblie, :title, :content, SYSDATE,
+									   SELECT seq_sms_message.NEXTVAL, u.mobile, :title, :content, SYSDATE,
 									          'db_sql', -2, :sms_type, SYSDATE
 									     FROM uc_user u
 									    WHERE u.state IN (1, 50)
@@ -109,7 +109,7 @@
 																	THEN '中奖'
 															END AS state
 											            FROM yzl_lottery_list l LEFT JOIN uc_user u
-											                 ON l.mobile = u.user_moblie
+											                 ON l.mobile = u.mobile
 											                 LEFT JOIN yzl_lottery_result_prize p
 											                 ON l.lottery_result_id = p.lottery_result_id
 											                 ) t
@@ -123,3 +123,9 @@
 											     AND t.state = :state
 											     
 @param.like.sql.ignore.null=true
+
+
+@BmRegionDTO.find.10 = select * from ( 
+						select t.* from BM_REGION t 
+					) where rownum <= 10
+@BmRegionDTO.find.10.mapped.entity = org.onetwo.common.jfish.BmRegionDTO

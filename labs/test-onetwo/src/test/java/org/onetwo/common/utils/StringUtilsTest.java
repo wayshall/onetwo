@@ -29,6 +29,21 @@ public class StringUtilsTest {
 		Assert.assertEquals("update", strs[1]);
 		Assert.assertEquals("list", strs[2]);
 	}
+
+	@Test
+	public void testGetFirstWord(){
+		String str = "saveUser";
+		String rs = StringUtils.getFirstWord(str);
+		Assert.assertEquals("save", rs);
+		
+		str = "updateUser";
+		rs = StringUtils.getFirstWord(str);
+		Assert.assertEquals("update", rs);
+		
+		str = " ";
+		rs = StringUtils.getFirstWord(str);
+		Assert.assertEquals("", rs);
+	}
 	
 	
 }

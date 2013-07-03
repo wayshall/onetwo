@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 
@@ -142,5 +143,13 @@ public class LangUtilsTest {
 		Assert.assertTrue(LangUtils.isWord("hello_word_2"));
 		Assert.assertFalse(LangUtils.isWord("hello@word"));
 		Assert.assertFalse(LangUtils.isWord("中文"));
+	}
+
+	@Test
+	public void testGetCauseServiceException(){
+		ServiceException se = new ServiceException("test service");
+		Exception re = new RuntimeException(se);
+		Throwable e = LangUtils.getCauseServiceException(re);
+		Assert.assertTrue(ServiceException.class.isInstance(e));
 	}
 }

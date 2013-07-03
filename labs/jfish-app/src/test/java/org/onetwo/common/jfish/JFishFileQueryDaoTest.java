@@ -53,8 +53,6 @@ public class JFishFileQueryDaoTest extends JFishBaseNGTest {
 	
 	@Test
 	public void testFindList(){
-		if(jdao.getDialect().getDbmeta().isOracle())
-			return ;
 		List<BmRegionDTO> uclist = this.jFishFileQueryDaoImpl.findListByQName("BmRegionDTO.find.10");
 		Assert.assertNotNull(uclist);
 		Assert.assertEquals(10, uclist.size());

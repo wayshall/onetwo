@@ -14,7 +14,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 
 
 @ActiveProfiles(Environment.TEST)
-@ContextConfiguration(locations = { "/applicationContext-test.xml" })
+//@ContextConfiguration(locations = { "/applicationContext-test.xml" })
+@ContextConfiguration(loader=JFishAppContextLoaderForTest.class)
 @TransactionConfiguration(defaultRollback = false)
 public class JFishBaseJUnitTest extends SpringTxJUnitTestCase {
 	
@@ -30,6 +31,7 @@ public class JFishBaseJUnitTest extends SpringTxJUnitTestCase {
 		user.setBirthDay(DateUtil.now());
 		user.setEmail(i+"username@qq.com");
 		user.setHeight(3.3f);
+		user.setAge(11);
 		
 		return user;
 	}

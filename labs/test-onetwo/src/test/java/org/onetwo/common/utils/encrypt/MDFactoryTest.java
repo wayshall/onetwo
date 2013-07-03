@@ -8,7 +8,7 @@ public class MDFactoryTest {
 	
 	@Test
 	public void testMD(){
-		String source = "iso900900";
+		String source = "123456";
 		String encrypt = MDFactory.getMDEncrypt().encryptWithSalt(source);
 		LangUtils.println("after encrypt : ${0}", encrypt);
 		

@@ -113,12 +113,39 @@ public class ExcelTest {
 	}
 	
 	@Test
-	public void testTemplateWithMutilSheet(){
+	public void testMutilSheetTemplate(){
 		System.out.println("===========================>>>>>testTemplateWithMutilSheet ");
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("data", list);
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_test.xls";
 		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_test.xml", context);
+		g.generateIt();
+		g.write(path);
+	}
+	@Test
+	public void testMutilSheetTemplateWithExportDatasource(){
+		System.out.println("===========================>>>>>testTemplateWithMutilSheet ");
+		Map<String, Object> context = new HashMap<String, Object>();
+		final List<?> datalist = list;
+		context.put("data", new ExportDatasource() {
+			
+			@Override
+			public List<?> getSheetDataList(int i) {
+				int toIndex = 10*(i+1);
+				if(toIndex>datalist.size())
+					toIndex = datalist.size();
+				
+				return datalist.subList(10*i, toIndex);
+			}
+
+			@Override
+			public String getSheetLabel(int sheetIndex) {
+				return "报表" + sheetIndex;
+			}
+			
+		});
+		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_exportds.xls";
+		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_exportds.xml", context);
 		g.generateIt();
 		g.write(path);
 	}

@@ -100,20 +100,21 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 	}
 	
 	@Test
-	public void testNullValue2(){
-		String sql = "select * from t_user t where t.age = ? and t.birth_day=? and t.user_name =:userName";
+	public void testSqlNullWithIn(){
+		String sql = "select * from t_user t where t.age in (?) and t.birth_day=? and t.user_name in :userName";
 		DynamicQuery q = DynamicQueryFactory.createJFishDynamicQuery(sql);
-		q.setParameter(0, 1);
-		q.setParameter(1, null);
-		q.setParameter(2, "wayshall");
+		q.setParameter(0, SQLKeys.Null);
+		q.setParameter(1, SQLKeys.Empty);
+		q.setParameter(2, SQLKeys.Null);
 		q.ignoreIfNull().compile();
 		
 //		System.out.println("testNullValue2 sql: " + q.getTransitionSql());
 //		System.out.println("values: " + q.getValues());
 		
-		String expected = "select * from t_user t where t.age = ? and 1=1 and t.user_name = ?";
+		String expected = "select * from t_user t where t.age is null and t.birth_day = ? and t.user_name is null";
 		Assert.assertEquals(expected, q.getTransitionSql());
-		Assert.assertEquals("[1, wayshall]", q.getValues().toString());
+		Assert.assertEquals(1, q.getValues().size());
+		Assert.assertEquals("[]", q.getValues().toString());
 	}
 	
 	@Test
@@ -391,6 +392,49 @@ public class JFishDynamicQueryImplTest extends BaseTest {
 		String expected = "select * from t_user t where lower( t.age ) = ? and 1=1 and t.user_name = to_char( ? )";
 		Assert.assertEquals(expected, q.getTransitionSql());
 		Assert.assertEquals("[11, wayshall]", q.getValues().toString());
+		
+		sql = "select count(route_id) as visit_count,ro.route_id,ri.name as route_name from " +
+				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id=ri.id " +
+				"where ro.company_id=:company_id and " +
+				"ro.click_time between to_date(:date, 'yyyy-mm-dd') " +
+				"and to_date(:date_any_name, 'yyyy-mm-dd') group by ro.route_id, ri.name order by total desc";
+		
+//		JFishSqlParserManager.getInstance().setDebug(true);
+		q = DynamicQueryFactory.createJFishDynamicQuery(sql);
+		q.setParameter(0, 11l);
+		String dateStr = "2013-06-27";
+		Date date = DateUtil.parse(dateStr);
+		q.setParameter("date", new Object[]{date, DateUtil.addDay(date, 1)});
+		
+		q.ignoreIfNull().compile();
+		
+//		System.out.println("testSqlFuntionInValue sql: " + q.getTransitionSql());
+		expected = "select count( route_id ) as visit_count, ro.route_id, ri.name as route_name from " +
+				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id = ri.id " +
+				"where ro.company_id = ? and " +
+				"ro.click_time between to_date( ?, 'yyyy-mm-dd' ) " +
+				"and to_date( ?, 'yyyy-mm-dd' ) group by ro.route_id, ri.name order by total desc";
+		
+//		System.out.println("q.getTransitionSql(): " + q.getTransitionSql());
+		Assert.assertEquals(expected, q.getTransitionSql());
+//		System.out.println("q.getValues().toString():" + q.getValues().toString());
+		Assert.assertEquals("[11, Thu Jun 27 00:00:00 CST 2013, Fri Jun 28 00:00:00 CST 2013]", q.getValues().toString());
+		
+		q = DynamicQueryFactory.createJFishDynamicQuery(sql);
+		q.setParameter(0, 11l);
+		q.ignoreIfNull().compile();
+		
+//		System.out.println("testSqlFuntionInValue sql: " + q.getTransitionSql());
+		expected = "select count( route_id ) as visit_count, ro.route_id, ri.name as route_name from " +
+				"tb_route_outlink ro inner join tb_route_info ri on ro.route_id = ri.id " +
+				"where ro.company_id = ? " +
+//				"and ro.click_time between to_date( ?, 'yyyy-mm-dd' ) and to_date( ?, 'yyyy-mm-dd' ) " +
+				"and 1=1 " +
+				"group by ro.route_id, ri.name order by total desc";
+		System.out.println("q.getTransitionSql(): " + q.getTransitionSql());
+		Assert.assertEquals(expected, q.getTransitionSql());
+		System.out.println("q.getValues().toString():" + q.getValues().toString());
+		Assert.assertEquals("[11]", q.getValues().toString());
 	}
 	
 	@Test

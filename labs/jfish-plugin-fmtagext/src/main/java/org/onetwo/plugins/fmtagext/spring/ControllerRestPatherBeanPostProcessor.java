@@ -1,6 +1,5 @@
 package org.onetwo.plugins.fmtagext.spring;
 
-import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.plugin.JFishPluginManager;

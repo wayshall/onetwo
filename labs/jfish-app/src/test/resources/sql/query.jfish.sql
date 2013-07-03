@@ -3,11 +3,6 @@
 @BmRegionDTO.find.all.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
 @BmRegionDTO.find.all.ignore.null = true
 
-@BmRegionDTO.find.10 = select * from ( 
-						select t.* from BM_REGION t 
-					) where rownum <= 10
-@BmRegionDTO.find.10.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
-
 @BmRegionDTO.find.page = select t.* from uc_user t
 @BmRegionDTO.find.page.mapped.entity = org.onetwo.common.jfish.BmRegionDTO
 @BmRegionDTO.find.page.count.sql = select count(t.id) from uc_user t 

@@ -1,17 +1,31 @@
 package org.onetwo.common.utils;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.utils.ReflectUtils.CopyConf;
 import org.onetwo.common.utils.ReflectUtils.CopyConfig;
 
 import com.opensymphony.xwork2.util.profiling.UtilTimerStack;
 
 public class ReflectUtilsTest {
+	
+
+	@Test
+	public void testSimple(){
+		Method[] methods = User.class.getDeclaredMethods();
+		for(Method m : methods){
+			System.out.println("m : " + m.getName());
+			int index = m.getName().indexOf("a");
+			if(index!=-1){
+				String[] pnames = StringUtils.split(m.getName().substring(index), "a");
+				LangUtils.println("${0}--${1}", index, pnames);
+			}
+		}
+	}
 	
 	@Test
 	public void testToMap(){
