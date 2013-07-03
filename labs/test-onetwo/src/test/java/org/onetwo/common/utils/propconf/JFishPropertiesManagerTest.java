@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.JFishPropertyConf;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl.NamespaceProperties;
 
 public class JFishPropertiesManagerTest{
 	

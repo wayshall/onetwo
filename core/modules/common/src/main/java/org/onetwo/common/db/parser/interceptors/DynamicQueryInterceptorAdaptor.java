@@ -3,17 +3,17 @@ package org.onetwo.common.db.parser.interceptors;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.parser.JFishConditon;
 import org.onetwo.common.db.parser.QueryContext;
+import org.onetwo.common.db.parser.SqlCondition;
 import org.onetwo.common.db.parser.SqlObject;
 
 public class DynamicQueryInterceptorAdaptor implements DynamicQueryInterceptor {
 	
-	public void onParse(SqlObject sqlObject, List<JFishConditon> conditions){
+	public void onParse(SqlObject sqlObject, List<SqlCondition> conditions){
 		
 	}
 	
-	public void onCompile(SqlObject sqlObject, JFishConditon cond, IfNull ifNull, StringBuilder segment, QueryContext qcontext){
+	public void onCompile(SqlObject sqlObject, SqlCondition cond, IfNull ifNull, StringBuilder segment, QueryContext qcontext){
 		
 	}
 	

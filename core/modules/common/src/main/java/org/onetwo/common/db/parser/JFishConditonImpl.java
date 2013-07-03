@@ -3,34 +3,64 @@ package org.onetwo.common.db.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.sqlext.SQLKeys;
-import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.utils.LangUtils;
 
-public class JFishConditon {
+public class JFishConditonImpl implements SqlCondition {
 	protected SqlVarObject sqlObject;
 	protected Object value;
 	protected int index;
 
 	private boolean mutiValue;
-
-	// private boolean ignore;
+	
+	private boolean ignore;
 
 	// private int endStrIndex;
 
+	public <T> T getValue(Class<T> type) {
+		/*if (SQLKeys.class.isInstance(value)) {
+			return ((SQLKeys) value).getJavaValue();
+		}*/
+		return type.cast(value);
+	}
+	
+	@Override
 	public Object getValue() {
+		return value;
+	}
+
+	public Object getActualValue() {
 		if (SQLKeys.class.isInstance(value)) {
 			return ((SQLKeys) value).getJavaValue();
 		}
 		return value;
 	}
 
-	public JFishConditon(SqlVarObject sqlObject, int index) {
+	public List<?> getActualValueAsList() {
+		if(isMutiValue()){
+			List<?> list = getValue(List.class);
+			List<Object> actualValues = new ArrayList<Object>(list.size());
+//			int index = 0;
+			for(Object obj : list){
+				if (SQLKeys.class.isInstance(obj)) {
+					obj = ((SQLKeys) value).getJavaValue();
+				}
+				if(obj!=null)
+					actualValues.add(obj);
+//				index++;
+			}
+			return actualValues;
+		}else{
+			return LangUtils.asList(getActualValue());
+		}
+	}
+
+	public JFishConditonImpl(SqlVarObject sqlObject, int index) {
 		this.sqlObject = sqlObject;
 		this.index = index;
 	}
 
+	@Override
 	public void setValue(Object value) {
 		if (LangUtils.isMultiple(value)) {
 			this.mutiValue = true;
@@ -48,10 +78,11 @@ public class JFishConditon {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	/*public void setIndex(int index) {
 		this.index = index;
-	}
+	}*/
 
+	@Override
 	public boolean isAvailable() {
 		return !isNullOrBlank();
 	}
@@ -61,14 +92,17 @@ public class JFishConditon {
 	}
 
 	public boolean isIgnore() {
-		return isNullOrBlank();
+		return ignore || isNullOrBlank();
 	}
 	
 	protected SqlInfixVarConditionExpr getSqlInfixVarCondition(){
 		return (SqlInfixVarConditionExpr) sqlObject;
 	}
 
+	@Override
 	public String toSqlString() {
+		return sqlObject.parseSql(this);
+		/*
 		if(!sqlObject.isInfix()){
 			return toSqlStringWithOr();
 		}else{
@@ -77,14 +111,14 @@ public class JFishConditon {
 			} else {
 				return toSqlStringWithOr();
 			}
-		}
+		}*/
 	}
 
 	/*public String getOp() {
 		return sqlObject.getOperatorString();
 	}*/
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/*@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String toSqlStringWithOr() {
 		StringBuilder sql = new StringBuilder();
 		if (sqlObject.isInfix()) {
@@ -112,9 +146,9 @@ public class JFishConditon {
 		return sql.toString();
 	}
 
-	/*public String getName() {
+	public String getName() {
 		return getSqlInfixVarCondition().getLeftString();
-	}*/
+	}
 
 	protected void appendOneSqlScript(StringBuilder sql, Object val, int valueIndex) {
 		String op = getSqlInfixVarCondition().getOperatorString();
@@ -160,7 +194,7 @@ public class JFishConditon {
 		StringBuilder sql = new StringBuilder();
 		if (isInfixOperator()) {
 			if (isMutiValue()) {
-				/*sql.append(getName()).append(" ").append(op);
+				sql.append(getName()).append(" ").append(op);
 				if (isAppendParenthesis())
 					sql.append(" (");
 				else
@@ -173,7 +207,7 @@ public class JFishConditon {
 					vindex++;
 				}
 				if (isAppendParenthesis())
-					sql.append(")");*/
+					sql.append(")");
 				sql.append(this.sqlObject.toJdbcSql(getValueAsList().size()));
 			} else {
 				sql.append(this.sqlObject.toJdbcSql(1));
@@ -182,16 +216,17 @@ public class JFishConditon {
 			sql.append(this.sqlObject.toJdbcSql(1));
 		}
 		return sql.toString();
-	}
+	}*/
 
 	public String toString() {
-		return LangUtils.append("condition: ", sqlObject.toJdbcSql(1));
+		return LangUtils.append("condition: ", sqlObject.parseSql(this));
 	}
 
 	public boolean isAppendParenthesis() {
 		return isMutiValue();
 	}
 
+	@Override
 	public String getVarname() {
 		return sqlObject.getVarname();
 	}
@@ -204,8 +239,11 @@ public class JFishConditon {
 		return mutiValue;
 	}
 
-	public boolean isInfixOperator() {
+	/*public boolean isInfixOperator() {
 		return this.sqlObject.isInfix();
+	}*/
+	public void setIgnore(boolean ignore) {
+		this.ignore = ignore;
 	}
 
 }

@@ -29,5 +29,12 @@ public class SqlStatment {
 		SqlObject sqlobj = LangUtils.getFirst(sqlObjects);
 		return SqlParserUtils.getSqlType(sqlobj);
 	}
+	
+	public String toString(){
+		StringBuilder sql = new StringBuilder();
+		for(SqlObject so : sqlObjects)
+			sql.append(so);
+		return sql.toString();
+	}
 
 }

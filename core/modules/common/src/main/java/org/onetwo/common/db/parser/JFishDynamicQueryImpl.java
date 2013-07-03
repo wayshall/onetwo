@@ -37,7 +37,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 	protected String countSql;
 	protected boolean hasBuildCountSql;
 
-	protected List<JFishConditon> conditions = LangUtils.newArrayList();
+	protected List<SqlCondition> conditions = LangUtils.newArrayList();
 	protected List values = new ArrayList();
 
 	protected int firstRecord = -1;
@@ -128,7 +128,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 			return this;
 		
 		Object value;
-		for(JFishConditon cond : this.conditions){
+		for(SqlCondition cond : this.conditions){
 			value = parameters.get(cond.getVarname());
 			cond.setValue(value);
 		}
@@ -143,7 +143,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 	public DynamicQuery setParameters(Object bean) {
 		if(!hasConditions())
 			return this;
-		for(JFishConditon cond : this.conditions){
+		for(SqlCondition cond : this.conditions){
 			cond.setValue(ReflectUtils.getExpr(bean, cond.getVarname()));
 		}
 		setNotompiled();
@@ -171,7 +171,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 		StringBuilder sql = new StringBuilder();
 		int count = 0;
 //		StringBuilder segment = new StringBuilder();;
-		JFishConditon cond = null;
+		SqlCondition cond = null;
 		for(SqlObject sqlObj : statments.getSqlObjects()){
 //			segment.delete(0, segment.length());
 			
@@ -206,7 +206,7 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 	public DynamicQuery setParameter(String varname, Object value) {
 		Assert.hasText(varname);
 		Assert.notEmpty(this.conditions);
-		for (JFishConditon cond : this.conditions) {
+		for (SqlCondition cond : this.conditions) {
 			if (!varname.equals(cond.getVarname()))
 				continue;
 			cond.setValue(value);
@@ -238,12 +238,12 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 		return values;
 	}
 	
-	public List<JFishConditon> getActualConditions(){
+	public List<SqlCondition> getActualConditions(){
 		if(this.ifNull!=IfNull.Ignore)
 			return this.conditions;
 		
-		List<JFishConditon> actaulConditions = LangUtils.newArrayList();
-		for(JFishConditon cond : this.conditions){
+		List<SqlCondition> actaulConditions = LangUtils.newArrayList();
+		for(SqlCondition cond : this.conditions){
 			if(cond.isIgnore())
 				continue;
 			actaulConditions.add(cond);
@@ -303,11 +303,11 @@ public class JFishDynamicQueryImpl implements DynamicQuery {
 //		Assert.notEmpty(this.conditions);
 		
 		List values = new ArrayList();
-		for(JFishConditon cond : this.getActualConditions()){
+		for(SqlCondition cond : this.getActualConditions()){
 			if(cond.isMutiValue()){
-				values.addAll(cond.getValueAsList());
+				values.addAll(cond.getActualValueAsList());
 			}else{
-				values.add(cond.getValue());
+				values.add(cond.getActualValue());
 			}
 		}
 		return values;

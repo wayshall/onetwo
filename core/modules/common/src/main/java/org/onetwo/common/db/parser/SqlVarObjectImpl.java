@@ -1,7 +1,8 @@
 package org.onetwo.common.db.parser;
 
 
-public class SqlVarObjectImpl extends SqlObjectImpl implements SqlVarObject{
+
+public class SqlVarObjectImpl extends AbstractSqlVarObject implements SqlVarObject{
 	
 	private final String varname;
 	private final boolean named;
@@ -24,12 +25,12 @@ public class SqlVarObjectImpl extends SqlObjectImpl implements SqlVarObject{
 		return varname;
 	}
 
-	@Override
+//	@Override
 	public boolean isNamed() {
 		return named;
 	}
 
-	@Override
+//	@Override
 	public boolean isInfix() {
 		return false;
 	}
@@ -39,9 +40,24 @@ public class SqlVarObjectImpl extends SqlObjectImpl implements SqlVarObject{
 		return SqlParserUtils.getActualPlaceHolder(count, count>1);
 	}
 
-	@Override
+//	@Override
 	public String toJdbcSql(int varCount) {
 		return getActualPlaceHolder(varCount);
+	}
+
+	/*@Override
+	public String getVarname(int varIndex) {
+		return getVarname();
+	}
+
+	@Override
+	public int getVarCount() {
+		return 1;
+	}*/
+
+	@Override
+	public String parseSql(SqlCondition condition){
+		return toJdbcSql(1);
 	}
 
 }

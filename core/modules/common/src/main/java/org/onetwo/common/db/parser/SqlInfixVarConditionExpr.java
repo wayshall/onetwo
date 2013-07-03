@@ -1,22 +1,26 @@
 package org.onetwo.common.db.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.lexer.AbstractParser.JTokenValue;
 import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 
+@SuppressWarnings("unchecked")
+public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements SqlVarObject {
 
-
-public class SqlInfixVarConditionExpr extends SqlInfixConditionExpr implements SqlVarObject {
-
+	private SqlInfixConditionExpr expr;
 	private boolean rightVar = true;
-	private String varname = null;
-	private boolean named = false;
 	public SqlInfixVarConditionExpr() {
 		super();
 	}
 
 	public SqlInfixVarConditionExpr(JTokenValueCollection<SqlTokenKey> left, SqlTokenKey operator, JTokenValueCollection<SqlTokenKey> right, boolean rightVar) {
-		super(left, operator, right);
+		super();
+		this.expr = new SqlInfixConditionExpr(left, operator, right);
 		this.rightVar = rightVar;
 		JTokenValueCollection<SqlTokenKey> varIds = null;
 		if(isRightVar()){
@@ -35,15 +39,6 @@ public class SqlInfixVarConditionExpr extends SqlInfixConditionExpr implements S
 		}
 	}
 
-	@Override
-	public String getVarname() {
-		return varname;
-	}
-
-	@Override
-	public boolean isNamed() {
-		return named;
-	}
 
 	public boolean isRightVar() {
 		return rightVar;
@@ -57,15 +52,15 @@ public class SqlInfixVarConditionExpr extends SqlInfixConditionExpr implements S
 		if(!isNamed()){
 //			return getLeft().getValues("");
 //			return getLeft().getVauesWithReplace(" ", SqlTokenKey.QUESTION, getActualPlaceHolder(varCount));
-			return SqlParserUtils.toSqlWithReplace(getLeft(), SqlTokenKey.QUESTION, varCount);
+			return SqlParserUtils.toSqlWithReplace(expr.getLeft(), SqlTokenKey.QUESTION, varCount);
 		}
 		
 		if(isRightVar()){
 //			return getLeft().getValues("");
-			return SqlParserUtils.toFragmentSql(getLeft());
+			return SqlParserUtils.toFragmentSql(expr.getLeft());
 		}else{
 //			return getLeft().getVauesWithReplace(" ", SqlTokenKey.VARNAME, getActualPlaceHolder(varCount));
-			return SqlParserUtils.toSqlWithReplace(getLeft(), SqlTokenKey.VARNAME, varCount);
+			return SqlParserUtils.toSqlWithReplace(expr.getLeft(), SqlTokenKey.VARNAME, varCount);
 		}
 	}
 	
@@ -73,29 +68,109 @@ public class SqlInfixVarConditionExpr extends SqlInfixConditionExpr implements S
 		if(!isNamed()){
 //			return getRight().getValues("");
 //			return getRight().getVauesWithReplace(" ", SqlTokenKey.QUESTION, getActualPlaceHolder(varCount));
-			return SqlParserUtils.toSqlWithReplace(getRight(), SqlTokenKey.QUESTION, varCount);
+			return SqlParserUtils.toSqlWithReplace(expr.getRight(), SqlTokenKey.QUESTION, varCount);
 		}
 		
 		if(isRightVar()){
 //			return getRight().getVauesWithReplace(" ", SqlTokenKey.VARNAME, getActualPlaceHolder(varCount));
-			return SqlParserUtils.toSqlWithReplace(getRight(), SqlTokenKey.VARNAME, varCount);
+			return SqlParserUtils.toSqlWithReplace(expr.getRight(), SqlTokenKey.VARNAME, varCount);
 		}else{
 //			return getRight().getValues("");
-			return SqlParserUtils.toFragmentSql(getRight());
+			return SqlParserUtils.toFragmentSql(expr.getRight());
 		}
 	}
 
-	@Override
+//	@Override
 	public boolean isInfix() {
 		return true;
 	}
 
-	@Override
+//	@Override
 	public String toJdbcSql(int varCount){
 		StringBuilder sql = new StringBuilder();
-		sql.append(getLeftString(varCount)).append(getOperatorString()).append(" ").append(getRightString(varCount));
+		sql.append(getLeftString(varCount)).append(expr.getOperatorString()).append(" ").append(getRightString(varCount));
 		return sql.toString();
 	}
+
+	@Override
+	public String parseSql(SqlCondition condition){
+		StringBuilder sql = new StringBuilder();
+		if (condition.isMutiValue()) {
+			sql.append("( ");
+			int vindex = 0;
+			List<?> values = new ArrayList<Object>(condition.getValue(List.class));
+			for (Object val : values) {
+				if (vindex != 0)
+					sql.append("or ");
+				parseSingleValue(sql, condition, val, vindex);
+				vindex++;
+			}
+			sql.append(")");
+		} else {
+			parseSingleValue(sql, condition, condition.getValue(), 0);
+		}
+		return sql.toString();
+	}
+	
+	protected void parseSingleValue(StringBuilder sql, SqlCondition condition, Object val, int valueIndex) {
+		if (SQLKeys.Null.equals(val)) {
+			SQLKeys sk = (SQLKeys)val;
+			String name = getLeftString();
+			if (SqlTokenKey.NEQ==expr.getOperator() || SqlTokenKey.LTGT==expr.getOperator()) {
+				sql.append(name).append("is not null ");
+			}else {
+				sql.append(name).append("is null ");
+//				sql.append(toJdbcSql(1));
+			}
+			if (condition.isMutiValue()) {
+				condition.getValue(List.class).set(valueIndex, sk.getJavaValue());
+			} else {
+				condition.setValue(sk.getJavaValue());// set to null, ignore
+			}
+		} else {
+			if (SqlTokenKey.LIKE==expr.getOperator()) {
+				String valStr = val == null ? "" : val.toString();
+				
+				if(isRightVar()){
+					valStr = ExtQueryUtils.getLikeString(valStr);
+				}
+				if (condition.isMutiValue()) {
+					condition.getValue(List.class).set(valueIndex, valStr);
+				} else {
+					condition.setValue(valStr);
+				}
+			}
+			sql.append(this.toJdbcSql(1));
+		}
+	}
+
+	public JTokenValueCollection<SqlTokenKey> getRight() {
+		return expr.getRight();
+	}
+
+	public JTokenValueCollection<SqlTokenKey> getLeft() {
+		return expr.getLeft();
+	}
+
+	public SqlTokenKey getOperator() {
+		return expr.getOperator();
+	}
+
+
+	@Override
+	public String toFragmentSql(){
+		return this.expr.toFragmentSql();
+	}
+	
+	/*@Override
+	public String getVarname(int varIndex) {
+		return getVarname();
+	}
+
+	@Override
+	public int getVarCount() {
+		return 1;
+	}*/
 
 
 }

@@ -3,6 +3,7 @@ package org.onetwo.common.lexer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.db.parser.SqlTokenKey;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -16,7 +17,7 @@ public abstract class AbstractParser<T> {
 		this.lexer = lexer;
 	}
 
-	protected void ignoreBlock(int count, T start, T end){
+	public void ignoreBlock(int count, T start, T end){
 		int braceCount = count;
 		while(this.throwIfNoNextToken()){
 			if (tokenIs(start)) {
@@ -35,28 +36,28 @@ public abstract class AbstractParser<T> {
 		}
 	}
 
-	protected boolean throwIfNoNextToken(){
+	public boolean throwIfNoNextToken(){
 		if(!lexer.nextToken())
 			throw new JSyntaxException("java syntax error, it may be not a completion java code!");
 		return true;
 	}
 
-	protected boolean throwIfNextTokenIsNot(T token, Object target){
+	public boolean throwIfNextTokenIsNot(T token, Object target){
 		this.throwIfNoNextToken();
 		if(token!=lexer.getToken())
 			throw new JSyntaxException("java syntax error, "+(target!=null?target:"it")+" should be "+token+", but it's "+lexer.getToken()+"");
 		return true;
 	}
-	protected boolean throwIfNextTokenIsNotOneOf(T... tokens){
+	public boolean throwIfNextTokenIsNotOneOf(T... tokens){
 		if(!nextTokenIsOneOf(tokens))
 			throw new JSyntaxException("java syntax error, it should be "+StringUtils.join(tokens, ",")+", but it's "+lexer.getToken()+"");
 		return true;
 	}
-	protected boolean nextTokenIsOneOf(T... tokens){
+	public boolean nextTokenIsOneOf(T... tokens){
 		this.throwIfNoNextToken();
 		return tokenIsOneOf(tokens);
 	}
-	protected boolean tokenIsOneOf(T... tokens){
+	public boolean tokenIsOneOf(T... tokens){
 		for(T token : tokens){
 			if(token==lexer.getToken())
 				return true;
@@ -64,15 +65,15 @@ public abstract class AbstractParser<T> {
 		return false;
 	}
 	
-	protected boolean tokenIs(T token){
+	public boolean tokenIs(T token){
 		return token==lexer.getToken();
 	}
-	protected boolean nextTokenIs(T token){
+	public boolean nextTokenIs(T token){
 		throwIfNoNextToken();
 		return lexer.getToken()==token;
 	}
 	
-	protected String stringValue(){
+	public String stringValue(){
 		return lexer.getStringValue();
 	}
 
@@ -81,7 +82,7 @@ public abstract class AbstractParser<T> {
 		return (AbstractLexer<T>)lexer;
 	}
 	
-	protected List<T> nextAllTheseTokens(T...definedTokens){
+	public List<T> nextAllTheseTokens(T...definedTokens){
 		List<T> kws = new ArrayList<T>();
 		while(true){
 			if(ArrayUtils.contains(definedTokens, lexer.getToken())){
@@ -94,7 +95,7 @@ public abstract class AbstractParser<T> {
 		return kws;
 	}
 	
-	protected JTokenValueCollection<T> nextAllTokensUntil(T... tokens){
+	public JTokenValueCollection<T> nextAllTokensUntil(T... tokens){
 		JTokenValueCollection<T> tks = new JTokenValueCollection<T>();
 		
 		if(ArrayUtils.contains(tokens, lexer.getToken()))
@@ -112,7 +113,7 @@ public abstract class AbstractParser<T> {
 		return tks;
 	}
 
-	protected List<T> nextAllKeyWordTokens(){
+	public List<T> nextAllKeyWordTokens(){
 		List<T> kws = new ArrayList<T>();
 		while(true){
 			if(lexer.getKeyWords().isKeyWord(lexer.getToken())){
@@ -184,6 +185,14 @@ public abstract class AbstractParser<T> {
 			if(LangUtils.isEmpty(tokenValues))
 				return null;
 			return this.tokenValues.get(0);
+		}
+		
+		public boolean startWith(SqlTokenKey token){
+			return  isEmpty()?false:(token == getFirst().getToken());
+		}
+		
+		public boolean endWith(SqlTokenKey token){
+			return isEmpty()?false:( token == getLast().getToken() );
 		}
 		
 		public JTokenValue<T> remove(int index){

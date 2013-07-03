@@ -3,12 +3,13 @@ package org.onetwo.common.db.parser.interceptors;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
-import org.onetwo.common.db.parser.JFishConditon;
+import org.onetwo.common.db.parser.JFishConditonImpl;
 import org.onetwo.common.db.parser.QueryContext;
+import org.onetwo.common.db.parser.QueryContext.QValue;
+import org.onetwo.common.db.parser.SqlCondition;
 import org.onetwo.common.db.parser.SqlKeywords;
 import org.onetwo.common.db.parser.SqlObject;
 import org.onetwo.common.db.parser.SqlVarObject;
-import org.onetwo.common.db.parser.QueryContext.QValue;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -21,15 +22,15 @@ public class DefaultDynamicQueryInterceptor extends DynamicQueryInterceptorAdapt
 
 	
 	@Override
-	public void onParse(SqlObject sqlObj, List<JFishConditon> conditions){
+	public void onParse(SqlObject sqlObj, List<SqlCondition> conditions){
 		if(SqlVarObject.class.isInstance(sqlObj)){
-			JFishConditon cond = new JFishConditon((SqlVarObject)sqlObj, conditions.size());
+			JFishConditonImpl cond = new JFishConditonImpl((SqlVarObject)sqlObj, conditions.size());
 			conditions.add(cond);
 		}
 	}
 	
 	@Override
-	public void onCompile(SqlObject sqlObj, JFishConditon cond, IfNull ifNull, StringBuilder segmentBuf, QueryContext qcontext){
+	public void onCompile(SqlObject sqlObj, SqlCondition cond, IfNull ifNull, StringBuilder segmentBuf, QueryContext qcontext){
 		String segment = "";
 		if (cond!=null) {
 			if(IfNull.Ignore==ifNull){
