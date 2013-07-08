@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.views.jsp.ui.AbstractClosingTag;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.TimeCounter;
+import org.onetwo.common.profiling.TimeCounter;
 
 import com.opensymphony.xwork2.inject.Container;
 

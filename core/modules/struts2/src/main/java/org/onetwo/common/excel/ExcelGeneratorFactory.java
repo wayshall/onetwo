@@ -11,13 +11,13 @@ abstract public class ExcelGeneratorFactory {
 	private static Map<String, TemplateModel> TemplateModelCache = new HashMap<String, TemplateModel>();
 
 	public static PoiExcelGenerator createExcelGenerator(TemplateModel template, Map context){
-		PoiExcelGenerator generator = new DefaultExcelGeneratorImpl(template, context);
+		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);
 		return generator;
 	}
 
 	public static PoiExcelGenerator createWebExcelGenerator(TemplateModel template, Map context){
 		ExcelValueParser parser = new WebExcelValueParser(context);
-		PoiExcelGenerator generator = new DefaultExcelGeneratorImpl(template);
+		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template);
 		generator.setExcelValueParser(parser);
 		return generator;
 	}

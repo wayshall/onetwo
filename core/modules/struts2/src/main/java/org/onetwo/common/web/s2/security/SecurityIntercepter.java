@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.SiteConfig;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
@@ -72,8 +73,8 @@ public class SecurityIntercepter extends MethodFilterInterceptor {
 			AuthenticationContext context = AuthenticationContext.create(config, target);
 			authentication.authenticate(context);
 			
-			if(authoritable!=null)
-				authoritable.setLastActivityTime(new Date());
+			if(UserActivityCheckable.class.isInstance(authentication))
+				((UserActivityCheckable)authoritable).setLastActivityTime(new Date());
 			
 			result = invocation.invoke();
 			
