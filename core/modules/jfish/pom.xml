@@ -90,11 +90,6 @@
 	</dependency>
 	
 	<dependency>
-	  <groupId>org.springframework.data</groupId>
-	  <artifactId>spring-data-redis</artifactId>
-	</dependency>
-	
-	<dependency>
 	  <groupId>net.sourceforge.cglib</groupId>
 	  <artifactId>com.springsource.net.sf.cglib</artifactId>
 	</dependency>

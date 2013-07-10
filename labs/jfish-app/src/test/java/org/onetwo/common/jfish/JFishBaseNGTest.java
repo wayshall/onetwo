@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 
-@ActiveProfiles({ Environment.TEST_LOCAL })
+@ActiveProfiles({ Environment.TEST })
 //@ActiveProfiles({ Environment.TEST_LOCAL })
 @ContextConfiguration(locations = { "/applicationContext-test.xml" })
 @TransactionConfiguration(defaultRollback = false)
