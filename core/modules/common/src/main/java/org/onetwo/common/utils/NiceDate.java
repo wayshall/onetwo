@@ -271,6 +271,22 @@ public class NiceDate {
 		return DateUtil.formatDateTime(calendar.getTime());
 	}
 	
+	public int getYear(){
+		return calendar.get(Calendar.YEAR);
+	}
+	
+	public int getMonth(){
+		return calendar.get(Calendar.MONTH);
+	}
+	
+	public int getDayOfMonth(){
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	public int getHourOfDay(){
+		return calendar.get(Calendar.HOUR_OF_DAY);
+	}
+	
 	public static void main(String[] args){
 		NiceDate date = new NiceDate();
 		System.out.println(date.getDatePhase());
