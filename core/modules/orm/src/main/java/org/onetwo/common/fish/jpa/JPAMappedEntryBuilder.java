@@ -1,5 +1,9 @@
 package org.onetwo.common.fish.jpa;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +17,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
+import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.AbstractDBDialect.StrategyType;
 import org.onetwo.common.fish.orm.AbstractMappedField;
 import org.onetwo.common.fish.orm.BaseColumnInfo;
@@ -23,14 +29,31 @@ import org.onetwo.common.fish.orm.JFishMappedEntryBuilder;
 import org.onetwo.common.fish.orm.JFishMappedEntryImpl;
 import org.onetwo.common.fish.orm.JFishMappedField;
 import org.onetwo.common.fish.orm.TableInfo;
+import org.onetwo.common.fish.orm.version.DateVersionableType;
+import org.onetwo.common.fish.orm.version.IntegerVersionableType;
+import org.onetwo.common.fish.orm.version.LongVersionableType;
+import org.onetwo.common.fish.orm.version.VersionableType;
 import org.onetwo.common.utils.AnnotationInfo;
 import org.onetwo.common.utils.JFishProperty;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 
 public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
+	
+	private static final Map<Class<?>, VersionableType<? extends Object>> versionTypes;
+	static {
+		Map<Class<?>, VersionableType<? extends Object>> tem = LangUtils.newHashMap(5);
+		tem.put(int.class, new IntegerVersionableType());
+		tem.put(Integer.class, new IntegerVersionableType());
+		tem.put(long.class, new LongVersionableType());
+		tem.put(Long.class, new LongVersionableType());
+		tem.put(Date.class, new DateVersionableType());
+		
+		versionTypes = Collections.unmodifiableMap(tem);
+	}
 	
 	public JPAMappedEntryBuilder(){
 		this.setOrder(0);
@@ -116,10 +139,17 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		return sname;
 	}
 
+	@Override
 	protected void buildMappedField(JFishMappedField mfield){
 		if(mfield.getPropertyInfo().hasAnnotation(Id.class)){
 			mfield.setIdentify(true);
 			this.buildIdMappedField(mfield);
+		}
+		if(mfield.getPropertyInfo().hasAnnotation(Version.class)){
+			if(!versionTypes.containsKey(mfield.getPropertyInfo().getType())){
+				throw new JFishOrmException("the type of field["+mfield.getName()+"] is not a supported version type. supported types: " + versionTypes.keySet());
+			}
+			mfield.setVersionableType(versionTypes.get(mfield.getPropertyInfo().getType()));
 		}
 	}
 	

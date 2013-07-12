@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="t_role")
@@ -17,6 +18,7 @@ public class RoleEntity extends BaseEntity {
 	
 	private Long id;
 	private String name;
+	private long version;
 
 	@Id
 	@GeneratedValue
@@ -36,6 +38,15 @@ public class RoleEntity extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Version
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
 	}
 
 }

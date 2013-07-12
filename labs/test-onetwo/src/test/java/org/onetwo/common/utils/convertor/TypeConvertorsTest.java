@@ -1,10 +1,12 @@
 package org.onetwo.common.utils.convertor;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.fish.spring.JNamedQueryKey;
+import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
@@ -98,5 +100,19 @@ public class TypeConvertorsTest {
 		Assert.assertEquals(new Integer[]{1,2,3}, Types.asArray("1,2,3", Integer.class));
 		Assert.assertEquals(LangUtils.newArrayList(1,2,3), Types.asList("1,2,3", Integer.class));
 		Assert.assertEquals(LangUtils.newArrayList(1.0,2.0,3.0), Types.asList("1,2,3", Double.class));
+	}
+	
+	@Test
+	public void testToDate(){
+		String datestr = "2012-05-05";
+		Date cdate = Types.convertValue(datestr, Date.class);
+		Assert.assertEquals(datestr, DateUtil.formatDate(cdate));
+		
+		datestr = "21:21:21";
+		cdate = Types.convertValue(datestr, Date.class);
+		Assert.assertEquals(datestr, DateUtil.formatTime(cdate));
+		
+		cdate = Types.convertValue(cdate.getTime(), Date.class);
+		Assert.assertEquals(datestr, DateUtil.formatTime(cdate));
 	}
 }

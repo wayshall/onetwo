@@ -74,6 +74,7 @@ public class UserEntity extends BaseEntity<Long>  {
 	
 	private List<AddressEntity> address;
 	
+	
 //	@Override
 	@Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE)
@@ -187,5 +188,6 @@ public class UserEntity extends BaseEntity<Long>  {
 	public void setAddress(List<AddressEntity> address) {
 		this.address = address;
 	}
+
 	
 }

@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
+import org.onetwo.common.fish.exception.JFishEntityVersionException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
+import org.onetwo.common.fish.orm.JFishMappedField;
 import org.onetwo.common.fish.orm.JdbcStatementContext;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -59,11 +61,35 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 	 * @return
 	 */
 	private int updateSingleEntity(boolean dymanic, JFishEventSource es, JFishMappedEntry entry, Object singleEntity){
+		Object currentTransactionVersion = null;
+
+		if(entry.isVersionControll()){
+			JFishMappedField versionField = entry.getVersionField();
+			JdbcStatementContext<Object[]> versionContext = entry.makeSelectVersion(singleEntity);
+			//因为在同一个事务里，实际上得到的version还是旧的，只是防止程序员自己修改version字段
+			currentTransactionVersion = es.getJFishJdbcTemplate().queryForObject(versionContext.getSql(), versionField.getColumnType(), entry.getId(singleEntity));
+			Object entityVersion = entry.getVersionField().getValue(singleEntity);
+			
+			if(!versionField.getVersionableType().isEquals(entityVersion, currentTransactionVersion)){
+				throw new JFishEntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
+			}
+		}
+		
 		JdbcStatementContext<List<Object[]>> update = dymanic?entry.makeDymanicUpdate(singleEntity):entry.makeUpdate(singleEntity);
 		int count = this.executeJdbcUpdate(false, update.getSql(), update.getValue(), es);
 		
-		if(count<1)
-			throw new JFishEntityNotFoundException("update count is " + count + ".", singleEntity.getClass(), entry.getId(singleEntity));
+		if(count<1){
+			if(currentTransactionVersion!=null){
+//				Object entityVersion = update.getSqlBuilder().getVersionValue(update.getValue().get(0));
+//				Object entityVersion = entry.getVersionField().getValue(singleEntity);
+				throw new JFishEntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
+			}else{
+				throw new JFishEntityNotFoundException("update count is " + count + ".", singleEntity.getClass(), entry.getId(singleEntity));
+			}
+		}
+		
+		this.updateEntityVersionIfNecessary(update.getSqlBuilder(), update.getValue().get(0), singleEntity);
+		
 		return count;
 	}
 
