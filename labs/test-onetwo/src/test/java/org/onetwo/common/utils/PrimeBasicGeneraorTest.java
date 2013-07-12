@@ -10,7 +10,7 @@ public class PrimeBasicGeneraorTest {
 	public void testCount(){
 		int count = g.getPrimeCount();
 		System.out.println("count: " + count);
-		System.out.println("g: " + g);
+//		System.out.println("g: " + g);
 	}
 
 }
