@@ -14,7 +14,7 @@ import org.onetwo.common.utils.xml.jaxb.DateAdapter;
 
 @XmlRootElement
 @MappedSuperclass
-abstract public class BaseEntity<T> implements IBaseEntity{
+abstract public class BaseEntity implements IBaseEntity{
  
 	private static final long serialVersionUID = 122579169646461421L;
 

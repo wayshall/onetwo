@@ -5,4 +5,6 @@ import org.onetwo.common.web.config.WebAppConfigurator;
 public interface JFishAppConfigrator extends JFishOrmConfigurator, WebAppConfigurator {
 
 	public String[] getXmlBasePackages();
+
+	public String getJFishBasePackage();
 }

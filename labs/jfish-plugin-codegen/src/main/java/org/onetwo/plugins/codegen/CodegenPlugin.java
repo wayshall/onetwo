@@ -15,6 +15,11 @@ public class CodegenPlugin extends AbstractJFishPlugin<CodegenPlugin> {
 	}
 
 	@Override
+	public void onJFishContextClasses(List<Class<?>> annoClasses) {
+		annoClasses.add(CodegenAppContext.class);
+	}
+
+	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(CodegenContext.class);
 	}

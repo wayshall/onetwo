@@ -12,11 +12,13 @@
 	
 	<#include "[fmtagext]/lib/bootstrap/_ui-grid.ftl"/>
 	</@form.form>
-	<script>
-		jQuery("#${__dg__.form.name}").initDatagrid();
-	</script>
 <#else>
 	<#include "[fmtagext]/lib/bootstrap/_ui-grid.ftl"/>
+</#if>
+<#if __dg__.initDatagrid>
+	<script>
+		jQuery("#${__dg__.initFormName}").initDatagrid();
+	</script>
 </#if>
 		
 <#recover>

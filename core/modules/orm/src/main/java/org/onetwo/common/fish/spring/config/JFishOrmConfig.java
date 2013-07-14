@@ -32,13 +32,12 @@ import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -58,13 +57,10 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Autowired
 	private DataSource dataSource;
 
-	@Value("${watch.sql.file}")
 	private boolean watchSqlFile;
 	
 	private boolean logJdbcSql;
 
-	@Value("${jfish.base.packages}")
-	private String entityBasePackages;
 	
 //	private JFishContextConfigurerListenerManager listenerManager= new JFishContextConfigurerListenerManager();
 	
@@ -95,11 +91,9 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 			this.jfishConfigurer = new JFishConfigurerAdapter();
 		}
 		this.jfishOrmConfigurator = SpringUtils.getBean(applicationContex, JFishOrmConfigurator.class);
-//		Assert.notNull(jfAppConfigurator);
-		if(jfishOrmConfigurator!=null){
-			this.logJdbcSql = jfishOrmConfigurator.isLogJdbcSql();
-			this.watchSqlFile = jfishOrmConfigurator.isWatchSqlFile();
-		}
+		Assert.notNull(jfishOrmConfigurator);
+		this.logJdbcSql = jfishOrmConfigurator.isLogJdbcSql();
+		this.watchSqlFile = jfishOrmConfigurator.isWatchSqlFile();
 	}
 
 	public ApplicationContext getApplicationContex() {
@@ -167,18 +161,8 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		if(em==null){
 			MutilMappedEntryManager mem = new MutilMappedEntryManager();
 			// em.setMappedEntryBuilder(mappedEntryBuilderList());
-			if(jfishOrmConfigurator!=null && !LangUtils.isEmpty(jfishOrmConfigurator.getModelBasePackages())){
+			if(!LangUtils.isEmpty(jfishOrmConfigurator.getModelBasePackages())){
 				mem.setPackagesToScan(jfishOrmConfigurator.getModelBasePackages());
-			}else{
-				if(SpringUtils.isSpringConfPlaceholder(entityBasePackages)){
-					entityBasePackages = "";
-				}
-				if(StringUtils.isNotBlank(entityBasePackages)){
-					String[] packages = StringUtils.split(entityBasePackages, ",");
-					if(!LangUtils.isEmpty(packages)){
-						mem.setPackagesToScan(packages);
-					}
-				}
 			}
 			
 			em = mem;

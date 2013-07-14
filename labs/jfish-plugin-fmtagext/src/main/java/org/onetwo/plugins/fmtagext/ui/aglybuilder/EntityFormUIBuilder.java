@@ -4,11 +4,11 @@ import java.util.Collections;
 
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.fmtag.JFieldShowable;
+import org.onetwo.plugins.fmtagext.ui.ButtonUI;
 import org.onetwo.plugins.fmtagext.ui.JFieldViewObject;
 import org.onetwo.plugins.fmtagext.ui.UI;
 import org.onetwo.plugins.fmtagext.ui.UITypeMapper;
 import org.onetwo.plugins.fmtagext.ui.ViewEntry;
-import org.onetwo.plugins.fmtagext.ui.form.FormButtonUI;
 import org.onetwo.plugins.fmtagext.ui.form.FormFieldUI;
 import org.onetwo.plugins.fmtagext.ui.form.FormUI;
 
@@ -87,7 +87,7 @@ public class EntityFormUIBuilder extends BaseEntityUIBuilder<FormUI>{
 //		}
 //	}
 	
-	public EntityFormUIBuilder buildButtons(FormButtonUI...buttons){
+	public EntityFormUIBuilder buildButtons(ButtonUI...buttons){
 		form.getButtons().clear();
 		form.addButtons(buttons);
 		return this;
@@ -112,6 +112,6 @@ public class EntityFormUIBuilder extends BaseEntityUIBuilder<FormUI>{
 	}
 
 	public void buildEntityFormCommonButtons(String listPath){
-		buildButtons(UI.btnOk(), listPath==null?null:UI.backToButton(listPath));
+		buildButtons(UI.submit(), listPath==null?null:UI.backToButton(listPath));
 	}
 }

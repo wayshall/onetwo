@@ -11,13 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 abstract public class BaseRestController<T> extends AbstractBaseController {
 	
 	private Class<T> entityClass;
-//	private EntityPathInfo entityPathInfo;
-	
 	@Autowired
 	private RestPather restPather;
 	
-//	private MappedEntryManager mappedEntryManager;
-
 	protected BaseRestController(){
 		this.entityClass = ReflectUtils.getSuperClassGenricType(this.getClass());
 	}
@@ -26,6 +22,7 @@ abstract public class BaseRestController<T> extends AbstractBaseController {
 		return null;
 	}
 	
+	//build page
 	public void initBuild(){
 		
 	}

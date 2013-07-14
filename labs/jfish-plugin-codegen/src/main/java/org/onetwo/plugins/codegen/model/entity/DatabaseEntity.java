@@ -17,10 +17,12 @@ import org.onetwo.plugins.fmtagext.annotation.JFieldView;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "codegen_database")
+@Table(name = DatabaseEntity.TABLE_NAME)
 @SequenceGenerator(name = "DataBaseEntityGenerator", sequenceName = "SEQ_codegen_database")
 @JEntryViewMeta(label="数据库")
 public class DatabaseEntity extends BaseEntity {
+
+	public static final String TABLE_NAME = "codegen_database";
 
 	private Long id;
 	private String label;

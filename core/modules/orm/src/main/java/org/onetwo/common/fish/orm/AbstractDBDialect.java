@@ -85,7 +85,10 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 		public void setVersion(String version) {
 			this.version = version;
 		}
-
+		
+		public DataBase getDb() {
+			return db;
+		}
 		public String toString(){
 			StringBuilder sb = new StringBuilder();
 			sb.append("dbmeta [dbName:").append(dbName).append(", version:").append(version).append("]");

@@ -350,6 +350,8 @@ public class FileUtils {
 			fileName = fileName.replace('\\', '/');
 		int start = fileName.lastIndexOf('/');
 		int index = fileName.lastIndexOf('.');
+		if(index==-1)
+			index = fileName.length();
 		return fileName.substring(start+1, index);
 	}
 
@@ -754,6 +756,13 @@ public class FileUtils {
 		if(!outDir.exists())
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+path);
+	}
+	
+	public static File getMavenProjectDir(){
+		String baseDirPath = FileUtils.getResourcePath("");
+		File baseDir = new File(baseDirPath);
+		baseDir = baseDir.getParentFile().getParentFile();
+		return baseDir;
 	}
 	
 	public static void main(String[] args) {

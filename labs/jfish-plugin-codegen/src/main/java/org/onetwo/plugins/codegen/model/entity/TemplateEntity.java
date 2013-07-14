@@ -12,19 +12,23 @@ import org.onetwo.common.fish.jpa.BaseEntity;
 import org.onetwo.plugins.fmtag.JFieldShowable;
 import org.onetwo.plugins.fmtag.annotation.JEntryViewMeta;
 import org.onetwo.plugins.fmtagext.annotation.JFieldView;
+import org.onetwo.plugins.fmtagext.uitils.UIType;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "codegen_template")
+@Table(name = TemplateEntity.TABLE_NAME)
 @SequenceGenerator(name = "TemplateEntityGenerator", sequenceName = "SEQ_codegen_template")
 @JEntryViewMeta(label="模板")
 public class TemplateEntity extends BaseEntity {
+
+	public static final String TABLE_NAME = "codegen_template";
 
 	private Long id;
 	private String name;
 	private String packageName;
 	private String fileNamePostfix;
 	private String filePostfix;
+	private String filePath;
 	private String content;
 
 	@Id
@@ -77,13 +81,22 @@ public class TemplateEntity extends BaseEntity {
 		this.filePostfix = filePostfix;
 	}
 
-	@JFieldView(label="模板内容", showable={JFieldShowable.create, JFieldShowable.update, JFieldShowable.show})
+	@JFieldView(label="模板内容", formui=UIType.FORM_TEXTAREA, showable={JFieldShowable.create, JFieldShowable.update, JFieldShowable.show})
 	public String getContent() {
 		return content;
 	}
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	@JFieldView(label="模板路径", showable={JFieldShowable.create, JFieldShowable.update, JFieldShowable.show})
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 }

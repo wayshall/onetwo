@@ -18,7 +18,7 @@ import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
-	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "delete", "insert");
+	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "delete", "insert", "create");
 	private static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;
@@ -135,6 +135,12 @@ public class DynamicMethod {
 			this.condidateParameterNames = parameterNamesByMethodName;
 		}
 
+		/****
+		 * 查询参数策略
+		 * 如果有注解优先
+		 * 其次是by分割符
+		 * 以上皆否，则通过参数位置作为名称
+		 */
 		public String getParameterName() {
 			if(StringUtils.isNotBlank(parameterName))
 				return parameterName;

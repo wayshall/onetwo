@@ -25,6 +25,12 @@ abstract public class BaseAppConfigurator implements JFishAppConfigrator {
 	}*/
 
 	@Override
+	public String[] getModelBasePackages() {
+		return new String[]{getJFishBasePackage()};
+	}
+
+
+	@Override
 	public boolean isLogJdbcSql() {
 		return BaseSiteConfig.getInstance().isJdbcSqlLog();
 	}

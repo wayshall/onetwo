@@ -28,6 +28,12 @@ public class StringUtilsTest {
 		Assert.assertEquals("new", strs[0]);
 		Assert.assertEquals("update", strs[1]);
 		Assert.assertEquals("list", strs[2]);
+		
+		str = "_update|list";
+		strs = StringUtils.split(str, "_|");
+		Assert.assertEquals(2, strs.length);
+		Assert.assertEquals("update", strs[0]);
+		Assert.assertEquals("list", strs[1]);
 	}
 
 	@Test

@@ -13,19 +13,13 @@ public class GenContext implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -4005047454897540100L;
-	
-	private String basePackage;
+
+	private String modelName;
 	private String tablePrefix;
 	private String generateOutDir;
 	
 	private Map<String, ?> context = new HashMap<String, Object>();
-	
-	public String getBasePackage() {
-		return basePackage;
-	}
-	public void setBasePackage(String basePackage) {
-		this.basePackage = basePackage;
-	}
+
 	public String getTablePrefix() {
 		return tablePrefix;
 	}
@@ -55,6 +49,16 @@ public class GenContext implements Serializable {
 	
 	public String toString(){
 		return LangUtils.toString(this);
+	}
+
+
+	public String getModelName() {
+		return modelName;
+	}
+
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
 }

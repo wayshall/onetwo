@@ -7,6 +7,7 @@ import org.onetwo.plugins.fmtagext.ui.UI;
 import org.onetwo.plugins.fmtagext.ui.aglybuilder.EntityGridUIBuilder;
 import org.onetwo.plugins.fmtagext.ui.aglybuilder.EntityPage;
 import org.onetwo.plugins.fmtagext.ui.datagrid.DataGridColumnUI;
+import org.onetwo.plugins.fmtagext.ui.datagrid.DataGridUI;
 import org.onetwo.plugins.fmtagext.ui.form.FormCheckboxUI;
 import org.onetwo.plugins.fmtagext.ui.form.FormLinkButtonUI;
 import org.onetwo.plugins.fmtagext.ui.form.FormUI;
@@ -42,7 +43,7 @@ public class DatabasePage extends EntityPage<DatabaseEntity>{
 		listgridBuilder.buildUIComponent();
 		
 		showTablesGridBuilder = newEntityGridUIBuilder();
-		showTablesGridBuilder.buildForm(entityPathInfo.getBatchDeletePathInfo().getMethod(), entityPathInfo.getBatchDeletePathInfo().getPath());
+//		showTablesGridBuilder.buildForm(entityPathInfo.getBatchDeletePathInfo().getMethod(), entityPathInfo.getBatchDeletePathInfo().getPath());
 		FormLinkButtonUI configMenu = new FormLinkButtonUI("config", "配置");
 		configMenu.setHref("/codegen/config");
 		configMenu.setDataMethod(FormMethod.post);
@@ -62,9 +63,12 @@ public class DatabasePage extends EntityPage<DatabaseEntity>{
 	}
 	
 	public PageUI getShowTablesGridPage(Object data){
+		build();
+		DataGridUI dg = showTablesGridBuilder.retriveUIComponent();
 		FormUI form = new FormUI("");
 		form.addHidden("dbid", ":id");
-		form.getChildren().addChild(showTablesGridBuilder.retriveUIComponent());
+		dg.setInitFormName(form.getName());
+		form.getChildren().addChild(dg);
 		return UI.page(form, data);
 	}
 }

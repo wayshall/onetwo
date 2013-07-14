@@ -56,7 +56,8 @@ public class BaseInitFilter extends IgnoreFiler {
 		siteConfig.getFreezer().freezing();
 		
 		ServletContext context = config.getServletContext();
-		context.setAttribute(BaseSiteConfig.CONFIG_NAME, webconfig);
+		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
+		context.setAttribute("webConfig", webconfig);
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		SpringApplication.initApplication(app);

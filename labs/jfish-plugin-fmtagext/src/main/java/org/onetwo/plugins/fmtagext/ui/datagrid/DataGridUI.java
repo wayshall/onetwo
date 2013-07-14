@@ -28,6 +28,8 @@ public class DataGridUI extends FmUIComponent {
 	
 	private int colspan;
 	
+	private String initFormName;
+	
 //	private String formAction;
 	
 	public DataGridUI() {
@@ -146,4 +148,17 @@ public class DataGridUI extends FmUIComponent {
 		}
 		return title;
 	}
+	public boolean isInitDatagrid(){
+		return StringUtils.isNotBlank(getInitFormName());
+	}
+	public String getInitFormName() {
+		if(StringUtils.isBlank(initFormName)&&form!=null){
+			initFormName = form.getName();
+		}
+		return initFormName;
+	}
+	public void setInitFormName(String initFormName) {
+		this.initFormName = initFormName;
+	}
+	
 }

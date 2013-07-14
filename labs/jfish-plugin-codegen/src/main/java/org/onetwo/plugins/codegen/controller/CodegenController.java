@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.exception.BusinessException;
+import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
 import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -51,13 +52,22 @@ public class CodegenController extends BaseController<Object>{
 	@Autowired
 	private FreemarkerTemplate freemarkerTemplate;
 	
+	@Autowired
+	private JFishAppConfigrator JFishAppConfigrator;
+	
 	@RequestMapping(value={"", "/"})
 	public String index(){
 		return redirect("/codegen/database");
 	}
+	
+	@RequestMapping(value="init", method=RequestMethod.POST)
+	public ModelAndView init(){
+		this.databaseServiceImpl.initCodegen();
+		return mv("codegen-init");
+	}
 
 	@RequestMapping(value="/config", method=RequestMethod.POST)
-	public ModelAndView config(@ModelAttribute("dbid") Long dbid, String[] tables, Page<TemplateEntity> tp) throws BusinessException{
+	public ModelAndView config(Long dbid, String[] tables, Page<TemplateEntity> tp) throws BusinessException{
 		System.out.println("tables: " + LangUtils.toString(tables));
 		templateServiceImpl.findPage(tp, K.DESC, "lastUpdateTime");
 		
@@ -79,12 +89,13 @@ public class CodegenController extends BaseController<Object>{
 			}
 		}
 		form.addFormField(new FormTextUI("要生成代码的表", StringUtils.join(tables, ",")));
-		form.addTextInput("basePackage", "包名");
-		form.addTextInput("generateOutDir", "输出目录");
+		form.addTextInput("modelName", "模块名");
+//		form.addTextInput("generateOutDir", "输出目录");
 		form.addTextInput("tablePrefix", "要去掉的前缀");
 		form.addHidden("dbid", dbid.toString());
 		DataGridUI dg = listgridBuilder.buildUIComponent();
 		dg.setTitle("选择代码模板：");
+		dg.setInitFormName(form.getName());
 		form.getChildren().addChild(dg);
 		form.addButtons(UI.submit());
 		
@@ -94,6 +105,7 @@ public class CodegenController extends BaseController<Object>{
 
 	@RequestMapping(value="/gencode", method=RequestMethod.POST)
 	public ModelAndView gencode(@ModelAttribute("dbid") Long dbid, String[] tables, Long[] ids, GenContext context) throws BusinessException{
+		
 		System.out.println("context: " + context);
 		if(LangUtils.isEmpty(ids)){
 			return mv("gen-result", MESSAGE, "请选择模板！");
@@ -104,10 +116,21 @@ public class CodegenController extends BaseController<Object>{
 		DefaultCodegenServiceImpl cs = new DefaultCodegenServiceImpl(freemarkerTemplate, tm);
 		for(Long id : ids){
 			TemplateEntity templ = this.templateServiceImpl.load(id);
-			CommonlContextBuilder cmb = new CommonlContextBuilder();
+			CommonlContextBuilder cmb = new CommonlContextBuilder(db.getDataBase());
+
+			cmb.setBasePackage(this.JFishAppConfigrator.getJFishBasePackage());
+			if(templ.getFileNamePostfix().equalsIgnoreCase("Entity") 
+					|| templ.getFileNamePostfix().equalsIgnoreCase("Service")
+					|| templ.getFileNamePostfix().equalsIgnoreCase("ServiceImpl")){
+				cmb.setArchetypePackage("model");
+			}else if(templ.getFileNamePostfix().equalsIgnoreCase("Controller")){
+				cmb.setArchetypePackage("web.controller");
+			}else{
+				cmb.setArchetypePackage("");
+			}
+			cmb.setModuleName(context.getModelName());
 			cmb.setName(templ.getName());
 			cmb.setTemplate(id.toString());
-			cmb.setOutFileNameCapitalize(true);
 			cmb.setFileNamePostfix(templ.getFileNamePostfix());
 			cmb.setFilePostfix(templ.getFilePostfix());
 			cmb.setSelfPackage(templ.getPackageName());

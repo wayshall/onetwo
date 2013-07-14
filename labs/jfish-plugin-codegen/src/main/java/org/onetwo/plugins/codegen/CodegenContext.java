@@ -1,38 +1,30 @@
 package org.onetwo.plugins.codegen;
 
-import org.onetwo.plugins.codegen.generator.DefaultDataSourceFactory;
-import org.onetwo.plugins.codegen.generator.DefaultTableComponentFacotry;
-import org.onetwo.plugins.codegen.generator.DefaultTableManagerFactory;
+import org.onetwo.plugins.codegen.controller.CodegenController;
 import org.onetwo.plugins.codegen.generator.FreemarkerTemplate;
-import org.onetwo.plugins.codegen.generator.TableComponentFacotry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 @Configuration
-@ComponentScan(basePackageClasses=CodegenPlugin.class)
+@ComponentScan(basePackageClasses=CodegenController.class)
 public class CodegenContext {
+
 	
 	public CodegenContext(){
 	}
 
-	@Bean
-	public DefaultDataSourceFactory dataSourceFactory(){
-		DefaultDataSourceFactory dsf = new DefaultDataSourceFactory();
-		return dsf;
+
+	@Bean 
+	public DatabaseInterceptor databaseInterceptor(){
+		return new DatabaseInterceptor();
 	}
-	
-	@Bean
-	public DefaultTableManagerFactory tableManagerFactory(){
-		DefaultTableManagerFactory tmf = new DefaultTableManagerFactory();
-		return tmf;
+	@Bean 
+	public MappedInterceptor mappedDatabaseInterceptor(){
+		return new MappedInterceptor(new String[]{"/codegen/**"}, new String[]{"/codegen/init"}, databaseInterceptor());
 	}
 
-	@Bean
-	public TableComponentFacotry tableComponentFacotry(){
-		TableComponentFacotry tcf = new DefaultTableComponentFacotry();
-		return tcf;
-	}
 
 	@Bean
 	public FreemarkerTemplate freemarkerTemplate(){

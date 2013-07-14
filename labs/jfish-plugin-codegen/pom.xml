@@ -32,6 +32,12 @@
 	  <artifactId>onetwo-plugin-fmtagext</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
+  	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-dq</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
 	
 	<dependency>
 	  <groupId>javax.persistence</groupId>

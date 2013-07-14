@@ -1,6 +1,8 @@
 package org.onetwo.plugins.codegen.model.service.impl;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.fish.JFishCrudServiceImpl;
+import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.codegen.generator.StringTemplateProvider;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,11 @@ public class TemplateServiceImpl extends JFishCrudServiceImpl<TemplateEntity, Lo
 		}
 		if(temp==null)
 			throw new ServiceException("找不到模板：" + name);
+		if(StringUtils.isNotBlank(temp.getFilePath())){
+			String content = FileUtils.readAsString(temp.getFilePath());
+			if(StringUtils.isNotBlank(content))
+				return content;
+		}
 		return temp.getContent();
 	}
 

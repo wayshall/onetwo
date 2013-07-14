@@ -14,6 +14,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,11 @@ public class JFishContextConfig implements ApplicationContextAware {
 
 	private ApplicationContext applicationContex;
 
+	@Value("${jfish.base.packages}")
+	private String entityBasePackages;
+	@Value("${watch.sql.file}")
+	private boolean isWatchSqlFile;
+	
 	// private JFishContextConfigurerListenerManager listenerManager = new
 	// JFishContextConfigurerListenerManager();
 
@@ -69,8 +75,8 @@ public class JFishContextConfig implements ApplicationContextAware {
 	}
 
 	@Bean
-	public JFishOrmConfigurator jfishAppConfigurator() {
-		JFishOrmConfigurator jfAppConfigurator = SpringUtils.getBean(applicationContex, JFishOrmConfigurator.class);
+	public JFishAppConfigrator jfishAppConfigurator() {
+		JFishAppConfigrator jfAppConfigurator = SpringUtils.getBean(applicationContex, JFishAppConfigrator.class);
 		if (jfAppConfigurator == null) {
 			jfAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigrator.class);
 		}
@@ -78,8 +84,13 @@ public class JFishContextConfig implements ApplicationContextAware {
 			jfAppConfigurator = new BaseAppConfigurator(){
 
 				@Override
-				public String[] getModelBasePackages() {
-					return null;
+				public String getJFishBasePackage() {
+					return entityBasePackages;
+				}
+
+				@Override
+				public boolean isWatchSqlFile() {
+					return isWatchSqlFile;
 				}
 				
 			};

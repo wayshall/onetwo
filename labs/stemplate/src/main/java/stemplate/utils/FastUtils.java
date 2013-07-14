@@ -6,13 +6,13 @@ import org.onetwo.common.spring.xml.JaxbMapperFactory;
 import org.onetwo.common.utils.bean.BeanDuplicator;
 import org.onetwo.common.utils.xml.jaxb.JaxbMapper;
 
-import stemplate.model.BaseEntity;
+import stemplate.model.AppBaseEntity;
 
 
 abstract public class FastUtils {
 
-	private final static BeanDuplicator BEAN_DUPLICATOR = DozerFacotry.createBeanDuplicator(FastUtils.class.getClassLoader(), BaseEntity.class.getPackage().getName());
-	private final static JaxbMapper JAXB_MAPPER = JaxbMapperFactory.createMapper(BaseEntity.class.getPackage().getName());
+	private final static BeanDuplicator BEAN_DUPLICATOR = DozerFacotry.createBeanDuplicator(FastUtils.class.getClassLoader(), AppBaseEntity.class.getPackage().getName());
+	private final static JaxbMapper JAXB_MAPPER = JaxbMapperFactory.createMapper(AppBaseEntity.class.getPackage().getName());
 
 	public static BeanDuplicator beanDuplicator() {
 		return BEAN_DUPLICATOR;
