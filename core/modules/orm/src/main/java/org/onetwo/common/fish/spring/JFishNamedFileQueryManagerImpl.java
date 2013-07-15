@@ -33,13 +33,13 @@ public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerIm
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
-		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
+		String sqldirPath = locationPattern+"/**/*"+conf.getPostfix();
 		
 		File[] allSqlFiles = null;
 		try {
 			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
 			if(StringUtils.isNotBlank(conf.getOverrideDir())){
-				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**"+conf.getPostfix();
+				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**/*"+conf.getPostfix();
 				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
 				if(!LangUtils.isEmpty(dbsqlfiles)){
 					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);

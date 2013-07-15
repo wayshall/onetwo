@@ -88,11 +88,6 @@
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-oxm</artifactId>
 	</dependency>
-	
-	<dependency>
-	  <groupId>net.sourceforge.cglib</groupId>
-	  <artifactId>com.springsource.net.sf.cglib</artifactId>
-	</dependency>
 	 
 	<dependency>
 	  <groupId>org.freemarker</groupId>

@@ -2,11 +2,10 @@ package org.onetwo.plugins.codegen.controller;
 
 import javax.validation.Valid;
 
-import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
-import org.onetwo.plugins.codegen.model.service.impl.TemplateServiceImpl;
+import org.onetwo.plugins.codegen.model.service.TemplateService;
 import org.onetwo.plugins.codegen.page.TemplatePage;
 import org.onetwo.plugins.fmtagext.BaseRestController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TemplateController extends BaseRestController<TemplateEntity> {
 	 
 	@Autowired
-	private TemplateServiceImpl templateServiceImpl;
+	private TemplateService templateService;
 
 	private TemplatePage temPage;
 	
@@ -38,7 +37,7 @@ public class TemplateController extends BaseRestController<TemplateEntity> {
 
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<TemplateEntity> page){
-		templateServiceImpl.findPage(page, K.DESC, "lastUpdateTime");
+		templateService.findTemplatePage(page);
 		return model(temPage.getListPage(page));
 	}
 	
@@ -53,14 +52,14 @@ public class TemplateController extends BaseRestController<TemplateEntity> {
 		if(bind.hasErrors()){
 			return model(temPage.getNewPage(tempate));
 		}
-		this.templateServiceImpl.save(tempate);
+		this.templateService.save(tempate);
 		this.addFlashMessage(redirectAttributes, "保存成功！");
 		return redirectTo(getEntityPathInfo().getListPathInfo().getPath());
 	}
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.GET)
 	public ModelAndView edit(@PathVariable("id") Long id){
-		TemplateEntity db = this.templateServiceImpl.findById(id);
+		TemplateEntity db = this.templateService.findTempateById(id);
 		return model(temPage.getEditPage(db));
 	}
 	
@@ -70,7 +69,7 @@ public class TemplateController extends BaseRestController<TemplateEntity> {
 		if(binding.hasErrors()){
 			return model(temPage.getEditPage(db));
 		}
-		this.templateServiceImpl.save(db);
+		this.templateService.save(db);
 		this.addFlashMessage(redirectAttributes, "保存成功！");
 		return model(temPage.getShowPage(db));
 	}
@@ -79,7 +78,7 @@ public class TemplateController extends BaseRestController<TemplateEntity> {
 	@RequestMapping(method=RequestMethod.DELETE)
 	public ModelAndView deleteBatch(@RequestParam(value="ids")long[] ids, RedirectAttributes redirectAttributes){
 		for(long id : ids){
-			this.templateServiceImpl.removeById(id);
+			this.templateService.removeById(id);
 		}
 		this.addFlashMessage(redirectAttributes, "删除成功！");
 		return redirectTo(getEntityPathInfo().getListPathInfo());
@@ -87,7 +86,7 @@ public class TemplateController extends BaseRestController<TemplateEntity> {
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
 	public ModelAndView show(@PathVariable("id") long id) throws BusinessException{
-		TemplateEntity db =  this.templateServiceImpl.findById(id);
+		TemplateEntity db =  this.templateService.findTempateById(id);
 		return model(temPage.getShowPage(db));
 	}
 }

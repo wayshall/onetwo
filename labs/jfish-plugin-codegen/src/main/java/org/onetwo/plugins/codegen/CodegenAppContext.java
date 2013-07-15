@@ -4,8 +4,9 @@ import org.onetwo.plugins.codegen.generator.DefaultDataSourceFactory;
 import org.onetwo.plugins.codegen.generator.DefaultTableComponentFacotry;
 import org.onetwo.plugins.codegen.generator.DefaultTableManagerFactory;
 import org.onetwo.plugins.codegen.generator.TableComponentFacotry;
+import org.onetwo.plugins.codegen.model.service.TemplateService;
 import org.onetwo.plugins.codegen.model.service.impl.DatabaseServiceImpl;
-import org.onetwo.plugins.codegen.model.service.impl.TemplateServiceImpl;
+import org.onetwo.plugins.codegen.model.service.impl.FileTemplateServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,8 +41,9 @@ public class CodegenAppContext {
 	}
 
 	@Bean
-	public TemplateServiceImpl templateServiceImpl(){
-		return new TemplateServiceImpl();
+	public TemplateService templateServiceImpl(){
+//		return new TemplateServiceImpl();
+		return new FileTemplateServiceImpl();
 	}
 	
 }

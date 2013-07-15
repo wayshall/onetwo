@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
 import org.onetwo.common.spring.web.BaseController;
@@ -21,8 +20,8 @@ import org.onetwo.plugins.codegen.generator.FreemarkerTemplate;
 import org.onetwo.plugins.codegen.generator.GenContext;
 import org.onetwo.plugins.codegen.model.entity.DatabaseEntity;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
+import org.onetwo.plugins.codegen.model.service.TemplateService;
 import org.onetwo.plugins.codegen.model.service.impl.DatabaseServiceImpl;
-import org.onetwo.plugins.codegen.model.service.impl.TemplateServiceImpl;
 import org.onetwo.plugins.fmtagext.ui.UI;
 import org.onetwo.plugins.fmtagext.ui.aglybuilder.EntityGridUIBuilder;
 import org.onetwo.plugins.fmtagext.ui.datagrid.DataGridUI;
@@ -41,7 +40,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class CodegenController extends BaseController<Object>{
 
 	@Autowired
-	private TemplateServiceImpl templateServiceImpl;
+	private TemplateService templateService;
 	
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
@@ -55,6 +54,9 @@ public class CodegenController extends BaseController<Object>{
 	@Autowired
 	private JFishAppConfigrator JFishAppConfigrator;
 	
+	public CodegenController(){
+		System.out.println("CodegenController");
+	}
 	@RequestMapping(value={"", "/"})
 	public String index(){
 		return redirect("/codegen/database");
@@ -62,14 +64,15 @@ public class CodegenController extends BaseController<Object>{
 	
 	@RequestMapping(value="init", method=RequestMethod.POST)
 	public ModelAndView init(){
-		this.databaseServiceImpl.initCodegen();
+		this.templateService.initCodegenTemplate();
+		
 		return mv("codegen-init");
 	}
 
 	@RequestMapping(value="/config", method=RequestMethod.POST)
 	public ModelAndView config(Long dbid, String[] tables, Page<TemplateEntity> tp) throws BusinessException{
 		System.out.println("tables: " + LangUtils.toString(tables));
-		templateServiceImpl.findPage(tp, K.DESC, "lastUpdateTime");
+		templateService.findTemplatePage(tp);
 		
 		EntityGridUIBuilder listgridBuilder = new EntityGridUIBuilder(TemplateEntity.class);
 //		listgridBuilder.buildForm();
@@ -115,7 +118,7 @@ public class CodegenController extends BaseController<Object>{
 		DefaultTableManager tm = this.tableManagerFactory.createTableManager(db);
 		DefaultCodegenServiceImpl cs = new DefaultCodegenServiceImpl(freemarkerTemplate, tm);
 		for(Long id : ids){
-			TemplateEntity templ = this.templateServiceImpl.load(id);
+			TemplateEntity templ = this.templateService.findTempateById(id);
 			CommonlContextBuilder cmb = new CommonlContextBuilder(db.getDataBase());
 
 			cmb.setBasePackage(this.JFishAppConfigrator.getJFishBasePackage());

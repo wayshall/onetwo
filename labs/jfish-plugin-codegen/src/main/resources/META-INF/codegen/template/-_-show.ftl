@@ -8,7 +8,7 @@ ${commonName} ${"$"}{${commonName?uncap_first}.id}
 		
 <div class="page-header">
 <h2>
-${commonName} ${"$"}{${commonName?uncap_first}.id}
+${commonName} ${"$"}{${commonName?uncap_first}.id} 
 </h2>
 </div>
 

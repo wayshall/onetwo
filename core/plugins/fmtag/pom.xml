@@ -39,41 +39,4 @@
   	</plugins>
   </build>
   
-  <repositories>
-    
-     <repository>
-		<id>guohui-public</id>
-		<name>Guohui Public Mirror</name>
-      	<url>http://172.20.81.220:8088/nexus/content/groups/public</url>
-      	<releases>
-      		<enabled>true</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-snapshots</id>
-		<name>Guohui Snapshots Mirror</name>
-		<url>http://172.20.81.220:8088/nexus/content/repositories/snapshots</url>
-      	<releases>
-      		<enabled>false</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>true</enabled>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-thirdparty</id>
-		<name>Guohui thirdparty Mirror</name>
-		<url>http://172.20.81.220:8088/nexus/content/repositories/thirdparty/</url>
-      	<releases>
-      		<enabled>true</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-    
-  </repositories>
 </project>
