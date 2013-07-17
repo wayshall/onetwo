@@ -11,7 +11,7 @@ import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.fish.exception.JFishOrmException;
+import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
 import org.onetwo.common.fish.spring.EntityManagerOperationImpl;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
@@ -85,7 +85,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		T entity = findById(entityClass, id);
 //		Assert.notNull(entity, "can not load the object from db : " + id);
 		if(entity==null){
-			throw new JFishOrmException("找不到数据：" + id);
+			throw new JFishEntityNotFoundException("找不到数据：" + id);
 		}
 		return entity;
 	}

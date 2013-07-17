@@ -24,6 +24,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
 		private String namespace;
+		private File srcfile;
 	
 		public String getNamespace() {
 			return namespace;
@@ -42,6 +43,16 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		public String toString(){
 			return LangUtils.append("{ namespace:", namespace, ", name: ", getName(), "}");
 		}
+
+		public File getSrcfile() {
+			return srcfile;
+		}
+
+		public void setSrcfile(File srcfile) {
+			this.srcfile = srcfile;
+		}
+
+		
 		
 	}
 	public static class JFishPropertyConf {
@@ -192,8 +203,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		return pf;
 	}
 	
-	
-	protected Map<String, T> buildPropertiesAsNamedInfos(final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
+	protected Map<String, T> buildPropertiesAsNamedInfos(File f, final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
 		List<String> keyNames = wrapper.sortedKeys();
 		if(isDebug()){
 			logger.info("================>>> buildPropertiesAsNamedInfos");
@@ -223,6 +233,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				propBean.setNamespace(namespace);
 				newBean = false;
 				preKey = key+".";
+				propBean.setSrcfile(f);
 			}else{
 				val = wrapper.getProperty(key, "");
 				String prop = key.substring(preKey.length());

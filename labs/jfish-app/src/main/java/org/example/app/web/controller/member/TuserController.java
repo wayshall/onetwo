@@ -58,7 +58,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * /user/{id}  DELETE  => delete()  
  * /user   DELETE      => deleteBatch() 
  * 
- * @author wayshall
+ * @author way
  */
 @Controller
 @RequestMapping("/member/tuser")//这个路径最好按照controller后面的包名+controller的短名字映射

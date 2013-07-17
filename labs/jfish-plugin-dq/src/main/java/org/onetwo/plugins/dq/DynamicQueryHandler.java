@@ -11,6 +11,7 @@ import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
@@ -86,6 +87,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		if(Page.class.isAssignableFrom(resultClass)){
 			Page<?> page = (Page<?>)args[0];
 			
+//			Object[] trimPageArgs = ArrayUtils.remove(args, 0);
 			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
 //			methodArgs = appendEntityClass(componentClass, methodArgs);
 //			t.stop();

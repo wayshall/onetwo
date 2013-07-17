@@ -37,7 +37,7 @@ public interface UserDao {
 	 * @param userName
 	 * @return
 	 */
-	public Page<UserEntity> queryPageByUserName(Page<UserEntity> page, @Name("userName") String userName);
+	public void queryPageByUserName(Page<UserEntity> page, @Name("userName") String userName);
 	
 	public UserEntity queryByUserName(@Name("userName") String userName);
 	

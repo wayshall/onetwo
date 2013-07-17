@@ -33,7 +33,7 @@ public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerIm
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
-		String sqldirPath = locationPattern+"/**/*"+conf.getPostfix();
+		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
 		
 		File[] allSqlFiles = null;
 		try {
@@ -65,8 +65,15 @@ public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerIm
 	}
 	
 	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName){
+		return createQuery(jfishFishDao, queryName, null);
+	}
+	
+	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName, Class<?> resultClass){
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		return new JFishFileQueryImpl(jfishFishDao, nameInfo, false);
+		JFishQuery jq = new JFishFileQueryImpl(jfishFishDao, nameInfo, false);
+		if(resultClass!=null)
+			jq.setResultClass(resultClass);
+		return jq;
 	}
 	
 	public JFishQuery createCountQuery(JFishDaoImplementor jfishFishDao, String queryName){

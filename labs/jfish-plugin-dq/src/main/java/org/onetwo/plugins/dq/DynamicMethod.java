@@ -51,7 +51,8 @@ public class DynamicMethod {
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
 			rClass = parameters.get(0).getParameterType();
-			if(!Page.class.isInstance(rClass)){
+//			rClass = parameters.remove(0).getParameterType();
+			if(Page.class != rClass){
 				throw new BaseException("method no return type, the first arg of method must be a Page object: " + method.toGenericString());
 			}
 			Type ptype = this.parameters.remove(0).getGenericParameterType();
