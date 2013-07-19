@@ -27,7 +27,7 @@ public class NiceDate {
 	}
 
 	public static NiceDate New(String dateStr, String format){
-		Date date = DateUtil.parse(dateStr, format);
+		Date date = DateUtil.parseByPatterns(dateStr, format);
 		return New(date);
 	}
 	
@@ -60,7 +60,7 @@ public class NiceDate {
 	
 	private Calendar calendar = Calendar.getInstance();
 	
-	private DateType dateType;
+	private DateType dateType = DateType.date;
 	
 	public NiceDate(){
 	}
