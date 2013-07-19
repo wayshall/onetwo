@@ -21,16 +21,16 @@ public class JFishRestTemplateTest {
 		addParams.setUserkey("486888a9311a4fa4a3fbb74d28658389");
 		addParams.setMembername("测试");
 		
-		addParams.setBukey("b39dceb683e249bdb38b2074406801e0");
+		addParams.setBukey("128f2c954bde464ebd6f3b9534d6660e");
 		addParams.setAlipaykey("alipaykey");
 		//自动生成
 //		addParams.setItemordersno("订单编号");
-		addParams.setTicketsname("新银盏温泉");
+		addParams.setTicketsname("测试景点");
 		addParams.setOrderdate(NiceDate.New().formatAsDateTime());
 		addParams.setCustomername("曾先生");
 		addParams.setContactphone("13622267218");
 		addParams.setQuantity("11");
-		addParams.setChildqty("5");
+		addParams.setChildqty("0");
 		addParams.setCreatedate(NiceDate.New().formatAsDateTime());
 		addParams.setRd(NiceDate.New().format("HH:mm"));
 		addParams.setAlipaykey("alipaykey");

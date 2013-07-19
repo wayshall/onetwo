@@ -255,7 +255,7 @@ abstract public class DateUtil {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		if (dateFormats == null || dateFormats.length == 0)
-			return parse(Date_Time, dateStr);
+			return parse(createDateFormat(Date_Time), dateStr);
 		Date date = null;
 		for (SimpleDateFormat sdf : dateFormats) {
 			date = parse(sdf, dateStr);
@@ -265,11 +265,11 @@ abstract public class DateUtil {
 		return date;
 	}
 
-	public static Date parse(String dateStr, String... patterns) {
+	public static Date parseByPatterns(String dateStr, String... patterns) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		if (patterns == null || patterns.length == 0)
-			return parse(Date_Time, dateStr);
+			return parse(createDateFormat(Date_Time), dateStr);
 		Date date = null;
 		for (String p : patterns) {
 			SimpleDateFormat sdf = getDateFormat(p);
@@ -281,23 +281,23 @@ abstract public class DateUtil {
 	}
 
 	public static Date parseDate(String dateStr) {
-		return parse(Date_Only, dateStr);
+		return parseByPatterns(dateStr, Date_Only);
 	}
 
 	public static Date parseTime(String dateStr) {
-		return parse(Time_Only, dateStr);
+		return parseByPatterns(dateStr, Time_Only);
 	}
 
 	public static Date parseShortTime(String dateStr) {
-		return parse(SHORT_TIME_ONLY, dateStr);
+		return parseByPatterns(dateStr, SHORT_TIME_ONLY);
 	}
 
 	public static Date parseDateTime(String dateStr) {
-		return parse(dateStr, Date_Time);
+		return parseByPatterns(dateStr, Date_Time);
 	}
 
 	public static Date parseDateShortTime(String dateStr) {
-		return parse(dateStr, DATE_SHORT_TIME);
+		return parseByPatterns(dateStr, DATE_SHORT_TIME);
 	}
 
 	public static Date parse(String dateStr) {
@@ -346,7 +346,7 @@ abstract public class DateUtil {
 				format += "HH"+timeSeperator+"mm"+timeSeperator+"ss";
 			}
 		}
-		date = parse(dateStr, format);
+		date = parseByPatterns(dateStr, format);
 		return date;
 //		return parse(dateStr, YYYY_MM_DD_HH_MM_SS, YYYY_MM_DD_HH_MM, YYYY_MM_DD);
 	}

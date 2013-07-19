@@ -13,6 +13,14 @@ import org.onetwo.common.utils.DateUtil.DateType;
 public class DateUtilTest {
 	
 	@Test
+	public void testDate(){
+		Date date = DateUtil.parseDate("2013-09-09");
+		System.out.println("date: " + date.toLocaleString());
+		Date date1 = NiceDate.New("2013-9-9").atTheBeginning().getTime();
+		System.out.println("date1: " + date1.toLocaleString());
+	}
+	
+	@Test
 	public void testParse(){
 		MyLoggerFactory.getLogger(this.getClass()).info("test{}, test2{}", "aa", 1);
 		Date test = new Date(1367078400000L);
@@ -36,7 +44,7 @@ public class DateUtilTest {
 		String checkInTime = "2012-08-31aaaaaaaaaaaaaaa";
 		System.out.println("aa:"+DateUtil.parse(checkInTime , DateUtil.YYYY_MM_DD).toLocaleString());
 		
-		Date parseDate = DateUtil.parse("20121029102501", "yyyyMMddHHmmss");
+		Date parseDate = DateUtil.parseByPatterns("20121029102501", "yyyyMMddHHmmss");
 		System.out.println("parseDate:" + parseDate.toLocaleString());
 		
 
