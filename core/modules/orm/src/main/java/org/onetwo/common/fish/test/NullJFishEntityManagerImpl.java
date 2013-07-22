@@ -92,26 +92,19 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest,
-			Object... properties) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass, Object... properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass,
+	public <T> List<T> findByProperties(Class<T> entityClass,
 			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		return null;

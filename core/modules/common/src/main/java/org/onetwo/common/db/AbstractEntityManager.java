@@ -294,15 +294,15 @@ abstract public class AbstractEntityManager implements EventSource {
 		return properties;
 	}
 	
-	public <T> List<T> findByProperties(Class entityClass, Object... properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		return this.findByProperties(entityClass, MyUtils.convertParamMap(properties));
 	}
 
 	public <T> List<T> findList(QueryBuilder squery) {
-		return findByProperties(squery.getEntityClass(), squery.getParams());
+		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 
-	public <T> List<T> findByProperties(Class entityClass, Map<Object, Object> properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		prepareProperties(properties);
 
 		ExtQuery extQuery = this.createExtQuery(entityClass, properties);

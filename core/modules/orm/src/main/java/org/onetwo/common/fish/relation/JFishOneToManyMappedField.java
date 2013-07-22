@@ -17,6 +17,7 @@ public class JFishOneToManyMappedField extends AbstractCascadeMappedField implem
 	
 //	private JoinTableInfo joinTable;
 //	private SQLBuilder joinTableBuilder;
+	private CascadeMappedField mappedOneField;
 	
 	public JFishOneToManyMappedField(JFishMappedEntry entry, JFishProperty prop) {
 		super(entry, prop);
@@ -25,34 +26,15 @@ public class JFishOneToManyMappedField extends AbstractCascadeMappedField implem
 		setMappedFieldType(JFishMappedFieldType.ONE_TO_MANY);
 	}
 	
-
-
-//	public AbstractMappedField getInverseReferencedField() {
-//		AbstractMappedField relatedField = inverseFieldEntry.getFieldByColumnName(getInverseJoinColumn().getReferencedColumnName());
-//		if(relatedField==null)
-//			throw new JFishOrmException("there is not mapped field for referenced column : " + getInverseJoinColumn().getReferencedColumnName());
-//		return relatedField;
-//	}
-//
-//	public void setInverseJoinFieldValue(Object oppositeEntity, Object parentEntity) {
-//		if(getMappedFieldType()==JFishMappedFieldType.FIELD){
-//			Object fieldValue = this.getInverseReferencedField().getValue(parentEntity);
-//			getInverseJoinField().setValue(oppositeEntity, fieldValue);
-//		}else if(getMappedFieldType()==JFishMappedFieldType.TO_ONE){
-//			getInverseJoinField().setValue(oppositeEntity, parentEntity);
-//		}else{//many
-//			throw new UnsupportedOperationException("unsupported mapped type : " + getMappedFieldType());
-//		}
-//	}
-
 	
-	/*public JFishMappedField getReferencedFieldOfJoinCloumn(JFishMappedEntry referencedFieldEntry){
-		JFishMappedField referncedField = referencedFieldEntry.getFieldByColumnName(getJoinColumnOfCascadeEntry().getReferencedColumnName());
-		if(referncedField==null)
-			throw new JFishOrmException("can not find the JoinColumn reference field: " + getJoinColumnOfCascadeEntry().getReferencedColumnName());
-		return referncedField;
-	}*/
-	
+	public CascadeMappedField getMappedOneField() {
+		return mappedOneField;
+	}
+
+	public void setMappedOneField(CascadeMappedField mappedOneField) {
+		this.mappedOneField = mappedOneField;
+	}
+
 	public Collection<?> getValueAsCollection(Object entity){
 		Collection<?> value = (Collection<?>)getValue(entity);
 		return CUtils.emptyIfNull(value);
@@ -65,6 +47,13 @@ public class JFishOneToManyMappedField extends AbstractCascadeMappedField implem
 		return new FieldValueHolder(value);
 	}
 
+	@Override
+	public JoinColumnMapper getJoinColumnMapper() {
+		JoinColumnMapper colMapper = super.getJoinColumnMapper();
+		if(colMapper==null)
+			colMapper = this.mappedOneField.getJoinColumnMapper();
+		return colMapper;
+	}
 
 	protected class FieldValueHolder {
 		public Collection<Object> news;

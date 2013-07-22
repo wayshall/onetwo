@@ -5,6 +5,6 @@ import org.onetwo.common.fish.orm.AbstractDBDialect.DBMeta;
 public interface InnerDBDialet extends DBDialect {
 
 	public void setDbmeta(DBMeta dbmeta);
-	public void setPrintSql(boolean printSql); 
+//	public void setPrintSql(boolean printSql); 
 	
 }

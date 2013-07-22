@@ -9,7 +9,7 @@ import org.onetwo.common.utils.JFishProperty;
 public class JFishToOneMappedField extends AbstractCascadeMappedField implements CascadeMappedField {
 
 //	private Collection<JoinColumnInfo> joinColumns = new HashSet<JoinColumnInfo>();
-	
+
 	
 	public JFishToOneMappedField(JFishMappedEntry entry, JFishProperty prop) {
 		super(entry, prop, null, null);

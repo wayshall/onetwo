@@ -32,6 +32,6 @@ public interface DBDialect {
 	public String getLimitStringWithNamed(String sql, String firstName, String maxResultName);
 	
 	public void addLimitedValue(JFishQueryValue params, String firstName, int firstResult, String maxName, int maxResults);
-	public boolean isPrintSql();
+//	public boolean isPrintSql();
 	public DataBaseConfig getDataBaseConfig();
 }

@@ -1,5 +1,8 @@
 package org.onetwo.common.fish.orm;
 
+import org.onetwo.common.fish.event.DbEventListenerManager;
+import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
+import org.onetwo.common.fish.relation.JFishRelatedDbEventListenerManager;
 import org.onetwo.common.utils.StringUtils;
 
 public class MySQLDialect extends AbstractDBDialect {
@@ -22,5 +25,14 @@ public class MySQLDialect extends AbstractDBDialect {
 		}
 		return sb.toString();
 	}
+
+	@Override
+	protected DbEventListenerManager createDefaultDbEventListenerManager() {
+		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager();
+//		return listenerManager;
+		return new JFishRelatedDbEventListenerManager(listenerManager);
+	}
+	
+	
 
 }

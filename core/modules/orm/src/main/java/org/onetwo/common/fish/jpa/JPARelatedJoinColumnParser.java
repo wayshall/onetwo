@@ -118,7 +118,8 @@ public class JPARelatedJoinColumnParser extends AbstractRelatedAnnotationParser 
 			if(manyToOneField.isJoinTableField()){
 				oneToManyField.setJoinTableMapper(this.createInverseJoinTableMapper(oneToManyField, manyToOneField.getJoinTableMapper()));
 			}else{
-				oneToManyField.setJoinColumnMapper(manyToOneField.getJoinColumnMapper());
+				oneToManyField.setMappedOneField(manyToOneField);
+//				oneToManyField.setJoinColumnMapper(manyToOneField.getJoinColumnMapper());
 			}
 			
 		}else if(oneToManyField.getPropertyInfo().hasAnnotation(JoinTable.class)){

@@ -8,5 +8,9 @@ public interface CascadeCollectionMappedField extends CascadeMappedField {
 
 	public Collection<?> getValueAsCollection(Object entity);
 	public FieldValueHolder getValueAsValueHolder(Object entity);
+	
+	public CascadeMappedField getMappedOneField();
+	
+	public void setMappedOneField(CascadeMappedField mappedOneField);
 
 }

@@ -9,12 +9,15 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.HqlSymbolParser;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.fish.JFishDataQuery;
 import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.fish.JFishQueryImpl;
 import org.onetwo.common.fish.JFishSQLSymbolManagerImpl;
@@ -25,6 +28,8 @@ import org.onetwo.common.fish.event.JFishEvent;
 import org.onetwo.common.fish.event.JFishEventAction;
 import org.onetwo.common.fish.event.JFishEventListener;
 import org.onetwo.common.fish.event.JFishEventSource;
+import org.onetwo.common.fish.event.JFishExtQueryEvent;
+import org.onetwo.common.fish.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.fish.event.JFishFindEvent;
 import org.onetwo.common.fish.event.JFishInsertEvent;
 import org.onetwo.common.fish.event.JFishInsertOrUpdateEvent;
@@ -70,7 +75,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	
 	private boolean watchSqlFile = false;
 	
-	private EntityManagerOperationImpl entityManagerWraper;
+//	private EntityManagerOperationImpl entityManagerWraper;
 	private SequenceNameManager sequenceNameManager;
 	
 	private RowMapperFactory rowMapperFactory;
@@ -328,6 +333,29 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return (List<T>)event.getResultObject();
 	}
 	
+	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties){
+		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.DEFUALT, entityClass, properties, this);
+		this.fireEvents(event);
+		return (List<T>)event.getResultObject();
+	}
+	
+	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties){
+		JFishExtQueryEvent event = new JFishExtQueryEvent(page, ExtQueryType.PAGINATION, entityClass, properties, this);
+		this.fireEvents(event);
+	}
+	
+	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties){
+		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.UNIQUE, entityClass, properties, this);
+		this.fireEvents(event);
+		return (T)event.getResultObject();
+	}
+	
+	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties){
+		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.COUNT, entityClass, properties, this);
+		this.fireEvents(event);
+		return (Number)event.getResultObject();
+	}
+	
 	/*@Override
 	public <T> List<T> queryList(Object queryableEntity){
 		JFishQueryableEvent event = new JFishQueryableEvent(queryableEntity, this);
@@ -515,6 +543,39 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return jq;
 	}
 	
+	public ExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties){
+		ExtQuery q = this.getSqlSymbolManager().createQuery(entityClass, "ent", properties);
+		return q;
+	}
+	
+	public DataQuery createAsDataQuery(ExtQuery extQuery){
+		DataQuery q = null;
+		if(extQuery.isSqlQuery()){
+			q = this.createAsDataQuery(extQuery.getSql(), extQuery.getEntityClass());
+			q.setParameters((List)extQuery.getParamsValue().getValues());
+		}else{
+			q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
+		}
+		JFishQuery jq = q.getRawQuery();
+		jq.setResultClass(extQuery.getEntityClass());
+		if(extQuery.needSetRange()){
+			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());
+		}
+		q.setQueryConfig(extQuery.getQueryConfig());
+		return q;
+	}
+	
+	public DataQuery createAsDataQuery(String sqlString, Class entityClass) {
+		JFishQuery jq = createJFishQuery(sqlString, entityClass);
+		DataQuery query = new JFishDataQuery(jq);
+		return query;
+	}
+	
+	public DataQuery createAsDataQuery(String sql, Map<String, Object> values){
+		DataQuery q = createAsDataQuery(sql, (Class)null);
+		q.setParameters(values);
+		return q;
+	}
 
 	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type){
 		return getDefaultRowMapper(type, false);
@@ -593,7 +654,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();
 		}
-		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
+//		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
 		
 	}
 	
@@ -631,9 +692,9 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return sqlSymbolManager;
 	}
 
-	public EntityManagerOperationImpl getEntityManagerWraper() {
-		return entityManagerWraper;
-	}
+//	public EntityManagerOperationImpl getEntityManagerWraper() {
+//		return entityManagerWraper;
+//	}
 
 	public SequenceNameManager getSequenceNameManager() {
 		return sequenceNameManager;

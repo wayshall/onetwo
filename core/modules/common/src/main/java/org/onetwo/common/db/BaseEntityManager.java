@@ -35,13 +35,13 @@ public interface BaseEntityManager {
 	
 	public <T> T findUnique(Class<T> entityClass, Object... properties);
 	
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
+//	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
 	
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties);
 
-	public <T> List<T> findByProperties(Class entityClass, Object... properties);
+	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
 
-	public <T> List<T> findByProperties(Class entityClass, Map<Object, Object> properties);
+	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
 	
 //	public <T> List<T> findList(QueryBuilder squery);
 	

@@ -173,7 +173,7 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Bean(name = "jfishDialect")
 	public DBDialect jfishDialect() {
 		InnerDBDialet dialet = (InnerDBDialet)jfishDao().getDialect();
-		dialet.setPrintSql(watchSqlFile);
+//		dialet.setPrintSql(watchSqlFile);
 		return dialet;
 	}
 
@@ -237,43 +237,18 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	public DBDialect mysqlDialet() {
 		MySQLDialect dialet = new MySQLDialect(this.jfishOrmConfigurator.getDataBaseConfig());
 		dialet.setAutoDetectIdStrategy(true);
-		dialet.setDbEventListenerManager(defaultDbEventListenerManager());
+//		dialet.setDbEventListenerManager(defaultDbEventListenerManager());
 		return dialet;
-	}
-
-	@Bean
-	public DbEventListenerManager defaultDbEventListenerManager() {
-		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager();
-//		return listenerManager;
-		return new JFishRelatedDbEventListenerManager(listenerManager);
 	}
 
 	@Bean(name = "oracleDialect")
 	public DBDialect oracleDialet() {
 		OracleDialect dialet = new OracleDialect(this.jfishOrmConfigurator.getDataBaseConfig());
 		dialet.setAutoDetectIdStrategy(true);
-		dialet.setDbEventListenerManager(oracleDbEventListenerManager());
+//		dialet.setDbEventListenerManager(oracleDbEventListenerManager());
 		return dialet;
 	}
 	
-	@Bean
-	public DbEventListenerManager oracleDbEventListenerManager() {
-		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager() {
-
-			protected InsertEventListener getDefaultInsertEventListener() {
-				return new JFishOracleInsertEventListener();
-			}
-
-			protected InsertEventListener getDefaultBatchInsertEventListener() {
-//				JFishOracleInsertEventListener ie = new JFishOracleInsertEventListener();
-				JFishOracleInsertEventListener ie = new JFishOracleBatchInsertEventListener();
-				return ie;
-			}
-
-		};
-//		return listenerManager;
-		return new JFishRelatedDbEventListenerManager(listenerManager);
-	}
 
 	@Bean(name = "cacheManager")
 	public CacheManager cacheManager() {
