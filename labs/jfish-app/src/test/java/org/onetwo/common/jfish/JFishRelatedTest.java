@@ -121,6 +121,7 @@ public class JFishRelatedTest extends JFishBaseNGTest {
 		UserEntity user = jdao.findById(UserEntity.class, article.getAuthor().getId());
 		List<AddressEntity> addrList = jem.findByProperties(AddressEntity.class, "userId", article.getAuthor().getId());
 		user.setAddress(addrList);
+//		UserEntity user = jem.findUnique(UserEntity.class, "id", article.getAuthor().getId(), K.INCLUDE, "address");
 		art.setAuthor(user);
 		
 		Assert.assertEquals(article.getTitle(), art.getTitle());

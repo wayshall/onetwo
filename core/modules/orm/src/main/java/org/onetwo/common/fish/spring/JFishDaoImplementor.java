@@ -3,9 +3,12 @@ package org.onetwo.common.fish.spring;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.fish.exception.JFishEntityNotSavedException;
 import org.onetwo.common.fish.orm.DBDialect;
 import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
@@ -68,7 +71,7 @@ public interface JFishDaoImplementor extends JFishDao {
 	public SQLSymbolManager getSqlSymbolManager();
 	
 	public SequenceNameManager getSequenceNameManager();
-	public EntityManagerOperationImpl getEntityManagerWraper();
+//	public EntityManagerOperationImpl getEntityManagerWraper();
 	
 	/********
 	 * 保存实体和关联实体的关系引用<br/>
@@ -101,5 +104,16 @@ public interface JFishDaoImplementor extends JFishDao {
 	 * @return
 	 */
 	public <T> int clearRef(T entity, String... relatedFields);
+	
+	/****
+	 * wrap JFishQuery as a DataQuery
+	 * @param extQuery
+	 * @return
+	 */
+	public DataQuery createAsDataQuery(ExtQuery extQuery);
+	
+	public DataQuery createAsDataQuery(String sqlString, Class<?> entityClass);
+	
+	public DataQuery createAsDataQuery(String sql, Map<String, Object> values);
 	
 }

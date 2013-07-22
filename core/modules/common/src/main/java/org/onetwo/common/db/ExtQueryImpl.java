@@ -61,6 +61,8 @@ public class ExtQueryImpl implements ExtQuery {
 	
 	private Map<String, Object> queryConfig;
 	
+	private List<IncludeField> includeFields;
+	
 	public ExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		this.entityClass = entityClass;
 		if(StringUtils.isBlank(alias)){
@@ -78,6 +80,8 @@ public class ExtQueryImpl implements ExtQuery {
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Ignore);
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 
+		this.includeFields = getValueAndRemoveKeyFromParams(K.INCLUDE, Collections.EMPTY_LIST);
+		
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
 		this.countValue = getValueAndRemoveKeyFromParams(K.COUNT, countValue);
@@ -741,6 +745,10 @@ public class ExtQueryImpl implements ExtQuery {
 
 	protected void setSqlQuery(boolean sqlQuery) {
 		this.sqlQuery = sqlQuery;
+	}
+
+	public List<IncludeField> getIncludeFields() {
+		return includeFields;
 	}
 	
 }

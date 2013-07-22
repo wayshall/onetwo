@@ -175,6 +175,10 @@ final public class CUtils {
 		
 		return properties;
 	}
+	
+	public static LinkedHashMap<Object, Object> asOrCreateLinkedHashMap(Object...params){
+		return CUtils.arrayIntoMap(CUtils.newLinkedHashMap(), params);
+	}
 
 	public static <T> List<T> newArrayList(){
 		return newArrayList(-1);
@@ -232,13 +236,13 @@ final public class CUtils {
 		return new HashMap<K, V>(size);
 	}
 
-	public static <K, V> Map<K, V> newLinkedHashMap(int size){
+	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int size){
 		if(size<=0)
 			return new LinkedHashMap<K, V>();
 		return new LinkedHashMap<K, V>(size);
 	}
 
-	public static <K, V> Map<K, V> newLinkedHashMap(){
+	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(){
 		return new LinkedHashMap<K, V>();
 	}
 

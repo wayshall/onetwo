@@ -11,6 +11,7 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 	protected UpdateEventListener[] updateEventListeners;
 	protected JFishDeleteEventListener[] deleteEventListeners;
 	protected JFishFindEventListener[] findEventListeners;
+	protected JFishExtQueryEventListener[] extQueryEventListeners;
 
 	protected JFishEventListener[] saveRefEventListeners;
 	protected JFishEventListener[] dropRefEventListeners;
@@ -44,6 +45,9 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 		}
 		if(this.dropRefEventListeners==null){
 			this.dropRefEventListeners = new JFishDropRefListener[]{new JFishDropRefListener()};
+		}
+		if(this.extQueryEventListeners==null){
+			this.extQueryEventListeners = new JFishExtQueryEventListener[]{new JFishExtQueryEventListener()};
 		}
 		/*if(this.queryableEventListeners==null){
 			this.queryableEventListeners = new JFishQueryableEventListener[]{new JFishQueryableEventListener()};
@@ -84,20 +88,20 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 			listeners = getUpdateEventListeners();
 		}else if(eventAction==JFishEventAction.insertOrUpdate){
 			listeners = getInsertOrUpdateEventListeners();
-		}else if(eventAction==JFishEventAction.batchInsert){
-			listeners = getBatchInsertEventListeners();
-		}else if(eventAction==JFishEventAction.batchUpdate){
-			listeners = getBatchUpdateEventListeners();
 		}else if(eventAction==JFishEventAction.delete){
 			listeners = getDeleteEventListeners();
 		}else if(eventAction==JFishEventAction.find){
 			listeners = getFindEventListeners();
+		}else if(eventAction==JFishEventAction.extQuery){
+			listeners = getExtQueryEventListeners();
+		}else if(eventAction==JFishEventAction.batchInsert){
+			listeners = getBatchInsertEventListeners();
+		}else if(eventAction==JFishEventAction.batchUpdate){
+			listeners = getBatchUpdateEventListeners();
 		}else if(eventAction==JFishEventAction.saveRef){
 			listeners = getSaveRefEventListeners();
 		}else if(eventAction==JFishEventAction.dropRef){
 			listeners = getDropRefEventListeners();
-		}else if(eventAction==JFishEventAction.queryable){
-			//TODO
 		}else{
 			throw new JFishDbException("don't supported this event action: " + eventAction);
 		}
@@ -174,6 +178,14 @@ public class JFishDefaultDbEventListenerManager implements DbEventListenerManage
 
 	public void setBatchUpdateEventListeners(UpdateEventListener[] batchUpdateEventListeners) {
 		this.batchUpdateEventListeners = batchUpdateEventListeners;
+	}
+
+	public JFishExtQueryEventListener[] getExtQueryEventListeners() {
+		return extQueryEventListeners;
+	}
+
+	public void setExtQueryEventListeners(JFishExtQueryEventListener... extQueryEventListeners) {
+		this.extQueryEventListeners = extQueryEventListeners;
 	}
 	
 }

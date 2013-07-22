@@ -1,6 +1,12 @@
 package org.onetwo.common.fish.orm;
 
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.fish.event.DbEventListenerManager;
+import org.onetwo.common.fish.event.InsertEventListener;
+import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
+import org.onetwo.common.fish.event.oracle.JFishOracleBatchInsertEventListener;
+import org.onetwo.common.fish.event.oracle.JFishOracleInsertEventListener;
+import org.onetwo.common.fish.relation.JFishRelatedDbEventListenerManager;
 import org.onetwo.common.utils.StringUtils;
 
 
@@ -71,5 +77,26 @@ public class OracleDialect extends AbstractDBDialect {
 	public int getMaxResults(int first, int size){
 		return first+size;
 	}
+
+	@Override
+	protected DbEventListenerManager createDefaultDbEventListenerManager() {
+		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager() {
+
+			protected InsertEventListener getDefaultInsertEventListener() {
+				return new JFishOracleInsertEventListener();
+			}
+
+			protected InsertEventListener getDefaultBatchInsertEventListener() {
+//				JFishOracleInsertEventListener ie = new JFishOracleInsertEventListener();
+				JFishOracleInsertEventListener ie = new JFishOracleBatchInsertEventListener();
+				return ie;
+			}
+
+		};
+//		return listenerManager;
+		return new JFishRelatedDbEventListenerManager(listenerManager);
+	}
+	
+	
 
 }

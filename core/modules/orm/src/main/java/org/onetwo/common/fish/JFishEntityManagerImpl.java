@@ -1,6 +1,7 @@
 package org.onetwo.common.fish;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -10,16 +11,23 @@ import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
-import org.onetwo.common.fish.spring.EntityManagerOperationImpl;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
 import org.onetwo.common.fish.spring.JFishFileQueryDao;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
+import org.onetwo.common.utils.map.M;
+import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,10 +38,12 @@ import org.springframework.jdbc.core.RowMapper;
 @SuppressWarnings("rawtypes")
 public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
 //	private SQLSymbolManager SQLSymbolManager;
 
 	private JFishDaoImplementor jfishDao;
-	private EntityManagerOperationImpl entityManagerWraper;
+//	private EntityManagerOperationImpl entityManagerWraper;
 	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 	private ApplicationContext applicationContext;
 	
@@ -49,7 +59,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 
 
 	public void afterPropertiesSet() throws Exception{
-		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
+//		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
 		
 		List<JFishEntityManagerLifeCycleListener> jlisteners = SpringUtils.getBeans(applicationContext, JFishEntityManagerLifeCycleListener.class);
 		this.emListeners = JFishList.wrapObject(jlisteners);
@@ -154,7 +164,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 	}
 	
 	protected DataQuery createQuery(ExtQuery extQuery){
-		return getJfishDao().getEntityManagerWraper().createQuery(extQuery);
+		return getJfishDao().createAsDataQuery(extQuery);
 	}
 
 	@Override
@@ -230,28 +240,63 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		return (JFishFileQueryDao)jfishDao;
 	}
 
+
+	public SequenceNameManager getSequenceNameManager(){
+		return jfishDao.getSequenceNameManager();
+	}
+	
 	public Long getSequences(Class entityClass, boolean createIfNotExist) {
-		return entityManagerWraper.getSequences(entityClass, createIfNotExist);
+		String seqName = getSequenceNameManager().getSequenceName(entityClass);
+		return getSequences(seqName, createIfNotExist);
 	}
 
+	
 	public Long getSequences(String sequenceName, boolean createIfNotExist) {
-		return entityManagerWraper.getSequences(sequenceName, createIfNotExist);
+		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
+		Long id = null;
+		try {
+			DataQuery dq = this.createSQLQuery(sql, null);
+			id = ((Number)dq.getSingleResult()).longValue();
+//			logger.info("createSequences id : "+id);
+		} catch (Exception e) {
+			if(!(e.getCause() instanceof SQLException) || !createIfNotExist)
+				throw new ServiceException("createSequences error: " + e.getMessage(), e);
+			
+			SQLException se = (SQLException) e.getCause();
+			if ("42000".equals(se.getSQLState())) {
+				try {
+					DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+					dq.executeUpdate();
+					
+					dq = this.createSQLQuery(sql, null);
+					id = ((Number)dq.getSingleResult()).longValue();
+				} catch (Exception ne) {
+					ne.printStackTrace();
+					throw new ServiceException("createSequences error: " + e.getMessage(), e);
+				}
+				if (id == null)
+					throw new ServiceException("createSequences error: " + e.getMessage(), e);
+			}
+		}
+		return id;
 	}
 
 	public DataQuery createQuery(String sql, Map<String, Object> values) {
-		return entityManagerWraper.createQuery(sql, values);
+		return jfishDao.createAsDataQuery(sql, values);
 	}
 
 	public void findPage(Class entityClass, Page page, Object... properties) {
-		entityManagerWraper.findPage(entityClass, page, properties);
+		jfishDao.findPageByProperties(entityClass, page, CUtils.asOrCreateLinkedHashMap(properties));
 	}
 
 	public void findPage(Class entityClass, Page page, Map<Object, Object> properties) {
-		entityManagerWraper.findPage(entityClass, page, properties);
+		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
 	public void removeList(List entities) {
-		entityManagerWraper.removeList(entities);
+		if(LangUtils.isEmpty(entities))
+			return ;
+		getJfishDao().delete(entities);
 	}
 	
 	public <T> List<T> findList(JFishQueryValue queryValue) {
@@ -278,58 +323,76 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		return entityManagerWraper.findList(squery);
 	}*/
 
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties) {
-		return entityManagerWraper.findUnique(entityClass, tryTheBest, properties);
-	}
 
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return entityManagerWraper.findUnique(entityClass, properties);
+		return jfishDao.findUniqueByProperties(entityClass, CUtils.asOrCreateLinkedHashMap(properties));
 	}
 
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
-		return entityManagerWraper.findUnique(entityClass, properties);
+		return jfishDao.findUniqueByProperties(entityClass, properties);
 	}
 
 	public <T> T findUnique(String sql, Object... values) {
-		return entityManagerWraper.findUnique(sql, values);
+		T entity = null;
+		try {
+			DataQuery dq = jfishDao.createAsDataQuery(sql, (Class<?>)null);
+			dq.setParameters(values);
+			entity = (T) dq.getSingleResult();
+		} catch (Exception e) {
+			logger.error("findUnique error : " + sql, e);
+			throw new BaseException("find the unique result error : " + sql, e);
+		}
+		return entity;
 	}
 
 	public <T> T findUnique(String sql, Map<String, Object> values) {
-		return entityManagerWraper.findUnique(sql, values);
+		return (T)jfishDao.createAsDataQuery(sql, values).getSingleResult();
 	}
 
-	public <T> List<T> findByProperties(Class entityClass, Object... properties) {
-		return entityManagerWraper.findByProperties(entityClass, properties);
+	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
+		return findByProperties(entityClass, CUtils.asOrCreateLinkedHashMap(properties));
 	}
 
-	public <T> List<T> findByProperties(Class entityClass, Map<Object, Object> properties) {
-		return entityManagerWraper.findByProperties(entityClass, properties);
+	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
+		return jfishDao.findByProperties(entityClass, properties);
 	}
 
-	public <T> List<T> findByExample(Class entityClass, Object obj) {
-		return entityManagerWraper.findByExample(entityClass, obj);
+	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
+		Map properties = M.bean2Map(obj);
+		return this.findByProperties(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
-		entityManagerWraper.findPageByExample(entityClass, page, obj);
+		Map properties = M.bean2Map(obj);
+		this.findPage(entityClass, page, properties);
 	}
 
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
-		return entityManagerWraper.countRecord(entityClass, properties);
+		return jfishDao.countByProperties(entityClass, properties);
 	}
 
 	public Number countRecord(Class entityClass, Object... params) {
-		return entityManagerWraper.countRecord(entityClass, params);
+		return countRecord(entityClass, CUtils.asOrCreateLinkedHashMap(params));
 	}
 
 	@Override
 	public void delete(ILogicDeleteEntity entity) {
-		entityManagerWraper.delete(entity);
+		entity.deleted();
+		getJfishDao().save(entity);
 	}
 
 	@Override
 	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id) {
-		return entityManagerWraper.deleteById(entityClass, id);
+		Object entity = getJfishDao().findById(entityClass, id);
+		if(entity==null)
+			return null;
+		if(!ILogicDeleteEntity.class.isAssignableFrom(entity.getClass())){
+			throw new ServiceException("实体不支持删除！");
+		}
+		T logicDeleteEntity = (T) entity;
+		logicDeleteEntity.deleted();
+		getJfishDao().save(logicDeleteEntity);
+		return logicDeleteEntity;
 	}
 
 	@Override

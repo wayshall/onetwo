@@ -12,6 +12,7 @@ public class AbstractCascadeMappedField extends AbstractMappedField implements C
 	private JoinTableMapper joinTableMapper;
 	private JoinColumnMapper joinColumnMapper;
 	
+	
 	public AbstractCascadeMappedField(JFishMappedEntry entry, JFishProperty prop){
 		super(entry, prop);
 	}

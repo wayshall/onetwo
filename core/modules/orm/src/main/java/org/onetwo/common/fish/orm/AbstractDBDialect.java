@@ -109,7 +109,7 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 	private SQLBuilderFactory sqlBuilderFactory;
 	
 	protected ApplicationContext applicationContext;
-	private boolean printSql = false;
+//	private boolean printSql = false;
 	
 	
 	public AbstractDBDialect(DataBaseConfig dataBaseConfig) {
@@ -126,14 +126,15 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 		
 		this.registerIdStrategy();
 		//优先使用自定义的 DbEventListenerManager
-		if(this.dbEventListenerManager==null)
-			this.dbEventListenerManager = this.findDbEventListenerManagerFromContext(applicationContext);
-		
 		if(this.dbEventListenerManager==null){
-			this.dbEventListenerManager = new JFishDefaultDbEventListenerManager().registerDefaultEventListeners();
-		}else{
-			this.dbEventListenerManager.registerDefaultEventListeners();
+			DbEventListenerManager dbelm = this.findDbEventListenerManagerFromContext(applicationContext);
+			if(dbelm==null){
+				dbelm = createDefaultDbEventListenerManager();
+				this.dbEventListenerManager = dbelm;
+			}
 		}
+		
+		this.dbEventListenerManager.registerDefaultEventListeners();
 		
 		this.initOtherComponents();
 	}
@@ -143,6 +144,8 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 	 */
 	protected void registerIdStrategy(){
 	}
+	
+	abstract protected DbEventListenerManager createDefaultDbEventListenerManager();
 	
 	protected void initOtherComponents(){
 		this.sqlBuilderFactory = new DefaultSQLBuilderFactory();
@@ -221,13 +224,13 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, Ini
 		this.applicationContext = applicationContext;
 	}
 
-	public boolean isPrintSql() {
-		return printSql;
-	}
-
-	public void setPrintSql(boolean printSql) {
-		this.printSql = printSql;
-	}
+//	public boolean isPrintSql() {
+//		return printSql;
+//	}
+//
+//	public void setPrintSql(boolean printSql) {
+//		this.printSql = printSql;
+//	}
 
 	public SQLBuilderFactory getSqlBuilderFactory() {
 		return sqlBuilderFactory;
