@@ -2,6 +2,11 @@ package org.onetwo.plugins.fmtag.service.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.onetwo.common.fish.JFishEntityManager;
+import org.onetwo.common.fish.orm.JFishMappedEntry;
+import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.fmtag.service.JFishDataDelegateService;
 import org.springframework.stereotype.Service;
@@ -11,37 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public class JFishDataDelegateServiceImpl implements JFishDataDelegateService  {
 
+	@Resource
+	private JFishEntityManager jfishEntityManager; 
+	
+	@Resource
+	private MappedEntryManager mappedEntryManager;
+
 	@Override
 	public <T> List<T> findListByQName(String queryName, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+//		return jfishEntityManager.getJfishFileQueryDao().findListByQName(queryName, params);
+		return jfishEntityManager.createJFishQueryByQName(queryName, params).getResultList();
 	}
-
-	@Override
-	public <T> Page<T> findPage(Class<T> entityClass, Page<T> page,
-			Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public <T> Page<T> findPage(Class<T> entityClass, Page<T> page, Object...params){
+		jfishEntityManager.findPage(entityClass, page, params);
+		return page;
 	}
-
-//	@Resource
-//	private JFishEntityManager jfishEntityManager; 
-//	
-//	@Resource
-//	private MappedEntryManager mappedEntryManager;
-//
-//	@Override
-//	public <T> List<T> findListByQName(String queryName, Object... params) {
-//		return jfishEntityManager.createJFishQueryByQName(queryName, params).getResultList();
-//	}
-//	
-//	public <T> Page<T> findPage(Class<T> entityClass, Page<T> page, Object...params){
-//		jfishEntityManager.findPage(entityClass, page, params);
-//		return page;
-//	}
-//	
-//	public JFishMappedEntry getJFishMappedEntry(Object clsName){
-//		return this.mappedEntryManager.getEntry(clsName);
-//	}
+	
+	public JFishMappedEntry getJFishMappedEntry(Object clsName){
+		return this.mappedEntryManager.getEntry(clsName);
+	}
 	
 }

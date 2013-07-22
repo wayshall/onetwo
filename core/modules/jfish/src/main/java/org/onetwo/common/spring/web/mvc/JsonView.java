@@ -3,6 +3,7 @@ package org.onetwo.common.spring.web.mvc;
 import java.util.Map;
 
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.spring.web.BaseController.UrlHelper;
 import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 
 public class JsonView extends MappingJacksonJsonView {
@@ -31,7 +32,7 @@ public class JsonView extends MappingJacksonJsonView {
 			model.clear();
 			model.put(key, singleModelWrapper.getValue());
 		}else{
-//			model.remove(UrlHelper.MODEL_KEY);
+			model.remove(UrlHelper.MODEL_KEY);
 		}
 		return super.filterModel(model);
 	}

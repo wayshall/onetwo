@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.exception.JFishInvokeRestException;
-import org.onetwo.common.spring.web.AbstractBaseController;
+import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -59,7 +59,7 @@ final public class JFishUtils {
 		return se;
 	}
 	
-	public static String getControllerPath(Class<? extends AbstractBaseController> controllerClass, String methodName, Object...params){
+	public static String getControllerPath(Class<? extends BaseController<?>> controllerClass, String methodName, Object...params){
 		Assert.notNull(controllerClass);
 		String path = "";
 		RequestMapping rm = controllerClass.getAnnotation(RequestMapping.class);

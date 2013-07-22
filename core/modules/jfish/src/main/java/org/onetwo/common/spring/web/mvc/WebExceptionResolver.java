@@ -13,7 +13,7 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.spring.web.AbstractBaseController;
+import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -105,8 +105,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
 		
 		String msg = LangUtils.getCauseServiceException(ex).getMessage();
-		if(!model.containsKey(AbstractBaseController.MESSAGE)){
-			model.put(AbstractBaseController.MESSAGE, msg);
+		if(!model.containsKey(BaseController.MESSAGE)){
+			model.put(BaseController.MESSAGE, msg);
 		}
 		
 //		WebContextUtils.attr(request, ERROR_CODE_KEY, ecode);

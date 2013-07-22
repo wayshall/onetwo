@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.spring.web.BaseController;
+import org.onetwo.common.spring.web.BaseController.UrlHelper;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.NiceDate;
@@ -22,5 +24,16 @@ public class JFishFreeMarkerView extends FreeMarkerView {
 			model.put(WebHelper.WEB_HELPER_KEY, JFishWebUtils.webHelper(request));
 		}
 
+		BaseController<?> c = JFishWebUtils.currentTypeController(BaseController.class);
+		if(c!=null){
+			//url helper
+			model.put(UrlHelper.MODEL_KEY, c.getUrlMeta());
+
+			//entityClass
+			if(c.getEntityClass()!=null && !model.containsKey(ENTITY_CLASS_KEY)){
+				model.put(ENTITY_CLASS_KEY, c.getEntityClass());
+			}
+			
+		}
 	}
 }

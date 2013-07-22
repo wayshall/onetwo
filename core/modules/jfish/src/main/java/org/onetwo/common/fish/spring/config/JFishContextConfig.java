@@ -8,6 +8,7 @@ import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
+import org.onetwo.common.spring.web.mvc.config.BaseAppConfigurator;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAda
  *
  */
 @Configuration
+@JFishOrm
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
 @Import(JFishProfiles.class)
 public class JFishContextConfig implements ApplicationContextAware {
@@ -42,9 +44,9 @@ public class JFishContextConfig implements ApplicationContextAware {
 	private ApplicationContext applicationContex;
 
 	@Value("${jfish.base.packages}")
-	private String jfishBasePackges;
-//	@Value("${watch.sql.file}")
-//	private boolean isWatchSqlFile;
+	private String entityBasePackages;
+	@Value("${watch.sql.file}")
+	private boolean isWatchSqlFile;
 	
 	// private JFishContextConfigurerListenerManager listenerManager = new
 	// JFishContextConfigurerListenerManager();
@@ -79,18 +81,17 @@ public class JFishContextConfig implements ApplicationContextAware {
 			jfAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigrator.class);
 		}
 		if(jfAppConfigurator==null){
-			jfAppConfigurator = new JFishAppConfigrator(){
+			jfAppConfigurator = new BaseAppConfigurator(){
 
 				@Override
 				public String getJFishBasePackage() {
-					return jfishBasePackges;
+					return entityBasePackages;
 				}
 
 				@Override
-				public String[] getXmlBasePackages() {
-					return new String[]{this.getJFishBasePackage()};
+				public boolean isWatchSqlFile() {
+					return isWatchSqlFile;
 				}
-
 				
 			};
 		}

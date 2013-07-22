@@ -20,6 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hibernate.validator.version>4.3.0.Final</hibernate.validator.version>
     <ehcache.version>2.6.0</ehcache.version>
+	<onetwo.orm.version>2.0-SNAPSHOT</onetwo.orm.version>
   </properties>
   
   <dependencies>
@@ -34,6 +35,12 @@
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-spring</artifactId>
 	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-orm</artifactId>
+	  <version>${onetwo.orm.version}</version>
 	</dependency>
 	
 	<dependency>
