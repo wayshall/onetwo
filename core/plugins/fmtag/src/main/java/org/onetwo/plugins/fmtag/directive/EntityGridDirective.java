@@ -1,16 +1,9 @@
 package org.onetwo.plugins.fmtag.directive;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.orm.AbstractMappedField;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.JFishMappedField;
-import org.onetwo.common.fish.orm.JFishMappedFieldType;
 import org.onetwo.common.ftl.directive.DirectivesUtils;
-import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.fmtag.service.JFishDataDelegateService;
 
@@ -52,37 +45,36 @@ public class EntityGridDirective extends DataGridDirective {
 				throw new JFishException("no entity class");
 		}
 		
-		JFishMappedEntry entry = jdataDelegate.getJFishMappedEntry(eclass.getName());
-		
-		doBeforeBuildEntryField(entry, dg);
-//		jdataDelegate.findPage(entry.getEntityClass(), dg.page);
-		Collection<AbstractMappedField> fields = entry.getFields(JFishMappedFieldType.FIELD);
-		boolean showable = false;
-		for(JFishMappedField field : fields){
-			showable = ArrayUtils.contains(includeFields, field.getName()) || !ArrayUtils.contains(excludeFields, field.getName());
-			if(!showable)
-				continue;
-			DataField dfield = this.createDataField(field);
-			if(!dfield.isShowInGrid())
-				continue;
-			if(ArrayUtils.contains(searchFields, field.getName())){
-				dfield.search = true;
-			}
-//			dg.addIteratorField(dfield);
-			
-			DataRow row = dg.getIteratorRow();
-//			dfield.setShowOrder(row.getFields().size()+1);
-			row.addField(dfield);
-		}
-		Collections.sort(dg.getIteratorRow().getFields());
+		//TODO
+//		JFishMappedEntry entry = jdataDelegate.getJFishMappedEntry(eclass.getName());
+//		
+//		doBeforeBuildEntryField(entry, dg);
+//		Collection<AbstractMappedField> fields = entry.getFields(JFishMappedFieldType.FIELD);
+//		boolean showable = false;
+//		for(JFishMappedField field : fields){
+//			showable = ArrayUtils.contains(includeFields, field.getName()) || !ArrayUtils.contains(excludeFields, field.getName());
+//			if(!showable)
+//				continue;
+//			DataField dfield = this.createDataField(field);
+//			if(!dfield.isShowInGrid())
+//				continue;
+//			if(ArrayUtils.contains(searchFields, field.getName())){
+//				dfield.search = true;
+//			}
+//			
+//			DataRow row = dg.getIteratorRow();
+//			row.addField(dfield);
+//		}
+//		Collections.sort(dg.getIteratorRow().getFields());
 	}
 	
-	protected DataField createDataField(JFishMappedField field){
-		return new DataField(field.getName(), field.getLabel());
-	}
-	
-	protected void doBeforeBuildEntryField(JFishMappedEntry entry, DataGrid dg){
-	}
+	//TODO
+//	protected DataField createDataField(JFishMappedField field){
+//		return new DataField(field.getName(), field.getLabel());
+//	}
+//	
+//	protected void doBeforeBuildEntryField(JFishMappedEntry entry, DataGrid dg){
+//	}
 
 	@Override
 	public String getDirectiveName() {

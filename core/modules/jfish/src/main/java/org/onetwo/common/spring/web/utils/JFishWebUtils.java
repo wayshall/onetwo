@@ -5,7 +5,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.spring.web.AbstractBaseController;
-import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
@@ -205,7 +204,7 @@ public final class JFishWebUtils {
 	}
 	
 	public static boolean isRedirect(String viewName){
-		return viewName!=null && viewName.startsWith(BaseController.REDIRECT);
+		return viewName!=null && viewName.startsWith(AbstractBaseController.REDIRECT);
 	}
 
 	public static String redirectUrl(String redirectUrl, String defaultUrl){
