@@ -1,4 +1,4 @@
-package org.onetwo.common.cmd;
+package org.onetwo.common.hibernate.cmd;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;

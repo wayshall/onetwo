@@ -1,16 +1,11 @@
 package org.onetwo.common.spring.web;
 
-import org.onetwo.common.db.IdEntity;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
 import org.onetwo.common.fish.plugin.PluginConfig;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -131,17 +126,18 @@ abstract public class BaseController<E> extends AbstractBaseController implement
 		
 		@SuppressWarnings("rawtypes")
 		protected Object getId(Object id){
-			if(id instanceof IdEntity){
-				return ((IdEntity)id).getId();
-			}else if(!LangUtils.isBaseType(id.getClass())){
-				MappedEntryManager manager = SpringApplication.getInstance().getBeanByDefaultName(MappedEntryManager.class);
-				if(manager==null)
-					return id;
-				JFishMappedEntry entry = manager.getEntry(id);
-				if(entry==null)
-					return id;
-				return entry.getId(id);
-			}
+			//TODO
+//			if(id instanceof IdEntity){
+//				return ((IdEntity)id).getId();
+//			}else if(!LangUtils.isBaseType(id.getClass())){
+//				MappedEntryManager manager = SpringApplication.getInstance().getBeanByDefaultName(MappedEntryManager.class);
+//				if(manager==null)
+//					return id;
+//				JFishMappedEntry entry = manager.getEntry(id);
+//				if(entry==null)
+//					return id;
+//				return entry.getId(id);
+//			}
 			return id;
 		}
 		//action

@@ -1,12 +1,13 @@
-package org.onetwo.common.spring.web.mvc.config;
+package org.onetwo.plugins.jorm;
 
 import org.onetwo.common.fish.orm.DataBaseConfig;
 import org.onetwo.common.fish.orm.DefaultDataBaseConfig;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
+import org.onetwo.common.fish.spring.config.JFishOrmConfigurator;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 
-abstract public class BaseAppConfigurator implements JFishAppConfigrator {
+abstract public class BaseAppConfigurator implements JFishOrmConfigurator, JFishAppConfigrator {
 
 	private DataBaseConfig dataBaseConfig;
 	

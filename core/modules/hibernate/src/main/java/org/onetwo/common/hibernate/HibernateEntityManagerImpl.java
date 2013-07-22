@@ -7,10 +7,9 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.onetwo.common.db.AbstractEntityManager;
+import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
-import org.onetwo.common.db.event.DbEventListeners;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.MyUtils;
@@ -22,7 +21,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	
 	private SessionFactory sessionFactory; 
 	
-	private SequenceNameManager sequenceNameManager;
+	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -32,18 +31,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	@Override
-	public <T> T getEntityManager() {
-		return null;
-	}
 
-	@Override
-	protected DbEventListeners newDbEventListeners() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public DataQuery createSQLQuery(String sqlString, Class entityClass){
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
 		if(entityClass!=null)
 			query.addEntity(entityClass);

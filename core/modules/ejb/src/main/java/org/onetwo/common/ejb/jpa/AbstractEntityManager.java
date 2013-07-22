@@ -1,4 +1,4 @@
-package org.onetwo.common.db;
+package org.onetwo.common.ejb.jpa;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -8,6 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.ILogicDeleteEntity;
+import org.onetwo.common.db.IdEntity;
+import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.event.DbEventListeners;
 import org.onetwo.common.db.event.EventSource;
 import org.onetwo.common.db.sql.SequenceNameManager;

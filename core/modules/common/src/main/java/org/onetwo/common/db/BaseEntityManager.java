@@ -64,7 +64,7 @@ public interface BaseEntityManager {
 	
 //	public EntityManager getEntityManager();
 	
-	public DataQuery createSQLQuery(String sqlString, Class entityClass);
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass);
 	
 	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping);
 	

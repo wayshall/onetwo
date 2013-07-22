@@ -4,11 +4,6 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishEntityManagerImpl;
-import org.onetwo.common.fish.event.DbEventListenerManager;
-import org.onetwo.common.fish.event.InsertEventListener;
-import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
-import org.onetwo.common.fish.event.oracle.JFishOracleBatchInsertEventListener;
-import org.onetwo.common.fish.event.oracle.JFishOracleInsertEventListener;
 import org.onetwo.common.fish.jpa.JPAMappedEntryBuilder;
 import org.onetwo.common.fish.jpa.JPARelatedMappedEntryBuilder;
 import org.onetwo.common.fish.orm.DBDialect;
@@ -20,7 +15,6 @@ import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.orm.MappedEntryManagerListener;
 import org.onetwo.common.fish.orm.MySQLDialect;
 import org.onetwo.common.fish.orm.OracleDialect;
-import org.onetwo.common.fish.relation.JFishRelatedDbEventListenerManager;
 import org.onetwo.common.fish.spring.JFishDaoImpl;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.MutilMappedEntryManager;
@@ -30,22 +24,16 @@ import org.onetwo.common.jdbc.JFishJdbcTemplateProxy;
 import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
-import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 
 @Configuration
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
@@ -249,7 +237,7 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		return dialet;
 	}
 	
-
+/****
 	@Bean(name = "cacheManager")
 	public CacheManager cacheManager() {
 		CacheManager cache = null;
@@ -282,5 +270,5 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		cacheManager.setCacheManager(cm);
 		return cacheManager;
 	}
-
+****/
 }
