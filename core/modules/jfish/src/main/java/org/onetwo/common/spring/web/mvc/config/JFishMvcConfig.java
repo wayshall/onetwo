@@ -1,7 +1,6 @@
 package org.onetwo.common.spring.web.mvc.config;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -18,7 +17,6 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerView;
-import org.onetwo.common.spring.propeditor.JFishDateEditor;
 import org.onetwo.common.spring.web.authentic.SpringAuthenticationInvocation;
 import org.onetwo.common.spring.web.authentic.SpringSecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
@@ -33,11 +31,8 @@ import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.PropertyEditorRegistrar;
-import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +45,6 @@ import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -302,40 +296,26 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	public void afterPropertiesSet() throws Exception{
-//		this.applicationContext.registerMvcResourcesOfPlugins();
-
 //		this.jfishAppConfigurator = SpringUtils.getBean(applicationContext, JFishAppConfigrator.class);
 //		Assert.notNull(jfishAppConfigurator, "there is not app configurator");
 		
-		final List<PropertyEditorRegistrar> peRegisttrarList = new JFishList<PropertyEditorRegistrar>();
-		peRegisttrarList.add(new PropertyEditorRegistrar() {
-			@Override
-			public void registerCustomEditors(PropertyEditorRegistry registry) {
-				registry.registerCustomEditor(Date.class, new JFishDateEditor());
-			}
-		});
+//		final List<PropertyEditorRegistrar> peRegisttrarList = new JFishList<PropertyEditorRegistrar>();
+//		peRegisttrarList.add(new PropertyEditorRegistrar() {
+//			@Override
+//			public void registerCustomEditors(PropertyEditorRegistry registry) {
+//				registry.registerCustomEditor(Date.class, new JFishDateEditor());
+//			}
+//		});
 		
-		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
+//		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
 		
-		/*this.listeners.each(new NoIndexIt<JFishMvcConfigurerListener>() {
-
-			@Override
-			protected void doIt(JFishMvcConfigurerListener element) {
-				element.onMvcPropertyEditorRegistrars(peRegisttrarList);
-				element.onMvcInitContext(applicationContext, JFishMvcConfig.this);
-			}
-			
-		});*/
-		
-		((ConfigurableWebBindingInitializer)requestMappingHandlerAdapter.getWebBindingInitializer()).setPropertyEditorRegistrars(peRegisttrarList.toArray(new PropertyEditorRegistrar[peRegisttrarList.size()]));
+//		((ConfigurableWebBindingInitializer)requestMappingHandlerAdapter.getWebBindingInitializer()).setPropertyEditorRegistrars(peRegisttrarList.toArray(new PropertyEditorRegistrar[peRegisttrarList.size()]));
 
 		SpringApplication.initApplication(applicationContext);
 		
 	}
 	
 	public Validator getValidator() {
-//		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-//		validator.setValidationMessageSource(validateMessageSource());
 		Validator validator = SpringApplication.getInstance().getBean(Validator.class);
 		Assert.notNull(validator, "validator can not be null");
 		return validator;

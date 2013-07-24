@@ -115,9 +115,4 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 		return (T)getBaseEntityManager().findUnique(entityClass, properties);
 	}
 	
-	@Override
-	public T findUnique(boolean tryTheBest, Object... properties) {
-		return (T)getBaseEntityManager().findUnique(entityClass, tryTheBest, properties);
-	}
-
 }

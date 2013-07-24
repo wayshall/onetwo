@@ -49,19 +49,7 @@ public class JFishContextConfig implements ApplicationContextAware {
 
 	@Value("${jfish.base.packages}")
 	private String jfishBasePackages;
-	@Value("${watch.sql.file}")
-	private boolean isWatchSqlFile;
-	
-	// private JFishContextConfigurerListenerManager listenerManager = new
-	// JFishContextConfigurerListenerManager();
 
-	// @Value("${app.cache}")
-	// private String appCache;
-
-	// @Autowired
-	// private ConfigurableEnvironment env;
-
-	// private JFishAppConfigurator jfAppConfigurator;
 
 	public JFishContextConfig() {
 		// this.jfAppConfigurator =

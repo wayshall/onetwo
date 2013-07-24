@@ -1,18 +1,14 @@
 package org.onetwo.plugins.jorm;
 
-import org.onetwo.common.fish.orm.DataBaseConfig;
-import org.onetwo.common.fish.orm.DefaultDataBaseConfig;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
 import org.onetwo.common.fish.spring.config.JFishOrmConfigurator;
+import org.onetwo.common.fish.spring.config.JFishOrmConfigurerAdapter;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 
-abstract public class BaseAppConfigurator implements JFishOrmConfigurator, JFishAppConfigrator {
+abstract public class BaseAppConfigurator  extends JFishOrmConfigurerAdapter implements JFishOrmConfigurator, JFishAppConfigrator {
 
-	private DataBaseConfig dataBaseConfig;
-	
 	public BaseAppConfigurator(){
-		this.dataBaseConfig = new DefaultDataBaseConfig();
 	}
 
 	@Override
@@ -39,11 +35,6 @@ abstract public class BaseAppConfigurator implements JFishOrmConfigurator, JFish
 	@Override
 	public boolean isWatchSqlFile() {
 		return BaseSiteConfig.getInstance().isJdbcSqlLog();
-	}
-
-	@Override
-	public DataBaseConfig getDataBaseConfig() {
-		return dataBaseConfig;
 	}
 
 }

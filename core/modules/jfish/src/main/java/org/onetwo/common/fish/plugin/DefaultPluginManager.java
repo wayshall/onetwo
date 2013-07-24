@@ -128,7 +128,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 			for(String dependency : plugin.getDependency()){
 				PluginInfo parentDependencyPlugin = pluginConfs.get(dependency);
 				if(parentDependencyPlugin==null)
-					throw new JFishException("the jfish can not find the dependency plugin[" + dependency+"], please install it!");
+					throw new JFishException("start plugin["+plugin.getName()+"] error: can not find the dependency plugin[" + dependency+"], please install it!");
 				initPlugin(pluginConfs, parentDependencyPlugin, plugin);
 			}
 		}
@@ -305,6 +305,9 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 
 			@Override
 			public boolean doIt(JFishPluginMeta element, int index) {
+				if(!element.getJfishPlugin().registerMvcResources()){
+					return true;
+				}
 				final String locations = element.getWebResourceMeta().getStaticResourcePath();
 				//TODO cacheSeconds
 				final String rsBeanName = ResourceHttpRequestHandler.class.getSimpleName()+"#jfishPlugin#"+element.getPluginInfo().getName();

@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.exception.SQLGrammarException;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -98,7 +99,15 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	@Override
 	public <T> T save(T entity) {
-		getSession().saveOrUpdate(entity);
+		try {
+			getSession().saveOrUpdate(entity);
+		} catch (SQLGrammarException e) {
+			if("42000".equals(e.getSQLState())){
+				this.createSequence(entity.getClass());
+			}
+			getSession().saveOrUpdate(entity);
+		}
+//		getSession().merge(entity);
 		return entity;
 	}
 	

@@ -49,9 +49,6 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	
 	private boolean logJdbcSql;
 
-	
-//	private JFishContextConfigurerListenerManager listenerManager= new JFishContextConfigurerListenerManager();
-	
 //	@Value("${app.cache}")
 //	private String appCache;
 	
@@ -60,8 +57,6 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	
 	private JFishOrmConfigurator jfishOrmConfigurator;
 	
-	private JFishConfigurer jfishConfigurer;
-	
 	public JFishOrmConfig(){
 	}
 
@@ -69,15 +64,10 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContex = applicationContext;
-//		listenerManager.addListener(pluginManager());
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.jfishConfigurer = SpringUtils.getBean(applicationContex, JFishConfigurer.class);
-		if(jfishConfigurer==null){
-			this.jfishConfigurer = new JFishConfigurerAdapter();
-		}
 		this.jfishOrmConfigurator = SpringUtils.getBean(applicationContex, JFishOrmConfigurator.class);
 		Assert.notNull(jfishOrmConfigurator);
 		this.logJdbcSql = jfishOrmConfigurator.isLogJdbcSql();
@@ -165,23 +155,10 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		return dialet;
 	}
 
-//	@Bean
-//	public SequenceNameManager sequenceNameManager() {
-//		return new JFishSequenceNameManager();
-//	}
-
-	/*@Bean
-	public SQLSymbolManager sqlSymbolManager() {
-		SQLDialet sqlDialet = new DefaultSQLDialetImpl();
-		JFishSQLSymbolManagerImpl sql = new JFishSQLSymbolManagerImpl(sqlDialet);
-		sql.setDialect(jfishDialect());
-		sql.setMappedEntryManager(mappedEntryManager());
-		return sql;
-	}*/
 
 	@Bean
 	public JFishEntityManager jfishEntityManager() {
-		JFishEntityManager jem = jfishConfigurer.jfishEntityManager(jfishDao());
+		JFishEntityManager jem = jfishOrmConfigurator.jfishEntityManager(jfishDao());
 		if(jem==null){
 			JFishEntityManagerImpl jemImpl = new JFishEntityManagerImpl();
 			jemImpl.setJfishDao(jfishDao());
@@ -213,13 +190,6 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		return listener;
 	}
 
-	/*
-	 * protected List<MappedEntryBuilder> mappedEntryBuilderList(){
-	 * List<MappedEntryBuilder> list = new ArrayList<MappedEntryBuilder>();
-	 * list.add(jfishMappedEntryBuilder());
-	 * list.add(jpaRelatedMappedEntryBuilder()); //
-	 * list.add(jpaMappedEntryBuilder()); return list; }
-	 */
 
 	@Bean(name = "mysqlDialect")
 	public DBDialect mysqlDialet() {

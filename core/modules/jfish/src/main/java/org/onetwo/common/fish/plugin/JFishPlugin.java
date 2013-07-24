@@ -14,4 +14,6 @@ public interface JFishPlugin extends JFishPluginLifeCycleListener {
 //	JFishContextConfigurerListener getJFishContextConfigurerListener();
 	
 	public JFishPluginMeta getPluginMeta();
+	
+	public boolean registerMvcResources();
 }

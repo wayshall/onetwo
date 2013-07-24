@@ -18,7 +18,7 @@
 	<snapshotRepository>
 		<id>Snapshots</id>
 		<name>Snapshots</name>
-		<url>http://172.20.81.220:8088/nexus/content/repositories/snapshots</url>
+		<url>http://192.168.1.5:8081/nexus/content/repositories/snapshots</url>
 	</snapshotRepository>
   </distributionManagement>
   
@@ -29,11 +29,9 @@
     	<modules>
 				<module>modules/parent</module>
 				<module>modules/common</module>
-				<module>modules/entity</module>
 				<module>modules/ejb</module>
 				<module>modules/spring</module>
 				<module>modules/hibernate</module>
-				<module>modules/hibernate3</module>
 				<module>modules/web</module>
 				<module>modules/security</module>
 				<module>modules/security-spring</module>

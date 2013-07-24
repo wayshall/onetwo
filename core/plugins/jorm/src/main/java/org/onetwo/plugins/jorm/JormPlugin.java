@@ -20,8 +20,8 @@ public class JormPlugin extends AbstractJFishPlugin<JormPlugin> {
 	}
 	
 	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginContext.class);
+	public void onJFishContextClasses(List<Class<?>> annoClasses) {
+		annoClasses.add(JormPluginContext.class);
 	}
 
 
