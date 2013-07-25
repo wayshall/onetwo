@@ -1,4 +1,4 @@
-package org.onetwo.common.ftl.directive;
+package org.onetwo.common.web.view;
 
 import org.onetwo.common.utils.StringUtils;
 

@@ -148,11 +148,6 @@
     </dependency>
      -->
      
-    <dependency>
-	  <groupId>com.sun</groupId>
-	  <artifactId>tools</artifactId>
-	  <version>1.5.0</version>
-	</dependency>
 
     <dependency>
       <groupId>junit</groupId>

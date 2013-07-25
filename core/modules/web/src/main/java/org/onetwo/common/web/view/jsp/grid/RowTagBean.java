@@ -1,11 +1,11 @@
-package org.onetwo.plugins.fmtag.directive;
+package org.onetwo.common.web.view.jsp.grid;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.web.view.HtmlElement;
 
-public class DataRow extends HtmlElement{
+public class RowTagBean extends HtmlElement{
 
 	public static enum RowType {
 		header,
@@ -14,22 +14,22 @@ public class DataRow extends HtmlElement{
 	}
 	
 	
-	public DataRow(RowType type) {
+	public RowTagBean(RowType type) {
 		super();
 		this.type = type;
 	}
-	List<DataField> fields = new ArrayList<DataField>();
+	List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
 	RowType type;
 	boolean renderHeader;
 
-	public void addField(DataField field){
+	public void addField(FieldTagBean field){
 		fields.add(field);
 	}
-	public List<DataField> getFields() {
+	public List<FieldTagBean> getFields() {
 		return fields;
 	}
-	public DataField getField(String name) {
-		for(DataField df : fields){
+	public FieldTagBean getField(String name) {
+		for(FieldTagBean df : fields){
 			if(df.getName().equals(name))
 				return df;
 		}

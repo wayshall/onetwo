@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.onetwo.common.ftl.directive.HtmlElement;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.plugins.fmtag.directive.DataRow.RowType;
 
 @SuppressWarnings("rawtypes")

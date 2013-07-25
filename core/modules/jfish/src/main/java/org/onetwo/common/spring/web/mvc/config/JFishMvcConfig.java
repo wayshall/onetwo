@@ -53,8 +53,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.MappedInterceptor;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.xml.MarshallingView;
 
@@ -71,13 +71,11 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
-	@Resource
-	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+//	@Resource
+//	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 	
 	@Resource
 	private JFishMvcApplicationContext applicationContext;
-	
-//	private JFishList<JFishMvcConfigurerListener> listeners = new JFishList<JFishMvcConfigurerListener>();
 	
 	private JFishMvcConfigurerListenerManager listenerManager = new JFishMvcConfigurerListenerManager();
 	
@@ -98,11 +96,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		
 		JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
-//		@Bean
-//		public SecurityInterceptorFacotryBean securityInterceptorFacotryBean() {
-//			SecurityInterceptorFacotryBean fb = new SecurityInterceptorFacotryBean();
-//			return fb;
-//		}
 		@Bean
 		public SpringSecurityInterceptor springSecurityInterceptor(){
 			SpringSecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SpringSecurityInterceptor.class);
@@ -162,6 +155,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	public JFishFreeMarkerConfigurer freeMarkerConfigurer() {
 		final JFishFreeMarkerConfigurer freeMarker = new JFishFreeMarkerConfigurer(listenerManager);
 		final List<String> templatePaths = new ArrayList<String>(3);
+//		templatePaths.add("/WEB-INF/views/");
 		templatePaths.add("/WEB-INF/ftl/");
 		final Properties setting = freemarkerSetting();
 		freeMarker.setTemplateLoaderPaths(templatePaths.toArray(new String[templatePaths.size()]));
@@ -201,6 +195,14 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		fmResolver.setRequestContextAttribute("request");
 		fmResolver.setOrder(1);
 		return fmResolver;
+	}
+	
+	@Bean
+	public InternalResourceViewResolver jspResolver(){
+		InternalResourceViewResolver jspResoler = new InternalResourceViewResolver();
+		jspResoler.setSuffix(".jsp");
+		jspResoler.setPrefix("/WEB-INF/views/");
+		return jspResoler;
 	}
 
 	@Bean
