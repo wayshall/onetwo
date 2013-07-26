@@ -128,4 +128,7 @@ public class FieldTagBean extends HtmlElement {
 		this.rowTagBean = rowTagBean;
 	}
 	
+	public boolean isCheckbox(){
+		return "checkbox".equalsIgnoreCase(render);
+	}
 }

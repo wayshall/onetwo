@@ -31,8 +31,10 @@ import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -45,6 +47,7 @@ import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -53,6 +56,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.MappedInterceptor;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -71,8 +75,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
-//	@Resource
-//	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+	@Resource
+	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 	
 	@Resource
 	private JFishMvcApplicationContext applicationContext;
@@ -301,7 +305,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //		this.jfishAppConfigurator = SpringUtils.getBean(applicationContext, JFishAppConfigrator.class);
 //		Assert.notNull(jfishAppConfigurator, "there is not app configurator");
 		
-//		final List<PropertyEditorRegistrar> peRegisttrarList = new JFishList<PropertyEditorRegistrar>();
+		final List<PropertyEditorRegistrar> peRegisttrarList = new JFishList<PropertyEditorRegistrar>();
 //		peRegisttrarList.add(new PropertyEditorRegistrar() {
 //			@Override
 //			public void registerCustomEditors(PropertyEditorRegistry registry) {
@@ -309,9 +313,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //			}
 //		});
 		
-//		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
+		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
 		
-//		((ConfigurableWebBindingInitializer)requestMappingHandlerAdapter.getWebBindingInitializer()).setPropertyEditorRegistrars(peRegisttrarList.toArray(new PropertyEditorRegistrar[peRegisttrarList.size()]));
+		((ConfigurableWebBindingInitializer)requestMappingHandlerAdapter.getWebBindingInitializer()).setPropertyEditorRegistrars(peRegisttrarList.toArray(new PropertyEditorRegistrar[peRegisttrarList.size()]));
 
 		SpringApplication.initApplication(applicationContext);
 		

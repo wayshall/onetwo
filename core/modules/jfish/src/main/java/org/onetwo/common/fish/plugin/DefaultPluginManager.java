@@ -314,6 +314,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 				applicationContext.registerAndGetBean(rsBeanName, ResourceHttpRequestHandler.class, "locations", locations);
 				//  pluginPath/static/** 
 				urlMap.put(element.getPluginInfo().getContextPath()+"/static/**", rsBeanName);
+				logger.info("mapped plugin["+element.getPluginInfo().getName()+"] resource: [" + locations + "] to [" + element.getPluginInfo().getContextPath()+"/static/**]");
 				
 				return true;
 			}

@@ -56,4 +56,9 @@ public class FmtagPlugin extends AbstractJFishPlugin<FmtagPlugin> {
 		};
 	}
 
+	@Override
+	public boolean registerMvcResources() {
+		return true;
+	}
+
 }

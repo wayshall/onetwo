@@ -29,8 +29,7 @@ public interface SSOService {
 	 */
 	public UserDetail checkLogin(SecurityTarget target);
 	
-	@SuppressWarnings("rawtypes")
-	public UserDetail login(String username, String password, Map params);
+	public UserDetail login(String username, String password, Map<?, ?> params);
 	
 	public void logout(UserDetail userDetail, boolean normal);
 	
