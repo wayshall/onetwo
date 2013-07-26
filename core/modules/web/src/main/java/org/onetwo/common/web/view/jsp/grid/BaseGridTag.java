@@ -1,16 +1,115 @@
 package org.onetwo.common.web.view.jsp.grid;
 
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.JspException;
+
+import org.onetwo.common.web.view.HtmlElement;
+import org.onetwo.common.web.view.jsp.AbstractBodyTag;
 
 @SuppressWarnings("serial")
-public class BaseGridTag extends BodyTagSupport {
+abstract public class BaseGridTag<T extends HtmlElement> extends AbstractBodyTag {
 	
-	public static final String VAR_PRIFEX = "__gridtag__";
+
+	protected String id;
+	protected String name;
+	protected String title;
+	protected String label;
+	protected String cssStyle;
+	protected String cssClass;
+	protected String onclick;
+	
+	protected T component;
+	
+	
+	abstract public T createComponent();
+	
+	
+	
+	@Override
+	public int doStartTag() throws JspException {
+		component = createComponent();
+		this.populateComponent();
+		return super.doStartTag();
+	}
+	
+	protected void populateComponent() throws JspException{
+		component.setId(id);
+		component.setName(name);
+		component.setTitle(title);
+		component.setLabel(label);
+		component.setCssClass(cssClass);
+		component.setCssStyle(cssStyle);
+		component.setOnclick(onclick);
+	}
 
 	protected String getGridVarName(){
-		return getTagVarName("gridTagBean__");
+		return GridTagBean.class.getSimpleName();
 	}
-	protected String getTagVarName(String name){
-		return VAR_PRIFEX + name;
+	
+	protected String getRowVarName(){
+		return RowTagBean.class.getSimpleName();
 	}
+
+	@Override
+	public int doEndTag() throws JspException {
+		return super.doEndTag();
+	}
+
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public String getCssStyle() {
+		return cssStyle;
+	}
+
+	public void setCssStyle(String cssStyle) {
+		this.cssStyle = cssStyle;
+	}
+
+	public String getCssClass() {
+		return cssClass;
+	}
+
+	public void setCssClass(String cssClass) {
+		this.cssClass = cssClass;
+	}
+
+	public String getOnclick() {
+		return onclick;
+	}
+
+	public void setOnclick(String onclick) {
+		this.onclick = onclick;
+	}
+	
+	
 }

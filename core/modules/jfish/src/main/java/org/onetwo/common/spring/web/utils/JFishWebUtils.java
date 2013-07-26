@@ -18,10 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SuppressWarnings("unchecked")
 public final class JFishWebUtils {
 
-	public static final String REQUEST_EXTENSION_KEY = "__JFISH_REQUEST_EXTENSION__";
-	public static final String REQUEST_URI_KEY = "__JFISH_REQUEST_URI__";
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
-	public static final String REQUEST_HANDLER_KEY = "__JFISH_REQUEST_HANDLER__";
 	public static final String REQUEST_HELPER_KEY = "__JFISH_REQUEST_HELPER__";
 
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
@@ -61,12 +58,8 @@ public final class JFishWebUtils {
 		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
 	}
 	
-	public static void currentHandler(Object handler){
-		req(REQUEST_HANDLER_KEY, handler);
-	}
-	
 	public static Object currentHandler(){
-		return req(REQUEST_HANDLER_KEY);
+		return webHelper().getControllerHandler();
 	}
 	
 	public static HandlerMethod currentHandlerMethod(){
@@ -159,12 +152,8 @@ public final class JFishWebUtils {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 	}
 	
-	public static void requestExtension(String ext){
-		req(REQUEST_EXTENSION_KEY, ext);
-	}
-	
 	public static String requestExtension(){
-		Object val = req(REQUEST_EXTENSION_KEY);
+		Object val = webHelper().getRequestExtension();
 		return val==null?"":val.toString();
 	}
 	
@@ -176,12 +165,8 @@ public final class JFishWebUtils {
 		return "xml".equalsIgnoreCase(requestExtension());
 	}
 	
-	public static void requestUri(String uri){
-		req(REQUEST_URI_KEY, uri);
-	}
-	
 	public static String requestUri(){
-		Object val = req(REQUEST_URI_KEY);
+		Object val = webHelper().getRequestURI();
 		return val==null?"":val.toString();
 	}
 	

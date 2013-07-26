@@ -15,6 +15,8 @@ abstract public class HtmlElement {
 	protected String attributes;
 
 	public String getId() {
+		if(StringUtils.isBlank(id) && StringUtils.isNotBlank(getName()))
+			id = getName().replace('.', '_');
 		return id;
 	}
 

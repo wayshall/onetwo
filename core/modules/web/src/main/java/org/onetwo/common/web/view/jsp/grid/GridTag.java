@@ -1,37 +1,73 @@
 package org.onetwo.common.web.view.jsp.grid;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.filter.BaseInitFilter;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
 @SuppressWarnings("serial")
-public class GridTag extends BaseGridTag {
-
-	private String template = TagUtils.getViewPage("lib/grid/default-grid.jsp");
+public class GridTag extends BaseGridTag<GridTagBean> {
+	
+	private String template = TagUtils.getTagPage("grid/default-grid.jsp");
 	private Object dataSource;
 	private int colspan = 0;
+
+	private String action;
 	
+	@Override
+	public GridTagBean createComponent() {
+		return new GridTagBean();
+	}
+
 	@Override
 	public int doEndTag() throws JspException {
 		try {
 			this.pageContext.include(getTemplate());
 		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage());
-		} 
+			throw new JspException("render grid error : " + e.getMessage(), e);
+		} finally{
+			clearComponentFromRequest(getGridVarName());
+		}
 		return EVAL_PAGE;
 	}
 	
-	@Override
-	public int doStartTag() throws JspException {
-		GridTagBean grid = new GridTagBean();
-		grid.setPage(TagUtils.toPage(dataSource));
-		grid.setColspan(colspan);
+	
+	protected void populateComponent() throws JspException{
+		super.populateComponent();
+		component.setPage(TagUtils.toPage(dataSource));
+		component.setColspan(colspan);
+		component.setAction(buildActionString());
 		
-		pageContext.getRequest().setAttribute(getGridVarName(), grid);
+		component.setQueryString(buildQueryString());
 		
-		return super.doStartTag();
+		setComponentIntoRequest(getGridVarName(), component);
 	}
 
+	protected String buildActionString() {
+		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		if(StringUtils.isNotBlank(action))
+			return action;
+		
+		String surl = BaseSiteConfig.getInstance().getBaseURL()+(String)request.getAttribute(BaseInitFilter.REQUEST_URI);
+		return surl;
+	}
+
+	protected String buildQueryString() {
+		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		String str = request.getQueryString();
+		if(StringUtils.isBlank(str))
+			return "";
+		CasualMap params = new CasualMap(str);
+		params.filter("pageNo");
+		str = params.toParamString();
+		return str;
+	}
+	
+	
 	public String getTemplate() {
 		return template;
 	}
@@ -46,5 +82,10 @@ public class GridTag extends BaseGridTag {
 	public void setColspan(int colspan) {
 		this.colspan = colspan;
 	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 
 }

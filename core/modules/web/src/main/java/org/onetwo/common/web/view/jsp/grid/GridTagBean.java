@@ -13,16 +13,21 @@ public class GridTagBean extends HtmlElement {
 	private List<RowTagBean> rows = new ArrayList<RowTagBean>();
 	private int colspan = 0;
 	
+
+	private String action;
+	private String queryString;
+	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
 		if(!rows.contains(row)){
-			row.renderHeader = true;
+			row.setRenderHeader(true);
 			addRow(row);
 		}
 		return row;
 	}
 	
 	public void addRow(RowTagBean row){
+		row.setGridTagBean(this);
 		this.rows.add(row);
 	}
 	public RowTagBean getCurrentRow(){
@@ -47,6 +52,32 @@ public class GridTagBean extends HtmlElement {
 
 	public void setColspan(int colspan) {
 		this.colspan = colspan;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
+	
+	public String getActionWithQueryString(){
+		String link = action;
+		if(action.contains("?")){
+			link += "&" + queryString;
+		}else{
+			link += "?" + queryString;
+		}
+		return link;
 	}
 
 }

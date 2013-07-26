@@ -11,10 +11,18 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 
 final public class TagUtils {
-	
+
+	public static String BASE_TAG_DIR = "/WEB-INF/tags/";
 	public static String BASE_VIEW_DIR = "/WEB-INF/views/";
 
+
 	public static String getViewPage(String path){
+		return getDirPage(BASE_VIEW_DIR, path);
+	}
+	public static String getTagPage(String path){
+		return getDirPage(BASE_TAG_DIR, path);
+	}
+	public static String getDirPage(String baseDir, String path){
 		if(StringUtils.isBlank(path))
 			return path;
 		
@@ -24,7 +32,7 @@ final public class TagUtils {
 		if(path.startsWith("/"))
 			path = path.substring(1);
 		
-		return BASE_VIEW_DIR + path;
+		return baseDir + path;
 	}
 	
 	public static Page<Object> toPage(Object dsValue){

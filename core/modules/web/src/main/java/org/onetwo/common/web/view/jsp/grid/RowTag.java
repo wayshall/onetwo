@@ -2,26 +2,47 @@ package org.onetwo.common.web.view.jsp.grid;
 
 import javax.servlet.jsp.JspException;
 
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
 @SuppressWarnings("serial")
-public class RowTag extends BaseGridTag {
+public class RowTag extends BaseGridTag<RowTagBean> {
 
-	private String template = TagUtils.getViewPage("lib/grid/default-grid.jsp");a
+	private RowType type = RowType.row;
+	private boolean renderHeader;
+	
+	
+	@Override
+	public RowTagBean createComponent() {
+		return new RowTagBean(type);
+	}
+	
+	protected void populateComponent() throws JspException{
+		super.populateComponent();
+		GridTagBean grid = getComponentFromRequest(getGridVarName(), GridTagBean.class);
+		if(grid==null)
+			throw new JspException("row tag must nested in a grid tag.");
+		
+		component.setRenderHeader(renderHeader);
+		grid.addRow(component);
+		
+		setComponentIntoRequest(getRowVarName(), component);
+	}
+
 	@Override
 	public int doEndTag() throws JspException {
-		try {
-			this.pageContext.include(getTemplate());
-		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage());
-		} 
 		return EVAL_PAGE;
 	}
-	public String getTemplate() {
-		return template;
+
+	public void setType(String type) {
+		this.type = RowType.valueOf(type);
 	}
-	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+
+	public boolean isRenderHeader() {
+		return renderHeader;
+	}
+
+	public void setRenderHeader(boolean renderHeader) {
+		this.renderHeader = renderHeader;
 	}
 
 }

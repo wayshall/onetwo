@@ -18,11 +18,14 @@ public class RowTagBean extends HtmlElement{
 		super();
 		this.type = type;
 	}
-	List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
-	RowType type;
-	boolean renderHeader;
+	
+	private GridTagBean gridTagBean;
+	private List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
+	private RowType type;
+	private boolean renderHeader;
 
 	public void addField(FieldTagBean field){
+		field.setRowTagBean(this);
 		fields.add(field);
 	}
 	public List<FieldTagBean> getFields() {
@@ -52,5 +55,14 @@ public class RowTagBean extends HtmlElement{
 	}
 	public boolean isFieldEmpty(){
 		return this.fields.isEmpty();
+	}
+	public GridTagBean getGridTagBean() {
+		return gridTagBean;
+	}
+	public void setGridTagBean(GridTagBean gridTagBean) {
+		this.gridTagBean = gridTagBean;
+	}
+	public void setRenderHeader(boolean renderHeader) {
+		this.renderHeader = renderHeader;
 	}
 }
