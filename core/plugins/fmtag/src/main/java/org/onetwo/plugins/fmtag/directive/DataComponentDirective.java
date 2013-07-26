@@ -21,8 +21,6 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.plugins.fmtag.service.JFishDataDelegateService;
-import org.onetwo.plugins.fmtag.service.impl.JFishDataDelegateServiceImpl;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -115,15 +113,16 @@ public class DataComponentDirective extends AbstractDirective implements Templat
 	protected Object getDataFromDataSource(String type, String ds, String methodName, String paramsStr){
 		Object result = null;
 		if(TYPE_SQL.equals(type)){//by named query
-			JFishDataDelegateService jem = SpringApplication.getInstance().getSpringHighestOrder(JFishDataDelegateServiceImpl.class);
-			if(StringUtils.isBlank(paramsStr)){
-				result = jem.findListByQName(ds);
-			}else{
-				Map dataParams = this.parseArgsAsMap(paramsStr);
-				if(dataParams==null)
-					throw new BaseException("it must be a json(map) paramters, check it: " +paramsStr );
-				result = jem.findListByQName(ds, dataParams);
-			}
+//			JFishDataDelegateService jem = SpringApplication.getInstance().getSpringHighestOrder(JFishDataDelegateServiceImpl.class);
+//			if(StringUtils.isBlank(paramsStr)){
+//				result = jem.findListByQName(ds);
+//			}else{
+//				Map dataParams = this.parseArgsAsMap(paramsStr);
+//				if(dataParams==null)
+//					throw new BaseException("it must be a json(map) paramters, check it: " +paramsStr );
+//				result = jem.findListByQName(ds, dataParams);
+//			}
+			throw new UnsupportedOperationException();
 		}else{
 			Object service = SpringApplication.getInstance().getBean(ds);
 			Assert.notNull(service, "can not find any service : " + ds);

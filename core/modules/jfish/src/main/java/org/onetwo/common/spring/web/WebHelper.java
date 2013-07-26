@@ -53,7 +53,11 @@ public class WebHelper {
 	private Map<String, Object> webRequestContext;
 	private RequestContext requestContext;
 	private StandardEvaluationContext elcontext;
-
+	
+	private String requestURI;
+	private String requestExtension;
+	private Object controllerHandler;
+	
 	public HttpServletRequest getRequest() {
 		return request;
 	}
@@ -68,10 +72,6 @@ public class WebHelper {
 	
 	public String getRequestUrl(){
 		return this.request.getRequestURL().toString();
-	}
-	
-	public String getRequestURI(){
-		return this.request.getRequestURI().toString();
 	}
 	
 	public String getQueryString(){
@@ -139,6 +139,32 @@ public class WebHelper {
 			this.elcontext.setVariables(getWebRequestContext());
 		}
 		return elcontext;
+	}
+
+
+	public String getRequestURI() {
+		return requestURI;
+	}
+
+	public void setRequestURI(String requestURI) {
+		this.requestURI = requestURI;
+	}
+
+
+	public String getRequestExtension() {
+		return requestExtension;
+	}
+
+	public void setRequestExtension(String requestExtension) {
+		this.requestExtension = requestExtension;
+	}
+
+	public Object getControllerHandler() {
+		return controllerHandler;
+	}
+
+	public void setControllerHandler(Object controllerHandler) {
+		this.controllerHandler = controllerHandler;
 	}
 
 }

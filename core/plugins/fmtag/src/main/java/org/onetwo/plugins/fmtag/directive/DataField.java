@@ -119,4 +119,7 @@ public class DataField extends AbstractJFieldView {
 	public List<String> getTypeList() {
 		return typeList;
 	}
+	public void setSearch(boolean search) {
+		this.search = search;
+	}
 }

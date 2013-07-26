@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.onetwo</groupId>
@@ -18,7 +18,7 @@
 	<snapshotRepository>
 		<id>Snapshots</id>
 		<name>Snapshots</name>
-		<url>http://172.20.81.220:8088/nexus/content/repositories/snapshots</url>
+		<url>http://192.168.1.5:8081/nexus/content/repositories/snapshots</url>
 	</snapshotRepository>
   </distributionManagement>
   
@@ -33,4 +33,7 @@
 	</profiles>
 
 
+  <modules>
+    <module>iccard</module>
+  </modules>
 </project>

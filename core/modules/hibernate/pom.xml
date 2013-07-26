@@ -42,6 +42,20 @@
 	  <version>${hibernate.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-ehcache</artifactId>
+	  <version>${hibernate.version}</version>
+	</dependency>
+	
+	<!-- ejb jpa
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-entitymanager</artifactId>
+	  <version>${hibernate.version}</version>
+	</dependency>
+	 -->
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

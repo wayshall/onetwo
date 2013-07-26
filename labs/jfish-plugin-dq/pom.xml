@@ -24,6 +24,13 @@
  
   <dependencies>
 	
+  	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId> 
+	  <artifactId>onetwo-plugin-jorm</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

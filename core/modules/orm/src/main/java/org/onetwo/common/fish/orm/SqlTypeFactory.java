@@ -11,18 +11,17 @@ import java.util.Map;
 import org.onetwo.common.fish.DBUtils;
 
 
-@SuppressWarnings("unchecked")
 public final class SqlTypeFactory {
 	
-	public static final Map<Class, Integer> BASIC_TYPES;
+	public static final Map<Class<?>, Integer> BASIC_TYPES;
 	
-	public static final Map<Integer, Class> SQL_TYPE_TO_JAVA_TYPE ;
+	public static final Map<Integer, Class<?>> SQL_TYPE_TO_JAVA_TYPE ;
 	
 	static {
-		Map<Integer, Class> types = new HashMap<Integer, Class>();
+		Map<Integer, Class<?>> types = new HashMap<Integer, Class<?>>();
 		types.put(Types.INTEGER, Integer.class);
 		types.put(Types.BIGINT, Long.class);
-//		types.put(Types.DECIMAL, BigDecimal.class);
+		types.put(Types.CHAR, String.class);
 		types.put(Types.DECIMAL, Long.class);
 		types.put(Types.NUMERIC, Number.class);
 		types.put(Types.VARCHAR, String.class);
@@ -40,7 +39,7 @@ public final class SqlTypeFactory {
 		SQL_TYPE_TO_JAVA_TYPE = Collections.unmodifiableMap(types);
 		
 		
-		Map<Class, Integer> basicTypes = new HashMap<Class, Integer>();
+		Map<Class<?>, Integer> basicTypes = new HashMap<Class<?>, Integer>();
 		basicTypes.put(int.class, Types.INTEGER);
 		basicTypes.put(long.class, Types.BIGINT);
 		basicTypes.put(short.class, Types.SMALLINT);
@@ -86,8 +85,8 @@ public final class SqlTypeFactory {
 		return getType(value.getClass());
 	}
 	
-	public static Class getJavaType(int sqlType){
-		Class clz = SQL_TYPE_TO_JAVA_TYPE.get(sqlType);
+	public static Class<?> getJavaType(int sqlType){
+		Class<?> clz = SQL_TYPE_TO_JAVA_TYPE.get(sqlType);
 		/*if(clz==null)
 			return String.class;*/
 		return clz;

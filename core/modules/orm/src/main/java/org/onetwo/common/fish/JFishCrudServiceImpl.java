@@ -143,13 +143,7 @@ abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends B
 	public T findUnique(Object... properties) {
 		return super.findUnique(properties);
 	}
-
-	@Override
-	@Transactional(readOnly=true)
-	public T findUnique(boolean tryTheBest, Object... properties) {
-		return super.findUnique(tryTheBest, properties);
-	}
-
+	
 	@Transactional
 	public void removeAll(){
 		baseEntityManager.removeAll(entityClass);

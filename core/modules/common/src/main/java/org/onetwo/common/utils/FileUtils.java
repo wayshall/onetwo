@@ -664,7 +664,7 @@ public class FileUtils {
 	}
 
 	public static File[] listFiles(String dir, final String postfix){
-		File sqlDir = new File(dir);
+		File dirFile = new File(dir);
 		/*File[] sqlFileList = sqlDir.listFiles(new FilenameFilter() {
 			
 			@Override
@@ -677,7 +677,7 @@ public class FileUtils {
 				return rs;
 			}
 		});*/
-		File[] sqlFileList = sqlDir.listFiles(new FileFilter() {
+		File[] sqlFileList = dirFile.listFiles(new FileFilter() {
 			
 			@Override
 			public boolean accept(File dir) {

@@ -3,7 +3,7 @@ package org.onetwo.plugins.fmtag.directive;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.ftl.directive.HtmlElement;
+import org.onetwo.common.web.view.HtmlElement;
 
 public class DataRow extends HtmlElement{
 

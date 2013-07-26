@@ -2,11 +2,11 @@ package org.onetwo.common.ejb.jpa;
 
 import javax.persistence.EntityManager;
 
+import org.onetwo.common.db.anno.EntityCascade;
 import org.onetwo.common.db.event.DefaultEventListener;
 import org.onetwo.common.db.event.EntityAction;
 import org.onetwo.common.db.event.RemoveEvent;
 import org.onetwo.common.db.event.RemoveEventListener;
-import org.onetwo.common.ejb.jpa.anno.EntityCascade;
 
 public class JPARemoveEventListener extends DefaultEventListener implements RemoveEventListener {
 
