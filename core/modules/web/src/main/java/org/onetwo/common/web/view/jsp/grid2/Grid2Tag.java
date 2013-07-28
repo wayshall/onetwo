@@ -1,4 +1,4 @@
-package org.onetwo.common.web.view.jsp.grid;
+package org.onetwo.common.web.view.jsp.grid2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -8,15 +8,19 @@ import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
+import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 
 @SuppressWarnings("serial")
-public class GridTag extends BaseGridTag<GridTagBean> {
+public class Grid2Tag extends BaseGridTag<GridTagBean> {
 	
-	private String template = TagUtils.getTagPage("grid/grid.jsp");
+	private String template = TagUtils.getTagPage("grid2/grid.jsp");
 	private Object dataSource;
 	private int colspan = 0;
 
 	private String action;
+	
+	private boolean toolbar;
 	
 	@Override
 	public GridTagBean createComponent() {
@@ -43,6 +47,7 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 		component.setAction(buildActionString());
 		
 		component.setQueryString(buildQueryString());
+		component.setToolbar(toolbar);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
@@ -85,6 +90,10 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public void setToolbar(boolean toolbar) {
+		this.toolbar = toolbar;
 	}
 
 

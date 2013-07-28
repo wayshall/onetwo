@@ -12,7 +12,7 @@ public class DefineTag extends BaseLayoutTag {
 	@Override
 	public int doEndTag() throws JspException {
 		if(hasChildPageOverride(name)){
-			String text = getChildPageOverrideBody(name).getContentText();
+			String text = getChildPageOverrideBody(name).getContent();
 			try {
 				pageContext.getOut().write(text);
 			} catch (IOException e) {

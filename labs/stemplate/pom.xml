@@ -104,7 +104,7 @@
      <repository>
 		<id>guohui-public</id>
 		<name>Guohui Public Mirror</name>
-      	<url>http://192.168.1.5:8081/nexus/content/groups/public</url>
+      	<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
       	<releases>
       		<enabled>true</enabled>
       	</releases>
@@ -115,7 +115,7 @@
      <repository>
 		<id>guohui-snapshots</id>
 		<name>Guohui Snapshots Mirror</name>
-		<url>http://192.168.1.5:8081/nexus/content/repositories/snapshots</url>
+		<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
       	<releases>
       		<enabled>false</enabled>
       	</releases>
@@ -126,7 +126,7 @@
      <repository>
 		<id>guohui-thirdparty</id>
 		<name>Guohui thirdparty Mirror</name>
-		<url>http://192.168.1.5:8081/nexus/content/repositories/thirdparty/</url>
+		<url>http://192.168.1.55:8081/nexus/content/repositories/thirdparty/</url>
       	<releases>
       		<enabled>true</enabled>
       	</releases>

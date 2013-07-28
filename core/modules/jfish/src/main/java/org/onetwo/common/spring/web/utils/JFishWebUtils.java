@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 public final class JFishWebUtils {
 
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
-	public static final String REQUEST_HELPER_KEY = "__JFISH_REQUEST_HELPER__";
+	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
 	public static final String DEFAULT_TOKEN_FIELD_NAME = "org.onetwo.jfish.form.token";

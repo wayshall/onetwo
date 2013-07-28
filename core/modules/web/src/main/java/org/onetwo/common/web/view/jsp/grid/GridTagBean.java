@@ -16,6 +16,8 @@ public class GridTagBean extends HtmlElement {
 
 	private String action;
 	private String queryString;
+
+	private boolean toolbar;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -78,6 +80,14 @@ public class GridTagBean extends HtmlElement {
 			link += "?" + queryString;
 		}
 		return link;
+	}
+
+	public boolean isToolbar() {
+		return toolbar;
+	}
+
+	public void setToolbar(boolean toolbar) {
+		this.toolbar = toolbar;
 	}
 
 }

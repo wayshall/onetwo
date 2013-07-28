@@ -28,7 +28,7 @@ abstract public class BaseGridTag<T extends HtmlElement> extends AbstractBodyTag
 	public int doStartTag() throws JspException {
 		component = createComponent();
 		this.populateComponent();
-		return super.doStartTag();
+		return EVAL_BODY_BUFFERED;
 	}
 	
 	protected void populateComponent() throws JspException{

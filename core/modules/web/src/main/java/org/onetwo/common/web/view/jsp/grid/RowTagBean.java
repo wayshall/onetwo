@@ -20,7 +20,7 @@ public class RowTagBean extends HtmlElement{
 	}
 	
 	private GridTagBean gridTagBean;
-	private List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
+	protected List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
 	private RowType type;
 	private boolean renderHeader;
 

@@ -8,20 +8,16 @@ public class BaseLayoutTag extends BodyTagSupport {
 	
 	public static class OverrideBody {
 		private final String name;
-		private final BodyContent content;
+		private final String content;
 
 		public OverrideBody(String name, BodyContent content) {
 			super();
 			this.name = name;
-			this.content = content;
+			this.content = content.getString();
 		}
 
-		public BodyContent getContent() {
+		public String getContent() {
 			return content;
-		}
-
-		public String getContentText() {
-			return content.getString();
 		}
 
 		public String getName() {

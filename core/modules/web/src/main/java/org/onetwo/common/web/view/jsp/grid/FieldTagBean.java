@@ -3,8 +3,6 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.servlet.jsp.tagext.BodyContent;
-
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
@@ -25,14 +23,14 @@ public class FieldTagBean extends HtmlElement {
 	private String orderType = Page.DESC;
 	private String orderBy;
 	
-	private BodyContent bodyContent;
+	private String bodyContent;
 	
 	private RowTagBean rowTagBean;
 	
 	
 	public void render(Writer out){
 		try {
-			bodyContent.writeOut(out);
+			out.write(bodyContent);
 		} catch (IOException e) {
 			throw new BaseException("render field["+value+"] error.");
 		}
@@ -86,10 +84,10 @@ public class FieldTagBean extends HtmlElement {
 	public void setOrderable(boolean orderable) {
 		this.orderable = orderable;
 	}
-	public BodyContent getBodyContent() {
+	public String getBodyContent() {
 		return bodyContent;
 	}
-	public void setBodyContent(BodyContent bodyContent) {
+	public void setBodyContent(String bodyContent) {
 		this.bodyContent = bodyContent;
 	}
 

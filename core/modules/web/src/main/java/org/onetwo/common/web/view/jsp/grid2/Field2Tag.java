@@ -1,12 +1,16 @@
-package org.onetwo.common.web.view.jsp.grid;
+package org.onetwo.common.web.view.jsp.grid2;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
+import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
+import org.onetwo.common.web.view.jsp.grid.RowTagBean;
+import org.onetwo.common.web.view.jsp.grid2.Row2TagBean.CurrentRowData;
 
 @SuppressWarnings("serial")
-public class FieldTag extends BaseGridTag<FieldTagBean> {
+public class Field2Tag extends BaseGridTag<FieldTagBean> {
 
 	private String value;
 	private int colspan;
@@ -14,6 +18,7 @@ public class FieldTag extends BaseGridTag<FieldTagBean> {
 	private String render;
 	//改字段是否可以排序
 	private boolean orderable = false;
+	private String dataFormat;
 	
 	@Override
 	public FieldTagBean createComponent() {
@@ -25,11 +30,16 @@ public class FieldTag extends BaseGridTag<FieldTagBean> {
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
 		if(row==null)
 			throw new JspException("field tag must nested in a row tag.");
-		
+
+		CurrentRowData cdata = getComponentFromRequest(Row2Tag.CURRENT_ROW_DATA, CurrentRowData.class);
 		if(!component.isAutoRender()){
 			BodyContent bc = getBodyContent();
-			if(bc!=null)
-				component.setBodyContent(bc.getString());
+			if(bc!=null){
+				cdata.putValue(component.getValue(), bc.getString(), dataFormat);
+			}
+//			return EVAL_BODY_INCLUDE;
+		}else{
+			cdata.translateValue(component.getValue(), dataFormat);
 		}
 		row.addField(component);
 		return EVAL_PAGE;
@@ -81,6 +91,10 @@ public class FieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setRender(String render) {
 		this.render = render;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 
 }
