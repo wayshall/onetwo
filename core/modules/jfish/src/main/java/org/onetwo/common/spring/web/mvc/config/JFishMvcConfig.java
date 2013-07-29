@@ -159,7 +159,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	public JFishFreeMarkerConfigurer freeMarkerConfigurer() {
 		final JFishFreeMarkerConfigurer freeMarker = new JFishFreeMarkerConfigurer(listenerManager);
 		final List<String> templatePaths = new ArrayList<String>(3);
-//		templatePaths.add("/WEB-INF/views/");
+		templatePaths.add("/WEB-INF/views/");
 		templatePaths.add("/WEB-INF/ftl/");
 		final Properties setting = freemarkerSetting();
 		freeMarker.setTemplateLoaderPaths(templatePaths.toArray(new String[templatePaths.size()]));

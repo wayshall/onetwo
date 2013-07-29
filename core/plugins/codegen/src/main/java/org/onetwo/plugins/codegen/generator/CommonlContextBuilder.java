@@ -142,6 +142,10 @@ public class CommonlContextBuilder extends AbstractBuilder {
 				 baseDir = FileUtils.getMavenProjectDir().getPath() + "/src/main/webapp/WEB-INF/ftl/";
 				 fullPackage = getModuleName();
 				 selfFileName = StringUtils.convert2UnderLineName(selfFileName, "-");
+			}else if(getFilePostfix().equalsIgnoreCase("jsp")){
+				 baseDir = FileUtils.getMavenProjectDir().getPath() + "/src/main/webapp/WEB-INF/views/";
+				 fullPackage = getModuleName();
+				 selfFileName = StringUtils.convert2UnderLineName(selfFileName, "-");
 			}else{
 				baseDir = "/";
 			}

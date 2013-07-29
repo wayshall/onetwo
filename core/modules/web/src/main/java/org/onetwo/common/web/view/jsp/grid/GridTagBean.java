@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
@@ -73,6 +74,8 @@ public class GridTagBean extends HtmlElement {
 	}
 	
 	public String getActionWithQueryString(){
+		if(StringUtils.isBlank(queryString))
+			return action;
 		String link = action;
 		if(action.contains("?")){
 			link += "&" + queryString;

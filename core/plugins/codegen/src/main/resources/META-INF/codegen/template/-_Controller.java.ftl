@@ -58,7 +58,7 @@ public class ${commonName}Controller extends AbstractBaseController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST)
-	public ModelAndView create(String redirectUrl, @Valid @ModelAttribute("${ename}")${entityName} ${ename}, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
+	public ModelAndView create(@Valid @ModelAttribute("${ename}")${entityName} ${ename}, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
 		if(bind.hasErrors()){
 			return mv("${ftlPath}-new");
 		}
