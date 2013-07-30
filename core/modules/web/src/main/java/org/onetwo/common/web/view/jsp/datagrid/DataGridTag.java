@@ -1,4 +1,4 @@
-package org.onetwo.common.web.view.jsp.grid2;
+package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -12,9 +12,9 @@ import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 
 @SuppressWarnings("serial")
-public class Grid2Tag extends BaseGridTag<GridTagBean> {
+public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
-	private String template = TagUtils.getTagPage("grid2/grid.jsp");
+	private String template = TagUtils.getTagPage("datagrid/grid.jsp");
 	private Object dataSource;
 	private int colspan = 0;
 

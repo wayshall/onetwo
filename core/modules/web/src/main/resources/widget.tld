@@ -214,9 +214,9 @@
   
   
   <tag>
-    <description><![CDATA[grid2]]></description>
-    <name>grid2</name>
-    <tag-class>org.onetwo.common.web.view.jsp.grid2.Grid2Tag</tag-class>
+    <description><![CDATA[datagrid]]></description>
+    <name>dataGrid</name>
+    <tag-class>org.onetwo.common.web.view.jsp.datagrid.DataGridTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description><![CDATA[template]]></description>
@@ -292,9 +292,9 @@
   </tag>
   
   <tag>
-    <description><![CDATA[row2]]></description>
-    <name>row2</name>
-    <tag-class>org.onetwo.common.web.view.jsp.grid2.Row2Tag</tag-class>
+    <description><![CDATA[data row]]></description>
+    <name>dataRow</name>
+    <tag-class>org.onetwo.common.web.view.jsp.datagrid.DataRowTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description><![CDATA[type]]></description>
@@ -353,9 +353,9 @@
   </tag>
   
   <tag>
-    <description><![CDATA[field2]]></description>
-    <name>field2</name>
-    <tag-class>org.onetwo.common.web.view.jsp.grid2.Field2Tag</tag-class>
+    <description><![CDATA[data field]]></description>
+    <name>dataField</name>
+    <tag-class>org.onetwo.common.web.view.jsp.datagrid.DataFieldTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description><![CDATA[value]]></description>

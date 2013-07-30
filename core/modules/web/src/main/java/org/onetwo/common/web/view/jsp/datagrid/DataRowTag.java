@@ -1,4 +1,4 @@
-package org.onetwo.common.web.view.jsp.grid2;
+package org.onetwo.common.web.view.jsp.datagrid;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,13 +6,13 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
-import org.onetwo.common.web.view.jsp.grid2.Row2TagBean.CurrentRowData;
 
 @SuppressWarnings("serial")
-public class Row2Tag extends BaseGridTag<Row2TagBean> {
+public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 
 	public static final String CURRENT_ROW_DATA = "current__row_data";
 	
@@ -21,8 +21,8 @@ public class Row2Tag extends BaseGridTag<Row2TagBean> {
 
 	
 	@Override
-	public Row2TagBean createComponent() {
-		return new Row2TagBean(type);
+	public DataRowTagBean createComponent() {
+		return new DataRowTagBean(type);
 	}
 	
 	protected void populateComponent() throws JspException{

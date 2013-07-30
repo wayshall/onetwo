@@ -1,4 +1,4 @@
-package org.onetwo.common.web.view.jsp.grid2;
+package org.onetwo.common.web.view.jsp.datagrid;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -17,14 +17,14 @@ import org.onetwo.common.web.view.jsp.grid.RowTagBean;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class Row2TagBean extends RowTagBean {
+public class DataRowTagBean extends RowTagBean {
 	private Iterator<?> iterator;
 	private List<Object> datas;
 	private CurrentRowData currentRowData;
 	
 	private boolean fieldTagCompletion;
 	
-	public Row2TagBean(RowType type) {
+	public DataRowTagBean(RowType type) {
 		super(type);
 	}
 	public void addField(FieldTagBean field){

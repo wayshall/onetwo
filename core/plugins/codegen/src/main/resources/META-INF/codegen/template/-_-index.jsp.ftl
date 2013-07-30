@@ -21,18 +21,18 @@
 		</li>
 	</layout:override>
 	
-	<widget:grid2 name="usergrid" dataSource="${'$'}{page}" title="用户列表" toolbar="true">
-		<widget:row2 name="entity" type="iterator" renderHeader="true">
-			<widget:field2 name="ids" render="checkbox" value="id"/>
-			<widget:field2 name="id" label="主键"/>
-			<widget:field2 name="userName" label="用户名"/>
-			<widget:field2 name="email" label="电子邮件"/>
-			<widget:field2 name="createTime" label="创建时间" dataFormat="yyyy-MM-dd"/>
-			<widget:field2 name="operation" label="操作" render="html">
+	<widget:dataGrid name="usergrid" dataSource="${'$'}{page}" title="用户列表" toolbar="true">
+		<widget:dataRow name="entity" type="iterator" renderHeader="true">
+			<widget:dataField name="ids" render="checkbox" value="id"/>
+			<widget:dataField name="id" label="主键"/>
+			<widget:dataField name="userName" label="用户名"/>
+			<widget:dataField name="email" label="电子邮件"/>
+			<widget:dataField name="createTime" label="创建时间" dataFormat="yyyy-MM-dd"/>
+			<widget:dataField name="operation" label="操作" render="html">
 				<a href="${'$'}{siteConfig.baseURL}${webPath}/${'$'}{entity.${table.primaryKey.javaName}}/edit">编辑</a>
-			</widget:field2>
-		</widget:row2>
-	</widget:grid2>
+			</widget:dataField>
+		</widget:dataRow>
+	</widget:dataGrid>
 	
   </layout:override>
   

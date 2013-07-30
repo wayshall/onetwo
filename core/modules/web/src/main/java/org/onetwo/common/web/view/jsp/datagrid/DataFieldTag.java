@@ -1,16 +1,16 @@
-package org.onetwo.common.web.view.jsp.grid2;
+package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean;
-import org.onetwo.common.web.view.jsp.grid2.Row2TagBean.CurrentRowData;
 
 @SuppressWarnings("serial")
-public class Field2Tag extends BaseGridTag<FieldTagBean> {
+public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	private String value;
 	private int colspan;
@@ -31,7 +31,7 @@ public class Field2Tag extends BaseGridTag<FieldTagBean> {
 		if(row==null)
 			throw new JspException("field tag must nested in a row tag.");
 
-		CurrentRowData cdata = getComponentFromRequest(Row2Tag.CURRENT_ROW_DATA, CurrentRowData.class);
+		CurrentRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, CurrentRowData.class);
 		if(!component.isAutoRender()){
 			BodyContent bc = getBodyContent();
 			if(bc!=null){
