@@ -1,9 +1,9 @@
 package org.onetwo.common.utils;
 
 
-public class SimpleTreeModelCreator implements TreeModelCreator<TreeModel>{
+public class SimpleTreeModelCreator implements TreeModelCreator<DefaultTreeModel, DefaultTreeModel>{
 	
-	public TreeModel createTreeModel(TreeModel obj){
+	public DefaultTreeModel createTreeModel(DefaultTreeModel obj){
 		return obj;
 	}
 

@@ -9,28 +9,29 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.MyLoggerFactory;
+import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
-public class TreeBuilder<T> {
-
-	Logger logger = Logger.getLogger(this.getClass());
-
-	private Map leafages = new LinkedHashMap();
-	private List<TreeModel> tree = new ArrayList<TreeModel>();
-	private Comparator comparator = null;
-	private List rootIds;
-
-	public TreeBuilder(List<T> datas) {
-		this(datas, null, null);
+public class TreeBuilder<TM extends TreeModel<TM>, T> {
+	
+	public static <TM1 extends TreeModel<TM1>, T1> TreeBuilder<TM1, T1> newBuilder(List<T1> datas, TreeModelCreator<TM1, T1> treeNodeCreator){
+		return new TreeBuilder<TM1, T1>(datas, treeNodeCreator);
 	}
 
-	public TreeBuilder(List<T> datas, TreeModelCreator treeNodeCreator) {
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+
+	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
+	private List<TM> tree = new ArrayList<TM>();
+	private Comparator<T> comparator = null;
+	private List<?> rootIds;
+
+	public TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
 		this(datas, treeNodeCreator, null);
 	}
 
-	public List getRootIds() {
+	public List<?> getRootIds() {
 		return rootIds;
 	}
 
@@ -38,22 +39,20 @@ public class TreeBuilder<T> {
 		this.rootIds = Arrays.asList(objects);
 	}
 
-	public TreeBuilder(List<T> datas, TreeModelCreator<T> treeNodeCreator, Comparator comparator) {
+	public TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
 		if (datas == null || datas.isEmpty())
 			return;
 
-		final TreeModelCreator tnc;
-		if (treeNodeCreator == null)
-			tnc = new SimpleTreeModelCreator();
-		else
-			tnc = treeNodeCreator;
+		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 
 		this.comparator = comparator != null ? comparator : new Comparator<T>() {
 			@Override
 			public int compare(T o1, T o2) {
-				TreeModel t1 = tnc.createTreeModel(o1);
-				TreeModel t2 = tnc.createTreeModel(o2);
-				return t1.compareTo(t2);
+				TM t1 = tnc.createTreeModel(o1);
+				TM t2 = tnc.createTreeModel(o2);
+				Comparable<Object> s1 = (Comparable<Object>)t1.getSort();
+				Comparable<Object> s2 = (Comparable<Object>)t2.getSort();
+				return s1.compareTo(s2);
 			}
 		};
 		Collections.sort(datas, this.comparator);
@@ -61,22 +60,22 @@ public class TreeBuilder<T> {
 		for (T data : datas) {
 			if (data == null)
 				continue;
-			TreeModel node = tnc.createTreeModel(data);
+			TM node = tnc.createTreeModel(data);
 			leafages.put(node.getId(), node);
 		}
 	}
 
-	public List<TreeModel> buidTree() {
+	public List<TM> buidTree() {
 		return this.buidTree(false);
 	}
 
-	public List<TreeModel> buidTree(boolean ignoreNoParentLeafe) {
+	public List<TM> buidTree(boolean ignoreNoParentLeafe) {
 		if (leafages.isEmpty())
 			return Collections.EMPTY_LIST;
 
-		Collection<TreeModel> treeModels = (Collection<TreeModel>) leafages.values();
+		Collection<TM> treeModels = (Collection<TM>) leafages.values();
 
-		for (TreeModel node : treeModels) {
+		for (TM node : treeModels) {
 			if (getRootIds() != null) {
 				if(getRootIds().contains(node.getId())){
 					addRoot(node);
@@ -89,7 +88,7 @@ public class TreeBuilder<T> {
 			}
 			if (isRoot(node))
 				continue;
-			TreeModel p = (TreeModel) leafages.get(node.getParentId());
+			TreeModel<TreeModel<?>> p = (TreeModel<TreeModel<?>>) leafages.get(node.getParentId());
 			if (p == null) {
 				if (ignoreNoParentLeafe)
 					logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
@@ -104,17 +103,17 @@ public class TreeBuilder<T> {
 		return tree;
 	}
 	
-	protected void addRoot(TreeModel node){
+	protected void addRoot(TM node){
 		tree.add(node);
 //		this.tree.put(node.getId()!=null?node.getId():node.getName(), node);
 	}
 	
-	protected boolean isRoot(TreeModel node){
+	protected boolean isRoot(TreeModel<?> node){
 		return tree.contains(node);
 	}
 	
-	public TreeModel getBranch(Object rootId){
-		for(TreeModel node : this.tree){
+	public TreeModel<?> getBranch(Object rootId){
+		for(TreeModel<?> node : this.tree){
 			if(rootId.equals(node.getId()))
 				return node;
 		}
@@ -122,21 +121,21 @@ public class TreeBuilder<T> {
 	}
 
 	public static void main(String[] args) {
-		TreeModel t1 = new TreeModel(1, "t1");
+		DefaultTreeModel t1 = new DefaultTreeModel(1, "t1");
 
-		TreeModel t2 = new TreeModel(2, "t2", 1);
+		DefaultTreeModel t2 = new DefaultTreeModel(2, "t2", 1);
 
-		TreeModel t3 = new TreeModel(3, "t3", 1);
+		DefaultTreeModel t3 = new DefaultTreeModel(3, "t3", 1);
 
-		TreeModel t4 = new TreeModel(4, "t4", 2);
+		DefaultTreeModel t4 = new DefaultTreeModel(4, "t4", 2);
 
-		TreeModel t5 = new TreeModel(5, "t5", 4);
+		DefaultTreeModel t5 = new DefaultTreeModel(5, "t5", 4);
 
-		List list = Arrays.asList(t1, t2, t3, t4, t5);
+		List<DefaultTreeModel> list = Arrays.asList(t1, t2, t3, t4, t5);
 
-		TreeBuilder tb = new TreeBuilder(list);
+		TreeBuilder<DefaultTreeModel, DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel, DefaultTreeModel>(list, new SimpleTreeModelCreator());
 		tb.setRootIds(1, 4);
-		List<TreeModel> t = tb.buidTree(true);
+		List<DefaultTreeModel> t = tb.buidTree(true);
 		System.out.println(t.get(0));
 		System.out.println(tb.getBranch(4));
 	}

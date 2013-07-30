@@ -1,8 +1,8 @@
 package org.onetwo.common.web.s2.security.service;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -16,7 +16,7 @@ import org.onetwo.common.web.s2.security.config.AuthenticConfigService;
 abstract public class AbstractAuthenticConfigService implements AuthenticConfigService {
 
 	protected final Logger logger = Logger.getLogger(this.getClass());
-	protected Map<String, AuthenticConfig> configs = new HashMap<String, AuthenticConfig>();
+	protected Map<String, AuthenticConfig> configs = new ConcurrentHashMap<String, AuthenticConfig>();
 
 	protected boolean devMode;
 
