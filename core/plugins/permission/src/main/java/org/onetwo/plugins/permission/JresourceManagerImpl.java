@@ -9,6 +9,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.TreeModel;
 import org.onetwo.common.utils.TreeModelCreator;
+import org.onetwo.common.utils.TreeUtils;
 import org.slf4j.Logger;
 
 public class JresourceManagerImpl {
@@ -38,7 +39,7 @@ public class JresourceManagerImpl {
 		this.keyResources = Collections.unmodifiableMap(keyResources);
 		
 		List<JResourceInfo> datas = LangUtils.asList(jresources.values());
-		TreeBuilder<RescourceTreeModel, JResourceInfo> treeBuilder = TreeBuilder.newBuilder(datas, new TreeModelCreator<RescourceTreeModel, JResourceInfo>() {
+		TreeBuilder<RescourceTreeModel, JResourceInfo> treeBuilder = TreeUtils.newBuilder(datas, new TreeModelCreator<RescourceTreeModel, JResourceInfo>() {
 
 			@Override
 			public RescourceTreeModel createTreeModel(JResourceInfo obj) {
@@ -103,6 +104,10 @@ public class JresourceManagerImpl {
 			return info.getId();
 		}
 
+		public List<RescourceTreeModel> getChildren() {
+			return children;
+		}
+
 		public JResourceInfo getInfo() {
 			return info;
 		}
@@ -111,20 +116,9 @@ public class JresourceManagerImpl {
 			return parent;
 		}
 		
-		public void buildString(StringBuilder str, RescourceTreeModel node){
-			str.append(node.getId()).append("\n");
-			if(node.children==null)
-				return ;
-			
-			for(RescourceTreeModel cnode : node.children){
-				str.append("--");
-				buildString(str, cnode);
-			}
-		}
-		
 		public String toString(){
 			StringBuilder str = new StringBuilder();
-			buildString(str, this);
+			TreeUtils.buildString(str, this, "--");
 			return str.toString();
 		}
 	}

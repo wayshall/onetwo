@@ -16,10 +16,6 @@ import org.slf4j.Logger;
 @SuppressWarnings("unchecked")
 public class TreeBuilder<TM extends TreeModel<TM>, T> {
 	
-	public static <TM1 extends TreeModel<TM1>, T1> TreeBuilder<TM1, T1> newBuilder(List<T1> datas, TreeModelCreator<TM1, T1> treeNodeCreator){
-		return new TreeBuilder<TM1, T1>(datas, treeNodeCreator);
-	}
-
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
