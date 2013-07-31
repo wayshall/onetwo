@@ -22,6 +22,12 @@
  
   <dependencies>
 	 
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-hibernate</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency> 
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
