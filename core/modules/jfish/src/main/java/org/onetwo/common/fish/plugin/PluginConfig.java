@@ -4,6 +4,9 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 
 
 public class PluginConfig {
+
+	public static String PLUGIN_KEY = "pluginConfig";
+	
 	private PluginInfo pluginInfo;
 	private BaseSiteConfig siteConfig;
 	private final String templateBasePath;

@@ -95,7 +95,7 @@ public class RichModelTest extends JFishBaseJUnitTest  {
 		Collection<ArticleModel> artlist = RichModelTestUtils.createArticles(10, "related article");
 		newUser.setArticles(artlist);
 		
-		newUser.save("articles");
+		newUser.saveWith("articles");
 		
 		UserModel quser = UserModel.findOne("userName", userName);
 		Assert.assertNotNull(quser);
@@ -127,12 +127,12 @@ public class RichModelTest extends JFishBaseJUnitTest  {
 		newUser.getRoles().add(new RoleModel("user"));
 		newUser.getRoles().add(new RoleModel("admin"));
 		
-		newUser.save("roles");
+		newUser.saveWith("roles");
 		
 		UserModel newUser2 = new UserModel();
 		newUser2.setUserName("new user2");
 		newUser2.getRoles().add(new RoleModel("admin2"));
-		newUser2.save("roles");
+		newUser2.saveWith("roles");
 		
 		UserModel queryUser = UserModel.findById(newUser.getId());
 		Collection<RoleModel> queryRoles = queryUser.getCascadeRoles();

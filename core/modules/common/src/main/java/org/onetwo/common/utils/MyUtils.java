@@ -419,6 +419,10 @@ public class MyUtils {
 	}
 	
 	public static String append(String s, int alength, String append){
+		return pad(s, alength, append.charAt(0), true);
+	}
+	
+	public static String pad(String s, int alength, char append, boolean padLeft){
 		int length = Math.abs(alength);
 		if(s.length()==length)
 			return s;
@@ -426,7 +430,10 @@ public class MyUtils {
 		if(str.length()<length){
 			int lack = length-str.length();
 			for(int i=0; i<lack; i++){
-				str.insert(0, append);
+				if(padLeft)
+					str.insert(0, append);
+				else
+					str.append(append);
 			}
 		}else{
 			if(alength>0)

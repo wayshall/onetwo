@@ -1,13 +1,12 @@
 package org.onetwo.plugins.jdoc.controller;
 
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.spring.web.BaseController;
+import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.plugins.jdoc.Lexer.JavadocManager;
 import org.springframework.stereotype.Controller;
 
-@SuppressWarnings("rawtypes")
 @Controller
-public class JDocBaseController extends BaseController{
+public class JDocBaseController extends AbstractBaseController{
 	
 	private JavadocManager jdocManager;
 	

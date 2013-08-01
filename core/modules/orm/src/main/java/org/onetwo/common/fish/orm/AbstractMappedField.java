@@ -8,6 +8,7 @@ import org.onetwo.common.fish.annotation.JFishFieldListeners;
 import org.onetwo.common.fish.event.JFishEntityFieldListener;
 import org.onetwo.common.fish.event.JFishEventAction;
 import org.onetwo.common.fish.orm.AbstractDBDialect.StrategyType;
+import org.onetwo.common.fish.orm.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -34,6 +35,8 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	private boolean freezing;
 	
 	private List<JFishEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
+	
+	private VersionableType<? extends Object> versionableType;
 	
 	public AbstractMappedField(JFishMappedEntry entry, JFishProperty propertyInfo) {
 		super();
@@ -239,6 +242,17 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	public List<JFishEntityFieldListener> getFieldListeners() {
 		return fieldListeners;
 	}
-	
-	
+
+	public boolean isVersionControll() {
+		return versionableType!=null;
+	}
+
+	public VersionableType<? extends Object> getVersionableType() {
+		return versionableType;
+	}
+
+	public void setVersionableType(VersionableType<? extends Object> versionableType) {
+		this.versionableType = versionableType;
+	}
+
 }

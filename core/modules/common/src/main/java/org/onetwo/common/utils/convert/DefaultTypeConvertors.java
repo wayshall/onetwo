@@ -2,9 +2,12 @@ package org.onetwo.common.utils.convert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.onetwo.common.exception.BaseException;
 
 @SuppressWarnings("unchecked")
 public class DefaultTypeConvertors implements Convertor {
@@ -21,6 +24,7 @@ public class DefaultTypeConvertors implements Convertor {
 		register(new ToBooleanConvertor(), Boolean.class, Boolean.TYPE);
 		register(new ToByteConvertor(), Byte.class, Byte.TYPE);
 		register(new ToCharConvertor(), Character.class, Character.TYPE);
+		register(new ToDateConvertor(), Date.class);
 		
 		register(new ToBigDecemalConvertor(), BigDecimal.class);
 		register(new ToBigIntegerConvertor(), BigInteger.class);
@@ -40,7 +44,10 @@ public class DefaultTypeConvertors implements Convertor {
 	}
 	
 	public <T> TypeConvert<T> getTypeConvertor(Class<T> clazz){
-		return (TypeConvert<T>)convertors.get(clazz);
+		TypeConvert<T> convert = (TypeConvert<T>)convertors.get(clazz);
+		if(convert==null)
+			throw new BaseException("type convertor not found : " + clazz);
+		return convert;
 	}
 	
 	/* (non-Javadoc)

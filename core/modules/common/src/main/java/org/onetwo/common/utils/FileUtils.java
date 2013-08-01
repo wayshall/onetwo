@@ -350,6 +350,8 @@ public class FileUtils {
 			fileName = fileName.replace('\\', '/');
 		int start = fileName.lastIndexOf('/');
 		int index = fileName.lastIndexOf('.');
+		if(index==-1)
+			index = fileName.length();
 		return fileName.substring(start+1, index);
 	}
 
@@ -662,7 +664,7 @@ public class FileUtils {
 	}
 
 	public static File[] listFiles(String dir, final String postfix){
-		File sqlDir = new File(dir);
+		File dirFile = new File(dir);
 		/*File[] sqlFileList = sqlDir.listFiles(new FilenameFilter() {
 			
 			@Override
@@ -675,7 +677,7 @@ public class FileUtils {
 				return rs;
 			}
 		});*/
-		File[] sqlFileList = sqlDir.listFiles(new FileFilter() {
+		File[] sqlFileList = dirFile.listFiles(new FileFilter() {
 			
 			@Override
 			public boolean accept(File dir) {
@@ -754,6 +756,13 @@ public class FileUtils {
 		if(!outDir.exists())
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+path);
+	}
+	
+	public static File getMavenProjectDir(){
+		String baseDirPath = FileUtils.getResourcePath("");
+		File baseDir = new File(baseDirPath);
+		baseDir = baseDir.getParentFile().getParentFile();
+		return baseDir;
 	}
 	
 	public static void main(String[] args) {

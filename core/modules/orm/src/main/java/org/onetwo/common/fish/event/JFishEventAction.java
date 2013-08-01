@@ -4,12 +4,14 @@ public enum JFishEventAction {
 
 	insertOrUpdate,
 	insert,
-	batchInsert,
-	batchUpdate,
 	update,
 	delete,
 	find,
-	queryable,
+	
+	extQuery,
+	
+	batchInsert,
+	batchUpdate,
 	saveRef,
 	dropRef
 }

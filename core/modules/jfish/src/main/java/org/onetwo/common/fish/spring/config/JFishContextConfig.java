@@ -6,14 +6,19 @@ import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
+import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
-import org.onetwo.common.spring.web.mvc.config.BaseAppConfigurator;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -22,36 +27,29 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /*******
- * 负责orm和applicationContext.xml上下文初始化
+ * 负责applicationContext.xml上下文初始化
  * 
  * @author wayshall
  *
  */
 @Configuration
-@JFishOrm
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
 @Import(JFishProfiles.class)
 public class JFishContextConfig implements ApplicationContextAware {
 
 	private ApplicationContext applicationContex;
 
-	// private JFishContextConfigurerListenerManager listenerManager = new
-	// JFishContextConfigurerListenerManager();
+	@Value("${jfish.base.packages}")
+	private String jfishBasePackages;
 
-	// @Value("${app.cache}")
-	// private String appCache;
-
-	// @Autowired
-	// private ConfigurableEnvironment env;
-
-	// private JFishAppConfigurator jfAppConfigurator;
 
 	public JFishContextConfig() {
 		// this.jfAppConfigurator =
@@ -69,19 +67,23 @@ public class JFishContextConfig implements ApplicationContextAware {
 	}
 
 	@Bean
-	public JFishOrmConfigurator jfishAppConfigurator() {
-		JFishOrmConfigurator jfAppConfigurator = SpringUtils.getBean(applicationContex, JFishOrmConfigurator.class);
+	public JFishAppConfigrator jfishAppConfigurator() {
+		JFishAppConfigrator jfAppConfigurator = SpringUtils.getBean(applicationContex, JFishAppConfigrator.class);
 		if (jfAppConfigurator == null) {
 			jfAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigrator.class);
 		}
 		if(jfAppConfigurator==null){
-			jfAppConfigurator = new BaseAppConfigurator(){
-
+			jfAppConfigurator = new JFishAppConfigrator() {
+				
 				@Override
-				public String[] getModelBasePackages() {
-					return null;
+				public String[] getXmlBasePackages() {
+					return new String[]{jfishBasePackages};
 				}
 				
+				@Override
+				public String getJFishBasePackage() {
+					return jfishBasePackages;
+				}
 			};
 		}
 		return jfAppConfigurator;
@@ -131,6 +133,38 @@ public class JFishContextConfig implements ApplicationContextAware {
 //		ms.setCacheSeconds(60);
 		return ms;
 	}
+	
+	@Bean(name = "cacheManager")
+	public CacheManager cacheManager() {
+		CacheManager cache = null;
+		Resource res = SpringUtils.newClassPathResource("cache/ehcache.xml");
+		if(res.exists()){
+			cache = ehcacheCacheManager(res);
+		}else{
+			cache = jfishSimpleCacheManager();
+		}
+		
+		return cache;
+	}
+
+	@Bean(name = "jfishSimpleCacheManager")
+	public CacheManager jfishSimpleCacheManager() {
+		JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
+		return cache;
+	}
+	
+	protected CacheManager ehcacheCacheManager(Resource configLocation){
+		net.sf.ehcache.CacheManager cm = null;
+		if(AbstractJFishAnnotationConfig.class.isInstance(applicationContex)){
+			AbstractJFishAnnotationConfig jfishWebapp = (AbstractJFishAnnotationConfig) applicationContex;
+			cm = jfishWebapp.registerAndGetBean(EhCacheManagerFactoryBean.class, "configLocation", configLocation);
+		}else{
+			cm = SpringUtils.registerBean(applicationContex, EhCacheManagerFactoryBean.class, "configLocation", configLocation);
+		}
+		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
+		cacheManager.setCacheManager(cm);
+		return cacheManager;
+	}
 
 	@Bean
 	public ThreadLocalCleaner ThreadLocalCleaner() {
@@ -143,8 +177,8 @@ public class JFishContextConfig implements ApplicationContextAware {
 	static class TestConcfig {
 
 		@Bean
-		public AnnotationMethodHandlerAdapter handlerAdapter() {
-			AnnotationMethodHandlerAdapter ha = new AnnotationMethodHandlerAdapter();
+		public RequestMappingHandlerAdapter handlerAdapter() {
+			RequestMappingHandlerAdapter ha = new RequestMappingHandlerAdapter();
 			return ha;
 		}
 	}

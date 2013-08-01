@@ -399,4 +399,8 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, Initializing
 		this.order = order;
 	}
 
+	public void setListenerManager(MappedEntryBuilderListenerManager listenerManager) {
+		this.listenerManager = listenerManager;
+	}
+
 }

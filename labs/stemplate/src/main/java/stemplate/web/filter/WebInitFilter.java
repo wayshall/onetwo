@@ -5,7 +5,7 @@ import javax.servlet.FilterConfig;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
 
-import stemplate.utils.WebConfig;
+import stemplate.WebConfig;
 
 
 public class WebInitFilter extends BaseInitFilter {

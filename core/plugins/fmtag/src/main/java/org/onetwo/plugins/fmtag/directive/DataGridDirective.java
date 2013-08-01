@@ -42,7 +42,7 @@ public class DataGridDirective extends FmtagBaseDirective implements TemplateDir
 	 */
 	public static final String PARAMS_THEME = "theme";
 
-	public static final String DEFAULT_TEMPLATE = "lib/dg/datagrid.ftl";
+	public static final String DEFAULT_TEMPLATE = "lib/dg_bstrp/datagrid.ftl";
 	public static final String DEFAULT_PAGINATION = "number";
 
 	@Override

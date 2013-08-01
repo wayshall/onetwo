@@ -4,11 +4,6 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishEntityManagerImpl;
-import org.onetwo.common.fish.event.DbEventListenerManager;
-import org.onetwo.common.fish.event.InsertEventListener;
-import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
-import org.onetwo.common.fish.event.oracle.JFishOracleBatchInsertEventListener;
-import org.onetwo.common.fish.event.oracle.JFishOracleInsertEventListener;
 import org.onetwo.common.fish.jpa.JPAMappedEntryBuilder;
 import org.onetwo.common.fish.jpa.JPARelatedMappedEntryBuilder;
 import org.onetwo.common.fish.orm.DBDialect;
@@ -20,7 +15,6 @@ import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.orm.MappedEntryManagerListener;
 import org.onetwo.common.fish.orm.MySQLDialect;
 import org.onetwo.common.fish.orm.OracleDialect;
-import org.onetwo.common.fish.relation.JFishRelatedDbEventListenerManager;
 import org.onetwo.common.fish.spring.JFishDaoImpl;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.MutilMappedEntryManager;
@@ -30,23 +24,16 @@ import org.onetwo.common.jdbc.JFishJdbcTemplateProxy;
 import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
-import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 
 @Configuration
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
@@ -58,16 +45,10 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Autowired
 	private DataSource dataSource;
 
-	@Value("${watch.sql.file}")
 	private boolean watchSqlFile;
 	
 	private boolean logJdbcSql;
 
-	@Value("${jfish.base.packages}")
-	private String entityBasePackages;
-	
-//	private JFishContextConfigurerListenerManager listenerManager= new JFishContextConfigurerListenerManager();
-	
 //	@Value("${app.cache}")
 //	private String appCache;
 	
@@ -76,8 +57,6 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	
 	private JFishOrmConfigurator jfishOrmConfigurator;
 	
-	private JFishConfigurer jfishConfigurer;
-	
 	public JFishOrmConfig(){
 	}
 
@@ -85,21 +64,14 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContex = applicationContext;
-//		listenerManager.addListener(pluginManager());
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.jfishConfigurer = SpringUtils.getBean(applicationContex, JFishConfigurer.class);
-		if(jfishConfigurer==null){
-			this.jfishConfigurer = new JFishConfigurerAdapter();
-		}
 		this.jfishOrmConfigurator = SpringUtils.getBean(applicationContex, JFishOrmConfigurator.class);
-//		Assert.notNull(jfAppConfigurator);
-		if(jfishOrmConfigurator!=null){
-			this.logJdbcSql = jfishOrmConfigurator.isLogJdbcSql();
-			this.watchSqlFile = jfishOrmConfigurator.isWatchSqlFile();
-		}
+		Assert.notNull(jfishOrmConfigurator);
+		this.logJdbcSql = jfishOrmConfigurator.isLogJdbcSql();
+		this.watchSqlFile = jfishOrmConfigurator.isWatchSqlFile();
 	}
 
 	public ApplicationContext getApplicationContex() {
@@ -167,18 +139,8 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		if(em==null){
 			MutilMappedEntryManager mem = new MutilMappedEntryManager();
 			// em.setMappedEntryBuilder(mappedEntryBuilderList());
-			if(jfishOrmConfigurator!=null && !LangUtils.isEmpty(jfishOrmConfigurator.getModelBasePackages())){
+			if(!LangUtils.isEmpty(jfishOrmConfigurator.getModelBasePackages())){
 				mem.setPackagesToScan(jfishOrmConfigurator.getModelBasePackages());
-			}else{
-				if(SpringUtils.isSpringConfPlaceholder(entityBasePackages)){
-					entityBasePackages = "";
-				}
-				if(StringUtils.isNotBlank(entityBasePackages)){
-					String[] packages = StringUtils.split(entityBasePackages, ",");
-					if(!LangUtils.isEmpty(packages)){
-						mem.setPackagesToScan(packages);
-					}
-				}
 			}
 			
 			em = mem;
@@ -189,27 +151,14 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Bean(name = "jfishDialect")
 	public DBDialect jfishDialect() {
 		InnerDBDialet dialet = (InnerDBDialet)jfishDao().getDialect();
-		dialet.setPrintSql(watchSqlFile);
+//		dialet.setPrintSql(watchSqlFile);
 		return dialet;
 	}
 
-//	@Bean
-//	public SequenceNameManager sequenceNameManager() {
-//		return new JFishSequenceNameManager();
-//	}
-
-	/*@Bean
-	public SQLSymbolManager sqlSymbolManager() {
-		SQLDialet sqlDialet = new DefaultSQLDialetImpl();
-		JFishSQLSymbolManagerImpl sql = new JFishSQLSymbolManagerImpl(sqlDialet);
-		sql.setDialect(jfishDialect());
-		sql.setMappedEntryManager(mappedEntryManager());
-		return sql;
-	}*/
 
 	@Bean
 	public JFishEntityManager jfishEntityManager() {
-		JFishEntityManager jem = jfishConfigurer.jfishEntityManager(jfishDao());
+		JFishEntityManager jem = jfishOrmConfigurator.jfishEntityManager(jfishDao());
 		if(jem==null){
 			JFishEntityManagerImpl jemImpl = new JFishEntityManagerImpl();
 			jemImpl.setJfishDao(jfishDao());
@@ -241,56 +190,24 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		return listener;
 	}
 
-	/*
-	 * protected List<MappedEntryBuilder> mappedEntryBuilderList(){
-	 * List<MappedEntryBuilder> list = new ArrayList<MappedEntryBuilder>();
-	 * list.add(jfishMappedEntryBuilder());
-	 * list.add(jpaRelatedMappedEntryBuilder()); //
-	 * list.add(jpaMappedEntryBuilder()); return list; }
-	 */
 
 	@Bean(name = "mysqlDialect")
 	public DBDialect mysqlDialet() {
 		MySQLDialect dialet = new MySQLDialect(this.jfishOrmConfigurator.getDataBaseConfig());
 		dialet.setAutoDetectIdStrategy(true);
-		dialet.setDbEventListenerManager(defaultDbEventListenerManager());
+//		dialet.setDbEventListenerManager(defaultDbEventListenerManager());
 		return dialet;
-	}
-
-	@Bean
-	public DbEventListenerManager defaultDbEventListenerManager() {
-		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager();
-//		return listenerManager;
-		return new JFishRelatedDbEventListenerManager(listenerManager);
 	}
 
 	@Bean(name = "oracleDialect")
 	public DBDialect oracleDialet() {
 		OracleDialect dialet = new OracleDialect(this.jfishOrmConfigurator.getDataBaseConfig());
 		dialet.setAutoDetectIdStrategy(true);
-		dialet.setDbEventListenerManager(oracleDbEventListenerManager());
+//		dialet.setDbEventListenerManager(oracleDbEventListenerManager());
 		return dialet;
 	}
 	
-	@Bean
-	public DbEventListenerManager oracleDbEventListenerManager() {
-		JFishDefaultDbEventListenerManager listenerManager = new JFishDefaultDbEventListenerManager() {
-
-			protected InsertEventListener getDefaultInsertEventListener() {
-				return new JFishOracleInsertEventListener();
-			}
-
-			protected InsertEventListener getDefaultBatchInsertEventListener() {
-//				JFishOracleInsertEventListener ie = new JFishOracleInsertEventListener();
-				JFishOracleInsertEventListener ie = new JFishOracleBatchInsertEventListener();
-				return ie;
-			}
-
-		};
-//		return listenerManager;
-		return new JFishRelatedDbEventListenerManager(listenerManager);
-	}
-
+/****
 	@Bean(name = "cacheManager")
 	public CacheManager cacheManager() {
 		CacheManager cache = null;
@@ -323,5 +240,5 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		cacheManager.setCacheManager(cm);
 		return cacheManager;
 	}
-
+****/
 }

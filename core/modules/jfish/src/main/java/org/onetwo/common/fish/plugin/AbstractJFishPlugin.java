@@ -56,4 +56,10 @@ public abstract class AbstractJFishPlugin<T extends JFishPlugin> implements JFis
 	}
 
 
+	@Override
+	public boolean registerMvcResources() {
+		return false;
+	}
+
+
 }

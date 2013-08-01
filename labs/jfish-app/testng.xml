@@ -25,4 +25,6 @@
       <class name="org.onetwo.common.fish.spring.JFishNamedFileQueryManagerTest" />
     </classes>
   </test> 
+  
+  
 </suite> <!-- Suite -->

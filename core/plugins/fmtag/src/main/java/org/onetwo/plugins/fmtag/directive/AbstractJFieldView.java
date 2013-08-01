@@ -1,7 +1,7 @@
 package org.onetwo.plugins.fmtag.directive;
 
-import org.onetwo.common.ftl.directive.HtmlElement;
 import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.plugins.fmtag.JFieldShowable;
 
 abstract public class AbstractJFieldView extends HtmlElement implements Comparable<AbstractJFieldView>{

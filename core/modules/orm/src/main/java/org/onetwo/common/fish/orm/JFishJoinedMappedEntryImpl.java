@@ -74,5 +74,10 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	public EntrySQLBuilder getStaticFetchAllSqlBuilder() {
 		return staticFetchAllSqlBuilder;
 	}
+
+	@Override
+	protected EntrySQLBuilder getStaticSelectVersionSqlBuilder() {
+		throw new UnsupportedOperationException("the joined entity unsupported this operation!");
+	}
 	
 }

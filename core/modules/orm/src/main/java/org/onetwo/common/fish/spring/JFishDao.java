@@ -8,6 +8,7 @@ import java.util.Map;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.fish.JFishQuery;
+import org.onetwo.common.utils.Page;
 
 public interface JFishDao {
 
@@ -179,4 +180,12 @@ public interface JFishDao {
 	public <T> List<T> findList(DynamicQuery query);
 	
 	public <T> List<T> findAll(Class<T> entityClass);
+	
+	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
+	
+	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties);
+	
+	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
+	
+	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties);
 }

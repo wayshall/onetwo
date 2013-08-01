@@ -27,7 +27,7 @@ public class NiceDate {
 	}
 
 	public static NiceDate New(String dateStr, String format){
-		Date date = DateUtil.parse(dateStr, format);
+		Date date = DateUtil.parseByPatterns(dateStr, format);
 		return New(date);
 	}
 	
@@ -60,7 +60,7 @@ public class NiceDate {
 	
 	private Calendar calendar = Calendar.getInstance();
 	
-	private DateType dateType;
+	private DateType dateType = DateType.date;
 	
 	public NiceDate(){
 	}
@@ -269,6 +269,22 @@ public class NiceDate {
 	}
 	public String formatAsDateTime(){
 		return DateUtil.formatDateTime(calendar.getTime());
+	}
+	
+	public int getYear(){
+		return calendar.get(Calendar.YEAR);
+	}
+	
+	public int getMonth(){
+		return calendar.get(Calendar.MONTH);
+	}
+	
+	public int getDayOfMonth(){
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	public int getHourOfDay(){
+		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
 	
 	public static void main(String[] args){

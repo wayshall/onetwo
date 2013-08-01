@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.utils.SiteInfo;
+import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.DefaultTemplatePathMapper;
 import org.onetwo.common.web.config.SiteConfig;
@@ -24,7 +25,8 @@ abstract public class SessionUtils {
 				return;
 			if (date == null)
 				date = new Date();
-			user.setLastActivityTime(date);
+			if(UserActivityCheckable.class.isInstance(user))
+				((UserActivityCheckable)user).setLastActivityTime(date);
 		} catch (Exception e) {
 			logger.error("update LastActivityTime error. ", e);
 		}

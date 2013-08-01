@@ -32,7 +32,9 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 
 	public void setMappedEntity(String mappedEntity) {
 		this.mappedEntity = mappedEntity;
-		this.mappedEntityClass = ReflectUtils.loadClass(mappedEntity);
+		if(StringUtils.isNotBlank(mappedEntity)){
+			this.mappedEntityClass = ReflectUtils.loadClass(mappedEntity);
+		}
 	}
 
 	public String getCountSql() {

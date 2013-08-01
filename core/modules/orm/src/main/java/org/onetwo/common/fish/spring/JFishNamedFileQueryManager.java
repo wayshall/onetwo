@@ -12,6 +12,8 @@ public interface JFishNamedFileQueryManager {
 	
 	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName);
 	
+	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName, Class<?> resultClass);
+	
 	public JFishQuery createCountQuery(JFishDaoImplementor jfishFishDao, String queryName);
 
 	/***

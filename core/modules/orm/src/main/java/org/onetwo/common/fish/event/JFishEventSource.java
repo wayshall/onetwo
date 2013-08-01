@@ -1,5 +1,8 @@
 package org.onetwo.common.fish.event;
 
+import java.util.Map;
+
+import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 
 public interface JFishEventSource extends JFishDaoImplementor {
@@ -30,5 +33,7 @@ public interface JFishEventSource extends JFishDaoImplementor {
 	 * @return
 	 */
 	public int update(Object entity, boolean dymanicUpdate, String... relatedFields);
+	
+	public ExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties);
 	
 }

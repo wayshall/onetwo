@@ -32,6 +32,10 @@ public class UserModel extends BaseModel  {
 	static {
 		System.out.println("UserModel init");
 	}
+	
+	public void saveWith(String...relatedFields){
+		super.saveWith(relatedFields);
+	}
 	private Long id;
 	
 	@NotBlank

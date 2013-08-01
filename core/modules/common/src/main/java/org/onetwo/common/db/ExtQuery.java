@@ -2,6 +2,7 @@ package org.onetwo.common.db;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
@@ -50,6 +51,8 @@ public interface ExtQuery {
 		public static final String DESC = ":desc";
 		public static final String ORDERBY = ":orderBy";
 
+		public static final String INCLUDE = ":include";
+		
 		public static final String SQL_JOIN = ":sql-join";
 		public static final String JOIN_IN = ":join-in";
 		public static final String FETCH = ":fetch";
@@ -120,6 +123,8 @@ public interface ExtQuery {
 	public Class getEntityClass();
 //	public boolean isIgnoreQuery();
 	public Map<String, Object> getQueryConfig();
+	
+	public List<IncludeField> getIncludeFields();
 	
 
 }

@@ -53,7 +53,8 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		public void addAll(Map<String, T> namedInfos, boolean throwIfExist) {
 			for(Entry<String, T> entry : namedInfos.entrySet()){
 				if(throwIfExist && this.namedProperties.containsKey(entry.getKey())){
-					throw new BaseException("sql key["+entry.getKey()+"] has already exist in namespace: " + namespace);
+					NamespaceProperty exitProp = this.namedProperties.get(entry.getKey());
+					throw new BaseException("int file["+entry.getValue().getSrcfile()+"], sql key["+entry.getKey()+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile().getPath());
 				}
 				this.namedProperties.put(entry.getKey(), entry.getValue());
 			}
@@ -180,7 +181,7 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 			return Collections.EMPTY_MAP;
 		logger.info("build [{}] sql file : {}", ns, f.getPath());
 		PropertiesWraper wrapper = new PropertiesWraper(pf);
-		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(ns, wrapper, (Class<T>)conf.getPropertyBeanClass());
+		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, wrapper, (Class<T>)conf.getPropertyBeanClass());
 		return namedInfos;
 	}
 	

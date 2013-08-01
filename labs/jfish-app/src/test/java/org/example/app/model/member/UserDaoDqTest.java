@@ -51,7 +51,8 @@ public class UserDaoDqTest extends JFishBaseJUnitTest {
 		List<UserEntity> users = userDao.queryListByUserNameByAge("test%", 10);
 		Assert.assertEquals(insertCount, users.size());
 		
-		Page<UserEntity> page = userDao.queryPageByUserName(new Page<UserEntity>(), "test%");
+		Page<UserEntity> page = Page.create();
+		userDao.queryPageByUserName(page, "test%");
 		Assert.assertEquals(insertCount, page.getResult().size());
 	}
 	

@@ -38,4 +38,8 @@ public interface JFishMappedEntryMeta {
 	
 	public boolean isInstance(Object entity);
 	
+	public JFishMappedField getVersionField();
+	
+	public boolean isVersionControll();
+	
 }

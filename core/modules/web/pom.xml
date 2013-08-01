@@ -81,10 +81,6 @@
 	  <artifactId>spring-context-support</artifactId>
 	</dependency>
 	
-	<dependency>
-	  <groupId>org.springframework</groupId>
-	  <artifactId>spring-ejbcontext</artifactId>
-	</dependency>
 	<!-- spring end -->
 	<dependency>
 	  <groupId>org.freemarker</groupId>
@@ -111,6 +107,13 @@
 		<groupId>javax.servlet</groupId>
 		<artifactId>jstl</artifactId>
 	</dependency>
+
+	<dependency>
+	  <groupId>javax.servlet.jsp</groupId>
+	  <artifactId>jsp-api</artifactId>
+	  <scope>provided</scope>
+	</dependency>
+	
 	
 	<dependency>
 	  <groupId>net.htmlparser.jericho</groupId>
@@ -126,11 +129,6 @@
 	<dependency>
 	  <groupId>c3p0</groupId>
 	  <artifactId>c3p0</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>javaee</groupId>
-	  <artifactId>javaee-api</artifactId>
 	</dependency>
 	
     <dependency>

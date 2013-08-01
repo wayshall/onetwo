@@ -60,6 +60,11 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 	}
 	
 
+	@Override
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
+		super.registerHandlerMethod(handler, method, mapping);
+	}
+
 	protected void detectMappedInterceptors(List<MappedInterceptor> mappedInterceptors) {
 		super.detectMappedInterceptors(mappedInterceptors);
 		Collections.sort(mappedInterceptors, new Comparator<MappedInterceptor>() {
