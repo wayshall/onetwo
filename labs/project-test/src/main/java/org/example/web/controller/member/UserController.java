@@ -8,7 +8,8 @@ import org.example.model.member.service.impl.UserServiceImpl;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.permission.anno.JResource;
+import org.onetwo.plugins.permission.anno.ByMenu;
+import org.onetwo.plugins.permission.anno.ByPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -22,26 +23,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/member/user")
 @Controller
-@JResource(label="用户管理", menu=true, parentResource=ModuleInfo.class)
+@ByMenu(name="用户管理", parent=ModuleMenuInfo.class)
 public class UserController extends AbstractBaseController {
 	 
 	@Autowired
 	private UserServiceImpl userServiceImpl;
 	
-	@JResource(label="用户列表", menu=true, permission=true)
+	@ByPermission(name="用户列表")
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<UserEntity> page){
 		userServiceImpl.findPage(page);
 		return mv("/member/user-index", "page", page);
 	}
 
-	@JResource(label="创建用户", menu=true, permission=true)
+	@ByMenu(pageElement=true)
+	@ByPermission(name="新增用户")
 	@RequestMapping(value="new", method=RequestMethod.GET)
 	public ModelAndView _new(@ModelAttribute("user") UserEntity user){
 		return mv("/member/user-new");
 	}
 	
-	@JResource(assemble="_new", label="创建用户", permission=true)
+	@ByPermission(code=":_new")
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView create(String redirectUrl, @Valid @ModelAttribute("user")UserEntity user, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
 		if(bind.hasErrors()){

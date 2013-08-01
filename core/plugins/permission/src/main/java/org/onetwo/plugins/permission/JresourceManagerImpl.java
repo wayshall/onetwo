@@ -16,7 +16,7 @@ public class JresourceManagerImpl {
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, JResourceInfo> keyResources;
-	private Map<String, JResourceInfo> idResources;
+	private Map<String, JResourceInfo> codeResources;
 	private List<RescourceTreeModel> resourceTree;
 	
 	public JresourceManagerImpl(Map<String, JResourceInfo> jresources) {
@@ -35,7 +35,7 @@ public class JresourceManagerImpl {
 			}
 			idResources.put(info.getId(), info);
 		}
-		this.idResources = Collections.unmodifiableMap(idResources);
+		this.codeResources = Collections.unmodifiableMap(idResources);
 		this.keyResources = Collections.unmodifiableMap(keyResources);
 		
 		List<JResourceInfo> datas = LangUtils.asList(jresources.values());
@@ -56,7 +56,7 @@ public class JresourceManagerImpl {
 	}
 	
 	public JResourceInfo getResourceInfoById(String id){
-		return idResources.get(id);
+		return codeResources.get(id);
 	}
 	
 	public static class RescourceTreeModel implements TreeModel<RescourceTreeModel> {

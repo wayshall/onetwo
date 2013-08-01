@@ -5,14 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JResource {
+public @interface ByPermission {
 	
-	String assemble() default "";	
-	String label();
-	boolean menu() default false;
-	boolean permission() default false;
-	Class<?> parentResource() default Object.class;
+	String code() default "" ;	
+	String name() default "";
 
 }

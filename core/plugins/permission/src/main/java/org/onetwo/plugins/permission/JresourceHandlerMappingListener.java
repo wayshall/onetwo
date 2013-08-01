@@ -9,7 +9,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.plugins.permission.anno.JResource;
+import org.onetwo.plugins.permission.anno.ByPermission;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.method.HandlerMethod;
@@ -27,22 +27,22 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		Map<String, JResourceInfo> infoMaps = new HashMap<String, JResourceInfo>();
 		JResourceInfo cinfo = null;
-		JResource jres = null;
+		ByPermission permission = null;
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
 			Class<?> declarClass = entry.getValue().getMethod().getDeclaringClass();
 			cinfo = parseClassInfo(infoMaps, declarClass);
-			jres = entry.getValue().getMethodAnnotation(JResource.class);
-			if(jres==null)
+			permission = entry.getValue().getMethodAnnotation(ByPermission.class);
+			if(permission==null)
 				continue;
 			
 			String methodName = declarClass.getSimpleName() + "." + entry.getValue().getMethod().getName();
 			logger.info(" find jresource in {}", methodName);
 			
-			JResourceInfo minfo = parseAsResourceInfo(jres, declarClass, entry.getValue().getMethod());
+			JResourceInfo minfo = parseAsResourceInfo(permission, declarClass, entry.getValue().getMethod());
 			if(cinfo!=null){//如果类有jresource标注，方法的父资源必须就是类的resource
 				minfo.setParent(cinfo);
 			}else{
-				Class<?> parentClass = jres.parentResource();
+				Class<?> parentClass = permission.parentResource();
 				if(!isRootResourceClass(parentClass)){
 					cinfo = parseClassInfo(infoMaps, parentClass);
 					if(cinfo!=null)
@@ -57,7 +57,7 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 	}
 	
 	protected JResourceInfo parseClassInfo(Map<String, JResourceInfo> infoMaps, Class<?> declarClass){
-		JResource jres = declarClass.getAnnotation(JResource.class);
+		ByPermission jres = declarClass.getAnnotation(ByPermission.class);
 		if(jres==null)//ignore if no jresource annotation
 			return null;
 		
@@ -88,7 +88,7 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 		return isClassAnno?declarClass.getName():method.toGenericString();
 	}
 	
-	protected JResourceInfo parseAsResourceInfo(JResource jres, Class<?> declarClass, Method method){
+	protected JResourceInfo parseAsResourceInfo(ByPermission jres, Class<?> declarClass, Method method){
 		Assert.notNull(jres);
 		JResourceInfo info = null;
 		String id = parseId(declarClass, method, jres.assemble());

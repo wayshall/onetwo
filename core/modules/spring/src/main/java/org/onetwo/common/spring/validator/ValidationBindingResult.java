@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import org.onetwo.common.annotation.JInfo;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyFactory;
 import org.onetwo.common.utils.LangUtils;
@@ -49,7 +50,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 			JFishProperty jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), true);
 			if(jp==null)
 				jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), false);
-			ValidationInfo jfm = jp.getAnnotation(ValidationInfo.class);
+			JInfo jfm = jp.getAnnotation(JInfo.class);
 			if(jfm==null){
 				fmsg = LangUtils.append(fe.getField(), fe.getDefaultMessage());
 			}else{
@@ -102,7 +103,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 					JFishProperty jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), true);
 					if(jp==null)
 						jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), false);
-					ValidationInfo jfm = jp.getAnnotation(ValidationInfo.class);
+					JInfo jfm = jp.getAnnotation(JInfo.class);
 					if(jfm==null){
 						fmsg = LangUtils.append(fe.getField(), fe.getDefaultMessage());
 					}else{
