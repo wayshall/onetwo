@@ -27,21 +27,24 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	@Override
 	public int doEndTag() throws JspException {
+		assertParentTag(DataRowTag.class);
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
 		if(row==null)
 			throw new JspException("field tag must nested in a row tag.");
 
-		CurrentRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, CurrentRowData.class);
-		if(!component.isAutoRender()){
-			BodyContent bc = getBodyContent();
-			if(bc!=null){
-				cdata.putValue(component.getValue(), bc.getString(), dataFormat);
-			}
-//			return EVAL_BODY_INCLUDE;
-		}else{
-			cdata.translateValue(component.getValue(), dataFormat);
-		}
 		row.addField(component);
+		CurrentRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, CurrentRowData.class);
+		if(cdata!=null){
+			if(!component.isAutoRender()){
+				BodyContent bc = getBodyContent();
+				if(bc!=null){
+					cdata.putValue(component.getValue(), bc.getString(), dataFormat);
+				}
+	//			return EVAL_BODY_INCLUDE;
+			}else{
+				cdata.translateValue(component.getValue(), dataFormat);
+			}
+		}
 		return EVAL_PAGE;
 	}
 	protected void populateComponent() throws JspException{

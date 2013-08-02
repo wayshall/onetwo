@@ -23,7 +23,7 @@
 	
 	<widget:dataGrid name="usergrid" dataSource="${'$'}{page}" title="用户列表" toolbar="true">
 		<widget:dataRow name="entity" type="iterator" renderHeader="true">
-			<widget:dataField name="ids" render="checkbox" value="id"/>
+			<widget:dataField name="ids" label="全选" render="checkbox" value="id"/>
 			<widget:dataField name="id" label="主键"/>
 			<widget:dataField name="userName" label="用户名"/>
 			<widget:dataField name="email" label="电子邮件"/>

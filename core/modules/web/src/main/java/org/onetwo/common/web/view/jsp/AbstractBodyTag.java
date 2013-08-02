@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp;
 
+import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 @SuppressWarnings("serial")
@@ -21,5 +22,14 @@ public class AbstractBodyTag extends BodyTagSupport {
 	
 	protected void clearComponentFromRequest(String name){
 		pageContext.getRequest().removeAttribute(getTagVarName(name));
+	}
+
+	protected void assertParentTag(Class<?> parentTag) throws JspException{
+		assertParentTag(parentTag, "tag["+getClass().getSimpleName()+"] must be a child tag of " + getParent().getClass().getSimpleName());
+	}
+	
+	protected void assertParentTag(Class<?> parentTag, String msg) throws JspException{
+		if(!parentTag.isInstance(getParent()))
+			throw new JspException(msg);
 	}
 }
