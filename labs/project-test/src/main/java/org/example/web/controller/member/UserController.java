@@ -8,6 +8,7 @@ import org.example.model.member.service.impl.UserServiceImpl;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.permission.anno.ByMenu;
 import org.onetwo.plugins.permission.anno.ByPermission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,27 +24,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/member/user")
 @Controller
-@ByMenu(name="用户管理", parent=ModuleMenuInfo.class)
+@ByMenu(name="用户管理", url=":index")
 public class UserController extends AbstractBaseController {
 	 
 	@Autowired
 	private UserServiceImpl userServiceImpl;
 	
-	@ByPermission(name="用户列表")
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<UserEntity> page){
 		userServiceImpl.findPage(page);
 		return mv("/member/user-index", "page", page);
 	}
 
-	@ByMenu(pageElement=true)
-	@ByPermission(name="新增用户")
+	@ByMenu(name="新增用户", pageElement=true, parent=UserController.class)
 	@RequestMapping(value="new", method=RequestMethod.GET)
 	public ModelAndView _new(@ModelAttribute("user") UserEntity user){
 		return mv("/member/user-new");
 	}
 	
-	@ByPermission(code=":_new")
+	@Authentic(permissions={":_new", ":edit"})
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView create(String redirectUrl, @Valid @ModelAttribute("user")UserEntity user, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
 		if(bind.hasErrors()){
