@@ -1,16 +1,16 @@
-package org.example.web.controller.member;
+package org.example.web.controller.system;
 
 
 import javax.validation.Valid;
 
 import org.example.model.member.entity.UserEntity;
 import org.example.model.member.service.impl.UserServiceImpl;
+import org.example.utils.MenuInfo.SystemMenu.UserManager;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.web.s2.security.config.annotation.Authentic;
-import org.onetwo.plugins.permission.anno.ByMenu;
-import org.onetwo.plugins.permission.anno.ByPermission;
+import org.onetwo.plugins.permission.anno.ByMenuClass;
+import org.onetwo.plugins.permission.anno.ByPermissionClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -24,25 +24,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/member/user")
 @Controller
-@ByMenu(name="用户管理", url=":index")
 public class UserController extends AbstractBaseController {
 	 
 	@Autowired
 	private UserServiceImpl userServiceImpl;
-	
+
+	@ByMenuClass(codeClass=UserManager.class)
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<UserEntity> page){
 		userServiceImpl.findPage(page);
 		return mv("/member/user-index", "page", page);
 	}
 
-	@ByMenu(name="新增用户", pageElement=true, parent=UserController.class)
+	@ByMenuClass(codeClass=UserManager.New.class)
 	@RequestMapping(value="new", method=RequestMethod.GET)
 	public ModelAndView _new(@ModelAttribute("user") UserEntity user){
 		return mv("/member/user-new");
 	}
 	
-	@Authentic(permissions={":_new", ":edit"})
+	@ByPermissionClass(codeClass=UserManager.New.class)
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView create(String redirectUrl, @Valid @ModelAttribute("user")UserEntity user, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
 		if(bind.hasErrors()){

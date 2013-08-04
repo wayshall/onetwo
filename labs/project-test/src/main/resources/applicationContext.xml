@@ -32,6 +32,7 @@
     	<property name="packagesToScan">
 			<list>
 				<value>${jfish.base.packages}</value>
+				<value>org.onetwo.plugins.permission.entity</value>
 			</list>
 		</property>
         <property name="hibernateProperties">
