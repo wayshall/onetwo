@@ -1,6 +1,6 @@
 package org.onetwo.plugins.jdoc.Lexer;
 
-import org.apache.commons.lang.StringUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class JLexerUtils {
 	

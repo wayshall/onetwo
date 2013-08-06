@@ -57,18 +57,17 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 		type.mapEmptyString(mapper.isMapEmpty());
 	}
 	
-	/*protected TypeMappingOption[] getTypeMappingOptions(DozerClassMapper mapper){
-		Set<TypeMappingOption> types = new HashSet<TypeMappingOption>();
-		types.add(TypeMappingOptions.mapNull(mapper.isMapNull()));
-		types.add(TypeMappingOptions.mapEmptyString(mapper.isMapEmpty()));
-		return types.toArray(new TypeMappingOption[types.size()]);
-	}*/
-	
 	protected Map<String, String> mappingFields(DozerClassMapper mapper){
-		Collection<String> srcFields = ReflectUtils.findInstanceFieldNames(mapper.getClassa(), Set.class);
-		Collection<String> desctFields = ReflectUtils.findInstanceFieldNames(mapper.getClassb(), Set.class);
-//		Collection<String> mapFields = srcFields.size()<desctFields.size()?srcFields:desctFields;
 		Map<String, String> mappingFields = LangUtils.newHashMap();
+		Collection<String> srcFields = ReflectUtils.desribPropertiesName(mapper.getClassa(), Set.class);
+		if(mapper.getClassa()==mapper.getClassb()){
+			for(String field : srcFields)
+				mappingFields.put(field, field);
+			return mappingFields;
+		}
+		
+		Collection<String> desctFields = ReflectUtils.desribPropertiesName(mapper.getClassb(), Set.class);
+//		Collection<String> mapFields = srcFields.size()<desctFields.size()?srcFields:desctFields;
 		for(String fname : srcFields){
 			if(desctFields.contains(fname)){
 				mappingFields.put(fname, fname);

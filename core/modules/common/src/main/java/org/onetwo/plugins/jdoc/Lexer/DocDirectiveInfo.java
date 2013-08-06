@@ -1,6 +1,6 @@
 package org.onetwo.plugins.jdoc.Lexer;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -48,6 +48,8 @@ public class DocDirectiveInfo {
 		String str = StringUtils.join(ary, "");
 		return str;
 	}
+	
+	
 
 	public String[] getValues() {
 		return values;

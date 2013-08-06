@@ -2,7 +2,6 @@ package org.onetwo.common.web.s2.security;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
@@ -15,6 +14,7 @@ import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
 import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.PermissionDetail;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 

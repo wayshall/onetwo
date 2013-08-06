@@ -23,7 +23,7 @@ public class DuplicatorTest {
 	@Before
 	public void setup(){
 //		this.duplicator = BeanDuplicatorFacotry.inst();
-		this.duplicator = DozerFacotry.createBeanDuplicator(this.getClass().getClassLoader(), DateUtilTest.class.getPackage().getName());
+		this.duplicator = DozerFacotry.createDozerBean(this.getClass().getClassLoader(), DateUtilTest.class.getPackage().getName());
 	}
 	
 	@Test

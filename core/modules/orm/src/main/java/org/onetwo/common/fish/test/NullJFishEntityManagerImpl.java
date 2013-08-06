@@ -315,4 +315,10 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		return null;
 	}
 
+	@Override
+	public void update(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

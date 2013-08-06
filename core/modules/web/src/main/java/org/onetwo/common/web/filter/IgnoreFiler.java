@@ -14,10 +14,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.core.OrderComparator;

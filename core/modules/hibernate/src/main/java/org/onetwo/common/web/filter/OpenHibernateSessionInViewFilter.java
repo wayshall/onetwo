@@ -3,7 +3,7 @@ package org.onetwo.common.web.filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 
 /**

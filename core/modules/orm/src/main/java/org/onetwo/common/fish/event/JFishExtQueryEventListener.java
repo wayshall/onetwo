@@ -4,13 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.fish.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 
 public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 

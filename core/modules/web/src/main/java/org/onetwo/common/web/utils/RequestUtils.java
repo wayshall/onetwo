@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 
 @SuppressWarnings("rawtypes")

@@ -7,9 +7,9 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;

@@ -3,8 +3,8 @@ package org.onetwo.common.spring.mcache;
 import java.io.Serializable;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.cache.Cacheable;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 

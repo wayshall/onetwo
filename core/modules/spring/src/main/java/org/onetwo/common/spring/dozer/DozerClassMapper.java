@@ -10,7 +10,10 @@ public class DozerClassMapper {
 	public DozerClassMapper(Class<?> classa, DozerMapping dozerMapping) {
 		super();
 		this.classa = classa;
-		this.classb = dozerMapping.classb();
+		if(dozerMapping.classb()==Object.class)
+			this.classb = this.classa;
+		else
+			this.classb = dozerMapping.classb();
 		this.mapNull = dozerMapping.mapNull();
 		this.mapEmpty = dozerMapping.mapEmpty();
 	}

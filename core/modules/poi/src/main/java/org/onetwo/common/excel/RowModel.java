@@ -3,7 +3,7 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class RowModel {
 	public static final String DEFAULT_NAME = "entity";

@@ -3,8 +3,8 @@ package org.onetwo.common.db.sql;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 
 /***
  * 序列管理类
@@ -15,7 +15,7 @@ public class SequenceNameManager {
 	
 	
 	public static final String CREATE_SEQUENCE_SQL = "database.sequence.sql";
-	public static final String CREATE_SEQUENCE = "create sequence :sequenceName start with 100 increment by 1 maxvalue 999999999999999999999999999";
+	public static final String CREATE_SEQUENCE = "create sequence :sequenceName start with 100 increment by 1 maxvalue 99999999999";
 
 	/*private static SequenceNameManager instance = new SequenceNameManager();
 

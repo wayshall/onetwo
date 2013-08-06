@@ -25,6 +25,12 @@ public class AppEntityManagerImplForTest extends AbstractBaseEntityManager {
 	}
 
 	@Override
+	public void update(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public SequenceNameManager getSequenceNameManager() {
 		return this.sequenceNameManager;
 	}

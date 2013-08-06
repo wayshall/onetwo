@@ -2,7 +2,8 @@ package org.onetwo.common.exception;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.onetwo.common.utils.StringUtils;
+
 
 @SuppressWarnings("serial")
 public class BaseException extends RuntimeException implements SystemErrorCode, ExceptionCodeMark, Serializable{

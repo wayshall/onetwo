@@ -2,8 +2,8 @@ package org.onetwo.common.web.utils.asyn;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.ConstantMap;
 
 

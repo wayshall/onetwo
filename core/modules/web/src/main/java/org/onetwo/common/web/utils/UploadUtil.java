@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;
@@ -19,6 +18,7 @@ import org.onetwo.common.exception.WebException;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class UploadUtil {
 

@@ -1,7 +1,7 @@
 package org.onetwo.common.exception;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 
 /***********
  * 

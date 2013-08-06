@@ -47,10 +47,19 @@
 	</dependency>
 	
 	<dependency>
-	  <groupId>net.sf.dozer</groupId>
-	  <artifactId>dozer</artifactId>
+	  <groupId>commons-lang</groupId>
+	  <artifactId>commons-lang</artifactId>
 	</dependency>
 	
+	<dependency>
+	  <groupId>commons-collections</groupId>
+	  <artifactId>commons-collections</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>commons-beanutils</groupId>
+	  <artifactId>commons-beanutils</artifactId>
+	</dependency>
 		
   </dependencies>
   

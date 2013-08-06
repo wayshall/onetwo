@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
 @SuppressWarnings("rawtypes")

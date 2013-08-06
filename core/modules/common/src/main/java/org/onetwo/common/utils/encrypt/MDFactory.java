@@ -36,6 +36,12 @@ abstract public class MDFactory {
 		return getMDEncrypt(null);
 	}
 
+	/****
+	 * md5的长度为16个字节，128位
+	 * @param base64
+	 * @param withLabel
+	 * @return
+	 */
 	public static MDEncrypt createMD5(boolean base64, final boolean withLabel){
 		MDEncryptImpl encryptor = null;
 		encryptor = new MDEncryptImpl("MD5", 16, base64){

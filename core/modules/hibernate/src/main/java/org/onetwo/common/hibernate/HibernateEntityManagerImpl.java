@@ -81,6 +81,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public void persist(Object entity) {
 		getSession().persist(entity);
 	}
+	@Override
+	public void update(Object entity) {
+		getSession().update(entity);
+	}
 
 	@Override
 	public void remove(Object entity) {
@@ -101,17 +105,17 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public <T> T save(T entity) {
 		try {
 			getSession().saveOrUpdate(entity);
+//			getSession().merge(entity);
 		} catch (SQLGrammarException e) {
 			if("42000".equals(e.getSQLState())){
 				this.createSequence(entity.getClass());
 			}
 			getSession().saveOrUpdate(entity);
 		}
-//		getSession().merge(entity);
 		return entity;
 	}
 	
-	protected Session getSession(){
+	public Session getSession(){
 		return this.sessionFactory.getCurrentSession();
 	}
 	

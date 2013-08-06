@@ -17,6 +17,8 @@ public interface BaseEntityManager {
 	public <T> T save(T entity);
 	
 	public void persist(Object entity);
+	
+	public void update(Object entity);
 
 	public void remove(Object entity);
 	

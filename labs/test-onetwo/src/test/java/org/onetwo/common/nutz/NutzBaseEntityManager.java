@@ -56,6 +56,12 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
+	public void update(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public <T> T save(T entity) {
 		return this.nutzDao.insert(entity);
 	}
@@ -114,11 +120,6 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 		return null;
 	}
 
-	@Override
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
@@ -127,13 +128,15 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass, Object... properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass,
+			Object... properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass, Map<Object, Object> properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass,
+			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -8,6 +8,7 @@ import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
 import org.onetwo.common.utils.propconf.Environment;
@@ -170,6 +171,13 @@ public class JFishContextConfig implements ApplicationContextAware {
 	public ThreadLocalCleaner ThreadLocalCleaner() {
 		ThreadLocalCleaner cleaner = new ThreadLocalCleaner();
 		return cleaner;
+	}
+
+	@Bean
+	public DozerBeanFactoryBean dozerBeanFactoryBean(){
+		DozerBeanFactoryBean f = new DozerBeanFactoryBean();
+		f.setBasePackage(jfishBasePackages);
+		return f;
 	}
 
 	@Configuration

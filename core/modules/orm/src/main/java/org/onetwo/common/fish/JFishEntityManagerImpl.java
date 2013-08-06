@@ -53,6 +53,12 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 	
 	
 	@Override
+	public void update(Object entity) {
+		this.jfishDao.update(entity);
+	}
+
+
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}

@@ -1,7 +1,7 @@
 package org.onetwo.common.db.sql;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class ConditionToken extends QueryToken {
 	public static final String JDBC_PARAM_PLACEHODER = "?";

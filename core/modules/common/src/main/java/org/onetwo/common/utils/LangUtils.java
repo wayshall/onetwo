@@ -720,7 +720,7 @@ public class LangUtils {
 		for(int i=0; i<chars.length; i=i+2){
 			numb1 = HEX_CHAR.indexOf(chars[i]) << 4  & 0xf0 ;
 			numb2 = HEX_CHAR.indexOf(chars[i+1]) & 0xf;
-			bytes = org.apache.commons.lang.ArrayUtils.add(bytes, (byte)((numb1 | numb2) & 0xff));
+			bytes = ArrayUtils.addAll(bytes, (byte)((numb1 | numb2) & 0xff));
 		}
 		return bytes;
 	}

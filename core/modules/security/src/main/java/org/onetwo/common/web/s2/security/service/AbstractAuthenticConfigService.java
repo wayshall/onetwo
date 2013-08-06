@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
 import org.onetwo.common.web.s2.security.config.AbstractConfigBuilder;

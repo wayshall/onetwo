@@ -2,12 +2,12 @@ package org.onetwo.common.db.sqlext;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.StringUtils;
 
 
 /***

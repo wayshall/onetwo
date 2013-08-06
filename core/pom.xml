@@ -29,7 +29,6 @@
     	<modules>
 				<module>modules/parent</module>
 				<module>modules/common</module>
-				<module>modules/ejb</module>
 				<module>modules/spring</module>
 				<module>modules/hibernate</module>
 				<module>modules/web</module>
