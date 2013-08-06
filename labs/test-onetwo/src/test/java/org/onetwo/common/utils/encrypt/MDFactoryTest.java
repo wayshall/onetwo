@@ -16,7 +16,14 @@ salt为8个随机字节。
 	public void testMD(){
 		String source = "123456";
 		String encrypt = MDFactory.getMDEncrypt().encryptWithSalt(source);
-		LangUtils.println("after encrypt : ${0}", encrypt);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		
+		encrypt = MDFactory.getMDEncrypt().encrypt(source);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+
+		MDEncrypt sha = new MDEncryptImpl("SHA", 20, false);
+		encrypt = sha.encrypt(source);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
 		
 		boolean rs = MDFactory.checkEncrypt(source, encrypt);
 		Assert.assertEquals(true, rs);

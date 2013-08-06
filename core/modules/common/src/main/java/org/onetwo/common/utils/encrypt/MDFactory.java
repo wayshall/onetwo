@@ -15,8 +15,8 @@ abstract public class MDFactory {
 	
 	static {
 		Map<String, MDEncrypt> map = new HashMap<String, MDEncrypt>(4);
-		MDEncrypt md5 = new MDEncryptImpl("MD5", 16, true);
-		MDEncrypt sha = new MDEncryptImpl("SHA", 20, true);
+		MDEncrypt md5 = new MDEncryptImpl("MD5", 16, true);//16bytes, 128bits
+		MDEncrypt sha = new MDEncryptImpl("SHA", 20, true);//20bytes
 		map.put("MD5", md5);
 		map.put("SHA", sha);
 		map.put("SMD5", md5);
