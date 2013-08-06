@@ -12,5 +12,5 @@ import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 @Authentic
 public @interface ByMenuClass {
 
-	Class<?> codeClass();
+	Class<?>[] codeClass();
 }

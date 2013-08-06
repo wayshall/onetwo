@@ -8,7 +8,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="ADMIN_PAGE_ELEMENT")
 @PrimaryKeyJoinColumn(name="PERMISSION_ID")
-public class PageElementModel extends PermissionEntity {
+public class PageElementEntity extends PermissionEntity {
 
 	private String name;
 	private Long menuId;

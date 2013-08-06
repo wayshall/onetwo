@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.plugins.permission.anno.ByPermission;
+import org.onetwo.plugins.permission.anno.ByMenuClass;
+import org.onetwo.plugins.permission.anno.ByPermissionClass;
+import org.onetwo.plugins.permission.entity.MenuEntity;
+import org.onetwo.plugins.permission.entity.PermissionEntity;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.method.HandlerMethod;
@@ -25,9 +29,9 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 	
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
-		Map<String, JResourceInfo> infoMaps = new HashMap<String, JResourceInfo>();
-		JResourceInfo cinfo = null;
-		ByPermission permission = null;
+		Map<String, PermissionEntity> infoMaps = new HashMap<String, PermissionEntity>();
+		PermissionEntity cinfo = null;
+		ByPermissionClass permission = null;
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
 			Class<?> declarClass = entry.getValue().getMethod().getDeclaringClass();
 			cinfo = parseClassInfo(infoMaps, declarClass);
@@ -56,28 +60,28 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 		this.jresourceManagerImpl = new JresourceManagerImpl(infoMaps);
 	}
 	
-	protected JResourceInfo parseClassInfo(Map<String, JResourceInfo> infoMaps, Class<?> declarClass){
-		ByPermission jres = declarClass.getAnnotation(ByPermission.class);
-		if(jres==null)//ignore if no jresource annotation
+	protected PermissionEntity parseClassInfo(Map<String, PermissionEntity> infoMaps, Class<?> declarClass){
+		ByPermissionClass bypermission = declarClass.getAnnotation(ByPermissionClass.class);
+		if(bypermission==null)//ignore if no jresource annotation
 			return null;
 		
 		String key = getKey(true, declarClass, null);
-		JResourceInfo info = infoMaps.get(key);
-		if(info!=null)
-			return info;
+		PermissionEntity permission = infoMaps.get(key);
+		if(permission!=null)
+			return permission;
 		
-		if(jres!=null){
-			info = infoMaps.get(key);
-			if(info==null){
-				info = parseAsResourceInfo(jres, declarClass, null);
-				infoMaps.put(key, info);
+		if(bypermission!=null){
+			permission = infoMaps.get(key);
+			if(permission==null){
+				permission = parseAsResourceInfo(bypermission, declarClass, null);
+				infoMaps.put(key, permission);
 			}
-			if(!isRootResourceClass(jres.parentResource())){
-				JResourceInfo parent = parseClassInfo(infoMaps, jres.parentResource());
-				info.setParent(parent);
+			if(!isRootResourceClass(bypermission.parentResource())){
+				JResourceInfo parent = parseClassInfo(infoMaps, bypermission.parentResource());
+				permission.setParent(parent);
 			}
 		}
-		return info;
+		return permission;
 	}
 	
 	protected boolean isRootResourceClass(Class<?> resClass){
@@ -88,20 +92,24 @@ public class JresourceHandlerMappingListener implements HandlerMappingListener {
 		return isClassAnno?declarClass.getName():method.toGenericString();
 	}
 	
-	protected JResourceInfo parseAsResourceInfo(ByPermission jres, Class<?> declarClass, Method method){
-		Assert.notNull(jres);
-		JResourceInfo info = null;
-		String id = parseId(declarClass, method, jres.assemble());
-		if(jres.menu()){
-			info = new JMenuInfo(id, jres.label());
-		}else if(jres.permission()){
-			info = new JPermissionInfo(id, jres.label());
+	protected PermissionEntity parseAsResourceInfo(ByMenuClass anno, Class<?> declarClass, Method method){
+		Assert.notNull(anno);
+		PermissionEntity info = null;
+		Class<?>[] codeClasses = anno.codeClass();
+		for(Class<?> codeClass : codeClasses){
+			codeClass.getDeclaringClass();
+		}
+		String id = parseId(declarClass, method, anno.assemble());
+		if(anno.){
+			info = new MenuEntity();
+		}else if(ByPermissionClass.class.isInstance(anno)){
+			info = new JPermissionInfo(id, anno.label());
 		}else{
-			info = new JResourceInfo(id, jres.label());
+			throw new ServiceException("unsupported annotation: " + anno);
 		}
 		String key = getKey(method==null, declarClass, method);
 		info.setKey(key);
-		info.setAssembleTag(StringUtils.isNotBlank(jres.assemble()));
+		info.setAssembleTag(StringUtils.isNotBlank(anno.assemble()));
 		return info;
 	}
 

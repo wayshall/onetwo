@@ -8,7 +8,7 @@ import javax.persistence.InheritanceType;
 
 @SuppressWarnings("serial")
 @Inheritance(strategy=InheritanceType.JOINED)
-public class PermissionEntity implements Serializable {
+abstract public class PermissionEntity implements Serializable {
 	
 	private Long id;
 	private String code;

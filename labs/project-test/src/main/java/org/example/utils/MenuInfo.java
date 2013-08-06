@@ -4,7 +4,7 @@ package org.example.utils;
 public interface MenuInfo {
 	public String name = "菜单管理";
 	
-	public static interface SystemMenu {
+	public static interface SystemManager {
 		public String name = "系统管理";
 		
 		public static interface UserManager {

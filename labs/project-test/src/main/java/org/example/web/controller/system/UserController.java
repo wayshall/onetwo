@@ -5,7 +5,7 @@ import javax.validation.Valid;
 
 import org.example.model.member.entity.UserEntity;
 import org.example.model.member.service.impl.UserServiceImpl;
-import org.example.utils.MenuInfo.SystemMenu.UserManager;
+import org.example.utils.MenuInfo.SystemManager.UserManager;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Page;

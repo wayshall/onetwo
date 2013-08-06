@@ -20,7 +20,7 @@ public class MenuEntity extends PermissionEntity {
 	private MenuEntity parent;
 
 	private List<MenuEntity> children;
-	private List<PageElementModel> pageElements;
+	private List<PageElementEntity> pageElements;
 
 	public String getName() {
 		return name;
@@ -51,11 +51,11 @@ public class MenuEntity extends PermissionEntity {
 
 	@OneToMany
 	@JoinColumn(referencedColumnName="MENU_ID")
-	public List<PageElementModel> getPageElements() {
+	public List<PageElementEntity> getPageElements() {
 		return pageElements;
 	}
 
-	public void setPageElements(List<PageElementModel> pageElements) {
+	public void setPageElements(List<PageElementEntity> pageElements) {
 		this.pageElements = pageElements;
 	}
 
