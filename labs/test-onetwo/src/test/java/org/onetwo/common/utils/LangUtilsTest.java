@@ -14,6 +14,11 @@ import org.onetwo.common.utils.list.L;
 public class LangUtilsTest {
 	
 	@Test
+	public void testHash(){
+		String str = "hello";
+		System.out.println("hash: " + str.hashCode());
+	}
+	@Test
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);

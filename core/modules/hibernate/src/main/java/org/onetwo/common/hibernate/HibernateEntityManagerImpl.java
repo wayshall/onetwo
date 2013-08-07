@@ -103,15 +103,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	@Override
 	public <T> T save(T entity) {
-		try {
-			getSession().saveOrUpdate(entity);
-//			getSession().merge(entity);
-		} catch (SQLGrammarException e) {
-			if("42000".equals(e.getSQLState())){
-				this.createSequence(entity.getClass());
-			}
-			getSession().saveOrUpdate(entity);
-		}
+		getSession().saveOrUpdate(entity);
 		return entity;
 	}
 	

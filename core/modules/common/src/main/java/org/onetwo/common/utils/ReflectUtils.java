@@ -833,7 +833,7 @@ public class ReflectUtils {
 	}
 
 	public static boolean hasImplements(Object obj, Class clazz) {
-		return clazz.isAssignableFrom(obj.getClass());
+		return clazz.isAssignableFrom(getObjectClass(obj));
 	}
 
 	public static PropertyDescriptor findProperty(Class<?> clazz,
@@ -1327,12 +1327,12 @@ public class ReflectUtils {
 	}
 
 	public static void setBean(Object obj, String fieldName, Object value) {
-		Field field = findField(obj.getClass(), fieldName, true);
+		Field field = findField(getObjectClass(obj), fieldName, true);
 		setFieldValue(field, obj, value);
 	}
 
 	public static void setBean(Object obj, Class fieldType, Object value) {
-		Field field = findField(obj.getClass(), fieldType, true);
+		Field field = findField(getObjectClass(obj), fieldType, true);
 		setFieldValue(field, obj, value);
 	}
 
@@ -1360,7 +1360,7 @@ public class ReflectUtils {
 
 	public static Object getFieldValue(Object obj, String fieldName,
 			boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName);
 		return getFieldValue(f, obj, throwIfError);
 	}
 
@@ -1380,13 +1380,13 @@ public class ReflectUtils {
 
 	public static void setFieldValueBySetter(Object obj, String fieldName,
 			Object value, boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName);
 		setFieldValueBySetter(obj, f, value, throwIfError);
 	}
 
 	public static Object getFieldValueByGetter(Object obj, String fieldName,
 			boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName);
 		return getFieldValueByGetter(obj, f, throwIfError);
 	}
 
@@ -1396,7 +1396,7 @@ public class ReflectUtils {
 			String getterName = "get"
 					+ org.onetwo.common.utils.StringUtils.toJavaName(f
 							.getName(), true);
-			Method getter = findMethod(obj.getClass(), getterName);
+			Method getter = findMethod(getObjectClass(obj), getterName);
 			Object val = invokeMethod(getter, obj);
 			return val;
 		} catch (Exception ex) {
@@ -1414,7 +1414,7 @@ public class ReflectUtils {
 			String setterName = "set"
 					+ org.onetwo.common.utils.StringUtils.toJavaName(f
 							.getName(), true);
-			Method setter = findMethod(obj.getClass(), setterName, f.getType());
+			Method setter = findMethod(getObjectClass(obj), setterName, f.getType());
 			invokeMethod(setter, obj, value);
 		} catch (Exception ex) {
 			if (throwIfError)

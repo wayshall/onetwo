@@ -1,22 +1,22 @@
 package org.onetwo.plugins.permission;
 
+import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ComponentScan(basePackageClasses=PermissionPlugin.class)
 public class PermissionPluginContext {
 	
 	@Bean
-	public JresourceHandlerMappingListener jresourceHandlerMappingListener(){
-		JresourceHandlerMappingListener l = new JresourceHandlerMappingListener();
+	public PermissionHandlerMappingListener jresourceHandlerMappingListener(){
+		PermissionHandlerMappingListener l = new PermissionHandlerMappingListener();
 		return l;
 	}
 	
 	@Bean
-	public JresourceManagerImpl jresourceManager(){
-		return jresourceHandlerMappingListener().getJresourceManager();
+	public PermissionManagerImpl permissionManagerImpl(){
+		return new PermissionManagerImpl();
 	}
+	
 }
