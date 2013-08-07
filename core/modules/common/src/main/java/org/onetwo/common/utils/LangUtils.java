@@ -704,7 +704,8 @@ public class LangUtils {
 	public static String toHex(byte[] bytes){
 		StringBuilder buf = new StringBuilder();
 		for(byte b : bytes){
-			buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high
+			//a byte contains 8 bit, every 4 bit can indecated by a hex number, in other words, a byte(8 bit) can indecated by 2 hex number
+			buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
 			buf.append(HEX_CHAR.charAt((b & 0xf)));//low
 		}
 		return buf.toString();
@@ -718,7 +719,8 @@ public class LangUtils {
 		int numb1;
 		int numb2;
 		for(int i=0; i<chars.length; i=i+2){
-			numb1 = HEX_CHAR.indexOf(chars[i]) << 4  & 0xf0 ;
+			//every 2 hex number indecate a byte
+			numb1 = HEX_CHAR.indexOf(chars[i]) << 4  & 0xf0 ;//first hex number is high
 			numb2 = HEX_CHAR.indexOf(chars[i+1]) & 0xf;
 			bytes = ArrayUtils.addAll(bytes, (byte)((numb1 | numb2) & 0xff));
 		}

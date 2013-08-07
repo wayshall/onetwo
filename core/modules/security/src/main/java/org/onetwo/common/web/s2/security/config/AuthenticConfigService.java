@@ -1,5 +1,7 @@
 package org.onetwo.common.web.s2.security.config;
 
+import java.lang.reflect.Method;
+
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 
@@ -19,5 +21,7 @@ public interface AuthenticConfigService {
 	public AuthenticConfig getConfig(SecurityTarget target);
 	
 	public AuthenticationInvocation getAuthenticationInvocation(AuthenticConfig config);
+	
+	public AuthenticConfig findAuthenticConfig(Class<?> clazz, Method method);
 	
 }

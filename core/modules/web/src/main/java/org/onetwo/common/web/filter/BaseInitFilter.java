@@ -18,7 +18,6 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.config.WebAppConfigurator;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -46,14 +45,13 @@ public class BaseInitFilter extends IgnoreFiler {
 		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
 		Object webconfig = getWebConfig(siteConfig);
 		
-		if(WebAppConfigurator.class.isInstance(webconfig)){
-			siteConfig.setWebAppConfigurator((WebAppConfigurator)webconfig);
-		}
+		//webconfig
+		siteConfig.setWebAppConfigurator(webconfig);
 		siteConfig.getFreezer().freezing();
 		
 		ServletContext context = config.getServletContext();
 		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
-		context.setAttribute("webConfig", webconfig);
+		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		SpringApplication.initApplication(app);

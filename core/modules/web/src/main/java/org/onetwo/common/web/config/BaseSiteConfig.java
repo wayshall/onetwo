@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 public class BaseSiteConfig extends AppConfig { 
 	protected static final Logger logger = MyLoggerFactory.getLogger(BaseSiteConfig.class);
 
+	public static final String WEB_CONFIG_NAME = "webConfig";
 	public static final String CONFIG_NAME = "siteConfig";
 
 	public static final String BASEURL = "baseURL";
@@ -44,7 +45,7 @@ public class BaseSiteConfig extends AppConfig {
 	protected static final String CONFIG_FILE = "siteConfig-base.properties";
 	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
 	
-	private WebAppConfigurator webAppConfigurator;
+	private Object webAppConfigurator;
 	private ServletContext servletContext;
 	private String contextPath;
 	private String appUrlPostfix;
@@ -278,11 +279,11 @@ public class BaseSiteConfig extends AppConfig {
 		return getBoolean(JDBC_SQL_LOG);
 	}
 
-	public WebAppConfigurator getWebAppConfigurator() {
+	public Object getWebAppConfigurator() {
 		return webAppConfigurator;
 	}
 
-	public <T extends WebAppConfigurator> T getWebAppConfigurator(Class<T> clazz) {
+	public <T> T getWebAppConfigurator(Class<T> clazz) {
 		if(clazz.isInstance(webAppConfigurator)){
 			return clazz.cast(webAppConfigurator);
 		}else{
@@ -290,7 +291,7 @@ public class BaseSiteConfig extends AppConfig {
 		}
 	}
 
-	public void setWebAppConfigurator(WebAppConfigurator webAppConfigurator) {
+	public void setWebAppConfigurator(Object webAppConfigurator) {
 		this.getFreezer().checkOperation("setWebAppConfigurator");
 		this.webAppConfigurator = webAppConfigurator;
 	}

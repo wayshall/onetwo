@@ -9,7 +9,7 @@ import org.onetwo.common.web.s2.security.Authenticator;
 
 
 
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authentic {
 	/*@Deprecated

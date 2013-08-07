@@ -1720,6 +1720,13 @@ public class ReflectUtils {
 		
 		return mappingFields;
 	}
+	
+	public static Class<?> getFinalDeclaringClass(Class<?> innerClass){
+		Class<?> parentClass = innerClass.getDeclaringClass();
+		while(parentClass!=null && parentClass.getDeclaringClass()!=null)
+			parentClass = parentClass.getDeclaringClass();
+		return parentClass;
+	}
 
 	public static void main(String[] args) {
 

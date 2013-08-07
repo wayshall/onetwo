@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
@@ -11,6 +12,7 @@ import org.onetwo.common.fish.plugin.PluginInfo;
 import org.onetwo.common.fish.plugin.anno.PluginControllerConf;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.OrderComparator;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.MappedInterceptor;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
 	private JFishPluginManager pluginManager;
+	
+	private List<HandlerMappingListener> listeners;
 
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
@@ -61,8 +65,12 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 	
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
-		super.registerHandlerMethod(handler, method, mapping);
+	protected void handlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
+		super.handlerMethodsInitialized(handlerMethods);
+		if(listeners!=null){
+			for(HandlerMappingListener l : listeners)
+				l.onHandlerMethodsInitialized(handlerMethods);
+		}
 	}
 
 	protected void detectMappedInterceptors(List<MappedInterceptor> mappedInterceptors) {
@@ -75,6 +83,10 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 			}
 			
 		});
+	}
+
+	public void setListeners(List<HandlerMappingListener> listeners) {
+		this.listeners = listeners;
 	}
 	
 }

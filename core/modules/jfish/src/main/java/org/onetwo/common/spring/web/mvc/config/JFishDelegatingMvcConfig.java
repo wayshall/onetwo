@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.common.spring.web.mvc.JFishRequestMappingHandlerMapping;
 import org.onetwo.common.spring.web.mvc.RequestMappingHandlerAdapterFactory;
 import org.onetwo.common.utils.LangUtils;
@@ -41,9 +42,13 @@ public class JFishDelegatingMvcConfig extends DelegatingWebMvcConfiguration {
 	@Bean
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 		JFishRequestMappingHandlerMapping handlerMapping = new JFishRequestMappingHandlerMapping();
+		List<HandlerMappingListener> listeners = SpringUtils.getBeans(applicationContex, HandlerMappingListener.class);
+		
 		handlerMapping.setOrder(0);
 		handlerMapping.setInterceptors(getInterceptors());
 		handlerMapping.setPluginManager(JFishPluginManagerFactory.getPluginManager());
+		handlerMapping.setListeners(listeners);
+		
 		return handlerMapping;
 	}
 	
