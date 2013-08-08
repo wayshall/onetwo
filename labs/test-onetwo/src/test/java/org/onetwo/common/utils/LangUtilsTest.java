@@ -15,7 +15,7 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testHash(){
-		String str = "hello";
+		String str = "hellohello_helloh_ellohello";
 		System.out.println("hash: " + str.hashCode());
 	}
 	@Test

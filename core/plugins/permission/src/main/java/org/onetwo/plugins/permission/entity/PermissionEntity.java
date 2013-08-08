@@ -15,10 +15,17 @@ import javax.persistence.Table;
 @Table(name="ADMIN_PERMISSION")
 public class PermissionEntity implements Serializable {
 
+	private Long id;
 	private String code;
 	private String ptype;
 	
 	@Id
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCode() {
 		return code;
 	}

@@ -55,7 +55,7 @@ public class MenuEntity extends PermissionEntity implements IBaseEntity{
 	}
 
 	@ManyToOne
-	@JoinColumn(name="PARENT_CODE")
+	@JoinColumn(name="PARENT_ID")
 //	@Fetch(FetchMode.JOIN)
 	public MenuEntity getParent() {
 		return parent;

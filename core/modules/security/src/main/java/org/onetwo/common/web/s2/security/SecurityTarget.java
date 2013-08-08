@@ -1,5 +1,6 @@
 package org.onetwo.common.web.s2.security;
 
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.utils.UserDetail;
@@ -30,7 +31,7 @@ public interface SecurityTarget {
 	void setCurrentLoginUser(UserDetail userDetail);
 	public void removeCookieToken();
 	
-	public String[] getRoles();
+	public List<String> getRoles();
 	public boolean containsRole(String role);
 	public void setCookieToken(String token);
 	

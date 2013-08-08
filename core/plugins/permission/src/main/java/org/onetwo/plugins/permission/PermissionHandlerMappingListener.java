@@ -3,13 +3,11 @@ package org.onetwo.plugins.permission;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.permission.entity.MenuEntity;
 import org.onetwo.plugins.permission.entity.PermissionEntity;
@@ -35,7 +33,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 			if(menuClass==null)
 				continue;
 			for(Class<?> codeClass : menuClass.codeClass()){
-				PermissionEntity perm = this.permissionManagerImpl.getMenuNode(codeClass);
+				PermissionEntity perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
 				if(perm==null)
 					throw new BaseException("can not find the menu code class in menu tree : " + codeClass);
 				if(MenuEntity.class.isInstance(perm)){

@@ -1360,7 +1360,7 @@ public class ReflectUtils {
 
 	public static Object getFieldValue(Object obj, String fieldName,
 			boolean throwIfError) {
-		Field f = findField(getObjectClass(obj), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName, throwIfError);
 		return getFieldValue(f, obj, throwIfError);
 	}
 

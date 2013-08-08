@@ -1,10 +1,13 @@
 package org.onetwo.plugins.permission;
 
 import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.plugins.permission.entity.MenuEntity;
 import org.onetwo.plugins.permission.entity.PageElementEntity;
@@ -12,29 +15,35 @@ import org.onetwo.plugins.permission.entity.PermissionEntity;
 
 public class MenuInfoParser {
 	
-	private final Class<?> menuClass;
-	private final Map<String, PermissionEntity> menuNodeMap = LangUtils.newHashMap();
+	private final Map<String, PermissionEntity> menuNodeMap = new LinkedHashMap<String, PermissionEntity>();
+	private MenuEntity rootMenu;
+
+	@Resource
+	private MenuInfoable menuInfoable;
 	
-	public MenuInfoParser(Class<?> menuClass) {
-		super();
-		this.menuClass = menuClass;
-	}
 
 	public Map<String, PermissionEntity> getMenuNodeMap() {
 		return menuNodeMap;
 	}
 	
+	public String getRootMenuCode(){
+		return parseCode(menuInfoable.getRootMenuClass());
+	}
 
 	public MenuEntity parseTree(){
+		Assert.notNull(menuInfoable);
+		Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
+		
 		PermissionEntity perm = null;
 		try {
-			perm = parseMenuClass(menuClass);
+			perm = parseMenuClass(menuInfoClass);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
 		}
 		if(!MenuEntity.class.isInstance(perm))
 			throw new BaseException("root must be a menu node");
-		return (MenuEntity) perm;
+		rootMenu = (MenuEntity)perm;
+		return rootMenu;
 	}
 
 	protected PermissionEntity parseMenuClass(Class<?> menuClass) throws Exception{
@@ -60,7 +69,7 @@ public class MenuInfoParser {
 		if(pageElementField!=null){
 			pageElement = pageElementField.getBoolean(permissionClass);
 		}
-		
+
 		Object nameValue = ReflectUtils.getFieldValue(permissionClass, "name", true);
 		String name = nameValue==null?"":nameValue.toString();
 		PermissionEntity perm = null;
@@ -86,6 +95,22 @@ public class MenuInfoParser {
 			code = menuClass.getSimpleName() + "_" + code;
 		}
 		return code;
+	}
+	
+	public PermissionEntity getMenuNode(Class<?> clazz){
+		return getMenuNode(parseCode(clazz));
+	}
+	
+	public PermissionEntity getMenuNode(String code){
+		return (PermissionEntity)menuNodeMap.get(code);
+	}
+
+	public MenuEntity getRootMenu() {
+		return rootMenu;
+	}
+
+	public void setRootMenu(MenuEntity rootMenu) {
+		this.rootMenu = rootMenu;
 	}
 	
 	

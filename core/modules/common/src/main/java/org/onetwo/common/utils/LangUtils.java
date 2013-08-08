@@ -979,7 +979,7 @@ public class LangUtils {
 		}else if(Collection.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Collection)obj);
 		}else if(obj.getClass().isArray()){
-			return ArrayUtils.hasElement((Object[])obj);
+			return Array.getLength(obj)!=0;
 		}else if(Map.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Map)obj);
 		}

@@ -184,9 +184,13 @@ public abstract class L {
 			return NULL_LIST;
 		
 		List list = null;
-		if(array.getClass().isArray())
-			list = list(trimNull, (Object[])array);
-		else
+		if(array.getClass().isArray()){
+			int length = Array.getLength(array);
+			list = new ArrayList(length);
+			for (int i = 0; i < length; i++) {
+				list.add(Array.get(array, i));
+			}
+		}else
 			list = tolist(array, trimNull);
 		
 		if (excludeClasses!=null && excludeClasses.length>0)

@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 
-@SuppressWarnings("serial")
 public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDetail, UserActivityCheckable {
 	
 	protected Date lastActivityTime = new Date();
@@ -84,7 +83,7 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDeta
 	}
 	
 	@Override
-	public String[] getRoles() {
+	public List<String> getRoles() {
 		return null;
 	}
 

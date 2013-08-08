@@ -6,9 +6,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.plugins.permission.MenuInfoParser;
-import org.onetwo.plugins.permission.MenuInfoable;
 import org.onetwo.plugins.permission.entity.MenuEntity;
 import org.onetwo.plugins.permission.entity.PermissionEntity;
 import org.slf4j.Logger;
@@ -18,10 +16,9 @@ public class PermissionManagerImpl {
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, PermissionEntity> menuNodeMap;
-	private MenuEntity rootMenu;
 
 	@Resource
-	private MenuInfoable menuInfoable;
+	private MenuInfoParser menuInfoParser;
 	
 	@Resource
 	private BaseEntityManager baseEntityManager;
@@ -30,38 +27,45 @@ public class PermissionManagerImpl {
 	}
 	
 	public void build(){
-		Assert.notNull(menuInfoable);
-		Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
-		MenuInfoParser menuInfoParser = new MenuInfoParser(menuInfoClass);
-		menuInfoParser.parseTree();
+		MenuEntity rootMenu = menuInfoParser.parseTree();
 		logger.info("menu:\n" + rootMenu);
 		this.menuNodeMap = menuInfoParser.getMenuNodeMap();
 	}
 	
-	public PermissionEntity getMenuNode(Class<?> clazz){
-		return getMenuNode(MenuInfoParser.parseCode(clazz));
-	}
-	
-	public PermissionEntity getMenuNode(String code){
-		return (PermissionEntity)menuNodeMap.get(code);
-	}
 
 	@Transactional
-	public MenuEntity getRootMenu() {
-		if(rootMenu==null){
-			Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
-			String rootCode = MenuInfoParser.parseCode(menuInfoClass);
-			rootMenu = baseEntityManager.findById(MenuEntity.class, rootCode);
-		}
-		return rootMenu;
+	public MenuEntity getDatabaseRootMenu() {
+		return baseEntityManager.findUnique(MenuEntity.class, "code", this.menuInfoParser.getRootMenuCode());
+	}
+	
+	@Transactional
+	public MenuEntity getDatabaseMenuNode(Class<?> clazz) {
+		String code = MenuInfoParser.parseCode(clazz);
+		return baseEntityManager.findUnique(MenuEntity.class, "code", code);
 	}
 	
 	@Transactional
 	public void syncMenuToDatabase(){
 		for(PermissionEntity perm : menuNodeMap.values()){
 			logger.info("sync perm[{}]...", perm.getCode());
-			baseEntityManager.save(perm);
+			PermissionEntity dbperm = this.baseEntityManager.findUnique(PermissionEntity.class, "code", perm.getCode());
+			if(dbperm!=null){
+				perm.setId(dbperm.getId());
+				baseEntityManager.merge(perm);
+			}else{
+				Long id = this.baseEntityManager.getSequences("SEQ_ADMIN_PERMISSION", false);
+				perm.setId(id);
+				baseEntityManager.persist(perm);
+			}
 		}
+	}
+	
+	public <T> T findById(Long id){
+		return (T)baseEntityManager.findById(PermissionEntity.class, id);
+	}
+
+	public MenuInfoParser getMenuInfoParser() {
+		return menuInfoParser;
 	}
 	
 /*	

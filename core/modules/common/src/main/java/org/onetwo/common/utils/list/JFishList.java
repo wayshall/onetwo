@@ -169,7 +169,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	public String asString(String separator){
 		return StringUtils.join(this, separator);
 	}
-	
+
 
 	public <T> List<T> getPropertyList(final String name){
 		final List<T> propValues = new ArrayList<T>();
@@ -185,6 +185,20 @@ public class JFishList<E> implements List<E>, Serializable {
 			
 		});
 		return propValues;
+	}
+
+	public void addPropertys(final String name, final Collection<Object> cols){
+		this.each(new NoIndexIt<E>() {
+
+			@Override
+			protected void doIt(E element) {
+				Object val = ReflectUtils.getExpr(element, name);
+				if(val==null)
+					return ;
+				cols.add(val);
+			}
+			
+		});
 	}
 	
 	public EachContext each(It<E> it){

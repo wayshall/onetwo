@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.UserDetail;
 
 @SuppressWarnings("unchecked")
@@ -72,15 +73,15 @@ final public class WebContextUtils {
 	}
 	
 	public static void removeCookieToken(HttpServletResponse response){
-		ResponseUtils.removeHttpOnlyCookie(response, UserDetail.TOKEN_KEY);
+		ResponseUtils.removeHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY);
 	}
 	
 	public static void setCookieToken(HttpServletResponse response, String token){
-		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, token);
+		ResponseUtils.setHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY, token);
 	}
 	
 	public static String getCookieToken(HttpServletRequest request){
-		return ResponseUtils.getCookieValue(request, UserDetail.TOKEN_KEY);
+		return ResponseUtils.getCookieValue(request, SsoTokenable.TOKEN_KEY);
 	}
 	
 }

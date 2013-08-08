@@ -34,7 +34,7 @@ public class PageElementEntity extends PermissionEntity implements IBaseEntity{
 		this.name = name;
 	}
 	@ManyToOne
-	@JoinColumn(name="MENU_CODE")
+	@JoinColumn(name="MENU_ID")
 	public MenuEntity getMenu() {
 		return menu;
 	}

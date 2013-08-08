@@ -35,7 +35,7 @@ public class SimpleNotSSOServiceImpl extends AbstractSSOServiceImpl {
 	}
 	@Override
 	protected UserDetail createUserDetail(SecurityTarget target) {
-		UserDetail user = new DefaultUserDetail();
+		DefaultUserDetail user = new DefaultUserDetail();
 		user.setToken(target.getCookieToken());
 		return user;
 	}

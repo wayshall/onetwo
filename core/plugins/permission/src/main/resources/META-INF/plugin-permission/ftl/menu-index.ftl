@@ -1,5 +1,5 @@
 
-${menu.getHtmlString()}
+${(menu.getHtmlString())!""}
 同步菜单到数据库
 <div style="color:red">
 ${message}

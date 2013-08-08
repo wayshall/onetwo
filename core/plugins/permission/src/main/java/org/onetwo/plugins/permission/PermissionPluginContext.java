@@ -19,4 +19,9 @@ public class PermissionPluginContext {
 		return new PermissionManagerImpl();
 	}
 	
+	@Bean
+	public MenuInfoParser menuInfoParser(){
+		return new MenuInfoParser();
+	}
+	
 }
