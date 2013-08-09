@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Authentic
 public @interface ByMenuClass {

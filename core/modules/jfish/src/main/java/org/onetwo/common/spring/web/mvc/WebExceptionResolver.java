@@ -71,6 +71,11 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
+
+		String msg = LangUtils.getCauseServiceException(ex).getMessage();
+		if(!model.containsKey(AbstractBaseController.MESSAGE)){
+			model.put(AbstractBaseController.MESSAGE, msg);
+		}
 		if(JFishWebUtils.isRedirect(errorMessage.getViewName())){
 			return this.createModelAndView(errorMessage.getViewName(), model, request);
 		}
@@ -104,10 +109,6 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		model.put(EXCEPTION_STATCK_KEY2, eInfo);
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
 		
-		String msg = LangUtils.getCauseServiceException(ex).getMessage();
-		if(!model.containsKey(AbstractBaseController.MESSAGE)){
-			model.put(AbstractBaseController.MESSAGE, msg);
-		}
 		
 //		WebContextUtils.attr(request, ERROR_CODE_KEY, ecode);
 		

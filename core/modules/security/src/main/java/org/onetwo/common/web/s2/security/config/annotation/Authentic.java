@@ -34,6 +34,6 @@ public @interface Authentic {
 	boolean throwIfTimeout() default true;
 
 	String authenticationName() default "";
-	String redirect() default "redirect:login";
+	String redirect() default "redirect:/login";
 	String[] roles() default {};
 }

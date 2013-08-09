@@ -2,7 +2,6 @@ package org.onetwo.common.spring.web.mvc.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -39,14 +38,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
@@ -176,9 +178,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean(name = "mediaType")
-	public Map<String, String> mediaType() {
+	public Properties mediaType() {
 		Properties prop = SpringUtils.createProperties("/mvc/media-type.properties", true);
-		return LangUtils.toMap(prop);
+		return prop;
 	}
 
 	@Bean(name = "mvcSetting")
@@ -250,12 +252,22 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
 		viewResolver.setUseNotAcceptableStatusCode(true);
 		viewResolver.setOrder(0);
-		viewResolver.setMediaTypes(mediaType());
 		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
 		viewResolver.setDefaultViews(views);
-		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
-		viewResolver.setIgnoreAcceptHeader(true);
+//		viewResolver.setMediaTypes(mediaType());
+//		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
+//		viewResolver.setIgnoreAcceptHeader(true);
+		viewResolver.setContentNegotiationManager(contentNegotiationManagerFactoryBean().getObject());
 		return viewResolver;
+	}
+	
+	@Bean
+	public ContentNegotiationManagerFactoryBean contentNegotiationManagerFactoryBean(){
+		ContentNegotiationManagerFactoryBean bean = new ContentNegotiationManagerFactoryBean();
+		bean.setMediaTypes(mediaType());
+		bean.setDefaultContentType(MediaType.TEXT_HTML);
+		bean.setIgnoreAcceptHeader(true);
+		return bean;
 	}
 
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -286,10 +298,18 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		WebExceptionResolver webexception = SpringUtils.getHighestOrder(this.applicationContext, WebExceptionResolver.class);
 		if(webexception==null){
 			webexception = new WebExceptionResolver();
+			webexception.setExceptionMessage(exceptionMessageSource());
 		}
 		return webexception;
 	}
 
+	@Bean(name=MvcBeanNames.EXCEPTION_MESSAGE)
+	public MessageSource exceptionMessageSource(){
+		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
+		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
+		return ms;
+	}
+	
 	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 		exceptionResolvers.add(webExceptionResolver());
 	}
@@ -340,4 +360,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return factory;
 	}
 
+	public static class MvcBeanNames {
+		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
+	}
 }

@@ -1,5 +1,6 @@
 package org.onetwo.plugins.permission;
 
+import org.onetwo.plugins.permission.service.PermissionConfigBuilder;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,12 @@ public class PermissionPluginContext {
 	
 	@Bean
 	public MenuInfoParser menuInfoParser(){
-		return new MenuInfoParser();
+		return new DefaultMenuInfoParser();
+	}
+	
+	@Bean
+	public PermissionConfigBuilder permissionConfigBuilder(){
+		return new PermissionConfigBuilder();
 	}
 	
 }

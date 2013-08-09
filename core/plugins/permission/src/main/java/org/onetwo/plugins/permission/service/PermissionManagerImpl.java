@@ -40,7 +40,7 @@ public class PermissionManagerImpl {
 	
 	@Transactional
 	public MenuEntity getDatabaseMenuNode(Class<?> clazz) {
-		String code = MenuInfoParser.parseCode(clazz);
+		String code = menuInfoParser.parseCode(clazz);
 		return baseEntityManager.findUnique(MenuEntity.class, "code", code);
 	}
 	

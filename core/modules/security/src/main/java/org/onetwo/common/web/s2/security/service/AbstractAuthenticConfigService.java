@@ -38,8 +38,8 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	}
 
 	protected AuthenticConfig readConfig(Class<?> clazz, Method method) {
-		AbstractConfigBuilder configBuilder = getConfigBuilder(clazz, method);
-		AuthenticConfig config = configBuilder.buildAuthenConfig();
+		AbstractConfigBuilder configBuilder = getConfigBuilder();
+		AuthenticConfig config = configBuilder.buildAuthenConfig(clazz, method);
 		configs.put(method.toGenericString(), config);
 		return config;
 	}
@@ -50,6 +50,6 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	 * @param method
 	 * @return
 	 */
-	abstract protected AbstractConfigBuilder getConfigBuilder(Class<?> clazz, Method method);
+	abstract protected AbstractConfigBuilder getConfigBuilder();
 	
 }

@@ -81,7 +81,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 			component.setFieldTagCompletion(true);
 			CurrentRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, CurrentRowData.class);
 			if(preData!=null){
-				component.getDatas().add(preData.getTranslateData());
+				component.getDatas().add(preData);//preData.getTranslateData()
 			}
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){

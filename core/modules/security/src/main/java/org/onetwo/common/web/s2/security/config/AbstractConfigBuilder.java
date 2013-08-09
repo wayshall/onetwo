@@ -10,16 +10,16 @@ import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 
 abstract public class AbstractConfigBuilder {
 
-	private Class<?> clazz;
-	private Method method;
-	private AuthenticConfig config;
+//	private Class<?> clazz;
+//	private Method method;
+//	private AuthenticConfig config;
 
-	public AbstractConfigBuilder(Class<?> clazz, Method method) {
+	/*public AbstractConfigBuilder(Class<?> clazz, Method method) {
 		this.clazz = clazz;
 		this.method = method;
-	}
+	}*/
 
-	public Class<?> getAuthenticClass(){
+	/*public Class<?> getAuthenticClass(){
 		return clazz;
 	}
 
@@ -29,18 +29,24 @@ abstract public class AbstractConfigBuilder {
 	
 	public AuthenticConfig retriveConfig(){
 		return config;
-	}
+	}*/
 	
-	public AuthenticConfig buildAuthenConfig() {
+	public AuthenticConfig buildAuthenConfig(Class<?> clazz, Method method) {
+		AuthenticConfig config = null;
 		Authentic authentic = findAnnotation(clazz, method, Authentic.class);
 		if (authentic == null) {
 			config = this.getDefaultAuthenticConfig();
 			return config;
 		}
 
-		config = buildAuthenticConfig(method.toGenericString(), authentic);
+		config = buildAuthenticConfig(getAuthenticName(method), authentic);
+		buildExtAnnotationConfig(config, clazz, method);
 
 		return config;
+	}
+	
+	protected String getAuthenticName(Method method){
+		return method.toGenericString();
 	}
 	
 	protected AuthenticConfig getDefaultAuthenticConfig(){
@@ -66,12 +72,11 @@ abstract public class AbstractConfigBuilder {
 		config.setRoles(authentic.roles());
 
 		buildAuthenticator(config, authentic);
-		buildExtAnnotationConfig(config, authentic);
 		
 		return config;
 	}
 	
-	protected void buildExtAnnotationConfig(AuthenticConfig config, Authentic authentic) {
+	protected void buildExtAnnotationConfig(AuthenticConfig config, Class<?> clazz, Method method) {
 		//TODO
 	}
 

@@ -200,7 +200,7 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 				if(authenticateExpression(p, authoritable))//pass if any one is true
 					return true;
 			}else{
-				if(pUser.getPermissions().contains(p))//pass if user permission contains any one of action permisson
+				if(pUser.getPermissions()!=null && pUser.getPermissions().contains(p))//pass if user permission contains any one of action permisson
 					return true;
 			}
 		}
