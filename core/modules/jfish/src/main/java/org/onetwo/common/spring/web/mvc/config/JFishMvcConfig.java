@@ -18,6 +18,8 @@ import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerView;
 import org.onetwo.common.spring.web.authentic.SpringAuthenticationInvocation;
 import org.onetwo.common.spring.web.authentic.SpringSecurityInterceptor;
+import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
 import org.onetwo.common.spring.web.mvc.JFishWebArgumentResolver;
@@ -308,6 +310,15 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
 		return ms;
+	}
+	
+	@Bean
+	public CodeMessager codeMessager(){
+		CodeMessager messager = SpringUtils.getBean(applicationContext, CodeMessager.class);;
+		if(messager==null){
+			messager = new DefaultCodeMessager();
+		}
+		return messager;
 	}
 	
 	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {

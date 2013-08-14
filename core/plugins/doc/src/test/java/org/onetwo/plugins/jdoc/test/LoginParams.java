@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.fish.annotation.JFishEntity;
 
 /******
  * @class LoginParams
@@ -13,7 +12,6 @@ import org.onetwo.common.fish.annotation.JFishEntity;
  * 
  *
  */
-@JFishEntity(table="t_user")
 public class LoginParams implements Serializable{
 
 	/**

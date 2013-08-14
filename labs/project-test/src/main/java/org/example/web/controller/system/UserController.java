@@ -10,7 +10,7 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
-import org.onetwo.plugins.permission.anno.ByPermissionClass;
+import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -42,7 +42,7 @@ public class UserController extends AbstractBaseController {
 		return mv("/member/user-new");
 	}
 	
-	@ByPermissionClass(codeClass=UserManager.New.class)
+	@ByFunctionClass(codeClass=UserManager.New.class)
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView create(String redirectUrl, @Valid @ModelAttribute("user")UserEntity user, BindingResult bind, RedirectAttributes redirectAttributes) throws BusinessException{
 		if(bind.hasErrors()){

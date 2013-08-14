@@ -24,34 +24,16 @@ import org.onetwo.plugins.permission.MenuUtils;
 //@DiscriminatorValue("MENU")
 public class MenuEntity extends PermissionEntity implements IBaseEntity{
 
-	private String name;
-	private String url;
 	private MenuEntity parent;
 
 	private List<MenuEntity> children;
-	private List<PageElementEntity> pageElements;
+	private List<FunctionEntity> functions;
 	
 	private Date createTime;
 	private Date lastUpdateTime;
 	
 	public MenuEntity(){
-		this.setPtype("MENU");
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+		this.setPtype(PermissionType.MENU);
 	}
 
 	@ManyToOne
@@ -67,13 +49,14 @@ public class MenuEntity extends PermissionEntity implements IBaseEntity{
 
 	@OneToMany(mappedBy="menu", fetch=FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
-	public List<PageElementEntity> getPageElements() {
-		return pageElements;
+	public List<FunctionEntity> getFunctions() {
+		return functions;
 	}
 
-	public void setPageElements(List<PageElementEntity> pageElements) {
-		this.pageElements = pageElements;
+	public void setFunctions(List<FunctionEntity> functions) {
+		this.functions = functions;
 	}
+	
 
 	@OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
 	public List<MenuEntity> getChildren() {
@@ -84,11 +67,11 @@ public class MenuEntity extends PermissionEntity implements IBaseEntity{
 		this.children = children;
 	}
 	
-	public void addPageElement(PageElementEntity page){
-		if(pageElements==null)
-			pageElements = LangUtils.newArrayList();
-		page.setMenu(this);
-		pageElements.add(page);
+	public void addFunction(FunctionEntity func){
+		if(functions==null)
+			functions = LangUtils.newArrayList();
+		func.setMenu(this);
+		functions.add(func);
 	}
 	
 	public void addChild(MenuEntity menu){
@@ -131,8 +114,8 @@ public class MenuEntity extends PermissionEntity implements IBaseEntity{
 					MenuEntity menu = (MenuEntity)obj;
 					str.append(menu.getName());
 					str.append(":").append(menu.getUrl()==null?"":menu.getUrl() );
-				}else if(PageElementEntity.class.isInstance(obj)){
-					PageElementEntity p = (PageElementEntity)obj;
+				}else if(FunctionEntity.class.isInstance(obj)){
+					FunctionEntity p = (FunctionEntity)obj;
 					str.append(p.getName());
 				}
 				str.append("<br/>");

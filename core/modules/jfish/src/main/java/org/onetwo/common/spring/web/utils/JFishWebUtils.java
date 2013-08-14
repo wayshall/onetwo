@@ -4,10 +4,14 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.slf4j.Logger;
+import org.springframework.context.MessageSource;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -18,6 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 @SuppressWarnings("unchecked")
 public final class JFishWebUtils {
 
+	private static final Logger logger = MyLoggerFactory.getLogger(JFishWebUtils.class);
+	
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
@@ -198,5 +204,31 @@ public final class JFishWebUtils {
 		}else{
 			return "redirect:" + redirectUrl;
 		}
+	}
+	
+	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args, String defaultMessage, Locale locale){
+		if(exceptionMessage==null)
+			return "";
+		try {
+			return exceptionMessage.getMessage(code, args, defaultMessage, locale);
+		} catch (Exception e) {
+			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
+		}
+		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+	}
+	
+	public static Locale getDefaultLocale(){
+		return JFishWebUtils.DEFAULT_LOCAL;
+	}
+
+	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args) {
+		if(exceptionMessage==null)
+			return "";
+		try {
+			return exceptionMessage.getMessage(code, args, getDefaultLocale());
+		} catch (Exception e) {
+			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
+		}
+		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 }
