@@ -16,6 +16,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
+import org.onetwo.common.fish.spring.JFishDao;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.JFishEntityManagerLifeCycleListener;
 import org.onetwo.common.fish.spring.JFishFileQueryDao;
@@ -425,6 +426,12 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 	@Override
 	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
 		return getJfishFileQueryDao().findPageByQName(queryName, rowMapper, page, params);
+	}
+
+
+	@Override
+	public JFishDao getRawManagerObject() {
+		return jfishDao;
 	}
 
 }

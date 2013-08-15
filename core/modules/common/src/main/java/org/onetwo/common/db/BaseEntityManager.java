@@ -90,4 +90,5 @@ public interface BaseEntityManager {
 	
 	public <T> void findPage(Page<T> page, JFishQueryValue squery);
 
+	public <T> T getRawManagerObject();
 }

@@ -257,4 +257,11 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 
+	@Override
+	public <T> T getRawManagerObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

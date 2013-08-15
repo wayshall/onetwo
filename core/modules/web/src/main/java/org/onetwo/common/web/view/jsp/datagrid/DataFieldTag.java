@@ -27,7 +27,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	@Override
 	public int doEndTag() throws JspException {
-		assertParentTag(DataRowTag.class);
+//		assertParentTag(DataRowTag.class);
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
 		if(row==null)
 			throw new JspException("field tag must nested in a row tag.");
