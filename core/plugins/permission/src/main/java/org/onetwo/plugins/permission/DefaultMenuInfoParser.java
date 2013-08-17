@@ -9,9 +9,10 @@ import javax.annotation.Resource;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.plugins.permission.entity.FunctionEntity;
 import org.onetwo.plugins.permission.entity.MenuEntity;
-import org.onetwo.plugins.permission.entity.PageElementEntity;
 import org.onetwo.plugins.permission.entity.PermissionEntity;
+import org.onetwo.plugins.permission.entity.PermissionEntity.PermissionType;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	
@@ -52,14 +53,14 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 
 	protected PermissionEntity parseMenuClass(Class<?> menuClass) throws Exception{
 		PermissionEntity perm = parsePermission(menuClass);
-		if(perm instanceof PageElementEntity)
+		if(perm instanceof FunctionEntity)
 			return perm;
 		MenuEntity menu = (MenuEntity) perm;
 		Class<?>[] childClasses = menuClass.getDeclaredClasses();
 		for(Class<?> childCls : childClasses){
 			PermissionEntity p = parseMenuClass(childCls);
-			if(p instanceof PageElementEntity){
-				menu.addPageElement((PageElementEntity)p);
+			if(p instanceof FunctionEntity){
+				menu.addFunction((FunctionEntity)p);
 			}else{
 				menu.addChild((MenuEntity)p);
 			}
@@ -68,17 +69,20 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	}
 	
 	public PermissionEntity parsePermission(Class<?> permissionClass) throws Exception{
-		Field pageElementField = ReflectUtils.findField(permissionClass, "pageElement");
-		boolean pageElement = false;
+		Field pageElementField = ReflectUtils.findField(permissionClass, "permissionType");
+		PermissionType ptype = PermissionType.MENU;
 		if(pageElementField!=null){
-			pageElement = pageElementField.getBoolean(permissionClass);
+			Object pvalue = pageElementField.get(permissionClass);
+			if(!PermissionType.class.isInstance(pvalue))
+				throw new BaseException("field[permissionType] of " + permissionClass + " must be PermissionType.");
+			ptype = (PermissionType) pvalue;
 		}
 
 		Object nameValue = ReflectUtils.getFieldValue(permissionClass, "name", true);
 		String name = nameValue==null?"":nameValue.toString();
 		PermissionEntity perm = null;
-		if(pageElement){
-			PageElementEntity p = new PageElementEntity();
+		if(ptype==PermissionType.FUNCTION){
+			FunctionEntity p = new FunctionEntity();
 			p.setName(name);
 			perm = p;
 		}else{

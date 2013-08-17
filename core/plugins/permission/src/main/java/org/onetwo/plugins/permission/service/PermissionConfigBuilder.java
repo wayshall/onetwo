@@ -12,7 +12,7 @@ import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.permission.MenuInfoParser;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
-import org.onetwo.plugins.permission.anno.ByPermissionClass;
+import org.onetwo.plugins.permission.anno.ByFunctionClass;
 
 public class PermissionConfigBuilder extends SpringConfigBuilder {
 
@@ -32,9 +32,9 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			}
 			buildExtAnnotationConfig(config, clazz, method);
 			
-		}else if(method.getAnnotation(ByPermissionClass.class)!=null){
-			ByPermissionClass permClass = method.getAnnotation(ByPermissionClass.class);
-			config = this.buildAuthenticConfig(getAuthenticName(method), ByPermissionClass.class.getAnnotation(Authentic.class));
+		}else if(method.getAnnotation(ByFunctionClass.class)!=null){
+			ByFunctionClass permClass = method.getAnnotation(ByFunctionClass.class);
+			config = this.buildAuthenticConfig(getAuthenticName(method), ByFunctionClass.class.getAnnotation(Authentic.class));
 
 			for(Class<?> codeCls : permClass.codeClass()){
 				perms.add(menuInfoParser.parseCode(codeCls));

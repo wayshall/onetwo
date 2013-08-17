@@ -25,7 +25,7 @@ public class AbstractBodyTag extends BodyTagSupport {
 	}
 
 	protected void assertParentTag(Class<?> parentTag) throws JspException{
-		assertParentTag(parentTag, "tag["+getClass().getSimpleName()+"] must be a child tag of " + getParent().getClass().getSimpleName());
+		assertParentTag(parentTag, "tag["+getClass().getSimpleName()+"] must be a child tag of " + parentTag.getSimpleName());
 	}
 	
 	protected void assertParentTag(Class<?> parentTag, String msg) throws JspException{

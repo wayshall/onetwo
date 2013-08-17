@@ -10,7 +10,7 @@ import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Authentic
-public @interface ByPermissionClass {
+public @interface ByFunctionClass {
 
 	Class<?>[] codeClass();
 }

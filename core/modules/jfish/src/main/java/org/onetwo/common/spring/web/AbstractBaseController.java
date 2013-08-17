@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,6 +16,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -38,8 +40,15 @@ abstract public class AbstractBaseController {
 
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+
+	@Resource
+	private CodeMessager codeMessager;
 	
 	protected AbstractBaseController(){
+	}
+	
+	public String getMessage(String code, Object...args){
+		return codeMessager.getMessage(code, args);
 	}
 
 	protected String redirect(String path){

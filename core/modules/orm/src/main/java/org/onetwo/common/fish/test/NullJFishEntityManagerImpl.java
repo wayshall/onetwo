@@ -13,6 +13,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.fish.JFishQueryBuilder;
+import org.onetwo.common.fish.spring.JFishDao;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
@@ -319,6 +320,12 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	public void update(Object entity) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public JFishDao getRawManagerObject() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

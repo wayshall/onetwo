@@ -43,4 +43,9 @@ public class AppEntityManagerImplForTest extends AbstractBaseEntityManager {
 		this.sequenceNameManager = sequenceNameManager;
 	}
 
+	@Override
+	public EntityManager getRawManagerObject() {
+		return entityManager;
+	}
+
 }

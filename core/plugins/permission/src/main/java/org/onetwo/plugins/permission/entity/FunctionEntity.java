@@ -11,28 +11,20 @@ import org.onetwo.common.db.IBaseEntity;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="ADMIN_PAGE_ELEMENT")
+@Table(name="ADMIN_FUNCTION")
 //@PrimaryKeyJoinColumn(name="PERMISSION_ID")
-//@DiscriminatorValue("PAGE")
-public class PageElementEntity extends PermissionEntity implements IBaseEntity{
+//@DiscriminatorValue("FUNCTION")
+public class FunctionEntity extends PermissionEntity implements IBaseEntity{
 
-	private String name;
 	private MenuEntity menu;
 
 	private Date createTime;
 	private Date lastUpdateTime;
 
-	public PageElementEntity(){
-		this.setPtype("PAGE");
+	public FunctionEntity(){
+		this.setPtype(PermissionType.FUNCTION);
 	}
 	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
 	@ManyToOne
 	@JoinColumn(name="MENU_ID")
 	public MenuEntity getMenu() {

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.plugins.permission.MenuInfoParser;
+import org.onetwo.plugins.permission.PermissionUtils;
 import org.onetwo.plugins.permission.entity.MenuEntity;
 import org.onetwo.plugins.permission.entity.PermissionEntity;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class PermissionManagerImpl {
 	}
 	
 	public void build(){
+		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		MenuEntity rootMenu = menuInfoParser.parseTree();
 		logger.info("menu:\n" + rootMenu);
 		this.menuNodeMap = menuInfoParser.getMenuNodeMap();

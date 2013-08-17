@@ -7,7 +7,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.exception.SQLGrammarException;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -137,6 +136,11 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	@Override
 	public <T> T merge(T entity) {
 		return (T)getSession().merge(entity);
+	}
+
+	@Override
+	public SessionFactory getRawManagerObject() {
+		return sessionFactory;
 	}
 	
 }
