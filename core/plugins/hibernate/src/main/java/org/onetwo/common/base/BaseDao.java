@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
@@ -150,6 +152,14 @@ abstract public class BaseDao<T, PK extends Serializable> {
 
 	public void save(T entity) {
 		baseEntityManager.save(entity);
+	}
+	
+	public SessionFactory getSessionFactory(){
+		return baseEntityManager.getRawManagerObject(SessionFactory.class);
+	}
+	
+	public Session getSession(){
+		return getSessionFactory().getCurrentSession();
 	}
 
 }
