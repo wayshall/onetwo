@@ -434,4 +434,10 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		return jfishDao;
 	}
 
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		return rawClass.cast(getRawManagerObject());
+	}
+
 }

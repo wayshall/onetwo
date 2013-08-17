@@ -30,12 +30,19 @@
 	  <version>${onetwo.jfish.version}</version>
 	</dependency>
   
-	
+	<!-- 
 	<dependency>
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-hibernate</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency> 
+	 -->
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-hibernate</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>

@@ -1,7 +1,5 @@
 package org.onetwo.common.jdbc;
 
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
@@ -18,7 +16,7 @@ public interface JFishJdbcOperations extends JdbcOperations {
 
 	public int updateWith(String sql, Object[] args, final AroundPreparedStatementExecute action) throws DataAccessException;
 
-	public <T> List<T> fqueryWith(String sql, Class<T> entityClass, Object... args);
+//	public <T> List<T> fqueryWith(String sql, Class<T> entityClass, Object... args);
 	
 	public void setDataSource(DataSource dataSource);
 

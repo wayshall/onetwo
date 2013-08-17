@@ -356,4 +356,10 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public <T> void findPage(Page<T> page, JFishQueryValue squery){
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		return rawClass.cast(getRawManagerObject());
+	}
+	
 }

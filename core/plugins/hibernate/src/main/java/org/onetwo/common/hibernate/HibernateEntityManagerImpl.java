@@ -7,6 +7,8 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -20,7 +22,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	
 	private SessionFactory sessionFactory; 
 	
-	private SequenceNameManager sequenceNameManager;
+	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -33,8 +35,13 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
-		if(entityClass!=null)
-			query.addEntity(entityClass);
+		if(entityClass!=null){
+			if(sessionFactory.getClassMetadata(entityClass)!=null){
+				query.addEntity(entityClass);
+			}else{
+				query.setResultTransformer(new AliasToBeanResultTransformer(entityClass));
+			}
+		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;
 	}
@@ -79,6 +86,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public void persist(Object entity) {
 		getSession().persist(entity);
 	}
+	@Override
+	public void update(Object entity) {
+		getSession().update(entity);
+	}
 
 	@Override
 	public void remove(Object entity) {
@@ -101,7 +112,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 		return entity;
 	}
 	
-	protected Session getSession(){
+	public Session getSession(){
 		return this.sessionFactory.getCurrentSession();
 	}
 	
@@ -132,5 +143,11 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public <T> T merge(T entity) {
 		return (T)getSession().merge(entity);
 	}
+
+	@Override
+	public SessionFactory getRawManagerObject() {
+		return sessionFactory;
+	}
+	
 	
 }

@@ -78,8 +78,6 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 //	private EntityManagerOperationImpl entityManagerWraper;
 	private SequenceNameManager sequenceNameManager;
 	
-	private RowMapperFactory rowMapperFactory;
-	
 	
 	public JFishDaoImpl(){
 	}
@@ -582,7 +580,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return (RowMapper<T>)this.rowMapperFactory.createDefaultRowMapper(type);
+		return (RowMapper<T>)this.getRowMapperFactory().createDefaultRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {
@@ -633,7 +631,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 
 	@Override
 	protected void initDao() throws Exception {
-		super.initDao();
+//		super.initDao();
 		if(this.dialect==null){
 			DBMeta dbmeta = getDBMeta();
 			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
@@ -642,7 +640,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			}
 		}
 		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
+		this.setRowMapperFactory(new JFishRowMapperFactory(mappedEntryManager));
 		
 		if(jfishFileQueryFactory==null){
 			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
@@ -24,6 +23,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -63,21 +63,32 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 			
 			SQLException se = (SQLException) e.getCause();
 			if ("42000".equals(se.getSQLState())) {
-				try {
-					DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
-					dq.executeUpdate();
-					
-					dq = this.createSQLQuery(sql, null);
-					id = ((Number)dq.getSingleResult()).longValue();
-				} catch (Exception ne) {
-					ne.printStackTrace();
-					throw new ServiceException("createSequences error: " + e.getMessage(), e);
-				}
-				if (id == null)
-					throw new ServiceException("createSequences error: " + e.getMessage(), e);
+				this.createSequence(sequenceName);
 			}
 		}
 		return id;
+	}
+	
+	protected void createSequence(Class entityClass){
+		String seqName = getSequenceNameManager().getSequenceName(entityClass);
+		this.createSequence(seqName);
+	}
+	
+	protected void createSequence(String sequenceName){
+		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
+		Long id = null;
+			try {
+				DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+				dq.executeUpdate();
+				
+				dq = this.createSQLQuery(sql, null);
+				id = ((Number)dq.getSingleResult()).longValue();
+			} catch (Exception ne) {
+				ne.printStackTrace();
+				throw new ServiceException("createSequences error: " + ne.getMessage(), ne);
+			}
+			if (id == null)
+				throw new ServiceException("createSequences error. ");
 	}
 
 	
@@ -207,9 +218,6 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		return findUnique((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 	
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties) {
-		return this.findUnique(entityClass, MyUtils.convertParamMap(properties), tryTheBest);
-	}
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		return this.findUnique(entityClass, MyUtils.convertParamMap(properties));
 	}
@@ -348,4 +356,10 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public <T> void findPage(Page<T> page, JFishQueryValue squery){
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		return rawClass.cast(getRawManagerObject());
+	}
+	
 }

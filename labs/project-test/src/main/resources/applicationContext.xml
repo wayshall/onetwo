@@ -60,8 +60,4 @@
         </property>
   	</bean>
 	
-	<bean id="baseEntityManager" class="org.onetwo.common.hibernate.HibernateEntityManagerImpl">
-	    <property name="sessionFactory" ref="sessionFactory"></property>
-	</bean>
-	
 </beans>

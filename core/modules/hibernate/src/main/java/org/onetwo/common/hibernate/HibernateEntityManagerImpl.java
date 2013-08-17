@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -34,8 +35,13 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
-		if(entityClass!=null)
-			query.addEntity(entityClass);
+		if(entityClass!=null){
+			if(sessionFactory.getClassMetadata(entityClass)!=null){
+				query.addEntity(entityClass);
+			}else{
+				query.setResultTransformer(new AliasToBeanResultTransformer(entityClass));
+			}
+		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;
 	}
@@ -142,5 +148,6 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public SessionFactory getRawManagerObject() {
 		return sessionFactory;
 	}
+	
 	
 }

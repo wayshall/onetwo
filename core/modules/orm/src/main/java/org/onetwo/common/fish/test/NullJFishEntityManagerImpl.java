@@ -328,4 +328,10 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		return null;
 	}
 
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

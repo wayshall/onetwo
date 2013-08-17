@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -33,6 +32,7 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	
 	private boolean debug;
 	protected NamedJdbcTemplate namedTemplate;
+	protected RowMapperFactory rowMapperFactory;
 
 	public JFishJdbcTemplate() {
 //		super(dataSource);
@@ -146,14 +146,6 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 		return updateWith(psc, action);
 	}
 	
-	@Override
-	public <T> List<T> fqueryWith(String sql, Class<T> entityClass, Object... args){
-		return this.query(sql, getBeanRowMapper(entityClass), args);
-	}
-	
-	public <T> BeanPropertyRowMapper<T> getBeanRowMapper(Class<T> clazz){
-		return new BeanPropertyRowMapper<T>(clazz);
-	}
 
 	public <T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
 		return super.query(sql, args, rowMapper);
