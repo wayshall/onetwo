@@ -24,6 +24,9 @@ import org.onetwo.plugins.permission.MenuUtils;
 //@DiscriminatorValue("MENU")
 public class MenuEntity extends PermissionEntity implements IBaseEntity{
 
+	private String url;
+	private String method;
+	
 	private MenuEntity parent;
 
 	private List<MenuEntity> children;
@@ -36,6 +39,22 @@ public class MenuEntity extends PermissionEntity implements IBaseEntity{
 		this.setPtype(PermissionType.MENU);
 	}
 
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
+	public String getMethod() {
+		return method;
+	}
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	
 	@ManyToOne
 	@JoinColumn(name="PARENT_ID")
 //	@Fetch(FetchMode.JOIN)

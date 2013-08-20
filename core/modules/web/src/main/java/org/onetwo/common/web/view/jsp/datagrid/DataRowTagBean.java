@@ -108,7 +108,7 @@ public class DataRowTagBean extends RowTagBean {
 				Object value = this.accessor.getPropertyValue(name);
 				this.translateData.put(name, formatValue(value, dataFormat));
 			} catch (Exception e) {
-				throw new BaseException("translate value error, name["+name+"], original["+originData+"]");
+				throw new BaseException("translate value error, name["+name+"], original["+originData+"]", e);
 			}
 		}
 		

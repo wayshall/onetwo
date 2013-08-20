@@ -1,6 +1,7 @@
 package org.onetwo.common.db.sqlext;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQuery;
@@ -26,6 +27,8 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	protected Map<String, HqlSymbolParser> parser;
 	private SQLDialet sqlDialet;
 	private PlaceHolder placeHolder;
+	
+	private List<ExtQueryListener> listeners;
 	
 
 	public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {
@@ -55,7 +58,8 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 
 	@Override
 	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
-		ExtQuery q = new ExtQueryImpl(entityClass, alias, properties, this);
+		ExtQuery q = new ExtQueryImpl(entityClass, alias, properties, this, this.listeners);
+		q.initQuery();
 		return q;
 	}
 
@@ -101,6 +105,10 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 		Assert.notNull(parser);
 		this.parser.put(parser.getSymbol(), parser);
 		return this;
+	}
+
+	public void setListeners(List<ExtQueryListener> listeners) {
+		this.listeners = listeners;
 	}
 
 }

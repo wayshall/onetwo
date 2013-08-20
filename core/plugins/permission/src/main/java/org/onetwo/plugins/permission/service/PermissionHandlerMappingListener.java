@@ -1,4 +1,4 @@
-package org.onetwo.plugins.permission;
+package org.onetwo.plugins.permission.service;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +13,6 @@ import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.onetwo.plugins.permission.entity.FunctionEntity;
 import org.onetwo.plugins.permission.entity.MenuEntity;
 import org.onetwo.plugins.permission.entity.PermissionEntity;
-import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -47,7 +46,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 						}
 					}
 				}
-			}else if(entry.getValue().getMethodAnnotation(ByFunctionClass.class)!=null){
+			}/*else if(entry.getValue().getMethodAnnotation(ByFunctionClass.class)!=null){
 				ByFunctionClass permClass = entry.getValue().getMethodAnnotation(ByFunctionClass.class);
 				for(Class<?> codeClass : permClass.codeClass()){
 					PermissionEntity perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
@@ -65,7 +64,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 						}
 					}
 				}
-			}
+			}*/
 		}
 
 //		logger.info("rootMenu:\n" + permissionManagerImpl.getRootMenu());

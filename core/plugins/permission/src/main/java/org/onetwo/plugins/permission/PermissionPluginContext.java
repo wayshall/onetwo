@@ -1,6 +1,7 @@
 package org.onetwo.plugins.permission;
 
 import org.onetwo.plugins.permission.service.PermissionConfigBuilder;
+import org.onetwo.plugins.permission.service.PermissionHandlerMappingListener;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -87,6 +87,9 @@ public interface ExtQuery {
 		}
 		
 	}
+	
+	public void initQuery();
+	
 	public boolean hasBuilt();
 	public boolean needSetRange();
 

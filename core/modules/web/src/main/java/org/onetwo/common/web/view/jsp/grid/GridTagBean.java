@@ -20,6 +20,8 @@ public class GridTagBean extends HtmlElement {
 
 	private boolean toolbar;
 	
+	private String bodyContent;
+	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
 		if(!rows.contains(row)){
@@ -91,6 +93,14 @@ public class GridTagBean extends HtmlElement {
 
 	public void setToolbar(boolean toolbar) {
 		this.toolbar = toolbar;
+	}
+
+	public String getBodyContent() {
+		return bodyContent;
+	}
+
+	public void setBodyContent(String bodyContent) {
+		this.bodyContent = bodyContent;
 	}
 
 }

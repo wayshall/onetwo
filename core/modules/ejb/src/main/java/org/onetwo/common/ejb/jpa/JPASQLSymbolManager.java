@@ -22,7 +22,9 @@ public class JPASQLSymbolManager extends DefaultSQLSymbolManagerImpl {
 
 	@Override
 	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
-		return new JPAExtQuery(entityClass, alias, properties, this);
+		ExtQuery q = new JPAExtQuery(entityClass, alias, properties, this);
+		q.initQuery();
+		return q;
 	}
 	
 	public SQLSymbolManager initParser() {

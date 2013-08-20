@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
@@ -30,6 +31,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
+			BodyContent bc = this.getBodyContent();
+			if(bc!=null){
+				this.component.setBodyContent(bc.getString());
+			}
 			this.pageContext.include(getTemplate());
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);

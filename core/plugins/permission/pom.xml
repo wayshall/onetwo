@@ -11,7 +11,7 @@
   <artifactId>onetwo-plugin-permission</artifactId>
   <packaging>jar</packaging>
 
-  <name>onetwo-plugin-archetype</name>
+  <name>onetwo-plugin-permission</name>
   <url>http://maven.apache.org</url>
 
  

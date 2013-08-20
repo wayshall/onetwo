@@ -16,6 +16,7 @@ public class DefaultTypeConvertors implements Convertor {
 	private Map<Class<?>, TypeConvert<?>> convertors = new HashMap<Class<?>, TypeConvert<?>>();
 	
 	public DefaultTypeConvertors(){
+		register(new ToStringConvertor(), String.class);
 		register(new ToLongConvertor(), Long.class, Long.TYPE);
 		register(new ToIntegerConvertor(), Integer.class, Integer.TYPE);
 		register(new ToShortConvertor(), Short.class, Short.TYPE);

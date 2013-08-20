@@ -20,17 +20,22 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.M;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class AbstractEntityManager implements BaseEntityManager {
+abstract public class AbstractEntityManager implements BaseEntityManager, ApplicationContextAware {
 
 	protected final Logger logger = Logger.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;
+	private SQLSymbolManager sqlSymbolManager;
 	
 
 	public AbstractEntityManager(){
@@ -209,7 +214,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		if(entities==null)
 			return ;
 		for(Object entity : entities){
-			this.remove((IdEntity)entity);
+			this.remove(entity);
 		}
 	}
 	
@@ -328,7 +333,8 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
 		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
 		extQuery.build();
-		return (Number) this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		Number count = this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		return count;
 	}
 
 	public Number countRecord(Class entityClass, Object... params) {
@@ -341,7 +347,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	}
 	
 	public SQLSymbolManager getSQLSymbolManager(){
-		return SQLSymbolManagerFactory.getInstance().get(this.getEntityManagerProvider());
+		return sqlSymbolManager;
 	}
 	
 
@@ -360,6 +366,15 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	@Override
 	public <T> T getRawManagerObject(Class<T> rawClass) {
 		return rawClass.cast(getRawManagerObject());
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
+		if(symbolManager==null){
+			symbolManager = SQLSymbolManagerFactory.getInstance().get(this.getEntityManagerProvider());
+		}
+		this.sqlSymbolManager = symbolManager;
 	}
 	
 }

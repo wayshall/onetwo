@@ -1,13 +1,14 @@
 package org.onetwo.common.hibernate;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.hibernate.exception.SQLGrammarException;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -18,7 +19,7 @@ import org.onetwo.common.utils.MyUtils;
 @SuppressWarnings("unchecked")
 public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = Logger.getLogger(this.getClass());
 	
 	private SessionFactory sessionFactory; 
 	
@@ -39,7 +40,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 			if(sessionFactory.getClassMetadata(entityClass)!=null){
 				query.addEntity(entityClass);
 			}else{
-				query.setResultTransformer(new AliasToBeanResultTransformer(entityClass));
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
 			}
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
@@ -108,7 +109,15 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	@Override
 	public <T> T save(T entity) {
-		getSession().saveOrUpdate(entity);
+		try {
+			getSession().saveOrUpdate(entity);
+		} catch (SQLGrammarException e) {
+			SQLException sqle = (SQLException)e.getCause();
+			if(sqle.getErrorCode()==2289 && "42000".equals(sqle.getSQLState())){
+				this.createSequence(entity.getClass());
+				getSession().saveOrUpdate(entity);
+			}
+		}
 		return entity;
 	}
 	

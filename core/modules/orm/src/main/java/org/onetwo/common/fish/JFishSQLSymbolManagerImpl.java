@@ -35,6 +35,7 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 			entry = this.mappedEntryManager.getEntry(entityClass);
 		}
 		ExtQuery q = new JFishExtQueryImpl(entry, entityClass, alias, properties, this);
+		q.initQuery();
 		return q;
 	}
 

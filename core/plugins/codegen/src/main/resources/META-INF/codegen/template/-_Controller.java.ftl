@@ -95,7 +95,7 @@ public class ${commonName}Controller extends AbstractBaseController {
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ModelAndView show(@PathVariable("id") long ${table.primaryKey.javaName}) throws BusinessException{
+	public ModelAndView show(@PathVariable("id") long ${table.primaryKey.javaName}){
 		${entityName} ${ename} =  this.${eserviceName}.findById(${table.primaryKey.javaName});
 		return mv("${ftlPath}-show", "${ename}", ${ename});
 	}

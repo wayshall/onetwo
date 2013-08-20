@@ -7,6 +7,7 @@ import javax.validation.ValidationException;
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
+import org.onetwo.common.fish.exception.JFishBusinessException;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;

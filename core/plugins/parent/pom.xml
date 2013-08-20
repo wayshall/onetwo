@@ -34,6 +34,7 @@
 				<module>../fmtagext</module>
 				<module>../codegen</module>
 				<module>../permission</module>
+				<module>../hibernate</module>
 	  	</modules>
 	  </profile>
 	</profiles>

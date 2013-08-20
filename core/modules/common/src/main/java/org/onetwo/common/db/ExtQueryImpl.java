@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.ServiceException;
@@ -28,7 +29,7 @@ public class ExtQueryImpl implements ExtQuery {
 
 	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")"};
 
-	private Class entityClass;
+	protected Class entityClass;
 	protected String alias;
 	private Map params;
 	private ParamValues paramsValue;
@@ -63,19 +64,25 @@ public class ExtQueryImpl implements ExtQuery {
 	
 	private List<IncludeField> includeFields;
 	
+	private List<ExtQueryListener> listeners;
+	
+
 	public ExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
+		this(entityClass, alias, params, symbolManager, null);
+	}
+	public ExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		this.entityClass = entityClass;
 		if(StringUtils.isBlank(alias)){
 			alias = StringUtils.uncapitalize(entityClass.getSimpleName());
 		}
 		this.alias = alias;
-		this.params = params;
+		this.params = new LinkedHashMap<Object, Object>(params);
 		this.symbolManager = symbolManager;
 		
-		this.init(entityClass, this.alias);
+//		this.init(entityClass, this.alias);
 	}
 	
-	protected void init(Class<?> entityClass, String alias){
+	public void initQuery(){
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, debug);
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Ignore);
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
@@ -99,6 +106,16 @@ public class ExtQueryImpl implements ExtQuery {
 			holder = PlaceHolder.POSITION;
 		}
 		this.paramsValue = new ParamValues(holder, symbolManager.getSqlDialet());
+		
+		this.fireInitListeners();
+	}
+	
+	protected void fireInitListeners(){
+		if(this.listeners!=null){
+			for(ExtQueryListener l : this.listeners){
+				l.onInit(this);
+			}
+		}
 	}
 	
 	public SQLFunctionManager getSqlFunctionManager() {

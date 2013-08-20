@@ -12,6 +12,7 @@ import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.fish.exception.ExceptionMessageArgs;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -72,7 +73,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
 
-		String msg = LangUtils.getCauseServiceException(ex).getMessage();
+		String msg = errorMessage.getMesage();
 		if(!model.containsKey(AbstractBaseController.MESSAGE)){
 			model.put(AbstractBaseController.MESSAGE, msg);
 		}
@@ -155,11 +156,13 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			errorCode = getUnknowError();
 		}
 		
-		if(StringUtils.isBlank(errorMsg)){
+		if(ExceptionMessageArgs.class.isInstance(ex)){
+			errorMsg = getMessage(errorCode, ((ExceptionMessageArgs)ex).getArgs(), ex.getMessage(), getLocale());
+		}else{
 			errorMsg = getMessage(errorCode, null, ex.getMessage(), getLocale());
-			if(StringUtils.isBlank(errorMsg)){
-				errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
-			}
+		}
+		if(StringUtils.isBlank(errorMsg)){
+			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
 		
 		String viewName = null;

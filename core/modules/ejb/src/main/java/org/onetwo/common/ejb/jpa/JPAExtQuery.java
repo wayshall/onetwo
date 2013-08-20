@@ -24,8 +24,8 @@ public class JPAExtQuery extends ExtQueryImpl {
 		super(entityClass, alias, params, symbolManager);
 	}
 
-	protected void init(Class<?> entityClass, String alias){
-		super.init(entityClass, alias);
+	public void initQuery(){
+		super.initQuery();
 		if(!isSqlQuery())
 			return ;
 		this.fieldMapping = new BaseMap<String, String>();
