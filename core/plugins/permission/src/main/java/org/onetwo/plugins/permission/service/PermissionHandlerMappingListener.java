@@ -9,10 +9,8 @@ import javax.annotation.Resource;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
-import org.onetwo.plugins.permission.anno.ByFunctionClass;
-import org.onetwo.plugins.permission.entity.FunctionEntity;
-import org.onetwo.plugins.permission.entity.MenuEntity;
-import org.onetwo.plugins.permission.entity.PermissionEntity;
+import org.onetwo.plugins.permission.entity.IMenu;
+import org.onetwo.plugins.permission.entity.IPermission;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -32,11 +30,11 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 			if(entry.getValue().getMethodAnnotation(ByMenuClass.class)!=null){
 				ByMenuClass menuClass = entry.getValue().getMethodAnnotation(ByMenuClass.class);
 				for(Class<?> codeClass : menuClass.codeClass()){
-					PermissionEntity perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
+					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
 					if(perm==null)
 						throw new BaseException("can not find the menu code class in menu tree : " + codeClass);
-					if(MenuEntity.class.isInstance(perm)){
-						MenuEntity menu = (MenuEntity) perm;
+					if(IMenu.class.isInstance(perm)){
+						IMenu menu = (IMenu) perm;
 						String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
 						menu.setUrl(url);
 						Iterator<RequestMethod> it = entry.getKey().getMethodsCondition().getMethods().iterator();

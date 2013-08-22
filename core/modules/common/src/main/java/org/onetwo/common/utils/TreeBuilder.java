@@ -14,34 +14,31 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
-public class TreeBuilder<TM extends TreeModel<TM>, T> {
+public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
 	private List<TM> tree = new ArrayList<TM>();
-	private Comparator<T> comparator = null;
+//	private Comparator<Object> comparator = null;
 	private List<?> rootIds;
 
-	public TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
+	public TreeBuilder(List<TM> datas) {
+		for(TM tm : datas){
+			this.leafages.put(tm.getId(), tm);
+		}
+	}
+	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
 		this(datas, treeNodeCreator, null);
 	}
 
-	public List<?> getRootIds() {
-		return rootIds;
-	}
-
-	public void setRootIds(Object...objects) {
-		this.rootIds = Arrays.asList(objects);
-	}
-
-	public TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
+	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
 		if (datas == null || datas.isEmpty())
 			return;
 
 		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 
-		this.comparator = comparator != null ? comparator : new Comparator<T>() {
+		Comparator<T> comp = comparator != null ? comparator : new Comparator<T>() {
 			@Override
 			public int compare(T o1, T o2) {
 				TM t1 = tnc.createTreeModel(o1);
@@ -51,7 +48,8 @@ public class TreeBuilder<TM extends TreeModel<TM>, T> {
 				return s1.compareTo(s2);
 			}
 		};
-		Collections.sort(datas, this.comparator);
+		
+		Collections.sort(datas, comp);
 
 		for (T data : datas) {
 			if (data == null)
@@ -61,6 +59,14 @@ public class TreeBuilder<TM extends TreeModel<TM>, T> {
 		}
 	}
 
+	public List<?> getRootIds() {
+		return rootIds;
+	}
+
+	public void setRootIds(Object...objects) {
+		this.rootIds = Arrays.asList(objects);
+	}
+	
 	public List<TM> buidTree() {
 		return this.buidTree(false);
 	}
@@ -129,7 +135,7 @@ public class TreeBuilder<TM extends TreeModel<TM>, T> {
 
 		List<DefaultTreeModel> list = Arrays.asList(t1, t2, t3, t4, t5);
 
-		TreeBuilder<DefaultTreeModel, DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel, DefaultTreeModel>(list, new SimpleTreeModelCreator());
+		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new SimpleTreeModelCreator());
 		tb.setRootIds(1, 4);
 		List<DefaultTreeModel> t = tb.buidTree(true);
 		System.out.println(t.get(0));

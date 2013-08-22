@@ -337,12 +337,12 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //		Assert.notNull(jfishAppConfigurator, "there is not app configurator");
 		
 		final List<PropertyEditorRegistrar> peRegisttrarList = new JFishList<PropertyEditorRegistrar>();
-//		peRegisttrarList.add(new PropertyEditorRegistrar() {
-//			@Override
-//			public void registerCustomEditors(PropertyEditorRegistry registry) {
-//				registry.registerCustomEditor(Date.class, new JFishDateEditor());
-//			}
-//		});
+		/*peRegisttrarList.add(new PropertyEditorRegistrar() {
+			@Override
+			public void registerCustomEditors(PropertyEditorRegistry registry) {
+				registry.registerCustomEditor(Enum.class, new EnumEditor());
+			}
+		});*/
 		
 		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
 		

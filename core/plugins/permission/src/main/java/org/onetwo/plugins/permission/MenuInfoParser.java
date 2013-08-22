@@ -2,17 +2,19 @@ package org.onetwo.plugins.permission;
 
 import java.util.Map;
 
-import org.onetwo.plugins.permission.entity.MenuEntity;
-import org.onetwo.plugins.permission.entity.PermissionEntity;
+import org.onetwo.plugins.permission.entity.IMenu;
+import org.onetwo.plugins.permission.entity.IPermission;
 
 public interface MenuInfoParser {
 
-	public abstract MenuEntity parseTree();
+	public MenuInfoable getMenuInfoable();
+	
+	public abstract IMenu<?, ?> parseTree();
 	public abstract String parseCode(Class<?> permClass);
 	
 	public String getRootMenuCode();
-	public Map<String, PermissionEntity> getMenuNodeMap();
-	public PermissionEntity getMenuNode(Class<?> clazz);
-	public MenuEntity getRootMenu();
+	public Map<String, IPermission> getMenuNodeMap();
+	public IPermission getMenuNode(Class<?> clazz);
+	public IMenu<?, ?> getRootMenu();
 
 }

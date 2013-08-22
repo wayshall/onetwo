@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.jsp.form.FormTagBean;
 
 final public class TagUtils {
 
@@ -72,6 +73,11 @@ final public class TagUtils {
 			result += "?pageNo="+numb;
 		}
 		return result;
+	}
+	
+
+	public static String getFormVarName(){
+		return FormTagBean.class.getSimpleName();
 	}
 	
 	private TagUtils(){

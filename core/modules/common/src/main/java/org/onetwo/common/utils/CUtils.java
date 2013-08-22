@@ -375,6 +375,16 @@ final public class CUtils {
 		return array;
 	}
 	
+	public static <K, V> List<Pair<K, V>> map2List(Map<K, V> map){
+		List<Pair<K, V>> list = newArrayList(LangUtils.isEmpty(map)?3:map.size());
+		Pair<K, V> p = null;
+		for(Entry<?, ?> entry : map.entrySet()){
+			p = new Pair(entry.getKey(), entry.getValue());
+			list.add(p);
+		}
+		return list;
+	}
+	
 	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}

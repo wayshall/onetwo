@@ -14,6 +14,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -75,7 +76,9 @@ public class DataRowTagBean extends RowTagBean {
 			super();
 			this.originData = originData;
 			this.index = index;
-			this.accessor = PropertyAccessorFactory.forBeanPropertyAccess(originData);
+			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(originData);
+			bw.setAutoGrowNestedPaths(true);
+			this.accessor = bw;
 		}
 		public int getIndex() {
 			return index;

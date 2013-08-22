@@ -9,21 +9,21 @@ import javax.annotation.Resource;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.permission.entity.FunctionEntity;
-import org.onetwo.plugins.permission.entity.MenuEntity;
-import org.onetwo.plugins.permission.entity.PermissionEntity;
-import org.onetwo.plugins.permission.entity.PermissionEntity.PermissionType;
+import org.onetwo.plugins.permission.entity.IFunction;
+import org.onetwo.plugins.permission.entity.IMenu;
+import org.onetwo.plugins.permission.entity.IPermission;
+import org.onetwo.plugins.permission.entity.PermissionType;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	
-	private final Map<String, PermissionEntity> menuNodeMap = new LinkedHashMap<String, PermissionEntity>();
-	private MenuEntity rootMenu;
+	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>();
+	private IMenu<?, ?> rootMenu;
 
 	@Resource
 	private MenuInfoable menuInfoable;
 	
 
-	public Map<String, PermissionEntity> getMenuNodeMap() {
+	public Map<String, IPermission> getMenuNodeMap() {
 		return menuNodeMap;
 	}
 	
@@ -35,40 +35,40 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseTree()
 	 */
 	@Override
-	public MenuEntity parseTree(){
+	public IMenu<?, ?> parseTree(){
 		Assert.notNull(menuInfoable);
 		Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
 		
-		PermissionEntity perm = null;
+		IPermission perm = null;
 		try {
 			perm = parseMenuClass(menuInfoClass);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
 		}
-		if(!MenuEntity.class.isInstance(perm))
+		if(!IMenu.class.isInstance(perm))
 			throw new BaseException("root must be a menu node");
-		rootMenu = (MenuEntity)perm;
+		rootMenu = (IMenu<?, ?>)perm;
 		return rootMenu;
 	}
 
-	protected PermissionEntity parseMenuClass(Class<?> menuClass) throws Exception{
-		PermissionEntity perm = parsePermission(menuClass);
-		if(perm instanceof FunctionEntity)
+	protected IPermission parseMenuClass(Class<?> menuClass) throws Exception{
+		IPermission perm = parsePermission(menuClass);
+		if(perm instanceof IFunction)
 			return perm;
-		MenuEntity menu = (MenuEntity) perm;
+		IMenu menu = (IMenu) perm;
 		Class<?>[] childClasses = menuClass.getDeclaredClasses();
 		for(Class<?> childCls : childClasses){
-			PermissionEntity p = parseMenuClass(childCls);
-			if(p instanceof FunctionEntity){
-				menu.addFunction((FunctionEntity)p);
+			IPermission p = parseMenuClass(childCls);
+			if(p instanceof IFunction){
+				menu.addFunction((IFunction)p);
 			}else{
-				menu.addChild((MenuEntity)p);
+				menu.addChild((IMenu)p);
 			}
 		}
 		return menu;
 	}
 	
-	public PermissionEntity parsePermission(Class<?> permissionClass) throws Exception{
+	public IPermission parsePermission(Class<?> permissionClass) throws Exception{
 		Field pageElementField = ReflectUtils.findField(permissionClass, "permissionType");
 		PermissionType ptype = PermissionType.MENU;
 		if(pageElementField!=null){
@@ -80,16 +80,13 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 
 		Object nameValue = ReflectUtils.getFieldValue(permissionClass, "name", true);
 		String name = nameValue==null?"":nameValue.toString();
-		PermissionEntity perm = null;
+		IPermission perm = null;
 		if(ptype==PermissionType.FUNCTION){
-			FunctionEntity p = new FunctionEntity();
-			p.setName(name);
-			perm = p;
+			perm = (IPermission)ReflectUtils.newInstance(this.menuInfoable.getIFunctionClass());
 		}else{
-			MenuEntity menu = new MenuEntity();
-			menu.setName(name);
-			perm = menu;
+			perm = (IPermission)ReflectUtils.newInstance(this.menuInfoable.getIMenuClass());
 		}
+		perm.setName(name);
 		String code = parseCode(permissionClass);
 		perm.setCode(code);
 		this.menuNodeMap.put(perm.getCode(), perm);
@@ -109,20 +106,24 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		return code;
 	}
 	
-	public PermissionEntity getMenuNode(Class<?> clazz){
+	public IPermission getMenuNode(Class<?> clazz){
 		return getMenuNode(parseCode(clazz));
 	}
 	
-	public PermissionEntity getMenuNode(String code){
-		return (PermissionEntity)menuNodeMap.get(code);
+	public IPermission getMenuNode(String code){
+		return (IPermission)menuNodeMap.get(code);
 	}
 
-	public MenuEntity getRootMenu() {
+	public IMenu getRootMenu() {
 		return rootMenu;
 	}
 
-	public void setRootMenu(MenuEntity rootMenu) {
+	public void setRootMenu(IMenu rootMenu) {
 		this.rootMenu = rootMenu;
+	}
+
+	public MenuInfoable getMenuInfoable() {
+		return menuInfoable;
 	}
 	
 	
