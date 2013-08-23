@@ -25,6 +25,7 @@ import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
 import org.onetwo.common.spring.web.mvc.JFishWebArgumentResolver;
 import org.onetwo.common.spring.web.mvc.JsonView;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
+import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.mvc.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
@@ -78,6 +79,7 @@ import org.springframework.web.servlet.view.xml.MarshallingView;
 public class JFishMvcConfig extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+
 	
 	@Resource
 	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
@@ -192,6 +194,11 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean
+	public MvcSetting mvcSettingWraper(){
+		return new MvcSetting(mvcSetting());
+	}
+
+	@Bean
 	public FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver fmResolver = new FreeMarkerViewResolver();
 		fmResolver.setViewClass(JFishFreeMarkerView.class);
@@ -301,6 +308,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		if(webexception==null){
 			webexception = new WebExceptionResolver();
 			webexception.setExceptionMessage(exceptionMessageSource());
+			webexception.setMvcSetting(mvcSettingWraper());
 		}
 		return webexception;
 	}
@@ -328,7 +336,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Bean(name="multipartResolver")
 	public MultipartResolver multipartResolver(){
 		CommonsMultipartResolver multipart = new CommonsMultipartResolver();
-		multipart.setMaxUploadSize(1024*1024*10);//10m
+		multipart.setMaxUploadSize(mvcSettingWraper().getMaxUploadSize());
 		return multipart;
 	}
 

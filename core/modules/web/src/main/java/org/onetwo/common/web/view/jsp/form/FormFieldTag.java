@@ -16,6 +16,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private FormFieldType type = FormFieldType.input;
 	private boolean errorTag = true;
 	private String render;
+	private String dataFormat;
 	private String value;
 	
 	//select, checkobx, radio
@@ -40,6 +41,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setErrorTag(errorTag);
 		component.setRender(render);
 		component.setValue(value);
+		component.setDataFormat(dataFormat);
 		
 		switch (type) {
 			case input:
@@ -58,7 +60,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 	
 			default:
-				throw new BaseException("unspported type: " + type);
+				break;
 		}
 	}
 	
@@ -128,6 +130,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setItemValue(String itemValue) {
 		this.itemValue = itemValue;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 
 }

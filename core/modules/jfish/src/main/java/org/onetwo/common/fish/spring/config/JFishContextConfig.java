@@ -11,6 +11,7 @@ import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
+import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.BeanUtils;
@@ -120,6 +121,11 @@ public class JFishContextConfig implements ApplicationContextAware {
 			vfb.setTraversableResolver(new JFishTraversableResolver());
 		}
 		return validator;
+	}
+	
+	@Bean
+	public ValidatorWrapper validatorWrapper(){
+		return ValidatorWrapper.wrap(beanValidator());
 	}
 
 	@Bean

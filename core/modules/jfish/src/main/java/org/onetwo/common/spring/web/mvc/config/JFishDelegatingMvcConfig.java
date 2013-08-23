@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.converter.JFishStringToEnumConverterFactory;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.common.spring.web.mvc.JFishRequestMappingHandlerMapping;
 import org.onetwo.common.spring.web.mvc.RequestMappingHandlerAdapterFactory;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
@@ -36,6 +38,10 @@ public class JFishDelegatingMvcConfig extends DelegatingWebMvcConfiguration {
 			return;
 		}
 		super.setConfigurers(Arrays.asList(configurers));
+	}
+
+	protected void addFormatters(FormatterRegistry registry) {
+		registry.addConverterFactory(new JFishStringToEnumConverterFactory());
 	}
 	
 

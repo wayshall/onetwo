@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	/**
@@ -46,7 +46,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 			}
 			
 			result = resultClass.newInstance();
-			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(result);
+			BeanWrapper bw = SpringUtils.newBeanWrapper(result);
 
 			Object val;
 			for ( int i = 0; i < aliases.length; i++ ) {

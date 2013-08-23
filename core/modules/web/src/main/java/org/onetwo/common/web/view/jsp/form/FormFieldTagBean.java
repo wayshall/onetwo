@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 
@@ -9,6 +10,7 @@ public class FormFieldTagBean extends HtmlElement {
 	private boolean errorTag;
 	private String render;
 	private String value;
+	private String dataFormat;
 	
 	private String bodyContent;
 	
@@ -71,7 +73,16 @@ public class FormFieldTagBean extends HtmlElement {
 	public Object getFieldValue(){
 		if(this.formBean==null)
 			return "";
-		return this.formBean.getProvider().getFieldValue(getValue());
+		Object val = this.formBean.getProvider().getFieldValue(getValue());
+		return LangUtils.formatValue(val, getDataFormat());
+	}
+
+	public String getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 
 	

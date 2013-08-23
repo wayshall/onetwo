@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.form;
 
 public enum FormFieldType {
 	input,
+	date,
 	textarea,
 	select,
 	radio,
@@ -10,6 +11,7 @@ public enum FormFieldType {
 	checkboxGroup,
 	hidden,
 	button,
-	submit;
+	submit,
+	html;
 	
 }

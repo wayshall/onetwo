@@ -33,7 +33,7 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		FormDataProvider provider = null;
 		if(FormDataProvider.class.isInstance(data)){
 			provider = (FormDataProvider) data;
-		}else if(data!=null){
+		}else{
 			provider = new SimpleFormDataProvider(data);
 		}
 		

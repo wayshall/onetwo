@@ -28,7 +28,7 @@ final public class ExceptionUtils {
 		public static final String BUSINESS = "error_business";
 		public static final String SERVICE = "error_service";
 		public static final String SYS_BASE = "error_base";
-		public static final String UNDEFINE = "500";
+		public static final String UNDEFINE = "error";
 	}
 	
 	

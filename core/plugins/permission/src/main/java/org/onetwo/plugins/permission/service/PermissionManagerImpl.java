@@ -53,8 +53,15 @@ public class PermissionManagerImpl {
 			logger.info("sync perm[{}]...", perm.getCode());
 			IPermission dbperm = (IPermission) this.baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "code", perm.getCode());
 			if(dbperm!=null){
-				perm.setId(dbperm.getId());
-				baseEntityManager.merge(perm);
+				if(perm.getClass()!=dbperm.getClass()){
+					baseEntityManager.remove(dbperm);
+					Long id = this.baseEntityManager.getSequences(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), false);
+					perm.setId(id);
+					baseEntityManager.save(perm);
+				}else{
+					perm.setId(dbperm.getId());
+					baseEntityManager.merge(perm);
+				}
 			}else{
 				Long id = this.baseEntityManager.getSequences(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), false);
 				perm.setId(id);

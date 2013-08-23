@@ -1,22 +1,16 @@
 package org.onetwo.common.web.view.jsp.datagrid;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class DataRowTagBean extends RowTagBean {
 	private Iterator<?> iterator;
@@ -76,8 +70,7 @@ public class DataRowTagBean extends RowTagBean {
 			super();
 			this.originData = originData;
 			this.index = index;
-			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(originData);
-			bw.setAutoGrowNestedPaths(true);
+			BeanWrapper bw = SpringUtils.newBeanWrapper(originData);
 			this.accessor = bw;
 		}
 		public int getIndex() {
@@ -91,19 +84,7 @@ public class DataRowTagBean extends RowTagBean {
 		}
 
 		protected Object formatValue(Object value, String dataFormat){
-			if(StringUtils.isBlank(dataFormat))
-				return value;
-			Object actualValue;
-			if(value instanceof Date){
-				actualValue = DateUtil.format(dataFormat, (Date)value);
-			}else if(value instanceof Number && dataFormat != null) {
-				NumberFormat nf = new DecimalFormat(dataFormat);
-				nf.setRoundingMode(RoundingMode.HALF_UP);
-				actualValue = nf.format(value);
-			}else{
-				actualValue = value;
-			}
-			return actualValue;
+			return LangUtils.formatValue(value, dataFormat);
 		}
 		
 		public void translateValue(String name, String dataFormat){

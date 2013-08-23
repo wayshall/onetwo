@@ -5,8 +5,8 @@ import java.util.List;
 
 final public class TreeUtils {
 
-	public static <TM extends TreeModel<TM>, T> TreeBuilder<TM, T> newBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator){
-		return new TreeBuilder<TM, T>(datas, treeNodeCreator);
+	public static <TM extends TreeModel<TM>, T> TreeBuilder<TM> newBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator){
+		return new TreeBuilder<TM>(datas, treeNodeCreator);
 	}
 	
 	public static <T extends TreeModel<T>> void buildString(StringBuilder str, TreeModel<T> node, String sp){

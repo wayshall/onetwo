@@ -1,6 +1,5 @@
 package org.onetwo.common.web.view.jsp.form;
 
-import org.onetwo.common.exception.BaseException;
 
 public class FormUIFactory {
 	
@@ -27,7 +26,7 @@ public class FormUIFactory {
 				break;
 	
 			default:
-				throw new BaseException("unspported type: " + type);
+				bean = new FormFieldTagBean();
 		}
 		return bean;
 	}

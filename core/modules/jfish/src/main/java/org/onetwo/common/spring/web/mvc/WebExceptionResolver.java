@@ -13,6 +13,7 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.ExceptionMessageArgs;
+import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver;
 
@@ -53,6 +55,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
 	
+	private MvcSetting mvcSetting;
 	private MessageSource exceptionMessage;
 	
 	public WebExceptionResolver(){
@@ -65,8 +68,6 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 
 	@Override
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
-		if(handlerMethod==null)
-			return null;
 
 		ModelMap model = new ModelMap();
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
@@ -123,11 +124,16 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	protected ErrorMessage getErrorMessage(HttpServletRequest request, HandlerMethod handlerMethod, ModelMap model, Exception ex){
 		String errorCode = "";
 		String errorMsg = "";
+		Object[] errorArgs = null;
 		
 		String defaultViewName = null;
 		boolean detail = true;
 		boolean authentic = false;
-		if(ex instanceof AuthenticationException){
+		if(ex instanceof MaxUploadSizeExceededException){
+			defaultViewName = ExceptionView.UNDEFINE;
+			errorCode = MvcError.MAX_UPLOAD_SIZE_ERROR;
+			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
+		}else if(ex instanceof AuthenticationException){
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
 			authentic = true;
@@ -152,15 +158,15 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		if(ExceptionCodeMark.class.isInstance(ex)){
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
-		}else{
+		}else if(StringUtils.isBlank(errorCode)){
 			errorCode = getUnknowError();
 		}
 		
 		if(ExceptionMessageArgs.class.isInstance(ex)){
-			errorMsg = getMessage(errorCode, ((ExceptionMessageArgs)ex).getArgs(), ex.getMessage(), getLocale());
-		}else{
-			errorMsg = getMessage(errorCode, null, ex.getMessage(), getLocale());
+			errorArgs = ((ExceptionMessageArgs)ex).getArgs();
 		}
+
+		errorMsg = getMessage(errorCode, errorArgs, ex.getMessage(), getLocale());
 		if(StringUtils.isBlank(errorMsg)){
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
@@ -259,8 +265,13 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	public void setExceptionMessage(MessageSource exceptionMessage) {
 		this.exceptionMessage = exceptionMessage;
 	}
-
 	
+
+	public void setMvcSetting(MvcSetting mvcSetting) {
+		this.mvcSetting = mvcSetting;
+	}
+
+
 	protected static class ErrorMessage {
 		final private String code;
 		final private String mesage;

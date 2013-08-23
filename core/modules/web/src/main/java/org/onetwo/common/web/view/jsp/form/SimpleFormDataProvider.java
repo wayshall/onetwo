@@ -1,7 +1,7 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class SimpleFormDataProvider implements FormDataProvider {
 
@@ -12,7 +12,7 @@ public class SimpleFormDataProvider implements FormDataProvider {
 		super();
 //		this.dataObject = dataObject;
 		if(dataObject!=null)
-			this.accessor = PropertyAccessorFactory.forBeanPropertyAccess(dataObject);
+			this.accessor = SpringUtils.newBeanWrapper(dataObject);
 	}
 
 	@Override

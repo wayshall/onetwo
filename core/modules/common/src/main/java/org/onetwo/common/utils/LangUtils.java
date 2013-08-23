@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1370,6 +1372,22 @@ public class LangUtils {
 	
 	public static boolean isWord(String str){
 		return AWORD.matcher(str).matches();
+	}
+	
+	public static Object formatValue(Object value, String dataFormat){
+		if(StringUtils.isBlank(dataFormat))
+			return value;
+		Object actualValue;
+		if(value instanceof Date){
+			actualValue = DateUtil.format(dataFormat, (Date)value);
+		}else if(value instanceof Number && dataFormat != null) {
+			NumberFormat nf = new DecimalFormat(dataFormat);
+			nf.setRoundingMode(RoundingMode.HALF_UP);
+			actualValue = nf.format(value);
+		}else{
+			actualValue = value;
+		}
+		return actualValue;
 	}
 	
 }

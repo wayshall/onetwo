@@ -544,6 +544,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[dataFormat]]></description>
+      <name>dataFormat</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <description><![CDATA[items]]></description>

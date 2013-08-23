@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Validator;
-
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
@@ -180,10 +178,9 @@ public class SpringApplication {
 		if(this.validatorWrapper!=null)
 			return validatorWrapper;
 		
-		 Validator validator = getBean(Validator.class);
-		 if(validator==null)
-			 throw new BaseException("no validator found!");
-		 this.validatorWrapper = ValidatorWrapper.wrap(validator);
+		this.validatorWrapper = getBean(ValidatorWrapper.class);
+		 if(validatorWrapper==null)
+			 throw new BaseException("no ValidatorWrapper found!");
 		 return validatorWrapper;
 	}
 

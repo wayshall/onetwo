@@ -65,7 +65,7 @@ public final class JFishWebUtils {
 	}
 	
 	public static Object currentHandler(){
-		return webHelper().getControllerHandler();
+		return webHelper()==null?null:webHelper().getControllerHandler();
 	}
 	
 	public static HandlerMethod currentHandlerMethod(){
@@ -159,7 +159,7 @@ public final class JFishWebUtils {
 	}
 	
 	public static String requestExtension(){
-		Object val = webHelper().getRequestExtension();
+		Object val = webHelper()==null?null:webHelper().getRequestExtension();
 		return val==null?"":val.toString();
 	}
 	

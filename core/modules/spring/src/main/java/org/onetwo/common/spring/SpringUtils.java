@@ -15,6 +15,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.propconf.PropUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -187,6 +189,12 @@ final public class SpringUtils {
 	
 	public static Resource classpath(String path){
 		return new ClassPathResource(path);
+	}
+	
+	public static BeanWrapper newBeanWrapper(Object obj){
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		bw.setAutoGrowNestedPaths(true);
+		return bw;
 	}
 	
 }
