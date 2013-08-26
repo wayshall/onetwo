@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.DeleteExtQueryImpl;
 import org.onetwo.common.db.ExtQuery;
-import org.onetwo.common.db.ExtQueryImpl;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.SelectExtQuery;
+import org.onetwo.common.db.SelectExtQueryImpl;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 
@@ -50,15 +52,20 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 		return placeHolder;
 	}
 
-	
 	@Override
-	public ExtQuery createQuery(Class<?> entityClass, Map<Object, Object> properties) {
-		return createQuery(entityClass, null, properties);
+	public ExtQuery createDeleteQuery(Class<?> entityClass, Map<Object, Object> properties) {
+		ExtQuery q = new DeleteExtQueryImpl(entityClass, null, properties, this, this.listeners);
+		q.initQuery();
+		return q;
+	}
+	@Override
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, Map<Object, Object> properties) {
+		return createSelectQuery(entityClass, null, properties);
 	}
 
 	@Override
-	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
-		ExtQuery q = new ExtQueryImpl(entityClass, alias, properties, this, this.listeners);
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
+		SelectExtQuery q = new SelectExtQueryImpl(entityClass, alias, properties, this, this.listeners);
 		q.initQuery();
 		return q;
 	}

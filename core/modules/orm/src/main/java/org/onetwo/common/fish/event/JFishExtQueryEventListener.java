@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.fish.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.utils.LangUtils;
@@ -22,7 +23,7 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 //		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 
 		Map<Object, Object> props = extEvent.getProperties()==null?new LinkedHashMap<Object, Object>():extEvent.getProperties();
-		ExtQuery extQuery = es.createExtQuery(extEvent.getEntityClass(), props);
+		SelectExtQuery extQuery = es.createExtQuery(extEvent.getEntityClass(), props);
 		
 		if(extEvent.getExtQueryType()==ExtQueryType.UNIQUE){
 			extQuery.setMaxResults(1);//add: support unique

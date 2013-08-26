@@ -3,7 +3,7 @@ package org.onetwo.common.fish;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.ExtQueryImpl;
+import org.onetwo.common.db.SelectExtQueryImpl;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
@@ -11,7 +11,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class JFishExtQueryImpl extends ExtQueryImpl {
+public class JFishExtQueryImpl extends SelectExtQueryImpl {
 
 	JFishMappedEntry entry;
 	
@@ -28,7 +28,7 @@ public class JFishExtQueryImpl extends ExtQueryImpl {
 	}
 
 
-	protected String getSelectFromName(Class<?> entityClass){
+	protected String getFromName(Class<?> entityClass){
 		String tableName = null;
 		if(entry!=null){
 			tableName = entry.getTableInfo().getName();
@@ -76,7 +76,7 @@ public class JFishExtQueryImpl extends ExtQueryImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected ExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, boolean hasParentheses) {
+	protected SelectExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, boolean hasParentheses) {
 		if (!hasParams(joinKey))
 			return this;
 		if(!K.LEFT_JOIN.equals(joinKey))//only support left join

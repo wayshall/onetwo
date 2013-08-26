@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
-import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
@@ -170,7 +170,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		throw new UnsupportedOperationException("not support operation!");
 	}
 	
-	protected DataQuery createQuery(ExtQuery extQuery){
+	protected DataQuery createQuery(SelectExtQuery extQuery){
 		return getJfishDao().createAsDataQuery(extQuery);
 	}
 

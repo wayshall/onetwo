@@ -15,6 +15,7 @@ import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.IdEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.event.DbEventListeners;
 import org.onetwo.common.db.event.EventSource;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -109,7 +110,7 @@ abstract public class AbstractEntityManager implements EventSource {
 		return q;
 	}
 	
-	protected DataQuery createQuery(ExtQuery extQuery){
+	protected DataQuery createQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
 		if(extQuery.isSqlQuery()){
 			q = this.createSQLQuery(extQuery.getSql(), extQuery.getEntityClass());
@@ -124,8 +125,8 @@ abstract public class AbstractEntityManager implements EventSource {
 		return q;
 	}
 	
-	protected ExtQuery createExtQuery(Class entityClass, Map<Object, Object> properties){
-		ExtQuery q = getSQLSymbolManager().createQuery(entityClass, "ent", properties);
+	protected SelectExtQuery createExtQuery(Class entityClass, Map<Object, Object> properties){
+		SelectExtQuery q = getSQLSymbolManager().createSelectQuery(entityClass, "ent", properties);
 		return q;
 	}
 	
@@ -174,7 +175,7 @@ abstract public class AbstractEntityManager implements EventSource {
 			properties.put(ExtQuery.K.DESC, page.getOrderBy());
 		}
 
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createExtQuery(entityClass, properties);
 		extQuery.build();
 		/*if (page.isAutoCount()) {
 			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
@@ -188,7 +189,7 @@ abstract public class AbstractEntityManager implements EventSource {
 		this.findPageByExtQuery(page, extQuery);
 	}
 	
-	protected void findPageByExtQuery(Page page, ExtQuery extQuery){
+	protected void findPageByExtQuery(Page page, SelectExtQuery extQuery){
 		if (page.isAutoCount()) {
 //			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 			Long totalCount = 0l;
@@ -234,7 +235,7 @@ abstract public class AbstractEntityManager implements EventSource {
 //		return findUnique(entityClass, properties, true);
 		prepareProperties(properties);
 
-		ExtQuery extQuery = createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = createExtQuery(entityClass, properties);
 		extQuery.setMaxResults(1);//add: support unique
 		extQuery.build();
 		DataQuery q = createQuery(extQuery);
@@ -312,7 +313,7 @@ abstract public class AbstractEntityManager implements EventSource {
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		prepareProperties(properties);
 
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createExtQuery(entityClass, properties);
 		extQuery.build();
 		return createQuery(extQuery).getResultList();
 	}
@@ -328,13 +329,16 @@ abstract public class AbstractEntityManager implements EventSource {
 	}
 
 	public <T> List<T> findAll(Class<T> entityClass){
-		StringBuilder sqlStr = new StringBuilder(); 
+		/*StringBuilder sqlStr = new StringBuilder(); 
 		sqlStr.append("select ent from ").append(entityClass.getSimpleName()).append(" ent");
-		return createQuery(sqlStr.toString()).getResultList();
+		return createQuery(sqlStr.toString()).getResultList();*/
+		SelectExtQuery extQuery = createExtQuery(entityClass, null);
+		extQuery.build();
+		return this.createQuery(extQuery).getResultList();
 	}
 
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createExtQuery(entityClass, properties);
 		extQuery.build();
 		return (Number) this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 	}

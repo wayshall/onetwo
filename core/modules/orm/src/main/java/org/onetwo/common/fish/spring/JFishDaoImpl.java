@@ -10,9 +10,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.HqlSymbolParser;
@@ -541,12 +541,12 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return jq;
 	}
 	
-	public ExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties){
-		ExtQuery q = this.getSqlSymbolManager().createQuery(entityClass, "ent", properties);
+	public SelectExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties){
+		SelectExtQuery q = this.getSqlSymbolManager().createSelectQuery(entityClass, "ent", properties);
 		return q;
 	}
 	
-	public DataQuery createAsDataQuery(ExtQuery extQuery){
+	public DataQuery createAsDataQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
 		if(extQuery.isSqlQuery()){
 			q = this.createAsDataQuery(extQuery.getSql(), extQuery.getEntityClass());

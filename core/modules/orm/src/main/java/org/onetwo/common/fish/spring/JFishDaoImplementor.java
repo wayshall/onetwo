@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.exception.JFishEntityNotSavedException;
@@ -110,7 +110,7 @@ public interface JFishDaoImplementor extends JFishDao {
 	 * @param extQuery
 	 * @return
 	 */
-	public DataQuery createAsDataQuery(ExtQuery extQuery);
+	public DataQuery createAsDataQuery(SelectExtQuery extQuery);
 	
 	public DataQuery createAsDataQuery(String sqlString, Class<?> entityClass);
 	

@@ -2,7 +2,6 @@ package org.onetwo.common.db;
 
 import org.onetwo.common.utils.LangUtils;
 
-
 public class SqlFuncFieldImpl extends QueryFieldImpl {
 
 	public static final SqlFuncFieldImpl create(String exp){
@@ -14,7 +13,7 @@ public class SqlFuncFieldImpl extends QueryFieldImpl {
 	}
 
 	@Override
-	public void init(ExtQuery extQuery, Object value) {
+	public void init(ExtQueryInner extQuery, Object value) {
 		if(!extQuery.isSqlQuery()){
 			LangUtils.throwBaseException("query is not a sql query, can not use raw sql function!");
 		}
@@ -22,7 +21,7 @@ public class SqlFuncFieldImpl extends QueryFieldImpl {
 	}
 
 	public String getActualFieldName() {
-		ExtQueryImpl q = (ExtQueryImpl)this.getExtQuery();
+		SelectExtQueryImpl q = (SelectExtQueryImpl)this.getExtQuery();
 		return q.translateAt(super.getFieldName());
 	}
 }

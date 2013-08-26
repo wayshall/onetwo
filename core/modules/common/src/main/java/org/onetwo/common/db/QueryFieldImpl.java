@@ -11,7 +11,7 @@ public class QueryFieldImpl implements QueryField {
 		return new QueryFieldImpl(exp);
 	}
 	
-	private ExtQueryImpl extQuery;
+	private ExtQueryInner extQuery;
 	private String fieldExpr;
 	private Object value;
 	
@@ -24,8 +24,8 @@ public class QueryFieldImpl implements QueryField {
 		this.fieldExpr = fieldExpr;
 	}
 	
-	public void init(ExtQuery extQuery, Object value){
-		this.extQuery = (ExtQueryImpl)extQuery;
+	public void init(ExtQueryInner extQuery, Object value){
+		this.extQuery = extQuery;
 		this.value = value;
 		
 		String[] sp = StringUtils.split(fieldExpr, SQLSymbolManager.SPLIT_SYMBOL);
@@ -74,7 +74,7 @@ public class QueryFieldImpl implements QueryField {
 		return fieldExpr;
 	}
 
-	public ExtQuery getExtQuery() {
+	public ExtQueryInner getExtQuery() {
 		return extQuery;
 	}
 

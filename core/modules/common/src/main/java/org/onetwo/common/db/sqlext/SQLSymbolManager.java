@@ -2,9 +2,10 @@ package org.onetwo.common.db.sqlext;
 
 import java.util.Map;
 
+import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.QueryField;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.SelectExtQuery;
 
 /***
  * sql操作符管理
@@ -52,7 +53,10 @@ public interface SQLSymbolManager {
 	public HqlSymbolParser getHqlSymbolParser(String symbol);
 //	public String createHql(Map<Object, Object> properties, List<Object> values) ;
 	public PlaceHolder getPlaceHolder();
-	public ExtQuery createQuery(Class<?> entityClass, Map<Object, Object> properties);
-	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties);
+	
+	public ExtQuery createDeleteQuery(Class<?> entityClass, Map<Object, Object> properties);
+	
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, Map<Object, Object> properties);
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties);
 	
 }

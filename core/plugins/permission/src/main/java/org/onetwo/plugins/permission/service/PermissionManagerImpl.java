@@ -1,11 +1,18 @@
 package org.onetwo.plugins.permission.service;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.plugins.permission.MenuInfoParser;
 import org.onetwo.plugins.permission.PermissionUtils;
 import org.onetwo.plugins.permission.entity.IMenu;
@@ -68,7 +75,12 @@ public class PermissionManagerImpl {
 				baseEntityManager.persist(perm);
 			}
 		}
-//		baseEntityManager.d
+		List<Long> ids = extract(menuNodeMap.values(), on(IPermission.class).getId());
+		ExtQuery deleteq = baseEntityManager.getSQLSymbolManager().createDeleteQuery(menuInfoParser.getMenuInfoable().getIPermissionClass(), LangUtils.asMap("id:not in", ids));
+		deleteq.build();
+		DataQuery dq = baseEntityManager.createQuery(deleteq.getSql(), deleteq.getParamsValue().asMap());
+		int deleteCount = dq.executeUpdate();
+		logger.info("delete {} menu", deleteCount);
 	}
 	
 	public <T> T findById(Long id){
