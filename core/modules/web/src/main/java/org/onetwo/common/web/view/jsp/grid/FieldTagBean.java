@@ -129,4 +129,8 @@ public class FieldTagBean extends HtmlElement {
 	public boolean isCheckbox(){
 		return "checkbox".equalsIgnoreCase(render);
 	}
+	
+	public GridTagBean getGrid(){
+		return getRowTagBean().getGridTagBean();
+	}
 }

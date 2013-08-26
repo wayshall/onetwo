@@ -6,6 +6,7 @@ import java.util.List;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
+import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
 public class GridTagBean extends HtmlElement {
@@ -21,6 +22,8 @@ public class GridTagBean extends HtmlElement {
 	private boolean toolbar;
 	
 	private String bodyContent;
+	
+	private PaginationType paginationType;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -101,6 +104,26 @@ public class GridTagBean extends HtmlElement {
 
 	public void setBodyContent(String bodyContent) {
 		this.bodyContent = bodyContent;
+	}
+	
+	public String getFormId(){
+		return getId() + "Form";
+	}
+
+	public PaginationType getPaginationType() {
+		return paginationType;
+	}
+
+	public void setPaginationType(PaginationType paginationType) {
+		this.paginationType = paginationType;
+	}
+	
+	public boolean isPagination(){
+		return this.paginationType!=PaginationType.none;
+	}
+	
+	public boolean isFormPagination(){
+		return this.paginationType==PaginationType.form;
 	}
 
 }

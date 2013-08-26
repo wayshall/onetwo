@@ -128,6 +128,5 @@ public interface ExtQuery {
 	public Map<String, Object> getQueryConfig();
 	
 	public List<IncludeField> getIncludeFields();
-	
 
 }

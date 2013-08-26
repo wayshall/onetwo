@@ -148,10 +148,19 @@ var Common = function () {
 			var href = link.attr('href');
 			var method = link.attr('data-method');
 			target = link.attr('target');
-			var form = null;
+			var form = link.parents('form');
+			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
-			}else{
+				form.attr("action", href);
+				form.attr("method", method);
+			}
+			else if(form.length>0){
+				form = $(form.get(0));
+				form.attr("action", href);
+				form.attr("method", method);
+			}
+			else{
 				form = $('<form method="post" action="'+ href + '"></form>');
 				metadata_input = '<input name="_method" value="'+ method + '" type="hidden" />';
 				form.appendTo('body');

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQueryImpl;
-import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.fish.orm.JFishMappedEntry;
@@ -22,8 +21,9 @@ public class JFishExtQueryImpl extends ExtQueryImpl {
 		this.entry = entry;
 	}
 
-	protected void init(Class<?> entityClass, String alias){
-		super.init(entityClass, alias);
+	@Override
+	public void initQuery(){
+		super.initQuery();
 //		super.setSqlQuery(true);
 	}
 

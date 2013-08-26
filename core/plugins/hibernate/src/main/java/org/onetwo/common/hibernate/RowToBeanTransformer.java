@@ -1,10 +1,12 @@
 package org.onetwo.common.hibernate;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.springframework.beans.BeanWrapper;
@@ -50,6 +52,8 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 
 			Object val;
 			for ( int i = 0; i < aliases.length; i++ ) {
+				if(propNames[i]==null)
+					continue;
 				val = Types.convertValue(tuple[i], bw.getPropertyType(propNames[i]));
 				bw.setPropertyValue(propNames[i], val);
 			}
@@ -67,11 +71,16 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	private void initialize(String[] aliases) {
 		this.aliases = new String[ aliases.length ];
 		this.propNames = new String[ aliases.length ];
+
+		List<String> resultPropNames = ReflectUtils.desribPropertiesName(resultClass);
+		
 		for ( int i = 0; i < aliases.length; i++ ) {
 			String alias = aliases[ i ];
 			if ( alias != null ) {
 				this.aliases[i] = alias;
-				this.propNames[i] = StringUtils.toPropertyName(alias); 
+				String propName = StringUtils.toPropertyName(alias); 
+				if(resultPropNames.contains(propName))
+					propNames[i] = propName;
 			}
 		}
 		isInitialized = true;

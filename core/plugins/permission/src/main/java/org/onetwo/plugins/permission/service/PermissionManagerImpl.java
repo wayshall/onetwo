@@ -68,6 +68,7 @@ public class PermissionManagerImpl {
 				baseEntityManager.persist(perm);
 			}
 		}
+//		baseEntityManager.d
 	}
 	
 	public <T> T findById(Long id){
