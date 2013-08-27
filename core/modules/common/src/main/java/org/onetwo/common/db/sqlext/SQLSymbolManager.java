@@ -1,5 +1,6 @@
 package org.onetwo.common.db.sqlext;
 
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.ParamValues.PlaceHolder;
@@ -58,5 +59,7 @@ public interface SQLSymbolManager {
 	
 	public SelectExtQuery createSelectQuery(Class<?> entityClass, Map<Object, Object> properties);
 	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties);
+	
+	public void setListeners(List<ExtQueryListener> listeners);
 	
 }

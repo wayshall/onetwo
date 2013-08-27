@@ -22,15 +22,15 @@ import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
-import org.onetwo.common.spring.web.mvc.JFishWebArgumentResolver;
 import org.onetwo.common.spring.web.mvc.JsonView;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
-import org.onetwo.common.spring.web.mvc.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
+import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
+import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -280,7 +280,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new JFishWebArgumentResolver());
+		argumentResolvers.add(new UserDetailArgumentResolver());
 		argumentResolvers.add(new WebAttributeArgumentResolver());
 		/*List<HttpMessageConverter<?>> converters = LangUtils.newArrayList();
 		converters.add(new MappingJacksonHttpMessageConverter());

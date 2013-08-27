@@ -376,5 +376,10 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 		}
 		this.sqlSymbolManager = symbolManager;
 	}
+
+	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {
+		this.sqlSymbolManager = sqlSymbolManager;
+	}
+	
 	
 }

@@ -17,6 +17,14 @@ public class LangUtilsTest {
 	public void testHash(){
 		String str = "hellohello_helloh_ellohello";
 		System.out.println("hash: " + str.hashCode());
+		boolean voted = false;
+		System.out.println("voted: " + (voted |=true));
+		voted = false;
+		System.out.println("voted: " + (voted |=false));
+		voted = false;
+		System.out.println("voted: " + (voted &=true));
+		voted = false;
+		System.out.println("voted: " + (voted &=true));
 	}
 	@Test
 	public void testTimeUnit(){
