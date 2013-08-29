@@ -10,7 +10,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DozerMapping {
 
-	Class<?> classb() default Object.class;
+	Class<?>[] classb() default {Object.class};
 	boolean mapNull() default false;
 	boolean mapEmpty() default true;
+	String fieldSplit() default "";
 }

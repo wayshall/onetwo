@@ -33,10 +33,14 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 	}
 	
 	protected void mapDozerClassMapper(DozerClassMapper mapper){
-		TypeMappingBuilder builder = mapping(buildTypeDefinitionA(mapper), buildTypeDefinitionB(mapper));
-		Map<String, String> mfields = mappingFields(mapper);
-		for(Entry<String, String> entry : mfields.entrySet()){
-			builder.fields(entry.getKey(), entry.getValue());
+		for(Class<?> classb : mapper.getClassb()){
+			if(classb==Object.class)
+				classb = mapper.getClassa();
+			TypeMappingBuilder builder = mapping(buildTypeDefinitionA(mapper), buildTypeDefinitionB(mapper, classb));
+			Map<String, String> mfields = mappingFields(mapper.getClassa(), classb, mapper.getFieldSplit());
+			for(Entry<String, String> entry : mfields.entrySet()){
+				builder.fields(entry.getKey(), entry.getValue());
+			}
 		}
 	}
 	
@@ -46,8 +50,8 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 		return a;
 	}
 	
-	protected TypeDefinition buildTypeDefinitionB(DozerClassMapper mapper){
-		TypeDefinition b = new TypeDefinition(mapper.getClassb());
+	protected TypeDefinition buildTypeDefinitionB(DozerClassMapper mapper, Class<?> classb){
+		TypeDefinition b = new TypeDefinition(classb);
 		buildProperties(b, mapper);
 		return b;
 	}
@@ -57,30 +61,39 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 		type.mapEmptyString(mapper.isMapEmpty());
 	}
 	
-	protected Map<String, String> mappingFields(DozerClassMapper mapper){
+	protected Map<String, String> mappingFields(Class<?> classa, Class<?> classb, String fieldSplit){
 		Map<String, String> mappingFields = LangUtils.newHashMap();
-		Collection<String> srcFields = ReflectUtils.desribPropertiesName(mapper.getClassa(), Set.class);
-		if(mapper.getClassa()==mapper.getClassb()){
-			for(String field : srcFields)
-				mappingFields.put(field, field);
+		Collection<String> srcFields = ReflectUtils.desribPropertiesName(classa, Set.class);
+		if(classa==classb){
+			for(String sfield : srcFields){
+				mappingFields.put(sfield, sfield);
+			}
 			return mappingFields;
 		}
 		
-		Collection<String> desctFields = ReflectUtils.desribPropertiesName(mapper.getClassb(), Set.class);
+		boolean isFieldSplit = StringUtils.isNotBlank(fieldSplit);
+		Collection<String> desctFields = ReflectUtils.desribPropertiesName(classb, Set.class);
 //		Collection<String> mapFields = srcFields.size()<desctFields.size()?srcFields:desctFields;
 		for(String fname : srcFields){
-			if(desctFields.contains(fname)){
-				mappingFields.put(fname, fname);
-				
-			}else if(fname.contains(UNDERLINE)){
-				String destname = StringUtils.toPropertyName(fname);
-				if(desctFields.contains(destname)){
-					mappingFields.put(fname, destname);
+			if(!isFieldSplit){
+				if(desctFields.contains(fname)){
+					mappingFields.put(fname, fname);
 				}
-			}else if(StringUtils.hasUpper(fname)){
-				String destname = StringUtils.convert2UnderLineName(fname, UNDERLINE);
-				if(desctFields.contains(destname)){
-					mappingFields.put(fname, destname);
+			}else{
+				if(fname.contains(fieldSplit)){
+					String destname = StringUtils.toPropertyName(fname);
+					if(desctFields.contains(destname)){
+						mappingFields.put(fname, destname);
+					}
+				}else if(StringUtils.hasUpper(fname)){
+					String destname = StringUtils.convert2UnderLineName(fname, fieldSplit);
+					if(desctFields.contains(destname)){
+						mappingFields.put(fname, destname);
+					}
+				}else{
+					if(desctFields.contains(fname)){
+						mappingFields.put(fname, fname);
+					}
 				}
 			}
 		}

@@ -60,6 +60,11 @@ public interface ExtQuery {
 		public static final String JOIN = ":join";
 		public static final String LEFT_JOIN = ":left-join";//o
 		
+		/****
+		 * 是否触发监听器
+		 */
+		public static final String LISTENERS = ":listeners";
+		
 		static{
 			ORDER_BY_MAP.put(ASC, " asc");
 			ORDER_BY_MAP.put(DESC, " desc");
@@ -93,9 +98,11 @@ public interface ExtQuery {
 
 	public ExtQuery build();
 
-	public Map getParams();
+//	public Map getParams();
 
-	public void setParams(Map params);
+//	public void setParams(Map params);
+	
+	public Map getParams();
 
 	public ParamValues getParamsValue();
 	
@@ -107,7 +114,7 @@ public interface ExtQuery {
 
 	public StringBuilder getWhere();
 
-	public Class getEntityClass();
+	public Class<?> getEntityClass();
 	public boolean isSqlQuery();
 	
 

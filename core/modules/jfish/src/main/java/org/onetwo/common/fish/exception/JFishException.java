@@ -33,7 +33,7 @@ public class JFishException extends BaseException{
 		super(cause);
 	}
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.BASE_CODE;
 	}
 

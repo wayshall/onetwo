@@ -81,7 +81,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	
-	@Resource
+	@Autowired
 	private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 	
 	@Resource
@@ -287,6 +287,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //		converters.add(new JsonStringHttpMessageConverter());
 		ModelAndJsonCompatibleResolver modelAndJson = new ModelAndJsonCompatibleResolver(converters);
 		argumentResolvers.add(modelAndJson);*/
+		
+		List<HandlerMethodArgumentResolver> resolvers = SpringUtils.getBeans(applicationContext, HandlerMethodArgumentResolver.class);
+		argumentResolvers.addAll(resolvers);
 	}
 	
 

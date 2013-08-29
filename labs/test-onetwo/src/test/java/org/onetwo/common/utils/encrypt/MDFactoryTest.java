@@ -43,5 +43,25 @@ salt为8个随机字节。
 		encrypt = MDFactory.getMDEncrypt("SMD5").encryptWithSalt(source);
 		LangUtils.println("smd5 after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
 	}
+	
+
+	@Test
+	public void testSha(){
+		String source = "123456";
+		String encrypt = MDFactory.getMDEncrypt("SHA").encrypt(source);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		boolean rs = MDFactory.getMDEncrypt("SHA").checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+		
+		encrypt = MDFactory.getMDEncrypt("SHA").encrypt(source);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+
+		MDEncrypt sha = new MDEncryptImpl("SHA", 20, false);
+		encrypt = sha.encrypt(source);
+		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		
+		rs = sha.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+	}
 
 }

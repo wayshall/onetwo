@@ -26,7 +26,7 @@ public class JFishEntityNotFoundException extends JFishOrmException{
 	}
 
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.ORM_ERROR;
 	}
 

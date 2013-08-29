@@ -7,6 +7,7 @@ public class FormUIFactory {
 		FormFieldTagBean bean = null;
 		switch (type) {
 			case input:
+			case password:
 			case hidden:
 			case radio:
 			case checkbox:

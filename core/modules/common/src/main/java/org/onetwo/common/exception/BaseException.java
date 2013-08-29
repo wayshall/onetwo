@@ -10,7 +10,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	protected static final String DefaultMsg = "occur error";
 	public static final String Prefix = "[ERROR]:";
-	protected String code = DEFAULT_SYSTEM_ERROR_CODE;
+	protected String code;
 
 //	protected List<Throwable> list = null;
 
@@ -55,26 +55,13 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 
 	public String getCode() {
+		if(StringUtils.isBlank(code))
+			return getDefaultCode();
 		return code;
 	}
 	
-	protected String getBaseCode(){
-//		return BaseErrorCode.BASE_CODE;
-		return null;
-	}
-
-	final public String appendBaseCode(String code){
-		String baseCode = getBaseCode();
-//		Assert.hasText(baseCode, "base code can not be empty");
-		if(baseCode==null)
-			return code;
-		if(StringUtils.isBlank(code))
-			return baseCode;
-		if(!code.startsWith(baseCode)){
-			return baseCode + code;
-		}else{
-			return code;
-		}
+	protected String getDefaultCode(){
+		return DEFAULT_SYSTEM_ERROR_CODE;
 	}
 
 }

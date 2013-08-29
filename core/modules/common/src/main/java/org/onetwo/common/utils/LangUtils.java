@@ -1349,7 +1349,7 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = MyUtils.append(strs);
+		String s = append(strs);
 		s = MDFactory.MD5.encrypt(s + new Date().getTime() + getRadomString(6));
 		return s;
 	}

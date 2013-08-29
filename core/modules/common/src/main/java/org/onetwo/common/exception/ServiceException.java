@@ -41,7 +41,7 @@ public class ServiceException extends BaseException{
 		super(cause, code);
 	}
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return BaseErrorCode.BASE_CODE;
 	}
 

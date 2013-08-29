@@ -56,6 +56,7 @@ public class PermissionManagerImpl {
 	
 	@Transactional
 	public void syncMenuToDatabase(){
+		int menuCount = 0;
 		for(IPermission perm : menuNodeMap.values()){
 			logger.info("sync perm[{}]...", perm.getCode());
 			IPermission dbperm = (IPermission) this.baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "code", perm.getCode());
@@ -74,7 +75,9 @@ public class PermissionManagerImpl {
 				perm.setId(id);
 				baseEntityManager.persist(perm);
 			}
+			menuCount++;
 		}
+		logger.info("sync menu count: {}", menuCount);
 		List<Long> ids = extract(menuNodeMap.values(), on(IPermission.class).getId());
 		ExtQuery deleteq = baseEntityManager.getSQLSymbolManager().createDeleteQuery(menuInfoParser.getMenuInfoable().getIPermissionClass(), LangUtils.asMap("id:not in", ids));
 		deleteq.build();

@@ -10,6 +10,7 @@ import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.web.context.request.RequestAttributes;
@@ -28,7 +29,7 @@ public final class JFishWebUtils {
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
-	public static final String DEFAULT_TOKEN_FIELD_NAME = "org.onetwo.jfish.form.token";
+	public static final String DEFAULT_TOKEN_FIELD_NAME = WebContextUtils.DEFAULT_TOKEN_FIELD_NAME;
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	

@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -78,6 +79,8 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public String getDataFormat() {
+		if(StringUtils.isBlank(dataFormat))
+			return DateUtil.Date_Only;
 		return dataFormat;
 	}
 

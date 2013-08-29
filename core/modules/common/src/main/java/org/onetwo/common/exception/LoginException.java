@@ -27,7 +27,7 @@ public class LoginException extends ServiceException {
 	}
 
 	@Override
-	protected String getBaseCode() {
+	public String getDefaultCode() {
 		return LoginErrorCode.BASE_CODE;
 	}
 	

@@ -23,7 +23,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private boolean toolbar;
 	
-	private PaginationType paginationType = PaginationType.form;
+	private PaginationType paginationType = PaginationType.link;
 	
 	@Override
 	public GridTagBean createComponent() {

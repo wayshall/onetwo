@@ -1,7 +1,11 @@
 package org.onetwo.common.web.view.jsp;
 
+import java.io.IOException;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.onetwo.common.exception.BaseException;
 
 @SuppressWarnings("serial")
 public class AbstractBodyTag extends BodyTagSupport {
@@ -31,5 +35,13 @@ public class AbstractBodyTag extends BodyTagSupport {
 	protected void assertParentTag(Class<?> parentTag, String msg) throws JspException{
 		if(!parentTag.isInstance(getParent()))
 			throw new JspException(msg);
+	}
+	
+	protected void write(String content){
+		try {
+			this.pageContext.getOut().write(content);
+		} catch (IOException e) {
+			throw new BaseException("write content error: " + e.getMessage(), e);
+		}
 	}
 }

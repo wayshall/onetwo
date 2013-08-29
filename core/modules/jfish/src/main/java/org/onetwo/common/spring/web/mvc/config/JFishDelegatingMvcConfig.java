@@ -16,7 +16,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
@@ -64,10 +63,6 @@ public class JFishDelegatingMvcConfig extends DelegatingWebMvcConfiguration {
 		RequestMappingHandlerAdapterFactory af = SpringUtils.getBean(applicationContex, RequestMappingHandlerAdapterFactory.class);
 		
 		if(af!=null){
-			ConfigurableWebBindingInitializer webBindingInitializer = new ConfigurableWebBindingInitializer();
-			webBindingInitializer.setConversionService(mvcConversionService());
-			webBindingInitializer.setValidator(mvcValidator());
-			
 			List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<HandlerMethodArgumentResolver>();
 			addArgumentResolvers(argumentResolvers);
 
@@ -75,10 +70,25 @@ public class JFishDelegatingMvcConfig extends DelegatingWebMvcConfiguration {
 			addReturnValueHandlers(returnValueHandlers);
 			
 			RequestMappingHandlerAdapter adapter = af.createAdapter();
+			
+			adapter.setContentNegotiationManager(mvcContentNegotiationManager());
 			adapter.setMessageConverters(getMessageConverters());
-			adapter.setWebBindingInitializer(webBindingInitializer);
+			adapter.setWebBindingInitializer(getConfigurableWebBindingInitializer());
 			adapter.setCustomArgumentResolvers(argumentResolvers);
 			adapter.setCustomReturnValueHandlers(returnValueHandlers);
+
+			AsyncSupportConfigurerAdapter configurer = new AsyncSupportConfigurerAdapter();
+			configureAsyncSupport(configurer);
+
+			if (configurer.getTaskExecutor() != null) {
+				adapter.setTaskExecutor(configurer.getTaskExecutor());
+			}
+			if (configurer.getTimeout() != null) {
+				adapter.setAsyncRequestTimeout(configurer.getTimeout());
+			}
+			adapter.setCallableInterceptors(configurer.getCallableInterceptors());
+			adapter.setDeferredResultInterceptors(configurer.getDeferredResultInterceptors());
+			
 			return adapter;
 			
 		}else{

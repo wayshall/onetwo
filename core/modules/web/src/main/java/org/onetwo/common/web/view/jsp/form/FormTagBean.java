@@ -81,5 +81,9 @@ public class FormTagBean extends HtmlElement {
 	public List<FormFieldTagBean> getButtons() {
 		return buttons;
 	}
+	
+	public String getEncType(){
+		return uploadFile?"multipart/form-data":"application/x-www-form-urlencoded";
+	}
 
 }

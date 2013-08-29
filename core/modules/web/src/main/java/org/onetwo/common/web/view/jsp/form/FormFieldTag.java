@@ -45,6 +45,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		
 		switch (type) {
 			case input:
+			case password:
 			case hidden:
 			case textarea:
 			case radio:

@@ -33,7 +33,7 @@ public class JFishOrmException extends BaseException{
 		super(cause);
 	}
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.ORM_ERROR;
 	}
 

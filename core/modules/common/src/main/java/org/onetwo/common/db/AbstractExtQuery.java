@@ -1,5 +1,6 @@
 package org.onetwo.common.db;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	protected StringBuilder where;
 	
 	private List<ExtQueryListener> listeners;
+	private boolean fireListeners = true;
 
 	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		this(entityClass, alias, params, symbolManager, null);
@@ -60,6 +62,8 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		}
 		this.symbolManager = symbolManager;
 		
+		this.listeners = (listeners==null?Collections.EMPTY_LIST:listeners);
+		
 //		this.init(entityClass, this.alias);
 	}
 
@@ -75,6 +79,8 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		}
 		this.paramsValue = new ParamValues(holder, symbolManager.getSqlDialet());
 		
+		this.fireListeners = getValueAndRemoveKeyFromParams(K.LISTENERS, true);
+		
 		this.fireInitListeners();
 	}
 	
@@ -84,7 +90,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	}
 	
 	protected void fireInitListeners(){
-		if(this.listeners!=null){
+		if(this.fireListeners){
 			for(ExtQueryListener l : this.listeners){
 				l.onInit(this);
 			}
@@ -112,9 +118,6 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		return params;
 	}
 
-	public void setParams(Map params) {
-		this.params = params;
-	}
 
 	protected boolean hasParams(String key) {
 		return this.params != null && !this.params.isEmpty() && this.params.containsKey(key);

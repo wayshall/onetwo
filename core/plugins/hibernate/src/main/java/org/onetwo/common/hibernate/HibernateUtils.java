@@ -4,6 +4,8 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.tuple.StandardProperty;
+import org.onetwo.common.utils.Assert;
 
 public abstract class HibernateUtils {
 
@@ -31,5 +33,16 @@ public abstract class HibernateUtils {
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass){
 		return sessionFactory.getClassMetadata(entityClass);
+	}
+	
+	public static boolean setPropertyState(StandardProperty[] props, Object[] currentState, String property, Object value){
+		Assert.hasText(property);
+		for (int i = 0; i < props.length; i++) {
+			if (props[i].getName().equals(property)) {
+				currentState[i] = value;
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -248,6 +248,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[paginationType]]></description>
+      <name>paginationType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>id</name>
@@ -609,6 +615,20 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <description><![CDATA[formToken]]></description>
+    <name>formToken</name>
+    <tag-class>org.onetwo.common.web.view.jsp.form.FormTokenFieldTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description><![CDATA[name]]></description>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   

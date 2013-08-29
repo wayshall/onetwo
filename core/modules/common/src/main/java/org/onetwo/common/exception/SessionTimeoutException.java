@@ -29,7 +29,7 @@ public class SessionTimeoutException extends NotLoginException {
 	}
 
 	@Override
-	protected String getBaseCode() {
+	protected String getDefaultCode() {
 		return AuthenticErrorCode.SESSION_TIMEOUT;
 	}
 }

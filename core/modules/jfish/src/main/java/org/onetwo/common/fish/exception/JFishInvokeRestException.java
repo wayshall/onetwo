@@ -33,7 +33,7 @@ public class JFishInvokeRestException extends ServiceException{
 		super(cause);
 	}
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.REST_INVOKE_ERROR;
 	}
 

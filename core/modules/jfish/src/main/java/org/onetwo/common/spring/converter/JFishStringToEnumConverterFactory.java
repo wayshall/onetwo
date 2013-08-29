@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.converter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.onetwo.common.exception.BaseException;
@@ -10,6 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.util.Assert;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class JFishStringToEnumConverterFactory implements ConverterFactory<String, Enum> {
 
 	public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
