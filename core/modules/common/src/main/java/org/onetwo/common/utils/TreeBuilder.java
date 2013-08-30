@@ -18,12 +18,22 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
+	private final Comparator<TM> comparator = new Comparator<TM>() {
+		@Override
+		public int compare(TM o1, TM o2) {
+			Comparable<Object> s1 = (Comparable<Object>)o1.getSort();
+			Comparable<Object> s2 = (Comparable<Object>)o2.getSort();
+			return s1.compareTo(s2);
+		}
+	};
+	
 	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
 	private List<TM> tree = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
 	private List<?> rootIds;
 
 	public TreeBuilder(List<TM> datas) {
+		Collections.sort(datas, comparator);
 		for(TM tm : datas){
 			this.leafages.put(tm.getId(), tm);
 		}
@@ -102,6 +112,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			}
 		}
 
+//		Collections.sort(tree, this.comparator);
 		return tree;
 	}
 	

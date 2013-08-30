@@ -21,6 +21,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 
 	@Resource
 	private MenuInfoable menuInfoable;
+	private int sortStartIndex = 1000;
 	
 
 	public Map<String, IPermission> getMenuNodeMap() {
@@ -42,6 +43,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		IPermission perm = null;
 		try {
 			perm = parseMenuClass(menuInfoClass);
+			perm.setSort(1);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
 		}
@@ -57,6 +59,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			return perm;
 		IMenu menu = (IMenu) perm;
 		Class<?>[] childClasses = menuClass.getDeclaredClasses();
+//		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
 			IPermission p = parseMenuClass(childCls);
 			if(p instanceof IFunction){
@@ -69,6 +72,17 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	}
 	
 	public IPermission parsePermission(Class<?> permissionClass) throws Exception{
+		Field sortField = ReflectUtils.findField(permissionClass, "sort");
+		Number sort = null;
+		if(sortField!=null){
+			Object pvalue = sortField.get(permissionClass);
+			if(!Number.class.isInstance(pvalue))
+				throw new BaseException("field[sort] of " + permissionClass + " must be Number.");
+			sort = (Number) pvalue;
+		}else{
+			sort = sortStartIndex++;
+		}
+		
 		Field pageElementField = ReflectUtils.findField(permissionClass, "permissionType");
 		PermissionType ptype = PermissionType.MENU;
 		if(pageElementField!=null){
@@ -77,6 +91,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 				throw new BaseException("field[permissionType] of " + permissionClass + " must be PermissionType.");
 			ptype = (PermissionType) pvalue;
 		}
+		
+
 
 		Object nameValue = ReflectUtils.getFieldValue(permissionClass, "name", true);
 		String name = nameValue==null?"":nameValue.toString();
@@ -89,6 +105,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		perm.setName(name);
 		String code = parseCode(permissionClass);
 		perm.setCode(code);
+		perm.setSort(sort.intValue());
 		this.menuNodeMap.put(perm.getCode(), perm);
 		return perm;
 	}
