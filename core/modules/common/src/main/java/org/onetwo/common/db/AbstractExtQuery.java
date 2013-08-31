@@ -71,7 +71,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	public void initQuery(){
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, debug);
-		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Ignore);
+		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Calm);
 
 		PlaceHolder holder = symbolManager.getPlaceHolder();
 		if(isSqlQuery()){

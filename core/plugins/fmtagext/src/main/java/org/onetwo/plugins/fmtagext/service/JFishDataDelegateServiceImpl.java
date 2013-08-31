@@ -24,7 +24,7 @@ public class JFishDataDelegateServiceImpl implements JFishDataDelegateService  {
 	@Override
 	public <T> List<T> findListByQName(String queryName, Object... params) {
 //		return jfishEntityManager.getJfishFileQueryDao().findListByQName(queryName, params);
-		return jfishEntityManager.createJFishQueryByQName(queryName, params).getResultList();
+		return jfishEntityManager.getFileNamedQueryFactory().createQuery(queryName, params).getResultList();
 	}
 	
 	public <T> Page<T> findPage(Class<T> entityClass, Page<T> page, Object...params){

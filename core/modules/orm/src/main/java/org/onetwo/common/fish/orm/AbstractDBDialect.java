@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.fish.event.DbEventListenerManager;
-import org.onetwo.common.fish.event.JFishDefaultDbEventListenerManager;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,40 +15,7 @@ import org.springframework.context.ApplicationContextAware;
 
 abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect, InitializingBean, ApplicationContextAware {
 
-	public static enum DataBase {
-		MySQL("mysql"),
-		Oracle("oracle"),
-		Unknow("unknow");
-		
-		private String name;
-		
-		DataBase(String name){
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-		
-		public boolean isOracle(){
-			return this.equals(Oracle);
-		}
-		
-		public boolean isMySQL(){
-			return this.equals(MySQL);
-		}
-		
-		public static DataBase of(String name){
-			name = name.toLowerCase();
-			for(DataBase db : values()){
-				if(name.indexOf(db.name)!=-1){
-					return db;
-				}
-			}
-			return Unknow;
-		}
-		
-	}
+	
 	public static enum StrategyType {
 		increase_id,
 		seq

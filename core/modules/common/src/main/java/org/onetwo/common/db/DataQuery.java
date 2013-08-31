@@ -12,7 +12,7 @@ public interface DataQuery {
 
 	public <T> List<T> getResultList();
 
-	public Object getSingleResult();
+	public <T> T getSingleResult();
 
 	public DataQuery setFirstResult(int startPosition);
 

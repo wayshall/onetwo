@@ -1,25 +1,19 @@
-package org.onetwo.common.fish.test;
+package org.onetwo.plugins.dq;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.fish.JFishEntityManager;
-import org.onetwo.common.fish.JFishQuery;
-import org.onetwo.common.fish.JFishQueryBuilder;
-import org.onetwo.common.fish.spring.JFishDao;
-import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.utils.Page;
-import org.springframework.jdbc.core.RowMapper;
 
-public class NullJFishEntityManagerImpl implements JFishEntityManager {
+public class NullBaseEntityManager implements BaseEntityManager {
 
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
@@ -41,6 +35,12 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 
 	@Override
 	public void persist(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Object entity) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -100,7 +100,8 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
+	public <T> List<T> findByProperties(Class<T> entityClass,
+			Object... properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -157,7 +158,7 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public DataQuery createSQLQuery(String sqlString, Class entityClass) {
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -230,12 +231,6 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public void update(Object entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public <T> T getRawManagerObject() {
 		// TODO Auto-generated method stub
 		return null;
@@ -252,55 +247,5 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public <T> Page<T> findPageByQName(String queryName,
-			RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int removeAll(Class<?> entityClass) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public JFishDaoImplementor getJfishDao() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T saveWith(T entity, String... relatedFields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> int saveRef(T entity, String... relatedFields) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <T> int dropRef(T entity, String... relatedFields) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <T> int clearRef(T entity, String... relatedFields) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public JFishQueryBuilder createQueryBuilder(Class<?> entityClass) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

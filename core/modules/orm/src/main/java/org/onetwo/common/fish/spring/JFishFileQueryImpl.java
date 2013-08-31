@@ -8,6 +8,8 @@ import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.fish.JFishQuery;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
+import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.springframework.jdbc.core.RowMapper;

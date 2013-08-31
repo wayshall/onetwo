@@ -11,6 +11,7 @@ import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
@@ -334,6 +335,8 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
 		Number count = this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		if(count==null)
+			count = 0;
 		return count;
 	}
 
@@ -379,6 +382,11 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 
 	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {
 		this.sqlSymbolManager = sqlSymbolManager;
+	}
+
+	@Override
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
+		throw new UnsupportedOperationException();
 	}
 	
 	

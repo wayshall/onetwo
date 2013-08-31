@@ -55,11 +55,11 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 		
 	}
-	public static class JFishPropertyConf {
+	public static class JFishPropertyConf<T> {
 		private String dir;
 		private String overrideDir;
 		private ClassLoader classLoader = FileUtils.getClassLoader();
-		private Class<? extends JFishNameValuePair> propertyBeanClass;
+		private Class<T> propertyBeanClass;
 		private boolean watchSqlFile;
 		private String postfix;
 		
@@ -89,7 +89,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		public Class<?> getPropertyBeanClass() {
 			return propertyBeanClass;
 		}
-		public void setPropertyBeanClass(Class<? extends JFishNameValuePair> propertyBeanClass) {
+		public void setPropertyBeanClass(Class<T> propertyBeanClass) {
 			Assert.notNull(propertyBeanClass);
 			this.propertyBeanClass = propertyBeanClass;
 		}
@@ -116,11 +116,11 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	public static final String JFISH_SQL_POSTFIX = ".jfish.sql";
 
 	private FileWatcher fileMonitor;
-	protected JFishPropertyConf conf;
+	protected JFishPropertyConf<T> conf;
 	private long period = 1;
 	private boolean debug;// = true;
 	
-	public AbstractPropertiesManager(JFishPropertyConf conf){
+	public AbstractPropertiesManager(JFishPropertyConf<T> conf){
 		this.conf = conf;
 	}
 	
@@ -130,7 +130,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			this.watchFiles(sqlfileArray);
 		}
 	}
-	protected File[] scanMatchSqlFiles(JFishPropertyConf conf){
+	protected File[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
 		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
@@ -240,12 +240,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				if(prop.indexOf('.')!=-1){
 					prop = StringUtils.toJavaName(prop, '.', false);
 				}
-				try {
-					ReflectUtils.setExpr(propBean, prop, val);
-				} catch (Exception e) {
-					logger.error("set value error : "+prop);
-					LangUtils.throwBaseException(e);
-				}
+				setNamedInfoProperty(propBean, prop, val);
 			}
 		}
 		if(propBean!=null){
@@ -259,6 +254,15 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 		
 		return namedProperties;
+	}
+	
+	protected void setNamedInfoProperty(Object bean, String prop, Object val){
+		try {
+			ReflectUtils.setExpr(bean, prop, val);
+		} catch (Exception e) {
+			logger.error("set value error : "+prop);
+			LangUtils.throwBaseException(e);
+		}
 	}
 
 	protected void watchFiles(File[] sqlfileArray){

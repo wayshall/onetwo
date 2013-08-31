@@ -92,4 +92,6 @@ public interface BaseEntityManager {
 
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);
+	
+	public FileNamedQueryFactory getFileNamedQueryFactory();
 }

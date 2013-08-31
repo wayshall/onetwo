@@ -20,7 +20,6 @@ import org.springframework.jdbc.core.RowMapper;
 public interface JFishDaoImplementor extends JFishDao {
 
 	public MappedEntryManager getMappedEntryManager();
-	public JFishNamedFileQueryManager getJfishFileQueryFactory();
 	
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 	
@@ -115,5 +114,6 @@ public interface JFishDaoImplementor extends JFishDao {
 	public DataQuery createAsDataQuery(String sqlString, Class<?> entityClass);
 	
 	public DataQuery createAsDataQuery(String sql, Map<String, Object> values);
+	
 	
 }
