@@ -1,6 +1,7 @@
 package org.onetwo.plugins.permission.service;
 
 import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.index;
 import static ch.lambdaj.Lambda.on;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PermissionManagerImpl {
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-	private Map<String, IPermission> menuNodeMap;
+	private Map<String, ? extends IPermission> menuNodeMap;
 
 	@Resource
 	private MenuInfoParser menuInfoParser;
@@ -56,10 +57,15 @@ public class PermissionManagerImpl {
 	
 	@Transactional
 	public void syncMenuToDatabase(){
+		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
+		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findAll(permClass);
+		Map<String, IPermission> mapByCode = index(permList, on(IPermission.class).getCode());
+		
 		int menuCount = 0;
 		for(IPermission perm : menuNodeMap.values()){
 			logger.info("sync perm[{}]...", perm.getCode());
-			IPermission dbperm = (IPermission) this.baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "code", perm.getCode());
+//			IPermission dbperm = (IPermission) this.baseEntityManager.findUnique(permClass, "code", perm.getCode());
+			IPermission dbperm = mapByCode.get(perm.getCode());
 			if(dbperm!=null){
 				if(perm.getClass()!=dbperm.getClass()){
 					baseEntityManager.remove(dbperm);

@@ -24,7 +24,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	private int sortStartIndex = 1000;
 	
 
-	public Map<String, IPermission> getMenuNodeMap() {
+	public Map<String, ? extends IPermission> getMenuNodeMap() {
 		return menuNodeMap;
 	}
 	

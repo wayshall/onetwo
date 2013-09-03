@@ -650,14 +650,20 @@ public abstract class StringUtils {
 		addWithTrim(collections, false, strs);
 	}
 
-	public static String getNotBlank(String str1, String str2, String defValue) {
-		if (StringUtils.isBlank(str1)) {
-			if (StringUtils.isBlank(str2))
-				return defValue;
-			else
-				return str2;
+	public static String defaultValue(String val, String def){
+		if(isBlank(val))
+			return def;
+		return val;
+	}
+
+	public static String defaultValues(String val, String... defs){
+		if(isBlank(val)){
+			for(String def : defs){
+				if(isNotBlank(def))
+					return def;
+			}
 		}
-		return str1;
+		return val;
 	}
 
 	public static boolean matchPrefix(String key, String... prefixs) {

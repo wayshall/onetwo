@@ -3,7 +3,6 @@ package org.onetwo.common.spring.web;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +16,9 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.CodeMessager;
-import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -79,27 +76,8 @@ abstract public class AbstractBaseController {
 	 * @param models "key1", value1, "key2", value2 ...
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected ModelAndView mv(String viewName, Object... models){
-		ModelAndView mv = new ModelAndView(viewName);
-//		mv.getModel().put(UrlHelper.MODEL_KEY, getUrlMeta());
-		if(LangUtils.isEmpty(models)){
-			return mv;
-		}
-		
-		if(models.length==1){
-			if(Map.class.isInstance(models[0])){
-				mv.addAllObjects((Map<String, ?>)models[0]);
-			}else{
-				mv.addObject(models[0]);
-				mv.addObject(SingleReturnWrapper.wrap(models[0]));
-//				mv.addObject(SINGLE_MODEL_FLAG_KEY, true);
-			}
-		}else{
-			Map<String, ?> modelMap = LangUtils.asMap(models);
-			mv.addAllObjects(modelMap);
-		}
-		return mv;
+		return JFishWebUtils.mv(viewName, models);
 	}
 	
 	public ModelAndView doInModelAndView(HttpServletRequest request, ModelAndView mv){

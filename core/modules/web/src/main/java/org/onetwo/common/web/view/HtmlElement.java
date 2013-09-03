@@ -1,6 +1,7 @@
 package org.onetwo.common.web.view;
 
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 abstract public class HtmlElement {
 
@@ -13,6 +14,9 @@ abstract public class HtmlElement {
 	protected String onclick;
 	
 	protected String attributes;
+	
+
+	protected StringBuilder attributesBuf;
 
 	public String getId() {
 		if(StringUtils.isBlank(id) && StringUtils.isNotBlank(getName()))
@@ -81,5 +85,24 @@ abstract public class HtmlElement {
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+	public void buildTagAttributesString(){
+		this.attributesBuf = new StringBuilder();
+		buildAttributeTag("id", getId());
+		buildAttributeTag("name", getName());
+		buildAttributeTag("title", getTitle());
+		buildAttributeTag("style", getCssStyle());
+		buildAttributeTag("class", getCssClass());
+		buildAttributeTag("onclick", getOnclick());
+	}
 	
+	protected void buildAttributeTag(String attr, Object val){
+		String valStr = val==null?"":HtmlUtils.htmlEscape(val.toString());
+		attributesBuf.append(attr).append("=\"").append(valStr).append("\"");
+	}
+
+	public String getAttributesHtml() {
+		return attributesBuf.toString();
+	}
+
 }

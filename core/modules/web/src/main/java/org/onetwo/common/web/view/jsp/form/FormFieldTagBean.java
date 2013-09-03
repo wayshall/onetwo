@@ -1,6 +1,5 @@
 package org.onetwo.common.web.view.jsp.form;
 
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -9,7 +8,6 @@ public class FormFieldTagBean extends HtmlElement {
 
 	private FormFieldType type;
 	private boolean errorTag;
-	private String render;
 	private String value;
 	private String dataFormat;
 	
@@ -17,15 +15,23 @@ public class FormFieldTagBean extends HtmlElement {
 	
 	private FormTagBean formBean;
 	
+
+	private boolean readOnly;
+	private boolean disabled;
 	
-	public boolean isAutoRender(){
-		return StringUtils.isBlank(render);
+	public boolean isHtmlTypeRender(){
+		return FormFieldType.html == type;
 	}
 	
-	public boolean isHtmlRender(){
-		return "html".equals(render);
+	public void buildTagAttributesString(){
+		super.buildTagAttributesString();
+		if(this.readOnly){
+			this.attributesBuf.append("readOnly");
+		}
+		if(this.disabled){
+			this.attributesBuf.append("disabled");
+		}
 	}
-	
 	public FormFieldType getType() {
 		return type;
 	}
@@ -37,12 +43,6 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 	public void setErrorTag(boolean errorTag) {
 		this.errorTag = errorTag;
-	}
-	public String getRender() {
-		return render;
-	}
-	public void setRender(String render) {
-		this.render = render;
 	}
 
 	public String getBodyContent() {
@@ -79,13 +79,27 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public String getDataFormat() {
-		if(StringUtils.isBlank(dataFormat))
-			return DateUtil.Date_Only;
 		return dataFormat;
 	}
 
 	public void setDataFormat(String dataFormat) {
 		this.dataFormat = dataFormat;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 	

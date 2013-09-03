@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.web.utils;
 
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,6 +9,8 @@ import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
+import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -231,5 +234,27 @@ public final class JFishWebUtils {
 			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
 		}
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+	}
+	
+	public static ModelAndView mv(String viewName, Object... models){
+		ModelAndView mv = new ModelAndView(viewName);
+//		mv.getModel().put(UrlHelper.MODEL_KEY, getUrlMeta());
+		if(LangUtils.isEmpty(models)){
+			return mv;
+		}
+		
+		if(models.length==1){
+			if(Map.class.isInstance(models[0])){
+				mv.addAllObjects((Map<String, ?>)models[0]);
+			}else{
+				mv.addObject(models[0]);
+				mv.addObject(SingleReturnWrapper.wrap(models[0]));
+//				mv.addObject(SINGLE_MODEL_FLAG_KEY, true);
+			}
+		}else{
+			Map<String, ?> modelMap = LangUtils.asMap(models);
+			mv.addAllObjects(modelMap);
+		}
+		return mv;
 	}
 }

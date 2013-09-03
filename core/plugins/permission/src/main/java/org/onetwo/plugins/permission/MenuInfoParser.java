@@ -13,7 +13,7 @@ public interface MenuInfoParser {
 	public abstract String parseCode(Class<?> permClass);
 	
 	public String getRootMenuCode();
-	public Map<String, IPermission> getMenuNodeMap();
+	public Map<String, ? extends IPermission> getMenuNodeMap();
 	public IPermission getMenuNode(Class<?> clazz);
 	public IMenu<?, ?> getRootMenu();
 

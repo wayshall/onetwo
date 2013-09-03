@@ -1375,10 +1375,10 @@ public class LangUtils {
 	}
 	
 	public static Object formatValue(Object value, String dataFormat){
-		if(StringUtils.isBlank(dataFormat))
-			return value;
 		Object actualValue;
 		if(value instanceof Date){
+			if(StringUtils.isBlank(dataFormat))
+				dataFormat = DateUtil.Date_Time;
 			actualValue = DateUtil.format(dataFormat, (Date)value);
 		}else if(value instanceof Number && dataFormat != null) {
 			NumberFormat nf = new DecimalFormat(dataFormat);
@@ -1389,5 +1389,5 @@ public class LangUtils {
 		}
 		return actualValue;
 	}
-	
+
 }

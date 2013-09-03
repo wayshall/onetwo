@@ -3,7 +3,6 @@ package org.onetwo.common.web.view.jsp.form;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
@@ -15,7 +14,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private static final long serialVersionUID = -5324408407472195764L;
 	private FormFieldType type = FormFieldType.input;
 	private boolean errorTag = true;
-	private String render;
+//	private String render;
 	private String dataFormat;
 	private String value;
 	
@@ -23,7 +22,9 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private Object items;
 	private String itemLabel;
 	private String itemValue;
-	
+
+	private boolean readOnly;
+	private boolean disabled;
 	
 	@Override
 	public FormFieldTagBean createComponent() {
@@ -39,9 +40,11 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		
 		component.setType(type);
 		component.setErrorTag(errorTag);
-		component.setRender(render);
+//		component.setRender(render);
 		component.setValue(value);
 		component.setDataFormat(dataFormat);
+		component.setReadOnly(readOnly);
+		component.setDisabled(disabled);
 		
 		switch (type) {
 			case input:
@@ -63,6 +66,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			default:
 				break;
 		}
+		
+		this.component.buildTagAttributesString();
 	}
 	
 	private void populateSelect(FormItemsTagBean sl){
@@ -83,7 +88,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		if(formBean==null)
 			throw new JspException("no parent form tag found for field : " + getName());
 		
-		if(component.isHtmlRender()){
+		if(component.isHtmlTypeRender()){
 			BodyContent bc = getBodyContent();
 			if(bc!=null)
 				component.setBodyContent(bc.getString());
@@ -103,14 +108,6 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setErrorTag(boolean errorTag) {
 		this.errorTag = errorTag;
-	}
-
-	public String getRender() {
-		return render;
-	}
-
-	public void setRender(String render) {
-		this.render = render;
 	}
 
 	public String getValue() {
@@ -135,6 +132,14 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setDataFormat(String dataFormat) {
 		this.dataFormat = dataFormat;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 }
