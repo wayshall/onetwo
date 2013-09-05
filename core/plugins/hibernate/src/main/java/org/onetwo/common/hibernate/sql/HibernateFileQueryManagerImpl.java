@@ -8,6 +8,7 @@ import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -19,11 +20,15 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	
 	private BaseEntityManager baseEntityManager;
 	private JFishNamedSqlFileManager<HibernateNamedInfo> sqlFileManager;
+	private FileSqlParser<HibernateNamedInfo> parser;
 	
 	public HibernateFileQueryManagerImpl(String dbname, boolean watchSqlFile, BaseEntityManager baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		sqlFileManager = new JFishNamedSqlFileManager<HibernateNamedInfo> (dbname, watchSqlFile, HibernateNamedInfo.class);
 		this.baseEntityManager = baseEntityManager;
+		FileSqlParser<HibernateNamedInfo> p = new FileSqlParser<HibernateNamedInfo>(sqlFileManager);
+		p.initialize();
+		this.parser = p;
 	}
 
 	public HibernateNamedInfo getNamedQueryInfo(String name) {
@@ -46,7 +51,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 		Assert.notNull(type);
 
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
-		HibernateFileQueryImpl jq = new HibernateFileQueryImpl(baseEntityManager, nameInfo, count);
+		HibernateFileQueryImpl jq = new HibernateFileQueryImpl(baseEntityManager, nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
 			jq.setParameters(LangUtils.asList(args));
@@ -62,7 +67,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	
 	public DataQuery createCountQuery(String queryName){
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
-		return new HibernateFileQueryImpl(baseEntityManager, nameInfo, true);
+		return new HibernateFileQueryImpl(baseEntityManager, nameInfo, true, parser);
 	}
 	
 
@@ -111,6 +116,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 		}
 		return page;
 	}
+	
 	@Override
 	public NamespacePropertiesManager<HibernateNamedInfo> getNamespacePropertiesManager() {
 		return sqlFileManager;

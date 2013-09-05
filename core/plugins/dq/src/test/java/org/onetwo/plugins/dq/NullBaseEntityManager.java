@@ -10,11 +10,67 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
+import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
 public class NullBaseEntityManager implements BaseEntityManager {
 
+	private FileNamedQueryFactory<NamespaceProperty> fileNamedQueryFactory = new FileNamedQueryFactory(){
+
+		@Override
+		public NamespacePropertiesManager getNamespacePropertiesManager() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void initQeuryFactory(BaseEntityManager em) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public DataQuery createQuery(String queryName, Object... args) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public DataQuery createQuery(String queryName, PlaceHolder type,
+				Object... args) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public DataQuery createCountQuery(String queryName, Object... args) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List findList(String queryName, Object... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object findUnique(String queryName, Object... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Page findPage(String queryName, Page page, Object... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	};
+	
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
 		// TODO Auto-generated method stub
@@ -244,8 +300,7 @@ public class NullBaseEntityManager implements BaseEntityManager {
 
 	@Override
 	public FileNamedQueryFactory getFileNamedQueryFactory() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.fileNamedQueryFactory;
 	}
 
 }

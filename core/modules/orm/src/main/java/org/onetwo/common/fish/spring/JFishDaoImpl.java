@@ -471,7 +471,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		}else{
 			q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
 		}
-		JFishQuery jq = q.getRawQuery();
+		JFishQuery jq = q.getRawQuery(JFishQuery.class);
 		jq.setResultClass(extQuery.getEntityClass());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());

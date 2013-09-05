@@ -20,6 +20,7 @@ import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
+import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -36,7 +37,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
-	private FileNamedQueryFactory<?> fileNamedQueryFactory;
+	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
 	
 	@Resource
 	private DataSource dataSource;
@@ -52,8 +53,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		String db = JdbcUtils.getDataBase(dataSource).toString();
-		FileNamedQueryFactoryListener<?> listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		FileNamedQueryFactory<?> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
+		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
 		fq.initQeuryFactory(this);
 		this.fileNamedQueryFactory = fq;
 	}

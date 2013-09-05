@@ -20,10 +20,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 
-public class DefaultQueryObjectFactoryManager implements ApplicationContextAware, FileNamedQueryFactoryListener<NamespaceProperty> {
+public class DefaultQueryObjectFactoryManager implements ApplicationContextAware, FileNamedQueryFactoryListener {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-	private NamespacePropertiesManager<NamespaceProperty> namespacePropertiesManager;
+	private NamespacePropertiesManager<? extends NamespaceProperty> namespacePropertiesManager;
 	
 	private ApplicationContext applicationContext;
 	private QueryObjectFactory queryObjectFactory;
@@ -31,7 +31,7 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 	
 
 	@Override
-	public void onInitialized(BaseEntityManager baseEntityManager, FileNamedQueryFactory<NamespaceProperty> fq) {
+	public void onInitialized(BaseEntityManager baseEntityManager, FileNamedQueryFactory<? extends NamespaceProperty> fq) {
 		Assert.notNull(queryObjectFactory);
 		this.namespacePropertiesManager = fq.getNamespacePropertiesManager();
 		
@@ -46,11 +46,11 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		}
 		
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
-		Collection<NamespaceProperties<NamespaceProperty>> namespacelist = namespacePropertiesManager.getAllNamespaceProperties();
+		Collection<?> namespacelist = namespacePropertiesManager.getAllNamespaceProperties();
 		
 		Class<?> dqInterface = null;
 		String beanName = null;
-		for(NamespaceProperties<? extends NamespaceProperty> nsp : namespacelist){
+		for(NamespaceProperties<NamespaceProperty> nsp : (Collection<NamespaceProperties<NamespaceProperty>>)namespacelist){
 			if(nsp.isGlobal())
 				continue;
 			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());

@@ -7,15 +7,31 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 public class JFishNamedFileQueryInfo extends NamespaceProperty {
+	public static final String COUNT_POSTFIX = "-count";
+
+	public static boolean isCountName(String name){
+		return name.endsWith(COUNT_POSTFIX);
+	}
+	public static String trimCountPostfix(String name){
+		if(!isCountName(name))
+			return name;
+		return name.substring(0, name.length() - COUNT_POSTFIX.length());
+	}
+	
 	private String mappedEntity;
 	private String countSql;
-	private boolean ignoreNull;
+	private FileSqlParserType parser;
+	
 	
 	private Class<?> mappedEntityClass;
 
 
 	public String getSql() {
 		return getValue();
+	}
+	
+	public String getCountName(){
+		return getFullName() + COUNT_POSTFIX;
 	}
 
 	public void setSql(String sql) {
@@ -49,16 +65,21 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	}
 
 	public boolean isIgnoreNull() {
-		return ignoreNull;
+		return parser==FileSqlParserType.IGNORENULL;
 	}
 
-	public void setIgnoreNull(boolean ignoreNull) {
-		this.ignoreNull = ignoreNull;
-	}
 	
+	public FileSqlParserType getFileSqlParserType() {
+		return parser;
+	}
+
+	public void setParser(String parser) {
+		this.parser = FileSqlParserType.valueOf(parser.toUpperCase());
+	}
+/*
 	public boolean isNeedParseSql(){
 		return isIgnoreNull();
-	}
+	}*/
 
 	public String toString() {
 		return LangUtils.append("{namespace:, ", getNamespace(), ", name:", getName(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", getCountSql(), "}");

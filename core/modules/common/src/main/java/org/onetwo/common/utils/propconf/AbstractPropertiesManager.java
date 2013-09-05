@@ -112,7 +112,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	public static final String NOTE = "--";
 	public static final String NAME_PREFIX = "@";
 	public static final String EQUALS_MARK = "=";
-	public static final String IGNORE_NULL_KEY = "ignore.null";
+//	public static final String IGNORE_NULL_KEY = "ignore.null";
 	public static final String JFISH_SQL_POSTFIX = ".jfish.sql";
 
 	private FileWatcher fileMonitor;
@@ -225,9 +225,9 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				}
 				propBean = ReflectUtils.newInstance(beanClassOfProperty);
 				val = wrapper.getAndThrowIfEmpty(key);
-				if(key.endsWith(IGNORE_NULL_KEY)){
+				/*if(key.endsWith(IGNORE_NULL_KEY)){
 					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
-				}
+				}*/
 				propBean.setName(key);
 				propBean.setValue(val);
 				propBean.setNamespace(namespace);

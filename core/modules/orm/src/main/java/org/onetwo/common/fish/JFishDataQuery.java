@@ -27,7 +27,7 @@ public class JFishDataQuery implements DataQuery {
 	}
 
 	@Override
-	public Object getSingleResult() {
+	public <T> T getSingleResult() {
 		return jfishQuery.getSingleResult();
 	}
 
@@ -91,13 +91,17 @@ public class JFishDataQuery implements DataQuery {
 	}
 
 	@Override
-	public <T> T getRawQuery() {
+	public <T> T getRawQuery(Class<T> clazz) {
 		return (T)jfishQuery;
 	}
 
 	@Override
 	public DataQuery setQueryConfig(Map<String, Object> configs) {
 		return this;
+	}
+
+	public JFishQuery getJfishQuery() {
+		return jfishQuery;
 	}
 
 }

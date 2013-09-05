@@ -1,10 +1,13 @@
 package org.onetwo.common.web.view.jsp.form;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.web.servlet.tags.NestedPathTag;
 
 @SuppressWarnings("serial")
 public class FormTag extends BaseHtmlTag<FormTagBean> {
@@ -22,9 +25,23 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		return new FormTagBean();
 	}
 
+	protected String resolveModelAttribute() {
+		return component.getName();
+	}
+	
+	protected void forSpringFormTag(){
+		// Expose the form object name for nested tags...
+		String modelAttribute = resolveModelAttribute();
+		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+//		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+		this.pageContext.setAttribute(NestedPathTag.NESTED_PATH_VARIABLE_NAME, modelAttribute + PropertyAccessor.NESTED_PROPERTY_SEPARATOR, PageContext.REQUEST_SCOPE);
+	}
+	
 	@Override
 	public int doStartTag() throws JspException {
 		int rs = super.doStartTag();
+		
+		this.forSpringFormTag();
 		
 		Object data = dataProvider;
 		if(data==null){

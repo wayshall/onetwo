@@ -1,10 +1,14 @@
 package org.onetwo.common.spring.web.mvc;
 
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
+import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
@@ -129,6 +133,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		String defaultViewName = null;
 		boolean detail = true;
 		boolean authentic = false;
+		
+		boolean findMsgByCode = true;
 		if(ex instanceof MaxUploadSizeExceededException){
 			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = MvcError.MAX_UPLOAD_SIZE_ERROR;
@@ -151,6 +157,17 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";
+		}else if(ex instanceof ConstraintViolationException){
+			ConstraintViolationException cex = (ConstraintViolationException) ex;
+			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
+			int i = 0;
+			for(ConstraintViolation<?> cv : constrants){
+				if(i!=0)
+					errorMsg+=", ";
+				errorMsg += cv.getMessage();
+				i++;
+			}
+			findMsgByCode = false;
 		}else{
 			defaultViewName = ExceptionView.UNDEFINE;
 		}
@@ -166,7 +183,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			errorArgs = ((ExceptionMessageArgs)ex).getArgs();
 		}
 
-		errorMsg = getMessage(errorCode, errorArgs, ex.getMessage(), getLocale());
+		if(findMsgByCode)
+			errorMsg = getMessage(errorCode, errorArgs, ex.getMessage(), getLocale());
+		
 		if(StringUtils.isBlank(errorMsg)){
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}

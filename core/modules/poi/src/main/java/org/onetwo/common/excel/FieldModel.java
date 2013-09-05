@@ -240,7 +240,7 @@ public class FieldModel {
 	}
 
 	public String getStyle() {
-		return StringUtils.getNotBlank(style, getParentRow().getFieldStyle(), "");
+		return StringUtils.defaultValues(style, getParentRow().getFieldStyle(), "");
 	}
 
 	public void setStyle(String style) {
@@ -248,7 +248,7 @@ public class FieldModel {
 	}
 
 	public String getFont() {
-		return StringUtils.getNotBlank(font, getParentRow().getFieldFont(), "");
+		return StringUtils.defaultValues(font, getParentRow().getFieldFont(), "");
 	}
 
 	public void setFont(String font) {
@@ -256,7 +256,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderFont() {
-		return StringUtils.getNotBlank(headerFont, getParentRow().getFieldHeaderFont(), "");
+		return StringUtils.defaultValues(headerFont, getParentRow().getFieldHeaderFont(), "");
 	}
 
 	public void setHeaderFont(String headerFont) {
@@ -264,7 +264,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderStyle() {
-		return StringUtils.getNotBlank(headerStyle, getParentRow().getFieldHeaderStyle(), "");
+		return StringUtils.defaultValues(headerStyle, getParentRow().getFieldHeaderStyle(), "");
 	}
 
 	public void setHeaderStyle(String headerStyle) {

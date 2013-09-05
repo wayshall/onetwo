@@ -66,7 +66,8 @@ public class HibernateQueryImpl implements DataQuery {
 			return this;
 		int position = 1;
 		for(Object value : params){
-			query.setParameter(position++, value);
+			query.setParameter(position, value);
+			position++;
 		}
 		return this;
 	}
@@ -103,7 +104,7 @@ public class HibernateQueryImpl implements DataQuery {
 	}
 
 	@Override
-	public <T> T getRawQuery() {
+	public <T> T getRawQuery(Class<T> clazz) {
 		return (T)query;
 	}
 

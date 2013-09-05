@@ -109,7 +109,7 @@ public class JpaQueryImpl implements DataQuery {
 	}
 
 	@Override
-	public <T> T getRawQuery() {
+	public <T> T getRawQuery(Class<T> clazz) {
 		return (T)query;
 	}
 

@@ -63,6 +63,7 @@ public class ReflectUtils {
 		 * @return
 		 */
 		public boolean isIgnoreAutoCopy();
+		public boolean isCheckSetMethod();
 		public boolean isThrowIfError();
 		public String[] getIgnoreFields();
 		public void copy(Object source, Object target, String property);
@@ -79,6 +80,7 @@ public class ReflectUtils {
 		private boolean ignoreOther = false;
 		private boolean ignoreAutoCopy = false;
 		private boolean throwIfError = false;
+		private boolean checkSetMethod = false;
 		private String[] ignoreFields;
 		
 		@Override
@@ -135,7 +137,16 @@ public class ReflectUtils {
 		}
 
 		public CopyConfig throwIfError() {
-			this.throwIfError = throwIfError;
+			this.throwIfError = true;
+			return this;
+		}
+
+		public boolean isCheckSetMethod() {
+			return checkSetMethod;
+		}
+
+		public CopyConfig checkSetMethod() {
+			this.checkSetMethod = true;
 			return this;
 		}
 		
@@ -250,8 +261,12 @@ public class ReflectUtils {
 		setProperty(element, propName, value, true);
 	}
 
-	public static void setProperty(Object element, String propName,
-			Object value, boolean throwIfError) {
+
+	public static void setProperty(Object element, String propName, Object value, boolean throwIfError) {
+		setProperty(element, propName, value, throwIfError, false);
+	}
+	
+	public static void setProperty(Object element, String propName, Object value, boolean throwIfError, boolean checkSetMethod) {
 		try {
 			if (element instanceof Map) {
 				((Map) element).put(propName, value);
@@ -264,6 +279,13 @@ public class ReflectUtils {
 				LangUtils.throwBaseException("the property[" + propName
 						+ "] type is primitive[" + prop.getPropertyType()
 						+ "], the value can not be null");
+			}
+			if(prop.getWriteMethod()==null){
+				if(!checkSetMethod){
+					throw new NoSuchMethodException("property: " + propName);
+				}else{
+					return ;
+				}
 			}
 			invokeMethod(prop.getWriteMethod(), element, value);
 		} catch (Exception e) {
@@ -875,6 +897,9 @@ public class ReflectUtils {
 	public static Map toMap(boolean ignoreNull, Object obj) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
+		if(obj.getClass().isArray()){
+			return LangUtils.asMap((Object[])obj);
+		}
 		PropertyDescriptor[] props = desribProperties(obj.getClass());
 		if (props == null || props.length == 0)
 			return Collections.EMPTY_MAP;
@@ -969,42 +994,39 @@ public class ReflectUtils {
 	}
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
-		copy(source, target, CopyConfig.create().throwIfError().ignoreFields(excludeNames));
+		copy(source, target, CopyConfig.create().throwIfError().checkSetMethod().ignoreFields(excludeNames));
 	}
 	
 	public static void copy(Object source, Object target, CopyConf conf) {
 		if (source == null)
 			return;
-		Collection<String> propNames = null;
+		List<String> propNames = null;
 		if (target instanceof Map) {
 			propNames = getPropertiesName(source);
 		} else {
 			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
 		}
 		Object value = null;
-		try {
-			for (String prop : propNames) {
-				if(conf.isIgnoreAutoCopy()){
-					conf.copy(source, target, prop);
-				}else{
-					if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
-						continue;//ignore
-					}
-					value = getProperty(source, prop);
-					if(conf.isIgnoreNull() && value==null)
-						continue;
-					if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
-						continue;
-					if(conf.isIgnoreOther(prop, value)){
-						continue;
-					}
-					setProperty(target, prop, value);
+		
+		for (String prop : propNames) {
+			if(conf.isIgnoreAutoCopy()){
+				conf.copy(source, target, prop);
+			}else{
+				if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
+					continue;//ignore
 				}
+				value = getProperty(source, prop);
+				if(conf.isIgnoreNull() && value==null)
+					continue;
+				if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
+					continue;
+				if(conf.isIgnoreOther(prop, value)){
+					continue;
+				}
+				setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
 			}
-		} catch (Exception e) {
-			if (conf.isThrowIfError())
-				LangUtils.throwBaseException(e);
 		}
+		
 	}
 
 	public static Map field2Map(Object obj) {

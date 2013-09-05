@@ -32,7 +32,7 @@ public interface DataQuery {
 	
 	public DataQuery setLimited(final Integer first, final Integer size);
 	
-	public <T> T getRawQuery();
+	public <T> T getRawQuery(Class<T> clazz);
 	
 	public DataQuery setQueryConfig(Map<String, Object> configs);
 	
