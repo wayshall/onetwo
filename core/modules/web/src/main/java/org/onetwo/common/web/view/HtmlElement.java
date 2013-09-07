@@ -16,7 +16,7 @@ abstract public class HtmlElement {
 	protected String attributes;
 	
 
-	protected StringBuilder attributesBuf;
+//	protected StringBuilder attributesBuf;
 
 	public String getId() {
 		if(StringUtils.isBlank(id) && StringUtils.isNotBlank(getName()))
@@ -86,23 +86,35 @@ abstract public class HtmlElement {
 		this.label = label;
 	}
 
-	public void buildTagAttributesString(){
-		this.attributesBuf = new StringBuilder();
-		buildAttributeTag("id", getId());
-		buildAttributeTag("name", getName());
-		buildAttributeTag("title", getTitle());
-		buildAttributeTag("style", getCssStyle());
-		buildAttributeTag("class", getCssClass());
-		buildAttributeTag("onclick", getOnclick());
+	public void buildTagAttributesString(StringBuilder attributesBuf){
+		buildAttributeTag(attributesBuf, "id", getId());
+		buildAttributeTag(attributesBuf, "name", getName());
+		buildAttributeTag(attributesBuf, "title", getTitle());
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+	}
+
+	public void buildExtTagAttributesString(StringBuilder attributesBuf){
 	}
 	
-	protected void buildAttributeTag(String attr, Object val){
+	protected void buildAttributeTag(StringBuilder attributesBuf, String attr, Object val){
 		String valStr = val==null?"":HtmlUtils.htmlEscape(val.toString());
 		attributesBuf.append(attr).append("=\"").append(valStr).append("\"");
 	}
 
 	public String getAttributesHtml() {
+		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "id", getId());
+		buildAttributeTag(attributesBuf, "name", getName());
+		buildAttributeTag(attributesBuf, "title", getTitle());
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		
+		this.buildExtTagAttributesString(attributesBuf);
 		return attributesBuf.toString();
 	}
+
 
 }

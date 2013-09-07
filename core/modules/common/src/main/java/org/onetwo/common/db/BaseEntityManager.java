@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public interface BaseEntityManager {
 
 	public void remove(Object entity);
 	
-	public void removeList(List entities);
+	public void removeList(Collection<?> entities);
 
 	public <T> T removeById(Class<T> entityClass, Serializable id);
 

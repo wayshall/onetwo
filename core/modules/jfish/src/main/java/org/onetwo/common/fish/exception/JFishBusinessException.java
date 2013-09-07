@@ -3,6 +3,7 @@ package org.onetwo.common.fish.exception;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 
 /***********
  * 
@@ -29,19 +30,29 @@ public class JFishBusinessException extends Exception implements SystemErrorCode
 		e.setArgs(args);
 		return e;
 	}
+
+
+	public static JFishBusinessException createByMsg(String msg){
+		JFishBusinessException e = new JFishBusinessException(msg, null);
+		return e;
+	}
 	
 	public static final String DEFAULT_MESSAGE = "[business error 业务错误]:";
 
 	private String code = BusinessErrorCode.BASE_CODE;
 	private Object[] args;
 
-	public JFishBusinessException(String msg, Throwable cause, String code) {
+	public JFishBusinessException(String code, Throwable cause, String msg) {
 		super(msg, cause);
-		this.code = code;
+		initErrorCode(code);
+	}
+	final protected void initErrorCode(String code){
+		if(StringUtils.isNotBlank(code))
+			this.code = code;//appendBaseCode(code);
 	}
 
 	public JFishBusinessException(String code) {
-		this.code = code;
+		initErrorCode(code);
 	}
 
 	public JFishBusinessException(String code, Throwable cause) {

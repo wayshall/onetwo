@@ -19,6 +19,11 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	//改字段是否可以排序
 	private boolean orderable = false;
 	private String dataFormat;
+
+	private String permission;
+	private boolean showable = true;
+	
+	private boolean ignoreField;
 	
 	@Override
 	public FieldTagBean createComponent() {
@@ -27,6 +32,9 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	@Override
 	public int doEndTag() throws JspException {
+		if(ignoreField)
+			return EVAL_PAGE;
+		
 //		assertParentTag(DataRowTag.class);
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
 		if(row==null)
@@ -58,8 +66,18 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setOrderType(Page.DESC.equals(order)?Page.ASC:Page.DESC);
 	}
 	
+	private boolean checkIgnoreField(){
+		if(!showable)
+			return true;
+		return !checkPermission(permission);
+	}
+	
 	@Override
 	public int doStartTag() throws JspException {
+		this.ignoreField = this.checkIgnoreField();
+		if(ignoreField)
+			return SKIP_BODY;
+		
 		super.doStartTag();
 		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 	}
@@ -98,6 +116,14 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setDataFormat(String dataFormat) {
 		this.dataFormat = dataFormat;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+
+	public void setShowable(boolean showable) {
+		this.showable = showable;
 	}
 
 }

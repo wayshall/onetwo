@@ -2,6 +2,7 @@ package org.onetwo.common.fish;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -281,7 +282,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		if(LangUtils.isEmpty(entities))
 			return ;
 		getJfishDao().delete(entities);

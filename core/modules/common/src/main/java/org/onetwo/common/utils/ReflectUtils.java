@@ -49,109 +49,8 @@ public class ReflectUtils {
 		void doWithProperty(PropertyDescriptor propertyDescriptor);
 	}
 
-	public static interface CopyConf {
-		/****
-		 * 是否忽略null值，默认false
-		 * @return
-		 */
-		public boolean isIgnoreNull();
-		public boolean isIgnoreBlank();
-		public boolean isIgnoreOther(String property, Object value);
-		
-		/*******
-		 * 是否自动复制，默认false，如果返回true，则所有复制策略失效，通过CopyConf#copy方法来执行复制，
-		 * @return
-		 */
-		public boolean isIgnoreAutoCopy();
-		public boolean isCheckSetMethod();
-		public boolean isThrowIfError();
-		public String[] getIgnoreFields();
-		public void copy(Object source, Object target, String property);
-	}
 	
-	public static class CopyConfig implements CopyConf {
-		
-		public static CopyConfig create() {
-			return new CopyConfig();
-		};
-
-		private boolean ignoreNull = false;
-		private boolean ignoreBlank = false;
-		private boolean ignoreOther = false;
-		private boolean ignoreAutoCopy = false;
-		private boolean throwIfError = false;
-		private boolean checkSetMethod = false;
-		private String[] ignoreFields;
-		
-		@Override
-		public boolean isIgnoreNull() {
-			return ignoreNull;
-		}
-
-		@Override
-		public boolean isIgnoreBlank() {
-			return ignoreBlank;
-		}
-
-		@Override
-		public boolean isIgnoreOther(String property, Object value) {
-			return ignoreOther;
-		}
-
-		@Override
-		public boolean isIgnoreAutoCopy() {
-			return ignoreAutoCopy;
-		}
-
-		@Override
-		public void copy(Object source, Object target, String property) {
-			throw new UnsupportedOperationException();
-		}
-
-		public CopyConfig ignoreNull() {
-			this.ignoreNull = true;
-			return this;
-		}
-
-		public CopyConfig ignoreBlank() {
-			this.ignoreBlank = true;
-			return this;
-		}
-
-		public CopyConfig ignoreAutoCopy() {
-			this.ignoreAutoCopy = true;
-			return this;
-		}
-
-		public String[] getIgnoreFields() {
-			return ignoreFields;
-		}
-
-		public CopyConfig ignoreFields(String... ignoreFields) {
-			this.ignoreFields = ignoreFields;
-			return this;
-		}
-
-		public boolean isThrowIfError() {
-			return throwIfError;
-		}
-
-		public CopyConfig throwIfError() {
-			this.throwIfError = true;
-			return this;
-		}
-
-		public boolean isCheckSetMethod() {
-			return checkSetMethod;
-		}
-
-		public CopyConfig checkSetMethod() {
-			this.checkSetMethod = true;
-			return this;
-		}
-		
-		
-	}
+	
 
 	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
@@ -1701,10 +1600,12 @@ public class ReflectUtils {
 	
 	public static Class<?>[] getObjectClasses(Object[] objs){
 		if(LangUtils.isEmpty(objs))
-			return null;
+			return EMPTY_CLASSES;
 		List<Class<?>> clslist = new ArrayList<Class<?>>(objs.length);
 		for(Object obj : objs){
-			clslist.add(obj.getClass());
+			if(obj==null)
+				continue;
+			clslist.add(getObjectClass(obj));
 		}
 		return clslist.toArray(new Class[clslist.size()]);
 	}
@@ -1749,6 +1650,34 @@ public class ReflectUtils {
 			parentClass = parentClass.getDeclaringClass();
 		return parentClass;
 	}
+	
+	public static boolean isInstanceOfAny(Object obj, Class<?>...classes){
+		if(LangUtils.isEmpty(classes))
+			return false;
+		for(Class<?> cls :classes){
+			if(cls.isInstance(obj))
+				return true;
+		}
+		return false;
+	}
+	
+	public static <T> void copyIgnoreAnnotations(T source, T target, Class<? extends Annotation>...classes){
+		PropertyDescriptor[] props = ReflectUtils.desribProperties(source.getClass());
+		for(PropertyDescriptor prop : props){
+			Annotation[] annos = prop.getReadMethod().getAnnotations();
+			
+			if(AnnotationUtils.containsAny(annos, classes))
+				continue;
+			
+			Object val = ReflectUtils.getProperty(source, prop);
+			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
+				continue;
+			
+			ReflectUtils.setProperty(target, prop, val);
+		}
+	}
+	
+	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
 
 	public static void main(String[] args) {
 

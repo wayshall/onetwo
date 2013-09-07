@@ -9,14 +9,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.exception.ServiceException;
-
 @SuppressWarnings("unchecked")
 public class AnnotationUtils {
 
+	public static final Class<? extends Annotation>[] EMPTY_CLASSES = new Class[0];
 	private AnnotationUtils() {
 	}
 	
+	public static boolean containsAny(Annotation[] annos, Class<? extends Annotation>... annoClasses){
+		if(LangUtils.isEmpty(annos))
+			return false;
+		for(Annotation anno : annos){
+			if(ReflectUtils.isInstanceOfAny(anno, annoClasses))
+				return true;
+		}
+		return false;
+	}
 
 	public static Field findFirstField(Class<?> clazz, Class annotationClass) {
 		List<Field> fields = findAnnotationField(clazz, annotationClass);

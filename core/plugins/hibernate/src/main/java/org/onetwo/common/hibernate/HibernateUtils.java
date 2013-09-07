@@ -1,13 +1,26 @@
 package org.onetwo.common.hibernate;
 
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.tuple.StandardProperty;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 
-public abstract class HibernateUtils {
+public final class HibernateUtils {
+	
 
 	private static SessionFactory sessionFactory;
 	
@@ -44,5 +57,11 @@ public abstract class HibernateUtils {
 			}
 		}
 		return false;
+	}
+	
+	public static final Class<? extends Annotation>[] IGNORE_ANNO_CLASSES = new Class[]{ManyToOne.class, ManyToMany.class, OneToMany.class, OneToOne.class, Transient.class};
+	
+	public static <T> void copyWithoutRelations(T source, T target){
+		ReflectUtils.copyIgnoreAnnotations(source, target, IGNORE_ANNO_CLASSES);
 	}
 }

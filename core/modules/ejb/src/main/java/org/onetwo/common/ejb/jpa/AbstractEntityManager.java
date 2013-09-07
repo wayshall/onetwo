@@ -2,6 +2,7 @@ package org.onetwo.common.ejb.jpa;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +212,7 @@ abstract public class AbstractEntityManager implements EventSource {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		if(entities==null)
 			return ;
 		for(Object entity : entities){

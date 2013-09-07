@@ -20,7 +20,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 	
 	final protected void initErrorCode(String code){
-		if(code!=null)
+		if(StringUtils.isNotBlank(code))
 			this.code = code;//appendBaseCode(code);
 	}
 
@@ -45,7 +45,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 
 	public BaseException(String msg, Throwable cause) {
-		super("[" + msg + "] : " + cause.getMessage(), cause);
+		super("[" + msg + "] : " + (cause==null?"":cause.getMessage()), cause);
 		this.initErrorCode(null);
 	}
 

@@ -1,5 +1,6 @@
 package org.onetwo.plugins.permission;
 
+import org.onetwo.common.web.view.ViewPermission;
 import org.onetwo.plugins.permission.service.PermissionConfigBuilder;
 import org.onetwo.plugins.permission.service.PermissionHandlerMappingListener;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
@@ -29,6 +30,11 @@ public class PermissionPluginContext {
 	@Bean
 	public PermissionConfigBuilder permissionConfigBuilder(){
 		return new PermissionConfigBuilder();
+	}
+	
+	@Bean
+	public ViewPermission viewPermission(){
+		return new ViewPermissionImpl();
 	}
 	
 }

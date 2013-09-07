@@ -1,6 +1,7 @@
 package org.onetwo.common.nutz;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
@@ -79,7 +81,7 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -259,6 +261,18 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 
 	@Override
 	public <T> T getRawManagerObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
 		// TODO Auto-generated method stub
 		return null;
 	}

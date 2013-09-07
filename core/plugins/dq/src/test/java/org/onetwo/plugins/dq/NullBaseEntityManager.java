@@ -1,6 +1,7 @@
 package org.onetwo.plugins.dq;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -108,7 +109,7 @@ public class NullBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		// TODO Auto-generated method stub
 		
 	}

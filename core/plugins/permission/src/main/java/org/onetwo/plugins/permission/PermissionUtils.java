@@ -2,6 +2,7 @@ package org.onetwo.plugins.permission;
 
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.PermissionDetail;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 
 final public class PermissionUtils {
@@ -13,6 +14,8 @@ final public class PermissionUtils {
 	}
 
 	public static boolean hasPermission(String permissionCode){
+		if(StringUtils.isBlank(permissionCode))
+			return true;
 		UserDetail userDetail = JFishWebUtils.getUserDetail();
 		if(!PermissionDetail.class.isInstance(userDetail))
 			return false;

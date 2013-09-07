@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.sql.SequenceNameManager;
 
 @Stateless
@@ -46,6 +47,18 @@ public class AppEntityManagerImplForTest extends AbstractBaseEntityManager {
 	@Override
 	public EntityManager getRawManagerObject() {
 		return entityManager;
+	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

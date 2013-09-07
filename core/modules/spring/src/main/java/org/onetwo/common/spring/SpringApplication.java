@@ -70,9 +70,9 @@ public class SpringApplication {
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
+			logger.error("get bean from spring error! ");
 			if(throwIfError)
 				throw new BaseException("get bean from spring error! ", e);
-//			logger.error("get bean from spring error! ", e);
 		}
 		return bean;
 	}
@@ -96,15 +96,15 @@ public class SpringApplication {
 
 	public <T> T getBean(Class<T> clazz, boolean throwIfError) {
 		T bean = null;
-			String beanName = StringUtils.uncapitalize(clazz.getSimpleName());
+		String beanName = StringUtils.uncapitalize(clazz.getSimpleName());
 //			Map map = this.getAppContext().getBeansOfType(clazz);
-			Map map = getBeansMap(clazz);
-			if (map == null || map.isEmpty())
-				return (T) getBean(beanName, throwIfError);
-			else
-				bean = (T) map.get(beanName);
-			if (bean == null)
-				bean = (T) map.values().iterator().next();
+		Map map = getBeansMap(clazz);
+		if (map == null || map.isEmpty())
+			return (T) getBean(beanName, throwIfError);
+		else
+			bean = (T) map.get(beanName);
+		if (bean == null)
+			bean = (T) map.values().iterator().next();
 		
 		return bean;
 	}

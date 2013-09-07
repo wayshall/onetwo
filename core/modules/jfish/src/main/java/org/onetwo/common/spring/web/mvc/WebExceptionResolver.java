@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
@@ -17,7 +16,9 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.ExceptionMessageArgs;
+import org.onetwo.common.fish.exception.JFishBusinessException;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
+import org.onetwo.common.fish.exception.JFishServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -102,7 +103,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 
 		String eInfo = "";
-		if(BaseSiteConfig.getInstance().isDev()){
+		if(BaseSiteConfig.getInstance().isDev() && errorMessage.isDetail()){
 			eInfo = LangUtils.toString(ex, true);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY, eInfo);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY2, eInfo);
@@ -110,7 +111,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY, "");
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY2, "");
 		}
-		eInfo = errorMessage.toString()+"  "+ eInfo;
+//		eInfo = errorMessage.toString()+"  "+ eInfo;
 		model.put(EXCEPTION_STATCK_KEY, eInfo);
 		model.put(EXCEPTION_STATCK_KEY2, eInfo);
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
@@ -148,6 +149,12 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			detail = false;
 			authentic = true;
 		}else if(ex instanceof BusinessException){
+			defaultViewName = ExceptionView.BUSINESS;
+			detail = false;
+		}else if(ex instanceof JFishBusinessException){
+			defaultViewName = ExceptionView.BUSINESS;
+			detail = false;
+		}else if(ex instanceof JFishServiceException){
 			defaultViewName = ExceptionView.BUSINESS;
 			detail = false;
 		}else if(ex instanceof ServiceException){

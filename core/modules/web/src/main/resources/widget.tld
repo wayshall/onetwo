@@ -385,13 +385,25 @@
       <description><![CDATA[orderable]]></description>
       <name>orderable</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[orderable]]></description>
       <name>dataFormat</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[permission]]></description>
+      <name>permission</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[showable]]></description>
+      <name>showable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     
     <attribute>
@@ -552,6 +564,19 @@
     </attribute>
     
     <attribute>
+      <description><![CDATA[permission]]></description>
+      <name>permission</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[showable]]></description>
+      <name>showable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
       <description><![CDATA[items]]></description>
       <name>items</name>
       <required>false</required>
@@ -573,12 +598,12 @@
     <attribute>
       <name>readOnly</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>disabled</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     
     <attribute>

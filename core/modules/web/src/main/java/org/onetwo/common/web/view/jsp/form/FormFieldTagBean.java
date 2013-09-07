@@ -23,15 +23,15 @@ public class FormFieldTagBean extends HtmlElement {
 		return FormFieldType.html == type;
 	}
 	
-	public void buildTagAttributesString(){
-		super.buildTagAttributesString();
+	public void buildExtTagAttributesString(StringBuilder attributesBuf){
 		if(this.readOnly){
-			this.attributesBuf.append("readOnly");
+			attributesBuf.append("readOnly=\"readOnly\"");
 		}
 		if(this.disabled){
-			this.attributesBuf.append("disabled");
+			attributesBuf.append("disabled");
 		}
 	}
+	
 	public FormFieldType getType() {
 		return type;
 	}

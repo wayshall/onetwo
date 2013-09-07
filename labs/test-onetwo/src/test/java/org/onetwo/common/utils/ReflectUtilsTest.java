@@ -1,15 +1,18 @@
 package org.onetwo.common.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Id;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.utils.ReflectUtils.CopyConfig;
+import org.onetwo.common.profiling.UtilTimerStack;
 
-import com.opensymphony.xwork2.util.profiling.UtilTimerStack;
+import test.entity.UserEntity;
 
 public class ReflectUtilsTest {
 	
@@ -212,6 +215,23 @@ public class ReflectUtilsTest {
 		Assert.assertEquals(28, user.getAge());
 		
 //		System.out.println(user.getAddress().getDetail());
+	}
+	
+	@Test
+	public void testCopyIgnoreAnnotations(){
+		Class<? extends Annotation>[] classes = new Class[]{Id.class};
+		UserEntity source = new UserEntity();
+		source.setId(11L);
+		source.setUserName("test");
+		UserEntity target = new UserEntity();
+		ReflectUtils.copyIgnoreAnnotations(source, target);
+		Assert.assertEquals(source.getId(), target.getId());
+		Assert.assertEquals(source.getUserName(), target.getUserName());
+		
+		target = new UserEntity();
+		ReflectUtils.copyIgnoreAnnotations(source, target, classes);
+		Assert.assertNull(target.getId());
+		Assert.assertEquals(source.getUserName(), target.getUserName());
 	}
 	
 	

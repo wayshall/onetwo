@@ -26,6 +26,12 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private boolean readOnly;
 	private boolean disabled;
 	
+
+	private String permission;
+	private boolean showable = true;
+
+	private boolean ignoreField;
+	
 	@Override
 	public FormFieldTagBean createComponent() {
 		return FormUIFactory.createUIBean(type);
@@ -67,7 +73,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 		}
 		
-		this.component.buildTagAttributesString();
+//		this.component.buildTagAttributesString();
 	}
 	
 	private void populateSelect(FormItemsTagBean sl){
@@ -81,9 +87,27 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		}
 		sl.setItemDatas(itemDatas);
 	}
+
+	private boolean checkIgnoreField(){
+		if(!showable)
+			return true;
+		return !checkPermission(permission);
+	}
+	
+	@Override
+	public int doStartTag() throws JspException {
+		this.ignoreField = this.checkIgnoreField();
+		if(ignoreField)
+			return SKIP_BODY;
+		
+		return super.doStartTag();
+	}
 	
 	@Override
 	public int doEndTag() throws JspException {
+		if(ignoreField)
+			return EVAL_PAGE;
+		
 		FormTagBean formBean = getFormTagBean();
 		if(formBean==null)
 			throw new JspException("no parent form tag found for field : " + getName());
@@ -140,6 +164,14 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+
+	public void setShowable(boolean showable) {
+		this.showable = showable;
 	}
 
 }
