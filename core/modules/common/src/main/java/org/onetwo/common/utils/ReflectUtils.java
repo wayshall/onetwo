@@ -50,9 +50,11 @@ public class ReflectUtils {
 	}
 
 	
-	
 
-	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().checkSetMethod().ignoreNull().ignoreBlank();
+
+	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
+//	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
 	private static WeakHashMap<Class, List<Field>> FIELDS_CACHE = new WeakHashMap<Class, List<Field>>();
 	
@@ -149,7 +151,10 @@ public class ReflectUtils {
 	}
 
 	public static void setProperty(Object element, PropertyDescriptor prop, Object val) {
-		invokeMethod(getWriteMethod(element.getClass(), prop), element, LangUtils.tryCastTo(val, prop.getPropertyType()));
+		Method wmethod = getWriteMethod(element.getClass(), prop);
+		if(wmethod==null)
+			throw new BaseException("not write method: " + prop.getName());
+		invokeMethod(wmethod, element, LangUtils.tryCastTo(val, prop.getPropertyType()));
 	}
 
 	protected static Object getValue(Map map, String propName) {
@@ -872,31 +877,24 @@ public class ReflectUtils {
 	}
 
 	public static void copy(Object source, Object target, boolean throwIfError) {
-		if (source == null)
-			return;
-		Collection<String> propNames = null;
-		if (target instanceof Map) {
-			propNames = getPropertiesName(source);
-		} else {
-			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
-		}
-		Object value = null;
-		try {
-			for (String prop : propNames) {
-				value = getProperty(source, prop);
-				setProperty(target, prop, value);
-			}
-		} catch (Exception e) {
-			if (throwIfError)
-				LangUtils.throwBaseException(e);
-		}
+		copy(source, target, CopyConfig.create().throwIfError());
 	}
+
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
 		copy(source, target, CopyConfig.create().throwIfError().checkSetMethod().ignoreFields(excludeNames));
 	}
 	
+	public static void copyIgnoreBlank(Object source, Object target) {
+		copy(source, target, IGNORE_BLANK);
+	}
+	
 	public static void copy(Object source, Object target, CopyConf conf) {
+		copyByPropNames(source, target, new CopyConfAdapter(conf));
+	}
+	
+
+	public static void copyByPropNames(Object source, Object target, PropertyCopyer<String> copyer) {
 		if (source == null)
 			return;
 		List<String> propNames = null;
@@ -905,25 +903,9 @@ public class ReflectUtils {
 		} else {
 			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
 		}
-		Object value = null;
 		
 		for (String prop : propNames) {
-			if(conf.isIgnoreAutoCopy()){
-				conf.copy(source, target, prop);
-			}else{
-				if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
-					continue;//ignore
-				}
-				value = getProperty(source, prop);
-				if(conf.isIgnoreNull() && value==null)
-					continue;
-				if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
-					continue;
-				if(conf.isIgnoreOther(prop, value)){
-					continue;
-				}
-				setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
-			}
+			copyer.copy(source, target, prop);
 		}
 		
 	}
@@ -1230,8 +1212,6 @@ public class ReflectUtils {
 	public static Object invokeMethod(boolean throwIfError, Method method,
 			Object target, Object... args) {
 		try {
-			if(method==null)
-				throw new NullPointerException("this method is not exist!");
 			if (!method.isAccessible())
 				method.setAccessible(true);
 			return method.invoke(target, args);
@@ -1661,23 +1641,86 @@ public class ReflectUtils {
 		return false;
 	}
 	
+	/*********
+	 * 复制对象属性，但会忽略那些null值、空白字符和包含了指定注解的属性
+	 * @param source
+	 * @param target
+	 * @param classes
+	 */
 	public static <T> void copyIgnoreAnnotations(T source, T target, Class<? extends Annotation>...classes){
+		copy(source, target, new IgnoreAnnosCopyer(classes));
+	}
+	
+	public static <T> T copy(T source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
+		T target = newInstance(targetClass);
+		copy(source, target, copyer);
+		return target;
+	}
+
+	public static <T> void copy(T source, T target, PropertyCopyer<PropertyDescriptor> copyer){
 		PropertyDescriptor[] props = ReflectUtils.desribProperties(source.getClass());
 		for(PropertyDescriptor prop : props){
-			Annotation[] annos = prop.getReadMethod().getAnnotations();
-			
-			if(AnnotationUtils.containsAny(annos, classes))
-				continue;
-			
-			Object val = ReflectUtils.getProperty(source, prop);
-			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
-				continue;
-			
-			ReflectUtils.setProperty(target, prop, val);
+			copyer.copy(source, target, prop);
 		}
 	}
 	
-	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
+	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
+		
+		private final Class<? extends Annotation>[] classes;
+		
+
+		public IgnoreAnnosCopyer(Class<? extends Annotation>[] classes) {
+			super();
+			this.classes = classes;
+		}
+
+		@Override
+		public void copy(Object source, Object target, PropertyDescriptor prop) {
+			if(prop.getReadMethod()==null || prop.getWriteMethod()==null)
+				return;
+			
+			Annotation[] annos = prop.getReadMethod().getAnnotations();
+			if(AnnotationUtils.containsAny(annos, classes))
+				return;
+			
+			Object val = ReflectUtils.getProperty(source, prop);
+			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
+				return;
+			
+			ReflectUtils.setProperty(target, prop, val);
+			
+		}
+		
+	};
+	
+
+	
+	private static class CopyConfAdapter implements PropertyCopyer<String> {
+		
+		final private CopyConf conf;
+		
+		public CopyConfAdapter(CopyConf conf) {
+			super();
+			this.conf = conf;
+		}
+
+		@Override
+		public void copy(Object source, Object target, String prop) {
+			if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
+				return;//ignore
+			}
+			Object value = getProperty(source, prop);
+			if(conf.isIgnoreNull() && value==null)
+				return;
+			if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
+				return;
+			if(conf.isIgnoreOther(prop, value)){
+				return;
+			}
+			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
+			
+		}
+	};
 
 	public static void main(String[] args) {
 

@@ -4,7 +4,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.StringUtils;
 
 /***********
  * 
@@ -37,7 +36,6 @@ public class JFishServiceException extends BaseException implements SystemErrorC
 	
 	public static final String DEFAULT_MESSAGE = "[service error 业务错误]:";
 
-	private String code = BusinessErrorCode.BASE_CODE;
 	private Object[] args;
 
 	public JFishServiceException(String code, Throwable cause, String msg) {

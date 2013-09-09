@@ -1,13 +1,12 @@
 package org.onetwo.plugins.permission.service;
 
-import static ch.lambdaj.Lambda.index;
-import static ch.lambdaj.Lambda.on;
-
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.plugins.permission.MenuInfoParser;
@@ -51,8 +50,34 @@ public class PermissionManagerImpl {
 		return (T)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
 	}
 	
+	/****
+	 * 同步菜单
+	 */
 	@Transactional
 	public void syncMenuToDatabase(){
+		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
+		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findAll(permClass);
+//		Map<String, IPermission> mapByCode = index(permList, on(IPermission.class).getCode());
+		
+		Session session = baseEntityManager.getRawManagerObject(SessionFactory.class).getCurrentSession();
+		for(IPermission dbperm : permList){
+			IPermission clsPerm = menuNodeMap.get(dbperm.getCode());
+			if(!session.contains(dbperm))
+				continue;
+			if(clsPerm==null){
+				removePermission(dbperm);
+				session.evict(dbperm);
+			}else if(clsPerm.getClass()!=dbperm.getClass()){
+				removePermission(dbperm);
+				session.evict(dbperm);
+			}
+		}
+		session.flush();
+		session.merge(this.menuInfoParser.getRootMenu());
+	}
+	
+	/*@Transactional
+	public void syncMenuToDatabase2(){
 		baseEntityManager.save(this.menuInfoParser.getRootMenu());
 		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
 		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findAll(permClass);
@@ -78,18 +103,18 @@ public class PermissionManagerImpl {
 		}
 		logger.info("sync menu count: {}", menuCount);
 //		List<Long> ids = extract(menuNodeMap.values(), on(IPermission.class).getId());
-		/*List<String> ids = extract(menuNodeMap.values(), on(IPermission.class).getCode());
+		List<String> ids = extract(menuNodeMap.values(), on(IPermission.class).getCode());
 		ExtQuery deleteq = baseEntityManager.getSQLSymbolManager().createDeleteQuery(menuInfoParser.getMenuInfoable().getIPermissionClass(), LangUtils.asMap("code:not in", ids));
 		deleteq.build();
 		DataQuery dq = baseEntityManager.createQuery(deleteq.getSql(), deleteq.getParamsValue().asMap());
-		int deleteCount = dq.executeUpdate();*/
+		int deleteCount = dq.executeUpdate();
 		if(!mapByCode.isEmpty()){
 			for(IPermission perm : mapByCode.values()){
 				removePermission(perm);
 			}
 			logger.info("delete {} menu", mapByCode.size());
 		}
-	}
+	}*/
 	
 	private void removePermission(IPermission dbperm){
 		dbperm.removeRelations();

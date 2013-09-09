@@ -13,9 +13,9 @@ public interface CopyConf {
 	 * 是否自动复制，默认false，如果返回true，则所有复制策略失效，通过CopyConf#copy方法来执行复制，
 	 * @return
 	 */
-	public boolean isIgnoreAutoCopy();
+//	public boolean isIgnoreAutoCopy();
 	public boolean isCheckSetMethod();
 	public boolean isThrowIfError();
 	public String[] getIgnoreFields();
-	public void copy(Object source, Object target, String property);
+//	public void copy(Object source, Object target, String property);
 }

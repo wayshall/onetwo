@@ -1,6 +1,7 @@
 package org.onetwo.common.fish.test;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +10,9 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.JFishEntityManager;
-import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.fish.JFishQueryBuilder;
-import org.onetwo.common.fish.spring.JFishDao;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
@@ -52,7 +50,7 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -80,13 +78,6 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public <T> T findUnique(String sql, Object... values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		// TODO Auto-generated method stub

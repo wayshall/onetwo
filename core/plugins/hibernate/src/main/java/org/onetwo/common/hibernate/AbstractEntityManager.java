@@ -269,21 +269,8 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 		return entity;
 	}*/
 	
-
-	public <T> T findUnique(final String sql, final Object... values){
-		T entity = null;
-		try {
-			entity = (T)this.createQuery(sql, values).getSingleResult();
-		} catch (Exception e) {
-			logger.error(e);
-			throw new BaseException("find the unique result error : " + sql, e);
-		}
-		return entity;
-	}
 	
-	
-	
-	public <T> T findUnique(final String sql, final Map<String, Object> values){
+	private <T> T findUnique(final String sql, final Map<String, Object> values){
 		T entity = null;
 		try {
 			entity = (T)this.createQuery(sql, values).getSingleResult();
@@ -327,9 +314,9 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 	}
 
 	public <T> List<T> findAll(Class<T> entityClass){
-		StringBuilder sqlStr = new StringBuilder(); 
-		sqlStr.append("select ent from ").append(entityClass.getSimpleName()).append(" ent");
-		return createQuery(sqlStr.toString()).getResultList();
+		/*StringBuilder sqlStr = new StringBuilder(); 
+		sqlStr.append("select ent from ").append(entityClass.getSimpleName()).append(" ent");*/
+		return findByProperties(entityClass);
 	}
 
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {

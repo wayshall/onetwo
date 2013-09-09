@@ -2,6 +2,7 @@ package org.onetwo.common.hibernate;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,6 +16,7 @@ abstract public class TimestampBaseEntity implements IBaseEntity {
 	private Date createTime;
 	private Date lastUpdateTime;
 	
+	@Column(name="CREATE_TIME", updatable=false)
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreateTime() {
 		return createTime;
@@ -22,6 +24,7 @@ abstract public class TimestampBaseEntity implements IBaseEntity {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+	@Column(name="LAST_UPDATE_TIME", insertable=false)
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLastUpdateTime() {
 		return lastUpdateTime;

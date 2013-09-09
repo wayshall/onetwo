@@ -51,6 +51,7 @@ public class LangUtils {
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+	public static final Class[] Empty_CLASSES = new Class[0];;
 	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 

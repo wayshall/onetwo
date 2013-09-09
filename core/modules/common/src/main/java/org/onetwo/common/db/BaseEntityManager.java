@@ -33,7 +33,7 @@ public interface BaseEntityManager {
 
 	public Number countRecord(Class entityClass, Object... params);
 
-	public <T> T findUnique(final String sql, final Object... values);
+//	public <T> T findUnique(final String sql, final Object... values);
 //	public <T> T findUnique(QueryBuilder squery);
 	
 	public <T> T findUnique(Class<T> entityClass, Object... properties);

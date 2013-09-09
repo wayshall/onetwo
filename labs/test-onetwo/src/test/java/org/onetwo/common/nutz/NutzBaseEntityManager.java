@@ -111,12 +111,6 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T> T findUnique(String sql, Object... values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		// TODO Auto-generated method stub
 		return null;

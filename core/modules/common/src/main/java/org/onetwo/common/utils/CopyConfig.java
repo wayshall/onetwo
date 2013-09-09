@@ -10,7 +10,7 @@ public class CopyConfig implements CopyConf {
 	private boolean ignoreNull = false;
 	private boolean ignoreBlank = false;
 	private boolean ignoreOther = false;
-	private boolean ignoreAutoCopy = false;
+//	private boolean ignoreAutoCopy = false;
 	private boolean throwIfError = false;
 	private boolean checkSetMethod = false;
 	private String[] ignoreFields;
@@ -30,7 +30,7 @@ public class CopyConfig implements CopyConf {
 		return ignoreOther;
 	}
 
-	@Override
+/*	@Override
 	public boolean isIgnoreAutoCopy() {
 		return ignoreAutoCopy;
 	}
@@ -38,7 +38,7 @@ public class CopyConfig implements CopyConf {
 	@Override
 	public void copy(Object source, Object target, String property) {
 		throw new UnsupportedOperationException();
-	}
+	}*/
 
 	public CopyConfig ignoreNull() {
 		this.ignoreNull = true;
@@ -50,10 +50,10 @@ public class CopyConfig implements CopyConf {
 		return this;
 	}
 
-	public CopyConfig ignoreAutoCopy() {
+	/*public CopyConfig ignoreAutoCopy() {
 		this.ignoreAutoCopy = true;
 		return this;
-	}
+	}*/
 
 	public String[] getIgnoreFields() {
 		return ignoreFields;
