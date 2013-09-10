@@ -18,17 +18,17 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	}
 	
 	public JFishFieldInfoImpl(Class<?> beanClass, Field field){
-		this(ClassWrapper.wrap(beanClass), field);
+		this(Intro.wrap(beanClass), field);
 	}
 
-	public JFishFieldInfoImpl(ClassWrapper<?> beanClassWrapper, Field field){
+	public JFishFieldInfoImpl(Intro<?> beanClassWrapper, Field field){
 		super(field.getName(), beanClassWrapper);
 		this.name = field.getName();
 		if(!field.isAccessible()){
 			field.setAccessible(true);
 		}
 		this.field = field;
-		this.propertyClassWrapper = ClassWrapper.wrap(field.getType());
+		this.propertyClassWrapper = Intro.wrap(field.getType());
 		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field.getAnnotations());
 	}
 
@@ -79,7 +79,7 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	}
 	
 	@Override
-	public ClassWrapper<?> getBeanClassWrapper() {
+	public Intro<?> getBeanClassWrapper() {
 		return beanClassWrapper;
 	}
 

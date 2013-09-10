@@ -10,7 +10,7 @@ public interface JFishProperty {
 	public void setValue(Object entity, Object value);
 
 	public Class<?> getBeanClass();
-	public ClassWrapper<?> getBeanClassWrapper();
+	public Intro<?> getBeanClassWrapper();
 
 	public String getName();
 
@@ -22,7 +22,7 @@ public interface JFishProperty {
 
 	public Class<?> getType();
 	
-	public ClassWrapper<?> getTypeClassWrapper();
+	public Intro<?> getTypeClassWrapper();
 	
 //	public void addAnnotations(Annotation...annotations);
 	
@@ -37,7 +37,7 @@ public interface JFishProperty {
 	public Type getGenericType();
 	public Type[] getParameterTypes();
 	public Type getFirstParameterType();
-	public ClassWrapper<?> getFirstParameterTypeClassWrapper();
+	public Intro<?> getFirstParameterTypeClassWrapper();
 
 	public boolean isCollectionType();
 	public boolean isMapType();

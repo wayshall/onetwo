@@ -88,7 +88,7 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copyWithoutRelations(T source, T target){
-		ReflectUtils.copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES));
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES));
 	}
 	/****
 	 * 复制对象属性，但会忽略那些null值、空白字符
@@ -96,7 +96,7 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copy(T source, T target){
-		ReflectUtils.copy(source, target, new HiberanteCopyer());
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer());
 	}
 	
 	/****

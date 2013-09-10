@@ -130,9 +130,9 @@ abstract public class BaseDao<T, PK extends Serializable> {
 		return (T) baseEntityManager.findUnique(entityClass, properties);
 	}
 
-	public T findUnique(String sql, Object... values) {
+	/*public T findUnique(String sql, Object... values) {
 		return (T) baseEntityManager.findUnique(sql, values);
-	}
+	}*/
 
 	public T load(PK id) {
 		return baseEntityManager.load(entityClass, id);

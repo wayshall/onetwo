@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.utils.ClassWrapper;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.LangUtils;
@@ -400,7 +400,7 @@ public class PropConfig implements VariableSupporter {
 	}
 	
 	public <T> T asObject(Class<T> clazz){
-		ClassWrapper<T> jc = ClassWrapper.wrap(clazz);
+		Intro<T> jc = Intro.wrap(clazz);
 		T bean = jc.newFrom((Map<String, ?>)this.getConfig());
 		return bean;
 	}

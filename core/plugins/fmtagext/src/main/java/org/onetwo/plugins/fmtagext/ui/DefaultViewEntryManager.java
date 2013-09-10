@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 
-import org.onetwo.common.utils.ClassWrapper;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.JFishFieldInfoImpl;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyInfoImpl;
@@ -34,7 +34,7 @@ public class DefaultViewEntryManager {
 		ViewEntry viewEntry = new ViewEntry(viewClass);
 		viewEntry.setTitle(viewMeta.label());
 		
-		ClassWrapper<?> wrapper = ClassWrapper.wrap(viewClass);
+		Intro<?> wrapper = Intro.wrap(viewClass);
 		if(viewMeta.byProperty()){
 			Collection<PropertyDescriptor> props = wrapper.getProperties();
 			for(PropertyDescriptor prop : props){
