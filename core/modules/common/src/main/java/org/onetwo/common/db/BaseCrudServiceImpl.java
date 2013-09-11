@@ -27,10 +27,6 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 		return (T)getBaseEntityManager().findById(entityClass, id);
 	}
 
-	@Override
-	public void persist(Object entity) {
-		getBaseEntityManager().persist(entity);
-	}
 
 	@Override
 	public Number countRecord(Map<Object, Object> properties) {
@@ -90,7 +86,18 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 		return (T)getBaseEntityManager().removeById(entityClass, id);
 	}
 
+	/*@Override
+	public T createNew(T entity) {
+		getBaseEntityManager().persist(entity);
+		return entity;
+	}
+
 	@Override
+	public T updateAttributes(T entity) {
+		getBaseEntityManager().update(entity);
+		return entity;
+	}*/
+
 	public T save(T entity) {
 		return getBaseEntityManager().save(entity);
 	}

@@ -34,7 +34,6 @@ abstract public class AbstractBaseController {
 	
 	public static final String REDIRECT = "redirect:";
 	public static final String MESSAGE = "message";
-
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 

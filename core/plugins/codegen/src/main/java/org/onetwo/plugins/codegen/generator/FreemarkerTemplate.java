@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplate;
+import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplate;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
 import org.onetwo.common.utils.FileUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import freemarker.template.Template;
 
 @SuppressWarnings("unchecked")
-public class FreemarkerTemplate extends DynamicFreemarkerTemplate implements InitializingBean {
+public class FreemarkerTemplate extends AbstractFreemarkerTemplate implements InitializingBean {
 	
 	public FreemarkerTemplate(){
 	}

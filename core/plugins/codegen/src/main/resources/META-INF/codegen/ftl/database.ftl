@@ -1,7 +1,7 @@
 <@extends>
 	<@override name="main-content">
 		
-		
+		<#--
 			
 			<@grid name="page" 
 				title="database列表"
@@ -19,5 +19,21 @@
 			</@field>
 		</@grid>
 		
+		-->
+		
+	
+		
+	<@widget.dataGrid name="database" dataSource=page title="database列表" >
+		<@widget.dataRow name="entity" type="iterator" renderHeader=true>
+			<@widget.dataField name="ids" label="全选" render="checkbox" value="id"/>
+			<@widget.dataField name="label" label="数据库名称"/>
+			<@widget.dataField name="username" label="数据库用户"  />
+			<@widget.dataField name="jdbcUrl" label="链接串"  />
+			<@widget.dataField name="operation" label="操作" render="html">
+				<a href="${pluginConfig.baseURL}/database/${entity.id}/tables">查看数据库表</a>
+			</@widget.dataField>
+		</@widget.dataRow>
+	</@widget.dataGrid>
+	
 	</@override>
 </@extends>

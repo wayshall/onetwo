@@ -17,12 +17,15 @@ public class PluginNameParser {
 	public String getPluginName(String name){
 		int startIndex = name.indexOf(start);
 		if(startIndex==-1)
-			return null;
+			return "";
 		int endIndex = name.indexOf(end, startIndex+1);
 		if(endIndex==-1)
 			return "";
 		String pname = name.substring(startIndex+1, endIndex);
 		return pname;
+	}
+	public String wrapViewPath(String name, String viewName){
+		return start + name + end + viewName;
 	}
 	
 	public String getPluginBasePath(String name){

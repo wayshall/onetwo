@@ -90,7 +90,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	private JFishMvcConfigurerListenerManager listenerManager = new JFishMvcConfigurerListenerManager();
 	
 	@Autowired
-	protected JFishPluginManager pluginManager;
+	protected JFishPluginManager jfishPluginManager;
 
 	@Autowired
 	private JFishAppConfigrator jfishAppConfigurator;
@@ -158,7 +158,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		listenerManager.addListener((JFishMvcConfigurerListener)pluginManager);
+		listenerManager.addListener((JFishMvcConfigurerListener)jfishPluginManager);
 	}
 
 	@Bean
@@ -171,6 +171,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		freeMarker.setTemplateLoaderPaths(templatePaths.toArray(new String[templatePaths.size()]));
 		freeMarker.setDefaultEncoding("UTF-8");
 		freeMarker.setFreemarkerSettings(setting);
+		freeMarker.setJfishPluginManager(jfishPluginManager);
 		
 		return freeMarker;
 	}

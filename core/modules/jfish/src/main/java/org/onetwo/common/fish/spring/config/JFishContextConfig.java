@@ -92,7 +92,7 @@ public class JFishContextConfig implements ApplicationContextAware {
 	}
 
 	@Bean
-	public JFishPluginManager pluginManager() {
+	public JFishPluginManager jfishPluginManager() {
 		return JFishPluginManagerFactory.getPluginManager();
 	}
 

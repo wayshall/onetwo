@@ -13,6 +13,8 @@ public interface JFishPluginManager {
 
 	public String JFISH_PLUGIN_MANAGER_KEY = "org.onetwo.common.fish.plugin.JFishPluginManager";
 
+	public PluginNameParser getPluginNameParser();
+	
 	/****
 	 * scan plugins on webapp application start 
 	 * {@linkplain org.onetwo.common.fish.web.JFishWebApplicationContext JFishWebApplicationContext},
