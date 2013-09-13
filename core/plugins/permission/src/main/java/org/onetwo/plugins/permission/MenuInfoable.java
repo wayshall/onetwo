@@ -2,15 +2,16 @@ package org.onetwo.plugins.permission;
 
 
 public interface MenuInfoable {
-	
+
 	public Class<?> getRootMenuClass();
+	public String[] getChildMenuPackages();
 	
-	public <T> Class<T> getIPermissionClass();
+	public Class<?> getIPermissionClass();
 	
 //	public IPermission createPermission(PermissionType type);
 	
-	public <T> Class<T> getIMenuClass();
+	public Class<?> getIMenuClass();
 	
-	public <T> Class<T> getIFunctionClass();
+	public Class<?> getIFunctionClass();
 	
 }

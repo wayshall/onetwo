@@ -38,10 +38,12 @@ public class AppConfig extends PropConfig {
 		return freezer;
 	}
 
+	/****
+	 * 根据第一个加载的配置文件名称来加载相应的环境配置
+	 * ${configName}-${env}.properties
+	 */
 	protected void addConfigByAppEnvironment(){
 		String env = this.getAppEnvironment();
-		if(StringUtils.isBlank(env))
-			return ;
 		String configEnv = "";
 		if(configName.endsWith(CONFIG_POSTFIX)){
 			configEnv = configName.substring(0, configName.length()-CONFIG_POSTFIX.length());
@@ -50,9 +52,6 @@ public class AppConfig extends PropConfig {
 		}
 		if(configEnv.endsWith("-base")){
 			configEnv = configEnv.substring(0, configEnv.length()-"-base".length());
-		}
-		if(!Environment.EnvLable.values.containsKey(env)){
-			env = Environment.DEV;
 		}
 		configEnv = configEnv + "-" + env + CONFIG_POSTFIX;
 		addConfigFile(configEnv);
@@ -87,13 +86,14 @@ public class AppConfig extends PropConfig {
 			logger.info("==================================== siteconfig end ====================================");
 		}
 	}
-	
+
 	public String getAppEnvironment(){
-		String env = this.getConfig().getOriginalProperty(APP_ENVIRONMENT, Environment.DEV);
-		if(!Environment.EnvLable.values.containsKey(env)){
-			env = Environment.DEV;
-		}
-		return env;
+		String env = this.getConfig().getOriginalProperty(APP_ENVIRONMENT, Env.DEV.getValue());
+		return Env.of(env).getValue().toLowerCase();
+//		return this.getProperty(APP_ENVIRONMENT, APP_ENVIRONMENT_DEV);
+	}
+	public Env getEnv(){
+		return Env.of(getAppEnvironment());
 //		return this.getProperty(APP_ENVIRONMENT, APP_ENVIRONMENT_DEV);
 	}
 	
@@ -102,15 +102,15 @@ public class AppConfig extends PropConfig {
 	}
 	
 	public boolean isDev(){
-		return getAppEnvironment().equals(Environment.DEV);
+		return getAppEnvironment().equals(Env.DEV);
 	}
 	
 	public boolean isProduct(){
-		return Environment.PRODUCT.equals(getAppEnvironment());
+		return Env.PRODUCT.equals(getAppEnvironment());
 	}
 	
 	public boolean isTest(){
-		return Environment.TEST.equals(getAppEnvironment());
+		return Env.TEST.equals(getAppEnvironment());
 	}
 
 	public Map<String, PropConfig> getOuters() {

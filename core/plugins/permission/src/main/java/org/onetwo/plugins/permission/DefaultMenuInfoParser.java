@@ -2,22 +2,30 @@ package org.onetwo.plugins.permission;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.utils.JFishResourcesScanner;
+import org.onetwo.common.spring.utils.ResourcesScanner;
+import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.plugins.permission.anno.MenuMapping;
 import org.onetwo.plugins.permission.entity.IFunction;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
 import org.onetwo.plugins.permission.entity.PermissionType;
+import org.springframework.core.type.classreading.MetadataReader;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	
 	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>();
-	private IMenu<?, ?> rootMenu;
+	private IMenu<? extends IMenu<?, ?> , ?> rootMenu;
+	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
 	@Resource
 	private MenuInfoable menuInfoable;
@@ -50,13 +58,54 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		if(!IMenu.class.isInstance(perm))
 			throw new BaseException("root must be a menu node");
 		rootMenu = (IMenu<?, ?>)perm;
+		
+		String[] childMenuPackages = menuInfoable.getChildMenuPackages();
+		if(LangUtils.isEmpty(childMenuPackages))
+			return rootMenu;
+		
+		List<Class<?>> childMenuClass = scaner.scan(new ScanResourcesCallback<Class<?>>(){
+
+			@Override
+			public boolean isCandidate(MetadataReader metadataReader) {
+				if (metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
+					return true;
+				return false;
+			}
+
+			@Override
+			public Class<?> doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
+				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
+				return cls;
+			}
+			
+		}, childMenuPackages);
+		
+		if(LangUtils.isEmpty(childMenuClass))
+			return rootMenu;
+		
+		for(Class<?> childMc : childMenuClass){
+			IPermission childPerm =  parseMenuClass(childMc);
+			if(IMenu.class.isInstance(childPerm)){
+//				rootMenu.addChild((IMenu<?, ?>)childPerm);
+			}else{
+				
+			}
+		}
+		
 		return rootMenu;
 	}
+	
 
-	protected IPermission parseMenuClass(Class<?> menuClass) throws Exception{
-		IPermission perm = parsePermission(menuClass);
+	protected <T extends IPermission> T parseMenuClass(Class<?> menuClass){
+		IPermission perm;
+		try {
+			perm = parsePermission(menuClass);
+		} catch (Exception e) {
+			throw new BaseException("parser permission error: " + e.getMessage(), e);
+		}
 		if(perm instanceof IFunction)
-			return perm;
+			return (T)perm;
+		
 		IMenu menu = (IMenu) perm;
 		Class<?>[] childClasses = menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
@@ -68,7 +117,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 				menu.addChild((IMenu)p);
 			}
 		}
-		return menu;
+		return (T)menu;
 	}
 	
 	public IPermission parsePermission(Class<?> permissionClass) throws Exception{

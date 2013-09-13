@@ -42,7 +42,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
 	
 
-	protected static final String CONFIG_FILE = "siteConfig-base.properties";
+	protected static final String CONFIG_FILE = "siteConfig.properties";
 	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
 	
 	private Object webAppConfigurator;

@@ -201,7 +201,7 @@ public class PropConfig implements VariableSupporter {
 	}*/
 
 	public String getVariable(String key) {
-		return getVariable(key, true);
+		return getVariable(key, false);
 	}
 
 	public String getVariable(String key, boolean checkCache) {

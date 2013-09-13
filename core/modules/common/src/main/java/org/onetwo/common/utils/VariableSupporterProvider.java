@@ -24,10 +24,10 @@ public class VariableSupporterProvider implements ValueProvider {
 	@Override
 	public String findString(String var) {
 		String val = variable.getVariable(var);
-		if(val==null){
+		if(StringUtils.isBlank(val)){
 			try {
 				//发现ongl性能非常一般，还是首先尝试通过反射来获取吧～
-				Object v = ReflectUtils.getExpr(variable, var);
+				Object v = ReflectUtils.getProperty(variable, var);
 				if(v!=null)
 					val = v.toString();
 				else
