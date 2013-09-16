@@ -417,10 +417,9 @@
    -->
   
 	<dependency>
-	  <groupId>javaee</groupId>
-	  <artifactId>javaee-api</artifactId>
-	  <version>5</version>
-	  <scope>provided</scope>
+		<groupId>org.apache.openejb</groupId>
+		<artifactId>javaee-api</artifactId>
+		<version>6.0-3</version>
 	</dependency>
 	
 	<dependency>

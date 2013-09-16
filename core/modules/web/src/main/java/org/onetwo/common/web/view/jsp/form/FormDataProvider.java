@@ -4,6 +4,6 @@ public interface FormDataProvider {
 	
 	public boolean isFieldShow(String fieldName);
 	
-	public Object getFieldValue(String value);
+	public Object getFieldValue(FormFieldTagBean field);
 
 }

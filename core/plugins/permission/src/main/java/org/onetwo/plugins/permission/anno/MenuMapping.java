@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface MenuMapping {
 
 //	String code();
-	Class<?> parent() default Object.class;
+	Class<?> parent();
 	
 }

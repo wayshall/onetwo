@@ -36,7 +36,7 @@ public class FormItemsTagBean extends FormFieldTagBean {
 	public Object getFieldValue(){
 		if(this.items!=null)
 			return items;
-		Object fd = this.getFormBean().getProvider().getFieldValue(getValue());
+		Object fd = this.getFormBean().getProvider().getFieldValue(this);
 		this.items = object2List(fd);
 		return this.items;
 	}

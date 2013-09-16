@@ -18,7 +18,7 @@ public interface IMenu<T extends IMenu<T, F>, F extends IFunction<T>> extends IP
 
 	void addFunction(IFunction<T> func);
 
-	void addChild(T menu);
+	void addChild(IMenu<T, F> menu);
 	public List<T> getChildren();
 	public List<F> getFunctions();
 

@@ -12,6 +12,6 @@ public @interface DozerMapping {
 
 	Class<?>[] classb() default {Object.class};
 	boolean mapNull() default false;
-	boolean mapEmpty() default true;
+	boolean mapEmpty() default false;
 	String fieldSplit() default "";
 }

@@ -25,8 +25,9 @@ final public class ExceptionUtils {
 	
 	public static class ExceptionView {
 		public static final String AUTHENTIC = "error_authentic";
-		public static final String BUSINESS = "error_business";
-		public static final String SERVICE = "error_service";
+//		public static final String BUSINESS = "error_business";
+//		public static final String SERVICE = "error_service";
+		public static final String CODE_EXCEPTON = "message";
 		public static final String SYS_BASE = "error_base";
 		public static final String UNDEFINE = "error";
 	}
@@ -49,7 +50,7 @@ final public class ExceptionUtils {
 		Class<?> eclass = e.getClass();
 		String viewName = null;
 		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
-			viewName = BaseSiteConfig.getInstance().getProperty(eclass.getSimpleName());
+			viewName = BaseSiteConfig.getInstance().getProperty(eclass.getName());
 			if(StringUtils.isNotBlank(viewName))
 				return viewName;
 			if(eclass.getSuperclass()!=null){

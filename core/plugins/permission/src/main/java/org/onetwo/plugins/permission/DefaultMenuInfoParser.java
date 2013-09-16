@@ -24,7 +24,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	
 	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>();
-	private IMenu<? extends IMenu<?, ?> , ?> rootMenu;
+	private IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> rootMenu;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
 	@Resource
@@ -86,9 +86,9 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		for(Class<?> childMc : childMenuClass){
 			IPermission childPerm =  parseMenuClass(childMc);
 			if(IMenu.class.isInstance(childPerm)){
-//				rootMenu.addChild((IMenu<?, ?>)childPerm);
+				rootMenu.addChild((IMenu)childPerm);
 			}else{
-				
+				rootMenu.addFunction((IFunction)childPerm);
 			}
 		}
 		
@@ -106,7 +106,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		if(perm instanceof IFunction)
 			return (T)perm;
 		
-		IMenu menu = (IMenu) perm;
+		IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> menu = (IMenu) perm;
 		Class<?>[] childClasses = menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){

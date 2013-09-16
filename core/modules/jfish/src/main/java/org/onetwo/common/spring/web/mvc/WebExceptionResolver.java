@@ -10,15 +10,11 @@ import javax.validation.ConstraintViolationException;
 
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.ExceptionMessageArgs;
-import org.onetwo.common.fish.exception.JFishBusinessException;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
-import org.onetwo.common.fish.exception.JFishServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -82,6 +78,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		String msg = errorMessage.getMesage();
 		if(!model.containsKey(AbstractBaseController.MESSAGE)){
 			model.put(AbstractBaseController.MESSAGE, msg);
+			model.put(AbstractBaseController.MESSAGE_TYPE, AbstractBaseController.MESSAGE_TYPE_ERROR);
 		}
 		if(JFishWebUtils.isRedirect(errorMessage.getViewName())){
 			return this.createModelAndView(errorMessage.getViewName(), model, request);
@@ -103,7 +100,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 
 		String eInfo = "";
-		if(BaseSiteConfig.getInstance().isDev() && errorMessage.isDetail()){
+		if(!BaseSiteConfig.getInstance().isProduct() && errorMessage.isDetail()){
 			eInfo = LangUtils.toString(ex, true);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY, eInfo);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY2, eInfo);
@@ -131,7 +128,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		String errorMsg = "";
 		Object[] errorArgs = null;
 		
-		String defaultViewName = null;
+		String defaultViewName = ExceptionView.UNDEFINE;
 		boolean detail = true;
 		boolean authentic = false;
 		
@@ -148,18 +145,18 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
 			authentic = true;
-		}else if(ex instanceof BusinessException){
+		}/*else if(ex instanceof BusinessException){
 			defaultViewName = ExceptionView.BUSINESS;
 			detail = false;
 		}else if(ex instanceof JFishBusinessException){
-			defaultViewName = ExceptionView.BUSINESS;
+			defaultViewName = ExceptionView.SERVICE;
 			detail = false;
 		}else if(ex instanceof JFishServiceException){
-			defaultViewName = ExceptionView.BUSINESS;
+			defaultViewName = ExceptionView.SERVICE;
 			detail = false;
 		}else if(ex instanceof ServiceException){
 			defaultViewName = ExceptionView.SERVICE;
-		}else if(ex instanceof BaseException){
+		}*/else if(ex instanceof BaseException){
 			defaultViewName = ExceptionView.SYS_BASE;
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
@@ -175,26 +172,32 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 				i++;
 			}
 			findMsgByCode = false;
-		}else{
-			defaultViewName = ExceptionView.UNDEFINE;
 		}
+		
+		
 
 		if(ExceptionCodeMark.class.isInstance(ex)){
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
+			findMsgByCode = StringUtils.isNotBlank(errorCode);
 		}else if(StringUtils.isBlank(errorCode)){
-			errorCode = getUnknowError();
+			errorCode = ex.getClass().getName();
 		}
 		
 		if(ExceptionMessageArgs.class.isInstance(ex)){
 			errorArgs = ((ExceptionMessageArgs)ex).getArgs();
 		}
 
-		if(findMsgByCode)
-			errorMsg = getMessage(errorCode, errorArgs, ex.getMessage(), getLocale());
+		if(findMsgByCode){
+			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+			defaultViewName = ExceptionView.CODE_EXCEPTON;
+		}
 		
 		if(StringUtils.isBlank(errorMsg)){
+			detail = true;
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
+		}else{
+			detail = false;
 		}
 		
 		String viewName = null;
@@ -230,11 +233,12 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	}
 	
 	protected void doLog(HttpServletRequest request, HandlerMethod handlerMethod, Exception ex, boolean detail){
+		String msg = RequestUtils.getServletPath(request);
 		if(detail){
-			String msg = RequestUtils.getServletPath(request)+" ["+handlerMethod+"] error ";
+			msg += " ["+handlerMethod+"] error: ";
 			logger.error(msg, ex);
 		}else{
-			logger.error(ex.getMessage());
+			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
 	}
 	

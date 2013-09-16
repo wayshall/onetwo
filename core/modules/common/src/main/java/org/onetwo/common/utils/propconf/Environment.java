@@ -13,8 +13,8 @@ public class Environment {
 	public static final String PRODUCT = "product";
 	public static final String DEV = "dev";
 	public static final String TEST = "test";
-	public static final String DEV_LOCAL = "dev-local";
-	public static final String TEST_LOCAL = "test-local";
+	public static final String DEV_LOCAL = "dev_local";
+	public static final String TEST_LOCAL = "test_local";
 	
 	/*public static class EnvLable {
 		public static final Map<String, String> values = new HashMap<String, String>();

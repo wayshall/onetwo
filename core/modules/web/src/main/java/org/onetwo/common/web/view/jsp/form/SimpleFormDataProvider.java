@@ -1,6 +1,7 @@
 package org.onetwo.common.web.view.jsp.form;
 
 import org.onetwo.common.spring.SpringUtils;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessor;
 
 public class SimpleFormDataProvider implements FormDataProvider {
@@ -11,8 +12,10 @@ public class SimpleFormDataProvider implements FormDataProvider {
 	public SimpleFormDataProvider(Object dataObject) {
 		super();
 //		this.dataObject = dataObject;
-		if(dataObject!=null)
-			this.accessor = SpringUtils.newBeanWrapper(dataObject);
+		if(dataObject!=null){
+			BeanWrapper bw = SpringUtils.newBeanWrapper(dataObject);
+			this.accessor = bw;
+		}
 	}
 
 	@Override
@@ -21,10 +24,13 @@ public class SimpleFormDataProvider implements FormDataProvider {
 	}
 
 	@Override
-	public Object getFieldValue(String fieldName) {
+	public Object getFieldValue(FormFieldTagBean field) {
 		Object val = null;
-		if(this.accessor!=null)
-			val = this.accessor.getPropertyValue(fieldName);
+		if(field.isModelAttribute()){
+			if(this.accessor!=null){
+				val = this.accessor.getPropertyValue(field.getValue());
+			}
+		}
 		return val;
 	}
 	

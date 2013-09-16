@@ -34,6 +34,9 @@ abstract public class AbstractBaseController {
 	
 	public static final String REDIRECT = "redirect:";
 	public static final String MESSAGE = "message";
+	public static final String MESSAGE_TYPE = "messageType";
+	public static final String MESSAGE_TYPE_ERROR = "error";
+	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
@@ -69,6 +72,10 @@ abstract public class AbstractBaseController {
 		return mv(redirect(path));
 	}
 	
+	protected ModelAndView redirectTo(String path, String message){
+		return mv(redirect(path), MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+	}
+	
 	/**********
 	 * 根据view名称和model返回一个ModelAndView
 	 * @param viewName
@@ -77,6 +84,10 @@ abstract public class AbstractBaseController {
 	 */
 	protected ModelAndView mv(String viewName, Object... models){
 		return JFishWebUtils.mv(viewName, models);
+	}
+	
+	protected ModelAndView messageMv(String message){
+		return mv(MESSAGE, MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 	
 	public ModelAndView doInModelAndView(HttpServletRequest request, ModelAndView mv){

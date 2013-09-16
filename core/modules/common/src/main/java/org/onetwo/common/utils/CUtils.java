@@ -28,8 +28,9 @@ final public class CUtils {
     public static final List NULL_LIST = new NullList();
 
     @SuppressWarnings("serial")
-	private static class NullList extends AbstractList<Object> implements RandomAccess, Serializable {
+    public static class NullList extends AbstractList<Object> implements RandomAccess, Serializable {
     	
+    	private NullList(){}
         public int size() {return 0;}
 
         public boolean contains(Object obj) {return false;}
