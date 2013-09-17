@@ -14,7 +14,7 @@ public class NoAuthorizationException extends AuthenticationException {
 	}
 
 	public NoAuthorizationException(String message) {
-		super(DEFAULT_MESSAGE+message);
+		super(message);
 	}
 
 	public NoAuthorizationException(Throwable cause) {

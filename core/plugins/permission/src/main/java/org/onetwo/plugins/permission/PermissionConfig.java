@@ -1,8 +1,9 @@
 package org.onetwo.plugins.permission;
 
 
-public interface MenuInfoable {
 
+public interface PermissionConfig {
+	
 	public Class<?> getRootMenuClass();
 	public String[] getChildMenuPackages();
 	

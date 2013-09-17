@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.exception.SystemErrorCode.BaseErrorCode;
+import org.onetwo.common.exception.SystemErrorCode.ServiceErrorCode;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
@@ -65,7 +65,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 				generator.write(out);
 			}
 		} catch (Exception e) {
-			if(LangUtils.isError(e, BaseErrorCode.RESOURCE_NOT_FOUND)){
+			if(LangUtils.isError(e, ServiceErrorCode.RESOURCE_NOT_FOUND)){
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}else{
 				response.reset();

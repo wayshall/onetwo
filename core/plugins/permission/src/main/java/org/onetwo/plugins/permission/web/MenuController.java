@@ -2,9 +2,8 @@ package org.onetwo.plugins.permission.web;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.fish.plugin.PluginBaseController;
-import org.onetwo.common.spring.web.AbstractBaseController;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.stereotype.Controller;
@@ -19,9 +18,10 @@ public class MenuController extends PluginBaseController {
 	@Resource
 	private PermissionManagerImpl permissionManagerImpl;
 	
+	
 	private void checkAvailable() throws ModelAndViewDefiningException{
-		if(BaseSiteConfig.getInstance().isProduct())
-			throw new ModelAndViewDefiningException(mv("error", MESSAGE, "无权访问"));
+		if(getCurrentLoginUser()==null || !getCurrentLoginUser().isSystemRootUser())
+			throw new NoAuthorizationException("无权访问！");
 	}
 	@RequestMapping(value="index")
 	public ModelAndView index() throws ModelAndViewDefiningException{

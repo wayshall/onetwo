@@ -5,5 +5,6 @@ import java.util.List;
 public interface RoleDetail {
 	
 	public List<String> getRoles();
+	
 
 }

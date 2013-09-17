@@ -78,6 +78,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 
 	/********
 	 * on initWebApplicationContext
+	 * 扫描插件，并初始化
 	 */
 	@Override
 	public void scanPlugins(){

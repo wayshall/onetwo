@@ -15,7 +15,9 @@ public class DefaultJFishPluginMeta implements JFishPluginMeta {
 		this.pluginNameParser = parser;
 		this.pluginInfo = pluginInfo;
 		this.jfishPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
-		this.pluginConfig = new PluginConfig(this);
+		PluginConfig pc = this.jfishPlugin.getPluginConfig();
+		pc.init(this);
+		this.pluginConfig = pc;
 		this.webResourceMeta = new PluginWebResourceMeta(pluginInfo);
 	}
 

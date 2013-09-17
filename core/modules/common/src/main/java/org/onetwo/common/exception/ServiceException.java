@@ -1,17 +1,22 @@
 package org.onetwo.common.exception;
 
+import org.onetwo.common.utils.StringUtils;
+
 /*********
  * 
  * @author wayshall
  *
  */
 //@Deprecated
-public class ServiceException extends BaseException{
+public class ServiceException extends BaseException implements ExceptionCodeMark{
 
 	/**
 	 *  
 	 */
 	private static final long serialVersionUID = 7280411050853219784L;
+	
+	protected String code;
+	private Object[] args;
 
 	public ServiceException() {
 		super();
@@ -19,7 +24,8 @@ public class ServiceException extends BaseException{
 
 
 	public ServiceException(String msg, String code) {
-		super(msg, code);
+		super(msg);
+		initErrorCode(code);
 	}
 
 	public ServiceException(String msg, Throwable cause, String code) {
@@ -38,19 +44,38 @@ public class ServiceException extends BaseException{
 
 
 	public ServiceException(Throwable cause, String code) {
-		super(cause, code);
+		super(cause);
+		initErrorCode(code);
+	}
+
+	
+	final protected void initErrorCode(String code){
+		if(StringUtils.isNotBlank(code))
+			this.code = code;//appendBaseCode(code);
+	}
+	public String getCode() {
+		if(StringUtils.isBlank(code))
+			return getDefaultCode();
+		return code;
 	}
 	
 	protected String getDefaultCode(){
-		return BaseErrorCode.BASE_CODE;
+		return DEFAULT_SYSTEM_ERROR_CODE;
 	}
 
+	public Object[] getArgs() {
+		return args;
+	}
+
+	public void setArgs(Object[] args) {
+		this.args = args;
+	}
 	public ServiceException(Throwable cause) {
 		super(cause);
 	}
 	
 	protected void setErrorCode(){
-		this.code = BaseErrorCode.BASE_CODE;
+		this.code = ServiceErrorCode.BASE_CODE;
 	}
 
 }

@@ -60,6 +60,11 @@ public class SimpleUserDetail implements UserDetail, RoleDetail {
 		.append("}");
 		return sb.toString();
 	}
+
+	@Override
+	public boolean isSystemRootUser() {
+		return false;
+	}
 	
 	
 }

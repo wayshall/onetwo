@@ -1,7 +1,7 @@
 package org.onetwo.common.fish.exception;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.utils.Assert;
 
@@ -14,7 +14,7 @@ import org.onetwo.common.utils.Assert;
  * @author wayshall
  *
  */
-public class JFishServiceException extends BaseException implements SystemErrorCode, ExceptionCodeMark, ExceptionMessageArgs {
+public class JFishServiceException extends ServiceException implements SystemErrorCode, ExceptionCodeMark {
 	
 
 	/**
@@ -36,8 +36,6 @@ public class JFishServiceException extends BaseException implements SystemErrorC
 	
 	public static final String DEFAULT_MESSAGE = "[service error 业务错误]:";
 
-	private Object[] args;
-
 	public JFishServiceException(String code, Throwable cause, String msg) {
 		super(msg, cause);
 		initErrorCode(code);
@@ -53,14 +51,6 @@ public class JFishServiceException extends BaseException implements SystemErrorC
 
 	public String getCode() {
 		return code;
-	}
-
-	public Object[] getArgs() {
-		return args;
-	}
-
-	public void setArgs(Object[] args) {
-		this.args = args;
 	}
 	
 }

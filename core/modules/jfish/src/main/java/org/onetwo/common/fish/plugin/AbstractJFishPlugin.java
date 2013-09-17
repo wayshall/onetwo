@@ -62,4 +62,10 @@ public abstract class AbstractJFishPlugin<T extends JFishPlugin> implements JFis
 	}
 
 
+	@Override
+	public PluginConfig getPluginConfig() {
+		return new DefaultPluginConfig();
+	}
+
+
 }

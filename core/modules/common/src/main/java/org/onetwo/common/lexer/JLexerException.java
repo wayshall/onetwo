@@ -20,10 +20,6 @@ public class JLexerException extends BaseException{
 	} 
 
 
-	public JLexerException(String msg, String code) {
-		super(msg, code);
-	}
-
 	public JLexerException(String msg, Throwable cause, String code) {
 		super(msg, cause, code);
 	}
@@ -36,11 +32,6 @@ public class JLexerException extends BaseException{
 
 	public JLexerException(String msg) {
 		super(msg);
-	}
-
-
-	public JLexerException(Throwable cause, String code) {
-		super(cause, code);
 	}
 	
 

@@ -94,6 +94,11 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDeta
 		.append("}");
 		return sb.toString();
 	}
+
+	@Override
+	public boolean isSystemRootUser() {
+		return false;
+	}
 	
 	
 }

@@ -22,13 +22,14 @@ import org.onetwo.plugins.permission.entity.PermissionType;
 import org.springframework.core.type.classreading.MetadataReader;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
-	
-	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>();
+
+	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>(50);
+	private final Map<Class<?>, IPermission> menuNodeMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
 	private IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> rootMenu;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
 	@Resource
-	private MenuInfoable menuInfoable;
+	private PermissionConfig menuInfoable;
 	private int sortStartIndex = 1000;
 	
 
@@ -156,8 +157,10 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
 		this.menuNodeMap.put(perm.getCode(), perm);
+		this.menuNodeMapByClass.put(permissionClass, perm);
 		return perm;
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseCode(java.lang.Class)
@@ -169,11 +172,19 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			menuClass = menuClass.getDeclaringClass();
 			code = menuClass.getSimpleName() + "_" + code;
 		}
+		MenuMapping mapping = menuClass.getAnnotation(MenuMapping.class);
+		if(mapping!=null){
+			Class<?> pcls = mapping.parent();
+			IPermission perm = this.menuNodeMapByClass.get(pcls);
+			if(perm==null)
+				throw new BaseException("parse menu class["+menuClass+"] error. no parent menu found: " + pcls);
+			code = perm.getCode() + "_" + code;
+		}
 		return code;
 	}
 	
 	public IPermission getMenuNode(Class<?> clazz){
-		return getMenuNode(parseCode(clazz));
+		return this.menuNodeMapByClass.get(clazz);
 	}
 	
 	public IPermission getMenuNode(String code){
@@ -188,7 +199,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		this.rootMenu = rootMenu;
 	}
 
-	public MenuInfoable getMenuInfoable() {
+	public PermissionConfig getMenuInfoable() {
 		return menuInfoable;
 	}
 	

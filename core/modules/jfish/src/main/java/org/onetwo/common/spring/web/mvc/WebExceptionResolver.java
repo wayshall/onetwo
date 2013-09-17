@@ -11,9 +11,9 @@ import javax.validation.ConstraintViolationException;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
+import org.onetwo.common.exception.ExceptionMessageArgs;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.SystemErrorCode;
-import org.onetwo.common.fish.exception.ExceptionMessageArgs;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
@@ -179,13 +179,13 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		if(ExceptionCodeMark.class.isInstance(ex)){
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
+			errorArgs = codeMark.getArgs();
+			
 			findMsgByCode = StringUtils.isNotBlank(errorCode);
+			detail = !findMsgByCode;
+			
 		}else if(StringUtils.isBlank(errorCode)){
 			errorCode = ex.getClass().getName();
-		}
-		
-		if(ExceptionMessageArgs.class.isInstance(ex)){
-			errorArgs = ((ExceptionMessageArgs)ex).getArgs();
 		}
 
 		if(findMsgByCode){
@@ -194,10 +194,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 		
 		if(StringUtils.isBlank(errorMsg)){
-			detail = true;
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
-		}else{
-			detail = false;
 		}
 		
 		String viewName = null;

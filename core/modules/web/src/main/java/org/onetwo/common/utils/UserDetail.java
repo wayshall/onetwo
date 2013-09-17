@@ -13,6 +13,12 @@ public interface UserDetail extends SsoTokenable {
 	public String getUserName();
 	
 	public long getUserId();
+
+	/***
+	 * 是否root管理员
+	 * @return
+	 */
+	public boolean isSystemRootUser();
 	
 //	public Long getOrganId();
 	

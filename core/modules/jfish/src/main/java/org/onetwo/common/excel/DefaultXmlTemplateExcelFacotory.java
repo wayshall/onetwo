@@ -2,8 +2,8 @@ package org.onetwo.common.excel;
 
 import java.util.Map;
 
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.SystemErrorCode.BaseErrorCode;
+import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.exception.SystemErrorCode.ServiceErrorCode;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -49,7 +49,7 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 		if(model==null){
 			Resource resource = SpringApplication.getInstance().getAppContext().getResource(getFullTemplatePath(path));
 			if(resource==null || !resource.isReadable())
-				throw new BaseException("can not find valid excel template: " + path, BaseErrorCode.RESOURCE_NOT_FOUND);
+				throw new ServiceException("can not find valid excel template: " + path, ServiceErrorCode.RESOURCE_NOT_FOUND);
 			model = ExcelUtils.readTemplate(resource);
 			
 			if(checkCache)

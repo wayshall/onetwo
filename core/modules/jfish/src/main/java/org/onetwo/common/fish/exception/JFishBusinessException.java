@@ -16,7 +16,7 @@ import org.onetwo.common.utils.StringUtils;
  * @author wayshall
  *
  */
-public class JFishBusinessException extends Exception implements SystemErrorCode, ExceptionCodeMark, ExceptionMessageArgs {
+public class JFishBusinessException extends Exception implements SystemErrorCode, ExceptionCodeMark {
 	
 
 	/**

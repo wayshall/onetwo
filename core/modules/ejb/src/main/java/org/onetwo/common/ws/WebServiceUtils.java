@@ -1,6 +1,6 @@
 package org.onetwo.common.ws;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -39,8 +39,8 @@ public abstract class WebServiceUtils {
 			e.printStackTrace();
 			createWSResultIfNull(wsresult).setSuccess(false);
 			wsresult.setMessage(e.getMessage());
-			if(e instanceof BaseException){
-				BaseException be = (BaseException) e;
+			if(e instanceof ExceptionCodeMark){
+				ExceptionCodeMark be = (ExceptionCodeMark) e;
 				wsresult.setResultCode(be.getCode());
 			}
 			block.doExcepted(wsresult);

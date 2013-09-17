@@ -56,6 +56,7 @@ abstract public class AbstractBaseController {
 	
 	public void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
 		redirectAttributes.addFlashAttribute(MESSAGE, StringUtils.trimToEmpty(msg));
+		redirectAttributes.addFlashAttribute(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 
 	
