@@ -22,6 +22,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	private String action;
 	
 	private boolean toolbar;
+	private boolean generatedForm = true;
+	private boolean pagination = true;
 	
 	private PaginationType paginationType = PaginationType.link;
 	
@@ -55,7 +57,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		
 		component.setQueryString(buildQueryString());
 		component.setToolbar(toolbar);
+		component.setPagination(pagination);
 		component.setPaginationType(paginationType);
+		component.setGeneratedForm(generatedForm);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
@@ -106,6 +110,14 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	public void setPaginationType(String paginationType) {
 		this.paginationType = PaginationType.valueOf(paginationType);
+	}
+
+	public void setGeneratedForm(boolean generatedForm) {
+		this.generatedForm = generatedForm;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
 	}
 
 }

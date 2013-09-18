@@ -249,6 +249,18 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
+      <description><![CDATA[generatedForm]]></description>
+      <name>generatedForm</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[pagination]]></description>
+      <name>pagination</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
       <description><![CDATA[paginationType]]></description>
       <name>paginationType</name>
       <required>false</required>
