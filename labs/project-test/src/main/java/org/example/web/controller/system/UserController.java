@@ -22,6 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/****
+ * 忽略测试：string paramter -> maven.test.skip=true
+ * 根据环境构建：
+ * @author wayshall
+ *
+ */
 @RequestMapping("/member/user")
 @Controller
 public class UserController extends AbstractBaseController {
