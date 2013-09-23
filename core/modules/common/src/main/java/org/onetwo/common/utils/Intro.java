@@ -47,6 +47,8 @@ public class Intro<T> {
 	}
 	
 	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
+		if(clazz.isInterface())
+			return Collections.EMPTY_MAP;
 		BeanInfo beanInfo = null;
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz, Object.class);

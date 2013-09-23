@@ -3,7 +3,7 @@ package org.onetwo.common.exception;
 public interface SystemErrorCode {
 	
 	public String APP_ERROR_MESSAGE = "appErrorMessage";
-	public String DEFAULT_SYSTEM_ERROR_CODE = "[SYSTEM ERROR]";
+	public String DEFAULT_SYSTEM_ERROR_CODE = "[ERROR]";
 	
 	public static class JFishErrorCode {
 		public static final String BASE_CODE = "[JFISH ERROR]";//前缀
@@ -30,13 +30,9 @@ public interface SystemErrorCode {
 		public static final String ERROR_ROLE = BASE_CODE + "ERROR ROLE";//登陆超时
 	}
 	
-	public static class BaseErrorCode {
-		public static final String BASE_CODE = "[SYS ERROR]";//前缀
-		public static final String RESOURCE_NOT_FOUND = BASE_CODE + "RESOURCE NOT FOUND";//前缀
-	}
-	
 	public static class ServiceErrorCode {
 		public static final String BASE_CODE = "[SERVICE ERROR]";//前缀
+		public static final String RESOURCE_NOT_FOUND = BASE_CODE + "RESOURCE NOT FOUND";//前缀
 	}
 	
 	public static class BusinessErrorCode {

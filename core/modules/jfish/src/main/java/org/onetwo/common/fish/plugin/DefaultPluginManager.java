@@ -34,7 +34,7 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 	
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
 
-	public static final PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
+	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
 	
 	/*private final static JFishPluginManager instance = new DefaultPluginManager();
 	
@@ -57,6 +57,8 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 		this.pluginPath = pluginPath;
 	}
 	
+	
+	
 	/*@Override
 	public void afterPropertiesSet() throws Exception {
 	}*/
@@ -66,8 +68,17 @@ public class DefaultPluginManager implements JFishPluginManager, JFishMvcConfigu
 		this.applicationContext = applicationContext;
 	}*/
 
+	public PluginNameParser getPluginNameParser() {
+		return pluginNameParser;
+	}
+	
+	public void setPluginNameParser(PluginNameParser pluginNameParser) {
+		this.pluginNameParser = pluginNameParser;
+	}
+
 	/********
 	 * on initWebApplicationContext
+	 * 扫描插件，并初始化
 	 */
 	@Override
 	public void scanPlugins(){

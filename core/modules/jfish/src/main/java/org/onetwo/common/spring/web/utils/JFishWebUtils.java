@@ -140,8 +140,12 @@ public final class JFishWebUtils {
 		}
 	}
 	
-	public static <T extends UserDetail> T currentLoginUser(){
-		return session(UserDetail.USER_DETAIL_KEY);
+	public static <T extends UserDetail> T currentLoginUser(Class<T> clazz){
+		return clazz.cast(session(UserDetail.USER_DETAIL_KEY));
+	}
+	
+	public static <T extends UserDetail> T getUserDetail(Class<T> clazz){
+		return clazz.cast(session(UserDetail.USER_DETAIL_KEY));
 	}
 	
 	public static <T extends UserDetail> T getUserDetail(){

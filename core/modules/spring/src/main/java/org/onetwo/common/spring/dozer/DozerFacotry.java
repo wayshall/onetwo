@@ -39,6 +39,7 @@ public class DozerFacotry {
 			@Override
 			public DozerClassMapper doWithCandidate(MetadataReader metadataReader, Resource clazz, int count) {
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
+				System.out.println("load dozer class: " + cls+", laoder: " + cls.getClassLoader());
 				DozerClassMapper mapper = new DozerClassMapper(cls, cls.getAnnotation(DozerMapping.class));
 				return mapper;
 			};

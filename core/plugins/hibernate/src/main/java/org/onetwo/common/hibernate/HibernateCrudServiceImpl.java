@@ -110,11 +110,6 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 		return super.save(entity);
 	}
 
-	@Override
-	@Transactional
-	public void persist(Object entity) {
-		super.persist(entity);
-	}
 
 	@Override
 	@Transactional

@@ -1,4 +1,4 @@
-package org.onetwo.common.fish.exception;
+package org.onetwo.common.exception;
 
 public interface ExceptionMessageArgs {
 

@@ -13,8 +13,8 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
-abstract public class DynamicFreemarkerTemplate{
-	public static final BeansWrapper INSTANCE = new BeansWrapper();
+abstract public class AbstractFreemarkerTemplate{
+	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 
 	static {
 		INSTANCE.setSimpleMapWrapper(true);
@@ -28,7 +28,7 @@ abstract public class DynamicFreemarkerTemplate{
 	
 	private StringTemplateProvider templateProvider;
 	
-	public DynamicFreemarkerTemplate(){
+	public AbstractFreemarkerTemplate(){
 	}
 
 	protected BeansWrapper getBeansWrapper(){

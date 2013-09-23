@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 
-import pluginarchetype.app.PluginAppContext;
-import pluginarchetype.mvc.PluginMvcContext;
+import pluginarchetype.model.PluginModelContext;
+import pluginarchetype.web.PluginWebContext;
 
 
 public class Plugin extends AbstractJFishPlugin<Plugin> {
@@ -24,13 +24,13 @@ public class Plugin extends AbstractJFishPlugin<Plugin> {
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginAppContext.class);
+		annoClasses.add(PluginModelContext.class);
 	}
 
 	
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginMvcContext.class);
+		annoClasses.add(PluginWebContext.class);
 	}
 
 

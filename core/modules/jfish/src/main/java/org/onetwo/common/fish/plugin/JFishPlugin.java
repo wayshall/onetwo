@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 
+/*******
+ * 插件接口
+ * 
+ * @author weishao
+ *
+ */
 public interface JFishPlugin extends JFishPluginLifeCycleListener {
 
 	void onMvcContextClasses(List<Class<?>> annoClasses);
@@ -16,4 +22,6 @@ public interface JFishPlugin extends JFishPluginLifeCycleListener {
 	public JFishPluginMeta getPluginMeta();
 	
 	public boolean registerMvcResources();
+	
+	public PluginConfig getPluginConfig();
 }

@@ -418,29 +418,11 @@ public class MyUtils {
 	}
 	
 	public static String append(String s, int alength, String append){
-		return pad(s, alength, append.charAt(0), true);
+		return LangUtils.padLeft(s, alength, append);
 	}
 	
 	public static String pad(String s, int alength, char append, boolean padLeft){
-		int length = Math.abs(alength);
-		if(s.length()==length)
-			return s;
-		StringBuilder str = new StringBuilder(s);
-		if(str.length()<length){
-			int lack = length-str.length();
-			for(int i=0; i<lack; i++){
-				if(padLeft)
-					str.insert(0, append);
-				else
-					str.append(append);
-			}
-		}else{
-			if(alength>0)
-				str.delete(length, str.length());
-			else
-				str.delete(0, str.length()-length);
-		}
-		return str.toString();
+		return LangUtils.pad(s, alength, append, padLeft);
 	}
 	
 	public static void main(String[] args){

@@ -19,6 +19,8 @@ public class FormFieldTagBean extends HtmlElement {
 	private boolean readOnly;
 	private boolean disabled;
 	
+	private boolean modelAttribute = true;
+	
 	public boolean isHtmlTypeRender(){
 		return FormFieldType.html == type;
 	}
@@ -74,7 +76,7 @@ public class FormFieldTagBean extends HtmlElement {
 	public Object getFieldValue(){
 		if(this.formBean==null)
 			return "";
-		Object val = this.formBean.getProvider().getFieldValue(getValue());
+		Object val = this.formBean.getProvider().getFieldValue(this);
 		return LangUtils.formatValue(val, getDataFormat());
 	}
 
@@ -100,6 +102,14 @@ public class FormFieldTagBean extends HtmlElement {
 
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
+	}
+
+	public boolean isModelAttribute() {
+		return modelAttribute;
+	}
+
+	public void setModelAttribute(boolean modelAttribute) {
+		this.modelAttribute = modelAttribute;
 	}
 
 	

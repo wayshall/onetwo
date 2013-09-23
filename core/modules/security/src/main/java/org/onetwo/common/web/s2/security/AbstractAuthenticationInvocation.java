@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ErrorRoleException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
@@ -245,8 +246,8 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 			throw (NotLoginException)e;
 		}else if(e instanceof AuthenticationException){
 			throw (AuthenticationException)e;
-		}else if(e instanceof BaseException){
-			String code = ((BaseException) e).getCode();
+		}else if(e instanceof ExceptionCodeMark){
+			String code = ((ExceptionCodeMark) e).getCode();
 			if(StringUtils.isNotBlank(code) && code.startsWith(LoginErrorCode.BASE_CODE)){
 				throw new LoginException(e.getMessage(), e);
 			}else{

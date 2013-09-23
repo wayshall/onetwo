@@ -2,8 +2,8 @@ package org.onetwo.plugins.permission.web;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.spring.web.AbstractBaseController;
-import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.exception.NoAuthorizationException;
+import org.onetwo.common.fish.plugin.PluginBaseController;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.stereotype.Controller;
@@ -13,20 +13,21 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 
 @Controller
-public class MenuController extends AbstractBaseController {
+public class MenuController extends PluginBaseController {
 
 	@Resource
 	private PermissionManagerImpl permissionManagerImpl;
 	
+	
 	private void checkAvailable() throws ModelAndViewDefiningException{
-		if(BaseSiteConfig.getInstance().isProduct())
-			throw new ModelAndViewDefiningException(mv("error", MESSAGE, "无权访问"));
+		if(getCurrentLoginUser()==null || !getCurrentLoginUser().isSystemRootUser())
+			throw new NoAuthorizationException("无权访问！");
 	}
 	@RequestMapping(value="index")
 	public ModelAndView index() throws ModelAndViewDefiningException{
 		this.checkAvailable();
 		IMenu menu = this.permissionManagerImpl.getMenuInfoParser().getRootMenu();
-		return mv("menu-index", "menu", menu);
+		return pluginMv("menu-index", "menu", menu);
 	}
 	
 	@RequestMapping(value="syncmenus", method=RequestMethod.POST)
@@ -34,6 +35,6 @@ public class MenuController extends AbstractBaseController {
 		this.checkAvailable();
 		this.permissionManagerImpl.syncMenuToDatabase();
 		IMenu menu = this.permissionManagerImpl.getMenuInfoParser().getRootMenu();
-		return mv("menu-index", "menu", menu, MESSAGE, "同步成功！");
+		return pluginMv("menu-index", "menu", menu, MESSAGE, "同步成功！");
 	}
 }

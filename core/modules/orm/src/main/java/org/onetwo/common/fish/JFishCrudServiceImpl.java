@@ -114,11 +114,11 @@ abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends B
 		return super.save(entity);
 	}
 
-	@Override
+	/*@Override
 	@Transactional
 	public void persist(Object entity) {
 		super.persist(entity);
-	}
+	}*/
 
 	@Override
 	@Transactional

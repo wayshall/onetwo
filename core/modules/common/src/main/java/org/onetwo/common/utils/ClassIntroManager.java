@@ -5,7 +5,7 @@ import java.util.WeakHashMap;
 
 public class ClassIntroManager {
 	
-	private Map<Class<?>, Intro<?>> introMaps = new WeakHashMap<Class<?>, Intro<?>>();
+	private Map<Class<?>, Intro<?>> introMaps = new WeakHashMap<Class<?>, Intro<?>>(500);
 	
 	public <T> Intro<T> getIntro(Class<T> clazz){
 		if(clazz==null)

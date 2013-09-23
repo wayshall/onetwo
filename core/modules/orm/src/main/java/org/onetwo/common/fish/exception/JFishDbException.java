@@ -9,10 +9,6 @@ public class JFishDbException extends BaseException{
 		super();
 	}
 
-	public JFishDbException(String msg, String code) {
-		super(msg, code);
-	}
-
 	public JFishDbException(String msg, Throwable cause, String code) {
 		super(msg, cause, code);
 	}
@@ -23,10 +19,6 @@ public class JFishDbException extends BaseException{
 
 	public JFishDbException(String msg) {
 		super(msg);
-	}
-
-	public JFishDbException(Throwable cause, String code) {
-		super(cause, code);
 	}
 
 	public JFishDbException(Throwable cause) {

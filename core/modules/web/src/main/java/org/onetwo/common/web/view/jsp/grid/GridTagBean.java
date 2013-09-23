@@ -20,9 +20,11 @@ public class GridTagBean extends HtmlElement {
 	private String queryString;
 
 	private boolean toolbar;
+	private boolean generatedForm;
 	
 	private String bodyContent;
-	
+
+	private boolean pagination;
 	private PaginationType paginationType;
 	
 	public RowTagBean createDefaultIteratorRow() {
@@ -116,14 +118,32 @@ public class GridTagBean extends HtmlElement {
 
 	public void setPaginationType(PaginationType paginationType) {
 		this.paginationType = paginationType;
+		if(isNonePagination())
+			this.pagination = false;
 	}
 	
-	public boolean isPagination(){
-		return this.paginationType!=PaginationType.none;
+	public boolean isNonePagination(){
+		return this.paginationType==PaginationType.none;
 	}
 	
 	public boolean isFormPagination(){
 		return this.paginationType==PaginationType.form;
+	}
+
+	public boolean isGeneratedForm() {
+		return generatedForm;
+	}
+
+	public void setGeneratedForm(boolean generatedForm) {
+		this.generatedForm = generatedForm;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
+	}
+	
+	public boolean isPagination(){
+		return this.pagination;
 	}
 
 }

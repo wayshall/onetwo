@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
-import org.onetwo.common.fish.plugin.PluginConfig;
+import org.onetwo.common.fish.plugin.DefaultPluginConfig;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class ModelAndViewPostProcessInterceptor extends WebInterceptorAdapter  {
 
-	public static String PLUGIN_KEY = PluginConfig.PLUGIN_KEY;
+	public static String PLUGIN_KEY = DefaultPluginConfig.PLUGIN_KEY;
 	
 	protected JFishPluginManager pluginManager;
 	

@@ -666,6 +666,16 @@ public abstract class StringUtils {
 		return val;
 	}
 
+	public static String firstNotBlank(String... defs){
+		if(LangUtils.isEmpty(defs))
+			return LangUtils.EMPTY_STRING;
+		for(String def : defs){
+			if(isNotBlank(def))
+				return def;
+		}
+		return LangUtils.EMPTY_STRING;
+	}
+
 	public static boolean matchPrefix(String key, String... prefixs) {
 		for (String prefix : prefixs) {
 			VerySimpleStartMatcher match = VerySimpleStartMatcher.create(prefix);

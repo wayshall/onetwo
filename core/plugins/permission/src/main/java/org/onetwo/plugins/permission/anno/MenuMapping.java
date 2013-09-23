@@ -5,14 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.common.web.s2.security.config.annotation.Authentic;
-
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Authentic
-public @interface Menu {
+public @interface MenuMapping {
 
-	String code();
-	String parent() default "";
-	boolean pageElement() default false;
+//	String code();
+	Class<?> parent();
+	
 }

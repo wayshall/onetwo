@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
+import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginTemplateLoader;
 import org.onetwo.common.ftl.directive.AbstractDirective;
 import org.onetwo.common.ftl.directive.DefineDirective;
@@ -23,13 +24,16 @@ import freemarker.template.TemplateException;
 
 public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 
-	public static final BeansWrapper INSTANCE = new BeansWrapper();
+	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 	private Map<String, Object> fishFreemarkerVariables = new HashMap<String, Object>();
 	private JFishMvcConfigurerListenerManager listenerManager;
 	private boolean freezing;
 	
-	static {
-		INSTANCE.setSimpleMapWrapper(true);
+	private JFishPluginManager jfishPluginManager;
+	
+
+	public void setJfishPluginManager(JFishPluginManager jfishPluginManager) {
+		this.jfishPluginManager = jfishPluginManager;
 	}
 
 	public JFishFreeMarkerConfigurer(JFishMvcConfigurerListenerManager listenerManager) {
@@ -108,7 +112,8 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 		final TemplateLoader loader = getConfiguration().getTemplateLoader();
 		final JFishPluginTemplateLoader jfishLoader = JFishPluginTemplateLoader.class.isInstance(loader)?(JFishPluginTemplateLoader)loader:null;
 		if(jfishLoader==null){
-			logger.error("not found JFishPluginTemplateLoader. ");
+//			logger.error("not found JFishPluginTemplateLoader. ");
+			throw new JFishException("not found JFishPluginTemplateLoader: " + name);
 		}
 		if(jfishLoader.containsPluginTemplateLoader(name)){
 			throw new JFishException("the jfish has contains the plugin template loader: " + name);
@@ -128,7 +133,7 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 				return templateLoaders.get(0);
 			default:
 				TemplateLoader[] loaders = templateLoaders.toArray(new TemplateLoader[loaderCount]);
-				StatefulTemplateLoader loader = new JFishPluginTemplateLoader(loaders);
+				StatefulTemplateLoader loader = new JFishPluginTemplateLoader(loaders, jfishPluginManager);
 //				if(this.pluginManager!=null) this.pluginManager.onTemplateLoader();
 				return loader;
 		}

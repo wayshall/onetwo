@@ -5,13 +5,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplate;
+import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplate;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends DynamicFreemarkerTemplate {
+public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplate {
 	public static final String QUERY_POSTFIX = ".query";//for ftl
 	
 	private JFishNamedSqlFileManager<T> sqlManager;

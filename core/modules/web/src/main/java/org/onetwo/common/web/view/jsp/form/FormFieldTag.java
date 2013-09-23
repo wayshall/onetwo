@@ -29,8 +29,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	private String permission;
 	private boolean showable = true;
+	private boolean modelAttribute = true;
 
 	private boolean ignoreField;
+	
 	
 	@Override
 	public FormFieldTagBean createComponent() {
@@ -51,6 +53,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setDataFormat(dataFormat);
 		component.setReadOnly(readOnly);
 		component.setDisabled(disabled);
+		component.setModelAttribute(modelAttribute);
 		
 		switch (type) {
 			case input:
@@ -67,6 +70,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 			case button:
 			case submit:
+				component.setErrorTag(false);
 				break;
 	
 			default:
@@ -172,6 +176,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setShowable(boolean showable) {
 		this.showable = showable;
+	}
+
+	public void setModelAttribute(boolean modelAttribute) {
+		this.modelAttribute = modelAttribute;
 	}
 
 }

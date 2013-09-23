@@ -1,7 +1,7 @@
 package org.onetwo.common.exception;
 
 @Deprecated
-public class WebException extends BaseException{
+public class WebException extends ServiceException{
 	
 	/**
 	 * 

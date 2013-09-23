@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.exception.BusinessException;
-import org.onetwo.common.spring.web.AbstractBaseController;
+import org.onetwo.common.fish.plugin.PluginBaseController;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.codegen.generator.DefaultTableManager;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/database")
 @Controller
-public class DatabaseController extends AbstractBaseController {
+public class DatabaseController extends PluginBaseController {
 	 
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
@@ -40,7 +40,7 @@ public class DatabaseController extends AbstractBaseController {
 		}else{
 			databaseServiceImpl.findPage(page, K.DESC, "lastUpdateTime");
 		}
-		return mv("database", "page", page);
+		return pluginMv("database", "page", page);
 	}
 	
 
@@ -56,7 +56,7 @@ public class DatabaseController extends AbstractBaseController {
 		}
 		List<String> tables = tm.getTableNames(true);
 //		return innerView("tables", "tables", tables);
-		return mv("database-tables", "tables", tables);
+		return pluginMv("database-tables", "tables", tables);
 	}
 	
 }
