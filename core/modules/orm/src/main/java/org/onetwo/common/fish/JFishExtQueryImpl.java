@@ -47,7 +47,7 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 		return "";
 	}
 
-	protected String getDefaultField(String name){
+	protected String getDefaultCountField(){
 		if(entry!=null && entry.getIdentifyField()!=null){
 			return entry.getIdentifyField().getColumn().getName();
 		}

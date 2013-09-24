@@ -43,6 +43,9 @@ public final class HibernateUtils {
 		}
 		
 	};
+
+	private static final HiberanteCopyer WITHOUT_RELATION = new HiberanteCopyer(IGNORE_ANNO_CLASSES);
+	private static final HiberanteCopyer COMMON = new HiberanteCopyer(new Class[]{Transient.class});
 	
 	private static SessionFactory sessionFactory;
 	
@@ -88,7 +91,7 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copyWithoutRelations(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES));
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
 	}
 	/****
 	 * 复制对象属性，但会忽略那些null值、空白字符
@@ -96,7 +99,7 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copy(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer());
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, COMMON);
 	}
 	
 	/****
@@ -106,7 +109,7 @@ public final class HibernateUtils {
 	 * @return
 	 */
 	public static <T> T copyWithoutRelations(T source, Class<T> targetClass){
-		return ReflectUtils.copy(source, targetClass, new HiberanteCopyer(IGNORE_ANNO_CLASSES));
+		return ReflectUtils.copy(source, targetClass, WITHOUT_RELATION);
 	}
 	/***
 	 * 复制对象属性，但会忽略那些null值、空白字符
@@ -114,7 +117,7 @@ public final class HibernateUtils {
 	 * @param targetClass
 	 */
 	public static <T> void copy(T source, Class<T> targetClass){
-		ReflectUtils.copy(source, targetClass, new HiberanteCopyer());
+		ReflectUtils.copy(source, targetClass, COMMON);
 	}
 	
 }

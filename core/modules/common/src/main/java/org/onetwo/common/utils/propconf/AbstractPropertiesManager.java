@@ -75,7 +75,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 		public void setOverrideDir(String overrideDir) {
 			Assert.hasText(overrideDir);
-			this.overrideDir = overrideDir;
+			this.overrideDir = overrideDir.toLowerCase();
 		}
 		public ClassLoader getClassLoader() {
 			return classLoader;

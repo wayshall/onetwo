@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.dozer;
 
+import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +62,18 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 		type.mapEmptyString(mapper.isMapEmpty());
 	}
 	
+	private boolean ignoreProperty(PropertyDescriptor prop){
+		return prop.getWriteMethod()==null;
+	}
+	
 	protected Map<String, String> mappingFields(Class<?> classa, Class<?> classb, String fieldSplit){
 		Map<String, String> mappingFields = LangUtils.newHashMap();
-		Collection<String> srcFields = ReflectUtils.desribPropertiesName(classa, Set.class);
+		PropertyDescriptor[] srcProps = ReflectUtils.desribProperties(classa);
 		if(classa==classb){
-			for(String sfield : srcFields){
-				mappingFields.put(sfield, sfield);
+			for(PropertyDescriptor prop : srcProps){
+				if(ignoreProperty(prop))
+					continue;
+				mappingFields.put(prop.getName(), prop.getName());
 			}
 			return mappingFields;
 		}
@@ -74,7 +81,10 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 		boolean isFieldSplit = StringUtils.isNotBlank(fieldSplit);
 		Collection<String> desctFields = ReflectUtils.desribPropertiesName(classb, Set.class);
 //		Collection<String> mapFields = srcFields.size()<desctFields.size()?srcFields:desctFields;
-		for(String fname : srcFields){
+		for(PropertyDescriptor prop : srcProps){
+			if(ignoreProperty(prop))
+				continue;
+			String fname = prop.getName();
 			if(!isFieldSplit){
 				if(desctFields.contains(fname)){
 					mappingFields.put(fname, fname);

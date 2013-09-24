@@ -927,8 +927,7 @@ public class ReflectUtils {
 		return rsMap;
 	}
 
-	public static List<PropertyDescriptor> desribProperties(Class<?> clazz,
-			Class<? extends Annotation> excludeAnnoClass) {
+	public static List<PropertyDescriptor> desribProperties(Class<?> clazz, Class<? extends Annotation> excludeAnnoClass) {
 		PropertyDescriptor[] props = desribProperties(clazz);
 		List<PropertyDescriptor> propList = new ArrayList<PropertyDescriptor>();
 		Method method = null;

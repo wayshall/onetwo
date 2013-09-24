@@ -144,7 +144,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 
 	@Override
 	public <T> T save(T entity) {
-		try {
+		/*try {
 			getSession().saveOrUpdate(entity);
 		} catch (SQLGrammarException e) {
 			SQLException sqle = (SQLException)e.getCause();
@@ -153,6 +153,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 				getSession().saveOrUpdate(entity);
 			}
 		}
+		return entity;*/
+		getSession().saveOrUpdate(entity);
 		return entity;
 	}
 	

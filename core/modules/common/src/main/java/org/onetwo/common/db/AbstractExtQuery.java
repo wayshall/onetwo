@@ -320,6 +320,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	}
 	
 	public String getFieldName(String f) {
+		Assert.hasText(f);
 		f = appendAlias(translateAt(f));
 		checkFieldNameValid(f);
 		return f;

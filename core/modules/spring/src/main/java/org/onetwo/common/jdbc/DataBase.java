@@ -4,6 +4,7 @@ package org.onetwo.common.jdbc;
 public enum DataBase {
 	MySQL("mysql"),
 	Oracle("oracle"),
+	Sqlserver("sqlserver"),
 	H2("h2");
 //	Unknow("unknow");
 	

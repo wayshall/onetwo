@@ -118,4 +118,8 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 		this.listeners = listeners;
 	}
 
+	protected List<ExtQueryListener> getListeners() {
+		return listeners;
+	}
+
 }

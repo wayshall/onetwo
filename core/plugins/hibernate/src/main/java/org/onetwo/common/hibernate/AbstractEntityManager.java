@@ -19,10 +19,8 @@ import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
@@ -361,11 +359,11 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
+		/*SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
 		if(symbolManager==null){
 			symbolManager = SQLSymbolManagerFactory.getInstance().get(this.getEntityManagerProvider());
 		}
-		this.sqlSymbolManager = symbolManager;
+		this.sqlSymbolManager = symbolManager;*/
 	}
 
 	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {

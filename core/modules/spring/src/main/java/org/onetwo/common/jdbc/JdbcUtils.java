@@ -53,6 +53,11 @@ final public class JdbcUtils {
 			}
 		}
 
+		return getDataBase(jdbcUrl);
+	}
+	
+
+	public static DataBase getDataBase(String jdbcUrl) {
 		if(StringUtils.isBlank(jdbcUrl))
 			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
 		
@@ -60,6 +65,8 @@ final public class JdbcUtils {
 			return DataBase.H2;
 		} else if (jdbcUrl.contains(":mysql:")) {
 			return DataBase.MySQL;
+		} else if (jdbcUrl.contains(":sqlserver:")) {
+			return DataBase.Sqlserver;
 		} else if (jdbcUrl.contains(":oracle:")) {
 			return DataBase.Oracle;
 		} else {

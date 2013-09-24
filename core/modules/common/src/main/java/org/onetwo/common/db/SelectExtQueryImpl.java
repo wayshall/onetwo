@@ -336,7 +336,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 	protected String buildCountSql(String sql){
 		String hql = sql;
-		String countField = getDefaultField("id");
+		String countField = getDefaultCountField();
 
 		if(hql.indexOf("{")!=-1 || hql.indexOf("}")!=-1)
 			hql = hql.replace("{", "").replace("}", "");
@@ -366,12 +366,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		return hql;
 	}
 	
-	protected String getDefaultField(String name){
-		String countName = getFieldName(name);
-		if(StringUtils.isBlank(countName)){
-			countName = "*";
-		}
-		return countName;
+	protected String getDefaultCountField(){
+		return getFieldName("id");
 	}
 
 	public String getCountSql() {

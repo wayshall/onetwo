@@ -7,11 +7,12 @@ import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.hibernate.HibernateEntityManagerImpl;
 import org.onetwo.common.hibernate.listener.TimestampEventListener;
+import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.context.ApplicationContext;
@@ -44,14 +45,15 @@ public class HibernatePluginContext  {
 	public BaseEntityManager baseEntityManager(){
 		HibernateEntityManagerImpl em = new HibernateEntityManagerImpl();
 		em.setSessionFactory(sessionFactory);
+		em.setSqlSymbolManager(sqlSymbolManager());
 		return em;
 	}
 	
 	@Bean
-	public SQLSymbolManager SqlSymbolManager(){
+	public SQLSymbolManager sqlSymbolManager(){
 		SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
 		if(symbolManager==null){
-			symbolManager = SQLSymbolManagerFactory.getInstance().get(baseEntityManager().getEntityManagerProvider());
+			symbolManager = new HibernateSQLSymbolManagerImpl(new DefaultSQLDialetImpl());//SQLSymbolManagerFactory.getInstance().get(EntityManagerProvider.Hibernate);
 			List<ExtQueryListener> listeners = SpringUtils.getBeans(applicationContext, ExtQueryListener.class);
 			symbolManager.setListeners(listeners);
 		}
