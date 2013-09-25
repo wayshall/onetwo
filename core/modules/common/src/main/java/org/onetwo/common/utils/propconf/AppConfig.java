@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.utils.Freezer;
-import org.onetwo.common.utils.StringUtils;
 
 public class AppConfig extends PropConfig {
 
@@ -102,15 +101,15 @@ public class AppConfig extends PropConfig {
 	}
 	
 	public boolean isDev(){
-		return getAppEnvironment().equals(Env.DEV);
+		return getEnv()==Env.DEV;
 	}
 	
 	public boolean isProduct(){
-		return Env.PRODUCT.equals(getAppEnvironment());
+		return getEnv()==Env.PRODUCT;
 	}
 	
 	public boolean isTest(){
-		return Env.TEST.equals(getAppEnvironment());
+		return getEnv()==Env.TEST;
 	}
 
 	public Map<String, PropConfig> getOuters() {

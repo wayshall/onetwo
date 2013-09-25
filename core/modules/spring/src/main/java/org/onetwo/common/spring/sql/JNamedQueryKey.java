@@ -2,6 +2,7 @@ package org.onetwo.common.spring.sql;
 
 public enum JNamedQueryKey {
 
+	ParserContext,
 	ResultClass,
 	ASC,
 	DESC;

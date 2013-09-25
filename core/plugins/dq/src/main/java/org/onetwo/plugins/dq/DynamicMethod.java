@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
+import org.onetwo.common.spring.sql.ParserContext;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
@@ -77,9 +78,53 @@ public class DynamicMethod {
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
 		
 		Object pvalue = null;
+		ParserContext parserContext = null;
 		for(DynamicMethodParameter mp : parameters){
 			pvalue = args[mp.getParameterIndex()];
-			if(!LangUtils.isSimpleTypeObject(pvalue)){
+			if(pvalue instanceof ParserContext){
+				//parserContext
+				if(parserContext==null)
+					parserContext = ParserContext.create();
+				parserContext.putAll((ParserContext) pvalue);
+			}else if(mp.hasParameterAnnotation(Name.class)){
+				Name name = mp.getParameterAnnotation(Name.class);
+				if(name.queryParam()){
+					values.add(mp.getParameterName());
+					values.add(pvalue);
+				}else{
+					//parserContext
+					if(parserContext==null)
+						parserContext = ParserContext.create();
+					parserContext.put(mp.getParameterName(), pvalue);
+				}
+					
+			}else{
+				values.add(mp.getParameterName());
+				values.add(pvalue);
+			}
+		}
+
+		if(parserContext!=null){
+			values.add(JNamedQueryKey.ParserContext);
+			values.add(parserContext);
+		}
+		if(componentClass!=null){
+			values.add(JNamedQueryKey.ResultClass);
+			values.add(componentClass);
+		}
+		return values.toArray();
+	}
+	
+	private Object[] toArrayByArgs2(Object[] args, Class<?> componentClass){
+		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
+		
+		Object pvalue = null;
+		for(DynamicMethodParameter mp : parameters){
+			pvalue = args[mp.getParameterIndex()];
+			if(pvalue instanceof ParserContext){
+				values.add(JNamedQueryKey.ParserContext);
+				values.add(pvalue);
+			}else if(!LangUtils.isSimpleTypeObject(pvalue)){
 				Map<?, ?> map = ReflectUtils.toMap(pvalue);
 				String prefix = "";
 				if(mp.hasParameterAnnotation(Name.class)){

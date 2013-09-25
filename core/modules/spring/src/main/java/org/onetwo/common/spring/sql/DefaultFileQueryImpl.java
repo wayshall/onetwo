@@ -32,6 +32,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements 
 	
 	protected T info;
 	private FileSqlParser<T> parser;
+	private ParserContext parserContext;
 	
 	private String[] ascFields;
 	private String[] desFields;
@@ -40,7 +41,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements 
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;
-//		this.parser = parser;
+		this.parser = parser;
 		
 		this.info = info;
 		this.resultClass = countQuery?Long.class:info.getMappedEntityClass();
@@ -89,7 +90,10 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements 
 			dataQuery = createDataQuery(query);
 			
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
-			String parsedSql = this.parser.parseSql(countQuery?info.getCountName():info.getFullName(), params);
+			if(this.parserContext==null)
+				this.parserContext = ParserContext.create();
+			this.parserContext.putAll(params);
+			String parsedSql = this.parser.parseSql(countQuery?info.getCountName():info.getFullName(), parserContext);
 			dataQuery = createDataQuery(parsedSql, resultClass);
 			
 			for(Entry<Object, Object> entry : this.params.entrySet()){
@@ -188,6 +192,8 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements 
 				String[] desFields = CUtils.asStringArray(value);
 				desc(desFields);
 				break;
+			case ParserContext:
+				this.setParserContext((ParserContext)value);
 			default:
 				break;
 		}
@@ -252,6 +258,10 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements 
 	@Override
 	public DataQuery setQueryConfig(Map<String, Object> configs) {
 		return null;
+	}
+
+	public void setParserContext(ParserContext parserContext) {
+		this.parserContext = parserContext;
 	}
 
 }

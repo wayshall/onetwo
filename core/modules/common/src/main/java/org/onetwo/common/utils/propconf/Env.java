@@ -17,7 +17,7 @@ public enum Env {
 		return label;
 	}
 	public String getValue(){
-		return toString();
+		return toString().toLowerCase();
 	}
 	
 	public static Env of(String value){

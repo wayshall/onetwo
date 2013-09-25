@@ -11,4 +11,6 @@ public @interface Name {
 
 	public String value();
 	
+	public boolean queryParam() default true;
+	
 }

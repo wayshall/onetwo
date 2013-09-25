@@ -802,9 +802,13 @@ public class ReflectUtils {
 	public static Map toMap(boolean ignoreNull, Object obj) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
-		if(obj.getClass().isArray()){
+		
+		if(obj.getClass().isArray())
 			return LangUtils.asMap((Object[])obj);
-		}
+		
+		if(obj instanceof Map)
+			return (Map)obj;
+		
 		PropertyDescriptor[] props = desribProperties(obj.getClass());
 		if (props == null || props.length == 0)
 			return Collections.EMPTY_MAP;
