@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplate;
+import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
 
 import freemarker.template.Configuration;
@@ -19,6 +20,8 @@ public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFr
 	public FileSqlParser(final JFishNamedSqlFileManager<T> sqlm) {
 		super();
 		this.sqlManager = sqlm;
+		
+		addDirective(new ForeachDirective());
 		
 		this.setTemplateProvider(new StringTemplateProvider() {
 			

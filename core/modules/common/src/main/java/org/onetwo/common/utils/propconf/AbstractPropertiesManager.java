@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
@@ -134,8 +133,16 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
 		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
+		if(logger.isInfoEnabled())
+			logger.info("find {} sql named file in dir {}", sqlfileArray.length, sqldirPath);
+		
 		if(StringUtils.isNotBlank(conf.getOverrideDir())){
-			File[] dbsqlfiles = FileUtils.listFiles(sqldirPath+"/"+conf.getOverrideDir(), conf.getPostfix());
+			String overridePath = sqldirPath+"/"+conf.getOverrideDir();
+			File[] dbsqlfiles = FileUtils.listFiles(overridePath, conf.getPostfix());
+
+			if(logger.isInfoEnabled())
+				logger.info("find {} sql named file in dir {}", dbsqlfiles.length, overridePath);
+			
 			if(!LangUtils.isEmpty(dbsqlfiles)){
 				sqlfileArray = (File[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
 			}

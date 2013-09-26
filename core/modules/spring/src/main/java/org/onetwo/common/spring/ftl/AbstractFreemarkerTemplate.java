@@ -28,11 +28,20 @@ abstract public class AbstractFreemarkerTemplate{
 	
 	private StringTemplateProvider templateProvider;
 	
+	private Map<String, Object> freemarkerVariables;
+	
 	public AbstractFreemarkerTemplate(){
 	}
 
 	protected BeansWrapper getBeansWrapper(){
 		return INSTANCE;
+	}
+	
+	final public AbstractFreemarkerTemplate addDirective(NamedDirective directive){
+		if(this.freemarkerVariables==null)
+			this.freemarkerVariables = LangUtils.newHashMap();
+		this.freemarkerVariables.put(directive.getName(), directive);
+		return this;
 	}
 	
 	/****
@@ -41,14 +50,13 @@ abstract public class AbstractFreemarkerTemplate{
 	public void initialize() {
 		Assert.notNull(templateProvider);
 		try {
-			Map<String, Object> freemarkerVariables = LangUtils.newHashMap();
-			
 			this.configuration = new Configuration();
 			this.configuration.setObjectWrapper(getBeansWrapper());
 			this.configuration.setOutputEncoding(this.encoding);
 //			this.cfg.setDirectoryForTemplateLoading(new File(templateDir));
 			this.configuration.setTemplateLoader(new DynamicTemplateLoader(templateProvider));
-			configuration.setAllSharedVariables(new SimpleHash(freemarkerVariables, configuration.getObjectWrapper()));
+			if(LangUtils.isNotEmpty(getFreemarkerVariables()))
+				configuration.setAllSharedVariables(new SimpleHash(freemarkerVariables, configuration.getObjectWrapper()));
 			this.buildConfigration(this.configuration);
 		} catch (Exception e) {
 			throw new BaseException("create freemarker template error : " + e.getMessage(), e);
@@ -85,6 +93,14 @@ abstract public class AbstractFreemarkerTemplate{
 
 	public String getEncoding() {
 		return encoding;
+	}
+
+	public Map<String, Object> getFreemarkerVariables() {
+		return freemarkerVariables;
+	}
+
+	public void setFreemarkerVariables(Map<String, Object> freemarkerVariables) {
+		this.freemarkerVariables = freemarkerVariables;
 	}
 
 

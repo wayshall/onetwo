@@ -117,7 +117,7 @@ public class PermissionManagerImpl {
 	}*/
 	
 	private void removePermission(IPermission dbperm){
-		dbperm.removeRelations();
+		dbperm.onRemove();
 		baseEntityManager.remove(dbperm);
 	}
 	

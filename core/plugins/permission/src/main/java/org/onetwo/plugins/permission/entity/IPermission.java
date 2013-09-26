@@ -11,7 +11,7 @@ public interface IPermission {
 	String getCode();
 	void setCode(String code);
 	
-	public void removeRelations();
+	public void onRemove();
 
 //	PermissionType getPtype();
 
