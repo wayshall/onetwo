@@ -1,7 +1,6 @@
 package org.onetwo.common.hibernate;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -11,7 +10,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.exception.SQLGrammarException;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -23,8 +21,9 @@ import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
@@ -45,13 +44,18 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Resource
 	private ApplicationContext applicationContext;
 	
-	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
+//	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
+	
+	@Resource
+	private AppConfig appConfig;
 
 	public HibernateEntityManagerImpl(){
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(appConfig, "appConfig can not be null.");
+		boolean watchSqlFile = appConfig.isDev();
 		String db = JdbcUtils.getDataBase(dataSource).toString();
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);

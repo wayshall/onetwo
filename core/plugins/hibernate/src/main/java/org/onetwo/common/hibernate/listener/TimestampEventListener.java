@@ -41,7 +41,9 @@ public class TimestampEventListener implements PreInsertEventListener, PreUpdate
 		Object[] currentState = event.getState();
 		
 		if (event.getEntity() instanceof IBaseEntity) {
-			HibernateUtils.setPropertyState(props, currentState, "createTime", new Date());
+			Date now = new Date();
+			HibernateUtils.setPropertyState(props, currentState, "createTime", now);
+			HibernateUtils.setPropertyState(props, currentState, "lastUpdateTime", now);
 		}
 		return false;
 	}

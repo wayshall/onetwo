@@ -32,7 +32,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 				for(Class<?> codeClass : menuClass.codeClass()){
 					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
 					if(perm==null)
-						throw new BaseException("can not find the menu code class in menu tree : " + codeClass);
+						throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
 					if(IMenu.class.isInstance(perm)){
 						IMenu menu = (IMenu) perm;
 						String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();

@@ -9,6 +9,8 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 
 /*****
  * service上下文初始化
+ * initialize in web app start 
+ * config in web.xml
  * @author wayshall
  *
  */

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 
 /******
  * mvc上下问初始化
+ * initialize in dispatcher servlet
  * @author wayshall
  *
  */

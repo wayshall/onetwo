@@ -7,11 +7,13 @@ import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
+import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +41,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 /*******
  * 负责applicationContext.xml上下文初始化
  * 
+ * initialize in web app start
+ * in JFishWebApplicationContext
  * @author wayshall
  *
  */
@@ -66,6 +70,11 @@ public class JFishContextConfig implements ApplicationContextAware {
 
 	public ApplicationContext getApplicationContex() {
 		return applicationContex;
+	}
+	
+	@Bean
+	public AppConfig appConfig(){
+		return BaseSiteConfig.getInstance();
 	}
 
 	@Bean
