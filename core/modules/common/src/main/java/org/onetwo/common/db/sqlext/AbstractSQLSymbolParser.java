@@ -2,7 +2,6 @@ package org.onetwo.common.db.sqlext;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
@@ -11,6 +10,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
 

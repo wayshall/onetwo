@@ -30,7 +30,7 @@ public class NotLoginException extends AuthenticationException {
 	}
 
 	@Override
-	protected String getBaseCode() {
+	protected String getDefaultCode() {
 		return AuthenticErrorCode.NOT_LOGIN_YET;
 	}
 }

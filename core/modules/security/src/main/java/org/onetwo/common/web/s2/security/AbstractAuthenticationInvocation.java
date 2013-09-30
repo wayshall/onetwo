@@ -2,11 +2,11 @@ package org.onetwo.common.web.s2.security;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ErrorRoleException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
@@ -15,6 +15,7 @@ import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
 import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.PermissionDetail;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 
@@ -200,7 +201,7 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 				if(authenticateExpression(p, authoritable))//pass if any one is true
 					return true;
 			}else{
-				if(pUser.getPermissions().contains(p))//pass if user permission contains any one of action permisson
+				if(pUser.getPermissions()!=null && pUser.getPermissions().contains(p))//pass if user permission contains any one of action permisson
 					return true;
 			}
 		}
@@ -245,8 +246,8 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 			throw (NotLoginException)e;
 		}else if(e instanceof AuthenticationException){
 			throw (AuthenticationException)e;
-		}else if(e instanceof BaseException){
-			String code = ((BaseException) e).getCode();
+		}else if(e instanceof ExceptionCodeMark){
+			String code = ((ExceptionCodeMark) e).getCode();
 			if(StringUtils.isNotBlank(code) && code.startsWith(LoginErrorCode.BASE_CODE)){
 				throw new LoginException(e.getMessage(), e);
 			}else{

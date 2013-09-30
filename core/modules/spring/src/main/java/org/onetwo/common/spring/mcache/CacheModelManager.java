@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.cache.Cacheable;
 import org.onetwo.common.cache.FlushCache;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.VProviderFactory;
 import org.onetwo.common.utils.ValueProvider;
-import org.onetwo.common.utils.map.M;
 import org.springframework.beans.factory.InitializingBean;
 
 public class CacheModelManager implements InitializingBean {

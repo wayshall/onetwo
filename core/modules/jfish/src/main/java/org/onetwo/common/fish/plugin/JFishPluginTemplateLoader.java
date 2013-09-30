@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import freemarker.cache.StatefulTemplateLoader;
@@ -21,7 +20,8 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 	
 //	public static final String ROOT_ACCESS = ":";
 
-	private final PluginNameParser newPnameParser = DefaultPluginManager.pluginNameParser;
+	private final PluginNameParser newPnameParser;
+	@Deprecated
 	private final PluginNameParser pnameParser = new PluginNameParser(":", ":");
 	private final TemplateLoader[] loaders;
 	private final Map lastLoaderForName = Collections.synchronizedMap(new HashMap());
@@ -29,8 +29,14 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 	private Map<String, TemplateLoader> pluginLoaders = new HashMap<String, TemplateLoader>();
 	private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
-	public JFishPluginTemplateLoader(TemplateLoader[] loaders) {
+	public JFishPluginTemplateLoader(TemplateLoader[] loaders, JFishPluginManager jfishPluginManager) {
 		this.loaders = (TemplateLoader[]) loaders.clone();
+		this.newPnameParser = jfishPluginManager.getPluginNameParser();
+	}
+
+	public JFishPluginTemplateLoader(TemplateLoader[] loaders, PluginNameParser pluginNameParser) {
+		this.loaders = (TemplateLoader[]) loaders.clone();
+		this.newPnameParser = pluginNameParser;
 	}
 
 	/*public void addTemplateLoader(TemplateLoader loader) {
@@ -114,7 +120,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 				actualName = StringUtils.trimStartWith(actualName, "/");
 				source = findPluginTemplateSource(meta, actualName);
 			}
-		}else{
+		}/*else{
 			Object controller = JFishWebUtils.currentController();
 			if (controller != null) {//for controller
 				JFishPluginMeta meta = pluginManager.getJFishPluginMetaOf(controller.getClass());
@@ -125,7 +131,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 						return source;
 				}
 			}
-		}
+		}*/
 		
 		if(source!=null)
 			return source;
@@ -226,7 +232,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 	}
 
 	public static void main(String[] args){
-		JFishPluginTemplateLoader j = new JFishPluginTemplateLoader(new TemplateLoader[]{});
+		JFishPluginTemplateLoader j = new JFishPluginTemplateLoader(new TemplateLoader[]{}, new PluginNameParser("[", "]"));
 		System.out.println(j.newPnameParser.getPluginName("lib/test/test.ftl"));
 		String path = "[codegen]/lib/test/test.ftl";
 		String pname = j.newPnameParser.getPluginName(path);

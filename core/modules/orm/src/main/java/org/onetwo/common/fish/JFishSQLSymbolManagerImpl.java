@@ -2,7 +2,7 @@ package org.onetwo.common.fish;
 
 import java.util.Map;
 
-import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
 import org.onetwo.common.db.sqlext.SQLDialet;
@@ -29,12 +29,13 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 	}
 
 	@Override
-	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
 		JFishMappedEntry entry = null;
 		if(mappedEntryManager!=null){
 			entry = this.mappedEntryManager.getEntry(entityClass);
 		}
-		ExtQuery q = new JFishExtQueryImpl(entry, entityClass, alias, properties, this);
+		SelectExtQuery q = new JFishExtQueryImpl(entry, entityClass, alias, properties, this);
+		q.initQuery();
 		return q;
 	}
 

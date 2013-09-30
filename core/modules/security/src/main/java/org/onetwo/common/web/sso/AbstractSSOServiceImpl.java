@@ -2,7 +2,6 @@ package org.onetwo.common.web.sso;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
@@ -11,6 +10,7 @@ import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;

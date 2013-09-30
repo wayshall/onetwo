@@ -32,7 +32,7 @@ public class ErrorRoleException extends AuthenticationException {
 	}
 
 	@Override
-	protected String getBaseCode() {
+	protected String getDefaultCode() {
 		return AuthenticErrorCode.ERROR_ROLE;
 	}
 }

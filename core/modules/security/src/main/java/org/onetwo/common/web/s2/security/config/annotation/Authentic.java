@@ -9,7 +9,7 @@ import org.onetwo.common.web.s2.security.Authenticator;
 
 
 
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authentic {
 	/*@Deprecated
@@ -34,6 +34,6 @@ public @interface Authentic {
 	boolean throwIfTimeout() default true;
 
 	String authenticationName() default "";
-	String redirect() default "login";
+	String redirect() default "redirect:/login";
 	String[] roles() default {};
 }

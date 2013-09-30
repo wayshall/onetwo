@@ -2,11 +2,13 @@ package org.onetwo.common.jdbc;
 
 
 import java.sql.Connection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.support.DaoSupport;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /****
@@ -14,10 +16,22 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * @author weishao
  *
  */
-public abstract class JdbcDaoSupport extends DaoSupport {
+abstract public class JdbcDaoSupport extends DaoSupport {
 
 	protected JFishJdbcOperations jdbcTemplate;
 	protected NamedJdbcTemplate namedParameterJdbcTemplate;
+	
+	private RowMapperFactory rowMapperFactory;
+	
+
+	public <T> List<T> query(String sql, Class<T> entityClass, Object... args){
+		return this.jdbcTemplate.query(sql, getDefaultRowMapper(entityClass), args);
+	}
+
+	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type){
+		return (RowMapper<T>)this.rowMapperFactory.createDefaultRowMapper(type);
+	}
+
 
 //	@Resource(name="dataSource")
 	final public void setDataSource(DataSource dataSource) {
@@ -46,12 +60,15 @@ public abstract class JdbcDaoSupport extends DaoSupport {
 
 	@Override
 	protected void initDao() throws Exception {
-		super.initDao();
+		if(this.rowMapperFactory==null){
+			this.rowMapperFactory = new SimpleRowMapperFactory();
+		}
 	}
 
 	protected void initTemplateConfig() {
-		if(this.namedParameterJdbcTemplate==null)
+		if(this.namedParameterJdbcTemplate==null){
 			this.namedParameterJdbcTemplate = new JFishNamedJdbcTemplate(getJdbcTemplate());
+		}
 	}
 
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
@@ -78,6 +95,14 @@ public abstract class JdbcDaoSupport extends DaoSupport {
 
 	public void setNamedParameterJdbcTemplate(NamedJdbcTemplate namedParameterJdbcTemplate) {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+	}
+
+	public RowMapperFactory getRowMapperFactory() {
+		return rowMapperFactory;
+	}
+
+	public void setRowMapperFactory(RowMapperFactory rowMapperFactory) {
+		this.rowMapperFactory = rowMapperFactory;
 	}
 
 }

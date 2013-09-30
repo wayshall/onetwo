@@ -2,7 +2,7 @@ package org.onetwo.common.ejb.jpa;
 
 import java.util.Map;
 
-import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sqlext.BooleanValueSQLSymbolParser;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
 import org.onetwo.common.db.sqlext.HasSymbolParser;
@@ -21,8 +21,10 @@ public class JPASQLSymbolManager extends DefaultSQLSymbolManagerImpl {
 	}
 
 	@Override
-	public ExtQuery createQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
-		return new JPAExtQuery(entityClass, alias, properties, this);
+	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
+		SelectExtQuery q = new JPAExtQuery(entityClass, alias, properties, this);
+		q.initQuery();
+		return q;
 	}
 	
 	public SQLSymbolManager initParser() {

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
@@ -24,6 +23,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -356,4 +356,10 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public <T> void findPage(Page<T> page, JFishQueryValue squery){
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		return rawClass.cast(getRawManagerObject());
+	}
+	
 }

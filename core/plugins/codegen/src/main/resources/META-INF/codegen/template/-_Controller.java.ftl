@@ -68,8 +68,8 @@ public class ${commonName}Controller extends AbstractBaseController {
 	}
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.GET)
-	public ModelAndView edit(@PathVariable("id") Long id){
-		${entityName} ${ename} = this.${eserviceName}.findById(id);
+	public ModelAndView edit(@PathVariable("id") Long ${table.primaryKey.javaName}){
+		${entityName} ${ename} = this.${eserviceName}.findById(${table.primaryKey.javaName});
 		return mv("${ftlPath}-edit", "${ename}", ${ename});
 	}
 	
@@ -86,8 +86,8 @@ public class ${commonName}Controller extends AbstractBaseController {
 	
 
 	@RequestMapping(method=RequestMethod.DELETE)
-	public ModelAndView deleteBatch(@RequestParam(value="ids")long[] ids, RedirectAttributes redirectAttributes){
-		for(long id : ids){
+	public ModelAndView deleteBatch(long[] ${table.primaryKey.javaName}s, RedirectAttributes redirectAttributes){
+		for(${table.primaryKey.javaType.simpleName} id : ${table.primaryKey.javaName}s){
 			this.${eserviceName}.removeById(id);
 		}
 		addFlashMessage(redirectAttributes, "删除成功！");
@@ -95,8 +95,8 @@ public class ${commonName}Controller extends AbstractBaseController {
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ModelAndView show(@PathVariable("id") long id) throws BusinessException{
-		${entityName} ${ename} =  this.${eserviceName}.findById(id);
+	public ModelAndView show(@PathVariable("id") long ${table.primaryKey.javaName}){
+		${entityName} ${ename} =  this.${eserviceName}.findById(${table.primaryKey.javaName});
 		return mv("${ftlPath}-show", "${ename}", ${ename});
 	}
 	

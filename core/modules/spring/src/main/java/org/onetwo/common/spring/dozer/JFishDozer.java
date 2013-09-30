@@ -1,17 +1,19 @@
 package org.onetwo.common.spring.dozer;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.bean.BeanDuplicator;
 
-public class JFishDozer extends BeanDuplicator {
+public class JFishDozer extends DozerBean {
 
 	private PropertyUnderlineMappingBuilder builder;
 	
-	public JFishDozer(List<DozerClassMapper> dozerClasses, Properties props) {
-		super(props);
+
+	public JFishDozer(List<DozerClassMapper> dozerClasses) {
+		this(dozerClasses, null);
+	}
+	public JFishDozer(List<DozerClassMapper> dozerClasses, List<String> mappingFiles) {
+		super(mappingFiles);
 		if(LangUtils.isNotEmpty(dozerClasses)){
 			this.builder = new PropertyUnderlineMappingBuilder(dozerClasses);
 		}

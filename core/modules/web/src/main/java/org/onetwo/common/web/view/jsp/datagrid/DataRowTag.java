@@ -45,6 +45,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 
 	@Override
 	public int doStartTag() throws JspException {
+		assertParentTag(DataGridTag.class);
 		super.doStartTag();
 		if(component.isIterator()){
 			Iterator<?> it = component.getIterator();
@@ -59,6 +60,9 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				
 				return EVAL_BODY_BUFFERED;
 			}else{
+				if(!component.isFieldTagCompletion()){
+					return EVAL_BODY_BUFFERED;
+				}
 				clearComponentFromRequest(CURRENT_ROW_DATA);
 				
 				if(StringUtils.isNotBlank(getName()))
@@ -77,7 +81,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 			component.setFieldTagCompletion(true);
 			CurrentRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, CurrentRowData.class);
 			if(preData!=null){
-				component.getDatas().add(preData.getTranslateData());
+				component.getDatas().add(preData);//preData.getTranslateData()
 			}
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){

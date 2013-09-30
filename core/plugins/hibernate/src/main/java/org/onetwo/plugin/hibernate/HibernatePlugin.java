@@ -25,6 +25,12 @@ public class HibernatePlugin extends AbstractJFishPlugin<HibernatePlugin> {
 	}
 
 
+	@Override
+	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+//		annoClasses.add(HibernateMvcContext.class);
+	}
+
+
 	public void setPluginInstance(HibernatePlugin plugin){
 		instance = plugin;
 	}

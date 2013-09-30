@@ -3,8 +3,8 @@ package org.onetwo.common.spring.web;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,11 +15,10 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
+import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -35,11 +34,20 @@ abstract public class AbstractBaseController {
 	
 	public static final String REDIRECT = "redirect:";
 	public static final String MESSAGE = "message";
-
+	public static final String MESSAGE_TYPE = "messageType";
+	public static final String MESSAGE_TYPE_ERROR = "error";
+	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+
+	@Resource
+	private CodeMessager codeMessager;
 	
 	protected AbstractBaseController(){
+	}
+	
+	public String getMessage(String code, Object...args){
+		return codeMessager.getMessage(code, args);
 	}
 
 	protected String redirect(String path){
@@ -48,6 +56,7 @@ abstract public class AbstractBaseController {
 	
 	public void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
 		redirectAttributes.addFlashAttribute(MESSAGE, StringUtils.trimToEmpty(msg));
+		redirectAttributes.addFlashAttribute(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 
 	
@@ -64,33 +73,22 @@ abstract public class AbstractBaseController {
 		return mv(redirect(path));
 	}
 	
+	protected ModelAndView redirectTo(String path, String message){
+		return mv(redirect(path), MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+	}
+	
 	/**********
 	 * 根据view名称和model返回一个ModelAndView
 	 * @param viewName
 	 * @param models "key1", value1, "key2", value2 ...
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected ModelAndView mv(String viewName, Object... models){
-		ModelAndView mv = new ModelAndView(viewName);
-//		mv.getModel().put(UrlHelper.MODEL_KEY, getUrlMeta());
-		if(LangUtils.isEmpty(models)){
-			return mv;
-		}
-		
-		if(models.length==1){
-			if(Map.class.isInstance(models[0])){
-				mv.addAllObjects((Map<String, ?>)models[0]);
-			}else{
-				mv.addObject(models[0]);
-				mv.addObject(SingleReturnWrapper.wrap(models[0]));
-//				mv.addObject(SINGLE_MODEL_FLAG_KEY, true);
-			}
-		}else{
-			Map<String, ?> modelMap = LangUtils.asMap(models);
-			mv.addAllObjects(modelMap);
-		}
-		return mv;
+		return JFishWebUtils.mv(viewName, models);
+	}
+	
+	protected ModelAndView messageMv(String message){
+		return mv(MESSAGE, MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 	
 	public ModelAndView doInModelAndView(HttpServletRequest request, ModelAndView mv){

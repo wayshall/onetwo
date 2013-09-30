@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +18,12 @@ public interface BaseEntityManager {
 	public <T> T save(T entity);
 	
 	public void persist(Object entity);
+	
+	public void update(Object entity);
 
 	public void remove(Object entity);
 	
-	public void removeList(List entities);
+	public void removeList(Collection<?> entities);
 
 	public <T> T removeById(Class<T> entityClass, Serializable id);
 
@@ -30,7 +33,7 @@ public interface BaseEntityManager {
 
 	public Number countRecord(Class entityClass, Object... params);
 
-	public <T> T findUnique(final String sql, final Object... values);
+//	public <T> T findUnique(final String sql, final Object... values);
 //	public <T> T findUnique(QueryBuilder squery);
 	
 	public <T> T findUnique(Class<T> entityClass, Object... properties);
@@ -88,4 +91,8 @@ public interface BaseEntityManager {
 	
 	public <T> void findPage(Page<T> page, JFishQueryValue squery);
 
+	public <T> T getRawManagerObject();
+	public <T> T getRawManagerObject(Class<T> rawClass);
+	
+	public FileNamedQueryFactory getFileNamedQueryFactory();
 }

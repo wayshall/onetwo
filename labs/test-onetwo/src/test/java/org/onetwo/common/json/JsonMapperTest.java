@@ -132,7 +132,7 @@ public class JsonMapperTest {
 			users.add(createUser());
 		}
 		String json = JsonMapper.defaultMapper().toJson(users);
-		System.out.println("testJson: " + json);
+		System.out.println("testJsonList: " + json);
 		
 		List<UserEntity> u2 = JsonMapper.defaultMapper().fromJsonAsList(json, UserEntity[].class);
 		System.out.println(u2);

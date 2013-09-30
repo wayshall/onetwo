@@ -12,9 +12,11 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	
 	public T findById(PK id);
 	
-	public void persist(Object entity);
-
 	public T save(T entity);
+	
+//	public T createNew(T entity);
+
+//	public T updateAttributes(T entity);
 
 	public T remove(T entity);
 	

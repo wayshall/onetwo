@@ -3,6 +3,7 @@ package org.onetwo.plugins.codegen.generator;
 import java.util.Map;
 import java.util.Set;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -73,8 +74,8 @@ public class CommonlContextBuilder extends AbstractBuilder {
 	@Override
 	public TemplateContext buildTheTemplateContext(final TableInfo table, final Map<String, Object> context, final GenContext ctx) {
 		if(table.getPrimaryKey()==null){
-			System.err.println("[" + table.getName() + "] no table primaryKey. service implements igonre generated file.");
-			return null;
+			String msg = ("[" + table.getName() + "] no table primaryKey. service implements igonre generated file.");
+			throw new BaseException(msg);
 		}
 
 		String fullPackage = getFullPackage(ctx);

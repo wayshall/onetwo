@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ public class LangUtils {
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+	public static final Class[] Empty_CLASSES = new Class[0];;
 	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 
@@ -704,7 +707,8 @@ public class LangUtils {
 	public static String toHex(byte[] bytes){
 		StringBuilder buf = new StringBuilder();
 		for(byte b : bytes){
-			buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high
+			//a byte contains 8 bit, every 4 bit can indecated by a hex number, in other words, a byte(8 bit) can indecated by 2 hex number
+			buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
 			buf.append(HEX_CHAR.charAt((b & 0xf)));//low
 		}
 		return buf.toString();
@@ -718,9 +722,10 @@ public class LangUtils {
 		int numb1;
 		int numb2;
 		for(int i=0; i<chars.length; i=i+2){
-			numb1 = HEX_CHAR.indexOf(chars[i]) << 4  & 0xf0 ;
+			//every 2 hex number indecate a byte
+			numb1 = HEX_CHAR.indexOf(chars[i]) << 4  & 0xf0 ;//first hex number is high
 			numb2 = HEX_CHAR.indexOf(chars[i+1]) & 0xf;
-			bytes = org.apache.commons.lang.ArrayUtils.add(bytes, (byte)((numb1 | numb2) & 0xff));
+			bytes = ArrayUtils.addAll(bytes, (byte)((numb1 | numb2) & 0xff));
 		}
 		return bytes;
 	}
@@ -977,7 +982,7 @@ public class LangUtils {
 		}else if(Collection.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Collection)obj);
 		}else if(obj.getClass().isArray()){
-			return ArrayUtils.hasElement((Object[])obj);
+			return Array.getLength(obj)!=0;
 		}else if(Map.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Map)obj);
 		}
@@ -1345,7 +1350,7 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = MyUtils.append(strs);
+		String s = append(strs);
 		s = MDFactory.MD5.encrypt(s + new Date().getTime() + getRadomString(6));
 		return s;
 	}
@@ -1370,4 +1375,45 @@ public class LangUtils {
 		return AWORD.matcher(str).matches();
 	}
 	
+	public static Object formatValue(Object value, String dataFormat){
+		Object actualValue;
+		if(value instanceof Date){
+			if(StringUtils.isBlank(dataFormat))
+				dataFormat = DateUtil.Date_Time;
+			actualValue = DateUtil.format(dataFormat, (Date)value);
+		}else if(value instanceof Number && dataFormat != null) {
+			NumberFormat nf = new DecimalFormat(dataFormat);
+			nf.setRoundingMode(RoundingMode.HALF_UP);
+			actualValue = nf.format(value);
+		}else{
+			actualValue = value;
+		}
+		return actualValue;
+	}
+
+	public static String padLeft(String s, int alength, String append){
+		return pad(s, alength, append.charAt(0), true);
+	}
+	
+	public static String pad(String s, int alength, char append, boolean padLeft){
+		int length = Math.abs(alength);
+		if(s.length()==length)
+			return s;
+		StringBuilder str = new StringBuilder(s);
+		if(str.length()<length){
+			int lack = length-str.length();
+			for(int i=0; i<lack; i++){
+				if(padLeft)
+					str.insert(0, append);
+				else
+					str.append(append);
+			}
+		}else{
+			if(alength>0)
+				str.delete(length, str.length());
+			else
+				str.delete(0, str.length()-length);
+		}
+		return str.toString();
+	}
 }

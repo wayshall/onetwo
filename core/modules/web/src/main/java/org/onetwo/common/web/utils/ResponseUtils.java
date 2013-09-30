@@ -13,10 +13,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;

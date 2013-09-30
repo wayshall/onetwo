@@ -3,11 +3,11 @@ package org.onetwo.common.excel;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.excel.ExcelReader.CellValueConvertor;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 
 public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> {
 	private Map<String, CellValueConvertor> convertors;

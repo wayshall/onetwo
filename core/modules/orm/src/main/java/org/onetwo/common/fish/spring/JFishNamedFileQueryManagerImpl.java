@@ -1,89 +1,135 @@
 package org.onetwo.common.fish.spring;
 
-import java.io.File;
+import java.util.List;
+import java.util.Map;
 
-import org.onetwo.common.fish.JFishQuery;
-import org.onetwo.common.fish.exception.JFishOrmException;
-import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.db.AbstractFileNamedQueryFactory;
+import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.FileNamedQueryFactoryListener;
+import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.fish.JFishDataQuery;
+import org.onetwo.common.fish.JFishEntityManager;
+import org.onetwo.common.spring.sql.FileSqlParser;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
+import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
+import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
+import org.springframework.jdbc.core.RowMapper;
 
 
-public class JFishNamedFileQueryManagerImpl extends NamespacePropertiesManagerImpl<JFishNamedFileQueryInfo> implements JFishNamedFileQueryManager{
+public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo>{
 
-	public static final String SQL_POSTFIX = ".sql";
+	private JFishEntityManager baseEntityManager;
+	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
+	private FileSqlParser<JFishNamedFileQueryInfo> parser;
 	
-	public JFishNamedFileQueryManagerImpl(final String dbname, final boolean watchSqlFile) {
-		super(new JFishPropertyConf(){
-			{
-				setDir("sql");
-				setOverrideDir(dbname);
-//				setPostfix(SQL_POSTFIX);
-				setPostfix(JFISH_SQL_POSTFIX);
-				setWatchSqlFile(watchSqlFile);
-			}
-		});
+	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, String dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+		super(fileNamedQueryFactoryListener);
+		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class);
+		this.baseEntityManager = jem;
+		
+		FileSqlParser<JFishNamedFileQueryInfo> p = new FileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
+		p.initialize();
+		this.parser = p;
 	}
-	
-	protected File[] scanMatchSqlFiles(JFishPropertyConf conf){
-		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-		
-		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
-		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
-		
-		File[] allSqlFiles = null;
-		try {
-			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
-			if(StringUtils.isNotBlank(conf.getOverrideDir())){
-				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**/*"+conf.getPostfix();
-				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
-				if(!LangUtils.isEmpty(dbsqlfiles)){
-					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
-				}
-			}
-			allSqlFiles = new File[sqlfileArray.length];
-			int index = 0;
-			for(Resource rs : sqlfileArray){
-				allSqlFiles[index++] = rs.getFile();
-			}
-		} catch (Exception e) {
-			throw new JFishOrmException("scan sql file error: " + e.getMessage());
-		}
-		
-		return allSqlFiles;
-	}
-	
+
+
 	public JFishNamedFileQueryInfo getNamedQueryInfo(String name) {
-		JFishNamedFileQueryInfo info = super.getJFishProperty(name);
-		if(info==null)
-			throw new JFishOrmException("namedQuery not found : " + name);
-		return info;
+		return sqlFileManager.getNamedQueryInfo(name);
 	}
-	
-	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName){
-		return createQuery(jfishFishDao, queryName, null);
-	}
-	
-	public JFishQuery createQuery(JFishDaoImplementor jfishFishDao, String queryName, Class<?> resultClass){
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		JFishQuery jq = new JFishFileQueryImpl(jfishFishDao, nameInfo, false);
-		if(resultClass!=null)
-			jq.setResultClass(resultClass);
-		return jq;
-	}
-	
-	public JFishQuery createCountQuery(JFishDaoImplementor jfishFishDao, String queryName){
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		return new JFishFileQueryImpl(jfishFishDao, nameInfo, true);
+	@Override
+	public void buildNamedQueryInfos() {
+		this.sqlFileManager.build();
 	}
 
 	@Override
-	public boolean containsQuery(String queryName) {
-		return super.contains(queryName);
+	public JFishDataQuery createQuery(String queryName, Object... args){
+		return createDataQuery(false, queryName, PlaceHolder.NAMED, args);
+	}
+	
+	public JFishDataQuery createCountQuery(String queryName, Object... args){
+		return createDataQuery(true, queryName, PlaceHolder.NAMED, args);
+	}
+
+	public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
+		Assert.notNull(type);
+
+		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
+		JFishFileQueryImpl jq = new JFishFileQueryImpl(baseEntityManager, nameInfo, count, parser);
+		
+		if(type==PlaceHolder.POSITION){
+			jq.setParameters(LangUtils.asList(args));
+		}else{
+			if(args.length==1 && LangUtils.isMap(args[0])){
+				jq.setParameters((Map)args[0]);
+			}else{
+				jq.setParameters(LangUtils.asMap(args));
+			}
+		}
+		return jq.getRawQuery(JFishDataQuery.class);
+	}
+	
+
+	@Override
+	public DataQuery createQuery(String queryName, PlaceHolder type, Object... args){
+		return createDataQuery(false, queryName, type, args);
+	}
+	
+
+
+	@Override
+	public <T> List<T> findList(String queryName, Object... params) {
+		DataQuery jq = this.createQuery(queryName, params);
+		return jq.getResultList();
+	}
+
+
+	@Override
+	public <T> T findUnique(String queryName, Object... params) {
+		DataQuery jq = this.createQuery(queryName, params);
+		return jq.getSingleResult();
+	}
+
+
+	@Override
+	public <T> Page<T> findPage(String queryName, Page<T> page, Object... params) {
+		DataQuery jq = this.createCountQuery(queryName, params);
+		Long total = jq.getSingleResult();
+		total = (total==null?0:total);
+		page.setTotalCount(total);
+		if(total>0){
+			jq = this.createQuery(queryName, params);
+			jq.setFirstResult(page.getFirst()-1);
+			jq.setMaxResults(page.getPageSize());
+			List<T> datalist = jq.getResultList();
+			page.setResult(datalist);
+		}
+		return page;
+	}
+	
+	
+//	@Override
+	public <T> Page<T> findPage(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
+		JFishDataQuery jq = this.createCountQuery(queryName, params);
+		Long total = jq.getSingleResult();
+		page.setTotalCount(total);
+		if(total!=null && total>0){
+			jq = this.createQuery(queryName, params);
+			jq.setFirstResult(page.getFirst()-1);
+			jq.setMaxResults(page.getPageSize());
+			jq.getJfishQuery().setRowMapper(rowMapper);
+			List<T> datalist = jq.getResultList();
+			page.setResult(datalist);
+		}
+		return page;
+	}
+
+
+	@Override
+	public NamespacePropertiesManager<JFishNamedFileQueryInfo> getNamespacePropertiesManager() {
+		return sqlFileManager;
 	}
 
 }

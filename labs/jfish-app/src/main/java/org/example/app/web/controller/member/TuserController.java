@@ -44,19 +44,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * 区别只是请求的方法不同
  * 遵循资源+动作的请求方式
  * 
- * <blockquote>
- * 	<pre>
- * 		{@link TuserController}  userController = new TuserController();
- * 	</pre>
- * </blockquote>
- * /user           => index()  
- * /user/new       => _new()  
- * /user/{id}      => show()  
- * /user/{id}/edit         => edit()  
- * /user   POST        => create()  
- * /user/{id}  PUT => update()  
- * /user/{id}  DELETE  => delete()  
- * /user   DELETE      => deleteBatch() 
+ * /user			GET		=> index()	列表页面
+ * /user/new		GET		=> _new()  	新建页面
+ * /user/{id}		GET		=> show()  	单条显示页面
+ * /user/{id}/edit	GET		=> edit()	编辑页面
+ * /user			POST	=> create()	保存新增实体
+ * /user/{id}		PUT		=> update()	更新新增实体
+ * /user/{id}		DELETE	=> delete()	删除单条
+ * /user			DELETE	=> deleteBatch()	批量删除
  * 
  * @author way
  */

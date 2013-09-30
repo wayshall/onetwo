@@ -1,6 +1,7 @@
 package org.onetwo.common.web.view;
 
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 abstract public class HtmlElement {
 
@@ -13,6 +14,9 @@ abstract public class HtmlElement {
 	protected String onclick;
 	
 	protected String attributes;
+	
+
+//	protected StringBuilder attributesBuf;
 
 	public String getId() {
 		if(StringUtils.isBlank(id) && StringUtils.isNotBlank(getName()))
@@ -81,5 +85,36 @@ abstract public class HtmlElement {
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+	public void buildTagAttributesString(StringBuilder attributesBuf){
+		buildAttributeTag(attributesBuf, "id", getId());
+		buildAttributeTag(attributesBuf, "name", getName());
+		buildAttributeTag(attributesBuf, "title", getTitle());
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+	}
+
+	public void buildExtTagAttributesString(StringBuilder attributesBuf){
+	}
 	
+	protected void buildAttributeTag(StringBuilder attributesBuf, String attr, Object val){
+		String valStr = val==null?"":HtmlUtils.htmlEscape(val.toString());
+		attributesBuf.append(attr).append("=\"").append(valStr).append("\"");
+	}
+
+	public String getAttributesHtml() {
+		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "id", getId());
+		buildAttributeTag(attributesBuf, "name", getName());
+		buildAttributeTag(attributesBuf, "title", getTitle());
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		
+		this.buildExtTagAttributesString(attributesBuf);
+		return attributesBuf.toString();
+	}
+
+
 }

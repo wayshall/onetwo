@@ -20,10 +20,14 @@ public class PermissionPlugin extends AbstractJFishPlugin<PermissionPlugin> {
 	}
 	
 	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(PermissionPluginContext.class);
 	}
 
+	@Override
+	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+		annoClasses.add(PermissionMvcContext.class);
+	}
 
 	public void setPluginInstance(PermissionPlugin plugin){
 		instance = plugin;

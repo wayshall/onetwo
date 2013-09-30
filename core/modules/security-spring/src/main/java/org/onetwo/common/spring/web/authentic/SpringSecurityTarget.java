@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.web.authentic;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.RoleDetail;
+import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -31,7 +33,7 @@ public class SpringSecurityTarget implements SecurityTarget {
 
 //	protected String[] roles;
 	protected String sessionKey = UserDetail.USER_DETAIL_KEY ;
-	protected String tokenKey = UserDetail.TOKEN_KEY;
+	protected String tokenKey = SsoTokenable.TOKEN_KEY;
 	
 	protected Map<String, Object> datas;
 	
@@ -95,7 +97,7 @@ public class SpringSecurityTarget implements SecurityTarget {
 		ResponseUtils.setHttpOnlyCookie(response, tokenKey, token);
 	}
 
-	public String[] getRoles() {
+	public List<String> getRoles() {
 		UserDetail userDetail = getAuthoritable();
 		if(RoleDetail.class.isInstance(userDetail)){
 			return ((RoleDetail) userDetail).getRoles();
@@ -108,7 +110,7 @@ public class SpringSecurityTarget implements SecurityTarget {
 	}*/
 	
 	public boolean containsRole(String role){
-		return ArrayUtils.contains(getRoles(), role);
+		return getRoles()!=null && getRoles().contains(role);
 	}
 
 	public Map<String, Object> getDatas() {

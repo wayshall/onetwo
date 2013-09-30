@@ -1,27 +1,27 @@
 package org.onetwo.common.spring.dozer;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.bean.BeanDuplicator;
-import org.onetwo.common.utils.bean.BeanDuplicatorFacotry;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.util.ClassUtils;
 
 public class DozerFacotry {
 
 	private final static ResourcesScanner scaner = new JFishResourcesScanner();
 	
 
-	public static BeanDuplicator createBeanDuplicator(ClassLoader cld, Class<?> rootClass){
-		return createBeanDuplicator(cld, rootClass.getPackage().getName());
+	public static DozerBean createDozerBean(ClassLoader cld, Class<?> rootClass){
+		return createDozerBean(cld, rootClass.getPackage().getName());
 	}
-	public static BeanDuplicator createBeanDuplicator(ClassLoader cld, String...basePackages){
+	public static DozerBean createDozerBean(ClassLoader cld, String...basePackages){
+		if(cld==null)
+			cld = ClassUtils.getDefaultClassLoader();
 		List<DozerClassMapper> dozerClasses = scaner.scan(new ScanResourcesCallback<DozerClassMapper>() {
 
 			@Override
@@ -39,6 +39,7 @@ public class DozerFacotry {
 			@Override
 			public DozerClassMapper doWithCandidate(MetadataReader metadataReader, Resource clazz, int count) {
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
+				System.out.println("load dozer class: " + cls+", laoder: " + cls.getClassLoader());
 				DozerClassMapper mapper = new DozerClassMapper(cls, cls.getAnnotation(DozerMapping.class));
 				return mapper;
 			};
@@ -49,9 +50,8 @@ public class DozerFacotry {
 			throw new JFishException("can not find any dozer class.");*/
 		
 		try {
-			BeanDuplicator dupplicator = null;
-			Properties props = BeanDuplicatorFacotry.loadConfig(cld, null);
-			dupplicator = new JFishDozer(dozerClasses, props);
+			DozerBean dupplicator = null;
+			dupplicator = new JFishDozer(dozerClasses);
 			dupplicator.initDozer();
 			return dupplicator;
 		} catch (Throwable e) {

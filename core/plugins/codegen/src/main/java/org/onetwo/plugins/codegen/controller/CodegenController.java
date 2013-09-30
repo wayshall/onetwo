@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.exception.BusinessException;
+import org.onetwo.common.fish.plugin.PluginBaseController;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
-import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.list.JFishList;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CodegenController extends BaseController<Object>{
+public class CodegenController extends PluginBaseController {
 
 	@Autowired
 	private TemplateService templateService;
@@ -58,7 +58,7 @@ public class CodegenController extends BaseController<Object>{
 	public ModelAndView init(){
 		this.templateService.initCodegenTemplate();
 		
-		return mv("codegen-init");
+		return pluginMv("codegen-init");
 	}
 
 	@RequestMapping(value="/config", method=RequestMethod.POST)
@@ -94,7 +94,7 @@ public class CodegenController extends BaseController<Object>{
 //		form.getChildren().addChild(dg);
 //		form.addButtons(UI.submit());
 		
-		return mv("gen-config", "page", tp, "tables", tables, "dbid", dbid);
+		return pluginMv("gen-config", "page", tp, "tables", tables, "dbid", dbid);
 //		return model(UI.page(form, tp));
 	}
 
@@ -147,7 +147,7 @@ public class CodegenController extends BaseController<Object>{
 			}
 			
 		});
-		return mv("gen-result", MESSAGE, "生成成功！", "genMessages", messages);
+		return pluginMv("gen-result", MESSAGE, "生成成功！", "genMessages", messages);
 	}
 
 }

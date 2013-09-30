@@ -20,7 +20,7 @@ public class PluginInfo {
 	public static PluginInfo newFrom(PropConfig prop){
 		PluginInfo info = new PluginInfo();
 		info.name = prop.getAndThrowIfEmpty(PKeys.NAME);
-		info.version = prop.getAndThrowIfEmpty(PKeys.VERSION);
+		info.version = prop.getProperty(PKeys.VERSION, "1.0");
 		info.pluginClass = prop.getAndThrowIfEmpty(PKeys.PLUGIN_CLASS);
 //		info.pluginInstance = ReflectUtils.newInstance(cls);
 //		info.contextPath = prop.getAndThrowIfEmpty("contextPath");

@@ -13,6 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
@@ -88,6 +89,21 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	}
 	
 	protected Workbook createWorkbook(File file){
+		Workbook workbook = null;
+		InputStream in = null;
+		try {
+			in = new FileInputStream(file);
+			workbook = WorkbookFactory.create(in);
+		} catch (Exception e) {
+			IOUtils.closeQuietly(in);
+			workbook = createWorkbookByExt(file);
+		}finally{
+			IOUtils.closeQuietly(in);
+		}
+		return workbook;
+	}
+	
+	private Workbook createWorkbookByExt(File file){
 		Workbook workbook = null;
 		InputStream in = null;
 		try {

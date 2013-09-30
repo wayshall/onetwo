@@ -22,11 +22,6 @@ public class JSyntaxException extends BaseException{
 		super("syntax error at line " + lineNumber);
 	} 
 
-
-	public JSyntaxException(String msg, String code) {
-		super(msg, code);
-	}
-
 	public JSyntaxException(String msg, Throwable cause, String code) {
 		super(msg, cause, code);
 	}
@@ -40,12 +35,6 @@ public class JSyntaxException extends BaseException{
 	public JSyntaxException(String msg) {
 		super(msg);
 	}
-
-
-	public JSyntaxException(Throwable cause, String code) {
-		super(cause, code);
-	}
-	
 
 	public JSyntaxException(Throwable cause) {
 		super(cause);

@@ -33,6 +33,9 @@
 				<module>../doc</module>
 				<module>../fmtagext</module>
 				<module>../codegen</module>
+				<module>../permission</module>
+				<module>../hibernate</module>
+				<module>../dq</module>
 	  	</modules>
 	  </profile>
 	</profiles>

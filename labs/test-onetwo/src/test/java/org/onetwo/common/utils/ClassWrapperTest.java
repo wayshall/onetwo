@@ -13,7 +13,7 @@ public class ClassWrapperTest {
 	
 	@Test
 	public void testNewInstanceFromMap(){
-		ClassWrapper<UserEntity> jcl = new ClassWrapper(UserEntity.class);
+		Intro<UserEntity> jcl = new Intro(UserEntity.class);
 		UserEntity bean = jcl.newFrom(LangUtils.asMap("userName", "way", "age", 11));
 		LangUtils.println("user : ${0}", bean);
 	}
@@ -24,7 +24,7 @@ public class ClassWrapperTest {
 		PropertyDescriptor pd = ReflectUtils.findProperty(UserEntity.class, "roles");
 		System.out.println("type: " + pd.getPropertyType());
 		
-		ClassWrapper cw = ClassWrapper.wrap(UserEntity.class);
+		Intro cw = Intro.wrap(UserEntity.class);
 		JFishPropertyInfoImpl jp = new JFishPropertyInfoImpl(cw, pd);
 		Type type = jp.getParameterTypes()[0];
 		Assert.assertEquals(RoleEntity.class, type);

@@ -10,9 +10,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.HqlSymbolParser;
@@ -64,21 +63,18 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JFishDao, JFishFileQueryDao, ApplicationContextAware {
+public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JFishDao, ApplicationContextAware {
 
 	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
 	private ApplicationContext applicationContext;
-	private JFishNamedFileQueryManager jfishFileQueryFactory;
+//	private FileNamedQueryFactory fileNamedQueryFactory;
 	
 	private SQLSymbolManager sqlSymbolManager;
 	
-	private boolean watchSqlFile = false;
 	
 //	private EntityManagerOperationImpl entityManagerWraper;
 	private SequenceNameManager sequenceNameManager;
-	
-	private RowMapperFactory rowMapperFactory;
 	
 	
 	public JFishDaoImpl(){
@@ -89,89 +85,8 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 //		this.afterPropertiesSet();
 	}
 	
-	public JFishQuery createJFishQueryByQName(String queryName, PlaceHolder type, Object... args){
-		Assert.notNull(type);
-//		JFishNamedFileQueryInfo nameInfo = jfishFileQueryFactory.getNamedQueryInfo(queryName);
-		JFishQuery jq = jfishFileQueryFactory.createQuery(this, queryName);
-		if(type==PlaceHolder.POSITION){
-			jq.setParameters(LangUtils.asList(args));
-		}else{
-			if(args.length==1 && LangUtils.isMap(args[0])){
-				jq.setParameters((Map)args[0]);
-			}else{
-				jq.setQueryAttributes(LangUtils.asMap(args));
-			}
-		}
-		return jq;
-	}
 	
-	@Override
-	public JFishQuery createJFishQueryByQName(String queryName, Object... args) {
-		JFishQuery jq = null;
-		if(LangUtils.isEmpty(args)){
-//			JFishNamedFileQueryInfo nameInfo = jfishFileQueryFactory.getNamedQueryInfo(queryName);
-			jq = jfishFileQueryFactory.createQuery(this, queryName);
-		}else{
-			jq = createJFishQueryByQName(queryName, PlaceHolder.NAMED, args);
-		}
-		return jq;
-	}
 
-	@Override
-	public JFishQuery createCountJFishQueryByQName(String queryName, Object... args) {
-//		JFishNamedFileQueryInfo nameInfo = jfishFileQueryFactory.getNamedQueryInfo(queryName);
-		JFishQuery jq = jfishFileQueryFactory.createCountQuery(this, queryName);
-//		jq.setParameters(LangUtils.asMap(args));
-		jq.setQueryAttributes(LangUtils.asMap(args));
-//		jq.setResultClass(Long.class);
-		return jq;
-	}
-
-	@Override
-	public <T> List<T> findListByQName(String queryName, Object... params) {
-		JFishQuery jq = this.createJFishQueryByQName(queryName, params);
-		return jq.getResultList();
-	}
-
-
-	@Override
-	public <T> T findUniqueByQName(String queryName, Object... params) {
-		JFishQuery jq = this.createJFishQueryByQName(queryName, params);
-		return jq.getSingleResult();
-	}
-
-
-	@Override
-	public <T> Page<T> findPageByQName(String queryName, Page<T> page, Object... params) {
-		JFishQuery jq = this.createCountJFishQueryByQName(queryName, params);
-		Long total = jq.getSingleResult();
-		total = (total==null?0:total);
-		page.setTotalCount(total);
-		if(total>0){
-			jq = this.createJFishQueryByQName(queryName, params);
-			jq.setFirstResult(page.getFirst()-1);
-			jq.setMaxResults(page.getPageSize());
-			List<T> datalist = jq.getResultList();
-			page.setResult(datalist);
-		}
-		return page;
-	}
-	
-	@Override
-	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		JFishQuery jq = this.createCountJFishQueryByQName(queryName, params);
-		Long total = jq.getSingleResult();
-		page.setTotalCount(total);
-		if(total!=null && total>0){
-			jq = this.createJFishQueryByQName(queryName, params);
-			jq.setFirstResult(page.getFirst()-1);
-			jq.setMaxResults(page.getPageSize());
-			jq.setRowMapper(rowMapper);
-			List<T> datalist = jq.getResultList();
-			page.setResult(datalist);
-		}
-		return page;
-	}
 
 
 	public <T> int save(T entity, String... relatedFields){
@@ -543,12 +458,12 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return jq;
 	}
 	
-	public ExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties){
-		ExtQuery q = this.getSqlSymbolManager().createQuery(entityClass, "ent", properties);
+	public SelectExtQuery createExtQuery(Class<?> entityClass, Map<Object, Object> properties){
+		SelectExtQuery q = this.getSqlSymbolManager().createSelectQuery(entityClass, "ent", properties);
 		return q;
 	}
 	
-	public DataQuery createAsDataQuery(ExtQuery extQuery){
+	public DataQuery createAsDataQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
 		if(extQuery.isSqlQuery()){
 			q = this.createAsDataQuery(extQuery.getSql(), extQuery.getEntityClass());
@@ -556,7 +471,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		}else{
 			q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
 		}
-		JFishQuery jq = q.getRawQuery();
+		JFishQuery jq = q.getRawQuery(JFishQuery.class);
 		jq.setResultClass(extQuery.getEntityClass());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());
@@ -582,7 +497,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return (RowMapper<T>)this.rowMapperFactory.createDefaultRowMapper(type);
+		return (RowMapper<T>)this.getRowMapperFactory().createDefaultRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {
@@ -633,7 +548,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 
 	@Override
 	protected void initDao() throws Exception {
-		super.initDao();
+//		super.initDao();
 		if(this.dialect==null){
 			DBMeta dbmeta = getDBMeta();
 			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
@@ -642,12 +557,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			}
 		}
 		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.rowMapperFactory = new DefaultRowMapperFactory(mappedEntryManager);
-		
-		if(jfishFileQueryFactory==null){
-			this.jfishFileQueryFactory = new JFishNamedFileQueryManagerImpl(dialect.getDbmeta().getDbName(), watchSqlFile);
-			this.jfishFileQueryFactory.build();
-		}
+		this.setRowMapperFactory(new JFishRowMapperFactory(mappedEntryManager));
 
 		this.initSQLSymbolManager(dialect, mappedEntryManager);
 		
@@ -679,14 +589,6 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		this.applicationContext = applicationContext;
 	}
 
-	public void setJfishFileQueryFactory(JFishNamedFileQueryManager jfishFileQueryFactory) {
-		this.jfishFileQueryFactory = jfishFileQueryFactory;
-	}
-
-
-	public void setWatchSqlFile(boolean watchSqlFile) {
-		this.watchSqlFile = watchSqlFile;
-	}
 
 	public SQLSymbolManager getSqlSymbolManager() {
 		return sqlSymbolManager;
@@ -709,9 +611,6 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		return this.namedParameterJdbcTemplate;
 	}
 
-	public JFishNamedFileQueryManager getJfishFileQueryFactory() {
-		return jfishFileQueryFactory;
-	}
 
 
 }

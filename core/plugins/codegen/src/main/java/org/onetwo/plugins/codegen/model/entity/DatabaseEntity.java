@@ -9,7 +9,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.codegen.db.SqlTypeFactory.DataBase;
 import org.onetwo.plugins.fmtag.annotation.JEntryViewMeta;
 import org.onetwo.plugins.fmtag.annotation.JFieldViewMeta;
@@ -88,12 +88,17 @@ public class DatabaseEntity extends BaseEntity {
 	
 	@Transient
 	public DataBase getDataBase(){
-		if(jdbcUrl.indexOf(DataBase.MySQL.getName())!=-1){
+		if(StringUtils.isBlank(jdbcUrl))
+			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+		
+		if (jdbcUrl.contains(":mysql:")) {
 			return DataBase.MySQL;
-		}else if(jdbcUrl.indexOf(DataBase.Oracle.getName())!=-1){
+		} else if (jdbcUrl.contains(":sqlserver:")) {
+			return DataBase.Sqlserver;
+		} else if (jdbcUrl.contains(":oracle:")) {
 			return DataBase.Oracle;
-		}else{
-			throw new ServiceException("unsupported database: " + this.jdbcUrl);
+		} else {
+			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
 		}
 	}
 

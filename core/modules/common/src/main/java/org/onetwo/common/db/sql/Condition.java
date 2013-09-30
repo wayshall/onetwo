@@ -3,11 +3,11 @@ package org.onetwo.common.db.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class Condition {
 	protected ConditionToken ctoken;

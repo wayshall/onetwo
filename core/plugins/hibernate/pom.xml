@@ -12,14 +12,14 @@
 	
   <packaging>jar</packaging>
 
-  <name>onetwo-plugin-archetype</name>
+  <name>onetwo-plugin-hibernate</name>
 
   <url>http://maven.apache.org</url>
 
  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <hibernate.version>4.1.0.Final</hibernate.version>
+    <hibernate.version>4.2.3.Final</hibernate.version>
   </properties>
 
  
@@ -31,6 +31,20 @@
 	  <artifactId>hibernate-core</artifactId>
 	  <version>${hibernate.version}</version>
 	</dependency>
+	
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-ehcache</artifactId>
+	  <version>${hibernate.version}</version>
+	</dependency>
+	
+	<!-- ejb jpa
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-entitymanager</artifactId>
+	  <version>${hibernate.version}</version>
+	</dependency>
+	 -->
 	 
     <dependency>
       <groupId>junit</groupId>

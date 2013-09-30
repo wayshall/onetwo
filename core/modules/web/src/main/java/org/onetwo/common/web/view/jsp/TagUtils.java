@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.jsp.form.FormTagBean;
 
 final public class TagUtils {
 
@@ -61,6 +61,23 @@ final public class TagUtils {
 			page.setPageSize(list.size());
 		}
 		return page;
+	}
+	
+	public static String pageLink(String action, int numb){
+		String result = action;
+		if(numb<=1)
+			return result;
+		if (action.indexOf("?")!=-1){
+			result += "&pageNo="+numb;
+		}else{
+			result += "?pageNo="+numb;
+		}
+		return result;
+	}
+	
+
+	public static String getFormVarName(){
+		return FormTagBean.class.getSimpleName();
 	}
 	
 	private TagUtils(){

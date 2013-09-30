@@ -27,5 +27,22 @@
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   
+  <function>
+  	<name>escapeHtml</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String escapeHtml(java.lang.String)</function-signature>
+  </function>
+  
+  <function>
+  	<name>firstNotblank</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String firstNotblank(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+  </function>
+  
+  <function>
+  	<name>format</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String format(java.util.Date, java.lang.String, java.lang.String)</function-signature>
+  </function>
   
 </taglib>

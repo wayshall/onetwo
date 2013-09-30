@@ -1,8 +1,12 @@
 package org.onetwo.common.jdbc;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
@@ -27,6 +31,49 @@ final public class JdbcUtils {
 			StatementCreatorUtils.setParameterValue(ps, parameterPosition, SqlTypeValue.TYPE_UNKNOWN, argValue);
 		}
 	}
+	
+	public static DataBase getDataBase(DataSource dataSource) {
+		//从DataSource中取出jdbcUrl.
+		String jdbcUrl = null;
+		Connection connection = null;
+		try {
+			connection = dataSource.getConnection();
+			if (connection == null) {
+				throw new IllegalStateException("Connection returned by DataSource [" + dataSource + "] was null");
+			}
+			jdbcUrl = connection.getMetaData().getURL();
+		} catch (SQLException e) {
+			throw new RuntimeException("Could not get database url", e);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+
+		return getDataBase(jdbcUrl);
+	}
+	
+
+	public static DataBase getDataBase(String jdbcUrl) {
+		if(StringUtils.isBlank(jdbcUrl))
+			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+		
+		if (jdbcUrl.contains(":h2:")) {
+			return DataBase.H2;
+		} else if (jdbcUrl.contains(":mysql:")) {
+			return DataBase.MySQL;
+		} else if (jdbcUrl.contains(":sqlserver:")) {
+			return DataBase.Sqlserver;
+		} else if (jdbcUrl.contains(":oracle:")) {
+			return DataBase.Oracle;
+		} else {
+			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+		}
+	}
+
 	
 	private JdbcUtils(){}
 

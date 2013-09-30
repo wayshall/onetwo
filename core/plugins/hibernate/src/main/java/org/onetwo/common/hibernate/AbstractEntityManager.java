@@ -2,35 +2,40 @@ package org.onetwo.common.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
-import org.onetwo.common.db.IdEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.M;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class AbstractEntityManager implements BaseEntityManager {
+abstract public class AbstractEntityManager implements BaseEntityManager, ApplicationContextAware {
 
 	protected final Logger logger = Logger.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;
+	private SQLSymbolManager sqlSymbolManager;
 	
 
 	public AbstractEntityManager(){
@@ -63,21 +68,32 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 			
 			SQLException se = (SQLException) e.getCause();
 			if ("42000".equals(se.getSQLState())) {
-				try {
-					DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
-					dq.executeUpdate();
-					
-					dq = this.createSQLQuery(sql, null);
-					id = ((Number)dq.getSingleResult()).longValue();
-				} catch (Exception ne) {
-					ne.printStackTrace();
-					throw new ServiceException("createSequences error: " + e.getMessage(), e);
-				}
-				if (id == null)
-					throw new ServiceException("createSequences error: " + e.getMessage(), e);
+				this.createSequence(sequenceName);
 			}
 		}
 		return id;
+	}
+	
+	protected void createSequence(Class entityClass){
+		String seqName = getSequenceNameManager().getSequenceName(entityClass);
+		this.createSequence(seqName);
+	}
+	
+	protected void createSequence(String sequenceName){
+		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
+		Long id = null;
+			try {
+				DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+				dq.executeUpdate();
+				
+				dq = this.createSQLQuery(sql, null);
+				id = ((Number)dq.getSingleResult()).longValue();
+			} catch (Exception ne) {
+				ne.printStackTrace();
+				throw new ServiceException("createSequences error: " + ne.getMessage(), ne);
+			}
+			if (id == null)
+				throw new ServiceException("createSequences error. ");
 	}
 
 	
@@ -93,7 +109,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		return q;
 	}
 	
-	protected DataQuery createQuery(ExtQuery extQuery){
+	protected DataQuery createQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
 		if(extQuery.isSqlQuery()){
 			q = this.createSQLQuery(extQuery.getSql(), extQuery.getEntityClass());
@@ -108,8 +124,8 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		return q;
 	}
 	
-	protected ExtQuery createExtQuery(Class entityClass, Map<Object, Object> properties){
-		ExtQuery q = getSQLSymbolManager().createQuery(entityClass, "ent", properties);
+	protected SelectExtQuery createSelectExtQuery(Class entityClass, Map<Object, Object> properties){
+		SelectExtQuery q = getSQLSymbolManager().createSelectQuery(entityClass, "ent", properties);
 		return q;
 	}
 	
@@ -158,7 +174,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 			properties.put(ExtQuery.K.DESC, page.getOrderBy());
 		}
 
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
 		/*if (page.isAutoCount()) {
 			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
@@ -172,7 +188,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		this.findPageByExtQuery(page, extQuery);
 	}
 	
-	protected void findPageByExtQuery(Page page, ExtQuery extQuery){
+	protected void findPageByExtQuery(Page page, SelectExtQuery extQuery){
 		if (page.isAutoCount()) {
 //			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 			Long totalCount = 0l;
@@ -194,11 +210,11 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		if(entities==null)
 			return ;
 		for(Object entity : entities){
-			this.remove((IdEntity)entity);
+			this.remove(entity);
 		}
 	}
 	
@@ -207,9 +223,6 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		return findUnique((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 	
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties) {
-		return this.findUnique(entityClass, MyUtils.convertParamMap(properties), tryTheBest);
-	}
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		return this.findUnique(entityClass, MyUtils.convertParamMap(properties));
 	}
@@ -218,7 +231,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 //		return findUnique(entityClass, properties, true);
 		prepareProperties(properties);
 
-		ExtQuery extQuery = createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = createSelectExtQuery(entityClass, properties);
 		extQuery.setMaxResults(1);//add: support unique
 		extQuery.build();
 		DataQuery q = createQuery(extQuery);
@@ -254,21 +267,8 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 		return entity;
 	}*/
 	
-
-	public <T> T findUnique(final String sql, final Object... values){
-		T entity = null;
-		try {
-			entity = (T)this.createQuery(sql, values).getSingleResult();
-		} catch (Exception e) {
-			logger.error(e);
-			throw new BaseException("find the unique result error : " + sql, e);
-		}
-		return entity;
-	}
 	
-	
-	
-	public <T> T findUnique(final String sql, final Map<String, Object> values){
+	private <T> T findUnique(final String sql, final Map<String, Object> values){
 		T entity = null;
 		try {
 			entity = (T)this.createQuery(sql, values).getSingleResult();
@@ -296,7 +296,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		prepareProperties(properties);
 
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
 		return createQuery(extQuery).getResultList();
 	}
@@ -312,15 +312,18 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	}
 
 	public <T> List<T> findAll(Class<T> entityClass){
-		StringBuilder sqlStr = new StringBuilder(); 
-		sqlStr.append("select ent from ").append(entityClass.getSimpleName()).append(" ent");
-		return createQuery(sqlStr.toString()).getResultList();
+		/*StringBuilder sqlStr = new StringBuilder(); 
+		sqlStr.append("select ent from ").append(entityClass.getSimpleName()).append(" ent");*/
+		return findByProperties(entityClass);
 	}
 
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
-		ExtQuery extQuery = this.createExtQuery(entityClass, properties);
+		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
-		return (Number) this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		Number count = this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		if(count==null)
+			count = 0;
+		return count;
 	}
 
 	public Number countRecord(Class entityClass, Object... params) {
@@ -333,7 +336,7 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	}
 	
 	public SQLSymbolManager getSQLSymbolManager(){
-		return SQLSymbolManagerFactory.getInstance().get(this.getEntityManagerProvider());
+		return sqlSymbolManager;
 	}
 	
 
@@ -348,4 +351,29 @@ abstract public class AbstractEntityManager implements BaseEntityManager {
 	public <T> void findPage(Page<T> page, JFishQueryValue squery){
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
+		return rawClass.cast(getRawManagerObject());
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		/*SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
+		if(symbolManager==null){
+			symbolManager = SQLSymbolManagerFactory.getInstance().get(this.getEntityManagerProvider());
+		}
+		this.sqlSymbolManager = symbolManager;*/
+	}
+
+	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {
+		this.sqlSymbolManager = sqlSymbolManager;
+	}
+
+	@Override
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
+		throw new UnsupportedOperationException();
+	}
+	
+	
 }

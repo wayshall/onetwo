@@ -12,7 +12,7 @@ public interface DataQuery {
 
 	public <T> List<T> getResultList();
 
-	public Object getSingleResult();
+	public <T> T getSingleResult();
 
 	public DataQuery setFirstResult(int startPosition);
 
@@ -32,7 +32,7 @@ public interface DataQuery {
 	
 	public DataQuery setLimited(final Integer first, final Integer size);
 	
-	public <T> T getRawQuery();
+	public <T> T getRawQuery(Class<T> clazz);
 	
 	public DataQuery setQueryConfig(Map<String, Object> configs);
 	

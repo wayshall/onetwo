@@ -108,9 +108,9 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		this.namespaceProperties = this.autoScanSqlDir(sqlfileArray);
 		this.buildSqlFileMonitor(sqlfileArray);
 		
-		System.out.println("all named query : ");
+		logger.info("all named query : ");
 		for(T prop : this.namedQueryCache.values()){
-			System.out.println(prop);
+			logger.info(prop.toString());
 		}
 	}
 	
@@ -129,11 +129,14 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 	
 	protected Map<String, NamespaceProperties<T>> autoScanSqlDir(File[] sqlfileArray){
-		if(LangUtils.isEmpty(sqlfileArray))
-			return null;
+		if(LangUtils.isEmpty(sqlfileArray)){
+			logger.info("no named sql file found.");
+			return Collections.EMPTY_MAP;
+		}
 		
 		Map<String, NamespaceProperties<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
 		for(File f : sqlfileArray){
+			logger.info("parse named sql file: {}", f.getName());
 			this.scanAndParseSqlFile(nsproperties, f, true);
 		}
 		return nsproperties;

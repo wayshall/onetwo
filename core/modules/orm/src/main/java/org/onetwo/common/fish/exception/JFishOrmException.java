@@ -9,10 +9,6 @@ public class JFishOrmException extends BaseException{
 		super("jfish orm error!");
 	}
 
-	public JFishOrmException(String msg, String code) {
-		super(msg, code);
-	}
-
 	public JFishOrmException(String msg, Throwable cause, String code) {
 		super(msg, cause, code);
 	}
@@ -25,15 +21,11 @@ public class JFishOrmException extends BaseException{
 		super(msg);
 	}
 
-	public JFishOrmException(Throwable cause, String code) {
-		super(cause, code);
-	}
-
 	public JFishOrmException(Throwable cause) {
 		super(cause);
 	}
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.ORM_ERROR;
 	}
 

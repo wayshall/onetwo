@@ -6,31 +6,31 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jdbc.JdbcDao;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*****
  * 数据访问的基类
- * 
+ * di: jdbcDao and dataSource
  * @author weishao
  *
  * @param <T>
  * @param <PK>
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class BaseDao<T, PK extends Serializable> {
+abstract public class BaseDao<T, PK extends Serializable> {
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = MyLoggerFactory.getLogger(getClass());
 
 	protected Class<T> entityClass;
-//	protected SequenceNameManager sequenceNameManager;
-	
 	protected JdbcDao jdbcDao;
 	
 	protected BaseEntityManager baseEntityManager;
@@ -70,7 +70,7 @@ public class BaseDao<T, PK extends Serializable> {
 	public JdbcDao getJdbcDao() {
 		return jdbcDao;
 	}
-
+	
 	@Resource
 	public void setJdbcDao(JdbcDao jdbcDao) {
 		this.jdbcDao = jdbcDao;
@@ -130,9 +130,9 @@ public class BaseDao<T, PK extends Serializable> {
 		return (T) baseEntityManager.findUnique(entityClass, properties);
 	}
 
-	public T findUnique(String sql, Object... values) {
+	/*public T findUnique(String sql, Object... values) {
 		return (T) baseEntityManager.findUnique(sql, values);
-	}
+	}*/
 
 	public T load(PK id) {
 		return baseEntityManager.load(entityClass, id);
@@ -152,6 +152,14 @@ public class BaseDao<T, PK extends Serializable> {
 
 	public void save(T entity) {
 		baseEntityManager.save(entity);
+	}
+	
+	public SessionFactory getSessionFactory(){
+		return baseEntityManager.getRawManagerObject(SessionFactory.class);
+	}
+	
+	public Session getSession(){
+		return getSessionFactory().getCurrentSession();
 	}
 
 }

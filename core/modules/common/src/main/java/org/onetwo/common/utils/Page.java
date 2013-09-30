@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
-
 @XmlRootElement
 public class Page<T> implements Serializable {
 	/**

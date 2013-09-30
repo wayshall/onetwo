@@ -306,7 +306,7 @@ public abstract class CollectionUtils {
 
 
     
-    public static Collection intersection(final Collection a, final Collection b) {
+    public static <T> List<T> intersection(final Collection a, final Collection b) {
         ArrayList list = new ArrayList();
         Map mapa = getCardinalityMap(a);
         Map mapb = getCardinalityMap(b);

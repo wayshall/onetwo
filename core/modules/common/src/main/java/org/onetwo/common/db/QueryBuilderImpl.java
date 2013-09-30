@@ -191,7 +191,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 			params.put(K.SQL_JOIN, RawSqlWrapper.wrap(leftJoinSql));
 		}
 		ExtQuery extQuery = null;//new ExtQueryImpl(entityClass, null, params, getSQLSymbolManager());
-		extQuery = getSQLSymbolManager().createQuery(entityClass, alias, params);
+		extQuery = getSQLSymbolManager().createSelectQuery(entityClass, alias, params);
 		extQuery.build();
 		
 		JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());

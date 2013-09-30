@@ -16,6 +16,7 @@ public class DefaultTypeConvertors implements Convertor {
 	private Map<Class<?>, TypeConvert<?>> convertors = new HashMap<Class<?>, TypeConvert<?>>();
 	
 	public DefaultTypeConvertors(){
+		register(new ToStringConvertor(), String.class);
 		register(new ToLongConvertor(), Long.class, Long.TYPE);
 		register(new ToIntegerConvertor(), Integer.class, Integer.TYPE);
 		register(new ToShortConvertor(), Short.class, Short.TYPE);
@@ -55,6 +56,8 @@ public class DefaultTypeConvertors implements Convertor {
 	 */
 	@Override
 	public <T> T convert(Object value, Class<T> targetClass){
+		if(targetClass==null)
+			throw new BaseException("targetClass can not be null, value: " + value);
 		if(targetClass.isEnum()){
 			return (T)getTypeConvertor(targetClass.getSuperclass()).convert(value, targetClass);
 		}else{

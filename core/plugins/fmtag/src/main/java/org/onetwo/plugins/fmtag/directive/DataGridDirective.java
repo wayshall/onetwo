@@ -75,7 +75,7 @@ public class DataGridDirective extends FmtagBaseDirective implements TemplateDir
 		String cssClass = DirectivesUtils.getParameterByString(params, PARAMS_CSS_CLASS, "table");
 		String cssStyle = DirectivesUtils.getParameterByString(params, PARAMS_CSS_STYLE, "");
 		
-		String themeDir = DirectivesUtils.getParameterByString(params, PARAMS_THEME, getSelfConfig().getTemplateBasePath()+"lib/dg");
+		String themeDir = DirectivesUtils.getParameterByString(params, PARAMS_THEME, getSelfConfig().getTemplatePath("lib/dg"));
 		String action = getActionString(env, params);
 		
 		DataGrid dg = new DataGrid();

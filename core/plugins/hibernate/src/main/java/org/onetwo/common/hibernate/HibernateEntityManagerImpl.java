@@ -2,25 +2,67 @@ package org.onetwo.common.hibernate;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.FileNamedQueryFactory;
+import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
+import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
+import org.onetwo.common.jdbc.JdbcUtils;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.propconf.AppConfig;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
-public class HibernateEntityManagerImpl extends AbstractEntityManager {
+public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = Logger.getLogger(this.getClass());
 	
 	private SessionFactory sessionFactory; 
 	
-	private SequenceNameManager sequenceNameManager;
+	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
+	
+	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
+	
+	@Resource
+	private DataSource dataSource;
+	
+	@Resource
+	private ApplicationContext applicationContext;
+	
+//	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
+	
+	@Resource
+	private AppConfig appConfig;
+
+	public HibernateEntityManagerImpl(){
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(appConfig, "appConfig can not be null.");
+		boolean watchSqlFile = appConfig.isDev();
+		String db = JdbcUtils.getDataBase(dataSource).toString();
+		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
+		fq.initQeuryFactory(this);
+		this.fileNamedQueryFactory = fq;
+	}
+
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -33,8 +75,13 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
-		if(entityClass!=null)
-			query.addEntity(entityClass);
+		if(entityClass!=null){
+			if(sessionFactory.getClassMetadata(entityClass)!=null){
+				query.addEntity(entityClass);
+			}else{
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+			}
+		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;
 	}
@@ -79,6 +126,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public void persist(Object entity) {
 		getSession().persist(entity);
 	}
+	@Override
+	public void update(Object entity) {
+		getSession().update(entity);
+	}
 
 	@Override
 	public void remove(Object entity) {
@@ -97,11 +148,21 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 
 	@Override
 	public <T> T save(T entity) {
+		/*try {
+			getSession().saveOrUpdate(entity);
+		} catch (SQLGrammarException e) {
+			SQLException sqle = (SQLException)e.getCause();
+			if(sqle.getErrorCode()==2289 && "42000".equals(sqle.getSQLState())){
+				this.createSequence(entity.getClass());
+				getSession().saveOrUpdate(entity);
+			}
+		}
+		return entity;*/
 		getSession().saveOrUpdate(entity);
 		return entity;
 	}
 	
-	protected Session getSession(){
+	public Session getSession(){
 		return this.sessionFactory.getCurrentSession();
 	}
 	
@@ -132,5 +193,15 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager {
 	public <T> T merge(T entity) {
 		return (T)getSession().merge(entity);
 	}
+
+	@Override
+	public SessionFactory getRawManagerObject() {
+		return sessionFactory;
+	}
 	
+
+	@Override
+	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
+		return fileNamedQueryFactory;
+	}
 }

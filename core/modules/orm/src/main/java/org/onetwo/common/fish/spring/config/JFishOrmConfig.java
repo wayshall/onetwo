@@ -85,7 +85,6 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 	@Bean
 	public JFishDaoImplementor jfishDao() {
 		JFishDaoImpl jfishDao = new JFishDaoImpl();
-		jfishDao.setWatchSqlFile(watchSqlFile);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());
 		jfishDao.setDataSource(dataSource);
@@ -162,6 +161,7 @@ public class JFishOrmConfig implements ApplicationContextAware, InitializingBean
 		if(jem==null){
 			JFishEntityManagerImpl jemImpl = new JFishEntityManagerImpl();
 			jemImpl.setJfishDao(jfishDao());
+			jemImpl.setWatchSqlFile(watchSqlFile);
 			jem = jemImpl;
 		}
 //		jem.setSequenceNameManager(sequenceNameManager());

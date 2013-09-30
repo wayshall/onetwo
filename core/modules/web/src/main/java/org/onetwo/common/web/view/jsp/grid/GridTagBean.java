@@ -6,6 +6,7 @@ import java.util.List;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
+import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
 public class GridTagBean extends HtmlElement {
@@ -19,6 +20,12 @@ public class GridTagBean extends HtmlElement {
 	private String queryString;
 
 	private boolean toolbar;
+	private boolean generatedForm;
+	
+	private String bodyContent;
+
+	private boolean pagination;
+	private PaginationType paginationType;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -91,6 +98,52 @@ public class GridTagBean extends HtmlElement {
 
 	public void setToolbar(boolean toolbar) {
 		this.toolbar = toolbar;
+	}
+
+	public String getBodyContent() {
+		return bodyContent;
+	}
+
+	public void setBodyContent(String bodyContent) {
+		this.bodyContent = bodyContent;
+	}
+	
+	public String getFormId(){
+		return getId() + "Form";
+	}
+
+	public PaginationType getPaginationType() {
+		return paginationType;
+	}
+
+	public void setPaginationType(PaginationType paginationType) {
+		this.paginationType = paginationType;
+		if(isNonePagination())
+			this.pagination = false;
+	}
+	
+	public boolean isNonePagination(){
+		return this.paginationType==PaginationType.none;
+	}
+	
+	public boolean isFormPagination(){
+		return this.paginationType==PaginationType.form;
+	}
+
+	public boolean isGeneratedForm() {
+		return generatedForm;
+	}
+
+	public void setGeneratedForm(boolean generatedForm) {
+		this.generatedForm = generatedForm;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
+	}
+	
+	public boolean isPagination(){
+		return this.pagination;
 	}
 
 }

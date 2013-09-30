@@ -1,8 +1,8 @@
 package org.onetwo.common.utils;
 
 
-public interface TreeModelCreator<T>{
+public interface TreeModelCreator<TM extends TreeModel<TM>, T>{
 	
-	public TreeModel createTreeModel(T obj);
+	public TM createTreeModel(T obj);
 
 }

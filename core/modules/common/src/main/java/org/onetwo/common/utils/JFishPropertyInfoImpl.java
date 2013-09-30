@@ -18,14 +18,14 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 
 
 	public JFishPropertyInfoImpl(Class<?> beanClass, String propName){
-		this(ClassWrapper.wrap(beanClass), ReflectUtils.findProperty(beanClass, propName));
+		this(Intro.wrap(beanClass), ReflectUtils.findProperty(beanClass, propName));
 	}
 
 	public JFishPropertyInfoImpl(Class<?> beanClass, PropertyDescriptor property){
-		this(ClassWrapper.wrap(beanClass), property);
+		this(Intro.wrap(beanClass), property);
 	}
 
-	public JFishPropertyInfoImpl(ClassWrapper<?> beanClassWrapper, PropertyDescriptor property){
+	public JFishPropertyInfoImpl(Intro<?> beanClassWrapper, PropertyDescriptor property){
 		super(property.getName(), beanClassWrapper);
 		Class<?> beanClass = beanClassWrapper.getClazz();
 		this.property = property;
@@ -44,7 +44,7 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 		}
 		Annotation[] annotations = getReadMethod().getAnnotations();
 		annotationInfo = new AnnotationInfo(beanClass, annotations);
-		this.propertyClassWrapper = ClassWrapper.wrap(propertyType);
+		this.propertyClassWrapper = Intro.wrap(propertyType);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 	}
 
 	@Override
-	public ClassWrapper<?> getBeanClassWrapper() {
+	public Intro<?> getBeanClassWrapper() {
 		return beanClassWrapper;
 	}
 

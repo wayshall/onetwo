@@ -2,7 +2,6 @@ package org.onetwo.common.ftl.directive;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +11,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.ftl.directive.OverrideDirective.OverrideBodyWraper;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
+import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -25,18 +25,12 @@ import org.slf4j.Logger;
 import org.springframework.web.servlet.support.RequestContext;
 
 import freemarker.core.Environment;
-import freemarker.ext.beans.ArrayModel;
 import freemarker.ext.beans.BeanModel;
-import freemarker.ext.beans.BooleanModel;
-import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.ext.beans.StringModel;
 import freemarker.ext.servlet.HttpRequestHashModel;
-import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import freemarker.template.TemplateNumberModel;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DirectivesUtils {
@@ -49,7 +43,7 @@ public class DirectivesUtils {
 //	public static final String ALREADY_RENDER_BODY = "__FTL_EXTENDS_ALREADY_RENDER_BODY__";
 //	public static final String CUURENT_OVERRIDE_BODY = "__FTL_EXTENDS_CUURENT_OVERRIDE_BODY__";
 
-	private static final Logger logger = MyLoggerFactory.getLogger(DirectivesUtils.class);
+//	private static final Logger logger = MyLoggerFactory.getLogger(DirectivesUtils.class);
 
 	private DirectivesUtils(){
 	}
@@ -83,24 +77,11 @@ public class DirectivesUtils {
 	}
 	
 	public static void render(String tag, Environment env, TemplateDirectiveBody body){
-		if(body==null || env==null)
-			return ;
-		try {
-			body.render(env.getOut());
-		} catch (Exception e) {
-			LangUtils.throwBaseException("render tempalte["+tag+"] error : "+e.getMessage(), e);
-		} 
+		FtlUtils.render(tag, env, body);
 	}
 	
 	public static TemplateModel getVariable(Environment env, String name, boolean throwIfError){
-		TemplateModel model = null;
-		try {
-			model = env.getVariable(name);
-		} catch (Exception e) {
-			if(throwIfError)
-				LangUtils.throwBaseException("get variable["+name+"] error: " + e.getMessage(), e);
-		}
-		return model;
+		return FtlUtils.getVariable(env, name, throwIfError);
 	}
 	
 
@@ -133,8 +114,7 @@ public class DirectivesUtils {
 		TemplateModel model = getVariable(env, name, true);
 		if(model==null){
 			if(StringUtils.isBlank(msg)){
-				msg = "the variable["+name+"] can not be null!";
-				LangUtils.throwBaseException(msg);
+				throw new BaseException("the variable["+name+"] can not be null!");
 			}
 		}
 		return model;
@@ -154,107 +134,38 @@ public class DirectivesUtils {
 	}
 	
 	public static void setVariable(Environment env, String name, Object val){
-		if(val==null)
-			return ;
-		TemplateModel model = null;
-		if(TemplateModel.class.isInstance(val)){
-			model = (TemplateModel) val;
-		}else if(Map.class.isInstance(val)){
-			model = new SimpleMapModel((Map)val, JFishFreeMarkerConfigurer.INSTANCE);
-		}else if(Collection.class.isInstance(val)){
-			model = new CollectionModel((Collection)val, JFishFreeMarkerConfigurer.INSTANCE);
-		}else if(LangUtils.isArray(val)){
-			model = new ArrayModel(val, JFishFreeMarkerConfigurer.INSTANCE);
-		}else if(String.class.isInstance(val)){
-			model = new StringModel(val, JFishFreeMarkerConfigurer.INSTANCE);
-		}else{
-			model = wrapAsBeanModel(val);
-		}
-		env.setVariable(name, model);
+		FtlUtils.setVariable(env, name, val);
 	}
 	
 	public static BeanModel wrapAsBeanModel(Object obj){
-		if(obj==null)
-			return null;
-		BeanModel m = null;
-		try {
-//			BeansWrapper bw = (BeansWrapper)ObjectWrapper.BEANS_WRAPPER;
-			m = new BeanModel(obj, JFishFreeMarkerConfigurer.INSTANCE);
-		} catch (Exception e) {
-			LangUtils.throwBaseException("wrap bean error : " + obj.getClass(), e);
-		}
-		
-		return m;
+		return FtlUtils.wrapAsBeanModel(obj);
 	}
 
 
 	public static void setVariable(Environment env, String name, TemplateModel val){
-		env.setVariable(name, val);
+		FtlUtils.setVariable(env, name, val);
 	}
 	
 	public static void setObjectVariable(Environment env, String name, Object val){
-		if(TemplateModel.class.isInstance(val)){
-			env.setVariable(name, (TemplateModel)val);
-		}else if(String.class.isInstance(val)){
-			env.setVariable(name, new SimpleScalar(val.toString()));
-		}else{
-			env.setVariable(name, wrapAsBeanModel(val));
-		}
+		FtlUtils.setObjectVariable(env, name, val);
 	}
 	
 	public static Object getObjectVariable(Environment env, String name){
-		Object val = null;
-		try {
-			BeanModel model = (BeanModel)env.getVariable(name);
-			val = model.getWrappedObject();
-		} catch (TemplateModelException e) {
-			return null;
-		} catch(Exception e){
-			logger.error("getObjectVariable error : " + e.getMessage(), e);
-		}
-		return val;
+		return FtlUtils.getObjectVariable(env, name);
 	}
 
 	public static String getRequiredParameterByString(Map params, String name){
-		TemplateModel val = getParameter(params, name, true);
-		return val.toString();
+		return FtlUtils.getRequiredParameterByString(params, name);
 	}
 	public static String getParameterByString(Map params, String name, String def){
-		TemplateModel attr = getParameter(params, name, false);
-		if(attr!=null)
-			return attr.toString();
-		return def;
+		return FtlUtils.getParameterByString(params, name, def);
 	}
 	
 	public static boolean getParameterByBoolean(Map params, String name, boolean def){
-		TemplateModel attr = getParameter(params, name, false);
-		if(attr!=null){
-			try {
-				if(BooleanModel.class.isInstance(attr)){
-					return ((BooleanModel)attr).getAsBoolean();
-				}else{
-					return Boolean.valueOf(attr.toString());
-				}
-			} catch (Exception e) {
-				return def;
-			}
-		}
-		return def;
+		return FtlUtils.getParameterByBoolean(params, name, def);
 	}
 	public static int getParameterByInt(Map params, String name, int def){
-		TemplateModel attr = getParameter(params, name, false);
-		if(attr!=null){
-			try {
-				if(TemplateNumberModel.class.isInstance(attr)){
-					return ((TemplateNumberModel)attr).getAsNumber().intValue();
-				}else{
-					return Integer.parseInt(attr.toString());
-				}
-			} catch (Exception e) {
-				return def;
-			}
-		}
-		return def;
+		return FtlUtils.getParameterByInt(params, name, def);
 	}
 
 	public static TemplateModel getRequiredParameter(Map params, String name){
@@ -262,26 +173,11 @@ public class DirectivesUtils {
 	}
 	
 	public static String getParameter(Map params, String name, String defVal){
-		TemplateModel val = getParameter(params, name, false);
-		if(val==null)
-			return defVal;
-		return val.toString();
+		return FtlUtils.getParameter(params, name, defVal);
 	}
 	
 	public static <T> T getParameter(Map params, String name, boolean throwIfNotExist){
-		if(!params.containsKey(name)){
-			if(throwIfNotExist)
-				throw LangUtils.asBaseException("freemarker template error : the param["+name+"] has not be given.");
-			else
-				return null;
-		}
-		
-		T val = (T)params.get(name);
-		return val;
-		/*if(val!=null)
-			return val;
-		else
-			throw LangUtils.asBaseException("the param["+name+"] can not be null.");*/
+		return FtlUtils.getParameter(params, name, throwIfNotExist);
 	}
 	
 

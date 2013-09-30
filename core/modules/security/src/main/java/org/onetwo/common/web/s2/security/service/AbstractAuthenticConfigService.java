@@ -1,27 +1,24 @@
 package org.onetwo.common.web.s2.security.service;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
 import org.onetwo.common.web.s2.security.config.AbstractConfigBuilder;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 import org.onetwo.common.web.s2.security.config.AuthenticConfigService;
+import org.slf4j.Logger;
 
 abstract public class AbstractAuthenticConfigService implements AuthenticConfigService {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
-	protected Map<String, AuthenticConfig> configs = new HashMap<String, AuthenticConfig>();
-
-	protected boolean devMode;
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected Map<String, AuthenticConfig> configs = new ConcurrentHashMap<String, AuthenticConfig>();
 
 	public AbstractAuthenticConfigService(){
-		this.devMode = BaseSiteConfig.getInstance().isDev();
 	}
 
 	public AuthenticationInvocation getAuthenticationInvocation(AuthenticConfig config){
@@ -33,9 +30,7 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	
 	public AuthenticConfig findAuthenticConfig(Class<?> clazz, Method method) {
 		String configName = method.toGenericString();
-		AuthenticConfig conf = null;
-		if(!isDevMode())
-			conf = configs.get(configName);
+		AuthenticConfig conf = configs.get(configName);
 		if (conf == null) {
 			conf = readConfig(clazz, method);
 		}
@@ -43,8 +38,8 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	}
 
 	protected AuthenticConfig readConfig(Class<?> clazz, Method method) {
-		AbstractConfigBuilder configBuilder = getConfigBuilder(clazz, method);
-		AuthenticConfig config = configBuilder.buildAuthenConfig();
+		AbstractConfigBuilder configBuilder = getConfigBuilder();
+		AuthenticConfig config = configBuilder.buildAuthenConfig(clazz, method);
 		configs.put(method.toGenericString(), config);
 		return config;
 	}
@@ -55,14 +50,6 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	 * @param method
 	 * @return
 	 */
-	abstract protected AbstractConfigBuilder getConfigBuilder(Class<?> clazz, Method method);
+	abstract protected AbstractConfigBuilder getConfigBuilder();
 	
-    public void setDevMode(String mode) {
-        this.devMode = "true".equals(mode);
-    }
-
-	public boolean isDevMode() {
-		return devMode;
-	}
-
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-import org.onetwo.common.db.ExtQueryImpl;
+import org.onetwo.common.db.SelectExtQueryImpl;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -16,7 +16,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.BaseMap;
 
 @SuppressWarnings("rawtypes")
-public class JPAExtQuery extends ExtQueryImpl {
+public class JPAExtQuery extends SelectExtQueryImpl {
 	//prop to column
 	private Map<String, String> fieldMapping;
 
@@ -24,8 +24,8 @@ public class JPAExtQuery extends ExtQueryImpl {
 		super(entityClass, alias, params, symbolManager);
 	}
 
-	protected void init(Class<?> entityClass, String alias){
-		super.init(entityClass, alias);
+	public void initQuery(){
+		super.initQuery();
 		if(!isSqlQuery())
 			return ;
 		this.fieldMapping = new BaseMap<String, String>();
@@ -44,7 +44,7 @@ public class JPAExtQuery extends ExtQueryImpl {
 		}
 	}
 
-	protected String getSelectFromName(Class<?> entityClass){
+	protected String getFromName(Class<?> entityClass){
 		String fromName = entityClass.getSimpleName();
 		if(isSqlQuery()){
 			Table table = AnnotationUtils.findAnnotation(entityClass, Table.class);

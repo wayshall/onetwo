@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.ArrayUtils;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -103,6 +103,10 @@ public class MDEncryptImpl implements MDEncrypt {
 		return appendLabel(encryptStr, false);
 	}
 
+	/*****
+	 * byte[] = digest(source+salt)+salt;
+	 * String = hex(byte[]);
+	 */
 	public String encryptWithSalt(String source, int saltLength){
 		String encryptStr = encrypt(getBytes(source), randomSalt(saltLength));
 		return appendLabel(encryptStr, true);
@@ -121,7 +125,9 @@ public class MDEncryptImpl implements MDEncrypt {
 		return encryptString;
 	}
 	
-
+	/****
+	 * byte[] = digest(source+salt)+salt
+	 */
 	public byte[] encryptBytes(byte[] source, byte[] salt){
 		byte[] dg = _encryptBytesOnly(source, salt);
 		boolean hasSalt = (salt!=null && salt.length>0);
@@ -131,6 +137,12 @@ public class MDEncryptImpl implements MDEncrypt {
 		return dg;
 	}
 	
+	/*****
+	 * 先源字符串，后随机盐
+	 * @param source
+	 * @param salt
+	 * @return
+	 */
 	synchronized public byte[] _encryptBytesOnly(byte[] source, byte[] salt){
 		boolean hasSalt = (salt!=null && salt.length>0);
 		byte[] dg = null;
@@ -147,6 +159,10 @@ public class MDEncryptImpl implements MDEncrypt {
 		return dg;
 	}
 	
+	/*****
+	 * byte(entryHexString)=> hash = entry + salt, 得到salt 
+	 * boolean: digest(source+salt) == hash
+	 */
 	public boolean checkEncrypt(String source, String encrypt){
 //		LangUtils.println(isDev, "checkEncrypt start=============================>>>");
 		Assert.hasText(source);

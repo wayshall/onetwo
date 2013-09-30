@@ -1,17 +1,17 @@
 package org.onetwo.common.fish.test;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.JFishEntityManager;
-import org.onetwo.common.fish.JFishQuery;
 import org.onetwo.common.fish.JFishQueryBuilder;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.utils.Page;
@@ -50,7 +50,7 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -78,13 +78,6 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public <T> T findUnique(String sql, Object... values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		// TODO Auto-generated method stub
@@ -228,40 +221,25 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 	}
 
 	@Override
-	public JFishQuery createJFishQueryByQName(String queryName, Object... args) {
+	public void update(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public <T> T getRawManagerObject() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JFishQuery createJFishQueryByQName(String queryName,
-			PlaceHolder type, Object... args) {
+	public <T> T getRawManagerObject(Class<T> rawClass) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JFishQuery createCountJFishQueryByQName(String queryName,
-			Object... args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> List<T> findListByQName(String queryName, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T findUniqueByQName(String queryName, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> Page<T> findPageByQName(String queryName, Page<T> page,
-			Object... params) {
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -314,5 +292,6 @@ public class NullJFishEntityManagerImpl implements JFishEntityManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

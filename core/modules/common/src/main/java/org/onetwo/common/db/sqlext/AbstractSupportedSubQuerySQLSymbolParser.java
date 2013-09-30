@@ -2,12 +2,13 @@ package org.onetwo.common.db.sqlext;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.StringUtils;
 
 
 /***
@@ -57,13 +58,13 @@ abstract public class AbstractSupportedSubQuerySQLSymbolParser extends AbstractS
 	}
 	
 	protected ExtQuery createSubQuery(Class subEntity, List paramlist){
-		ExtQuery subQuery = null;
+		SelectExtQuery subQuery = null;
 		String subAlias = "sub_"+StringUtils.uncapitalize(subEntity.getSimpleName());
 		if(paramlist.size()%2==0)
-			subQuery = this.sqlSymbolManager.createQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
+			subQuery = this.sqlSymbolManager.createSelectQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
 		else{
 			paramlist.add(0, K.SELECT);//entity后第一个str为要select的字段
-			subQuery = this.sqlSymbolManager.createQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
+			subQuery = this.sqlSymbolManager.createSelectQuery(subEntity, subAlias, MyUtils.convertParamMap(paramlist.toArray()));
 		}
 		subQuery.setSubQuery(true);
 		return subQuery;

@@ -35,6 +35,18 @@
 	  <version>${onetwo.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.freemarker</groupId>
+	  <artifactId>freemarker</artifactId>
+	</dependency>
+	
+	<!-- 
+	<dependency>
+	  <groupId>javax.persistence</groupId>
+	  <artifactId>com.springsource.javax.persistence</artifactId>
+	</dependency>
+	 -->
+	
 	<!-- spring begin -->
 	<dependency>
 	  <groupId>org.springframework</groupId>
@@ -103,6 +115,11 @@
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-test</artifactId>
 	  <scope>compile</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>net.sf.dozer</groupId>
+	  <artifactId>dozer</artifactId>
 	</dependency>
 	
     <dependency>

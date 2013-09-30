@@ -21,13 +21,12 @@
 		</li>
 	</layout:override>
 	
-	<widget:dataGrid name="usergrid" dataSource="${'$'}{page}" title="用户列表" toolbar="true">
+	<widget:dataGrid name="usergrid" dataSource="${'$'}{page}" title="${commonName}列表" toolbar="true">
 		<widget:dataRow name="entity" type="iterator" renderHeader="true">
-			<widget:dataField name="ids" render="checkbox" value="id"/>
-			<widget:dataField name="id" label="主键"/>
-			<widget:dataField name="userName" label="用户名"/>
-			<widget:dataField name="email" label="电子邮件"/>
-			<widget:dataField name="createTime" label="创建时间" dataFormat="yyyy-MM-dd"/>
+			<widget:dataField name="${table.primaryKey.javaName}s" label="全选" render="checkbox" value="${table.primaryKey.javaName}"/>
+		<#list table.columnCollection as column>
+			<widget:dataField name="${column.javaName}" label="${column.javaName}"/>
+		</#list>
 			<widget:dataField name="operation" label="操作" render="html">
 				<a href="${'$'}{siteConfig.baseURL}${webPath}/${'$'}{entity.${table.primaryKey.javaName}}/edit">编辑</a>
 			</widget:dataField>

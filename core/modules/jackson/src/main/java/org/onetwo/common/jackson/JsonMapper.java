@@ -54,7 +54,7 @@ public class JsonMapper {
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	private JsonMapper(Inclusion include){
+	public JsonMapper(Inclusion include){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 		setDateFormat(DateUtil.Date_Time);

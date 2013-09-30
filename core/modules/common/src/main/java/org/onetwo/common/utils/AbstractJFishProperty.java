@@ -7,13 +7,13 @@ import java.lang.reflect.Type;
 
 abstract public class AbstractJFishProperty implements JFishProperty {
 
-	protected final ClassWrapper<?> beanClassWrapper;
+	protected final Intro<?> beanClassWrapper;
 	protected AnnotationInfo annotationInfo;
-	protected ClassWrapper<?> propertyClassWrapper;
+	protected Intro<?> propertyClassWrapper;
 	private final String name;
 	
 	
-	public AbstractJFishProperty(String name, ClassWrapper<?> beanClassWrapper) {
+	public AbstractJFishProperty(String name, Intro<?> beanClassWrapper) {
 		this.name = name;
 		this.beanClassWrapper = beanClassWrapper;
 	}
@@ -21,7 +21,7 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	public AnnotationInfo getAnnotationInfo() {
 		return annotationInfo;
 	}
-	public ClassWrapper<?> getBeanClassWrapper() {
+	public Intro<?> getBeanClassWrapper() {
 		return beanClassWrapper;
 	}
 
@@ -48,11 +48,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		return LangUtils.isEmpty(types)?null:types[0];
 	}
 
-	public ClassWrapper<?> getFirstParameterTypeClassWrapper() {
-		return ClassWrapper.wrap((Class)getFirstParameterType());
+	public Intro<?> getFirstParameterTypeClassWrapper() {
+		return Intro.wrap((Class)getFirstParameterType());
 	}
 
-	public ClassWrapper<?> getTypeClassWrapper() {
+	public Intro<?> getTypeClassWrapper() {
 		return propertyClassWrapper;
 	}
 

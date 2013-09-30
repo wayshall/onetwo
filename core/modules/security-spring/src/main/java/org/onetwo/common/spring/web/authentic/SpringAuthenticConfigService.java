@@ -1,24 +1,22 @@
 package org.onetwo.common.spring.web.authentic;
 
-import java.lang.reflect.Method;
-
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.onetwo.common.web.s2.security.config.AbstractConfigBuilder;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
-import org.onetwo.common.web.s2.security.config.AuthenticConfigService;
 import org.onetwo.common.web.s2.security.service.AbstractAuthenticConfigService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
 
-@Service(AuthenticConfigService.NAME)
+//@Service(AuthenticConfigService.NAME)
 public class SpringAuthenticConfigService extends AbstractAuthenticConfigService implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
+	private AbstractConfigBuilder configBuilder;
 	
 
 	public SpringAuthenticConfigService() {
@@ -49,13 +47,21 @@ public class SpringAuthenticConfigService extends AbstractAuthenticConfigService
 	}
 
 	@Override
-	protected AbstractConfigBuilder getConfigBuilder(Class<?> clazz, Method method) {
-		return new SpringConfigBuilder(clazz, method);
+	protected AbstractConfigBuilder getConfigBuilder() {
+		return configBuilder;
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+		AbstractConfigBuilder configBuilder = SpringUtils.getBean(applicationContext, AbstractConfigBuilder.class);
+		if(configBuilder==null){
+			logger.info("no security configBuilder, user default : " + SpringConfigBuilder.class);
+			configBuilder = new SpringConfigBuilder();
+		}else{
+			logger.info("user custom security configBuilder : " + configBuilder.getClass());
+		}
+		this.configBuilder = configBuilder;
 	}
 
 }

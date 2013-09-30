@@ -2,8 +2,8 @@ package org.onetwo.common.db.sql;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.PropConfig;
 import org.onetwo.common.utils.propconf.PropUtils;
 

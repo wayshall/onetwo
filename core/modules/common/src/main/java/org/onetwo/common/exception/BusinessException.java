@@ -1,7 +1,7 @@
 package org.onetwo.common.exception;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 
 /***********
  * 
@@ -24,6 +24,7 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 	public static final String DEFAULT_MESSAGE = "[business error 业务错误]:";
 
 	protected String code = BusinessErrorCode.BASE_CODE;
+	private Object[] args;
 
 	public BusinessException(String msg, String code) {
 		super(msg);
@@ -85,5 +86,13 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 	public String getCode() {
 		return code;
 	}
+	public Object[] getArgs() {
+		return args;
+	}
+
+	public void setArgs(Object[] args) {
+		this.args = args;
+	}
+	
 
 }

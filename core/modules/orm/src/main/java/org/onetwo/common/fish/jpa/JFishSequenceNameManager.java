@@ -3,9 +3,9 @@ package org.onetwo.common.fish.jpa;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 
 /***
  * 序列管理类

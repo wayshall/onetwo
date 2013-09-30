@@ -26,7 +26,7 @@ public class AuthenticationException extends ServiceException {
 		super(message, cause);
 	}
 
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return DEFAULT_CODE;
 	}
 }

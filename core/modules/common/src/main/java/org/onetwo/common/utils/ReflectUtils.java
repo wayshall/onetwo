@@ -9,7 +9,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayDeque;
@@ -28,11 +27,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.WeakHashMap;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
 import org.onetwo.common.utils.list.ListFun;
@@ -49,102 +48,16 @@ public class ReflectUtils {
 		void doWithProperty(PropertyDescriptor propertyDescriptor);
 	}
 
-	public static interface CopyConf {
-		/****
-		 * 是否忽略null值，默认false
-		 * @return
-		 */
-		public boolean isIgnoreNull();
-		public boolean isIgnoreBlank();
-		public boolean isIgnoreOther(String property, Object value);
-		
-		/*******
-		 * 是否自动复制，默认false，如果返回true，则所有复制策略失效，通过CopyConf#copy方法来执行复制，
-		 * @return
-		 */
-		public boolean isIgnoreAutoCopy();
-		public boolean isThrowIfError();
-		public String[] getIgnoreFields();
-		public void copy(Object source, Object target, String property);
-	}
 	
-	public static class CopyConfig implements CopyConf {
-		
-		public static CopyConfig create() {
-			return new CopyConfig();
-		};
 
-		private boolean ignoreNull = false;
-		private boolean ignoreBlank = false;
-		private boolean ignoreOther = false;
-		private boolean ignoreAutoCopy = false;
-		private boolean throwIfError = false;
-		private String[] ignoreFields;
-		
-		@Override
-		public boolean isIgnoreNull() {
-			return ignoreNull;
-		}
+	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().checkSetMethod().ignoreNull().ignoreBlank();
 
-		@Override
-		public boolean isIgnoreBlank() {
-			return ignoreBlank;
-		}
-
-		@Override
-		public boolean isIgnoreOther(String property, Object value) {
-			return ignoreOther;
-		}
-
-		@Override
-		public boolean isIgnoreAutoCopy() {
-			return ignoreAutoCopy;
-		}
-
-		@Override
-		public void copy(Object source, Object target, String property) {
-			throw new UnsupportedOperationException();
-		}
-
-		public CopyConfig ignoreNull() {
-			this.ignoreNull = true;
-			return this;
-		}
-
-		public CopyConfig ignoreBlank() {
-			this.ignoreBlank = true;
-			return this;
-		}
-
-		public CopyConfig ignoreAutoCopy() {
-			this.ignoreAutoCopy = true;
-			return this;
-		}
-
-		public String[] getIgnoreFields() {
-			return ignoreFields;
-		}
-
-		public CopyConfig ignoreFields(String... ignoreFields) {
-			this.ignoreFields = ignoreFields;
-			return this;
-		}
-
-		public boolean isThrowIfError() {
-			return throwIfError;
-		}
-
-		public CopyConfig throwIfError() {
-			this.throwIfError = throwIfError;
-			return this;
-		}
-		
-		
-	}
-
-	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
-	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
-	private static WeakHashMap<Class, List<Field>> FIELDS_CACHE = new WeakHashMap<Class, List<Field>>();
+	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
+//	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+//	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
+//	private static WeakHashMap<Class, List<Field>> FIELDS_CACHE = new WeakHashMap<Class, List<Field>>();
+	
+	private static final ClassIntroManager introManager = new ClassIntroManager();
 	
 	public static final String READMETHOD_KEY = "get";
 	public static final String BOOLEAN_READMETHOD_KEY = "is";
@@ -220,17 +133,24 @@ public class ReflectUtils {
 		return getProperty(element, propName, true);
 	}
 
-	public static Object getProperty(Object element, String propName,
-			boolean throwIfError) {
+	public static Object getProperty(Object element, String propName, boolean throwIfError) {
 		if (element instanceof Map) {
 			return getValue((Map) element, propName);
 		}
-		PropertyDescriptor prop = getPropertyDescriptor(element, propName);
+		/*PropertyDescriptor prop = getPropertyDescriptor(element, propName);
 		Object value = null;
 		if (prop != null)
 			value = invokeMethod(throwIfError, getReadMethod(
 					element.getClass(), prop), element);
-		return value;
+		return value;*/
+		try{
+			return getIntro(getObjectClass(element)).getPropertyValue(element, propName);
+		}catch(Exception e){
+			logger.error("get property["+propName+"] error: " + element);
+			if(throwIfError)
+				throw LangUtils.asBaseException(e);
+		}
+		return null;
 	}
 
 	public static Object getProperty(Object element, PropertyDescriptor prop) {
@@ -239,7 +159,10 @@ public class ReflectUtils {
 	}
 
 	public static void setProperty(Object element, PropertyDescriptor prop, Object val) {
-		invokeMethod(getWriteMethod(element.getClass(), prop), element, LangUtils.tryCastTo(val, prop.getPropertyType()));
+		Method wmethod = getWriteMethod(element.getClass(), prop);
+		if(wmethod==null)
+			throw new BaseException("not write method: " + prop.getName());
+		invokeMethod(wmethod, element, LangUtils.tryCastTo(val, prop.getPropertyType()));
 	}
 
 	protected static Object getValue(Map map, String propName) {
@@ -250,8 +173,12 @@ public class ReflectUtils {
 		setProperty(element, propName, value, true);
 	}
 
-	public static void setProperty(Object element, String propName,
-			Object value, boolean throwIfError) {
+
+	public static void setProperty(Object element, String propName, Object value, boolean throwIfError) {
+		setProperty(element, propName, value, throwIfError, false);
+	}
+	
+	public static void setProperty(Object element, String propName, Object value, boolean throwIfError, boolean checkSetMethod) {
 		try {
 			if (element instanceof Map) {
 				((Map) element).put(propName, value);
@@ -264,6 +191,13 @@ public class ReflectUtils {
 				LangUtils.throwBaseException("the property[" + propName
 						+ "] type is primitive[" + prop.getPropertyType()
 						+ "], the value can not be null");
+			}
+			if(prop.getWriteMethod()==null){
+				if(!checkSetMethod){
+					throw new NoSuchMethodException("property: " + propName);
+				}else{
+					return ;
+				}
 			}
 			invokeMethod(prop.getWriteMethod(), element, value);
 		} catch (Exception e) {
@@ -310,12 +244,12 @@ public class ReflectUtils {
 	}
 
 	public static PropertyDescriptor getPropertyDescriptor(Class<?> element, String propName) {
-		PropertyDescriptor[] props = desribProperties(element);
+		/*PropertyDescriptor[] props = desribProperties(element);
 		for (PropertyDescriptor prop : props) {
 			if (prop.getName().equals(propName))
 				return prop;
-		}
-		return null;
+		}*/
+		return getIntro(element).getProperty(propName);
 	}
 	
 	public static boolean isPropertyOf(Object bean, String propName){
@@ -488,19 +422,11 @@ public class ReflectUtils {
 	}
 
 	public static String getReadMethodName(String name, Class returnType) {
-		String getMethod = StringUtils.capitalize(name);
-		if (returnType!=null && Boolean.class.equals(returnType)
-				|| boolean.class.equals(returnType)) {
-			getMethod = BOOLEAN_READMETHOD_KEY + getMethod;
-		} else {
-			getMethod = READMETHOD_KEY + getMethod;
-		}
-		return getMethod;
+		return Intro.getReadMethodName(name, returnType);
 	}
 
 	public static String getWriteMethodName(String name) {
-		String getMethod = StringUtils.capitalize(name);
-		return WRITEMETHOD_KEY + getMethod;
+		return Intro.getWriteMethodName(name);
 	}
 
 	public static Method findGetMethod(Class objClass, Field field) {
@@ -833,7 +759,7 @@ public class ReflectUtils {
 	}
 
 	public static boolean hasImplements(Object obj, Class clazz) {
-		return clazz.isAssignableFrom(obj.getClass());
+		return clazz.isAssignableFrom(getObjectClass(obj));
 	}
 
 	public static PropertyDescriptor findProperty(Class<?> clazz,
@@ -852,7 +778,7 @@ public class ReflectUtils {
 	}
 
 	public static PropertyDescriptor[] desribProperties(Class<?> clazz) {
-		PropertyDescriptor[] props = DESCRIPTORS_CACHE.get(clazz);
+		/*PropertyDescriptor[] props = DESCRIPTORS_CACHE.get(clazz);
 		if (props != null)
 			return props;
 		BeanInfo beanInfo = null;
@@ -865,7 +791,8 @@ public class ReflectUtils {
 		if (props != null) {
 			DESCRIPTORS_CACHE.put(clazz, props);
 		}
-		return props;
+		return props;*/
+		return getIntro(clazz).getPropertyArray();
 	}
 
 
@@ -875,6 +802,13 @@ public class ReflectUtils {
 	public static Map toMap(boolean ignoreNull, Object obj) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
+		
+		if(obj.getClass().isArray())
+			return LangUtils.asMap((Object[])obj);
+		
+		if(obj instanceof Map)
+			return (Map)obj;
+		
 		PropertyDescriptor[] props = desribProperties(obj.getClass());
 		if (props == null || props.length == 0)
 			return Collections.EMPTY_MAP;
@@ -948,63 +882,37 @@ public class ReflectUtils {
 	}
 
 	public static void copy(Object source, Object target, boolean throwIfError) {
-		if (source == null)
-			return;
-		Collection<String> propNames = null;
-		if (target instanceof Map) {
-			propNames = getPropertiesName(source);
-		} else {
-			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
-		}
-		Object value = null;
-		try {
-			for (String prop : propNames) {
-				value = getProperty(source, prop);
-				setProperty(target, prop, value);
-			}
-		} catch (Exception e) {
-			if (throwIfError)
-				LangUtils.throwBaseException(e);
-		}
+		copy(source, target, CopyConfig.create().throwIfError());
 	}
+
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
-		copy(source, target, CopyConfig.create().throwIfError().ignoreFields(excludeNames));
+		copy(source, target, CopyConfig.create().throwIfError().checkSetMethod().ignoreFields(excludeNames));
+	}
+	
+	public static void copyIgnoreBlank(Object source, Object target) {
+		copy(source, target, IGNORE_BLANK);
 	}
 	
 	public static void copy(Object source, Object target, CopyConf conf) {
+		copyByPropNames(source, target, new CopyConfAdapter(conf));
+	}
+	
+
+	public static void copyByPropNames(Object source, Object target, PropertyCopyer<String> copyer) {
 		if (source == null)
 			return;
-		Collection<String> propNames = null;
+		List<String> propNames = null;
 		if (target instanceof Map) {
 			propNames = getPropertiesName(source);
 		} else {
 			propNames = CollectionUtils.intersection(getPropertiesName(source), getPropertiesName(target));//交集
 		}
-		Object value = null;
-		try {
-			for (String prop : propNames) {
-				if(conf.isIgnoreAutoCopy()){
-					conf.copy(source, target, prop);
-				}else{
-					if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
-						continue;//ignore
-					}
-					value = getProperty(source, prop);
-					if(conf.isIgnoreNull() && value==null)
-						continue;
-					if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
-						continue;
-					if(conf.isIgnoreOther(prop, value)){
-						continue;
-					}
-					setProperty(target, prop, value);
-				}
-			}
-		} catch (Exception e) {
-			if (conf.isThrowIfError())
-				LangUtils.throwBaseException(e);
+		
+		for (String prop : propNames) {
+			copyer.copy(source, target, prop);
 		}
+		
 	}
 
 	public static Map field2Map(Object obj) {
@@ -1023,8 +931,7 @@ public class ReflectUtils {
 		return rsMap;
 	}
 
-	public static List<PropertyDescriptor> desribProperties(Class<?> clazz,
-			Class<? extends Annotation> excludeAnnoClass) {
+	public static List<PropertyDescriptor> desribProperties(Class<?> clazz, Class<? extends Annotation> excludeAnnoClass) {
 		PropertyDescriptor[] props = desribProperties(clazz);
 		List<PropertyDescriptor> propList = new ArrayList<PropertyDescriptor>();
 		Method method = null;
@@ -1080,7 +987,8 @@ public class ReflectUtils {
 	}
 
 	public static Collection<Field> findNotStaticAndTransientFields(Class clazz) {
-		List<Class> classes = findSuperClasses(clazz);
+		return getIntro(clazz).getNotStaticAndTransientFields(true);
+		/*List<Class> classes = findSuperClasses(clazz);
 		classes.add(0, clazz);
 
 		Collection<Field> fields = new HashSet<Field>();
@@ -1093,7 +1001,7 @@ public class ReflectUtils {
 				fields.add(f);
 			}
 		}
-		return fields;
+		return fields;*/
 	}
 
 	public static Collection<Field> findFieldsExclude(Class clazz,
@@ -1161,19 +1069,16 @@ public class ReflectUtils {
 	}
 
 	public static Field findField(Class clazz, String fieldName, boolean throwIfNotfound) {
-		List<Field> fields = findAllFields(clazz);
-		for (Field f : fields) {
-			if (f.getName().equals(fieldName))
-				return f;
-		}
-		if (throwIfNotfound)
-			throw new ServiceException("can not find class[" + clazz
+		Field field = getIntro(clazz).getField(fieldName, true);
+		if (field==null && throwIfNotfound)
+			throw new BaseException("can not find class[" + clazz
 					+ "]'s field [" + fieldName + "]");
-		return null;
+		return field;
 	}
 
 	public static List<Field> findAllFields(Class clazz) {
-		List<Field> fields = FIELDS_CACHE.get(clazz);
+		return getIntro(clazz).getAllFields();
+		/*List<Field> fields = FIELDS_CACHE.get(clazz);
 		if(LangUtils.isNotEmpty(fields))
 			return fields;
 		
@@ -1191,7 +1096,7 @@ public class ReflectUtils {
 		
 		FIELDS_CACHE.put(clazz, fields);
 		
-		return fields;
+		return fields;*/
 	}
 
 	public static Field findField(Class clazz, Class fieldType,
@@ -1234,27 +1139,26 @@ public class ReflectUtils {
 	}
 
 	public static void desribPropertiesName(Class<?> clazz, Collection<String> propsName) {
-		PropertyDescriptor[] props = desribProperties(clazz);
-		if (props == null)
-			return;
-		for (PropertyDescriptor p : props) {
-			propsName.add(p.getName());
-		}
+		propsName.addAll(getIntro(clazz).desribPropertyNames());
+	}
+	
+	public static <T> Intro<T> getIntro(Class<T> clazz){
+		return introManager.getIntro(clazz);
 	}
 
 	public static List<Class> findSuperClasses(Class clazz) {
-		return findSuperClasses(clazz, Object.class);
+		return getIntro(clazz).findSuperClasses();
 	}
 
 	public static List<Class> findSuperClasses(Class clazz, Class stopClass) {
-		List<Class> classes = new ArrayList<Class>();
+		return getIntro(clazz).findSuperClasses(stopClass);
+		/*List<Class> classes = new ArrayList<Class>();
 		Class parent = clazz.getSuperclass();
 		while (parent != null && !parent.equals(stopClass)) {
 			classes.add(parent);
 			parent = parent.getSuperclass();
 		}
-		return classes;
-
+		return classes;*/
 	}
 
 	public static Object invokeMethod(String methodName, Object target,
@@ -1301,16 +1205,12 @@ public class ReflectUtils {
 		return invokeMethod(method, target, (Object[]) null);
 	}
 
-	public static Object invokeMethod(Method method, Object target,
-			Object... args) {
+	public static Object invokeMethod(Method method, Object target, Object... args) {
 		return invokeMethod(true, method, target, args);
 	}
 
-	public static Object invokeMethod(boolean throwIfError, Method method,
-			Object target, Object... args) {
+	public static Object invokeMethod(boolean throwIfError, Method method, Object target, Object... args) {
 		try {
-			if(method==null)
-				throw new NullPointerException("this method is not exist!");
 			if (!method.isAccessible())
 				method.setAccessible(true);
 			return method.invoke(target, args);
@@ -1327,28 +1227,28 @@ public class ReflectUtils {
 	}
 
 	public static void setBean(Object obj, String fieldName, Object value) {
-		Field field = findField(obj.getClass(), fieldName, true);
+		Field field = findField(getObjectClass(obj), fieldName, true);
 		setFieldValue(field, obj, value);
 	}
 
 	public static void setBean(Object obj, Class fieldType, Object value) {
-		Field field = findField(obj.getClass(), fieldType, true);
+		Field field = findField(getObjectClass(obj), fieldType, true);
 		setFieldValue(field, obj, value);
 	}
 
 	public static void setFieldValue(Field f, Object obj, Object value) {
-		setBean(obj, f, value);
-	}
-
-	public static void setBean(Object obj, Field f, Object value) {
+		Assert.notNull(f);
 		try {
 			if (!f.isAccessible())
 				f.setAccessible(true);
-			f.set(obj, LangUtils.tryCastTo(value, f.getType()));
+			f.set(obj, value==null?null:Types.convertValue(value, f.getType()));
 		} catch (Exception ex) {
-			throw new ServiceException("invoke method error: "
-					+ ex.getMessage(), ex);
+			throw LangUtils.asBaseException("invoke method error: " + ex.getMessage(), ex);
 		}
+	}
+
+	public static void setBean(Object obj, Field f, Object value) {
+		setFieldValue(f, obj, value);
 	}
 
 	public static Object getFieldValue(Object obj, String fieldName) {
@@ -1360,19 +1260,19 @@ public class ReflectUtils {
 
 	public static Object getFieldValue(Object obj, String fieldName,
 			boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName, throwIfError);
 		return getFieldValue(f, obj, throwIfError);
 	}
 
 	public static Object getFieldValue(Field f, Object obj, boolean throwIfError) {
+		Assert.notNull(f);
 		try {
 			if (!f.isAccessible())
 				f.setAccessible(true);
 			return f.get(obj);
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw new ServiceException("get value of field[" + f
-						+ "] error: " + ex.getMessage(), ex);
+				throw LangUtils.asBaseException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
 			else
 				return null;
 		}
@@ -1380,13 +1280,13 @@ public class ReflectUtils {
 
 	public static void setFieldValueBySetter(Object obj, String fieldName,
 			Object value, boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName);
 		setFieldValueBySetter(obj, f, value, throwIfError);
 	}
 
 	public static Object getFieldValueByGetter(Object obj, String fieldName,
 			boolean throwIfError) {
-		Field f = findField(obj.getClass(), fieldName);
+		Field f = findField(getObjectClass(obj), fieldName);
 		return getFieldValueByGetter(obj, f, throwIfError);
 	}
 
@@ -1396,7 +1296,7 @@ public class ReflectUtils {
 			String getterName = "get"
 					+ org.onetwo.common.utils.StringUtils.toJavaName(f
 							.getName(), true);
-			Method getter = findMethod(obj.getClass(), getterName);
+			Method getter = findMethod(getObjectClass(obj), getterName);
 			Object val = invokeMethod(getter, obj);
 			return val;
 		} catch (Exception ex) {
@@ -1414,7 +1314,7 @@ public class ReflectUtils {
 			String setterName = "set"
 					+ org.onetwo.common.utils.StringUtils.toJavaName(f
 							.getName(), true);
-			Method setter = findMethod(obj.getClass(), setterName, f.getType());
+			Method setter = findMethod(getObjectClass(obj), setterName, f.getType());
 			invokeMethod(setter, obj, value);
 		} catch (Exception ex) {
 			if (throwIfError)
@@ -1679,10 +1579,12 @@ public class ReflectUtils {
 	
 	public static Class<?>[] getObjectClasses(Object[] objs){
 		if(LangUtils.isEmpty(objs))
-			return null;
+			return EMPTY_CLASSES;
 		List<Class<?>> clslist = new ArrayList<Class<?>>(objs.length);
 		for(Object obj : objs){
-			clslist.add(obj.getClass());
+			if(obj==null)
+				continue;
+			clslist.add(getObjectClass(obj));
 		}
 		return clslist.toArray(new Class[clslist.size()]);
 	}
@@ -1720,6 +1622,99 @@ public class ReflectUtils {
 		
 		return mappingFields;
 	}
+	
+	public static Class<?> getFinalDeclaringClass(Class<?> innerClass){
+		Class<?> parentClass = innerClass.getDeclaringClass();
+		while(parentClass!=null && parentClass.getDeclaringClass()!=null)
+			parentClass = parentClass.getDeclaringClass();
+		return parentClass;
+	}
+	
+	public static boolean isInstanceOfAny(Object obj, Class<?>...classes){
+		if(LangUtils.isEmpty(classes))
+			return false;
+		for(Class<?> cls :classes){
+			if(cls.isInstance(obj))
+				return true;
+		}
+		return false;
+	}
+	
+	/*********
+	 * 复制对象属性，但会忽略那些null值、空白字符和包含了指定注解的属性
+	 * @param source
+	 * @param target
+	 * @param classes
+	 */
+	public static <T> void copyIgnoreAnnotations(T source, T target, Class<? extends Annotation>...classes){
+		Assert.notNull(target);
+		getIntro(target.getClass()).copy(source, target, new IgnoreAnnosCopyer(classes));
+	}
+	
+	public static <T> T copy(T source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
+		T target = newInstance(targetClass);
+		getIntro(targetClass).copy(source, target, copyer);
+		return target;
+	}
+
+	
+	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
+		
+		private final Class<? extends Annotation>[] classes;
+		
+
+		public IgnoreAnnosCopyer(Class<? extends Annotation>[] classes) {
+			super();
+			this.classes = classes;
+		}
+
+		@Override
+		public void copy(Object source, Object target, PropertyDescriptor prop) {
+			if(prop.getReadMethod()==null || prop.getWriteMethod()==null)
+				return;
+			
+			Annotation[] annos = prop.getReadMethod().getAnnotations();
+			if(AnnotationUtils.containsAny(annos, classes))
+				return;
+			
+			Object val = ReflectUtils.getProperty(source, prop);
+			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
+				return;
+			
+			ReflectUtils.setProperty(target, prop, val);
+			
+		}
+		
+	};
+	
+
+	
+	private static class CopyConfAdapter implements PropertyCopyer<String> {
+		
+		final private CopyConf conf;
+		
+		public CopyConfAdapter(CopyConf conf) {
+			super();
+			this.conf = conf;
+		}
+
+		@Override
+		public void copy(Object source, Object target, String prop) {
+			if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
+				return;//ignore
+			}
+			Object value = getProperty(source, prop);
+			if(conf.isIgnoreNull() && value==null)
+				return;
+			if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))
+				return;
+			if(conf.isIgnoreOther(prop, value)){
+				return;
+			}
+			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
+			
+		}
+	};
 
 	public static void main(String[] args) {
 

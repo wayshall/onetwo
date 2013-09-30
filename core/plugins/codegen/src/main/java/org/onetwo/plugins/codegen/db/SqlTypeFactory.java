@@ -13,6 +13,7 @@ public final class SqlTypeFactory {
 	public static enum DataBase {
 		MySQL("mysql"),
 		Oracle("oracle"),
+		Sqlserver("sqlserver"),
 		Unknow("unknow");
 		
 		private String name;

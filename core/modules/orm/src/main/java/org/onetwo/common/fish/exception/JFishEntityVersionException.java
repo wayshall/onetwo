@@ -14,7 +14,7 @@ public class JFishEntityVersionException extends JFishOrmException{
 	}
 
 	
-	protected String getBaseCode(){
+	protected String getDefaultCode(){
 		return JFishErrorCode.ORM_ERROR;
 	}
 
