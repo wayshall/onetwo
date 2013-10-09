@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
@@ -15,7 +16,7 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 
-public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> implements DataQuery, QueryOrderByable {
+public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends AbstractDataQuery implements QueryOrderByable {
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;

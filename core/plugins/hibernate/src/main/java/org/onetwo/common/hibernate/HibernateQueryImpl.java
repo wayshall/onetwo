@@ -6,14 +6,15 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 
 import org.hibernate.Query;
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("unchecked")
-public class HibernateQueryImpl implements DataQuery {
+public class HibernateQueryImpl extends AbstractDataQuery {
  
-	private Query query; 
+	private Query query;
 	
 	public HibernateQueryImpl(Query query){
 		this.query = query;
@@ -24,10 +25,12 @@ public class HibernateQueryImpl implements DataQuery {
 	}
 
 	public <T> List<T> getResultList() {
+		query.setCacheable(isCacheable());
 		return query.list();
 	}
 
 	public Object getSingleResult() {
+		query.setCacheable(isCacheable());
 		return query.uniqueResult();
 	}
 
@@ -110,7 +113,8 @@ public class HibernateQueryImpl implements DataQuery {
 
 	@Override
 	public DataQuery setQueryConfig(Map<String, Object> configs) {
-		// TODO Auto-generated method stub
 		return this;
 	}
+
+	
 }

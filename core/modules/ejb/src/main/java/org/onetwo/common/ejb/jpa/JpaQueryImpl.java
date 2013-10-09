@@ -8,12 +8,13 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("unchecked")
-public class JpaQueryImpl implements DataQuery {
+public class JpaQueryImpl extends AbstractDataQuery {
 	
 	public static class QConfig {
 		public static String MaxFetchDepth = "MaxFetchDepth";

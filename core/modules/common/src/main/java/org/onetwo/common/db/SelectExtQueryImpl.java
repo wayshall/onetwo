@@ -33,6 +33,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	
 	private Map<String, Object> queryConfig;
 	
+	private boolean cacheable;
+	
 
 	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
@@ -47,6 +49,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
 		this.countValue = getValueAndRemoveKeyFromParams(K.COUNT, countValue);
+		this.cacheable = getValueAndRemoveKeyFromParams(K.CACHEABLE, cacheable);
 		
 		//query config
 		Object qc = getValueAndRemoveKeyFromParams(K.QUERY_CONFIG, queryConfig);
@@ -395,6 +398,11 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		return queryConfig;
 	}
 
+
+	@Override
+	public boolean isCacheable() {
+		return cacheable;
+	}
 
 	public static void main(String[] args) {
 

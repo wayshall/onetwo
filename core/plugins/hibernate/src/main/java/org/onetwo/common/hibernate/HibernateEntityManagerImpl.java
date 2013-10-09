@@ -22,6 +22,7 @@ import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,7 +80,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 			if(sessionFactory.getClassMetadata(entityClass)!=null){
 				query.addEntity(entityClass);
 			}else{
-				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+				if(LangUtils.isBaseType(entityClass))
+					query.setResultTransformer(new SingleColumnTransformer(entityClass));
+				else
+					query.setResultTransformer(new RowToBeanTransformer(entityClass));
 			}
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
