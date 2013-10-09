@@ -19,7 +19,7 @@ import org.onetwo.plugins.codegen.generator.FreemarkerTemplate;
 import org.onetwo.plugins.codegen.generator.GenContext;
 import org.onetwo.plugins.codegen.model.entity.DatabaseEntity;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
-import org.onetwo.plugins.codegen.model.service.TemplateService;
+import org.onetwo.plugins.codegen.model.service.CodeTemplateService;
 import org.onetwo.plugins.codegen.model.service.impl.DatabaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class CodegenController extends PluginBaseController {
 
 	@Autowired
-	private TemplateService templateService;
+	private CodeTemplateService templateService;
 	
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;

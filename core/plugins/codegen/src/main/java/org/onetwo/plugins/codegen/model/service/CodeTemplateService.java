@@ -4,7 +4,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface TemplateService {
+public interface CodeTemplateService {
 
 //	public String getTemplateContent(String name);
 	

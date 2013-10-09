@@ -15,6 +15,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.tuple.StandardProperty;
 import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -70,7 +71,14 @@ public final class HibernateUtils {
 	}
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass){
-		return sessionFactory.getClassMetadata(entityClass);
+		return getClassMeta(entityClass, false);
+	}
+	
+	public static ClassMetadata getClassMeta(Class<?> entityClass, boolean throwIfNoteFound){
+		ClassMetadata meta = sessionFactory.getClassMetadata(entityClass);
+		if(meta==null && throwIfNoteFound)
+			throw new BaseException("can not find the entity["+entityClass+"], check it please!");
+		return meta;
 	}
 	
 	public static boolean setPropertyState(StandardProperty[] props, Object[] currentState, String property, Object value){

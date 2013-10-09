@@ -14,13 +14,13 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.codegen.generator.DefaultTableManagerFactory;
 import org.onetwo.plugins.codegen.model.dao.TemplateDao;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
-import org.onetwo.plugins.codegen.model.service.TemplateService;
+import org.onetwo.plugins.codegen.model.service.CodeTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 
 //@Service
-public class TemplateServiceImpl implements StringTemplateProvider, TemplateService {
+public class TemplateServiceImpl implements StringTemplateProvider, CodeTemplateService {
 
 	final private Class<TemplateEntity> entityClass = TemplateEntity.class;
 
