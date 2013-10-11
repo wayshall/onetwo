@@ -61,6 +61,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			case hidden:
 			case textarea:
 			case radio:
+			case file:
 			case checkbox:
 				break;
 			case select:

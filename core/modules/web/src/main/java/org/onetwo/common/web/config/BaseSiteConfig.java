@@ -132,9 +132,9 @@ public class BaseSiteConfig extends AppConfig {
 		this.setProperty("contextRealPath", realPath);
 		if(containsKey(APP_URL_POSTFIX)){
 			this.appUrlPostfix = getProperty(APP_URL_POSTFIX);
-		}else{
+		}/*else{
 			this.appUrlPostfix = ".do";
-		}
+		}*/
 		if(logger.isInfoEnabled()){
 			logger.info("set contextPath: " + cp );
 			logger.info("set ContextRealPath: " + realPath);
