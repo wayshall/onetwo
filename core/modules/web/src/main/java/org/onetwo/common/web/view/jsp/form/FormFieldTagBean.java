@@ -77,7 +77,8 @@ public class FormFieldTagBean extends HtmlElement {
 		if(this.formBean==null)
 			return "";
 		Object val = this.formBean.getProvider().getFieldValue(this);
-		return LangUtils.formatValue(val, getDataFormat());
+		val = LangUtils.formatValue(val, getDataFormat());
+		return val==null?"":val;
 	}
 
 	public String getDataFormat() {

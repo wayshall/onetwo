@@ -15,6 +15,7 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
+import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
@@ -139,7 +140,13 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public void remove(Object entity) {
 		if(entity==null)
 			return ;
-		getSession().delete(entity);
+		if(entity instanceof ILogicDeleteEntity){
+			ILogicDeleteEntity le = (ILogicDeleteEntity) entity;
+			le.deleted();
+			getSession().update(le);
+		}else{
+			getSession().delete(entity);
+		}
 	}
 
 	@Override

@@ -54,9 +54,14 @@ public interface BaseEntityManager {
 
 	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties);
 
-
+	/****
+	 * @see remove
+	 * @param entity
+	 */
+	@Deprecated
 	public void delete(ILogicDeleteEntity entity);
-	
+
+	@Deprecated
 	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id);
 	
 	public void flush();
