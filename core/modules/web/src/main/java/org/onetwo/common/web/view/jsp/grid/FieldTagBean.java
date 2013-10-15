@@ -27,6 +27,14 @@ public class FieldTagBean extends HtmlElement {
 	
 	private RowTagBean rowTagBean;
 	
+	
+	//search
+	private boolean searchable;
+	private String searchFieldType;
+	private Object searchItems;
+	private String searchItemLabel;
+	private String searchItemValue;
+	
 
 	public void render(Writer out){
 		try {
@@ -135,4 +143,45 @@ public class FieldTagBean extends HtmlElement {
 	}
 
 	
+	//search
+	public boolean isSearchable() {
+		return searchable;
+	}
+
+	public void setSearchable(boolean searchable) {
+		this.searchable = searchable;
+	}
+
+	public String getSearchFieldType() {
+		return searchFieldType;
+	}
+
+	public void setSearchFieldType(String searchFieldType) {
+		this.searchFieldType = searchFieldType;
+	}
+
+	public Object getSearchItems() {
+		return searchItems;
+	}
+
+	public void setSearchItems(Object searchItems) {
+		this.searchItems = searchItems;
+	}
+
+	public String getSearchItemLabel() {
+		return searchItemLabel;
+	}
+
+	public void setSearchItemLabel(String searchItemLabel) {
+		this.searchItemLabel = searchItemLabel;
+	}
+
+	public String getSearchItemValue() {
+		return searchItemValue;
+	}
+
+	public void setSearchItemValue(String searchItemValue) {
+		this.searchItemValue = searchItemValue;
+	}
+
 }

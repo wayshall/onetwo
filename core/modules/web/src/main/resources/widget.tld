@@ -457,6 +457,38 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
+    
+    <attribute>
+      <description><![CDATA[searchable]]></description>
+      <name>searchable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchFieldType]]></description>
+      <name>searchFieldType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItems]]></description>
+      <name>searchItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItemLabel]]></description>
+      <name>searchItemLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItemValue]]></description>
+      <name>searchItemValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   

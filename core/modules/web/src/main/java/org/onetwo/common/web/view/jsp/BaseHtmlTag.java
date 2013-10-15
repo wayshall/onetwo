@@ -25,9 +25,19 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	
 	@Override
 	public int doStartTag() throws JspException {
+//		return EVAL_BODY_BUFFERED;
+		int rs = startTag();
+		return rs;
+	}
+	
+	protected int startTag()throws JspException {
 		component = createComponent();
 		this.populateComponent();
 		return EVAL_BODY_BUFFERED;
+	}
+	
+	protected int endTag()throws JspException {
+		return super.doEndTag();
 	}
 	
 	protected void populateComponent() throws JspException{
@@ -42,7 +52,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 
 	@Override
 	public int doEndTag() throws JspException {
-		return super.doEndTag();
+		return endTag();
 	}
 
 
