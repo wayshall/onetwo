@@ -22,6 +22,17 @@ abstract public class BaseGridTag<T extends HtmlElement> extends BaseHtmlTag<T> 
 		clearComponentFromRequest(TAG_STACK_NAME);
 	}
 	
+	protected <T extends HtmlElement> T getTopComponent(Class<T> clazz){
+		Deque<T> stack = (Deque<T>)getTagStack();
+		if(stack==null)
+			return null;
+		for(T b : stack){
+			if(b.getClass()==clazz)
+				return b;
+		}
+		return null;
+	}
+	
 
 	@Override
 	public int doStartTag() throws JspException {
