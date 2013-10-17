@@ -14,7 +14,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	 */
 	private static final long serialVersionUID = -5324408407472195764L;
 	private FormFieldType type = FormFieldType.input;
-	private boolean errorTag = true;
+	private boolean showErrorTag = true;
 	private String errorPath;
 //	private String render;
 	private String dataFormat;
@@ -49,7 +49,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		super.populateComponent();
 		
 		component.setType(type);
-		component.setErrorTag(errorTag);
+		component.setErrorTag(showErrorTag);
 		component.setErrorPath(errorPath);
 //		component.setRender(render);
 		component.setValue(value);
@@ -134,12 +134,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		this.type = FormFieldType.valueOf(type);
 	}
 
-	public boolean isErrorTag() {
-		return errorTag;
-	}
-
 	public void setErrorTag(String errorTag) {
-		this.errorTag = Types.convertValue(errorTag, boolean.class);
+		this.showErrorTag = Types.convertValue(errorTag, boolean.class);
 		this.errorPath = errorTag;
 	}
 
