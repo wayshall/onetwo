@@ -8,6 +8,8 @@ public class FormFieldTagBean extends HtmlElement {
 
 	private FormFieldType type;
 	private boolean errorTag;
+	private String errorPath;
+	
 	private String value;
 	private String dataFormat;
 	
@@ -111,6 +113,16 @@ public class FormFieldTagBean extends HtmlElement {
 
 	public void setModelAttribute(boolean modelAttribute) {
 		this.modelAttribute = modelAttribute;
+	}
+
+	public String getErrorPath() {
+		if(StringUtils.isBlank(errorPath))
+			return getName();
+		return errorPath;
+	}
+
+	public void setErrorPath(String errorPath) {
+		this.errorPath = errorPath;
 	}
 
 	

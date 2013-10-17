@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.jsp.form;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
@@ -13,7 +14,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	 */
 	private static final long serialVersionUID = -5324408407472195764L;
 	private FormFieldType type = FormFieldType.input;
-	private boolean errorTag = true;
+	private boolean showErrorTag = true;
+	private String errorPath;
 //	private String render;
 	private String dataFormat;
 	private String value;
@@ -47,7 +49,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		super.populateComponent();
 		
 		component.setType(type);
-		component.setErrorTag(errorTag);
+		component.setErrorTag(showErrorTag);
+		component.setErrorPath(errorPath);
 //		component.setRender(render);
 		component.setValue(value);
 		component.setDataFormat(dataFormat);
@@ -131,12 +134,9 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		this.type = FormFieldType.valueOf(type);
 	}
 
-	public boolean isErrorTag() {
-		return errorTag;
-	}
-
-	public void setErrorTag(boolean errorTag) {
-		this.errorTag = errorTag;
+	public void setErrorTag(String errorTag) {
+		this.showErrorTag = Types.convertValue(errorTag, boolean.class);
+		this.errorPath = errorTag;
 	}
 
 	public String getValue() {
