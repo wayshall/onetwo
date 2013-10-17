@@ -111,6 +111,8 @@ abstract public class HtmlElement {
 		buildAttributeTag(attributesBuf, "style", getCssStyle());
 		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		if(StringUtils.isNotBlank(getTitle()))
+			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
 		
 		this.buildExtTagAttributesString(attributesBuf);
 		return attributesBuf.toString();

@@ -85,5 +85,9 @@ public class FormTagBean extends HtmlElement {
 	public String getEncType(){
 		return uploadFile?"multipart/form-data":"application/x-www-form-urlencoded";
 	}
+	
+	public String getId(){
+		return super.getId()+"Form";
+	}
 
 }
