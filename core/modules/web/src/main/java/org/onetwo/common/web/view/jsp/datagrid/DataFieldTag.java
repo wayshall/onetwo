@@ -4,6 +4,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.convert.ToBooleanConvertor;
 import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
@@ -26,6 +28,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private boolean ignoreField;
 	
 	private boolean searchable;
+	private String searchFieldName;
 	private String searchFieldType;
 	private Object searchItems;
 	private String searchItemLabel;
@@ -72,6 +75,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		String order = pageContext.getRequest().getParameter("order");
 		component.setOrderType(Page.DESC.equals(order)?Page.ASC:Page.DESC);
 		
+		component.setSearchFieldName(searchFieldName);
 		component.setSearchable(searchable);
 		component.setSearchFieldType(searchFieldType);
 		component.setSearchItems(searchItems);
@@ -140,8 +144,14 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	}
 
 	//search
-	public void setSearchable(boolean searchable) {
-		this.searchable = searchable;
+	public void setSearch(String search) {
+		if(StringUtils.isNotBlank(search) && !ToBooleanConvertor.FALSE_VALUE.equals(search)){
+			this.searchable = true;
+			if("true".equals(search))
+				this.searchFieldName = null;
+			else
+				this.searchFieldName = search;
+		}
 	}
 
 	public void setSearchFieldType(String searchFieldType) {

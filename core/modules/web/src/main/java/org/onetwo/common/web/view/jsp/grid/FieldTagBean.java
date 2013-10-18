@@ -30,6 +30,7 @@ public class FieldTagBean extends HtmlElement {
 	
 	//search
 	private boolean searchable;
+	private String searchFieldName;
 	private String searchFieldType;
 	private Object searchItems;
 	private String searchItemLabel;
@@ -182,6 +183,16 @@ public class FieldTagBean extends HtmlElement {
 
 	public void setSearchItemValue(String searchItemValue) {
 		this.searchItemValue = searchItemValue;
+	}
+
+	public String getSearchFieldName() {
+		if(StringUtils.isBlank(searchFieldName))
+			return getName();
+		return searchFieldName;
+	}
+
+	public void setSearchFieldName(String searchFieldName) {
+		this.searchFieldName = searchFieldName;
 	}
 
 }

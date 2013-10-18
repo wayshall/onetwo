@@ -2,6 +2,9 @@ package org.onetwo.common.utils.convert;
 
 public class ToBooleanConvertor implements TypeConvert<Boolean> {
 
+	public static final String FALSE_VALUE = "false";
+	public static final String NO_VALUE = "no";
+
 	@Override
 	public Boolean convert(Object value, Class<?> componentType) {
 		if (value == null)
@@ -14,7 +17,7 @@ public class ToBooleanConvertor implements TypeConvert<Boolean> {
 		if (c == Character.class)
 			return ((Character) value).charValue() != 0;
 		if (CharSequence.class.isAssignableFrom(c)) {
-			if ("false".equalsIgnoreCase(value.toString()) || "no".equalsIgnoreCase(value.toString())) {
+			if (FALSE_VALUE.equalsIgnoreCase(value.toString()) || NO_VALUE.equalsIgnoreCase(value.toString())) {
 				return false;
 			}
 		}

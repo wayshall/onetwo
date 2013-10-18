@@ -465,8 +465,8 @@
     
     
     <attribute>
-      <description><![CDATA[searchable]]></description>
-      <name>searchable</name>
+      <description><![CDATA[search]]></description>
+      <name>search</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -650,6 +650,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[emptyOptionLabel]]></description>
+      <name>emptyOptionLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>readOnly</name>
@@ -665,40 +671,40 @@
     <attribute>
       <name>id</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>name</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>label</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>onclick</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[Set the html title attribute on rendered html element]]></description>
       <name>title</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css class to use for element]]></description>
       <name>cssClass</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css style definitions for element to use]]></description>
       <name>cssStyle</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     
     <dynamic-attributes>false</dynamic-attributes>
