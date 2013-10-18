@@ -29,7 +29,7 @@ public class GridTagBean extends HtmlElement {
 	private PaginationType paginationType;
 	
 	private SearchForm searchFormBean;
-	private boolean searchForm = true;
+	private boolean searchForm;
 	
 	
 	public RowTagBean createDefaultIteratorRow() {
