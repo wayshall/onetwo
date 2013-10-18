@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -101,7 +102,7 @@ final public class SpringUtils {
 	
 	public static PropertyPlaceholderConfigurer newApplicationConf(boolean searchSystemEnvironment, String... locations){
 		Assert.notEmpty(locations);
-		PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+		PropertyPlaceholderConfigurer ppc = new JFishPropertyPlaceholder();
 		ppc.setIgnoreResourceNotFound(true);
 		ppc.setIgnoreUnresolvablePlaceholders(true);
 		ppc.setSearchSystemEnvironment(searchSystemEnvironment);
