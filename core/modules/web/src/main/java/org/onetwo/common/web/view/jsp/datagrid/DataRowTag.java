@@ -44,9 +44,9 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 	}
 
 	@Override
-	public int doStartTag() throws JspException {
+	public int startTag() throws JspException {
 		assertParentTag(DataGridTag.class);
-		super.doStartTag();
+		super.startTag();
 		if(component.isIterator()){
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){
@@ -101,10 +101,6 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 		return super.doAfterBody();
 	}
 
-	@Override
-	public int doEndTag() throws JspException {
-		return EVAL_PAGE;
-	}
 
 	public void setType(String type) {
 		this.type = RowType.valueOf(type);

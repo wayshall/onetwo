@@ -1,5 +1,8 @@
 package org.onetwo.common.web.view.jsp.datagrid;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -8,6 +11,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
@@ -27,9 +31,19 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private PaginationType paginationType = PaginationType.link;
 	
+	private boolean searchForm = true;
+	
 	@Override
 	public GridTagBean createComponent() {
-		return new GridTagBean();
+		GridTagBean gbean = new GridTagBean();
+		return gbean;
+	}
+
+	@Override
+	public int doStartTag() throws JspException {
+		Deque<HtmlElement> tagStack = new ArrayDeque<HtmlElement>(5);
+		setTagStack(tagStack);
+		return super.doStartTag();
 	}
 
 	@Override
@@ -44,6 +58,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
 			clearComponentFromRequest(getGridVarName());
+			
+			getTagStack().pop();
+			clearTagStackFromRequest();
 		}
 		return EVAL_PAGE;
 	}
@@ -60,6 +77,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setPagination(pagination);
 		component.setPaginationType(paginationType);
 		component.setGeneratedForm(generatedForm);
+		component.setSearchForm(searchForm);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
@@ -118,6 +136,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	public void setPagination(boolean pagination) {
 		this.pagination = pagination;
+	}
+
+	public void setSearchForm(boolean searchForm) {
+		this.searchForm = searchForm;
 	}
 
 }

@@ -22,6 +22,14 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 	public GridTagBean createComponent() {
 		return new GridTagBean();
 	}
+	
+
+	@Override
+	public int doStartTag() throws JspException {
+//		Deque<HtmlElement> tagStack = new ArrayDeque<HtmlElement>();
+//		setTagStack(tagStack);
+		return super.doStartTag();
+	}
 
 	@Override
 	public int doEndTag() throws JspException {

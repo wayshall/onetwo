@@ -266,6 +266,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[searchForm]]></description>
+      <name>searchForm</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>id</name>
@@ -457,6 +463,38 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
+    
+    <attribute>
+      <description><![CDATA[searchable]]></description>
+      <name>searchable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchFieldType]]></description>
+      <name>searchFieldType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItems]]></description>
+      <name>searchItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItemLabel]]></description>
+      <name>searchItemLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[searchItemValue]]></description>
+      <name>searchItemValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   
@@ -505,17 +543,17 @@
     <attribute>
       <name>id</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>name</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>label</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>onclick</name>
@@ -532,13 +570,13 @@
       <description><![CDATA[The css class to use for element]]></description>
       <name>cssClass</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css style definitions for element to use]]></description>
       <name>cssStyle</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     
     <dynamic-attributes>false</dynamic-attributes>

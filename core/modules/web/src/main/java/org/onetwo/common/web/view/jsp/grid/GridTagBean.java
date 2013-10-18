@@ -7,6 +7,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
+import org.onetwo.common.web.view.jsp.datagrid.SearchForm;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
 public class GridTagBean extends HtmlElement {
@@ -26,6 +27,10 @@ public class GridTagBean extends HtmlElement {
 
 	private boolean pagination;
 	private PaginationType paginationType;
+	
+	private SearchForm searchFormBean;
+	private boolean searchForm = true;
+	
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -145,5 +150,22 @@ public class GridTagBean extends HtmlElement {
 	public boolean isPagination(){
 		return this.pagination;
 	}
+
+	public void setSearchForm(boolean searchForm) {
+		this.searchForm = searchForm;
+		if(searchForm){
+			searchFormBean = new SearchForm();
+		}
+	}
+
+	public SearchForm getSearchFormBean() {
+		return searchFormBean;
+	}
+
+	public boolean isSearchForm() {
+		return searchForm;
+	}
+
+	
 
 }
