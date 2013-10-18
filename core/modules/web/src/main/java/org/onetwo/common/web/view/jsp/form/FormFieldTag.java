@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.jsp.form;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
@@ -24,6 +25,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private Object items;
 	private String itemLabel;
 	private String itemValue;
+	private String emptyOptionLabel;
 
 	private boolean readOnly;
 	private boolean disabled;
@@ -62,6 +64,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			case input:
 			case password:
 			case hidden:
+				component.setErrorTag(false);
+				break;
 			case textarea:
 			case radio:
 			case file:
@@ -94,6 +98,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			itemDatas = this.items;
 		}
 		sl.setItemDatas(itemDatas);
+		sl.setEmptyOptionLabel(emptyOptionLabel);
 	}
 
 	private boolean checkIgnoreField(){
@@ -131,9 +136,16 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 
 	public void setType(String type) {
-		this.type = FormFieldType.valueOf(type);
+		if(StringUtils.isBlank(type))
+			this.type = FormFieldType.input;
+		else
+			this.type = FormFieldType.valueOf(type);
 	}
 
+	/****
+	 * 只要不是false和no字符串，即为true
+	 * @param errorTag
+	 */
 	public void setErrorTag(String errorTag) {
 		this.showErrorTag = Types.convertValue(errorTag, boolean.class);
 		this.errorPath = errorTag;
@@ -181,6 +193,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setModelAttribute(boolean modelAttribute) {
 		this.modelAttribute = modelAttribute;
+	}
+
+	public void setEmptyOptionLabel(String emptyOptionLabel) {
+		this.emptyOptionLabel = emptyOptionLabel;
 	}
 
 }

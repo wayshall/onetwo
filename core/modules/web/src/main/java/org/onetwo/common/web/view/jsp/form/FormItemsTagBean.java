@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class FormItemsTagBean extends FormFieldTagBean {
 
 	private List<?> items;
 	private String itemLabel;
 	private String itemValue;
+
+	private String emptyOptionLabel;
 	
 
 	public FormItemsTagBean() {
@@ -55,5 +58,14 @@ public class FormItemsTagBean extends FormFieldTagBean {
 	}
 	public List<?> getItems() {
 		return items;
+	}
+	public boolean isEmptyOption() {
+		return StringUtils.isNotBlank(emptyOptionLabel);
+	}
+	public String getEmptyOptionLabel() {
+		return emptyOptionLabel;
+	}
+	public void setEmptyOptionLabel(String emptyOptionLabel) {
+		this.emptyOptionLabel = emptyOptionLabel;
 	}
 }

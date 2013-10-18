@@ -21,7 +21,7 @@ import org.onetwo.common.utils.StringUtils;
 public abstract class ExtQueryUtils {
 	
 	public static class F {
-		public static final String POSTFIX = "_____%&^&*#$#$%____";
+//		public static final String POSTFIX = "_____%&^&*#$#$%____";
 		/*public static final String func(String func){
 			return codeString(func, K.FUNC, "");
 		}

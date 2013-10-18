@@ -47,16 +47,21 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		if(data==null){
 			data = this.pageContext.getRequest().getAttribute(getName());
 		}
+		FormDataProvider provider = createDataProvider(data);
+		
+		this.component.setProvider(provider);
+		
+		return rs;
+	}
+	
+	public static FormDataProvider createDataProvider(Object data){
 		FormDataProvider provider = null;
 		if(FormDataProvider.class.isInstance(data)){
 			provider = (FormDataProvider) data;
 		}else{
 			provider = new SimpleFormDataProvider(data);
 		}
-		
-		this.component.setProvider(provider);
-		
-		return rs;
+		return provider;
 	}
 
 	@Override

@@ -1,11 +1,16 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
+import org.slf4j.Logger;
 
 public class FormFieldTagBean extends HtmlElement {
 
+	private static final Logger logger = MyLoggerFactory.getLogger(FormFieldTagBean.class);
+	
 	private FormFieldType type;
 	private boolean errorTag;
 	private String errorPath;
@@ -78,7 +83,12 @@ public class FormFieldTagBean extends HtmlElement {
 	public Object getFieldValue(){
 		if(this.formBean==null)
 			return "";
-		Object val = this.formBean.getProvider().getFieldValue(this);
+		Object val = null;
+		try {
+			val = this.formBean.getProvider().getFieldValue(this);
+		} catch (Exception e) {
+			throw new BaseException("getFieldValue error", e);
+		}
 		val = LangUtils.formatValue(val, getDataFormat());
 		return val==null?"":val;
 	}
@@ -101,6 +111,10 @@ public class FormFieldTagBean extends HtmlElement {
 
 	public boolean isDisabled() {
 		return disabled;
+	}
+
+	public boolean isHidden() {
+		return FormFieldType.hidden==type;
 	}
 
 	public void setDisabled(boolean disabled) {

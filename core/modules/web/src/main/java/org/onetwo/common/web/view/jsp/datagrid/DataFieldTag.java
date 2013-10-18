@@ -4,6 +4,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.convert.ToBooleanConvertor;
 import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
@@ -25,17 +27,25 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	
 	private boolean ignoreField;
 	
+	private boolean searchable;
+	private String searchFieldName;
+	private String searchFieldType;
+	private Object searchItems;
+	private String searchItemLabel;
+	private String searchItemValue;
+	
 	@Override
 	public FieldTagBean createComponent() {
 		return new FieldTagBean();
 	}
 
 	@Override
-	public int doEndTag() throws JspException {
+	public int endTag() throws JspException {
 		if(ignoreField)
 			return EVAL_PAGE;
 		
 //		assertParentTag(DataRowTag.class);
+//		Deque<?> d = this.getTagStack();
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
 		if(row==null)
 			throw new JspException("field tag must nested in a row tag.");
@@ -64,6 +74,13 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setOrdering(getName().equals(pageContext.getRequest().getParameter("orderBy")));
 		String order = pageContext.getRequest().getParameter("order");
 		component.setOrderType(Page.DESC.equals(order)?Page.ASC:Page.DESC);
+		
+		component.setSearchFieldName(searchFieldName);
+		component.setSearchable(searchable);
+		component.setSearchFieldType(searchFieldType);
+		component.setSearchItems(searchItems);
+		component.setSearchItemLabel(searchItemLabel);
+		component.setSearchItemValue(searchItemValue);
 	}
 	
 	private boolean checkIgnoreField(){
@@ -73,12 +90,12 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	}
 	
 	@Override
-	public int doStartTag() throws JspException {
+	public int startTag() throws JspException {
 		this.ignoreField = this.checkIgnoreField();
 		if(ignoreField)
 			return SKIP_BODY;
 		
-		super.doStartTag();
+		super.startTag();
 		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 	}
 
@@ -124,6 +141,33 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setShowable(boolean showable) {
 		this.showable = showable;
+	}
+
+	//search
+	public void setSearch(String search) {
+		if(StringUtils.isNotBlank(search) && !ToBooleanConvertor.FALSE_VALUE.equals(search)){
+			this.searchable = true;
+			if("true".equals(search))
+				this.searchFieldName = null;
+			else
+				this.searchFieldName = search;
+		}
+	}
+
+	public void setSearchFieldType(String searchFieldType) {
+		this.searchFieldType = searchFieldType;
+	}
+
+	public void setSearchItems(Object searchItems) {
+		this.searchItems = searchItems;
+	}
+
+	public void setSearchItemLabel(String searchItemLabel) {
+		this.searchItemLabel = searchItemLabel;
+	}
+
+	public void setSearchItemValue(String searchItemValue) {
+		this.searchItemValue = searchItemValue;
 	}
 
 }
