@@ -31,7 +31,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private PaginationType paginationType = PaginationType.link;
 	
-	private boolean searchForm = true;
+	private boolean searchForm;
 	
 	@Override
 	public GridTagBean createComponent() {

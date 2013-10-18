@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -166,6 +167,10 @@ public class GridTagBean extends HtmlElement {
 		return searchForm;
 	}
 
-	
+	public void addSearchField(FieldTagBean field){
+		if(!searchForm)
+			return ;
+		getSearchFormBean().addField(field);
+	}
 
 }

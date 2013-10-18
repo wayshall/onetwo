@@ -27,7 +27,7 @@ public class DataRowTagBean extends RowTagBean {
 			return ;
 		super.addField(field);
 		if(field.isSearchable()){
-			getGridTagBean().getSearchFormBean().addField(field);
+			getGridTagBean().addSearchField(field);
 		}
 	}
 	
