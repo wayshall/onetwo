@@ -724,4 +724,85 @@
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   
+  
+  <tag>
+    <description><![CDATA[link]]></description>
+    <name>link</name>
+    <tag-class>org.onetwo.common.web.view.jsp.link.LinkTag</tag-class>
+    <body-content>JSP</body-content>
+    
+    <attribute>
+      <description><![CDATA[dataMethod]]></description>
+      <name>dataMethod</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[href]]></description>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[dataConfirm]]></description>
+      <name>dataConfirm</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <description><![CDATA[permission]]></description>
+      <name>permission</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[showable]]></description>
+      <name>showable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[Set the html title attribute on rendered html element]]></description>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css class to use for element]]></description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The css style definitions for element to use]]></description>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  
 </taglib>

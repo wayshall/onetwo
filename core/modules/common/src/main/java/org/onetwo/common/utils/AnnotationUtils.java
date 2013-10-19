@@ -86,7 +86,13 @@ public class AnnotationUtils {
 		return findAnnotationWithStopClass(clazz, method, annotationClass);
 	}
 
-	public static <T extends Annotation> T findAnnotationWithStopClass(Class<?> clazz, Method method, Class<T> annotationClass, Class...stopClass) {
+	public static final Class<?>[] DEFAULT_STOP_CLASS = new Class[]{Object.class};
+	
+	public static <T extends Annotation> T findMethodAnnotationWithStopClass(Method method, Class<T> annotationClass) {
+		return findAnnotationWithStopClass(method.getDeclaringClass(), method, annotationClass, DEFAULT_STOP_CLASS);
+	}
+	
+	public static <T extends Annotation> T findAnnotationWithStopClass(Class<?> clazz, Method method, Class<T> annotationClass, Class<?>...stopClass) {
 		T annotation = null;
 		if (method != null)
 			annotation = method.getAnnotation(annotationClass);

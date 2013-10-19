@@ -22,10 +22,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private boolean orderable = false;
 	private String dataFormat;
 
-	private String permission;
-	private boolean showable = true;
 	
-	private boolean ignoreField;
 	
 	private boolean searchable;
 	private String searchFieldName;
@@ -41,9 +38,6 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	@Override
 	public int endTag() throws JspException {
-		if(ignoreField)
-			return EVAL_PAGE;
-		
 //		assertParentTag(DataRowTag.class);
 //		Deque<?> d = this.getTagStack();
 		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
@@ -83,18 +77,9 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setSearchItemValue(searchItemValue);
 	}
 	
-	private boolean checkIgnoreField(){
-		if(!showable)
-			return true;
-		return !checkPermission(permission);
-	}
 	
 	@Override
 	public int startTag() throws JspException {
-		this.ignoreField = this.checkIgnoreField();
-		if(ignoreField)
-			return SKIP_BODY;
-		
 		super.startTag();
 		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 	}
@@ -135,13 +120,6 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		this.dataFormat = dataFormat;
 	}
 
-	public void setPermission(String permission) {
-		this.permission = permission;
-	}
-
-	public void setShowable(boolean showable) {
-		this.showable = showable;
-	}
 
 	//search
 	public void setSearch(String search) {

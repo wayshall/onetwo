@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.exception.BusinessException;
-import org.onetwo.common.fish.plugin.PluginBaseController;
+import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CodegenController extends PluginBaseController {
+public class CodegenController extends PluginSupportedController {
 
 	@Autowired
 	private CodeTemplateService templateService;

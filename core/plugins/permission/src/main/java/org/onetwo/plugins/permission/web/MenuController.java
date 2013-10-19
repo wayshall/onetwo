@@ -3,7 +3,7 @@ package org.onetwo.plugins.permission.web;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.NoAuthorizationException;
-import org.onetwo.common.fish.plugin.PluginBaseController;
+import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 
 @Controller
-public class MenuController extends PluginBaseController {
+public class MenuController extends PluginSupportedController {
 
 	@Resource
 	private PermissionManagerImpl permissionManagerImpl;

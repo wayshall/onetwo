@@ -36,16 +36,18 @@ abstract public class BaseGridTag<T extends HtmlElement> extends BaseHtmlTag<T> 
 
 	@Override
 	public int doStartTag() throws JspException {
-		int rs = startTag();
+		int rs = super.doStartTag();
 		getTagStack().push(component);
 		return rs;
 	}
 
 	@Override
 	public int doEndTag() throws JspException {
-		int rs = endTag();
-		getTagStack().pop();
-		return rs;
+		try{
+			return super.doEndTag();
+		}finally{
+			getTagStack().pop();
+		}
 	}
 	
 	protected String getGridVarName(){

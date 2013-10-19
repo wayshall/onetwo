@@ -100,12 +100,6 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		sl.setItemDatas(itemDatas);
 		sl.setEmptyOptionLabel(emptyOptionLabel);
 	}
-
-	private boolean checkIgnoreField(){
-		if(!showable)
-			return true;
-		return !checkPermission(permission);
-	}
 	
 	@Override
 	public int doStartTag() throws JspException {

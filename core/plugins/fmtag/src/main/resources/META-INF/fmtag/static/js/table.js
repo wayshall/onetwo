@@ -11,6 +11,19 @@ var Common = function () {
 			msgDIV.show("slow", function(){
 				if(cb) cb(msgDIV); else msgDIV.hideIn("slow", 2000);
 			});
+		},
+		
+		showTipsWindow: function(message, title){
+			var modalWin = $('#showTipsModal')
+			if(modalWin.length==0){
+				alert(message);
+				return ;
+			}
+			if(!title)
+				title = "提示";
+			modalWin.find('.modal-title').html(title);
+			modalWin.find('.modal-body').html(message);
+			modalWin.modal('show');
 		}
 	});
 	
@@ -44,13 +57,9 @@ var Common = function () {
 				var checkfields = $(jfish.cssKeys.checkAll, form);
 				if(checkfields.length>0){
 					var values = $(form).checkboxValues(true);
-	    			var table = $(form).children("table:first");
+//	    			var table = $(form).children("table:first");
 					if(!values || values.length==0){
-						if(table.length==1){
-							$.showMessageOn(table, "请先选择数据！");
-						}else{
-							alert("请先选择数据！");
-						}
+						$.showTipsWindow("请先选择数据！");
 						return false;
 					}
 				}
@@ -90,6 +99,10 @@ var Common = function () {
 						params_input += '<input name="'+p+'" value="'+params[p]+'" type="hidden" />';
 					}
 					$(form).append(params_input);
+				}
+				params = $(this).find('input[type=hidden]');
+				if(params && params.length>0){
+					$(form).append(params);
 				}
 				$(form).submit();
 				return false;

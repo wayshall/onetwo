@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp;
 
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.web.view.HtmlElement;
 
 @SuppressWarnings("serial")
@@ -17,6 +18,23 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	protected String onclick;
 	
 	protected T component;
+
+
+	protected String permission;
+	protected boolean showable = true;
+	protected boolean ignoreTag;
+
+	protected boolean checkIgnoreField(){
+		if(!showable)
+			return true;
+		return !checkPermission(permission);
+	}
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+	public void setShowable(boolean showable) {
+		this.showable = showable;
+	}
 	
 	
 	abstract public T createComponent();
@@ -25,19 +43,25 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	
 	@Override
 	public int doStartTag() throws JspException {
+		this.ignoreTag = this.checkIgnoreField();
+		if(ignoreTag)
+			return SKIP_BODY;
+		
 //		return EVAL_BODY_BUFFERED;
+		component = createComponent();
+		this.populateComponent();
 		int rs = startTag();
 		return rs;
 	}
 	
 	protected int startTag()throws JspException {
-		component = createComponent();
-		this.populateComponent();
+		/*component = createComponent();
+		this.populateComponent();*/
 		return EVAL_BODY_BUFFERED;
 	}
 	
-	protected int endTag()throws JspException {
-		return super.doEndTag();
+	protected int endTag()throws Exception {
+		return EVAL_PAGE;
 	}
 	
 	protected void populateComponent() throws JspException{
@@ -52,7 +76,16 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 
 	@Override
 	public int doEndTag() throws JspException {
-		return endTag();
+		if(ignoreTag)
+			return EVAL_PAGE;
+		
+		try {
+			return endTag();
+		} catch (JspException e) {
+			throw e;
+		}catch (Exception e) {
+			throw new BaseException("render tag error : " + e.getMessage());
+		}
 	}
 
 

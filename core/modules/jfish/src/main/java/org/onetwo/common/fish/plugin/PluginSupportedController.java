@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.springframework.web.servlet.ModelAndView;
 
-abstract public class PluginBaseController extends AbstractBaseController {
+abstract public class PluginSupportedController extends AbstractBaseController {
 	
 	@Resource
 	private JFishPluginManager jfishPluginManager;
