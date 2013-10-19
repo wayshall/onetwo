@@ -4,14 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.web.csrf.AbstractCsrfPreventor.Token;
 import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventor.Token;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.AbstractBodyTag;
 
 @SuppressWarnings("serial")
 public class FormTokenFieldTag extends AbstractBodyTag {
 	private String name;
-	private CsrfPreventor csrfPreventor = CsrfPreventor.SESSION;
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 	
 	@Override
 	public int doEndTag() throws JspException {
