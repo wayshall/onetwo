@@ -69,7 +69,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		String tokenFieldName = getTokenFieldName(request, response);
 		String reqTokenValue = request.getParameter(tokenFieldName);
 		Token token = getStoredTokenValue(tokenFieldName, request, response);
-		String storedTokenValue = token.value;
+		String storedTokenValue = token.getValue();
 		
 		try {
 			if(StringUtils.isBlank(reqTokenValue) && StringUtils.isBlank(storedTokenValue)){
@@ -98,6 +98,9 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	}
 
 
+	public String getFieldOfTokenFieldName() {
+		return fieldOfTokenFieldName;
+	}
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */

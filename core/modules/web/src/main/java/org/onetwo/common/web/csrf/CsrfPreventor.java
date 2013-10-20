@@ -7,17 +7,25 @@ public interface CsrfPreventor {
 
 	public static final String DEFAULT_CSRF_TOKEN_FIELD = "_jfish_token";
 	public static class Token {
-//		public String fieldOfFieldName;
-		public String fieldName;
-		public String value;
+//		private final String fieldOfFieldName;
+		private final String fieldName;
+		private final String value;
 		protected Token(String fieldName, String value) {
 			super();
 //			this.fieldOfFieldName = fieldOfFieldName;
 			this.fieldName = fieldName;
 			this.value = value;
 		}
+		public String getFieldName() {
+			return fieldName;
+		}
+		public String getValue() {
+			return value;
+		}
 		
 	}
+	
+	public String getFieldOfTokenFieldName();
 
 	public abstract void validateToken(Object controller,
 			HttpServletRequest request, HttpServletResponse response);
