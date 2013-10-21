@@ -6,18 +6,19 @@ import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.web.csrf.CsrfPreventor;
 import org.onetwo.common.web.csrf.CsrfPreventor.Token;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.AbstractBodyTag;
 
 @SuppressWarnings("serial")
 public class FormTokenFieldTag extends AbstractBodyTag {
 	private String name;
-	private CsrfPreventor csrfPreventor = CsrfPreventor.SESSION;
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 	
 	@Override
 	public int doEndTag() throws JspException {
 		Token token = csrfPreventor.generateToken(name, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
-		write("<input name='"+token.fieldOfFieldName+"' type='hidden' value='"+token.fieldName+"'/>");
-		write("<input name='"+token.fieldName+"' type='hidden' value='"+token.value+"'/>");
+		write("<input name='"+csrfPreventor.getFieldOfTokenFieldName()+"' type='hidden' value='"+token.getFieldName()+"'/>");
+		write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getValue()+"'/>");
 		return EVAL_PAGE;
 	}
 	

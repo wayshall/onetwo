@@ -8,6 +8,7 @@ import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
@@ -15,7 +16,7 @@ import org.springframework.web.util.WebUtils;
 public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 	
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
-	private CsrfPreventor csrfPreventor = CsrfPreventor.SESSION;
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if(!isMethodHandler(handler))
