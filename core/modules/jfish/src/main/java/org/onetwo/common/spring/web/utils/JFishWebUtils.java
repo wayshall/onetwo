@@ -159,7 +159,16 @@ public final class JFishWebUtils {
 	public static <T extends UserDetail> T removeUserDetail(){
 		UserDetail user = session(UserDetail.USER_DETAIL_KEY);
 		removeSession(UserDetail.USER_DETAIL_KEY);
+		removeAllSessionAttributes();
 		return (T)user;
+	}
+	
+	public static void removeAllSessionAttributes(){
+		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+		if(!LangUtils.isEmpty(attrNames)){
+			for(String attr : attrNames)
+				removeSession(attr);
+		}
 	}
 	
 	public static HttpServletRequest request(){

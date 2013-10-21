@@ -3,11 +3,9 @@ package org.onetwo.common.spring.web.mvc;
 import java.io.Serializable;
 
 /*****
- * 历史原因存在的类，去掉
  * @author wayshall
  *
  */
-@Deprecated
 public class SingleReturnWrapper implements Serializable{
 	
 	/**

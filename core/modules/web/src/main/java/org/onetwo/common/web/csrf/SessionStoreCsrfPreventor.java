@@ -23,16 +23,16 @@ public class SessionStoreCsrfPreventor extends AbstractCsrfPreventor {
 	 * @return
 	 */
 	@Override
-	protected Token getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
+	protected CsrfToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
 		return WebContextUtils.getAttr(request.getSession(), tokenFieldName);
 	}
 	@Override
-	protected void cleanStoredTokenValue(Token token, HttpServletRequest request, HttpServletResponse response){
+	protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response){
 		WebContextUtils.remove(request.getSession(), token.getFieldName());
 	}
 
 	@Override
-	protected void storeToken(Token token, HttpServletRequest request, HttpServletResponse response){
+	protected void storeToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response){
 		WebContextUtils.attr(request.getSession(), token.getFieldName(), token);
 	}
 }

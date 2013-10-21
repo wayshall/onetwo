@@ -6,24 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface CsrfPreventor {
 
 	public static final String DEFAULT_CSRF_TOKEN_FIELD = "_jfish_token";
-	public static class Token {
-//		private final String fieldOfFieldName;
-		private final String fieldName;
-		private final String value;
-		protected Token(String fieldName, String value) {
-			super();
-//			this.fieldOfFieldName = fieldOfFieldName;
-			this.fieldName = fieldName;
-			this.value = value;
-		}
-		public String getFieldName() {
-			return fieldName;
-		}
-		public String getValue() {
-			return value;
-		}
-		
-	}
 	
 	public String getFieldOfTokenFieldName();
 
@@ -39,7 +21,7 @@ public interface CsrfPreventor {
 	 * @param response
 	 * @return
 	 */
-	public abstract Token generateToken(String ptokenFieldName,
-			HttpServletRequest request, HttpServletResponse response);
+	public abstract CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response);
+	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response);
 
 }

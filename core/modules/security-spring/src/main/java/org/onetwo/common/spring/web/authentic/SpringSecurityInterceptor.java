@@ -12,6 +12,8 @@ import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
 import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
@@ -35,6 +37,8 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 	private ApplicationContext applicationContext;
 	private AuthenticConfigService authenticConfigService;
 	private int order = Ordered.HIGHEST_PRECEDENCE;
+	
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	public SpringSecurityInterceptor(){
 	}
@@ -95,6 +99,10 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 		}
 		
 		UtilTimerStack.pop(pname);			
+
+		if(BaseSiteConfig.getInstance().isSafeRequest())
+			csrfPreventor.validateToken(hm.getMethod(), request, response);
+		
 		return true;
 	}
 	

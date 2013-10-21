@@ -16,6 +16,8 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
@@ -158,6 +160,10 @@ abstract public class AbstractBaseController {
 		} finally{
 			IOUtils.closeQuietly(input);
 		}
+	}
+	
+	protected Object singleJson(DataResult object){
+		return SingleReturnWrapper.wrap(object);
 	}
 
 	protected UserDetail getCurrentLoginUser(){

@@ -1,5 +1,8 @@
 package org.onetwo.common.web.view.jsp;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.exception.BaseException;
@@ -8,7 +11,8 @@ import org.onetwo.common.web.view.HtmlElement;
 @SuppressWarnings("serial")
 abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag {
 	
-
+	private static final String TAG_STACK_NAME = "tagStack";
+	
 	protected String id;
 	protected String name;
 	protected String title;
@@ -36,6 +40,26 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		this.showable = showable;
 	}
 	
+	protected void setTagStack(Deque<HtmlElement> tagStack){
+		setComponentIntoRequest(TAG_STACK_NAME, tagStack);
+	}
+	protected Deque<HtmlElement> getTagStack(){
+		return (Deque<HtmlElement>)getComponentFromRequest(TAG_STACK_NAME, Deque.class);
+	}
+	protected void clearTagStackFromRequest(){
+		clearComponentFromRequest(TAG_STACK_NAME);
+	}
+	
+	protected <T extends HtmlElement> T getTopComponent(Class<T> clazz){
+		Deque<T> stack = (Deque<T>)getTagStack();
+		if(stack==null)
+			return null;
+		for(T b : stack){
+			if(b.getClass()==clazz)
+				return b;
+		}
+		return null;
+	}
 	
 	abstract public T createComponent();
 	
@@ -50,6 +74,13 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 //		return EVAL_BODY_BUFFERED;
 		component = createComponent();
 		this.populateComponent();
+		
+		Deque<HtmlElement> tagStack = getTagStack();
+		if(tagStack==null){
+			tagStack = new ArrayDeque<HtmlElement>();
+			setTagStack(tagStack);
+		}
+		getTagStack().push(component);
 		int rs = startTag();
 		return rs;
 	}
@@ -85,6 +116,8 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 			throw e;
 		}catch (Exception e) {
 			throw new BaseException("render tag error : " + e.getMessage());
+		} finally{
+			getTagStack().pop();
 		}
 	}
 

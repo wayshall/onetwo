@@ -1350,8 +1350,8 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = append(strs);
-		s = MDFactory.MD5.encrypt(s + new Date().getTime() + getRadomString(6));
+		String s = appendNotBlank(strs);
+		s = MDFactory.MD5.encrypt(s + System.currentTimeMillis() + getRadomString(6));
 		return s;
 	}
 

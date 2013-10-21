@@ -11,7 +11,6 @@ import javax.validation.ConstraintViolationException;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
-import org.onetwo.common.exception.ExceptionMessageArgs;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
@@ -50,6 +49,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	public static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
 	public static final String ERROR_CODE_KEY = "__errorCode__";
 	public static final String PRE_URL = "preurl";
+	public static final String AJAX_RESULT_KEY = "result";
 	
 	public static final int RESOLVER_ORDER = -9999;
 
@@ -74,7 +74,20 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
-
+		String extension = JFishWebUtils.requestExtension();
+		
+		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
+		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
+		if("json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType)){
+//			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
+//			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
+			DataResult result = new DataResult();
+			result.setCode(AjaxKeys.RESULT_FAILED);
+			result.setMessage("操作失败："+ ex.getMessage());
+			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
+			return createModelAndView(null, model, request);
+		}
+		
 		String msg = errorMessage.getMesage();
 		if(!model.containsKey(AbstractBaseController.MESSAGE)){
 			model.put(AbstractBaseController.MESSAGE, msg);
@@ -82,21 +95,6 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 		if(JFishWebUtils.isRedirect(errorMessage.getViewName())){
 			return this.createModelAndView(errorMessage.getViewName(), model, request);
-		}
-		
-
-		String extension = JFishWebUtils.requestExtension();
-		
-		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
-		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
-		if("json".equals(extension) || RequestType.Ajax.equals(requestType)){
-			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
-			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
-			return createModelAndView(null, model, request);
-		}else if(RequestType.Flash.equals(requestType)){
-			model.put(AjaxKeys.MESSAGE_KEY, "error request: "+ex.getMessage());
-			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
-			return createModelAndView(null, model, request);
 		}
 
 		String eInfo = "";
@@ -213,7 +211,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		
 		ErrorMessage error = new ErrorMessage(errorCode, errorMsg, detail);
 		error.setViewName(viewName);
-		
+		error.setAuthentic(authentic);
 		return error;
 	}
 	
@@ -303,6 +301,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		final private String code;
 		final private String mesage;
 		final boolean detail;
+		private boolean authentic = false;
 		private String viewName;
 		
 		public ErrorMessage(String code, String mesage, boolean detail) {
@@ -327,6 +326,12 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			this.viewName = viewName;
 		}
 		
+		public boolean isAuthentic() {
+			return authentic;
+		}
+		public void setAuthentic(boolean authentic) {
+			this.authentic = authentic;
+		}
 		public String toString(){
 			return LangUtils.append(code, ":", mesage);
 		}
