@@ -30,7 +30,7 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 		helper.setControllerHandler(handler);
 
 		HandlerMethod hm = getHandlerMethod(handler);
-		csrfPreventor.validateToken(hm.getMethod(), request, response);
+//		csrfPreventor.validateToken(hm.getMethod(), request, response);
 		/*if(!csrfPreventor.validateToken(request, response)){
 			throw new JFishInvalidTokenException();
 		}*/
