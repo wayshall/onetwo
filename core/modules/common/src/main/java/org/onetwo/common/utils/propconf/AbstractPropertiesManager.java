@@ -23,7 +23,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
 		private String namespace;
-		private File srcfile;
+		private ResourceAdapter srcfile;
 	
 		public String getNamespace() {
 			return namespace;
@@ -43,11 +43,11 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			return LangUtils.append("{ namespace:", namespace, ", name: ", getName(), "}");
 		}
 
-		public File getSrcfile() {
+		public ResourceAdapter getSrcfile() {
 			return srcfile;
 		}
 
-		public void setSrcfile(File srcfile) {
+		public void setSrcfile(ResourceAdapter srcfile) {
 			this.srcfile = srcfile;
 		}
 
@@ -123,13 +123,13 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		this.conf = conf;
 	}
 	
-	protected void buildSqlFileMonitor(File[] sqlfileArray){
+	protected void buildSqlFileMonitor(ResourceAdapter[] sqlfileArray){
 		if(conf.isWatchSqlFile() && fileMonitor==null){
 			fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
 		}
 	}
-	protected File[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
+	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
 		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
@@ -147,10 +147,10 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				sqlfileArray = (File[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
 			}
 		}
-		return sqlfileArray;
+		return FileUtils.adapterResources(sqlfileArray);
 	}
 	
-	protected String getFileNameNoJfishSqlPostfix(File f){
+	protected String getFileNameNoJfishSqlPostfix(ResourceAdapter f){
 		String fname = f.getName();
 		if(!fname.endsWith(JFISH_SQL_POSTFIX)){
 			return fname;
@@ -159,7 +159,14 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 	}
 	
-	protected Properties loadSqlFile(File f){
+	protected List<String> readResourceAsList(ResourceAdapter f){
+		if(f.isSupportedToFile())
+			return FileUtils.readAsList(f.getFile());
+		else
+			throw new UnsupportedOperationException();
+	}
+	
+	protected Properties loadSqlFile(ResourceAdapter f){
 //		String fname = FileUtils.getFileNameWithoutExt(f.getName());
 		if(!f.getName().endsWith(JFISH_SQL_POSTFIX)){
 			logger.info("file["+f.getName()+" is not a jfish file, ignore it.");
@@ -168,7 +175,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 		Properties pf = new Properties();
 		try {
-			List<String> fdatas = FileUtils.readAsList(f);
+			List<String> fdatas = readResourceAsList(f);
 			String key = null;
 			StringBuilder value = null;
 			String line = null;
@@ -203,14 +210,14 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				pf.setProperty(key, value.toString());
 			}
 			
-			System.out.println("loaded jfish file : " + f.getPath());
+			System.out.println("loaded jfish file : " + f);
 		} catch (Exception e) {
 			LangUtils.throwBaseException("load jfish file error : " + f, e);
 		}
 		return pf;
 	}
 	
-	protected Map<String, T> buildPropertiesAsNamedInfos(File f, final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
+	protected Map<String, T> buildPropertiesAsNamedInfos(ResourceAdapter f, final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
 		List<String> keyNames = wrapper.sortedKeys();
 		if(isDebug()){
 			logger.info("================>>> buildPropertiesAsNamedInfos");
@@ -272,14 +279,14 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 	}
 
-	protected void watchFiles(File[] sqlfileArray){
+	protected void watchFiles(ResourceAdapter[] sqlResourceArray){
 		this.fileMonitor.watchFile(period, new FileChangeListener() {
 			
 			@Override
 			public void fileChanged(File file) {
-				reloadFile(file);
+				reloadFile(FileUtils.adapterResource(file));
 			}
-		}, sqlfileArray);
+		}, sqlResourceArray);
 	}
 	
 	public boolean isDebug() {
@@ -290,5 +297,5 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		this.debug = debug;
 	}
 
-	abstract protected void reloadFile(File file);
+	abstract protected void reloadFile(ResourceAdapter file);
 }

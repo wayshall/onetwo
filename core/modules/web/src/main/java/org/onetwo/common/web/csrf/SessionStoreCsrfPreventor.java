@@ -12,7 +12,14 @@ import org.onetwo.common.web.utils.WebContextUtils;
  */
 public class SessionStoreCsrfPreventor extends AbstractCsrfPreventor {
 	
+	private CsrfAnnotationManager csrfAnnotationManager;
+	
 	public SessionStoreCsrfPreventor(){
+		this.csrfAnnotationManager = new CsrfAnnotationManager();
+	}
+	
+	protected boolean isValidCsrf(Object controller, HttpServletRequest request){
+		return csrfAnnotationManager.getControllerCsrfInfo(controller, request).isValid();
 	}
 	
 	/***

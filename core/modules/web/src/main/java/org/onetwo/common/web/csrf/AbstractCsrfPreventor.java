@@ -9,7 +9,7 @@ import org.onetwo.common.utils.StringUtils;
 abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 
 	
-	public static final String MEHTOD_GET = "get";
+//	public static final String MEHTOD_GET = "get";
 	
 	protected String fieldOfTokenFieldName = DEFAULT_CSRF_TOKEN_FIELD;
 //	protected boolean force;
@@ -34,7 +34,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	
 	abstract protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response);
 	
-	protected boolean isForceValid(Object controller){
+	protected boolean isValidCsrf(Object controller, HttpServletRequest request){
 		return true;
 	}
 	
@@ -43,10 +43,12 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 */
 	@Override
 	public void validateToken(Object controller, HttpServletRequest request, HttpServletResponse response){
-		if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
+//		if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
+//			return ;
+		
+		if(!isValidCsrf(controller, request))
 			return ;
 		
-		boolean force = isForceValid(controller);
 		String tokenFieldName = getTokenFieldName(request, response);
 		String reqTokenValue = request.getParameter(tokenFieldName);
 		CsrfToken token = getStoredTokenValue(tokenFieldName, request, response);
@@ -54,10 +56,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		
 		try {
 			if(token==null){
-				if(force)
-					handleInvalidToken(token, request, response);
-				else
-					return ;
+				handleInvalidToken(token, request, response);
 			}else if(StringUtils.isBlank(reqTokenValue)){
 				handleInvalidToken(token, request, response);
 			}else{
@@ -106,7 +105,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response){
 		String safeUrl = url;
 		CsrfToken token = generateToken(request, response);
-		String param = token.getFieldName()+"="+token.getValue()+"&"+fieldOfTokenFieldName+"="+token.getFieldName();
+		String param = fieldOfTokenFieldName+"="+token.getFieldName() +"&"+ token.getFieldName()+"="+token.getValue();
 		if(safeUrl.indexOf('?')!=-1){
 			safeUrl += "&" + param;
 		}else{
@@ -131,9 +130,6 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 			return valid;
 		}
 
-		public void setValid(boolean valid) {
-			this.valid = valid;
-		}
 		
 	}
 }

@@ -18,14 +18,14 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 
 	public class CommonNamespaceProperties implements NamespaceProperties<T> {
 		private final String namespace;
-		private File source;
+		private ResourceAdapter source;
 		private final Map<String, T> namedProperties;
 		
 		public CommonNamespaceProperties(String namespace){
 			this.namespace = namespace;
 			this.namedProperties = LangUtils.newHashMap();
 		}
-		public CommonNamespaceProperties(String namespace, File source, Map<String, T> namedProperties) {
+		public CommonNamespaceProperties(String namespace, ResourceAdapter source, Map<String, T> namedProperties) {
 			super();
 			this.namespace = namespace;
 			this.source = source;
@@ -42,7 +42,7 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 			return namedProperties.values();
 		}
 
-		public File getSource() {
+		public ResourceAdapter getSource() {
 			return source;
 		}
 		@Override
@@ -54,7 +54,7 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 			for(Entry<String, T> entry : namedInfos.entrySet()){
 				if(throwIfExist && this.namedProperties.containsKey(entry.getKey())){
 					NamespaceProperty exitProp = this.namedProperties.get(entry.getKey());
-					throw new BaseException("int file["+entry.getValue().getSrcfile()+"], sql key["+entry.getKey()+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile().getPath());
+					throw new BaseException("int file["+entry.getValue().getSrcfile()+"], sql key["+entry.getKey()+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile());
 				}
 				this.namedProperties.put(entry.getKey(), entry.getValue());
 			}
@@ -104,7 +104,7 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 
 	public void build(){
 		this.namedQueryCache = LangUtils.newHashMap();
-		File[] sqlfileArray = scanMatchSqlFiles(conf);
+		ResourceAdapter[] sqlfileArray = scanMatchSqlFiles(conf);
 		this.namespaceProperties = this.autoScanSqlDir(sqlfileArray);
 		this.buildSqlFileMonitor(sqlfileArray);
 		
@@ -114,37 +114,37 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		}
 	}
 	
-	public void reloadFile(File file){
+	public void reloadFile(ResourceAdapter file){
 		Properties pf = loadSqlFile(file);
 		if(pf==null){
-			logger.warn("no file relaoded : " + file.getPath());
+			logger.warn("no file relaoded : " + file);
 			return ;
 		}
 		this.scanAndParseSqlFile(this.namespaceProperties, file, false);
-		logger.warn("file relaoded : " + file.getPath());
+		logger.warn("file relaoded : " + file);
 	}
 	
 	private boolean isGlobalNamespace(String namespace){
 		return GLOBAL_NS_KEY.endsWith(namespace) || !namespace.contains(".");
 	}
 	
-	protected Map<String, NamespaceProperties<T>> autoScanSqlDir(File[] sqlfileArray){
+	protected Map<String, NamespaceProperties<T>> autoScanSqlDir(ResourceAdapter[] sqlfileArray){
 		if(LangUtils.isEmpty(sqlfileArray)){
 			logger.info("no named sql file found.");
 			return Collections.EMPTY_MAP;
 		}
 		
 		Map<String, NamespaceProperties<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
-		for(File f : sqlfileArray){
-			logger.info("parse named sql file: {}", f.getName());
+		for(ResourceAdapter f : sqlfileArray){
+			logger.info("parse named sql file: {}", f);
 			this.scanAndParseSqlFile(nsproperties, f, true);
 		}
 		return nsproperties;
 	}
 
 
-	protected NamespaceProperties<T> scanAndParseSqlFile(Map<String, NamespaceProperties<T>> nsproperties, File f, boolean throwIfExist){
-		logger.info("scan and parse sql file : " + f.getPath());
+	protected NamespaceProperties<T> scanAndParseSqlFile(Map<String, NamespaceProperties<T>> nsproperties, ResourceAdapter f, boolean throwIfExist){
+		logger.info("scan and parse sql file : " + f);
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
 		if(isGlobalNamespace(namespace)){
@@ -178,11 +178,11 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		return np;
 	}
 
-	protected Map<String, T> buildNamedInfos(String ns, File f){
+	protected Map<String, T> buildNamedInfos(String ns, ResourceAdapter f){
 		Properties pf = loadSqlFile(f);
 		if(pf==null || pf.isEmpty())
 			return Collections.EMPTY_MAP;
-		logger.info("build [{}] sql file : {}", ns, f.getPath());
+		logger.info("build [{}] sql file : {}", ns, f);
 		PropertiesWraper wrapper = new PropertiesWraper(pf);
 		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, wrapper, (Class<T>)conf.getPropertyBeanClass());
 		return namedInfos;

@@ -31,11 +31,11 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private boolean disabled;
 	
 
-	private String permission;
-	private boolean showable = true;
+//	private String permission;
+//	private boolean showable = true;
 	private boolean modelAttribute = true;
 
-	private boolean ignoreField;
+//	private boolean ignoreField;
 	
 	
 	@Override
@@ -63,6 +63,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		switch (type) {
 			case input:
 			case password:
+				break;
 			case hidden:
 				component.setErrorTag(false);
 				break;
@@ -101,19 +102,19 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		sl.setEmptyOptionLabel(emptyOptionLabel);
 	}
 	
-	@Override
+	/*@Override
 	public int doStartTag() throws JspException {
 		this.ignoreField = this.checkIgnoreField();
 		if(ignoreField)
 			return SKIP_BODY;
 		
 		return super.doStartTag();
-	}
+	}*/
 	
 	@Override
-	public int doEndTag() throws JspException {
-		if(ignoreField)
-			return EVAL_PAGE;
+	public int endTag() throws JspException {
+//		if(ignoreField)
+//			return EVAL_PAGE;
 		
 		FormTagBean formBean = getFormTagBean();
 		if(formBean==null)
