@@ -144,7 +144,7 @@ public class JFishContextConfig implements ApplicationContextAware {
 			ms = this.applicationContex.getBean("validationMessages", ReloadableResourceBundleMessageSource.class);
 		}else{
 			ms = new ReloadableResourceBundleMessageSource();
-			ms.setBasename("classpath:messages/ValidationMessages");
+			ms.setBasename("classpath*:messages/ValidationMessages");
 		}
 //		ms.setCacheSeconds(60);
 		return ms;

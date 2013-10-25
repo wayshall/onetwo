@@ -53,7 +53,9 @@ public class StringTemplateLoaderTest {
 		StringTemplateLoader st = new StringTemplateLoader();
 		String tname = "hello";
 		String content = 
-"hello：[@foreach list=datas separator='union '; val, index]select from ${val} [/@foreach]";
+"hello：[@foreach list=datas separator='union '; val, index]" +
+		"select from ${val} " +
+		"[/@foreach]";
 		st.putTemplate(tname, content);
 		cfg.setTemplateLoader(st); 
 		cfg.setDefaultEncoding("UTF-8"); 

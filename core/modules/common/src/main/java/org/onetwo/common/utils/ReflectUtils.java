@@ -1678,11 +1678,18 @@ public class ReflectUtils {
 				return;
 			
 			Object val = ReflectUtils.getProperty(source, prop);
-			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
-				return;
+			if(isIgnoreValue(val))
+				return ;
+			
 			
 			ReflectUtils.setProperty(target, prop, val);
 			
+		}
+		
+		protected boolean isIgnoreValue(Object val){
+			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
+				return true;
+			return false;
 		}
 		
 	};

@@ -19,6 +19,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.ReflectUtils.IgnoreAnnosCopyer;
 
 public final class HibernateUtils {
@@ -41,6 +42,12 @@ public final class HibernateUtils {
 					return ;
 			}
 			super.copy(source, target, prop);
+		}
+		
+		protected boolean isIgnoreValue(Object val){
+			if(val==null)
+				return true;
+			return false;
 		}
 		
 	};
