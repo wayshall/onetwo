@@ -97,15 +97,16 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			String parsedSql = this.parser.parseSql(countQuery?info.getCountName():info.getFullName(), parserContext);
 			dataQuery = createDataQuery(parsedSql, resultClass);
 			
-			for(Entry<Object, Object> entry : this.params.entrySet()){
-				if(entry.getKey() instanceof Integer){
-					dataQuery.setParameter((Integer)entry.getKey(), entry.getValue());
-				}else{
-					dataQuery.setParameter(entry.getKey().toString(), entry.getValue());
-				}
-			}
 		}else{
 			dataQuery = createDataQuery(sql, resultClass);
+		}
+
+		for(Entry<Object, Object> entry : this.params.entrySet()){
+			if(entry.getKey() instanceof Integer){
+				dataQuery.setParameter((Integer)entry.getKey(), entry.getValue());
+			}else{
+				dataQuery.setParameter(entry.getKey().toString(), entry.getValue());
+			}
 		}
 		
 		if(firstRecord>0)

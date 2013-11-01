@@ -65,4 +65,22 @@
   	<function-signature>java.lang.String format(java.util.Date, java.lang.String, java.lang.String)</function-signature>
   </function>
   
+  <function>
+  	<name>asDateTime</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String asDateTime(java.util.Date)</function-signature>
+  </function>
+  
+  <function>
+  	<name>asDate</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String asDate(java.util.Date)</function-signature>
+  </function>
+  
+  <function>
+  	<name>asTime</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String asTime(java.util.Date)</function-signature>
+  </function>
+  
 </taglib>

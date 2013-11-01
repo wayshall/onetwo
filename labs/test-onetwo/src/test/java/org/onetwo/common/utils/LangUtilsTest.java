@@ -165,4 +165,18 @@ public class LangUtilsTest {
 		Throwable e = LangUtils.getCauseServiceException(re);
 		Assert.assertTrue(ServiceException.class.isInstance(e));
 	}
+
+	@Test
+	public void testFixedLengthString(){
+		int length = 12;
+		String str = "12";
+		String rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000012", rs);
+		str = "10000000000000012";
+		rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000012", rs);
+		str = null;
+		rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000000", rs);
+	}
 }

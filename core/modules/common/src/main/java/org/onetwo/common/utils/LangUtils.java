@@ -1416,4 +1416,14 @@ public class LangUtils {
 		}
 		return str.toString();
 	}
+	
+	public static String fixedLengthString(String str, int length, String padString){
+		if(StringUtils.isBlank(str))
+			return padLeft("", length, padString);
+		if(str.length()>=length){
+			return str.substring(str.length()-length, str.length());
+		}else{
+			return padLeft(str, length, padString);
+		}
+	}
 }

@@ -101,7 +101,7 @@ public final class HibernateUtils {
 	
 	
 	/*****
-	 * 复制对象属性，但会忽略那些null值、空白字符和配置了关系的属性
+	 * 复制对象属性，但会忽略那些null值和配置了关系的属性
 	 * @param source
 	 * @param target
 	 */
@@ -109,7 +109,7 @@ public final class HibernateUtils {
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
 	}
 	/****
-	 * 复制对象属性，但会忽略那些null值、空白字符
+	 * 复制对象属性，但会忽略那些null值
 	 * @param source
 	 * @param target
 	 */
