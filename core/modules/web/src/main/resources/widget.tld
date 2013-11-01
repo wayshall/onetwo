@@ -272,6 +272,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[ajaxSupported]]></description>
+      <name>ajaxSupported</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>id</name>
