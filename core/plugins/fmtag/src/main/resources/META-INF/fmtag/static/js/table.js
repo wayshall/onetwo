@@ -53,7 +53,7 @@ var Common = function () {
 
 				form = form || $(this).parents("form:first")[0];
 				
-
+				
 				var checkfields = $(jfish.cssKeys.checkAll, form);
 				if(checkfields.length>0){
 					var values = $(form).checkboxValues(true);
@@ -83,13 +83,7 @@ var Common = function () {
 					amethod = restMethod;
 				}
 				if(!!amethod){//true
-					var methodEle = $('input[name="_method"]', $(form));
-					if(methodEle){
-						methodEle.val(amethod);
-					}else{
-						metadata_input = '<input name="_method" value="'+amethod+'" type="hidden" />';
-						$(form).append(metadata_input);
-					}
+					jfish.appendHiddenMethodParamIfNecessary(form, amethod);
 				}
 
 				var params = eval("("+$(this).attr("data-params")+")");
@@ -104,6 +98,8 @@ var Common = function () {
 				if(params && params.length>0){
 					$(form).append(params);
 				}
+				
+				
 				$(form).submit();
 				return false;
 			}
@@ -125,6 +121,16 @@ var Common = function () {
 			if(!!params){
 				var params_input = jfish.toInputHidden(params);
 				$(form).append(params_input);
+			}
+		},
+		
+		appendHiddenMethodParamIfNecessary: function(form, method){
+			var methodEle = $('input[name="_method"]', $(form));
+			if(methodEle){
+				methodEle.val(method);
+			}else{
+				var metadata_input = '<input name="_method" value="'+method+'" type="hidden" />';
+				$(form).append(metadata_input);
 			}
 		},
 		
@@ -160,8 +166,23 @@ var Common = function () {
 		handleMethod : function(link) {
 			var href = link.attr('href');
 			var method = link.attr('data-method');
-			target = link.attr('target');
-			var form = link.parents('form');
+			var target = link.attr('target');
+			
+			var remote = eval($(link).attr('remote'));
+			var ajaxInst = null;
+			if(remote && remote==true){
+				var ajaxName = $(link).attr('ajaxName');
+				ajaxInst = AjaxAnywhere.findInstance(ajaxName);
+				if(!ajaxInst){
+					alert("不支持ajax请求");
+					return false;
+				}
+					
+			}
+			
+			
+			var formId = ajaxInst.formName;
+			var form = $('#'+formId);
 			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
@@ -174,23 +195,29 @@ var Common = function () {
 				form.attr("method", method);
 			}
 			else{
-				form = $('<form method="post" action="'+ href + '"></form>');
+				form = $('<form id="'+formId+'" name="'+formId+'" method="post" action="'+ href + '"></form>');
 				metadata_input = '<input name="_method" value="'+ method + '" type="hidden" />';
 				form.appendTo('body');
 			}
-			
+
 			var params = $(link).children(".link_params").html();
 			if(params){
-				metadata_input += params;
+				form.append(params);
 			}
 			
+			jfish.appendHiddenMethodParamIfNecessary(form, method);
 			jfish.appendHiddenByDataParams(link, form);
 
 			if (target) {
 				form.attr('target', target);
 			}
-			form.hide().append(metadata_input);
-			form.submit();
+			
+			if(ajaxInst){
+				ajaxInst.submitAJAX();
+				return false;
+			}else{
+				$(form).submit();
+			}
 		}
 		
 	};
