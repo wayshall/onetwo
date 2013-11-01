@@ -142,12 +142,6 @@
 	  <version>${urlrewrite.version}</version>
     </dependency>
     
-    <dependency>
-	  <groupId>net.sourceforge.ajaxanywhere</groupId>
-	  <artifactId>ajaxanywhere</artifactId>
-	  <version>1.2.1</version>
-	</dependency>
-    
   </dependencies>
   
   
