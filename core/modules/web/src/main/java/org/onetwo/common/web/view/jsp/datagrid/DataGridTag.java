@@ -14,7 +14,7 @@ import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 
 @SuppressWarnings("serial")
 public class DataGridTag extends BaseGridTag<GridTagBean> {
-	private static final String AJAX_POSTFIX = "Ajax";
+//	private static final String AJAX_POSTFIX = "Ajax";
 	private static final String AJAX_INST_POSTFIX = "AjaxInst";
 	
 	private String template = TagUtils.getTagPage("datagrid/grid.jsp");
@@ -34,7 +34,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	private boolean ajaxSupported = false;
 	private String ajaxZoneName;
-	private String ajaxInstName;
+//	private String ajaxInstName;
 	
 	@Override
 	public GridTagBean createComponent() {
@@ -83,10 +83,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setSearchForm(searchForm);
 		component.setAjaxSupported(ajaxSupported);
 		
-		ajaxZoneName = getName() + AJAX_POSTFIX;
-		ajaxInstName = getName() + AJAX_INST_POSTFIX;
+		ajaxZoneName = getName();// + AJAX_POSTFIX;
+//		ajaxInstName = getName() + AJAX_INST_POSTFIX;
 		component.setAjaxZoneName(ajaxZoneName);
-		component.setAjaxInstName(ajaxInstName);
+//		component.setAjaxInstName(ajaxInstName);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
@@ -159,7 +159,4 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		this.ajaxSupported = ajaxSupported;
 	}
 
-	public String getAjaxInstName() {
-		return ajaxInstName;
-	}
 }

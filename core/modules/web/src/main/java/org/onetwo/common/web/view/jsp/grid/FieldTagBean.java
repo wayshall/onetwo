@@ -9,11 +9,16 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 
 public class FieldTagBean extends HtmlElement {
+	public static enum RenderType {
+		auto,
+		checkbox,
+		html
+	}
 
 	private String value;
 	private int colspan = 1;
 //	String link;
-	private String render;
+	private RenderType render;
 	//改字段是否可以排序
 	private boolean orderable = false;
 	
@@ -37,13 +42,13 @@ public class FieldTagBean extends HtmlElement {
 	private String searchItemValue;
 	
 
-	public void render(Writer out){
+	/*public void render(Writer out){
 		try {
 			out.write(bodyContent);
 		} catch (IOException e) {
 			throw new BaseException("render field["+value+"] error.");
 		}
-	}
+	}*/
 	
 	public String getValue() {
 		if(StringUtils.isBlank(value))
@@ -79,7 +84,7 @@ public class FieldTagBean extends HtmlElement {
 		this.colspan = colspan;
 	}
 	public boolean isAutoRender() {
-		return StringUtils.isBlank(render);
+		return RenderType.auto==render;
 	}
 	public boolean isOrdering() {
 		return ordering;
@@ -100,12 +105,20 @@ public class FieldTagBean extends HtmlElement {
 		this.bodyContent = bodyContent;
 	}
 
-	public String getRender() {
+	public RenderType getRender() {
 		return render;
 	}
 
 	public void setRender(String render) {
-		this.render = render;
+		if(StringUtils.isBlank(render)){
+			this.render = RenderType.auto;
+			return ;
+		}
+		try{
+			this.render = RenderType.valueOf(render);
+		}catch(Exception e){
+			this.render = RenderType.auto;
+		}
 	}
 
 	public String getOrderType() {
@@ -136,7 +149,11 @@ public class FieldTagBean extends HtmlElement {
 	}
 	
 	public boolean isCheckbox(){
-		return "checkbox".equalsIgnoreCase(render);
+		return RenderType.checkbox==render;
+	}
+	
+	public boolean isHtmlRender(){
+		return RenderType.html==render;
 	}
 	
 	public GridTagBean getGrid(){

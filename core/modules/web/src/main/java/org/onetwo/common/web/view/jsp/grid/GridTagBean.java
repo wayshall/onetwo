@@ -3,7 +3,6 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -35,7 +34,7 @@ public class GridTagBean extends HtmlElement {
 
 	private boolean ajaxSupported = false;
 	private String ajaxZoneName;
-	private String ajaxInstName;
+//	private String ajaxInstName;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -193,13 +192,6 @@ public class GridTagBean extends HtmlElement {
 		this.ajaxZoneName = ajaxZoneName;
 	}
 
-	public String getAjaxInstName() {
-		return ajaxInstName;
-	}
-
-	public void setAjaxInstName(String ajaxInstName) {
-		this.ajaxInstName = ajaxInstName;
-	}
 
 	
 }
