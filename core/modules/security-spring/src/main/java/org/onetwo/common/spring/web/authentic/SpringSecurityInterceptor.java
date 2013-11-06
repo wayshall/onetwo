@@ -76,8 +76,8 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 		AuthenticConfigService service = getAuthenticConfigService();
 		
 		AuthenticConfig config = service.getConfig(target);
-		if(BaseSiteConfig.getInstance().isDev())
-			logger.info(request.getRequestURL() + " AuthenticConfig: " + config.toString());
+		/*if(BaseSiteConfig.getInstance().isDev())
+			logger.info(request.getRequestURL() + " AuthenticConfig: " + config.toString());*/
 
 		//验证逻辑
 		AuthenticationInvocation authentication = service.getAuthenticationInvocation(config);

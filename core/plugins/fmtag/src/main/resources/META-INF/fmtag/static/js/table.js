@@ -3,6 +3,7 @@ var Common = function () {
 };
 
 (function ($) {
+	var loadHtml = '<div id="loadingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-body"><p>正在加载，请稍候……</p></div></div>';
 	
 	$.extend({
 		showMessageOn : function(ele, message, cb){
@@ -23,9 +24,45 @@ var Common = function () {
 				title = "提示";
 			modalWin.find('.modal-title').html(title);
 			modalWin.find('.modal-body').html(message);
+			modalWin.modal({keyboard: false, backdrop: 'static'});
 			modalWin.modal('show');
+		},
+		
+		closeTipsWindow: function(){
+			var modalWin = $('#showTipsModal');
+			modalWin.modal('toggle');
+		},
+		
+		showBlockMsg: function(message){
+			var loadDiv = $('#loadingModal');
+			if(loadDiv.length==0){
+				loadDiv = $(loadHtml);
+				loadDiv.appendTo(document.body);
+				loadDiv.modal({keyboard: false, backdrop: 'static'});
+			}
+			if(message)
+				loadDiv.find('.modal-body').html(message);
+			loadDiv.modal('show');
+		},
+		closeBlockMsg: function(){
+			var loadDiv = $('#loadingModal');
+			if(loadDiv)
+				loadDiv.modal('toggle');
 		}
+		
 	});
+	
+	if(AjaxAnywhere){
+		AjaxAnywhere.prototype.hideLoadingMessage = function() {
+			$.closeBlockMsg()
+		};
+		AjaxAnywhere.prototype.showLoadingMessage = function() {
+			$.showBlockMsg()
+		};
+		AjaxAnywhere.prototype.handlePrevousRequestAborted = function() {
+			$.showTipsWindow('请求正在加载中，请勿频繁操作！')
+		};
+	}
 	
 	var jfish;
 	$.jfish = jfish = {
@@ -103,6 +140,7 @@ var Common = function () {
 					return false;
 				}else{
 					$(form).submit();
+					return false;
 				}
 			}
 		},
@@ -127,7 +165,7 @@ var Common = function () {
 		},
 		
 		appendHiddenMethodParamIfNecessary: function(form, method){
-			var methodEle = $('input[name="_method"]', $(form));
+			var methodEle = $('input[name=_method]', $(form));
 			if(methodEle){
 				methodEle.val(method);
 			}else{
@@ -360,7 +398,8 @@ var Common = function () {
 			var l = ($(window).width()-$(this).width())/2;
 //			alert("t:"+t+" l:"+l);
 //			$(this).offset({top: t, left: l});
-			$(this).css({top: t+"px", left: l+"px"});
+			//$(this).css({top: t+"px", left: l+"px"});
+			$(this).offset({top: t, left: l});
 		},
 		
 		onFormCenter : function(loadE){

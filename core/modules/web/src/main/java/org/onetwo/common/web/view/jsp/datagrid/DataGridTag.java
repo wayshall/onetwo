@@ -71,7 +71,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
-		component.setPage(TagUtils.toPage(dataSource));
 		component.setColspan(colspan);
 		component.setAction(buildActionString());
 		
@@ -82,6 +81,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setGeneratedForm(generatedForm);
 		component.setSearchForm(searchForm);
 		component.setAjaxSupported(ajaxSupported);
+		component.setPage(TagUtils.toPage(dataSource));
 		
 		ajaxZoneName = getName();// + AJAX_POSTFIX;
 //		ajaxInstName = getName() + AJAX_INST_POSTFIX;

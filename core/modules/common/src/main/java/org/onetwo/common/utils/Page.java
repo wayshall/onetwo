@@ -142,6 +142,10 @@ public class Page<T> implements Serializable {
 
 	public void setAutoCount(final boolean autoCount) {
 		this.autoCount = autoCount;
+		if(!this.autoCount){
+			this.setFirst(-1);
+			this.setPageSize(-1);
+		}
 	}
 
 	public Page<T> autoCount(final boolean theAutoCount) {

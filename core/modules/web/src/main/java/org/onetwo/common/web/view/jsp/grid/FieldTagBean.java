@@ -1,9 +1,5 @@
 package org.onetwo.common.web.view.jsp.grid;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -51,7 +47,7 @@ public class FieldTagBean extends HtmlElement {
 	}*/
 	
 	public String getValue() {
-		if(StringUtils.isBlank(value))
+		if(value==null)
 			value = getName();
 		return value;
 	}

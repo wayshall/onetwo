@@ -115,7 +115,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		} catch (JspException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("render tag error : " + e.getMessage());
+			throw new BaseException("render tag error : " + e.getMessage(), e);
 		} finally{
 			getTagStack().pop();
 		}

@@ -9,9 +9,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ExtQuery;
+import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
@@ -21,6 +23,7 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
@@ -31,7 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class AbstractEntityManager implements BaseEntityManager, ApplicationContextAware {
+abstract public class AbstractEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager, ApplicationContextAware {
 
 	protected final Logger logger = Logger.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;
@@ -288,12 +291,22 @@ abstract public class AbstractEntityManager implements BaseEntityManager, Applic
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		return this.findByProperties(entityClass, MyUtils.convertParamMap(properties));
 	}
-
 	public <T> List<T> findList(QueryBuilder squery) {
 		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
+		return select(entityClass, properties);
+	}
+
+	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties){
+		Map<Object, Object> params = LangUtils.newHashMap();
+		CUtils.arrayIntoMap(params, properties);
+		params.put(K.SELECT, selectFields);
+		return this.select(entityClass, params);
+	}
+	
+	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties) {
 		prepareProperties(properties);
 
 		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);

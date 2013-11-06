@@ -103,17 +103,22 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 
 	@Override
 	public <T> Page<T> findPage(String queryName, Page<T> page, Object... params) {
-		DataQuery jq = this.createCountQuery(queryName, params);
-		Long total = jq.getSingleResult();
-		total = (total==null?0:total);
-		page.setTotalCount(total);
-		if(total>0){
-			jq = this.createQuery(queryName, params);
-			jq.setFirstResult(page.getFirst()-1);
-			jq.setMaxResults(page.getPageSize());
-			List<T> datalist = jq.getResultList();
-			page.setResult(datalist);
+		DataQuery jq = null;
+		if(page.isAutoCount()){
+			jq = this.createCountQuery(queryName, params);
+			Long total = jq.getSingleResult();
+			total = (total==null?0:total);
+			page.setTotalCount(total);
+			if(total<1)
+				return page;
 		}
+		
+		jq = this.createQuery(queryName, params);
+		jq.setFirstResult(page.getFirst()-1);
+		jq.setMaxResults(page.getPageSize());
+		List<T> datalist = jq.getResultList();
+		page.setResult(datalist);
+		
 		return page;
 	}
 	

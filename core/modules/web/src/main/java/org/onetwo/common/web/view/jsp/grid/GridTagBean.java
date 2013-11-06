@@ -152,6 +152,8 @@ public class GridTagBean extends HtmlElement {
 	}
 	
 	public boolean isPagination(){
+		if(!this.page.isAutoCount())
+			return false;
 		return this.pagination;
 	}
 

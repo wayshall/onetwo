@@ -20,7 +20,7 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	
 	private String mappedEntity;
 	private String countSql;
-	private FileSqlParserType parser;
+	private FileSqlParserType parser = FileSqlParserType.NONE;
 	
 	
 	private Class<?> mappedEntityClass;

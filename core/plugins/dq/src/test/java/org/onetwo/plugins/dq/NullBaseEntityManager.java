@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -17,7 +18,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
-public class NullBaseEntityManager implements BaseEntityManager {
+public class NullBaseEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager {
 
 	private FileNamedQueryFactory<NamespaceProperty> fileNamedQueryFactory = new FileNamedQueryFactory(){
 

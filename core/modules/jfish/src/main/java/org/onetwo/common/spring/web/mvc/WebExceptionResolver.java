@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -170,6 +171,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 				i++;
 			}
 			findMsgByCode = false;
+		}else if(ex instanceof ObjectOptimisticLockingFailureException){
+			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}
 		
 		

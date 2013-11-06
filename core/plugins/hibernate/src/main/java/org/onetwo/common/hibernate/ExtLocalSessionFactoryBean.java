@@ -13,6 +13,7 @@ import org.hibernate.event.spi.EventType;
 import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.onetwo.common.hibernate.interceptor.PrintInfoInterceptor;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -45,6 +46,8 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		if(getHibernateProperties()==null || getHibernateProperties().isEmpty()){
 			this.setHibernateProperties(autoHibernateConfig());
 		}
+		
+		setEntityInterceptor(new PrintInfoInterceptor());
 		
 		super.afterPropertiesSet();
 	}

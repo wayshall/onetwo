@@ -3,21 +3,27 @@ package org.onetwo.common.spring.web.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.NiceDate;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.slf4j.Logger;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
 public class JFishFirstInterceptor extends WebInterceptorAdapter  {
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
-	
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		if(BaseSiteConfig.getInstance().isDev())
+			logger.info(request.getMethod() + "|" + request.getRequestURL());
+		
 		if(!isMethodHandler(handler))
 			return true;
 		

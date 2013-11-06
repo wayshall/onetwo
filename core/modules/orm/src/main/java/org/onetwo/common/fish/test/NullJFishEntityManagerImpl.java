@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -17,7 +18,7 @@ import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 
-public class NullJFishEntityManagerImpl implements JFishEntityManager {
+public class NullJFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager {
 
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {

@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 @Repository
-public class NutzBaseEntityManager implements BaseEntityManager {
+public class NutzBaseEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager {
 	
 	private NutzBaseDao nutzDao;
 	
