@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.UserActivityCheckable;
@@ -63,9 +62,6 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		String pname = "SpringSecurityInterceptor";
-		UtilTimerStack.push(pname);
-		
 		SecurityTarget target = createSecurityTarget(request, response, handler);
 		if(target==null){
 //			logger.info(request.getRequestURL() + " can not create target, ignore it.");
@@ -76,8 +72,8 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 		AuthenticConfigService service = getAuthenticConfigService();
 		
 		AuthenticConfig config = service.getConfig(target);
-		/*if(BaseSiteConfig.getInstance().isDev())
-			logger.info(request.getRequestURL() + " AuthenticConfig: " + config.toString());*/
+		if(BaseSiteConfig.getInstance().isDev())
+			logger.info(request.getRequestURL() + " AuthenticConfig: " + config.toString());
 
 		//验证逻辑
 		AuthenticationInvocation authentication = service.getAuthenticationInvocation(config);
@@ -98,8 +94,6 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 			checkable.setLastActivityTime(new Date());
 		}
 		
-		UtilTimerStack.pop(pname);			
-
 		if(BaseSiteConfig.getInstance().isSafeRequest())
 			csrfPreventor.validateToken(hm.getMethod(), request, response);
 		

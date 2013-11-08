@@ -33,10 +33,10 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 	
 	public void buildExtTagAttributesString(StringBuilder attributesBuf){
-		if(this.readOnly){
+		if(this.isReadOnly()){
 			attributesBuf.append("readOnly=\"readOnly\"");
 		}
-		if(this.disabled){
+		if(this.isDisabled()){
 			attributesBuf.append("disabled");
 		}
 	}
@@ -114,7 +114,7 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public boolean isDisabled() {
-		return disabled;
+		return this.formBean.isShowOnly() || disabled;
 	}
 
 	public boolean isHidden() {

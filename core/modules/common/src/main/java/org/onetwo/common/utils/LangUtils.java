@@ -1426,4 +1426,28 @@ public class LangUtils {
 			return padLeft(str, length, padString);
 		}
 	}
+	
+
+	public static Object safeGetValue(Object elemetns, int index){
+		return safeGetValue(elemetns, index, null);
+	}
+	
+	public static Object safeGetValue(Object elemetns, int index, Object def){
+		if(elemetns==null)
+			return def;
+		if(elemetns.getClass().isArray()){
+			Object[] array = (Object[]) elemetns;
+			if(index>=array.length){
+				return def;
+			}
+			return array[index];
+		}else if(List.class.isInstance(elemetns)){
+			List<?> list = (List) elemetns;
+			if(index>=list.size())
+				return def;
+			return list.get(index);
+		}else{
+			throw new UnsupportedOperationException("unsupported type: "+ elemetns.getClass());
+		}
+	}
 }

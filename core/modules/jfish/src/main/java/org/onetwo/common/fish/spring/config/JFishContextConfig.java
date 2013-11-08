@@ -4,6 +4,7 @@ import javax.validation.Validator;
 
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
+import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
@@ -13,6 +14,7 @@ import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.validator.JFishTraversableResolver;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -186,6 +188,11 @@ public class JFishContextConfig implements ApplicationContextAware {
 	public ThreadLocalCleaner ThreadLocalCleaner() {
 		ThreadLocalCleaner cleaner = new ThreadLocalCleaner();
 		return cleaner;
+	}
+
+	@Bean
+	public ContextHolder contextHolder(){
+		return new WebRequestHolder();
 	}
 
 	@Bean

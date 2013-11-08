@@ -38,6 +38,7 @@ public class BaseInitFilter extends IgnoreFiler {
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
+	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
 
 
 	protected void initApplication(FilterConfig config) {
@@ -56,6 +57,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		SpringApplication.initApplication(app);
 		
+		UtilTimerStack.active(timeProfiler);
 	}
 	
 	protected BaseSiteConfig getBaseSiteConfig(){
@@ -72,17 +74,14 @@ public class BaseInitFilter extends IgnoreFiler {
 	
 	
 	protected void printRequestTime(boolean push, HttpServletRequest request){
-		boolean active = "true".equals(request.getParameter("printRequestTime"));
-		if(!active)
+		if(!timeProfiler)
 			return ;
-		String url = this.getClass().getSimpleName()+" "+request.getMethod() + ":" + request.getRequestURI();
-		UtilTimerStack.setActive(active);
+		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(push){
 			UtilTimerStack.push(url);
 		}else{
 			UtilTimerStack.pop(url);
 		}
-		UtilTimerStack.setActive(!active);
 	}
 	
 	protected void reloadConfigIfNecessary(HttpServletRequest request){

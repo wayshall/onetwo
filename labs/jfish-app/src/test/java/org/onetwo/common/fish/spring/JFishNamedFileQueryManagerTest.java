@@ -11,11 +11,11 @@ public class JFishNamedFileQueryManagerTest {
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl("mysql", false);
 		fq.build();
 		JFishNamedFileQueryInfo info = fq.getNamedQueryInfo("searchPageListSupplier_json");
-		LangUtils.println("info: "+info);
+		LangUtils.log("info: "+info);
 		Assert.assertNotNull(info);
 		
 		info = fq.getNamedQueryInfo("searchPageListSupplier_json2");
-		LangUtils.println("info2: "+info);
+		LangUtils.log("info2: "+info);
 		Assert.assertNotNull(info);
 	}
 

@@ -1,7 +1,10 @@
 package org.onetwo.common.profiling;
 
 
-
+/****
+ * copy from struts 2
+ *
+ */
 public class UtilTimerStack
 {
 
@@ -22,22 +25,20 @@ public class UtilTimerStack
     private static boolean active;
     private static boolean nanoTime;
     
-    private static TimerOutputer ouputer;
+    private static TimeLogger timeLogger;
 
     static {
         active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
+		timeLogger = new Log4jTimeLogger();
     }
 
     
-    public static TimerOutputer getOuputer() {
-    	if(ouputer==null){
-    		ouputer = new TimerOutputer();
-    	}
-		return ouputer;
+    public static TimeLogger getOuputer() {
+		return timeLogger;
 	}
 
-	public static void setOuputer(TimerOutputer ouputer) {
-		UtilTimerStack.ouputer = ouputer;
+	public static void setOuputer(TimeLogger ouputer) {
+		UtilTimerStack.timeLogger = ouputer;
 	}
 
 	public static void setNanoTime(boolean nanoTime) {
@@ -106,7 +107,7 @@ public class UtilTimerStack
             {
                 printTimes(currentTimer);
                 current.set(null); //prevent printing multiple times
-                getOuputer().println("Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
+                getOuputer().log("Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
             }
         }
 
@@ -120,7 +121,7 @@ public class UtilTimerStack
      */
     private static void printTimes(ProfilingTimerBean currentTimer)
     {
-    	getOuputer().println(currentTimer.getPrintable(getMinTime()));
+    	getOuputer().log(currentTimer.getPrintable(getMinTime()));
     }
 
     /**
@@ -151,13 +152,16 @@ public class UtilTimerStack
         return active;
     }
 
+    @Deprecated
+    public static void setActive(boolean active) {
+    	//ignore
+    }
     /**
      * Turn profiling on or off.
      * 
      * @param active
      */
-    public static void setActive(boolean active)
-    {
+    public static void active(boolean active) {
         if (active)
             System.setProperty(ACTIVATE_PROPERTY, "true");
         else

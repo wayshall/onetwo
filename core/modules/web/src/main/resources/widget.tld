@@ -303,7 +303,7 @@
       <description><![CDATA[Set the html title attribute on rendered html element]]></description>
       <name>title</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css class to use for element]]></description>
@@ -364,7 +364,7 @@
       <description><![CDATA[Set the html title attribute on rendered html element]]></description>
       <name>title</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css class to use for element]]></description>
@@ -454,7 +454,7 @@
       <description><![CDATA[Set the html title attribute on rendered html element]]></description>
       <name>title</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css class to use for element]]></description>
@@ -545,6 +545,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[showOnly]]></description>
+      <name>showOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>id</name>
@@ -570,7 +576,7 @@
       <description><![CDATA[Set the html title attribute on rendered html element]]></description>
       <name>title</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[The css class to use for element]]></description>

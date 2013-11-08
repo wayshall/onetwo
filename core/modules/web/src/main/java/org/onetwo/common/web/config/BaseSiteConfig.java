@@ -40,6 +40,8 @@ public class BaseSiteConfig extends AppConfig {
 	
 
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
+	public static final String TIME_PROFILER = "time.profiler";
+	public static final String LOG_OPERATION = "log.operation";
 	
 	public static final String SAFE_REQUEST = "safe.request";
 	
@@ -300,5 +302,13 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public boolean isSafeRequest(){
 		return getBoolean(SAFE_REQUEST, true);
+	}
+	
+	public boolean isTimeProfiler(){
+		return getBoolean(TIME_PROFILER, isDev());
+	}
+	
+	public boolean isLogOperation(){
+		return getBoolean(LOG_OPERATION, false);
 	}
 }

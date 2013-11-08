@@ -10,10 +10,10 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.PreDeleteEventListener;
 import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
-import org.onetwo.common.hibernate.interceptor.PrintInfoInterceptor;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -35,6 +35,7 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 	private PreInsertEventListener[] preInsertEventListeners;
 	private PreUpdateEventListener[] preUpdateEventListeners;
 	private SaveOrUpdateEventListener[] saveOrUpdateEventListeners;
+	private PreDeleteEventListener[] preDeleteEventListeners;
 	
 	@Autowired
 	private JFishPropertyPlaceholder configHolder; 
@@ -46,9 +47,6 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		if(getHibernateProperties()==null || getHibernateProperties().isEmpty()){
 			this.setHibernateProperties(autoHibernateConfig());
 		}
-		
-		setEntityInterceptor(new PrintInfoInterceptor());
-		
 		super.afterPropertiesSet();
 	}
 	
@@ -97,6 +95,12 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		}
 		reg.getEventListenerGroup(EventType.PRE_UPDATE).appendListeners(preUpdateEventListeners);
 
+		if(preDeleteEventListeners==null){
+			List<PreDeleteEventListener> preUpdates = SpringUtils.getBeans(applicationContext, PreDeleteEventListener.class);
+			this.preDeleteEventListeners = preUpdates.toArray(new PreDeleteEventListener[0]);
+		}
+		reg.getEventListenerGroup(EventType.PRE_DELETE).appendListeners(preDeleteEventListeners);
+
 		if(saveOrUpdateEventListeners==null){
 			List<SaveOrUpdateEventListener> preUpdates = SpringUtils.getBeans(applicationContext, SaveOrUpdateEventListener.class);
 			this.saveOrUpdateEventListeners = preUpdates.toArray(new SaveOrUpdateEventListener[0]);
@@ -117,6 +121,10 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 
 	public void setSaveOrUpdateEventListeners(SaveOrUpdateEventListener[] saveOrUpdateEventListeners) {
 		this.saveOrUpdateEventListeners = saveOrUpdateEventListeners;
+	}
+
+	public void setPreDeleteEventListeners(PreDeleteEventListener[] preDeleteEventListeners) {
+		this.preDeleteEventListeners = preDeleteEventListeners;
 	}
 
 	@Override

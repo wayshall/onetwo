@@ -1,9 +1,10 @@
 package org.onetwo.common.profiling;
 
 
-public class TimerOutputer {
+public class TimerOutputer implements TimeLogger {
 	
-	public void println(String msg){
+	@Override
+	public void log(String msg){
 		System.out.println("==================>>>"+msg);
 	}
 
