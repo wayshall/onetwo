@@ -18,6 +18,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <urlrewrite.version>3.2.0</urlrewrite.version>
+	<tomcat.version>7.0.29</tomcat.version>
+    <hibernate.validator.version>4.3.0.Final</hibernate.validator.version>
   </properties>
 
   <dependencies>
@@ -102,6 +104,13 @@
     	<artifactId>tools</artifactId>
     </dependency>
 	 -->
+	 
+	 
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-validator</artifactId>
+	  <version>${hibernate.validator.version}</version>
+	</dependency>
 
 	<dependency>
 	  <groupId>javax.servlet</groupId>
@@ -146,6 +155,32 @@
 	  <groupId>net.sourceforge.ajaxanywhere</groupId>
 	  <artifactId>ajaxanywhere</artifactId>
 	  <version>1.2.1</version>
+	</dependency>
+	
+	<!-- embed tomcat -->
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-core</artifactId>
+	  <scope>test</scope>
+	</dependency>
+
+	<dependency>
+	  <groupId>javax.servlet.jsp</groupId>
+	  <artifactId>jsp-api</artifactId>
+	  <version>2.2.1-b03</version>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-logging-log4j</artifactId>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-jasper</artifactId>
+	  <scope>test</scope>
 	</dependency>
     
   </dependencies>

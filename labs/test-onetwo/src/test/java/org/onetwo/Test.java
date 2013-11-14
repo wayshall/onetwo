@@ -14,7 +14,7 @@ public class Test {
 	
 	public static void main(String[] args){
 		Method m = ReflectUtils.findMethod(UserEntity.class, "getUserName");
-		System.out.println("m:"+m);
+		System.out.println("m("+String.valueOf(Integer.MAX_VALUE).length()+"):"+Integer.MAX_VALUE);
 		System.out.println("m:"+m.toGenericString());
 	}
 	
