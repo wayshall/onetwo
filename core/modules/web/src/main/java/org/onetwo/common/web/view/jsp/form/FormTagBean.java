@@ -18,6 +18,7 @@ public class FormTagBean extends HtmlElement {
 	private FormFieldTagBean submit;
 
 	private FormDataProvider provider;
+	private boolean showOnly;
 
 	public void addField(FormFieldTagBean field) {
 		field.setFormBean(this);
@@ -88,6 +89,14 @@ public class FormTagBean extends HtmlElement {
 	
 	public String getId(){
 		return super.getId()+"Form";
+	}
+
+	public boolean isShowOnly() {
+		return showOnly;
+	}
+
+	public void setShowOnly(boolean showOnly) {
+		this.showOnly = showOnly;
 	}
 
 }

@@ -44,6 +44,9 @@ public interface BaseEntityManager {
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
 
+	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties);
+	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties);
+
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
 	
 //	public <T> List<T> findList(QueryBuilder squery);

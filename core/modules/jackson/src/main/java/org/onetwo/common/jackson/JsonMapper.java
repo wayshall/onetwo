@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.codehaus.jackson.JsonParser.Feature;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.map.util.JSONPObject;
@@ -45,8 +47,8 @@ public class JsonMapper {
 		return jsonm;
 	}
 	
-	public static JsonMapper mapper(Inclusion include){
-		JsonMapper jsonm = new JsonMapper(include);
+	public static JsonMapper mapper(Inclusion include, boolean fieldVisibility){
+		JsonMapper jsonm = new JsonMapper(include, fieldVisibility);
 		return jsonm;
 	}
 	
@@ -54,13 +56,19 @@ public class JsonMapper {
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
+
 	public JsonMapper(Inclusion include){
+		this(include, false);
+	}
+	public JsonMapper(Inclusion include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 		setDateFormat(DateUtil.Date_Time);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		if(fieldVisibility)
+			objectMapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
 	}
 	
 	@SuppressWarnings("deprecation")

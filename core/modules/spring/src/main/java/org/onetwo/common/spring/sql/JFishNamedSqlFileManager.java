@@ -1,13 +1,19 @@
 package org.onetwo.common.spring.sql;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
 import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -40,14 +46,28 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 		return info;
 	}
 	
+	@Override
+	protected List<String> readResourceAsList(ResourceAdapter f){
+		if(f.isSupportedToFile()){
+			return FileUtils.readAsList(f.getFile());
+		}else{
+			Resource res = (Resource)f.getResource();
+			try {
+				return FileUtils.readAsList(res.getInputStream());
+			} catch (IOException e) {
+				throw new BaseException("read content error: " + f, e);
+			}
+		}
+	}
 	
-	protected File[] scanMatchSqlFiles(JFishPropertyConf conf){
+	@Override
+	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf conf){
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
 		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
 		
-		File[] allSqlFiles = null;
+		ResourceAdapter[] allSqlFiles = null;
 		try {
 			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
 			if(StringUtils.isNotBlank(conf.getOverrideDir())){
@@ -57,10 +77,10 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
 				}
 			}
-			allSqlFiles = new File[sqlfileArray.length];
+			allSqlFiles = new ResourceAdapter[sqlfileArray.length];
 			int index = 0;
 			for(Resource rs : sqlfileArray){
-				allSqlFiles[index++] = rs.getFile();
+				allSqlFiles[index++] = new SpringResourceAdapterImpl(rs);
 			}
 		} catch (Exception e) {
 			throw new BaseException("scan sql file error: " + e.getMessage());

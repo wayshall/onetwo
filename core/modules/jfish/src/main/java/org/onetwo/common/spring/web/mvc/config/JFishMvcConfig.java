@@ -10,6 +10,7 @@ import org.onetwo.common.excel.DefaultXmlTemplateExcelFacotory;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
+import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -31,6 +32,8 @@ import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
 import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
+import org.onetwo.common.spring.web.mvc.log.AccessLogger;
+import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -143,6 +146,19 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		@Bean
 		public MappedInterceptor mappedInterceptor4First() {
 			return WebInterceptorAdapter.createMappedInterceptor(new JFishFirstInterceptor());
+		}
+
+		@Bean
+		public MappedInterceptor mappedLoggerInterceptor() {
+			LoggerInterceptor loggerInterceptor = SpringUtils.getHighestOrder(applicationContext, LoggerInterceptor.class);
+			if(loggerInterceptor==null){
+				loggerInterceptor = new LoggerInterceptor();
+				ContextHolder contextHolder = SpringUtils.getHighestOrder(applicationContext, ContextHolder.class);
+				AccessLogger accessLogger = SpringUtils.getHighestOrder(applicationContext, AccessLogger.class);
+				loggerInterceptor.setContextHolder(contextHolder);
+				loggerInterceptor.setAccessLogger(accessLogger);
+			}
+			return WebInterceptorAdapter.createMappedInterceptor(loggerInterceptor);
 		}
 
 		/*@Bean
@@ -382,6 +398,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}
 		return factory;
 	}
+	
 
 	public static class MvcBeanNames {
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";

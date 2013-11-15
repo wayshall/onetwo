@@ -3,6 +3,7 @@ var Common = function () {
 };
 
 (function ($) {
+	var loadHtml = '<div id="loadingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-body"><p>正在加载，请稍候……</p></div></div>';
 	
 	$.extend({
 		showMessageOn : function(ele, message, cb){
@@ -23,9 +24,45 @@ var Common = function () {
 				title = "提示";
 			modalWin.find('.modal-title').html(title);
 			modalWin.find('.modal-body').html(message);
+			modalWin.modal({keyboard: false, backdrop: 'static'});
 			modalWin.modal('show');
+		},
+		
+		closeTipsWindow: function(){
+			var modalWin = $('#showTipsModal');
+			modalWin.modal('toggle');
+		},
+		
+		showBlockMsg: function(message){
+			var loadDiv = $('#loadingModal');
+			if(loadDiv.length==0){
+				loadDiv = $(loadHtml);
+				loadDiv.appendTo(document.body);
+				loadDiv.modal({keyboard: false, backdrop: 'static'});
+			}
+			if(message)
+				loadDiv.find('.modal-body').html(message);
+			loadDiv.modal('show');
+		},
+		closeBlockMsg: function(){
+			var loadDiv = $('#loadingModal');
+			if(loadDiv)
+				loadDiv.modal('toggle');
 		}
+		
 	});
+	
+	if(AjaxAnywhere){
+		AjaxAnywhere.prototype.hideLoadingMessage = function() {
+			$.closeBlockMsg()
+		};
+		AjaxAnywhere.prototype.showLoadingMessage = function() {
+			$.showBlockMsg()
+		};
+		AjaxAnywhere.prototype.handlePrevousRequestAborted = function() {
+			$.showTipsWindow('请求正在加载中，请勿频繁操作！')
+		};
+	}
 	
 	var jfish;
 	$.jfish = jfish = {
@@ -53,7 +90,7 @@ var Common = function () {
 
 				form = form || $(this).parents("form:first")[0];
 				
-
+				
 				var checkfields = $(jfish.cssKeys.checkAll, form);
 				if(checkfields.length>0){
 					var values = $(form).checkboxValues(true);
@@ -83,29 +120,28 @@ var Common = function () {
 					amethod = restMethod;
 				}
 				if(!!amethod){//true
-					var methodEle = $('input[name="_method"]', $(form));
-					if(methodEle){
-						methodEle.val(amethod);
-					}else{
-						metadata_input = '<input name="_method" value="'+amethod+'" type="hidden" />';
-						$(form).append(metadata_input);
-					}
+					jfish.appendHiddenMethodParamIfNecessary(form, amethod);
 				}
 
-				var params = eval("("+$(this).attr("data-params")+")");
-				if(params){
-					params_input = "";
-					for(var p in params){
-						params_input += '<input name="'+p+'" value="'+params[p]+'" type="hidden" />';
+				jfish.appendHiddenByDataParams(this, form);
+				
+				var remote = eval($(this).attr('remote'));
+				if(remote && remote==true){
+					var ajaxName = $(this).attr('ajaxName');
+					if(!ajaxName){
+						alert("不支持ajax请求！");
+						return false;
 					}
-					$(form).append(params_input);
+					ajaxAnywhere.getZonesToReload = function() {
+						return ajaxName;
+					}
+					ajaxAnywhere.formName=$(form).attr('id');
+					ajaxAnywhere.submitAJAX();
+					return false;
+				}else{
+					$(form).submit();
+					return false;
 				}
-				params = $(this).find('input[type=hidden]');
-				if(params && params.length>0){
-					$(form).append(params);
-				}
-				$(form).submit();
-				return false;
 			}
 		},
 		
@@ -128,6 +164,16 @@ var Common = function () {
 			}
 		},
 		
+		appendHiddenMethodParamIfNecessary: function(form, method){
+			var methodEle = $('input[name=_method]', $(form));
+			if(methodEle){
+				methodEle.val(method);
+			}else{
+				var metadata_input = '<input name="_method" value="'+method+'" type="hidden" />';
+				$(form).append(metadata_input);
+			}
+		},
+		
 		init : function(){
 			$(jfish.cssKeys.linkButton).live("click", function(){
 				var confirmMsg = $(this).attr('data-confirm')
@@ -140,6 +186,22 @@ var Common = function () {
 			});
 			
 			$(jfish.cssKeys.formButton).live("click", jfish.handleFormFunc());
+			
+			$('.jfish-toggle-control').live("click", function(){
+				var $this = $(this);
+				var parent = $this.parents('.jfish-container');
+				var body = parent.find('.jfish-toggle-body');
+				if($this.attr('control')=='0'){
+					body.fadeToggle();
+					$this.html('隐藏');
+					$this.attr('control', '1');
+				}else{
+					body.fadeToggle();
+					$this.html('显示');
+					$this.attr('control', '0');
+				}
+			});
+
 			
 		},
 		
@@ -160,8 +222,36 @@ var Common = function () {
 		handleMethod : function(link) {
 			var href = link.attr('href');
 			var method = link.attr('data-method');
-			target = link.attr('target');
-			var form = link.parents('form');
+			var target = link.attr('target');
+			
+			var remote = eval($(link).attr('remote'));
+			var ajaxInst = null;
+			var form = null;
+			if(remote && remote==true){
+				var ajaxName = $(link).attr('ajaxName');
+				//ajaxInst = AjaxAnywhere.findInstance(ajaxName);
+				ajaxInst = ajaxAnywhere;
+				if(!ajaxName || !ajaxInst){
+					alert("不支持ajax请求");
+					return false;
+				}
+
+				ajaxAnywhere.getZonesToReload = function() {
+					return ajaxName;
+				}
+				if(method && method.toLowerCase()=='get'){
+					ajaxInst.getAJAX(href);
+					return false;
+				}
+				//var formId = ajaxInst.formName;
+				//form = $('#'+formId);
+			}
+			
+			
+			if(!form){
+				form = $(link).parents("form:first");
+			}
+			
 			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
@@ -174,23 +264,33 @@ var Common = function () {
 				form.attr("method", method);
 			}
 			else{
-				form = $('<form method="post" action="'+ href + '"></form>');
-				metadata_input = '<input name="_method" value="'+ method + '" type="hidden" />';
-				form.appendTo('body');
+				var formId = '_linkForm';
+				form = $('#'+formId);
+				if(form.length==0){
+					form = $('<form id="'+formId+'" name="'+formId+'" method="post" action="'+ href + '"></form>');
+					metadata_input = '<input name="_method" value="'+ method + '" type="hidden" />';
+					form.appendTo('body');
+				}
 			}
-			
-			var params = $(link).children(".link_params").html();
-			if(params){
-				metadata_input += params;
-			}
-			
-			jfish.appendHiddenByDataParams(link, form);
+
+			jfish.appendHiddenMethodParamIfNecessary(form, method);
 
 			if (target) {
 				form.attr('target', target);
 			}
-			form.hide().append(metadata_input);
-			form.submit();
+			
+			if(ajaxInst){
+				ajaxInst.formName=form.attr('id');
+				ajaxInst.submitAJAX();
+				return false;
+			}else{
+				var params = $(link).children(".link_params").html();
+				if(params){
+					form.append(params);
+				}
+				jfish.appendHiddenByDataParams(link, form);
+				$(form).submit();
+			}
 		}
 		
 	};
@@ -298,7 +398,8 @@ var Common = function () {
 			var l = ($(window).width()-$(this).width())/2;
 //			alert("t:"+t+" l:"+l);
 //			$(this).offset({top: t, left: l});
-			$(this).css({top: t+"px", left: l+"px"});
+			//$(this).css({top: t+"px", left: l+"px"});
+			$(this).offset({top: t, left: l});
 		},
 		
 		onFormCenter : function(loadE){

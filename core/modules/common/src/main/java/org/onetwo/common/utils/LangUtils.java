@@ -1350,8 +1350,8 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = append(strs);
-		s = MDFactory.MD5.encrypt(s + new Date().getTime() + getRadomString(6));
+		String s = appendNotBlank(strs);
+		s = MDFactory.MD5.encrypt(s + System.currentTimeMillis() + getRadomString(6));
 		return s;
 	}
 
@@ -1415,5 +1415,39 @@ public class LangUtils {
 				str.delete(0, str.length()-length);
 		}
 		return str.toString();
+	}
+	
+	public static String fixedLengthString(String str, int length, String padString){
+		if(StringUtils.isBlank(str))
+			return padLeft("", length, padString);
+		if(str.length()>=length){
+			return str.substring(str.length()-length, str.length());
+		}else{
+			return padLeft(str, length, padString);
+		}
+	}
+	
+
+	public static Object safeGetValue(Object elemetns, int index){
+		return safeGetValue(elemetns, index, null);
+	}
+	
+	public static Object safeGetValue(Object elemetns, int index, Object def){
+		if(elemetns==null)
+			return def;
+		if(elemetns.getClass().isArray()){
+			Object[] array = (Object[]) elemetns;
+			if(index>=array.length){
+				return def;
+			}
+			return array[index];
+		}else if(List.class.isInstance(elemetns)){
+			List<?> list = (List) elemetns;
+			if(index>=list.size())
+				return def;
+			return list.get(index);
+		}else{
+			throw new UnsupportedOperationException("unsupported type: "+ elemetns.getClass());
+		}
 	}
 }

@@ -7,6 +7,7 @@ public class LinkTagBean extends HtmlElement {
 	private String dataMethod;
 	private String dataConfirm;
 	private String href;
+	private boolean safeUrl;
 	
 	public String getDataMethod() {
 		return dataMethod;
@@ -26,6 +27,11 @@ public class LinkTagBean extends HtmlElement {
 	public void setHref(String href) {
 		this.href = href;
 	}
-	
+	public boolean isSafeUrl() {
+		return safeUrl;
+	}
+	public void setSafeUrl(boolean safeUrl) {
+		this.safeUrl = safeUrl;
+	}
 	
 }

@@ -3,7 +3,6 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -32,6 +31,10 @@ public class GridTagBean extends HtmlElement {
 	private SearchForm searchFormBean;
 	private boolean searchForm;
 	
+
+	private boolean ajaxSupported = false;
+	private String ajaxZoneName;
+//	private String ajaxInstName;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -149,6 +152,8 @@ public class GridTagBean extends HtmlElement {
 	}
 	
 	public boolean isPagination(){
+		if(!this.page.isAutoCount())
+			return false;
 		return this.pagination;
 	}
 
@@ -173,4 +178,22 @@ public class GridTagBean extends HtmlElement {
 		getSearchFormBean().addField(field);
 	}
 
+	public boolean isAjaxSupported() {
+		return ajaxSupported;
+	}
+
+	public void setAjaxSupported(boolean ajaxSupported) {
+		this.ajaxSupported = ajaxSupported;
+	}
+
+	public String getAjaxZoneName() {
+		return ajaxZoneName;
+	}
+
+	public void setAjaxZoneName(String ajaxZoneName) {
+		this.ajaxZoneName = ajaxZoneName;
+	}
+
+
+	
 }

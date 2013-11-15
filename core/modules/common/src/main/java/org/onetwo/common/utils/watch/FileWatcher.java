@@ -9,6 +9,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;
 
 /********
@@ -38,10 +39,10 @@ public class FileWatcher {
 		this.initDelay = initDelay;
 	}
 
-	public void watchFile(FileChangeListener listener, File...files){
+	public void watchFile(FileChangeListener listener, ResourceAdapter...files){
 		watchFile(1, listener, files);
 	}
-	public void watchFile(long periodSecond, FileChangeListener listener, File...files){
+	public void watchFile(long periodSecond, FileChangeListener listener, ResourceAdapter...files){
 		Assert.notEmpty(files);
 		WatchFileTask task = new WatchFileTask(files, listener);
 		addFileTask(periodSecond, task);
@@ -57,11 +58,12 @@ public class FileWatcher {
 		private final JFishList<FileState> fileStates;
 		private final FileChangeListener listener;
 		
-		private WatchFileTask(File[] files, FileChangeListener listener) {
+		private WatchFileTask(ResourceAdapter[] files, FileChangeListener listener) {
 			super();
 			fileStates = JFishList.newList(files.length);
-			for(File file : files){
-				fileStates.add(new FileState(file));
+			for(ResourceAdapter file : files){
+				if(file.isSupportedToFile())
+					fileStates.add(new FileState(file.getFile()));
 			}
 			this.listener = listener;
 		}

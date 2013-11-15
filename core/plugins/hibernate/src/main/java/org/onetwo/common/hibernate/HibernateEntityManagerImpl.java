@@ -57,7 +57,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(appConfig, "appConfig can not be null.");
-		boolean watchSqlFile = appConfig.isDev();
+		boolean watchSqlFile = !appConfig.isProduct();
 		String db = JdbcUtils.getDataBase(dataSource).toString();
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);

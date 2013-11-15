@@ -14,12 +14,16 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 
 	
 	@Override
-	public Token generateToken(String ptokenFieldName, HttpServletRequest request, HttpServletResponse response){
-		Token token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+	public CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response){
+		CsrfToken token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
 		if(token!=null)
 			return token;
 		
-		token = super.generateToken(ptokenFieldName, request, response);
+		synchronized (request.getSession()) {
+			token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+			if(token==null)
+				token = super.generateToken(request, response);
+		}
 		return token;
 	}
 	
@@ -28,16 +32,18 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 //	}
 	
 	@Override
-	protected Token getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
+	protected CsrfToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
 		return WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
 	}
 	@Override
-	protected void cleanStoredTokenValue(Token token, HttpServletRequest request, HttpServletResponse response){
-//		WebContextUtils.remove(request.getSession(), fieldOfTokenFieldName);
+	protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response){
+		if(invalid)
+			WebContextUtils.remove(request.getSession(), fieldOfTokenFieldName);
+//		super.cleanStoredTokenValue(token, request, response);
 	}
 
 	@Override
-	protected void storeToken(Token token, HttpServletRequest request, HttpServletResponse response){
+	protected void storeToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response){
 		WebContextUtils.attr(request.getSession(), fieldOfTokenFieldName, token);
 	}
 }

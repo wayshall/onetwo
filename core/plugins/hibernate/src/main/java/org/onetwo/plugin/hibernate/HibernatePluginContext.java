@@ -63,5 +63,4 @@ public class HibernatePluginContext  {
 		return new TimestampEventListener();
 	}
 	
-	
 }

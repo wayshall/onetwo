@@ -90,15 +90,13 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		sql.append(select);
 		if (join != null)
 			sql.append(join);
-		if (params.isEmpty()) {
-			if (orderBy != null)
-				sql.append(orderBy);
-			return this;
+		
+		if (!params.isEmpty()) {
+			this.buildWhere();
+			if(where!=null)
+				sql.append(where);
 		}
 		
-		this.buildWhere();
-		if(where!=null)
-			sql.append(where);
 		if (orderBy != null)
 			sql.append(orderBy);
 

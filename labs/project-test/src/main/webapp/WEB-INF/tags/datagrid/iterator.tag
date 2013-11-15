@@ -3,7 +3,6 @@
 <%@ taglib prefix="gridRender" tagdir="/WEB-INF/tags/datagrid" %>
 
 <%@ attribute name="row" type="org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean" required="true"%>
-<%@ attribute name="entity" type="java.lang.Object" required="true"%>
 
 <c:if test="${row.renderHeader}">
 	<thead>
@@ -20,9 +19,12 @@
 				String linkText = "";
 				if(fieldBean.isOrderable()){
 					linkText = "<a href='";
-					linkText += fieldBean.appendOrderBy(fieldBean.getRowTagBean().getGridTagBean().getAction());
+					linkText += fieldBean.appendOrderBy(fieldBean.getRowTagBean().getGridTagBean().getAction()) +"' ";
 							
-					linkText += "'>";
+					if(fieldBean.getGrid().isFormPagination()){
+						linkText += " data-method='post'";
+					}
+					linkText += ">";
 					linkText +=fieldBean.getLabel();
 					
 					if (fieldBean.isOrdering() && fieldBean.getOrderType()==":desc"){

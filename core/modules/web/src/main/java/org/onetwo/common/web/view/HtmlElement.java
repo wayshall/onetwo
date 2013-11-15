@@ -25,6 +25,9 @@ abstract public class HtmlElement {
 	}
 
 	public String getName() {
+		/*if(StringUtils.isBlank(name)){
+			return getClass().getSimpleName();
+		}*/
 		return name;
 	}
 

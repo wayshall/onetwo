@@ -29,6 +29,8 @@ import javax.imageio.ImageIO;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
@@ -42,7 +44,8 @@ public class FileUtils {
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
-	
+
+	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
 
 	private FileUtils() {
@@ -356,9 +359,9 @@ public class FileUtils {
 	}
 
 	public static String getFileName(String fileName) {
-		if(fileName.indexOf('\\')!=-1)
-			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(SLASH_CHAR);
+//		if(fileName.indexOf(File.separatorChar)!=-1)
+//			fileName = fileName.replace('\\', SLASH_CHAR);
+		int start = fileName.lastIndexOf(File.separatorChar);
 		return fileName.substring(start+1);
 	}
 
@@ -763,6 +766,21 @@ public class FileUtils {
 		File baseDir = new File(baseDirPath);
 		baseDir = baseDir.getParentFile().getParentFile();
 		return baseDir;
+	}
+	
+	public static ResourceAdapter adapterResource(Object resource){
+		return new ResourceAdapterImpl(resource);
+	}
+	
+	public static ResourceAdapter[] adapterResources(Object[] resource){
+		if(LangUtils.isEmpty(resource))
+			return EMPTY_RESOURCES;
+		ResourceAdapterImpl[] reslist = new ResourceAdapterImpl[resource.length];
+		int index = 0;
+		for(Object obj : resource){
+			reslist[index++] = new ResourceAdapterImpl(obj);
+		}
+		return reslist;
 	}
 	
 	public static void main(String[] args) {

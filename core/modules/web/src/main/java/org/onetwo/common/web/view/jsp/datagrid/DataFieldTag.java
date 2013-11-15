@@ -108,10 +108,6 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		this.orderable = orderable;
 	}
 
-	public String getRender() {
-		return render;
-	}
-
 	public void setRender(String render) {
 		this.render = render;
 	}

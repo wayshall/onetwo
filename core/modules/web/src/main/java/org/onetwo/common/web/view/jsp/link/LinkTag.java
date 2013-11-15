@@ -1,7 +1,12 @@
 package org.onetwo.common.web.view.jsp.link;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
@@ -23,6 +28,13 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 		super.populateComponent();
 		component.setDataConfirm(dataConfirm);
 		component.setDataMethod(dataMethod);
+
+		boolean safeUrl = BaseSiteConfig.getInstance().isSafeRequest();
+		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl){
+			href = CsrfPreventorFactory.getDefault().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+    	}
+
+		component.setSafeUrl(safeUrl);
 		component.setHref(href);
 
 		setComponentIntoRequest(this.getClass().getSimpleName(), component);

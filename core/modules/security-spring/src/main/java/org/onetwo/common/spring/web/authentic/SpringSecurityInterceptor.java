@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
 import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
@@ -35,6 +36,8 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 	private ApplicationContext applicationContext;
 	private AuthenticConfigService authenticConfigService;
 	private int order = Ordered.HIGHEST_PRECEDENCE;
+	
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	public SpringSecurityInterceptor(){
 	}
@@ -59,9 +62,6 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		String pname = "SpringSecurityInterceptor";
-		UtilTimerStack.push(pname);
-		
 		SecurityTarget target = createSecurityTarget(request, response, handler);
 		if(target==null){
 //			logger.info(request.getRequestURL() + " can not create target, ignore it.");
@@ -94,7 +94,9 @@ public class SpringSecurityInterceptor implements HandlerInterceptor, Initializi
 			checkable.setLastActivityTime(new Date());
 		}
 		
-		UtilTimerStack.pop(pname);			
+		if(BaseSiteConfig.getInstance().isSafeRequest())
+			csrfPreventor.validateToken(hm.getMethod(), request, response);
+		
 		return true;
 	}
 	

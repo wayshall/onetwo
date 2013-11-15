@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
@@ -55,24 +56,36 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				CurrentRowData cdata = new CurrentRowData(data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
-				if(StringUtils.isNotBlank(getName()))
-					pageContext.getRequest().setAttribute(getName(), cdata.getOriginData());
+				if(StringUtils.isNotBlank(component.getName()))
+					pageContext.getRequest().setAttribute(component.getName(), cdata.getOriginData());
 				
 				return EVAL_BODY_BUFFERED;
 			}else{
 				if(!component.isFieldTagCompletion()){
 					return EVAL_BODY_BUFFERED;
 				}
-				clearComponentFromRequest(CURRENT_ROW_DATA);
+//				clearComponentFromRequest(CURRENT_ROW_DATA);
 				
-				if(StringUtils.isNotBlank(getName()))
-					pageContext.getRequest().removeAttribute(getName());
 				
 				return SKIP_BODY;
 			}
 		}else{
+			CurrentRowData cdata = new CurrentRowData(LangUtils.newHashMap(), 0);
+			setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
+			
+			component.setCurrentRowData(cdata);
+			
 			return EVAL_BODY_BUFFERED;
 		}
+	}
+
+
+	@Override
+	public int endTag() throws Exception {
+		clearComponentFromRequest(CURRENT_ROW_DATA);
+		if(StringUtils.isNotBlank(component.getName()))
+			pageContext.getRequest().removeAttribute(component.getName());
+		return super.endTag();
 	}
 
 	@Override
