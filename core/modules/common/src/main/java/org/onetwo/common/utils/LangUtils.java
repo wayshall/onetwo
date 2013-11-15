@@ -684,8 +684,9 @@ public class LangUtils {
 	}
 	
 
+	public static final String UTF8 = "utf-8";
 	public static byte[] getBytes(String source){
-		return getBytes(source, null);
+		return getBytes(source, UTF8);
 	}
 	
 	public static byte[] getBytes(String source, String charset){
