@@ -1,4 +1,4 @@
-package org.onetwo.common.fish.plugin;
+package org.onetwo.common.spring.plugin;
 
 import org.springframework.web.context.WebApplicationContext;
 
@@ -8,9 +8,9 @@ import org.springframework.web.context.WebApplicationContext;
  * @author weishao
  *
  */
-public interface JFishPluginLifeCycleListener {
+public interface JFishPluginLifeCycleListener<T extends ContextPluginMeta<? extends ContextPlugin<?>>> {
 
-	void init(JFishPluginMeta pluginMeta);
+	void init(T pluginMeta);
 	void onStartWebAppConext(WebApplicationContext appContext);
 	void onStopWebAppConext();
 }

@@ -2,6 +2,10 @@ package org.onetwo.common.web.config;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.spring.plugin.ContextPlugin;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
+import org.onetwo.common.spring.plugin.ContextPluginMeta;
+import org.onetwo.common.spring.plugin.SpringContextPluginManager;
 import org.onetwo.common.utils.list.JFishList;
 
 /*****
@@ -23,9 +27,13 @@ public class WebProfilesApplicationContext extends AbstractJFishAnnotationConfig
 	public WebProfilesApplicationContext(Class<?>[] outerContextClasses){
 		SpringUtils.setProfiles(BaseSiteConfig.getInstance().getAppEnvironment());
 		
+		ContextPluginManager jpm = new SpringContextPluginManager<ContextPluginMeta<? extends ContextPlugin<?>>>(BaseSiteConfig.getInstance().getAppEnvironment());
+		jpm.scanPlugins();
+		
 		final JFishList<Class<?>> contextClasses = JFishList.create();
 		contextClasses.add(ClassPathApplicationContext.class);
 		contextClasses.addArray(outerContextClasses);
+		jpm.registerPluginJFishContextClasses(contextClasses);
 
 		this.register(contextClasses.toArray(new Class[contextClasses.size()]));
 	}
