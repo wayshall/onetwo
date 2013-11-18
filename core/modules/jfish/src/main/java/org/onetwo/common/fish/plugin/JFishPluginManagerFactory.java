@@ -25,7 +25,10 @@ public final class JFishPluginManagerFactory {
 	public static JFishPluginManager getPluginManager(){
 		if(PLUGIN_MANAGER==null){
 //			throw new JFishException("JFishPluginManager has not inited!");
-			initPluginManager();
+			synchronized (JFishPluginManagerFactory.class) {
+				if(PLUGIN_MANAGER==null)
+					initPluginManager();
+			}
 		}
 		return PLUGIN_MANAGER;
 	}

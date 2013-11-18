@@ -16,5 +16,5 @@ public interface ContextPluginManager {
 	 * @param contextClasses
 	 */
 	public void registerPluginJFishContextClasses(List<Class<?>> contextClasses);
-
+	
 }

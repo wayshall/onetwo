@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
-import org.onetwo.common.fish.plugin.PluginInfo;
 import org.onetwo.common.fish.plugin.anno.PluginControllerConf;
+import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.OrderComparator;

@@ -1,4 +1,4 @@
-package org.onetwo.common.fish.plugin;
+package org.onetwo.common.spring.plugin;
 
 import java.util.List;
 
