@@ -15,12 +15,6 @@ public interface JFishPluginManager {
 
 	public PluginNameParser getPluginNameParser();
 	
-	/****
-	 * scan plugins on webapp application start 
-	 * {@linkplain org.onetwo.common.fish.web.JFishWebApplicationContext JFishWebApplicationContext},
-	 * it common start by web context listener.
-	 */
-	public void scanPlugins();
 	
 	/****
 	 * called when jfish dispatcher servlet(spring mvc) initialize mvc context
@@ -43,11 +37,6 @@ public interface JFishPluginManager {
 	 * @param contextClasses
 	 */
 	public void registerPluginMvcContextClasses(List<Class<?>> contextClasses);
-	/***
-	 * called when jfish instance a {@linkplain org.onetwo.common.fish.web.JFishWebApplicationContext JFishWebApplicationContext} .
-	 * @param contextClasses
-	 */
-	public void registerPluginJFishContextClasses(List<Class<?>> contextClasses);
 	
 	public void destroy();
 
