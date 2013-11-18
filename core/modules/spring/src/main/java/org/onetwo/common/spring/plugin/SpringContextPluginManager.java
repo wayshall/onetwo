@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-public class SpringContextPluginManager<T extends ContextPluginMeta<? extends ContextPlugin>> implements ContextPluginManager {
+ public class SpringContextPluginManager<T extends ContextPluginMeta> implements ContextPluginManager {
 
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
 	
@@ -121,6 +121,8 @@ public class SpringContextPluginManager<T extends ContextPluginMeta<? extends Co
 		meta.getJfishPlugin().init(meta);
 	}
 	
+
+//	abstract protected T createPluginMeta(PluginInfo plugin);
 	protected T createPluginMeta(PluginInfo plugin){
 		return (T)new DefaultContextPluginMeta(plugin);
 	}
@@ -143,5 +145,7 @@ public class SpringContextPluginManager<T extends ContextPluginMeta<? extends Co
 	public JFishList<T> getPluginMetas() {
 		return pluginMetas;
 	}
+	
+	
 
 }

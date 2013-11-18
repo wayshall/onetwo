@@ -2,10 +2,11 @@ package org.onetwo.plugins.dq;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
+import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
 
-public class DqPlugin extends AbstractJFishPlugin<DqPlugin> {
+public class DqPlugin extends AbstractContextPlugin<DqPlugin, DefaultContextPluginMeta<DqPlugin>> {
 
 	private static DqPlugin instance;
 	
@@ -14,10 +15,6 @@ public class DqPlugin extends AbstractJFishPlugin<DqPlugin> {
 		return instance;
 	}
 	
-
-	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
-	}
 	
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {

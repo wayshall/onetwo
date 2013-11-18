@@ -75,7 +75,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
-				meta.getJfishPlugin().onStartWebAppConext(appContext);
+				JFishPluginUtils.getJFishPlugin(meta).onStartWebAppConext(appContext);
 			}
 			
 		});
@@ -88,7 +88,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			@Override
 			public void doIt(JFishPluginMeta meta) {
 				logger.info("stop plugin["+meta.getJfishPlugin()+"]..." );
-				meta.getJfishPlugin().onStopWebAppConext();
+				JFishPluginUtils.getJFishPlugin(meta).onStopWebAppConext();
 			}
 			
 		});
@@ -127,7 +127,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	
 
 	public JFishPlugin getJFishPlugin(String name){
-		return getJFishPluginMeta(name).getJfishPlugin();
+		return JFishPluginUtils.getJFishPlugin(getJFishPluginMeta(name));
 	}
 
 	public JFishPluginMeta getJFishPluginMeta(String name){
@@ -145,7 +145,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			protected void doIt(JFishPluginMeta element) {
-				element.getJfishPlugin().onMvcContextClasses(annoClasses);
+				JFishPluginUtils.getJFishPlugin(element).onMvcContextClasses(annoClasses);
 			}
 			
 		});
@@ -194,7 +194,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 					logger.info("add plugin["+e+"]resource path : " + rspath);
 				}
 				
-				e.getJfishPlugin().getJFishMvcConfigurerListener().onMvcBuildFreeMarkerConfigurer(config, hasBuilt);
+				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onMvcBuildFreeMarkerConfigurer(config, hasBuilt);
 			}
 			
 		});
@@ -207,7 +207,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			protected void doIt(JFishPluginMeta e) {
-				e.getJfishPlugin().getJFishMvcConfigurerListener().onMvcPropertyEditorRegistrars(propertyEditorRegistrars);
+				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onMvcPropertyEditorRegistrars(propertyEditorRegistrars);
 			}
 			
 		});
@@ -221,7 +221,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			protected void doIt(JFishPluginMeta e) {
-				e.getJfishPlugin().getJFishMvcConfigurerListener().onMvcInitContext(applicationContext, mvcConfig);
+				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onMvcInitContext(applicationContext, mvcConfig);
 			}
 			
 		});
@@ -234,7 +234,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			public boolean doIt(JFishPluginMeta element, int index) {
-				if(!element.getJfishPlugin().registerMvcResources()){
+				if(!JFishPluginUtils.getJFishPlugin(element).registerMvcResources()){
 					return true;
 				}
 				final String locations = element.getWebResourceMeta().getStaticResourcePath();

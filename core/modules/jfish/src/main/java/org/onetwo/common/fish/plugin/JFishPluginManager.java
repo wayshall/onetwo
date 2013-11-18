@@ -37,7 +37,7 @@ public interface JFishPluginManager extends ContextPluginManager{
 	 * @param contextClasses
 	 */
 	public void registerPluginMvcContextClasses(List<Class<?>> contextClasses);
-	
+
 	public void destroy();
 
 }

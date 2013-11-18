@@ -2,7 +2,10 @@ package org.onetwo.common.spring.plugin;
 
 import java.util.List;
 
-public interface ContextPlugin<T extends ContextPluginMeta<? extends ContextPlugin<?>>> extends JFishPluginLifeCycleListener<T> {
+public interface ContextPlugin {
+
+	void init(ContextPluginMeta pluginMeta);
+	
 	void onJFishContextClasses(List<Class<?>> annoClasses);
 
 }

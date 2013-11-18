@@ -11,7 +11,7 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
  * @author weishao
  *
  */
-public interface JFishPlugin extends ContextPlugin<JFishPluginMeta> {
+public interface JFishPlugin extends ContextPlugin, JFishPluginLifeCycleListener{
 
 	void onMvcContextClasses(List<Class<?>> annoClasses);
 	

@@ -3,7 +3,7 @@ package org.onetwo.common.spring.plugin;
 import org.onetwo.common.utils.ReflectUtils;
 
 
-public class DefaultContextPluginMeta<T extends ContextPlugin> implements ContextPluginMeta<T> {
+public class DefaultContextPluginMeta<T extends ContextPlugin> implements ContextPluginMeta {
 
 	private final PluginInfo pluginInfo;
 	private final T jfishPlugin;

@@ -6,14 +6,12 @@ import org.onetwo.common.spring.plugin.PluginInfo;
 public class DefaultJFishPluginMeta extends DefaultContextPluginMeta<JFishPlugin> implements JFishPluginMeta {
 
 	private final PluginNameParser pluginNameParser;
-	private final PluginInfo pluginInfo;
 	private final PluginWebResourceMeta webResourceMeta;
 	private final PluginConfig pluginConfig;
 	
 	public DefaultJFishPluginMeta(PluginInfo pluginInfo, PluginNameParser parser) {
 		super(pluginInfo);
 		this.pluginNameParser = parser;
-		this.pluginInfo = pluginInfo;
 		PluginConfig pc = this.getJfishPlugin().getPluginConfig();
 		pc.init(this);
 		this.pluginConfig = pc;
@@ -27,10 +25,6 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta<JFishPlugin
 	public boolean isClassOfThisPlugin(Class<?> clazz){
 		return clazz.getName().startsWith(getRootClass().getPackage().getName());
 	}
-
-	public PluginInfo getPluginInfo() {
-		return pluginInfo;
-	}
 	
 	public PluginWebResourceMeta getWebResourceMeta() {
 		return webResourceMeta;
@@ -43,5 +37,9 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta<JFishPlugin
 	public PluginNameParser getPluginNameParser() {
 		return pluginNameParser;
 	}
-	
+
+	@Override
+	public JFishPlugin getJfishPlugin() {
+		return JFishPluginUtils.getJFishPlugin(super.getJfishPlugin());
+	}
 }

@@ -1,9 +1,9 @@
 package org.onetwo.common.spring.plugin;
 
 
-public interface ContextPluginMeta<T extends ContextPlugin> {
+public interface ContextPluginMeta {
 	
-	public T getJfishPlugin();
+	public ContextPlugin getJfishPlugin();
 	
 
 }
