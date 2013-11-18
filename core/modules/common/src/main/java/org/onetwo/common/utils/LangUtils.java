@@ -659,6 +659,11 @@ public class LangUtils {
 		return result;
 	}
 	
+
+	
+	public static String newString(byte[] bytes){
+		return newString(bytes, UTF8);
+	}
 	public static String newString(byte[] bytes, String charset){
 		String result = null;
 		try {

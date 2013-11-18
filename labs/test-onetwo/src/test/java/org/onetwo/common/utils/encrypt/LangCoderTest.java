@@ -1,19 +1,17 @@
 package org.onetwo.common.utils.encrypt;
 
-import javax.crypto.Cipher;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 
-public class AesTest {
+public class LangCoderTest {
 	
 	@Test
 	public void testAes(){
 		String key = "aabbcc";
 //		byte[] keya = LangUtils.getBytes(key);
 //		byte[] keya = new byte[]{-10,98,-93,-77,-61,-59,37,48,-112,22,-35,-18,-97,-20,65,24};
-		byte[] keya = LangCoder.generateKey(key, 128);
+		byte[] keya = LangCoder.generateAesKey(key, 128);
 		String content = "AES数据";
 		
 		byte[] contentBytes = LangUtils.getBytes(content);

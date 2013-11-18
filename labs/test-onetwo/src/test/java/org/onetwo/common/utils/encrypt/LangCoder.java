@@ -14,8 +14,8 @@ import org.onetwo.common.utils.LangUtils;
 public class LangCoder {
 
 	private static final String AES_KEY = "AES";
-	private static final int DEFAULT_AES_LENGTH = 128;
-	private static final String DEFAULT_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+	private static final int AES_DEFAULT_LENGTH = 128;
+	private static final String AES_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
 	
 
 //	public static byte[] aesEncrypt(String key, String content){
@@ -26,8 +26,11 @@ public class LangCoder {
 //		return aes(LangUtils.getBytes(key), DEFAULT_AES_LENGTH, Cipher.DECRYPT_MODE, LangUtils.getBytes(content));
 //	}
 //	
-	
-	public static byte[] generateKey(String key, int length){
+
+	public static byte[] generateAesKey(String key){
+		return generateAesKey(key, AES_DEFAULT_LENGTH);
+	}
+	public static byte[] generateAesKey(String key, int length){
 		KeyGenerator keyGenerator = null;
 		try {
 			keyGenerator = KeyGenerator.getInstance(AES_KEY);
@@ -66,7 +69,7 @@ public class LangCoder {
 		Cipher aesCipher = null;
 		byte[] result = null;
 		try{
-			aesCipher = Cipher.getInstance(DEFAULT_CIPHER_ALGORITHM);
+			aesCipher = Cipher.getInstance(AES_CIPHER_ALGORITHM);
 			aesCipher.init(opmode, skeySpec);
 			result = aesCipher.doFinal(byteContent);
 		}catch (Exception e) {
