@@ -15,10 +15,14 @@ public class AESEncryptCoder extends AbstractEncryptCoder {
 	private static final int AES_DEFAULT_LENGTH = 128;
 	private static final String AES_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
 	
-	private final int size = AES_DEFAULT_LENGTH;
+//	private final int size = AES_DEFAULT_LENGTH;
 	private final byte[] key;
 	
+
 	public AESEncryptCoder(){
+		this(AES_DEFAULT_LENGTH);
+	}
+	public AESEncryptCoder(int size){
 		KeyGenerator keyGenerator = null;
 		try {
 			keyGenerator = KeyGenerator.getInstance(AES_KEY);

@@ -16,7 +16,7 @@ abstract public class MDFactory {
 	static {
 		Map<String, MDEncrypt> map = new HashMap<String, MDEncrypt>(4);
 		MDEncrypt md5 = new MDEncryptImpl("MD5", 16, true);//16bytes, 128bits
-		MDEncrypt sha = new MDEncryptImpl("SHA", 20, true);//20bytes
+		MDEncrypt sha = new MDEncryptImpl("SHA", 20, true);//sha-1,  20bytes, 160bits
 		map.put("MD5", md5);
 		map.put("SHA", sha);
 		map.put("SMD5", md5);
@@ -43,8 +43,13 @@ abstract public class MDFactory {
 	 * @return
 	 */
 	public static MDEncrypt createMD5(boolean base64, final boolean withLabel){
+		MDEncrypt encryptor = create("MD5", 16, base64, withLabel);
+		return encryptor;
+	}
+
+	public static MDEncrypt create(String algorithm, int size, boolean base64, final boolean withLabel){
 		MDEncryptImpl encryptor = null;
-		encryptor = new MDEncryptImpl("MD5", 16, base64){
+		encryptor = new MDEncryptImpl(algorithm.toUpperCase(), size, base64){
 
 			@Override
 			public boolean isWithLabel() {

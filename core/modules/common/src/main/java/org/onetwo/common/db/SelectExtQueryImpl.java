@@ -102,7 +102,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 		if (isDebug()) {
 			logger.info("generated sql : " + sql);
-			logger.info("params : " + (Map) this.paramsValue.getValues());
+			logger.info("params : " + this.paramsValue.getValues());
 		}
 
 		if(isDebug())
@@ -142,6 +142,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			selectKey = K.DISTINCT;
 			selectValule = params.get(selectKey);
 		}
+		params.remove(K.DISTINCT);
+		
 		if (selectValule != null) {
 			params.remove(selectKey);
 			Object[] selectList = null;

@@ -136,6 +136,7 @@ public class ExtQueryImplTest {
 		params.put(":fetch", "bid");
 		params.put(K.DESC, "name, text");
 		params.put(K.ORDERBY, "object.nameid desc, object.textid asc");
+		params.put(K.IF_NULL, IfNull.Ignore);
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, params);
 		q.build();
 		
@@ -347,6 +348,7 @@ public class ExtQueryImplTest {
 		properties.put(K.SQL_QUERY, true);
 		properties.put(F.sqlFunc("LOWER(name)"), "way");
 		properties.put(F.sqlFunc("substring(name, 5, 1)"), "w");
+		properties.put(K.IF_NULL, IfNull.Ignore);
 
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
@@ -363,6 +365,7 @@ public class ExtQueryImplTest {
 	
 	@Test
 	public void testFunc(){
+//		properties.put(K.SELECT, ".max(@name, @age)");
 		properties.put(K.JOIN_IN, "articles:art");
 		properties.put(K.NO_PREFIX+"art.lastName", "Grisham");
 		properties.put("&LOWER(@name)", "way");
@@ -578,6 +581,7 @@ public class ExtQueryImplTest {
 		this.properties.put("name:", null);
 		this.properties.put("nickname:not in", "way");
 		this.properties.put(K.DEBUG, true);
+		this.properties.put(K.IF_NULL, IfNull.Ignore);
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createDeleteQuery(Magazine.class, properties);
 		q.build();
 		

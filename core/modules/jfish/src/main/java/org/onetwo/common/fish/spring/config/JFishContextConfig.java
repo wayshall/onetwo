@@ -5,7 +5,6 @@ import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
@@ -85,26 +84,11 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	}
 
 	
-	@Bean(name = "cacheManager")
-	public CacheManager cacheManager() {
-		CacheManager cache = null;
-		Resource res = SpringUtils.newClassPathResource("cache/ehcache.xml");
-		if(res.exists()){
-			cache = ehcacheCacheManager(res);
-		}else{
-			cache = jfishSimpleCacheManager();
+	protected CacheManager ehcacheCacheManager(){
+		Resource configLocation = SpringUtils.newClassPathResource("cache/ehcache.xml");
+		if(!configLocation.exists()){
+			return null;
 		}
-		
-		return cache;
-	}
-
-	@Bean(name = "jfishSimpleCacheManager")
-	public CacheManager jfishSimpleCacheManager() {
-		JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
-		return cache;
-	}
-	
-	protected CacheManager ehcacheCacheManager(Resource configLocation){
 		net.sf.ehcache.CacheManager cm = null;
 		if(AbstractJFishAnnotationConfig.class.isInstance(applicationContex)){
 			AbstractJFishAnnotationConfig jfishWebapp = (AbstractJFishAnnotationConfig) applicationContex;

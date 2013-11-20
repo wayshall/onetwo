@@ -152,8 +152,8 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		}
 		
 		Map<String, T> namedinfos = buildNamedInfos(namespace, f);
-		if(namedinfos.isEmpty())
-			return null;
+		/*if(namedinfos.isEmpty())
+			return null;*/
 
 		NamespaceProperties<T> np = null;
 		if(isGlobalNamespace(namespace)){

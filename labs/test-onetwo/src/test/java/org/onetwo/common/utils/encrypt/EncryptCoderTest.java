@@ -1,5 +1,6 @@
 package org.onetwo.common.utils.encrypt;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
@@ -9,7 +10,7 @@ public class EncryptCoderTest {
 	@Test
 	public void testAes(){
 		EncryptCoder aes = EncryptCoderFactory.aesCoder();
-		String content = "aes数据";
+		String content = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd";
 		
 		byte[] encryptData = aes.encrypt(aes.getKey(), LangUtils.getBytes(content));
 		byte[] dencryptData = aes.dencrypt(aes.getKey(), encryptData);
@@ -22,14 +23,31 @@ public class EncryptCoderTest {
 	@Test
 	public void testRsa(){
 		RSAEncryptCoder rsa = (RSAEncryptCoder)EncryptCoderFactory.rsaCoder();
-		String content = "rsa数据";
+		String content = "各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！";
 		
+		System.out.println("publickey: " + LangUtils.toHex(rsa.getKey()).length());
 		byte[] encryptData = rsa.encrypt(rsa.getKey(), LangUtils.getBytes(content));
+//		String encryptStr = LangUtils.newString(encryptData);
+//		encryptData = LangUtils.getBytes(encryptStr);
+		String encryptStr = LangUtils.newString(Base64.encodeBase64(encryptData));
+		encryptData = Base64.decodeBase64(LangUtils.getBytes(encryptStr));
 		byte[] dencryptData = rsa.dencrypt(rsa.getPrivateKey(), encryptData);
 		
 		String dencryptContent = LangUtils.newString(dencryptData);
 		Assert.assertEquals(content, dencryptContent);
-		
 	}
-
+	
+	@Test
+	public void testRsaHex(){
+		RSAEncryptCoder rsa = (RSAEncryptCoder)EncryptCoderFactory.rsaCoder();
+		String content = "各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！各种各样的问题，不懂啊！";
+		
+		String hexKey = LangUtils.toHex(rsa.getKey());
+		byte[] encryptData = rsa.encrypt(LangUtils.hex2Bytes(hexKey), LangUtils.getBytes(content));
+		byte[] dencryptData = rsa.dencrypt(rsa.getPrivateKey(), encryptData);
+		
+		String dencryptContent = LangUtils.newString(dencryptData);
+		Assert.assertEquals(content, dencryptContent);
+	}
+	
 }

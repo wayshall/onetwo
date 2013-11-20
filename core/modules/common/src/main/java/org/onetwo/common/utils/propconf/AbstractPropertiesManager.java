@@ -280,6 +280,8 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	}
 
 	protected void watchFiles(ResourceAdapter[] sqlResourceArray){
+		if(LangUtils.isEmpty(sqlResourceArray))
+			return ;
 		this.fileMonitor.watchFile(period, new FileChangeListener() {
 			
 			@Override

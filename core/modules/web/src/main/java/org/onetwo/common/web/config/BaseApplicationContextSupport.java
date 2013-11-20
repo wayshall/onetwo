@@ -2,11 +2,13 @@ package org.onetwo.common.web.config;
 
 import javax.validation.Validator;
 
+import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -77,5 +79,26 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 		}
 //		ms.setCacheSeconds(60);
 		return ms;
+	}
+	
+
+	@Bean(name = "cacheManager")
+	public CacheManager cacheManager() {
+		CacheManager cache = ehcacheCacheManager();
+		if(cache==null){
+			cache = jfishSimpleCacheManager();
+		}
+		
+		return cache;
+	}
+
+	@Bean
+	public CacheManager jfishSimpleCacheManager() {
+		JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
+		return cache;
+	}
+	
+	protected CacheManager ehcacheCacheManager(){
+		return null;
 	}
 }
