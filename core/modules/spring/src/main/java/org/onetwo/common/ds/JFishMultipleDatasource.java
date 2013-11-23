@@ -32,16 +32,21 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(masterName, "masterName can not be empty.");
+		if(StringUtils.isBlank(masterName))
+			masterName = DEFAULT_MASTER_NAME;
+		
 		Assert.notEmpty(datasources, "datasources can not be empty.");
-		this.masterDatasource = datasources.get(masterName);
+		if(masterDatasource==null){
+//			Assert.hasText(masterName, "masterName can not be empty.");
+			this.masterDatasource = datasources.get(masterName);
+		}
 		Assert.notNull(masterDatasource, "master datasource can not be null: " + masterName);
+		
 		if(contextHolder==null){
 			contextHolder = SpringUtils.getBean(applicationContext, ContextHolder.class);
 		}
+		
 		Assert.notNull(contextHolder, "contextHolder can not be null.");
-		if(StringUtils.isBlank(masterName))
-			masterName = DEFAULT_MASTER_NAME;
 	}
 
 	public DataSource getCurrentDatasource(){
@@ -58,7 +63,10 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 		return ds;
 	}
 	
-	
+	public void setMasterDatasource(DataSource masterDatasource) {
+		this.masterDatasource = masterDatasource;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
