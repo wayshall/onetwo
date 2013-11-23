@@ -24,7 +24,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -62,9 +61,8 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 			JFishMultipleDatasource mds = new JFishMultipleDatasource();
 			mds.setDatasources(datasources);
 			mds.setMasterDatasource(dataSourceHolder);
-			SingletonBeanRegistry sbr = SpringUtils.getSingletonBeanRegistry(applicationContext);
 			String beanName = StringUtils.uncapitalize(JFishMultipleDatasource.class.getSimpleName());
-			sbr.registerSingleton(beanName, mds);
+			SpringUtils.registerSingleton(applicationContext, beanName, mds);
 		}
 		super.afterPropertiesSet();
 	}

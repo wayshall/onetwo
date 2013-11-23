@@ -214,6 +214,10 @@ final public class SpringUtils {
 		return sbr;
 	}
 	
+	public static void registerSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
+	}
+	
 	public static Resource classpath(String path){
 		return new ClassPathResource(path);
 	}
