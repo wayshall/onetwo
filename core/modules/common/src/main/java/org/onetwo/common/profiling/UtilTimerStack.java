@@ -152,6 +152,10 @@ public class UtilTimerStack
         return active;
     }
 
+    /****
+     * @see #active()
+     * @param active
+     */
     @Deprecated
     public static void setActive(boolean active) {
     	//ignore

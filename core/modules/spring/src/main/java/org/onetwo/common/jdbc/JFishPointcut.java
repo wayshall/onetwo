@@ -11,5 +11,9 @@ public class JFishPointcut {
 
 	/*@Pointcut("execution (* *save*(..))")
 	public void profilerMethod(){}*/
-	
+
+	@Pointcut("@within(org.springframework.stereotype.Controller)")
+//	@Pointcut("@within(org.springframework.stereotype.Controller) && @annotation(org.springframework.web.bind.annotation.RequestMapping)")
+//	@Pointcut("execution (* com..*.*Controller.*(..))")
+	public void autoSwitchDatasourceByRequestMapping(){}
 }
