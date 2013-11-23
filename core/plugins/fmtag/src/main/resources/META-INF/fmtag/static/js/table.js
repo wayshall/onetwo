@@ -201,8 +201,15 @@ var Common = function () {
 					$this.attr('control', '0');
 				}
 			});
-
 			
+		},
+		
+		initAfterPage: function(){
+			var initBtn = function(){
+				$(this).button('loading');
+			};
+			$('button[data-loading-text]').click(initBtn);
+			$('input[type=submit][data-loading-text]').click(initBtn);
 		},
 		
 		setCheckboxEvent: function(formName){
