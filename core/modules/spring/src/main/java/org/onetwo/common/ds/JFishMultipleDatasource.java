@@ -3,13 +3,16 @@ package org.onetwo.common.ds;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -17,9 +20,11 @@ import org.springframework.context.ApplicationContextAware;
 
 public class JFishMultipleDatasource implements DataSource, InitializingBean, ApplicationContextAware {
 	
+	public static final String DEFAULT_MASTER_NAME = DataSourceSwitcherInfo.DEFAULT_INFO.getCurrentDatasourceName();
+	
 	private Map<String, DataSource> datasources;
 	private ContextHolder contextHolder;
-	private String masterName = DataSourceSwitcherInfo.DEFAULT_INFO.getCurrentDatasourceName();
+	private String masterName;
 	private DataSource masterDatasource;
 	private boolean masterSlave = true;
 	
@@ -35,6 +40,8 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 			contextHolder = SpringUtils.getBean(applicationContext, ContextHolder.class);
 		}
 		Assert.notNull(contextHolder, "contextHolder can not be null.");
+		if(StringUtils.isBlank(masterName))
+			masterName = DEFAULT_MASTER_NAME;
 	}
 
 	public DataSource getCurrentDatasource(){
@@ -112,6 +119,11 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		return getCurrentDatasource().unwrap(arg0);
+	}
+
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		return getCurrentDatasource().getParentLogger();
 	}
 
 }

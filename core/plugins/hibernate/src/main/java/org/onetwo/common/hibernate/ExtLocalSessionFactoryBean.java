@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -14,12 +16,14 @@ import org.hibernate.event.spi.PreDeleteEventListener;
 import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.onetwo.common.ds.JFishMultipleDatasource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -38,7 +42,10 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 	private PreDeleteEventListener[] preDeleteEventListeners;
 	
 	@Autowired
-	private JFishPropertyPlaceholder configHolder; 
+	private JFishPropertyPlaceholder configHolder;
+	
+	private boolean autoScanMultipleDatasources;
+	private String masterName;
 	
 	public ExtLocalSessionFactoryBean(){
 	}
@@ -47,9 +54,27 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		if(getHibernateProperties()==null || getHibernateProperties().isEmpty()){
 			this.setHibernateProperties(autoHibernateConfig());
 		}
+		if(autoScanMultipleDatasources){
+			Map<String, DataSource> datasources = SpringUtils.getBeansAsMap(applicationContext, DataSource.class);
+			logger.info("scan datasources: " + datasources);
+			JFishMultipleDatasource mds = new JFishMultipleDatasource();
+			mds.setDatasources(datasources);
+			mds.setMasterName(masterName);
+			SingletonBeanRegistry sbr = SpringUtils.getSingletonBeanRegistry(applicationContext);
+			sbr.registerSingleton("_datasource", mds);
+		}
 		super.afterPropertiesSet();
 	}
 	
+	
+	public void setAutoScanMultipleDatasources(boolean autoScanMultipleDatasources) {
+		this.autoScanMultipleDatasources = autoScanMultipleDatasources;
+	}
+
+	public void setMasterName(String masterName) {
+		this.masterName = masterName;
+	}
+
 	protected Properties autoHibernateConfig(){
 		Properties props = configHolder.getMergedConfig();
 		Properties hibConfig = new Properties();

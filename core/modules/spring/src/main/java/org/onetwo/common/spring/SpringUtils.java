@@ -75,6 +75,12 @@ final public class SpringUtils {
 		OrderComparator.sort(list);
 		return list;
 	}
+	
+	public static <T> Map<String, T> getBeansAsMap(ApplicationContext appContext, Class<T> clazz) {
+		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
+		return beanMaps;
+	}
+	
 	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
