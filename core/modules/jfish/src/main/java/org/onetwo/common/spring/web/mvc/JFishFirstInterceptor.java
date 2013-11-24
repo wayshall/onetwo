@@ -17,7 +17,7 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 //	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
-	private static final String CONTROLLER_TIME_KEY = "controller execute";
+	private static final String CONTROLLER_TIME_KEY = "mvc execute";
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if(!isMethodHandler(handler))

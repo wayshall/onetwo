@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -14,6 +16,7 @@ import org.hibernate.event.spi.PreDeleteEventListener;
 import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.onetwo.common.ds.JFishMultipleDatasource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -38,7 +41,11 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 	private PreDeleteEventListener[] preDeleteEventListeners;
 	
 	@Autowired
-	private JFishPropertyPlaceholder configHolder; 
+	private JFishPropertyPlaceholder configHolder;
+	
+	private boolean autoScanMultipleDatasources;
+//	private String masterName;
+	private DataSource dataSourceHolder;
 	
 	public ExtLocalSessionFactoryBean(){
 	}
@@ -47,7 +54,30 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		if(getHibernateProperties()==null || getHibernateProperties().isEmpty()){
 			this.setHibernateProperties(autoHibernateConfig());
 		}
+		if(autoScanMultipleDatasources){
+			Map<String, DataSource> datasources = SpringUtils.getBeansAsMap(applicationContext, DataSource.class);
+			logger.info("scan datasources: " + datasources);
+			/*JFishMultipleDatasource mds = new JFishMultipleDatasource();
+			mds.setDatasources(datasources);
+			mds.setMasterDatasource(dataSourceHolder);*/
+//			String beanName = StringUtils.uncapitalize(JFishMultipleDatasource.class.getSimpleName());
+//			SpringUtils.registerSingleton(applicationContext, beanName, mds);
+			JFishMultipleDatasource mds = SpringUtils.registerBean(applicationContext, JFishMultipleDatasource.class, 
+									"datasources", datasources, 
+									"masterDatasource", dataSourceHolder);
+			this.setDataSource(mds);
+		}
 		super.afterPropertiesSet();
+	}
+	
+	
+	public void setAutoScanMultipleDatasources(boolean autoScanMultipleDatasources) {
+		this.autoScanMultipleDatasources = autoScanMultipleDatasources;
+	}
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSourceHolder = dataSource;
+		super.setDataSource(dataSource);
 	}
 	
 	protected Properties autoHibernateConfig(){

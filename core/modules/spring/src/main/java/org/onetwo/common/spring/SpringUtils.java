@@ -23,10 +23,12 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -73,6 +75,12 @@ final public class SpringUtils {
 		OrderComparator.sort(list);
 		return list;
 	}
+	
+	public static <T> Map<String, T> getBeansAsMap(ApplicationContext appContext, Class<T> clazz) {
+		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
+		return beanMaps;
+	}
+	
 	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
@@ -186,6 +194,28 @@ final public class SpringUtils {
 		if(bean==null)
 			throw new BaseException("register spring bean error : " + beanClass);
 		return bean;
+	}
+	
+	/*****
+	 * 获取SingletonBeanRegistry
+	 * @param applicationContext
+	 * @return
+	 */
+	public static SingletonBeanRegistry getSingletonBeanRegistry(ApplicationContext applicationContext){
+		BeanFactory bf = null;
+		if(applicationContext instanceof AbstractApplicationContext){
+			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
+		}
+		if(bf==null || !SingletonBeanRegistry.class.isInstance(bf)){
+			return null;
+		}
+		
+		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
+		return sbr;
+	}
+	
+	public static void registerSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
 	}
 	
 	public static Resource classpath(String path){

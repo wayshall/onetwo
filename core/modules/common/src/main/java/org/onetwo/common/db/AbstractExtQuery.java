@@ -133,9 +133,9 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	
 
 	String buildWhere(Map params, boolean isSubQuery) {
-		String fname = "buildWhere";
+		/*String fname = "buildWhere";
 		if(isDebug())
-			UtilTimerStack.push(fname);
+			UtilTimerStack.push(fname);*/
 		StringBuilder where = new StringBuilder("");
 		if (params == null || params.isEmpty())
 			return where.toString();
@@ -209,8 +209,8 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			where.insert(0, "( ");
 			where.insert(where.length(), ") ");
 		}
-		if(isDebug())
-			UtilTimerStack.pop(fname);
+		/*if(isDebug())
+			UtilTimerStack.pop(fname);*/
 		return where.toString();
 	}
 
