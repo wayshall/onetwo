@@ -20,7 +20,6 @@ import org.onetwo.common.ds.JFishMultipleDatasource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
-import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +57,15 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		if(autoScanMultipleDatasources){
 			Map<String, DataSource> datasources = SpringUtils.getBeansAsMap(applicationContext, DataSource.class);
 			logger.info("scan datasources: " + datasources);
-			JFishMultipleDatasource mds = new JFishMultipleDatasource();
+			/*JFishMultipleDatasource mds = new JFishMultipleDatasource();
 			mds.setDatasources(datasources);
-			mds.setMasterDatasource(dataSourceHolder);
-			String beanName = StringUtils.uncapitalize(JFishMultipleDatasource.class.getSimpleName());
-			SpringUtils.registerSingleton(applicationContext, beanName, mds);
+			mds.setMasterDatasource(dataSourceHolder);*/
+//			String beanName = StringUtils.uncapitalize(JFishMultipleDatasource.class.getSimpleName());
+//			SpringUtils.registerSingleton(applicationContext, beanName, mds);
+			JFishMultipleDatasource mds = SpringUtils.registerBean(applicationContext, JFishMultipleDatasource.class, 
+									"datasources", datasources, 
+									"masterDatasource", dataSourceHolder);
+			this.setDataSource(mds);
 		}
 		super.afterPropertiesSet();
 	}

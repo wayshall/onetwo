@@ -42,8 +42,9 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
 	public static final String TIME_PROFILER = "time.profiler";
 	public static final String LOG_OPERATION = "log.operation";
-	
+
 	public static final String SAFE_REQUEST = "safe.request";
+//	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 	
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";

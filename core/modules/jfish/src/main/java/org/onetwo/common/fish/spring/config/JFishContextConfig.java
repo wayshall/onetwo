@@ -67,6 +67,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 				public String getJFishBasePackage() {
 					return jfishBasePackages;
 				}
+				
 			};
 		}
 		return jfAppConfigurator;
