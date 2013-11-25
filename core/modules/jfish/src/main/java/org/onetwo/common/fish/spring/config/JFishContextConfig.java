@@ -6,12 +6,12 @@ import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
-import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.spring.context.BaseApplicationContextSupport;
+import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.utils.propconf.Environment;
-import org.onetwo.common.web.config.BaseApplicationContextSupport;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -91,8 +91,8 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 			return null;
 		}
 		net.sf.ehcache.CacheManager cm = null;
-		if(AbstractJFishAnnotationConfig.class.isInstance(applicationContex)){
-			AbstractJFishAnnotationConfig jfishWebapp = (AbstractJFishAnnotationConfig) applicationContex;
+		if(SpringProfilesWebApplicationContext.class.isInstance(applicationContex)){
+			SpringProfilesWebApplicationContext jfishWebapp = (SpringProfilesWebApplicationContext) applicationContex;
 			cm = jfishWebapp.registerAndGetBean(EhCacheManagerFactoryBean.class, "configLocation", configLocation);
 		}else{
 			cm = SpringUtils.registerBean(applicationContex, EhCacheManagerFactoryBean.class, "configLocation", configLocation);

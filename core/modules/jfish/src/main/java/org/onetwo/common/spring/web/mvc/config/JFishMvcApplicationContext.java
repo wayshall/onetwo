@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
+import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.slf4j.Logger;
 
 /******
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
  * @author wayshall
  *
  */
-public class JFishMvcApplicationContext extends AbstractJFishAnnotationConfig {
+public class JFishMvcApplicationContext extends SpringProfilesWebApplicationContext {
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	

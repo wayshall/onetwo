@@ -1,4 +1,4 @@
-package org.onetwo.common.web.config;
+package org.onetwo.common.spring.context;
 
 import javax.validation.Validator;
 
@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 /****
  * WebMvcConfigurationSupport
@@ -25,6 +24,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class BaseApplicationContextSupport implements ApplicationContextAware {
 
 	protected ApplicationContext applicationContex;
+
+	private AppConfig appConfig;
+	
+	
+	/*public BaseApplicationContextSupport(AppConfig appConfig) {
+		super();
+		this.appConfig = appConfig;
+	}*/
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -38,7 +45,7 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 	
 	@Bean
 	public AppConfig appConfig(){
-		return BaseSiteConfig.getInstance();
+		return appConfig;
 	}
 	
 
@@ -49,7 +56,7 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 			Class<?> clazz;
 			try {
 				String className = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean";
-				clazz = ClassUtils.forName(className, WebMvcConfigurationSupport.class.getClassLoader());
+				clazz = ClassUtils.forName(className, org.onetwo.common.utils.ClassUtils.getDefaultClassLoader());
 			} catch (ClassNotFoundException e) {
 				throw new BeanInitializationException("Could not find default validator", e);
 			} catch (LinkageError e) {

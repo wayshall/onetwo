@@ -22,16 +22,17 @@ import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
 public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
 
+	
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	
 	private SessionFactory sessionFactory; 
@@ -48,16 +49,18 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 //	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
 	
-	@Resource
-	private AppConfig appConfig;
+//	@Resource
+//	private AppConfig appConfig;
+	@Autowired
+	private JFishPropertyPlaceholder configHolder;
 
 	public HibernateEntityManagerImpl(){
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(appConfig, "appConfig can not be null.");
-		boolean watchSqlFile = !appConfig.isProduct();
+//		Assert.notNull(appConfig, "appConfig can not be null.");
+		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		String db = JdbcUtils.getDataBase(dataSource).toString();
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);

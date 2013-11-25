@@ -60,6 +60,12 @@ public class DynamicMethod {
 			if(ptype instanceof ParameterizedType){
 				compClass = ReflectUtils.getGenricType(ptype, 0);
 			}
+		}else if(Page.class==rClass){
+			rClass = parameters.get(0).getParameterType();
+//			rClass = parameters.remove(0).getParameterType();
+			if(Page.class == rClass){
+				throw new BaseException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
+			}
 		}
 		
 		resultClass = rClass;

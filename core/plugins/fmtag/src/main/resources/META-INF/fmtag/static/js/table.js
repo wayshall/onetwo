@@ -210,6 +210,7 @@ var Common = function () {
 			};
 			$('button[data-loading-text]').click(initBtn);
 			$('input[type=submit][data-loading-text]').click(initBtn);
+			$('input[type=button][data-loading-text]').click(initBtn);
 		},
 		
 		setCheckboxEvent: function(formName){

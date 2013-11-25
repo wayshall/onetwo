@@ -16,7 +16,7 @@ public final class JFishPluginManagerFactory {
 		setPluginManager(jpm);
 	}
 
-	private static void setPluginManager(JFishPluginManager jpm){
+	public static void setPluginManager(JFishPluginManager jpm){
 		if(PLUGIN_MANAGER!=null)
 			throw new JFishException("the plugin manager has bean init!");
 		PLUGIN_MANAGER = jpm;

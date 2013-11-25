@@ -1,10 +1,10 @@
 package org.onetwo.common.fish.web;
 
+import org.onetwo.common.fish.plugin.DefaultPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishContextConfig;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.context.AbstractJFishAnnotationConfig;
-import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 /*****
@@ -14,24 +14,20 @@ import org.onetwo.common.web.config.BaseSiteConfig;
  * @author wayshall
  *
  */
-public class JFishWebApplicationContext extends AbstractJFishAnnotationConfig {
+public class JFishWebApplicationContext extends SpringProfilesWebApplicationContext {
 	
-
-	public JFishWebApplicationContext(){
-		this(null);
+	public JFishWebApplicationContext(String appEnvironment, Class<?>... outerContextClasses){
+		initPluginContext(appEnvironment, outerContextClasses);
 	}
 	
-	public JFishWebApplicationContext(Class<?>[] outerContextClasses){
-		SpringUtils.setProfiles(BaseSiteConfig.getInstance().getAppEnvironment());
-		JFishPluginManagerFactory.initPluginManager();
-		
-		final JFishList<Class<?>> contextClasses = JFishList.create();
-		contextClasses.add(JFishContextConfig.class);
-		contextClasses.addArray(outerContextClasses);
-
-		JFishPluginManagerFactory.getPluginManager().registerPluginJFishContextClasses(contextClasses);
-		
-		this.register(contextClasses.toArray(new Class[contextClasses.size()]));
+	public JFishWebApplicationContext(){
+		initPluginContext(BaseSiteConfig.getInstance().getAppEnvironment(), JFishContextConfig.class);
+	}
+	
+	protected ContextPluginManager createPluginManager(String appEnvironment){
+		DefaultPluginManager jpm =  new DefaultPluginManager();
+		JFishPluginManagerFactory.setPluginManager(jpm);
+		return jpm;
 	}
 	
 }

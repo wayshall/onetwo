@@ -157,6 +157,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			defaultViewName = ExceptionView.SERVICE;
 		}*/else if(ex instanceof BaseException){
 			defaultViewName = ExceptionView.SYS_BASE;
+			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";

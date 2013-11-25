@@ -1,4 +1,4 @@
-package org.onetwo.common.web.config;
+package org.onetwo.common.spring.context;
 
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.springframework.context.annotation.Configuration;

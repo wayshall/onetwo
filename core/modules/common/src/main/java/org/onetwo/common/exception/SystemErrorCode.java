@@ -3,7 +3,7 @@ package org.onetwo.common.exception;
 public interface SystemErrorCode {
 	
 	public String APP_ERROR_MESSAGE = "appErrorMessage";
-	public String DEFAULT_SYSTEM_ERROR_CODE = "[ERROR]";
+	public String DEFAULT_SYSTEM_ERROR_CODE = "[SYSTEM ERROR]";
 	
 	public static class JFishErrorCode {
 		public static final String BASE_CODE = "[JFISH ERROR]";//前缀
