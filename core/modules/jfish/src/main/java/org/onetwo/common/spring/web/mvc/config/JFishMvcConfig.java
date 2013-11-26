@@ -57,8 +57,6 @@ import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -97,6 +95,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	@Autowired
 	private JFishAppConfigrator jfishAppConfigurator;
+	
+	@Resource
+	private MvcSetting mvcSetting;
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
@@ -204,16 +205,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return prop;
 	}
 
-	@Bean(name = "mvcSetting")
-	public Properties mvcSetting() {
-		Properties prop = SpringUtils.createProperties("/mvc/mvc.properties", true);
-		return prop;
-	}
-
-	@Bean
-	public MvcSetting mvcSettingWraper(){
-		return new MvcSetting(mvcSetting());
-	}
 
 	@Bean
 	public FreeMarkerViewResolver freeMarkerViewResolver() {
@@ -266,7 +257,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		if(jfishAppConfigurator!=null && !LangUtils.isEmpty(jfishAppConfigurator.getXmlBasePackages())){
 			marshaller.setClassesToBeBoundByBasePackages(jfishAppConfigurator.getXmlBasePackages());
 		}else{
-			String xmlBasePackage = mvcSetting().getProperty("xml.base.packages");
+			String xmlBasePackage = this.mvcSetting.getMvcSetting().getProperty("xml.base.packages");
 			Assert.hasText(xmlBasePackage, "xmlBasePackage in mvc.properties must has text");
 			marshaller.setXmlBasePackage(xmlBasePackage);
 		}
@@ -328,7 +319,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		if(webexception==null){
 			webexception = new WebExceptionResolver();
 			webexception.setExceptionMessage(exceptionMessageSource());
-			webexception.setMvcSetting(mvcSettingWraper());
+			webexception.setMvcSetting(mvcSetting);
 		}
 		return webexception;
 	}
@@ -351,13 +342,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 		exceptionResolvers.add(webExceptionResolver());
-	}
-	
-	@Bean(name="multipartResolver")
-	public MultipartResolver multipartResolver(){
-		CommonsMultipartResolver multipart = new CommonsMultipartResolver();
-		multipart.setMaxUploadSize(mvcSettingWraper().getMaxUploadSize());
-		return multipart;
 	}
 
 	public void afterPropertiesSet() throws Exception{

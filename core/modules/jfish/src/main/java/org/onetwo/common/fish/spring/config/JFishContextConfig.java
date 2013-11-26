@@ -1,5 +1,7 @@
 package org.onetwo.common.fish.spring.config;
 
+import java.util.Properties;
+
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.utils.ContextHolder;
@@ -11,6 +13,7 @@ import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
+import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +27,9 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /*******
@@ -38,6 +44,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
 @Import(JFishProfiles.class)
 public class JFishContextConfig extends BaseApplicationContextSupport {
+	
+	public static final String MVC_CONFIG = "mvcConfig";
 
 	@Value("${jfish.base.packages}")
 	private String jfishBasePackages;
@@ -84,7 +92,23 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		return rest;
 	}
 
+	@Bean(name = MVC_CONFIG)
+	public Properties mvcConfig() {
+		Properties prop = SpringUtils.createProperties("/mvc/mvc.properties", true);
+		return prop;
+	}
+
+	@Bean
+	public MvcSetting mvcSetting(){
+		return new MvcSetting(mvcConfig());
+	}
 	
+	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	public MultipartResolver filterMultipartResolver(){
+		CommonsMultipartResolver multipart = new CommonsMultipartResolver();
+		multipart.setMaxUploadSize(mvcSetting().getMaxUploadSize());
+		return multipart;
+	}
 	protected CacheManager ehcacheCacheManager(){
 		Resource configLocation = SpringUtils.newClassPathResource("cache/ehcache.xml");
 		if(!configLocation.exists()){

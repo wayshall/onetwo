@@ -72,7 +72,6 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	}
 	
 //	abstract protected String parseSql(String queryName, Map<Object, Object> params);
-	
 	protected DataQuery createDataQueryIfNecessarry(){
 		String sql = countQuery?info.getCountSql():info.getSql();
 		

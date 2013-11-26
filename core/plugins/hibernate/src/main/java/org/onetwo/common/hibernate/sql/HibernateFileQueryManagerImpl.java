@@ -52,6 +52,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
 		HibernateFileQueryImpl jq = new HibernateFileQueryImpl(baseEntityManager, nameInfo, count, parser);
+//		HibernateFileQueryImpl jq = new TempHibernateFileQueryImpl(baseEntityManager, nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
 			jq.setParameters(LangUtils.asList(args));
@@ -68,6 +69,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	public DataQuery createCountQuery(String queryName){
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
 		return new HibernateFileQueryImpl(baseEntityManager, nameInfo, true, parser);
+//		return new TempHibernateFileQueryImpl(baseEntityManager, nameInfo, true, parser);
 	}
 	
 

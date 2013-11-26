@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.fish.plugin.PluginSupportedController;
+import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ public class MenuController extends PluginSupportedController {
 		return pluginMv("menu-index", "menu", menu);
 	}
 	
+	@CsrfValid(false)
 	@RequestMapping(value="syncmenus", method=RequestMethod.POST)
 	public ModelAndView synMenus() throws ModelAndViewDefiningException{
 		this.checkAvailable();
