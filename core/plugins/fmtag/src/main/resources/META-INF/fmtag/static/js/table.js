@@ -210,7 +210,12 @@ var Common = function () {
 			};
 			$('button[data-loading-text]').click(initBtn);
 			$('input[type=submit][data-loading-text]').click(initBtn);
-			$('input[type=button][data-loading-text]').click(initBtn);
+			$('.data-board').each(function(){
+				var name = $(this).attr('name');
+				var url = $(this).attr('data-url');
+				
+			});
+			
 		},
 		
 		setCheckboxEvent: function(formName){

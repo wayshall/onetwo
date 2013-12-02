@@ -15,7 +15,7 @@ import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 @SuppressWarnings("serial")
 public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private static final String AJAX_POSTFIX = "Ajax";
-	private static final String AJAX_INST_POSTFIX = "AjaxInst";
+//	private static final String AJAX_INST_POSTFIX = "AjaxInst";
 	
 	private String template = TagUtils.getTagPage("datagrid/grid.jsp");
 	private Object dataSource;
