@@ -27,10 +27,10 @@ public class HibernateNamedInfo extends JFishNamedFileQueryInfo {
 	}
 
 	protected String processSql(String sql){
-		sql = sql.replace("out_transaction_${date}", "out_transaction");
+		/*sql = sql.replace("out_transaction_${date}", "out_transaction");
 		sql = sql.replace("OUT_TRANSACTION_${date}", "out_transaction");
 		sql = sql.replace("in_transaction_${date}", "in_transaction");
-		sql = sql.replace("IN_TRANSACTION_${date}", "in_transaction");
+		sql = sql.replace("IN_TRANSACTION_${date}", "in_transaction");*/
 		return sql;
 	}
 	
