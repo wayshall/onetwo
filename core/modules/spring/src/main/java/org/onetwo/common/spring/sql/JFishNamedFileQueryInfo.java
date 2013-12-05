@@ -82,6 +82,6 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	}*/
 
 	public String toString() {
-		return LangUtils.append("{namespace:, ", getNamespace(), ", name:", getName(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", getCountSql(), "}");
+		return LangUtils.append("{namespace:, ", getNamespace(), ", name:", getName(), ", config:", getConfig(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", getCountSql(), "}");
 	}
 }

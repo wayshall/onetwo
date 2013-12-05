@@ -85,6 +85,10 @@ final public class SpringUtils {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
 	}
+	
+	public static <T> T getBean(ApplicationContext appContext, String beanName) {
+		return (T)appContext.getBean(beanName);
+	}
 
 	
 	public static <T> T getHighestOrder(ApplicationContext appContext, Class<T> clazz){

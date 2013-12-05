@@ -11,19 +11,21 @@ import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.hibernate.HibernateEntityManagerImpl;
+import org.onetwo.common.hibernate.HibernateFileQueryManagerFactoryBean;
 import org.onetwo.common.hibernate.listener.TimestampEventListener;
 import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.spring.SpringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-public class HibernatePluginContext  {
+public class HibernatePluginContext implements InitializingBean  {
 	
-	@Resource
+//	@Resource
 	private DataSource dataSource;
 	
 	@Resource
@@ -32,6 +34,13 @@ public class HibernatePluginContext  {
 	@Resource
 	private ApplicationContext applicationContext;
 	
+	
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.dataSource = SpringUtils.getBean(applicationContext, DataSource.class);
+	}
+
 	@Bean
 	public JdbcDao jdbcDao(){
 		JdbcDao jdbcDao = new JdbcDao();
@@ -43,6 +52,7 @@ public class HibernatePluginContext  {
 	public BaseEntityManager baseEntityManager(){
 		HibernateEntityManagerImpl em = new HibernateEntityManagerImpl();
 		em.setSessionFactory(sessionFactory);
+//		em.setDataSource(dataSource);
 		em.setSqlSymbolManager(sqlSymbolManager());
 		return em;
 	}
@@ -56,6 +66,13 @@ public class HibernatePluginContext  {
 			symbolManager.setListeners(listeners);
 		}
 		return symbolManager;
+	}
+	
+	@Bean
+	public HibernateFileQueryManagerFactoryBean fileQueryManagerFactoryBean(){
+		HibernateFileQueryManagerFactoryBean fb = new HibernateFileQueryManagerFactoryBean();
+		fb.setDataSource(dataSource);
+		return fb;
 	}
 
 	@Bean

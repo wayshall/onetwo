@@ -10,7 +10,7 @@ public interface ContextHolder {
 
 	public DataChangedContext getDataChangedContext();
 	public void setDataChangedContext(DataChangedContext context);
-	
+
 	public <T> void setContextAttribute(String attrName, T attr);
 	public <T> T getContextAttribute(String attrName);
 }

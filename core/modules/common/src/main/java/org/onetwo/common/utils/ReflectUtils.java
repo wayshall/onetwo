@@ -894,7 +894,7 @@ public class ReflectUtils {
 		copy(source, target, IGNORE_BLANK);
 	}
 	
-	public static void copy(Object source, Object target, CopyConf conf) {
+	public static void copy(Object source, Object target, CopyConfig conf) {
 		copyByPropNames(source, target, new CopyConfAdapter(conf));
 	}
 	
@@ -1696,11 +1696,11 @@ public class ReflectUtils {
 	
 
 	
-	private static class CopyConfAdapter implements PropertyCopyer<String> {
+	public static class CopyConfAdapter implements PropertyCopyer<String> {
 		
-		final private CopyConf conf;
+		final private CopyConfig conf;
 		
-		public CopyConfAdapter(CopyConf conf) {
+		public CopyConfAdapter(CopyConfig conf) {
 			super();
 			this.conf = conf;
 		}
@@ -1710,6 +1710,17 @@ public class ReflectUtils {
 			if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
 				return;//ignore
 			}
+			if(LangUtils.isEmpty(conf.getIncludeFields())){
+				copyValue(source, target, prop);
+			}else{
+				if(ArrayUtils.contains(conf.getIncludeFields(), prop)){
+					copyValue(source, target, prop);
+				}
+			}
+			
+		}
+		
+		private void copyValue(Object source, Object target, String prop){
 			Object value = getProperty(source, prop);
 			if(conf.isIgnoreNull() && value==null)
 				return;
@@ -1719,7 +1730,6 @@ public class ReflectUtils {
 				return;
 			}
 			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
-			
 		}
 	};
 

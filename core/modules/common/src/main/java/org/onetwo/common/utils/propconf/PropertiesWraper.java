@@ -266,6 +266,12 @@ public class PropertiesWraper implements VariableSupporter {
 		return config;
 	}
 	
+	
+	
+	public boolean isEmpty() {
+		return cache.isEmpty();
+	}
+
 	public List<String> sortedKeys(){
 		List<String> keys = new ArrayList<String>();
 		Enumeration<String> keyNames = (Enumeration<String>)this.config.propertyNames();
@@ -274,6 +280,10 @@ public class PropertiesWraper implements VariableSupporter {
 		}
 		Collections.sort(keys, NAME_LENGTH_COMPARATOR);
 		return keys;
+	}
+
+	public String toString() {
+		return config.toString();
 	}
 
 

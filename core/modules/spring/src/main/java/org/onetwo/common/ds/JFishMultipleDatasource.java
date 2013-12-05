@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.fish.utils.ContextHolder;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
@@ -15,10 +16,15 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.Ordered;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
-public class JFishMultipleDatasource implements DataSource, InitializingBean, ApplicationContextAware {
-	
-	public static final String DEFAULT_MASTER_NAME = DataSourceSwitcherInfo.DEFAULT_INFO.getCurrentDatasourceName();
+public class JFishMultipleDatasource implements DataSource, Ordered, InitializingBean, ApplicationContextAware {
+
+	public static final String DATASOURCE_KEY = "Datasource";
+	public static final String DEFAULT_MASTER_NAME = SwitcherInfo.DEFAULT_SWITCHER_NAME + DATASOURCE_KEY;
 	
 	private Map<String, DataSource> datasources;
 	private ContextHolder contextHolder;
@@ -30,11 +36,10 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(StringUtils.isBlank(masterName))
-			masterName = DEFAULT_MASTER_NAME;
-		
 		Assert.notEmpty(datasources, "datasources can not be empty.");
 		if(masterDatasource==null){
+			if(StringUtils.isBlank(masterName))
+				masterName = DEFAULT_MASTER_NAME;
 //			Assert.hasText(masterName, "masterName can not be empty.");
 			this.masterDatasource = datasources.get(masterName);
 		}
@@ -51,12 +56,28 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 		if(!masterSlave)
 			return masterDatasource;
 		
-		DataSourceSwitcherInfo switcher = contextHolder.getContextAttribute(DataSourceSwitcherInfo.CURRENT_DATASOURCE_KEY);
-		DataSource ds = null;
-		if(datasources!=null && switcher!=null && datasources.containsKey(switcher.getCurrentDatasourceName())){
-			ds = datasources.get(switcher.getCurrentDatasourceName());
-		}else{
-			ds = masterDatasource;
+		SwitcherInfo switcher = contextHolder.getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
+		DataSource ds = masterDatasource;
+		if(datasources!=null && switcher!=null && StringUtils.isNotBlank(switcher.getCurrentSwitcherName())){
+			switch (switcher.getType()) {
+			case TransactionManager:
+				PlatformTransactionManager pt = (PlatformTransactionManager)SpringApplication.getInstance().getBean(switcher.getCurrentSwitcherName());
+				if(HibernateTransactionManager.class.isInstance(pt)){
+					ds = ((HibernateTransactionManager)pt).getDataSource();
+				}else if(DataSourceTransactionManager.class.isInstance(pt)){
+					ds = ((DataSourceTransactionManager)pt).getDataSource();
+				}else{
+					throw new UnsupportedOperationException("TransactionManager: " + switcher.getCurrentSwitcherName());
+				}
+				break;
+
+			default:
+				String dsName = switcher.getCurrentSwitcherName() + DATASOURCE_KEY;
+				if(datasources.containsKey(dsName))
+					ds = datasources.get(dsName);
+				break;
+			}
+			
 		}
 		return ds;
 	}
@@ -125,6 +146,11 @@ public class JFishMultipleDatasource implements DataSource, InitializingBean, Ap
 
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		return getCurrentDatasource().unwrap(arg0);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 

@@ -19,7 +19,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.ReflectUtils.IgnoreAnnosCopyer;
 
 public final class HibernateUtils {
@@ -28,11 +27,14 @@ public final class HibernateUtils {
 	public static final Class<? extends Annotation>[] IGNORE_ANNO_CLASSES = new Class[]{ManyToOne.class, ManyToMany.class, OneToMany.class, OneToOne.class, Transient.class};
 	public static final String[] TIMESTAMP_FIELDS = new String[]{"createTime", "lastUpdateTime"};
 	public static final class HiberanteCopyer extends IgnoreAnnosCopyer {
+		private String[] ignoreFields;
+		
 		public HiberanteCopyer() {
 			super(null);
 		}
-		public HiberanteCopyer(Class<? extends Annotation>[] classes) {
+		public HiberanteCopyer(Class<? extends Annotation>[] classes, String... ignoreFields) {
 			super(classes);
+			this.ignoreFields = ignoreFields;
 		}
 
 		@Override
@@ -40,6 +42,9 @@ public final class HibernateUtils {
 			if(target instanceof IBaseEntity){
 				if(ArrayUtils.contains(TIMESTAMP_FIELDS, prop.getName()))
 					return ;
+			}
+			if(ArrayUtils.contains(ignoreFields, prop.getName())){
+				return ;
 			}
 			super.copy(source, target, prop);
 		}
@@ -108,6 +113,9 @@ public final class HibernateUtils {
 	public static <T> void copyWithoutRelations(T source, T target){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
 	}
+	public static <T> void copyIgnoreRelationsAndFields(T source, T target, String... ignoreFields){
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
+	}
 	/****
 	 * 复制对象属性，但会忽略那些null值
 	 * @param source
@@ -115,6 +123,9 @@ public final class HibernateUtils {
 	 */
 	public static <T> void copy(T source, T target){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, COMMON);
+	}
+	public static <T> void copyIgnore(T source, T target, String... ignoreFields){
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(new Class[]{Transient.class}, ignoreFields));
 	}
 	
 	/****

@@ -2,27 +2,28 @@ package org.onetwo.common.ds;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.onetwo.common.profiling.UtilTimerStack;
 
 @Aspect
-public class AutoSwitchDatasourceByRequestMapping extends DatasourceSwitcherProxyImpl{
+public class AutoSwitchDatasourceByRequestMapping extends SwitcherProxyImpl{
 
-	private String timeKey = "controller";
+//	private String timeKey = "controller";
 	
-	@Before("org.onetwo.common.jdbc.JFishPointcut.autoSwitchDatasourceByRequestMapping()")
+//	@Before("org.onetwo.common.jdbc.JFishPointcut.autoSwitchDatasourceByRequestMapping()")
 	public void switchDatasource(JoinPoint jp){
 		this.processSwitchInfo(jp);
 	}
-	
+
+	@Around("org.onetwo.common.jdbc.JFishPointcut.byRequestMapping()")
 	public Object autoSwitch(ProceedingJoinPoint pjp) throws Throwable{
-		processSwitchInfo(pjp);
 		try{
-			UtilTimerStack.push(timeKey);
+			processSwitchInfo(pjp);
+//			UtilTimerStack.push(timeKey);
 			return pjp.proceed();
 		}finally{
-			UtilTimerStack.pop(timeKey);
+//			UtilTimerStack.pop(timeKey);
+			clearSwitchInfo();
 		}
 	}
 }

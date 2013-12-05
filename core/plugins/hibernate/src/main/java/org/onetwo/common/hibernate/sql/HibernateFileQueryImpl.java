@@ -1,6 +1,6 @@
 package org.onetwo.common.hibernate.sql;
 
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
@@ -15,7 +15,7 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedI
 //	private FileSqlParser parser;
 	
 
-	public HibernateFileQueryImpl(BaseEntityManager baseEntityManager, HibernateNamedInfo info, boolean count, FileSqlParser<HibernateNamedInfo> parser) {
+	public HibernateFileQueryImpl(CreateQueryable baseEntityManager, HibernateNamedInfo info, boolean count, FileSqlParser<HibernateNamedInfo> parser) {
 		super(baseEntityManager, info, count, parser);
 		Assert.notNull(baseEntityManager);
 //		this.baseEntityManager = baseEntityManager;

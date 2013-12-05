@@ -108,18 +108,18 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		this.namespaceProperties = this.autoScanSqlDir(sqlfileArray);
 		this.buildSqlFileMonitor(sqlfileArray);
 		
-		logger.info("all named query : ");
+		/*logger.info("all named query : ");
 		for(T prop : this.namedQueryCache.values()){
 			logger.info(prop.toString());
-		}
+		}*/
 	}
 	
 	public void reloadFile(ResourceAdapter file){
-		Properties pf = loadSqlFile(file);
+		/*JFishProperties pf = loadSqlFile(file);
 		if(pf==null){
 			logger.warn("no file relaoded : " + file);
 			return ;
-		}
+		}*/
 		this.scanAndParseSqlFile(this.namespaceProperties, file, false);
 		logger.warn("file relaoded : " + file);
 	}
@@ -179,12 +179,12 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 
 	protected Map<String, T> buildNamedInfos(String ns, ResourceAdapter f){
-		Properties pf = loadSqlFile(f);
-		if(pf==null || pf.isEmpty())
+		JFishProperties pf = loadSqlFile(f);
+		if(pf==null)
 			return Collections.EMPTY_MAP;
 		logger.info("build [{}] sql file : {}", ns, f);
-		PropertiesWraper wrapper = new PropertiesWraper(pf);
-		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, wrapper, (Class<T>)conf.getPropertyBeanClass());
+//		PropertiesWraper wrapper = new PropertiesWraper(pf);
+		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, pf, (Class<T>)conf.getPropertyBeanClass());
 		return namedInfos;
 	}
 	
