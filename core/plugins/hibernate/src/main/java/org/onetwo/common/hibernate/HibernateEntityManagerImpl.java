@@ -46,8 +46,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 //	@Resource
 //	private AppConfig appConfig;
-	@Autowired
-	private JFishPropertyPlaceholder configHolder;
+//	@Autowired
+//	private JFishPropertyPlaceholder configHolder;
 
 	public HibernateEntityManagerImpl(){
 	}

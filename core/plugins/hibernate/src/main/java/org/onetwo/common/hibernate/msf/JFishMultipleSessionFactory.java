@@ -32,8 +32,8 @@ import org.springframework.context.ApplicationContextAware;
 
 public class JFishMultipleSessionFactory implements SessionFactory, InitializingBean, ApplicationContextAware {
 
-	public static final String SESSIONFACTORY_KEY = "SessionFactory";
-	public static final String DEFAULT_SESSIONFACTORY = SwitcherInfo.DEFAULT_SWITCHER_NAME + SESSIONFACTORY_KEY;
+//	public static final String SESSIONFACTORY_KEY = "SessionFactory";
+	public static final String DEFAULT_SESSIONFACTORY = SwitcherInfo.DEFAULT_SWITCHER_NAME;// + SESSIONFACTORY_KEY;
 	
 	private Map<String, SessionFactory> sessionFactories;
 	private ContextHolder contextHolder;
@@ -69,7 +69,7 @@ public class JFishMultipleSessionFactory implements SessionFactory, Initializing
 		SwitcherInfo switcher = contextHolder.getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
 		SessionFactory sf = defaultSessionFactory;
 		if(sessionFactories!=null && switcher!=null){
-			String sfName = switcher.getCurrentSwitcherName() + SESSIONFACTORY_KEY;
+			String sfName = switcher.getCurrentSwitcherName();// + SESSIONFACTORY_KEY;
 			if(sessionFactories.containsKey(sfName))
 				sf = sessionFactories.get(sfName);
 		}

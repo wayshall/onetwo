@@ -23,8 +23,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 public class JFishMultipleDatasource implements DataSource, Ordered, InitializingBean, ApplicationContextAware {
 
-	public static final String DATASOURCE_KEY = "Datasource";
-	public static final String DEFAULT_MASTER_NAME = SwitcherInfo.DEFAULT_SWITCHER_NAME + DATASOURCE_KEY;
+//	public static final String DATASOURCE_KEY = "DataSource";
+	public static final String DEFAULT_MASTER_NAME = SwitcherInfo.DEFAULT_SWITCHER_NAME;// + DATASOURCE_KEY;
 	
 	private Map<String, DataSource> datasources;
 	private ContextHolder contextHolder;
@@ -72,7 +72,7 @@ public class JFishMultipleDatasource implements DataSource, Ordered, Initializin
 				break;
 
 			default:
-				String dsName = switcher.getCurrentSwitcherName() + DATASOURCE_KEY;
+				String dsName = switcher.getCurrentSwitcherName();// + DATASOURCE_KEY;
 				if(datasources.containsKey(dsName))
 					ds = datasources.get(dsName);
 				break;

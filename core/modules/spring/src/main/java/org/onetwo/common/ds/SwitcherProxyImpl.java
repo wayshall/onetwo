@@ -35,7 +35,7 @@ public class SwitcherProxyImpl implements InitializingBean, SwitcherProxy {
 		final MethodSignature ms = (MethodSignature) pjp.getSignature();
 		SwitcherInfo info = null;
 		
-//		System.out.println("====>>>>pjp:"+ms.getMethod());
+		System.out.println("====>>>>pjp:"+ms.getMethod());
 		info = contextHolder.getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
 		if(info!=null)
 			return ;
