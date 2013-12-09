@@ -429,7 +429,7 @@ public class FileUtils {
 		BufferedInputStream fin = null;
 		BufferedOutputStream fout = null;
 		try {
-			System.out.println("creating the file : " + destFile.getPath());
+//			System.out.println("creating the file : " + destFile.getPath());
 			fin = new BufferedInputStream(new FileInputStream(srcFile));
 			fout = new BufferedOutputStream(new FileOutputStream(destFile));
 			byte[] buf = new byte[1024 * 5];
@@ -437,18 +437,12 @@ public class FileUtils {
 			while ((count = fin.read(buf, 0, buf.length)) != -1) {
 				fout.write(buf, 0, count);
 			}
-			System.out.println("file is created!");
+//			System.out.println("file is created!");
 		} catch (Exception e) {
 			throw new BaseException("copy file error", e);
 		} finally {
-			try {
-				if (fin != null)
-					fin.close();
-				if (fout != null)
-					fout.close();
-			} catch (Exception e) {
-				throw new BaseException("close file error!", e);
-			}
+			IOUtils.closeQuietly(fin);
+			IOUtils.closeQuietly(fout);
 		}
 	}
 
@@ -467,7 +461,7 @@ public class FileUtils {
 		} else {
 			if (!destFile.exists()) {
 				destFile.mkdirs();
-				System.out.println("create drectory : " + destFile.getPath());
+//				System.out.println("create drectory : " + destFile.getPath());
 			}
 			File[] list = srcFile.listFiles();
 			for (int i = 0; i < list.length; i++) {

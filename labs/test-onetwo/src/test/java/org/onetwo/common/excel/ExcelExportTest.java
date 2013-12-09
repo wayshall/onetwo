@@ -71,7 +71,7 @@ public class ExcelExportTest {
 	public void testExport2() {
 //		System.out.println("style:"+ReflectUtils.getStaticFieldValue(CellStyle.class, "ALIGN_LEFT"));
 		String path = "E:/mydev/ejb3/lvyou2/onetwo-common/test/org/onetwo/common/excel/export_test2.xls";
-		PoiExcelGenerator g = ExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
+		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
 		g.generateIt();
 		g.write(path);
 	}
