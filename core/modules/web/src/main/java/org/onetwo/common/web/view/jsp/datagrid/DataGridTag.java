@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.StringUtils;
@@ -11,6 +12,8 @@ import org.onetwo.common.web.filter.BaseInitFilter;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.web.servlet.tags.NestedPathTag;
 
 @SuppressWarnings("serial")
 public class DataGridTag extends BaseGridTag<GridTagBean> {
@@ -49,6 +52,24 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		return super.doStartTag();
 	}*/
 
+	protected String resolveModelAttribute() {
+		return component.getName();
+	}
+	
+	
+	protected void forSpringFormTag(){
+		// Expose the form object name for nested tags...
+		String modelAttribute = resolveModelAttribute();
+		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+//		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+		this.pageContext.setAttribute(NestedPathTag.NESTED_PATH_VARIABLE_NAME, modelAttribute + PropertyAccessor.NESTED_PROPERTY_SEPARATOR, PageContext.REQUEST_SCOPE);
+	}
+
+	protected int startTag()throws JspException {
+		forSpringFormTag();
+		return EVAL_BODY_BUFFERED;
+	}
+	
 	@Override
 	protected int endTag() throws JspException {
 		try {

@@ -10,8 +10,13 @@ import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 	public String WATCH_SQL_FILE = "watch.sql.file";
 	
+	/***
+	 * 初始化
+	 * @param createQueryable
+	 */
+	public void initQeuryFactory(CreateQueryable createQueryable);
+	
 	public NamespacePropertiesManager<PT> getNamespacePropertiesManager();
-	public void initQeuryFactory(BaseEntityManager em);
 	
 	public DataQuery createQuery(String queryName, Object... args);
 	

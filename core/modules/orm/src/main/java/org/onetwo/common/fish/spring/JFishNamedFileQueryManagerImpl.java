@@ -21,14 +21,14 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo>{
 
-	private JFishEntityManager baseEntityManager;
+//	private JFishEntityManager baseEntityManager;
 	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
 	private FileSqlParser<JFishNamedFileQueryInfo> parser;
 	
 	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, String dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class);
-		this.baseEntityManager = jem;
+//		this.baseEntityManager = jem;
 		
 		FileSqlParser<JFishNamedFileQueryInfo> p = new FileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
 		p.initialize();
@@ -57,7 +57,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		Assert.notNull(type);
 
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		JFishFileQueryImpl jq = new JFishFileQueryImpl(baseEntityManager, nameInfo, count, parser);
+		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
 			jq.setParameters(LangUtils.asList(args));

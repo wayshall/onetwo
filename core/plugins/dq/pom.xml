@@ -23,7 +23,17 @@
 
  
   <dependencies>
-	
+    
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
   
 	
     <dependency>

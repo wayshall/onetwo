@@ -9,7 +9,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("rawtypes")
-public interface BaseEntityManager {
+public interface BaseEntityManager extends CreateQueryable {
 
 	public <T> T load(Class<T> entityClass, Serializable id);
 	
@@ -75,11 +75,8 @@ public interface BaseEntityManager {
 	
 //	public EntityManager getEntityManager();
 	
-	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass);
-	
 	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping);
 	
-	public DataQuery createQuery(String ejbqlString);
 	
 	public DataQuery createNamedQuery(String name);
 	public DataQuery createQuery(String sql, Map<String, Object> values);
@@ -102,5 +99,4 @@ public interface BaseEntityManager {
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);
 	
-	public FileNamedQueryFactory getFileNamedQueryFactory();
 }

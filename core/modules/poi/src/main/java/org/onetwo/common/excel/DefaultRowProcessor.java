@@ -15,7 +15,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
-import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -71,13 +70,13 @@ public class DefaultRowProcessor implements RowProcessor {
 	}
 	
 	protected Object getFieldRootValue(Object rowRoot, FieldModel field){
-		String name = "getFieldRootValue";//+field.getName();
-		UtilTimerStack.push(name);
+//		String name = "getFieldRootValue";//+field.getName();
+//		UtilTimerStack.push(name);
 		Object fieldRoot = rowRoot;
 		if(StringUtils.isNotBlank(field.getRootValue())){
 			fieldRoot = this.generator.getExcelValueParser().parseValue(field.getRootValue(), rowRoot, field);
 		}
-		UtilTimerStack.pop(name);
+//		UtilTimerStack.pop(name);
 		return fieldRoot;
 	}
 	

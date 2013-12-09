@@ -3,7 +3,6 @@ package org.onetwo.common.hibernate;
 import java.io.Serializable;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -14,20 +13,15 @@ import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
-import org.onetwo.common.jdbc.JdbcUtils;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
 public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
@@ -39,20 +33,21 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
+	@Resource
 	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
 	
-	@Resource
-	private DataSource dataSource;
+//	@Resource
+//	private DataSource dataSource;
 	
-	@Resource
-	private ApplicationContext applicationContext;
+//	@Resource
+//	private ApplicationContext applicationContext;
 	
 //	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
 	
 //	@Resource
 //	private AppConfig appConfig;
-	@Autowired
-	private JFishPropertyPlaceholder configHolder;
+//	@Autowired
+//	private JFishPropertyPlaceholder configHolder;
 
 	public HibernateEntityManagerImpl(){
 	}
@@ -60,12 +55,12 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(appConfig, "appConfig can not be null.");
-		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
+		/*boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		String db = JdbcUtils.getDataBase(dataSource).toString();
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
 		fq.initQeuryFactory(this);
-		this.fileNamedQueryFactory = fq;
+		this.fileNamedQueryFactory = fq;*/
 	}
 
 

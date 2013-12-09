@@ -6,7 +6,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -22,13 +22,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Cache methodCache;
-	private BaseEntityManager em;
+	private CreateQueryable em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	
-	public DynamicQueryHandler(BaseEntityManager em, Cache methodCache, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
