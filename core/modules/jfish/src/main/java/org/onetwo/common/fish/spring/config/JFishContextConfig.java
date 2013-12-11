@@ -14,6 +14,7 @@ import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +57,11 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		// BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
 	}
 
+	@Bean
+	public AppConfig appConfig(){
+//		AppConfig appConfig = SpringUtils.getBean(applicationContex, AppConfig.class);
+		return BaseSiteConfig.getInstance();
+	}
 	
 	@Bean
 	public JFishAppConfigrator jfishAppConfigurator() {
