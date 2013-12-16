@@ -12,6 +12,7 @@ import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.hibernate.HibernateEntityManagerImpl;
 import org.onetwo.common.hibernate.HibernateFileQueryManagerFactoryBean;
+import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.hibernate.listener.TimestampEventListener;
 import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
 import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
@@ -39,9 +40,11 @@ public class HibernatePluginContext implements InitializingBean  {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.dataSource = SpringUtils.getBean(applicationContext, DataSource.class);
-		this.sessionFactory = SpringUtils.getBean(applicationContext, JFishMultipleSessionFactory.class);
-		if(this.sessionFactory==null)
-			this.sessionFactory = SpringUtils.getBean(applicationContext, SessionFactory.class);
+		SessionFactory sf = SpringUtils.getBean(applicationContext, JFishMultipleSessionFactory.class);
+		if(sf==null)
+			sf = SpringUtils.getBean(applicationContext, SessionFactory.class);
+		HibernateUtils.initSessionFactory(sf);
+		this.sessionFactory = sf;
 	}
 
 	@Bean
