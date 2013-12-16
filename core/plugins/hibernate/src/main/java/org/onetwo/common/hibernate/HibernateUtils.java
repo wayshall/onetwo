@@ -62,7 +62,7 @@ public final class HibernateUtils {
 	
 	private static SessionFactory sessionFactory;
 	
-	static void initSessionFactory(SessionFactory sessionFactory) {
+	public static void initSessionFactory(SessionFactory sessionFactory) {
 		HibernateUtils.sessionFactory = sessionFactory;
 	}
 
