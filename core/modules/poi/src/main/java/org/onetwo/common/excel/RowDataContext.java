@@ -1,6 +1,6 @@
 package org.onetwo.common.excel;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Sheet;
 
 public class RowDataContext {
 	final private RowModel rowModel;
@@ -11,7 +11,7 @@ public class RowDataContext {
 		this.rowModel = rowModel;
 		this.sheetData = sheetData;
 	}
-	public HSSFSheet getSheet() {
+	public Sheet getSheet() {
 		return sheetData.getSheet();
 	}
 	public RowModel getRowModel() {

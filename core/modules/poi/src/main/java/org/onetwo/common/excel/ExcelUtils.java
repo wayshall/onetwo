@@ -23,19 +23,19 @@ import org.springframework.core.io.Resource;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-@SuppressWarnings("unchecked")
 abstract public class ExcelUtils {
 	
 	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);
 	
 
-	public static TemplateModel readTemplate(String path){
+	public static <T> T readTemplate(String path){
 		Resource config = new ClassPathResource(path);
 		return readTemplate(config);
 	}
 	
-	public static TemplateModel readTemplate(Resource config){
+	public static <T> T readTemplate(Resource config){
 		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("workbook", WorkbookModel.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
@@ -50,18 +50,18 @@ abstract public class ExcelUtils {
 		}
 		
 		
-		TemplateModel template = null;
+		Object template = null;
 		try {
 			if(config.exists()){
-				template = (TemplateModel) xstream.fromXML(new FileInputStream(config.getFile()));
+				template = xstream.fromXML(new FileInputStream(config.getFile()));
 			}else{
-				template = (TemplateModel) xstream.fromXML(config.getInputStream());
+				template = xstream.fromXML(config.getInputStream());
 			}
 		} catch (Exception e) {
 			throw new ServiceException("读取模板["+config+"]配置出错：" + e.getMessage(), e);
 		} 
 		
-		return template;
+		return (T)template;
 	}
 	
 	public static void setCellValue(Cell cell, Object value){
