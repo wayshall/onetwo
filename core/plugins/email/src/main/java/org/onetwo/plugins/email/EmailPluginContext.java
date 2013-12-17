@@ -9,7 +9,6 @@ import javax.annotation.Resource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
@@ -74,12 +73,7 @@ public class EmailPluginContext implements InitializingBean {
 	@Bean
 	public PropertiesFactoryBean mailConfig() {
 		String envLocation = "/email/mailconfig-" + appConfig.getAppEnvironment() + ".properties";
-		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
-		pfb.setIgnoreResourceNotFound(true);
-		pfb.setLocations(new org.springframework.core.io.Resource[] {
-				SpringUtils.classpath("/email/mailconfig.properties"),
-				SpringUtils.classpath(envLocation) });
-		return pfb;
+		return SpringUtils.createPropertiesBySptring("/email/mailconfig.properties", envLocation);
 	}
 	
 	@Bean

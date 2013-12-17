@@ -6,11 +6,16 @@ import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.SessionFactoryUtils;
 
+@SuppressWarnings("serial")
 public class MultipSessionFactoryTransactionManager extends HibernateTransactionManager {
+	
+//	@Autowired
+//	private JFishMultipleSessionFactory multipleSessionFactory;
 	
 	public MultipSessionFactoryTransactionManager(){
 		this.setAutodetectDataSource(false);
 	}
+
 
 	@Override
 	public SessionFactory getSessionFactory() {
