@@ -37,12 +37,12 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 	}
 
 
-	protected TemplateModel getTemplateModel(String path){
-		return getTemplateModel(path, cacheTemplate);
+	protected WorkbookModel getWorkbookModel(String path){
+		return getWorkbookModel(path, cacheTemplate);
 	}
 	
-	protected TemplateModel getTemplateModel(String path, boolean checkCache){
-		TemplateModel model = null;
+	protected WorkbookModel getWorkbookModel(String path, boolean checkCache){
+		WorkbookModel model = null;
 		if(checkCache)
 			model = cache.get(path);
 		
@@ -50,7 +50,7 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 			Resource resource = SpringApplication.getInstance().getAppContext().getResource(getFullTemplatePath(path));
 			if(resource==null || !resource.isReadable())
 				throw new ServiceException("can not find valid excel template: " + path, ServiceErrorCode.RESOURCE_NOT_FOUND);
-			model = ExcelUtils.readTemplate(resource);
+			model = ExcelUtils.readAsWorkbookModel(resource);
 			
 			if(checkCache)
 				cache.put(path, model);
@@ -64,15 +64,11 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 	}
 	
 	@Override
-	public TemplateGenerator create(String template, Map<?, ?> context) {
-		return createExcelGenerator(getTemplateModel(template), context);
+	public TemplateGenerator create(String template, Map<String, Object> context) {
+		return DefaultExcelGeneratorFactory.createWorkbookGenerator(getWorkbookModel(template), context);
 	}
 	
-	public TemplateGenerator createExcelGenerator(TemplateModel template, Map<?, ?> context){
-		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);
-		return generator;
-	}
-
+	
 	public String getBaseTemplateDir() {
 		return baseTemplateDir;
 	}

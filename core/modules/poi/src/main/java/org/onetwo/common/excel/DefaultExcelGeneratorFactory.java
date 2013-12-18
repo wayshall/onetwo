@@ -68,13 +68,7 @@ abstract public class DefaultExcelGeneratorFactory {
 		if(fromCache)
 			model = TemplateModelCache.get(path);
 		if(model==null){
-			Object m = ExcelUtils.readTemplate(path);
-			if(TemplateModel.class.isInstance(m)){
-				model = new WorkbookModel();
-				model.addSheet((TemplateModel)m);
-			}else{
-				model = (WorkbookModel) m;
-			}
+			model = ExcelUtils.readAsWorkbookModel(path);
 //			model.getFreezer().freezing();
 			TemplateModelCache.put(path, model);
 		}

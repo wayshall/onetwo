@@ -373,7 +373,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Bean
 	public XmlTemplateGeneratorFactory xmlTemplateGeneratorFactory(){
 		String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
-		XmlTemplateGeneratorFactory factory = null;
+		DefaultXmlTemplateExcelFacotory factory = null;
 		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
 			factory = new DefaultXmlTemplateExcelFacotory();
 //			factory.setCacheTemplate(true);
