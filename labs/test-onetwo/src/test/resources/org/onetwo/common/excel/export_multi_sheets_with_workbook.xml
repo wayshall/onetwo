@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbook>
+	<sheets>
 	<template name="sheet1" label="报名客户资料1" datasource="#data">
 	
 			<rows>
@@ -31,7 +32,7 @@
 						<field value="'报名客户资料2'" rowspan="2" colspan="4"/>
 					</fields>
 				</row>
-				<row name="element" type="iterator" datasource="#sheet2" renderHeader="true" fieldProcessor="#fieldProcessor"> 
+				<row name="element" type="iterator" datasource="#data2" renderHeader="true" fieldProcessor="#fieldProcessor"> 
 					<fields>
 						<field name=":id" label="主键" />
 						<field name=":name" label="名称" />
@@ -43,4 +44,5 @@
 				
 			</rows>
 	</template>
+	</sheets>
 </workbook>

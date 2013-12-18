@@ -36,6 +36,7 @@ abstract public class ExcelUtils {
 	public static <T> T readTemplate(Resource config){
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("workbook", WorkbookModel.class);
+		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);

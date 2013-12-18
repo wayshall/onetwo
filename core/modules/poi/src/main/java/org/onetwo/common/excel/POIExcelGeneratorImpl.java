@@ -17,7 +17,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings("rawtypes")
-public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
+public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implements PoiExcelGenerator{
 	
 	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
@@ -34,30 +34,26 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 	private Map<String, RowProcessor> rowProcessors;
 	
 	public POIExcelGeneratorImpl() {
-		this.init(new HSSFWorkbook());
+		this.workbook = new HSSFWorkbook();
+		this.init();
 	}
 
 	public POIExcelGeneratorImpl(TemplateModel template){
 		this(template, null);
 	}
-	public POIExcelGeneratorImpl(TemplateModel template, Map context) {
+	public POIExcelGeneratorImpl(TemplateModel template, Map<String, Object> context) {
 		this(new HSSFWorkbook(), template, context);
 	}
-	public POIExcelGeneratorImpl(Workbook workbook, TemplateModel template, Map context) {
-		this.init(workbook);
+	public POIExcelGeneratorImpl(Workbook workbook, TemplateModel template, Map<String, Object> context) {
+		this.workbook = workbook;
 		this.tempalte = template;
 		if(context!=null){
 			this.excelValueParser = new DefaultExcelValueParser(context);
 		}
+		this.init();
 	}
 	
-	protected void init(Workbook wb){
-		if(wb==null){
-			this.workbook = new HSSFWorkbook();
-		}else{
-			this.workbook = wb;
-		}
-		
+	final protected void init(){
 		RowProcessor titleProcessor;
 		RowProcessor iteratorProcessor;
 		RowProcessor rowProcessor;

@@ -5,16 +5,13 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
+import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.utils.LangUtils;
 
-abstract public class AbstractWorkbookExcelGenerator implements PoiExcelGenerator {
+abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerator {
 
 	protected Workbook workbook;
 	
-	/* (non-Javadoc)
-	 * @see com.project.base.excel.ExcelGenerator#write2File(java.io.OutputStream)
-	 */
 	public void write(OutputStream out) {
 		try {
 			this.getWorkbook().write(out);
@@ -25,9 +22,6 @@ abstract public class AbstractWorkbookExcelGenerator implements PoiExcelGenerato
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.project.base.excel.ExcelGenerator#write2File(java.lang.String)
-	 */
 	public void write(String path) {
 		FileOutputStream file = null;
 		try {
@@ -40,6 +34,9 @@ abstract public class AbstractWorkbookExcelGenerator implements PoiExcelGenerato
 		}
 	}
 
+	public Workbook getWorkbook() {
+		return workbook;
+	}
 
 
 }
