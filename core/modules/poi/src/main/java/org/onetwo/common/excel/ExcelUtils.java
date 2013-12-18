@@ -33,6 +33,23 @@ abstract public class ExcelUtils {
 		return readTemplate(config);
 	}
 	
+
+	public static WorkbookModel readAsWorkbookModel(String path){
+		return readAsWorkbookModel(new ClassPathResource(path));
+	}
+	
+	public static WorkbookModel readAsWorkbookModel(Resource config){
+		WorkbookModel model = null;
+		Object m = ExcelUtils.readTemplate(config);
+		if(TemplateModel.class.isInstance(m)){
+			model = new WorkbookModel();
+			model.addSheet((TemplateModel)m);
+		}else{
+			model = (WorkbookModel) m;
+		}
+		return model;
+	}
+	
 	public static <T> T readTemplate(Resource config){
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("workbook", WorkbookModel.class);
