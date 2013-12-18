@@ -19,6 +19,7 @@ public class RowModel {
 	private String datasource;
 	private int space;
 	private String span;
+	private short height;
 	private String index;
 	
 	private boolean renderHeader;
@@ -187,6 +188,14 @@ public class RowModel {
 	
 	public boolean hasFieldProcessor(){
 		return StringUtils.isNotBlank(fieldProcessor);
+	}
+
+	public short getHeight() {
+		return height;
+	}
+
+	public void setHeight(short height) {
+		this.height = height;
 	}
 	
 	/*public RowExecutor getExecutorInstance() {

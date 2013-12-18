@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -16,7 +17,6 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
-@SuppressWarnings("rawtypes")
 public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implements PoiExcelGenerator{
 	
 	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
@@ -132,6 +132,11 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	
 	private void generateSheet(String sheetname, List<?> datalist){
 		Sheet sheet = workbook.createSheet(sheetname);
+		if(LangUtils.isNotEmpty(tempalte.getColumnWidthMap())){
+			for(Entry<Integer, Short> entry : tempalte.getColumnWidthMap().entrySet()){
+				sheet.setColumnWidth(entry.getKey(), entry.getValue());
+			}
+		}
 		SheetData sdata = new SheetData(sheet, datalist);
 		this.excelValueParser.getContext().put(tempalte.getVarName(), sdata);
 		try{

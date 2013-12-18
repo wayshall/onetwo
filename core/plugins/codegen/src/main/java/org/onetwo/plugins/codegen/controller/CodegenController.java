@@ -47,7 +47,6 @@ public class CodegenController extends PluginSupportedController {
 	private JFishAppConfigrator JFishAppConfigrator;
 	
 	public CodegenController(){
-		System.out.println("CodegenController");
 	}
 	@RequestMapping(value={"", "/"})
 	public String index(){
@@ -63,7 +62,6 @@ public class CodegenController extends PluginSupportedController {
 
 	@RequestMapping(value="/config", method=RequestMethod.POST)
 	public ModelAndView config(Long dbid, String[] tables, Page<TemplateEntity> tp) throws BusinessException{
-		System.out.println("tables: " + LangUtils.toString(tables));
 		templateService.findTemplatePage(tp);
 		
 //		EntityGridUIBuilder listgridBuilder = new EntityGridUIBuilder(TemplateEntity.class);

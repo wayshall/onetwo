@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbook>
 	<sheets>
-	<template name="sheet1" label="报名客户资料1" datasource="#data">
+	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="1:100;2:100">
 	
 			<rows>
 			
-				<row span="2" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+				<row height="1000" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
 					<fields>
-						<field value="'报名客户资料'" rowspan="2" colspan="4"/>
+						<field value="'报名客户资料'" colspan="4"/>
 					</fields>
 				</row>
 				

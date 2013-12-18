@@ -94,11 +94,20 @@ public class DefaultRowProcessor implements RowProcessor {
 			span = rowModel.getSpace();
 		}
 		
-		Row row = sheet.createRow(rowIndex++);
+		Row row = createRow(sheet, rowIndex++, rowModel);
 		if(span>0){
-			for(int i=1; i<span; i++)
-				sheet.createRow(rowIndex++);
+			for(int i=1; i<span; i++){
+//				sheet.createRow(rowIndex++);
+				createRow(sheet, rowIndex++, rowModel);
+			}
 		}
+		return row;
+	}
+	
+	protected Row createRow(Sheet sheet, int rowIndex, RowModel rowModel){
+		Row row = sheet.createRow(rowIndex++);
+		if(rowModel.getHeight()>0)
+			row.setHeight(rowModel.getHeight());
 		return row;
 	}
 	
@@ -118,6 +127,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			cellIndex = 0;
 		
 		Cell cell = row.createCell(cellIndex++);
+//		System.out.println("cell width: " +sheet.getColumnWidth(cellIndex)+" w:" + sheet.getDefaultColumnWidth());
 		
 		int colspan = cellContext.getColSpan();
 		
