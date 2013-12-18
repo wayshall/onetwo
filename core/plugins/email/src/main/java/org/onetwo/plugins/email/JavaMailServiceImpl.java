@@ -19,7 +19,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class JavaMailServiceImpl {
+public class JavaMailServiceImpl implements JavaMailService {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
@@ -31,6 +31,7 @@ public class JavaMailServiceImpl {
 	
 
 
+	@Override
 	public void send(MailInfo mailInfo) throws MessagingException {
 		try {
 			if(mailInfo.isMimeMail()){

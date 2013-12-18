@@ -114,6 +114,7 @@ public class MailInfo {
 
 	public MailInfo attachments(File... attachments) {
 		this.attachments = attachments;
+		this.mimeMail = true;
 		return this;
 	}
 
