@@ -12,6 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
@@ -150,7 +151,6 @@ public class ExcelTest {
 		g.write(path);
 	}
 	
-
 	@Test
 	public void testExportMutilSheetWithWorkbook(){
 		System.out.println("===========================>>>>>testExportMutilSheetWithWorkbook ");
@@ -173,9 +173,12 @@ public class ExcelTest {
 			}
 			
 		});
-		context.put("sheet2", datalist.subList(count/2, count));
+//		context.put("sheet2", datalist.subList(count/2, count));sheet和xml的template名称冲突
+		context.put("data2", datalist.subList(count/2, count));
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_workbook.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
+		System.out.println("path: " + path);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createWorkbookGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
+//		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
 		g.generateIt();
 		g.write(path);
 	}

@@ -10,7 +10,6 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
-@SuppressWarnings("rawtypes")
 public class DefaultExcelValueParser implements ExcelValueParser {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
 	
@@ -20,11 +19,10 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		this(null);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public DefaultExcelValueParser(Map context) {
+	public DefaultExcelValueParser(Map<String, Object> context) {
 		super();
 		if(context==null)
-			context = new HashMap();
+			context = new HashMap<String, Object>();
 		else
 			this.context = context;
 		if(!context.containsKey(TheFunction.ALIAS_NAME)){
