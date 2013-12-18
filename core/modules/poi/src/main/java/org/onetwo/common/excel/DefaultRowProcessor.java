@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -37,7 +35,7 @@ public class DefaultRowProcessor implements RowProcessor {
 	}
 
 	public void processRow(RowDataContext rowContext) {
-		HSSFSheet sheet = rowContext.getSheet();
+		Sheet sheet = rowContext.getSheet();
 		RowModel rowModel = rowContext.getRowModel();
 		Row row = createRow(sheet, rowModel, null);
 		if(rowModel.getFields()==null)
@@ -84,7 +82,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		return "";
 	}
 
-	public HSSFRow createRow(HSSFSheet sheet, RowModel rowModel, Object obj) {
+	public Row createRow(Sheet sheet, RowModel rowModel, Object obj) {
 //		int rowIndex = sheet.getLastRowNum();
 		int rowIndex = sheet.getPhysicalNumberOfRows();
 //		System.out.println("createRow:"+rowIndex);
@@ -96,7 +94,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			span = rowModel.getSpace();
 		}
 		
-		HSSFRow row = sheet.createRow(rowIndex++);
+		Row row = sheet.createRow(rowIndex++);
 		if(span>0){
 			for(int i=1; i<span; i++)
 				sheet.createRow(rowIndex++);

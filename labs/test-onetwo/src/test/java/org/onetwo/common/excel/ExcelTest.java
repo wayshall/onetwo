@@ -150,6 +150,36 @@ public class ExcelTest {
 		g.write(path);
 	}
 	
+
+	@Test
+	public void testExportMutilSheetWithWorkbook(){
+		System.out.println("===========================>>>>>testExportMutilSheetWithWorkbook ");
+		Map<String, Object> context = new HashMap<String, Object>();
+		final List<?> datalist = list;
+		context.put("data", new ExportDatasource() {
+			
+			@Override
+			public List<?> getSheetDataList(int i) {
+				int toIndex = 10*(i+1);
+				if(toIndex>datalist.size())
+					toIndex = datalist.size();
+				
+				return datalist.subList(10*i, toIndex);
+			}
+
+			@Override
+			public String getSheetLabel(int sheetIndex) {
+				return "报表" + sheetIndex;
+			}
+			
+		});
+		context.put("sheet2", datalist.subList(count/2, count));
+		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_workbook.xls";
+		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
+		g.generateIt();
+		g.write(path);
+	}
+	
 //	@Test
 	public void testTemplateWithReflect(){
 		System.out.println("===========================>>>>>testTemplateWithReflect ");
