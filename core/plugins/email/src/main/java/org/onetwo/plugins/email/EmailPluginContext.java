@@ -42,7 +42,7 @@ public class EmailPluginContext implements InitializingBean {
 	}
 
 	@Bean
-	public JavaMailServiceImpl JavaMailServiceImpl() throws Exception{
+	public JavaMailService JavaMailService() throws Exception{
 		JavaMailServiceImpl jm = new JavaMailServiceImpl();
 		jm.setJavaMailSender(javaMailSender());
 		jm.setConfiguration(mailFreemarkerConfiguration);
