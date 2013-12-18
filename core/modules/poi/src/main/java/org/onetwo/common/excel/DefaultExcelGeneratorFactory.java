@@ -19,6 +19,10 @@ abstract public class DefaultExcelGeneratorFactory {
 		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);
 		return generator;
 	}
+	public static PoiExcelGenerator createExcelGenerator(WorkbookModel workbook, Map context){
+		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);
+		return generator;
+	}
 
 	public static PoiExcelGenerator createWebExcelGenerator(TemplateModel template, Map context){
 		ExcelValueParser parser = new DefaultExcelValueParser(context);

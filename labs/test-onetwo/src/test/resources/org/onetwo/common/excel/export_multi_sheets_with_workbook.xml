@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbook>
+	<template name="sheet1" label="报名客户资料1" datasource="#data">
+	
+			<rows>
+			
+				<row span="2" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+					<fields>
+						<field value="'报名客户资料'" rowspan="2" colspan="4"/>
+					</fields>
+				</row>
+				
+				<row name="element" type="iterator" datasource="#sheet1.datasource" renderHeader="true" fieldProcessor="#fieldProcessor"> 
+					<fields>
+						<field name=":id" label="主键" />
+						<field name=":name" label="名称" />
+						<field name=":phone" label="电话" />
+						<field name=":postcode" label="邮编" />
+						<field name=":address" label="地址" />
+						<field name=":fax" label="传真" />
+					</fields>
+				</row>
+				
+			</rows>
+	</template>
+	<template name="sheet2" label="报名客户资料2" >
+			<rows>
+			
+				<row span="2" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+					<fields>
+						<field value="'报名客户资料2'" rowspan="2" colspan="4"/>
+					</fields>
+				</row>
+				<row name="element" type="iterator" datasource="#sheet2" renderHeader="true" fieldProcessor="#fieldProcessor"> 
+					<fields>
+						<field name=":id" label="主键" />
+						<field name=":name" label="名称" />
+						<field name=":phone" label="电话" />
+						<field name=":postcode" label="邮编" />
+						<field name=":fax" label="传真" />
+					</fields>
+				</row>
+				
+			</rows>
+	</template>
+</workbook>
