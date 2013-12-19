@@ -11,7 +11,7 @@
 					</fields>
 				</row>
 				
-				<row name="element" type="iterator" datasource="#sheet1.datasource" renderHeader="true" fieldProcessor="#fieldProcessor"> 
+				<row name="element" type="iterator" datasource="#sheet1.datasource" renderHeader="true" fieldProcessor="#fieldProcessor" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"> 
 					<fields>
 						<field name=":id" label="主键" />
 						<field name=":name" label="名称" />

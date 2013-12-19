@@ -25,6 +25,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 abstract public class ExcelUtils {
 	
+	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
+	
 	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);
 	
 
