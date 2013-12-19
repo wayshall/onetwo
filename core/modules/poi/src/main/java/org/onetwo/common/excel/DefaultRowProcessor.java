@@ -2,6 +2,7 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -177,7 +178,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		}
 		
 		cstyle = this.generator.getWorkbook().createCellStyle();
-		if(StringUtils.isNotBlank(styleString)){
+		/*if(StringUtils.isNotBlank(styleString)){
 			String[] attrs = StringUtils.split(styleString, ";");
 			for(String attr : attrs){
 				String[] av = StringUtils.split(attr.trim(), ":");
@@ -190,6 +191,12 @@ public class DefaultRowProcessor implements RowProcessor {
 					}
 				}
 			}
+		}*/
+		
+		Map<String, String> styleMap = this.generator.getPropertyStringParser().parseStyle(styleString);
+		for(Entry<String, String> entry : styleMap.entrySet()){
+			Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, entry.getValue().trim().toUpperCase());
+			ReflectUtils.setProperty(cstyle, entry.getKey(), styleValue);
 		}
 		
 		Font font = buildCellFont(field, fontString);
@@ -207,7 +214,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			return null;
 		
 		Font font = this.generator.getWorkbook().createFont();
-		String[] attrs = StringUtils.split(fontString, ";");
+		/*String[] attrs = StringUtils.split(fontString, ";");
 		for(String attr : attrs){
 			String[] av = StringUtils.split(attr.trim(), ":");
 			if(av!=null && av.length==2){
@@ -218,6 +225,12 @@ public class DefaultRowProcessor implements RowProcessor {
 					throw new ServiceException("set ["+StringUtils.join(av, ":")+"] font error", e);
 				}
 			}
+		}*/
+
+		Map<String, String> fontMap = this.generator.getPropertyStringParser().parseStyle(fontString);
+		for(Entry<String, String> entry : fontMap.entrySet()){
+			Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, entry.getValue().trim().toUpperCase());
+			ReflectUtils.setProperty(font, entry.getKey(), styleValue);
 		}
 		return font;
 	}

@@ -33,6 +33,8 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	
 	private Map<String, RowProcessor> rowProcessors;
 	
+	private PropertyStringParser propertyStringParser = ExcelUtils.DEFAULT_PROPERTY_STRING_PARSER;
+	
 	public POIExcelGeneratorImpl() {
 		this.workbook = new HSSFWorkbook();
 		this.init();
@@ -132,11 +134,14 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	
 	private void generateSheet(String sheetname, List<?> datalist){
 		Sheet sheet = workbook.createSheet(sheetname);
-		if(LangUtils.isNotEmpty(tempalte.getColumnWidthMap())){
-			for(Entry<Integer, Short> entry : tempalte.getColumnWidthMap().entrySet()){
-				sheet.setColumnWidth(entry.getKey(), entry.getValue());
+		
+		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
+		if(LangUtils.isNotEmpty(columnMap)){
+			for(Entry<Integer, Short> entry : columnMap.entrySet()){
+				sheet.setColumnWidth(entry.getKey(), entry.getValue()*256);
 			}
 		}
+		
 		SheetData sdata = new SheetData(sheet, datalist);
 		this.excelValueParser.getContext().put(tempalte.getVarName(), sdata);
 		try{
@@ -186,6 +191,11 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}*/
 		
 		//System.out.println("generate excel success!");
+	}
+	
+
+	public PropertyStringParser getPropertyStringParser() {
+		return propertyStringParser;
 	}
 
 	public static void main(String[] args) {
