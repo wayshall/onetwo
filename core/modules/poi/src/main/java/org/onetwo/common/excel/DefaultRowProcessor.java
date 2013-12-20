@@ -12,11 +12,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 public class DefaultRowProcessor implements RowProcessor {
 
@@ -178,6 +179,8 @@ public class DefaultRowProcessor implements RowProcessor {
 		}
 		
 		cstyle = this.generator.getWorkbook().createCellStyle();
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(cstyle);
+		bw.setAutoGrowNestedPaths(true);
 		/*if(StringUtils.isNotBlank(styleString)){
 			String[] attrs = StringUtils.split(styleString, ";");
 			for(String attr : attrs){
@@ -195,8 +198,12 @@ public class DefaultRowProcessor implements RowProcessor {
 		
 		Map<String, String> styleMap = this.generator.getPropertyStringParser().parseStyle(styleString);
 		for(Entry<String, String> entry : styleMap.entrySet()){
-			Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, entry.getValue().trim().toUpperCase());
-			ReflectUtils.setProperty(cstyle, entry.getKey(), styleValue);
+			if(isField(entry.getValue())){
+				Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, entry.getValue().trim().toUpperCase());
+				ReflectUtils.setProperty(cstyle, entry.getKey(), styleValue);
+			}else{
+				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			}
 		}
 		
 		Font font = buildCellFont(field, fontString);
@@ -209,11 +216,24 @@ public class DefaultRowProcessor implements RowProcessor {
 		return cstyle;
 	}
 	
+	protected boolean isField(String value){
+//		return value.startsWith("&");
+		for(char ch : value.toCharArray()){
+			if('_'==ch)
+				continue;
+			else if(!Character.isUpperCase(ch))
+				return false;
+		}
+		return true;
+	}
+	
 	protected Font buildCellFont(FieldModel field, String fontString){
 		if(StringUtils.isBlank(fontString))
 			return null;
 		
 		Font font = this.generator.getWorkbook().createFont();
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(font);
+		bw.setAutoGrowNestedPaths(true);
 		/*String[] attrs = StringUtils.split(fontString, ";");
 		for(String attr : attrs){
 			String[] av = StringUtils.split(attr.trim(), ":");
@@ -229,8 +249,12 @@ public class DefaultRowProcessor implements RowProcessor {
 
 		Map<String, String> fontMap = this.generator.getPropertyStringParser().parseStyle(fontString);
 		for(Entry<String, String> entry : fontMap.entrySet()){
-			Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, entry.getValue().trim().toUpperCase());
-			ReflectUtils.setProperty(font, entry.getKey(), styleValue);
+			if(isField(entry.getValue())){
+				Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, entry.getValue().trim().toUpperCase());
+				ReflectUtils.setProperty(font, entry.getKey(), styleValue);
+			}else{
+				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			}
 		}
 		return font;
 	}
@@ -309,7 +333,8 @@ public class DefaultRowProcessor implements RowProcessor {
 		for(FieldListener fl : field.getListeners()){
 			v = fl.getCellValue(cell, v);
 		}
-		
+
+		v = LangUtils.formatValue(v, field.getDataFormat());
 		setCellValue(cell, v);
 
 		cellContext.addRowSpanCount(cellContext.getRowSpan());

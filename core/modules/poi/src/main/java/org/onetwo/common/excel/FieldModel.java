@@ -14,6 +14,7 @@ public class FieldModel {
 	private String label;
 	private String name;
 	private String value;
+	private String dataFormat;
 	
 	private boolean columnTotal;
 	private boolean rowTotal;
@@ -277,6 +278,14 @@ public class FieldModel {
 
 	public void setRootValue(String rootValue) {
 		this.rootValue = rootValue;
+	}
+
+	public String getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 	
 }
