@@ -134,6 +134,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	
 	private void generateSheet(String sheetname, List<?> datalist){
 		Sheet sheet = workbook.createSheet(sheetname);
+		int sheetIndex = workbook.getSheetIndex(sheet);
 		
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
 		if(LangUtils.isNotEmpty(columnMap)){
@@ -142,7 +143,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}
 		
-		SheetData sdata = new SheetData(sheet, datalist);
+		SheetData sdata = new SheetData(workbook, sheet, datalist);
 		this.excelValueParser.getContext().put(tempalte.getVarName(), sdata);
 		try{
 			this.generateSheet(sdata);

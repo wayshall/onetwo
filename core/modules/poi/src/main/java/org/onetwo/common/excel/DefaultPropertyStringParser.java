@@ -58,7 +58,6 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 																							if(av!=null && av.length==2){
 																								try {
 																									styleMap.put(av[0], av[1]);
-																									return styleMap;
 																								} catch (Exception e) {
 																									throw new ServiceException("set ["+StringUtils.join(av, ":")+"] style error", e);
 																								}

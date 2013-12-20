@@ -23,7 +23,7 @@ public class AutoSwitchDatasourceByRequestMapping extends SwitcherProxyImpl{
 			return pjp.proceed();
 		}finally{
 //			UtilTimerStack.pop(timeKey);
-			clearSwitchInfo();
+//			clearSwitchInfo();
 		}
 	}
 }
