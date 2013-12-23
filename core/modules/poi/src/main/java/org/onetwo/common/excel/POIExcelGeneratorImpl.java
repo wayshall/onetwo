@@ -134,7 +134,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	
 	private void generateSheet(String sheetname, List<?> datalist){
 		Sheet sheet = workbook.createSheet(sheetname);
-		int sheetIndex = workbook.getSheetIndex(sheet);
+//		int sheetIndex = workbook.getSheetIndex(sheet);
 		
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
 		if(LangUtils.isNotEmpty(columnMap)){
