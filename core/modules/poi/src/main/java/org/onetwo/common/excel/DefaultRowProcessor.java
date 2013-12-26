@@ -91,26 +91,38 @@ public class DefaultRowProcessor implements RowProcessor {
 		
 		int span =0;
 		if(rowModel.hasSpan()){
-			span = parseIntValue(rowModel.getSpan(), obj);
+			span = this.generator.getExcelValueParser().parseIntValue(rowModel.getSpan(), obj);
 		}else{
 			span = rowModel.getSpace();
 		}
 		
-		Row row = createRow(sheet, rowIndex++, rowModel);
+		Row row = createRow(sheet, rowIndex, rowModel);
 		if(span>0){
 			for(int i=1; i<span; i++){
 //				sheet.createRow(rowIndex++);
-				createRow(sheet, rowIndex++, rowModel);
+				createRow(sheet, ++rowIndex, rowModel);
 			}
 		}
 		return row;
 	}
 	
 	protected Row createRow(Sheet sheet, int rowIndex, RowModel rowModel){
-		Row row = sheet.createRow(rowIndex++);
+		Row row = sheet.createRow(rowIndex);
 		if(rowModel.getHeight()>0)
 			row.setHeight(rowModel.getHeight());
+		
+		this.generator.getWorkbookData().getWorkbookListener().afterCreateRow(row, rowIndex);
 		return row;
+	}
+	
+	protected void doFieldValueExecutors(FieldModel field, ExcelValueParser parser, Object fieldValue){
+		if(!field.getFieldValueExecutors().isEmpty()){
+			for(ExecutorModel executor : field.getFieldValueExecutors()){
+				Object preValue = parser.getContext().get(executor.getName());
+				preValue = executor.getFieldValueExecutor().execute(field, executor, parser, fieldValue, preValue);
+				parser.getContext().put(executor.getName(), preValue);
+			}
+		}
 	}
 	
 //	protected Cell createCell(Sheet sheet, Row row, FieldModel field, int cellIndex, Object root){
@@ -125,34 +137,35 @@ public class DefaultRowProcessor implements RowProcessor {
 		/*if(cellIndex < 0)
 			cellIndex = row.getLastCellNum();*/
 		
-		if(cellIndex==-1)
-			cellIndex = 0;
-		
-		Cell cell = row.createCell(cellIndex++);
+//		Cell cell = row.createCell(cellIndex);
+		Cell cell = createCell(row, cellIndex);
 //		System.out.println("cell width: " +sheet.getColumnWidth(cellIndex)+" w:" + sheet.getDefaultColumnWidth());
 		
-		int colspan = cellContext.getColSpan();
+		CellStyle cstyle = this.buildCellStyle(field);
+		if(cstyle!=null){
+			cell.setCellStyle(cstyle);
+		}
+
+//		this.generator.getWorkbookData().getWorkbookListener().afterCreateCell(cell, cellIndex);
 		
+		int colspan = cellContext.getColSpan();
 		if(colspan>1){
-			for(int i=1; i<colspan;i++)
-				row.createCell(cellIndex++);
+			for(int i=1; i<colspan;i++){
+				createCell(row, ++cellIndex);
+//				row.createCell(++cellIndex);
+			}
 		}
 		if(field.isRange()){
 //			CellRangeAddress range = createCellRange(row, cell, field, root);
 			CellRangeAddress range = new CellRangeAddress(rowNum, rowNum+cellContext.getRowSpan()-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
 			sheet.addMergedRegion(range);
 		}
-
-
-		CellStyle cstyle = this.buildCellStyle(field);
-		if(cstyle!=null){
-			cell.setCellStyle(cstyle);
-		}
-
-		
-		for(FieldListener fl : field.getListeners()){
-			fl.afterCreateCell(this.generator.getWorkbook(), sheet, row, cell);
-		}
+		return cell;
+	}
+	
+	private Cell createCell(Row row, int cellIndex){
+		Cell cell = row.createCell(cellIndex);
+		this.generator.getWorkbookData().getWorkbookListener().afterCreateCell(cell, cellIndex);
 		return cell;
 	}
 	
@@ -181,20 +194,6 @@ public class DefaultRowProcessor implements RowProcessor {
 		cstyle = this.generator.getWorkbook().createCellStyle();
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(cstyle);
 		bw.setAutoGrowNestedPaths(true);
-		/*if(StringUtils.isNotBlank(styleString)){
-			String[] attrs = StringUtils.split(styleString, ";");
-			for(String attr : attrs){
-				String[] av = StringUtils.split(attr.trim(), ":");
-				if(av!=null && av.length==2){
-					try {
-						Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, av[1].trim().toUpperCase());
-						ReflectUtils.setProperty(cstyle, av[0], styleValue);
-					} catch (Exception e) {
-						throw new ServiceException("set ["+StringUtils.join(av, ":")+"] style error", e);
-					}
-				}
-			}
-		}*/
 		
 		Map<String, String> styleMap = this.generator.getPropertyStringParser().parseStyle(styleString);
 		for(Entry<String, String> entry : styleMap.entrySet()){
@@ -234,18 +233,6 @@ public class DefaultRowProcessor implements RowProcessor {
 		Font font = this.generator.getWorkbook().createFont();
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(font);
 		bw.setAutoGrowNestedPaths(true);
-		/*String[] attrs = StringUtils.split(fontString, ";");
-		for(String attr : attrs){
-			String[] av = StringUtils.split(attr.trim(), ":");
-			if(av!=null && av.length==2){
-				try {
-					Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, av[1].trim().toUpperCase());
-					ReflectUtils.setProperty(font, av[0], styleValue);
-				} catch (Exception e) {
-					throw new ServiceException("set ["+StringUtils.join(av, ":")+"] font error", e);
-				}
-			}
-		}*/
 
 		Map<String, String> fontMap = this.generator.getPropertyStringParser().parseStyle(fontString);
 		for(Entry<String, String> entry : fontMap.entrySet()){
@@ -257,31 +244,6 @@ public class DefaultRowProcessor implements RowProcessor {
 			}
 		}
 		return font;
-	}
-	
-	
-	/*protected CellRangeAddress createCellRange(Row row, Cell cell, FieldModel field, Object root){
-		int rowspan = parseIntValue(field.getRowspan(), root);
-		int colspan = parseIntValue(field.getColspan(), root);
-		
-		if(rowspan < 1) {
-			rowspan = 1;
-		}
-		
-		if(colspan < 1) {
-			colspan = 1;
-		}
-		
-		CellRangeAddress range = new CellRangeAddress(row.getRowNum(), row.getRowNum()+rowspan-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
-		return range;
-	}*/
-	
-	protected Object processSymbol(FieldModel field, String value){
-		if(value==null || !value.startsWith(":"))
-			return null;
-		String aValue = value.substring(1);
-		Object v = ReflectUtils.getProperty(field, aValue, false);
-		return v;
 	}
 	
 	protected Object getFieldValue(Object root, FieldModel field, Object defValue){
@@ -310,14 +272,18 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.processSingleField(cellContext);
 		}else{
 			List<Object> rootList = LangUtils.asList(root);
-			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
 
 			int rowCount = row.getRowNum();
 //			for(Object val : rootList){
-			for (int i = 0; i < rootList.size(); i++) {
-				CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
-				this.processSingleField(cellContext);
-				rowCount += cellContext.getRowSpanCount();
+			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
+			try{
+				for (int i = 0; i < rootList.size(); i++) {
+					CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
+					this.processSingleField(cellContext);
+					rowCount += cellContext.getRowSpanCount();
+				}
+			}finally{
+				this.generator.getExcelValueParser().getContext().remove("rootValue");
 			}
 		}
 //		UtilTimerStack.pop(pname);
@@ -330,13 +296,16 @@ public class DefaultRowProcessor implements RowProcessor {
 		FieldModel field = cellContext.field;
 		Object v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
 
-		for(FieldListener fl : field.getListeners()){
+		/*for(FieldListener fl : field.getListeners()){
 			v = fl.getCellValue(cell, v);
-		}
+		}*/
 
+		this.doFieldValueExecutors(field, cellContext.parser, v);
+		
 		v = LangUtils.formatValue(v, field.getDataFormat());
 		setCellValue(cell, v);
-
+		
+		
 		cellContext.addRowSpanCount(cellContext.getRowSpan());
 	}
 
@@ -344,13 +313,13 @@ public class DefaultRowProcessor implements RowProcessor {
 		ExcelUtils.setCellValue(cell, value);
 	}
 	
-	protected int parseIntValue(String expr, Object root) {
-		/*Object v = this.generator.getExcelValueParser().parseValue(expr, root, null);
+	/*protected int parseIntValue(String expr, Object root) {
+		Object v = this.generator.getExcelValueParser().parseValue(expr, root, null);
 		
-		return (v == null ? 0 : Integer.valueOf(v.toString()));	*/
+		return (v == null ? 0 : Integer.valueOf(v.toString()));	
 		
 		return this.generator.getExcelValueParser().parseIntValue(expr, root);
-	}
+	}*/
 	
 	public class CellContext {
 		public final ExcelValueParser parser;
@@ -374,6 +343,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.rowCount = objectValueIndex;
 			this.row = row;
 			this.field = field;
+			//row.getLastCellNum()
 			this.cellIndex = cellIndex;
 			this.defFieldValue = defValue;
 		}
@@ -395,6 +365,8 @@ public class DefaultRowProcessor implements RowProcessor {
 			/*int cellIndex = row.getSheet().getRow(row.getRowNum()+objectValueIndex).getLastCellNum();
 			if(cellIndex==-1)
 				cellIndex = 0;*/
+			if(cellIndex==-1)
+				return 0;
 			return cellIndex;
 		}
 		

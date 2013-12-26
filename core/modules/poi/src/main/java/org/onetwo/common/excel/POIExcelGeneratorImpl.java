@@ -24,19 +24,20 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	protected TemplateModel tempalte;
 	// protected Object root;
 //	protected Map context;
-	protected Workbook workbook;
+//	protected Workbook workbook;
+	protected WorkbookData workbookData;
 //	protected HSSFSheet sheet;
 //	protected int rowIndex;
 //	protected int cellIndex;
 
-	private ExcelValueParser excelValueParser;
+//	private ExcelValueParser excelValueParser;
 	
 	private Map<String, RowProcessor> rowProcessors;
 	
 	private PropertyStringParser propertyStringParser = ExcelUtils.DEFAULT_PROPERTY_STRING_PARSER;
 	
 	public POIExcelGeneratorImpl() {
-		this.workbook = new HSSFWorkbook();
+		this.workbookData = new WorkbookData(new HSSFWorkbook(), new DefaultExcelValueParser(null));
 		this.init();
 	}
 
@@ -44,14 +45,12 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		this(template, null);
 	}
 	public POIExcelGeneratorImpl(TemplateModel template, Map<String, Object> context) {
-		this(new HSSFWorkbook(), template, context);
+		this(new WorkbookData(new HSSFWorkbook(), new DefaultExcelValueParser(context)), template);
 	}
-	public POIExcelGeneratorImpl(Workbook workbook, TemplateModel template, Map<String, Object> context) {
-		this.workbook = workbook;
+	public POIExcelGeneratorImpl(WorkbookData workbook, TemplateModel template) {
+		this.workbookData = workbook;
 		this.tempalte = template;
-		if(context!=null){
-			this.excelValueParser = new DefaultExcelValueParser(context);
-		}
+//		this.excelValueParser = excelValueParser;
 		this.init();
 	}
 	
@@ -90,20 +89,21 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 
 	public ExcelValueParser getExcelValueParser() {
-		return excelValueParser;
+		return this.workbookData.getExcelValueParser();
 	}
 
-	public void setExcelValueParser(ExcelValueParser excelValueParser) {
+	/*public void setExcelValueParser(ExcelValueParser excelValueParser) {
 		this.excelValueParser = excelValueParser;
-	}
+	}*/
 
 	public Workbook getWorkbook() {
-		return workbook;
+		return this.workbookData.getWorkbook();
 	}
 
 
 	@Override
 	public void generateIt() {
+		this.tempalte.initModel(workbookData);
 		ExportDatasource ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
 			ds = new ListExportDatasource(tempalte, Collections.EMPTY_LIST);
@@ -133,8 +133,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 	
 	private void generateSheet(String sheetname, List<?> datalist){
-		Sheet sheet = workbook.createSheet(sheetname);
-//		int sheetIndex = workbook.getSheetIndex(sheet);
+		Sheet sheet = getWorkbook().createSheet(sheetname);
+		int sheetIndex = getWorkbook().getSheetIndex(sheet);
+		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);
 		
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
 		if(LangUtils.isNotEmpty(columnMap)){
@@ -143,12 +144,12 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}
 		
-		SheetData sdata = new SheetData(workbook, sheet, datalist);
-		this.excelValueParser.getContext().put(tempalte.getVarName(), sdata);
+		SheetData sdata = new SheetData(getWorkbookData(), sheet, datalist);
+		this.getExcelValueParser().getContext().put(tempalte.getVarName(), sdata);
 		try{
 			this.generateSheet(sdata);
 		}finally{
-			this.excelValueParser.getContext().remove(tempalte.getVarName());
+			this.getExcelValueParser().getContext().remove(tempalte.getVarName());
 		}
 		
 	}
@@ -197,6 +198,11 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 
 	public PropertyStringParser getPropertyStringParser() {
 		return propertyStringParser;
+	}
+
+	@Override
+	public WorkbookData getWorkbookData() {
+		return workbookData;
 	}
 
 	public static void main(String[] args) {

@@ -60,6 +60,8 @@ abstract public class ExcelUtils {
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);
+		xstream.alias("fieldValueExecutors", List.class);
+		xstream.alias("fieldValueExecutor", ExecutorModel.class);
 //		xstream.useAttributeFor(Number.class);
 //		xstream.useAttributeFor(boolean.class);
 //		xstream.useAttributeFor(String.class); 

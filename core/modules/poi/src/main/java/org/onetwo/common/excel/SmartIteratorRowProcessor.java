@@ -16,12 +16,12 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //	protected void processSingleField(Object ele, Row row, FieldModel field, Object defValue, int cellIndex){
 	protected void processSingleField(CellContext cellContext){
 //		Cell cell = createCell(row.getSheet(), row, field, -1, ele);
-		Object ele = cellContext.objectValue;
+//		Object ele = cellContext.objectValue;
 		Row row = cellContext.getCurrentRow();
 		FieldModel field = cellContext.field;
 		int cellIndex = cellContext.getCellIndex();
 		
-		Object v = getFieldValue(ele, field, cellContext.defFieldValue);
+		Object v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
 		
 		if(Collection.class.isInstance(v)){
 			Collection<?> values = (Collection<?>) v;
@@ -29,8 +29,9 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //			Row currentRow = null;
 //			int cellIndex = row.getLastCellNum();
 			for(Object value : values){
+				this.doFieldValueExecutors(field, cellContext.parser, value);
 //				currentRow = row.getSheet().getRow(row.getRowNum()+rowCount);
-				this.createSingleCell(ele, row, field, rowCount, cellIndex, value);
+				this.createSingleCell(cellContext.objectValue, row, field, rowCount, cellIndex, value);
 //				cellIndex = cell.getColumnIndex();
 				rowCount++;
 				cellContext.addRowSpanCount(1);
@@ -39,6 +40,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //			this.createSingleCell(ele, row, field, cellIndex, v);
 			super.processSingleField(cellContext);
 		}
+		
 
 	}
 	
@@ -49,10 +51,6 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
 		CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), ele, rowCount, row, field, cellIndex, "");
 		cell = createCell(cellContext);
-		
-		for(FieldListener fl : field.getListeners()){
-			cellValue = fl.getCellValue(cell, cellValue);
-		}
 		
 		setCellValue(cell, cellValue);
 		

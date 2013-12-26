@@ -1,5 +1,7 @@
 package org.onetwo.common.utils.propconf;
 
+import java.util.Properties;
+
 import org.junit.Test;
 
 public class PropConfigTest {
@@ -9,5 +11,6 @@ public class PropConfigTest {
 		AppConfig s = AppConfig.create("siteConfig-base.properties");
 		System.out.println("============================");
 		s.getBoolean("test");
+		Properties config = (Properties)s.getConfig();
 	}
 }

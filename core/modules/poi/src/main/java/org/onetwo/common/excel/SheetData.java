@@ -1,18 +1,17 @@
 package org.onetwo.common.excel;
 
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 
 public class SheetData {
 	private final Sheet sheet;
 	private final Object datasource;
 	private final int sheetIndex;
 	
-	public SheetData(Workbook workbook, Sheet sheet, Object dataSourceValue) {
+	public SheetData(WorkbookData workbookData, Sheet sheet, Object dataSourceValue) {
 		super();
 		this.sheet = sheet;
 		this.datasource = dataSourceValue;
-		this.sheetIndex = workbook.getSheetIndex(sheet);
+		this.sheetIndex = workbookData.getWorkbook().getSheetIndex(sheet);
 	}
 	public Sheet getSheet() {
 		return sheet;

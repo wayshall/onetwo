@@ -5,6 +5,7 @@ import java.util.List;
 import org.onetwo.common.utils.LangUtils;
 
 public class WorkbookModel {
+	private String listener;
 	
 	private List<TemplateModel> sheets;
 
@@ -22,5 +23,13 @@ public class WorkbookModel {
 	}
 	public TemplateModel getSheet(int index){
 		return this.sheets.get(index);
+	}
+
+	public String getListener() {
+		return listener;
+	}
+
+	public void setListener(String setter) {
+		this.listener = setter;
 	}
 }

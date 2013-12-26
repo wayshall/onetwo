@@ -37,6 +37,12 @@ public class RowModel {
 	
 	public RowModel(){
 	}
+
+	public void initModel(WorkbookData workbookData){
+		for(FieldModel field : fields){
+			field.initModel(workbookData);
+		}
+	}
 	
 	public int size(){
 		return this.fields.size();

@@ -10,7 +10,7 @@ import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerator {
 
-	protected Workbook workbook;
+//	protected Workbook workbook;
 	
 	public void write(OutputStream out) {
 		try {
@@ -34,9 +34,7 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 		}
 	}
 
-	public Workbook getWorkbook() {
-		return workbook;
-	}
+	abstract public Workbook getWorkbook();
 
 
 }
