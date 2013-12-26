@@ -79,7 +79,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 			if(sessionFactory.getClassMetadata(entityClass)!=null){
 				query.addEntity(entityClass);
 			}else{
-				if(LangUtils.isBaseType(entityClass))
+				if(LangUtils.isSimpleType(entityClass))
 					query.setResultTransformer(new SingleColumnTransformer(entityClass));
 				else
 					query.setResultTransformer(new RowToBeanTransformer(entityClass));
