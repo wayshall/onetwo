@@ -25,9 +25,14 @@ public class TemplateModel {
 	
 //	private Map<Integer, Short> columnWidthMap = LangUtils.newHashMap();
 	
-	private String styleSetter;
 	
 	public TemplateModel(){
+	}
+	
+	public void initModel(WorkbookData workbookData){
+		for(RowModel row : rows){
+			row.initModel(workbookData);
+		}
 	}
 
 	public String getName() {
@@ -96,14 +101,6 @@ public class TemplateModel {
 
 	public void setColumnWidth(String columnWidth) {
 		this.columnWidth = columnWidth;
-	}
-
-	public String getStyleSetter() {
-		return styleSetter;
-	}
-
-	public void setStyleSetter(String styleSetter) {
-		this.styleSetter = styleSetter;
 	}
 	
 	/*public boolean isMultiSheet(){

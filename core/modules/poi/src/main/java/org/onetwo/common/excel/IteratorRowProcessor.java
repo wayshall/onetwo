@@ -3,7 +3,6 @@ package org.onetwo.common.excel;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.profiling.UtilTimerStack;
@@ -69,17 +68,8 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 				}*/
 				
 				//Cell cell = createCell(sheet, row, field);
-
 				this.processField(getFieldRootValue(ele, field), row, field, "");
 				// putInContext(field.getName(), v);
-
-				if (field.getExecutors() == null)
-					continue;
-
-				for (FieldExecutor exe : field.getExecutors()) {
-					if (exe != null)
-						exe.process(context, field, dataSourceValue);
-				}
 				
 				/*if(profile){
 					UtilTimerStack.pop(field.getName());

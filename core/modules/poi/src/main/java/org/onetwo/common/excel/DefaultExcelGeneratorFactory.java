@@ -3,9 +3,7 @@ package org.onetwo.common.excel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.interfaces.TemplateGenerator;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
 
 /******
  * excel生成器工厂类
@@ -22,15 +20,15 @@ abstract public class DefaultExcelGeneratorFactory {
 		return generator;
 	}
 
-	public static PoiExcelGenerator createExcelGenerator(Workbook workbook, TemplateModel template, Map<String, Object> context){
-		PoiExcelGenerator generator = new POIExcelGeneratorImpl(workbook, template, context);
+	public static PoiExcelGenerator createExcelGenerator(WorkbookData workbook, TemplateModel template){
+		PoiExcelGenerator generator = new POIExcelGeneratorImpl(workbook, template);
 		return generator;
 	}
 	
 	public static PoiExcelGenerator createWebExcelGenerator(TemplateModel template, Map<String, Object> context){
-		ExcelValueParser parser = new DefaultExcelValueParser(context);
+//		ExcelValueParser parser = new DefaultExcelValueParser(context);
 		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template);
-		generator.setExcelValueParser(parser);
+//		generator.setExcelValueParser(parser);
 		return generator;
 	}
 	
