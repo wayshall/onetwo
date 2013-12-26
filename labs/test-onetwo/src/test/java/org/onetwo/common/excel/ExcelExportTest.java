@@ -1,6 +1,7 @@
 package org.onetwo.common.excel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class ExcelExportTest {
 				
 				cb.setBeans(JFishList.wrap(cb));
 				card.addCardBean(cb);
+				card.setProperties(Arrays.asList("aa", "bb"));
 			}
 			
 			cards.add(card);
@@ -67,7 +69,7 @@ public class ExcelExportTest {
 		g.write(path);
 	}
 
-//	@Test
+	@Test
 	public void testExport2() {
 //		System.out.println("style:"+ReflectUtils.getStaticFieldValue(CellStyle.class, "ALIGN_LEFT"));
 		String path = "E:/mydev/ejb3/lvyou2/onetwo-common/test/org/onetwo/common/excel/export_test2.xls";

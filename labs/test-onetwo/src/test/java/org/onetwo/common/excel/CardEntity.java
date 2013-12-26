@@ -87,6 +87,7 @@ public class CardEntity {
 	
 	protected List<CardBean> cardBeans;
   
+	protected List<String> properties;
 	
 	public CardEntity(){
 	}
@@ -249,6 +250,16 @@ public class CardEntity {
 		if(this.cardBeans==null)
 			this.cardBeans = new ArrayList<CardBean>();
 		this.cardBeans.add(cardBean);
+	}
+
+
+	public List<String> getProperties() {
+		return properties;
+	}
+
+
+	public void setProperties(List<String> properties) {
+		this.properties = properties;
 	}
 	
 }

@@ -13,6 +13,7 @@
 				<field name="主键" />
 				<field name="卡号" />
 				<field name="密码" />
+				<field name="properties" label="properties"/>
 				<field name="carbean" />
 			</fields>
 		</row>
@@ -21,6 +22,9 @@
 				<field name="id" rowspan="cardBeans.size()"/>
 				<field name="cardNo" rowspan="cardBeans.size()" value="cardNo+'--for--test--'+cardPwd"/>
 				<field name="cardPwd" rowspan="cardBeans.size()"/>
+				<!-- 一列多行  属性是list，每列的值是list元素 -->
+				<field name="properties"/>
+				<!-- 一列多行 属性是list，每列的值是list元素的某个属性-->
 				<field name="name" rootValue="cardBeans">
 				</field>
 			</fields>
