@@ -33,7 +33,4 @@
 	</profiles>
 
 
-  <modules>
-    <module>iccard</module>
-  </modules>
 </project>

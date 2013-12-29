@@ -1,9 +1,7 @@
-package org.onetwo.common.ds;
+package org.onetwo.common.spring.utils;
 
 import java.util.Enumeration;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -17,13 +15,12 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
+public class ConfigableBeanByPropertiesFactoryBean<T> implements FactoryBean<T>, InitializingBean {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
-	private DataSource dataSource;
-	
-	private Class<? extends DataSource> implementClass;
+	private T object;
+	private Class<? extends T> implementClass;
 	private Properties config;
 	private String prefix;
 	
@@ -39,8 +36,8 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		Assert.notEmpty(config);
 		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
-		dataSource = BeanUtils.instantiate(implementClass);
-		BeanWrapper bw = SpringUtils.newBeanWrapper(dataSource);
+		object = BeanUtils.instantiate(implementClass);
+		BeanWrapper bw = SpringUtils.newBeanWrapper(object);
 		Enumeration<?> names = config.propertyNames();
 		while(names.hasMoreElements()){
 			String propertyName = names.nextElement().toString();
@@ -61,13 +58,13 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 	}
 
 	@Override
-	public DataSource getObject() throws Exception {
-		return dataSource;
+	public T getObject() throws Exception {
+		return object;
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return DataSource.class;
+		return implementClass;
 	}
 
 	@Override
@@ -75,7 +72,7 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		return true;
 	}
 
-	public void setImplementClass(Class<? extends DataSource> implementClass) {
+	public void setImplementClass(Class<? extends T> implementClass) {
 		this.implementClass = implementClass;
 	}
 
