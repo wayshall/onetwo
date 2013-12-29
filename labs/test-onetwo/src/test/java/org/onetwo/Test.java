@@ -1,21 +1,13 @@
 package org.onetwo;
 
-import java.lang.reflect.Method;
-
-import org.onetwo.common.utils.ReflectUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import test.entity.UserEntity;
 
 
 
 public class Test {
 	
 	public static void main(String[] args){
-		Method m = ReflectUtils.findMethod(UserEntity.class, "getUserName");
-		System.out.println("m("+String.valueOf(Integer.MAX_VALUE).length()+"):"+Integer.MAX_VALUE);
-		System.out.println("m:"+m.toGenericString());
+		int i = '\0';
+		System.out.println("i: " + i);
 	}
 	
 }
