@@ -15,6 +15,7 @@ import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 public class WebProfilesApplicationContext extends SpringProfilesWebApplicationContext {
 	
 	public WebProfilesApplicationContext(){
-		initPluginContext(BaseSiteConfig.getInstance().getAppEnvironment(), ClassPathApplicationContext.class);
+		setAppEnvironment(BaseSiteConfig.getInstance().getAppEnvironment());
+		setAnnotatedClasses(ClassPathApplicationContext.class);
 	}
 }

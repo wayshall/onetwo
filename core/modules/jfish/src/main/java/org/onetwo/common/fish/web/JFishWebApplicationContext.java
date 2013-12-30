@@ -1,10 +1,7 @@
 package org.onetwo.common.fish.web;
 
-import org.onetwo.common.fish.plugin.DefaultPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishContextConfig;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
-import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 /*****
@@ -17,17 +14,12 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 public class JFishWebApplicationContext extends SpringProfilesWebApplicationContext {
 	
 	public JFishWebApplicationContext(String appEnvironment, Class<?>... outerContextClasses){
-		initPluginContext(appEnvironment, outerContextClasses);
+		setAppEnvironment(appEnvironment);
+		setAnnotatedClasses(outerContextClasses);
 	}
 	
 	public JFishWebApplicationContext(){
-		initPluginContext(BaseSiteConfig.getInstance().getAppEnvironment(), JFishContextConfig.class);
-	}
-	
-	protected ContextPluginManager createPluginManager(String appEnvironment){
-		DefaultPluginManager jpm =  new DefaultPluginManager();
-		JFishPluginManagerFactory.setPluginManager(jpm);
-		return jpm;
+		this(BaseSiteConfig.getInstance().getAppEnvironment(), JFishContextConfig.class);
 	}
 	
 }
