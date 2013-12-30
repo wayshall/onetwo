@@ -179,4 +179,35 @@ public class LangUtilsTest {
 		rs = LangUtils.fixedLengthString(str, length, "0");
 		Assert.assertEquals("000000000000", rs);
 	}
+	
+	@Test
+	public void testDataFormat(){
+		double value = 2002.2456;
+		String rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.25), rs);
+
+		value = 2002.2;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.20), rs);
+
+		Integer intValue = 2002;
+		rs = (String)LangUtils.formatValue(intValue, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.00), rs);
+
+		value = 0.525;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.53), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.78), rs);
+		
+		value = 0.001;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.00), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.00#");
+		Assert.assertEquals(String.valueOf(0.775), rs);
+	}
 }
