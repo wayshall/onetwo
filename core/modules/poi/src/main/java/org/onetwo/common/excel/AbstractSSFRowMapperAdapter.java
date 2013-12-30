@@ -20,7 +20,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		this.convertors = convertors;
 	}
 	
-	@Override
+//	@Override
 	public String getMapperName() {
 		return this.getClass().getName();
 	}

@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 public interface SSFRowMapper<T> {
 
-	String getMapperName();
+//	String getMapperName();
 	
 	/******
 	 * 读取标题行

@@ -179,7 +179,19 @@ abstract public class ExcelUtils {
 		try {
 			return WorkbookFactory.create(inp);
 		} catch (Exception e) {
-			throw new BaseException("read workbook error: " + e.getMessage(), e);
+			throw new BaseException("read workbook error by inputStream : " + e.getMessage(), e);
+		} 
+	}
+	
+	public static Workbook readWorkbookFromClasspath(String path){
+		return readWorkbook(new ClassPathResource(path));
+	}
+	
+	public static Workbook readWorkbook(Resource res){
+		try {
+			return WorkbookFactory.create(res.getInputStream());
+		} catch (Exception e) {
+			throw new BaseException("read workbook error by resource : " + e.getMessage(), e);
 		} 
 	}
 	

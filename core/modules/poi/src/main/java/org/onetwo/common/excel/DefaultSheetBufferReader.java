@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 
-public class DefaultSheetBufferReader implements SheetBufferReader<Row> {
+public class DefaultSheetBufferReader implements ExcelBufferReader<Row> {
 	
 //	private static final Logger logger = MyLoggerFactory.getLogger(SheetBufferReader.class);
 	
@@ -13,7 +13,7 @@ public class DefaultSheetBufferReader implements SheetBufferReader<Row> {
 	private int rowCount = 0;
 	private boolean initialized;
 	
-	private int currentRowNumber;
+	private int currentRowNumber = 0;
 	
 	public DefaultSheetBufferReader(Sheet sheet){
 		this.sheet = sheet;
@@ -23,10 +23,11 @@ public class DefaultSheetBufferReader implements SheetBufferReader<Row> {
 	public void initReader(){
 		Assert.notNull(sheet);
 		rowCount = sheet.getPhysicalNumberOfRows();
-		if(rowCount<1)
-			return ;
-		currentRowNumber = 0;
 		this.initialized = true;
+	}
+	
+	public boolean isEnd(){
+		return currentRowNumber >= rowCount;
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class DefaultSheetBufferReader implements SheetBufferReader<Row> {
 		if(!initialized)
 			throw new BaseException("buffer has not initialized!");
 		
-		if(currentRowNumber < rowCount) {
+		if(!isEnd()) {
 			Row row = sheet.getRow(currentRowNumber);
 			currentRowNumber++;
 			return row;

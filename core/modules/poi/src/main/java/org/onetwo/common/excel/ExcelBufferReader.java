@@ -1,9 +1,9 @@
 package org.onetwo.common.excel;
 
-public interface SheetBufferReader<T> {
+public interface ExcelBufferReader<T> {
 
 	void initReader();
-
 	T read();
+	boolean isEnd();
 
 }
