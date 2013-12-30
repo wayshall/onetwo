@@ -12,6 +12,7 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 
 //	protected Workbook workbook;
 	
+	
 	public void write(OutputStream out) {
 		try {
 			this.getWorkbook().write(out);
@@ -20,6 +21,12 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 		} finally {
 			//LangUtils.closeIO(out);
 		}
+	}
+
+	@Override
+	public void generateTo(String path) {
+		this.generateIt();
+		this.write(path);
 	}
 
 	public void write(String path) {
