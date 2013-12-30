@@ -68,7 +68,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		return getCellValueConvertor(type.getSimpleName());
 	}
 
-	@Override
+//	@Override
 	public CellValueConvertor getCellValueConvertor(String type) {
 		if(convertors==null || convertors.isEmpty())
 			return null;
