@@ -1,9 +1,12 @@
 package org.onetwo.guava;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 
 import test.entity.UserEntity;
@@ -11,6 +14,7 @@ import test.entity.UserEntity;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 
 public class GuavaTest {
 	
@@ -27,6 +31,21 @@ public class GuavaTest {
 			users.add(createUser(userName, i));
 		}
 		return users;
+	}
+	
+	@Test
+	public void testDiffence(){
+		HashSet<Integer> alist = Sets.newHashSet(1, 2, 3, 5);
+		HashSet<Integer> blist = Sets.newHashSet(1, 2, 6, 7);
+		Set<Integer> dlist = Sets.difference(alist, blist);
+		System.out.println("dlist:" + dlist);
+		Assert.assertEquals(dlist.size(), 2);
+		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 3));
+		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 5));
+		dlist = Sets.difference(blist, alist);
+		System.out.println("dlist:" + dlist);
+		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 6));
+		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 7));
 	}
 	
 	@Test
