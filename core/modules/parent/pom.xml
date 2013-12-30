@@ -50,7 +50,7 @@
     <hornetq.client.version>2.2.7.Final</hornetq.client.version>
     <jboss.netty.version>3.2.7.Final</jboss.netty.version>
     
-    <xstream.version>1.2.1</xstream.version>
+    <xstream.version>1.3.1</xstream.version>
     
     <lucene.core.version>3.5.0</lucene.core.version>
     <solr.core.version>3.5.0</solr.core.version>

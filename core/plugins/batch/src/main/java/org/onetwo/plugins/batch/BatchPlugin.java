@@ -18,7 +18,7 @@ public class BatchPlugin extends AbstractContextPlugin<BatchPlugin, DefaultConte
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(BatchPluginContext.class);
+//		annoClasses.add(BatchPluginContext.class);
 	}
 
 

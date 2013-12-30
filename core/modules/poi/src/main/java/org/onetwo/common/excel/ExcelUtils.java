@@ -1,6 +1,7 @@
 package org.onetwo.common.excel;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,9 @@ import ognl.Ognl;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
@@ -169,6 +173,14 @@ abstract public class ExcelUtils {
 			logger.error("["+exp+"] getValue error : " + e.getMessage());
 		}
 		return value;
+	}
+	
+	public static Workbook readWorkbook(InputStream inp){
+		try {
+			return WorkbookFactory.create(inp);
+		} catch (Exception e) {
+			throw new BaseException("read workbook error: " + e.getMessage(), e);
+		} 
 	}
 	
 	public static void main(String[] args){
