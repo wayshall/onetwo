@@ -206,7 +206,7 @@ var Common = function () {
 		
 		initAfterPage: function(){
 			var initBtn = function(){
-				$(this).button('loading');
+				$(this).button('loading');//$(this).button('reset')
 			};
 			$('button[data-loading-text]').click(initBtn);
 			$('input[type=submit][data-loading-text]').click(initBtn);
