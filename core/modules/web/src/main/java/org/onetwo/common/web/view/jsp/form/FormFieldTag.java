@@ -178,7 +178,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		String codePrefix = "code:";
 		if(disabled.startsWith(codePrefix)){
 			String code = disabled.substring(codePrefix.length());
-			this.disabled = checkPermission(code);
+			this.disabled = !checkPermission(code);
 		}else{
 			this.disabled = Types.convertValue(disabled, boolean.class);
 		}
