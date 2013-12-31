@@ -32,6 +32,12 @@
 	</dependency>
 	
 	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-poi</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-hibernate</artifactId>
 	  <version>${onetwo.plugin.version}</version>
@@ -71,6 +77,13 @@
 	  <groupId>mysql</groupId>
 	  <artifactId>mysql-connector-java</artifactId>
 	  <version>${mysql.driver.version}</version>
+	</dependency>
+	
+	
+	<dependency>
+	  <groupId>com.microsoft</groupId>
+	  <artifactId>sqljdbc4</artifactId>
+	  <version>1.0</version>
 	</dependency>
 	
   	<dependency>

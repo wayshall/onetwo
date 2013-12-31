@@ -25,8 +25,6 @@
 					    http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd"
 	default-lazy-init="true">
   
-	<context:component-scan base-package="org.onetwo.project.batch"></context:component-scan>
-	<context:annotation-config />
 	<!-- 
 	<bean class="org.onetwo.plugin.hibernate.HibernatePluginContext" />
 	<bean class="org.onetwo.plugins.dq.DqPluginContext" />
@@ -41,47 +39,6 @@
 			</list>
 		</property>
   	</bean>
-  	
-  	<!-- 
-	<jdbc:initialize-database data-source="dataSource">
-		<jdbc:script location="classpath:/org/springframework/batch/core/schema-drop-mysql.sql"/>
-		<jdbc:script location="classpath:/org/springframework/batch/core/schema-mysql.sql"/>	
-	</jdbc:initialize-database>
-	 -->
-  	
-  	<batch:job-repository/>
-  	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-	    <property name="jobRepository" ref="jobRepository" />
-	</bean>
-	
-	
-	<bean id="dataReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-		<property name="resource" value="classpath:inputDatas.txt"/>
-		<property name="linesToSkip" value="1"/>
-		<property name="lineMapper">
-			<bean id="lineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-				<property name="lineTokenizer">
-					<bean id="defaultLinetokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
-						<property name="names" value="user_name,age,email"></property>
-					</bean>
-				</property>
-				<property name="fieldSetMapper">
-					<bean id="fieldMapper" class="org.onetwo.project.batch.UserFieldMapper"></bean>
-				</property>
-			</bean>
-		</property>
-	</bean>
-	
-	<batch:job id="importDatas">
-		<batch:step id="readAndWriteDatas">
-			<batch:tasklet>
-				<batch:chunk reader="dataReader" 
-							 processor="userProcessorService"
-							 writer="userWriterService"
-							 commit-interval="10"/>
-			</batch:tasklet>
-		</batch:step>
-	</batch:job>
   	
 
 </beans>
