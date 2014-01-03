@@ -9,7 +9,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.project.batch.tools.entity.PsamEntity;
 import org.springframework.batch.item.ItemWriter;
 
-public class PsamWriter implements ItemWriter<PsamEntity>{
+public class ExportPsamWriter implements ItemWriter<PsamEntity>{
 
 	@Override
 	public void write(List<? extends PsamEntity> items) throws Exception {

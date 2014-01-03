@@ -3,11 +3,15 @@ package org.onetwo.project.batch.tools;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.plugins.batch.ExcelFileItemReader;
 import org.onetwo.project.batch.tools.entity.PsamEntity;
-import org.onetwo.project.batch.tools.service.PsamReader;
-import org.onetwo.project.batch.tools.service.PsamWriter;
+import org.onetwo.project.batch.tools.service.ExportPsamReader;
+import org.onetwo.project.batch.tools.service.ExportPsamWriter;
+import org.onetwo.project.batch.tools.service.ImportExcelMapper;
+import org.onetwo.project.batch.tools.service.ImportPsamWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -38,6 +42,8 @@ public class ToolBatchContextConfig {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	private int psamCount = 10000;
+	
 //	@Autowired
 //	private ItemReader<PsamEntity> psamReader;
 	
@@ -48,9 +54,9 @@ public class ToolBatchContextConfig {
 	
 	@Bean
 	public Step exportPsamStep(){
-		return steps.get("exportPsamStep").<PsamEntity, PsamEntity>chunk(10000)
-					.reader(psamReader())
-					.writer(psamWriter())
+		return steps.get("exportPsamStep").<PsamEntity, PsamEntity>chunk(psamCount)
+					.reader(exportPsamReader())
+					.writer(exportPsamWriter())
 					.build();
 	}
 	
@@ -66,17 +72,46 @@ public class ToolBatchContextConfig {
 	}
 
 	@Bean
-	public ItemReader<PsamEntity> psamReader(){
-		PsamReader reader = new PsamReader();
+	public ItemReader<PsamEntity> exportPsamReader(){
+		ExportPsamReader reader = new ExportPsamReader();
 		Map<Object, Object> params = LangUtils.asMap("areaCode", "5500", "id:>=", 30000L, "id:<=", 30099L);
 		reader.setParams(params);
 		return reader;
 	}
 	
 	@Bean
-	public ItemWriter<PsamEntity> psamWriter(){
-		PsamWriter writer = new PsamWriter();
+	public ItemWriter<PsamEntity> exportPsamWriter(){
+		ExportPsamWriter writer = new ExportPsamWriter();
 		return writer;
 	}
+	
+	
+	@Bean
+	public Job importPsamJob(){
+		return jobs.get("importPsamJob").start(importPsamStep()).build();
+	}
+	
+	@Bean
+	public Step importPsamStep(){
+		return steps.get("importPsamStep").<PsamEntity, PsamEntity>chunk(psamCount)
+				.reader(importPsamReader())
+				.writer(importPsamWriter())
+				.build();
+	}
+	
+	@Bean
+	public ItemReader<PsamEntity> importPsamReader(){
+		ExcelFileItemReader<PsamEntity> reader = new ExcelFileItemReader<PsamEntity>();
+		reader.setResource(SpringUtils.classpath("psam_lingnantong.xls"));
+		reader.setRowMapper(new ImportExcelMapper());
+		return reader;
+	}
+	
+	@Bean
+	public ItemWriter<PsamEntity> importPsamWriter(){
+		ImportPsamWriter writer = new ImportPsamWriter();
+		return writer;
+	}
+	
 
 }

@@ -1,9 +1,9 @@
 package org.onetwo.plugins.batch;
 
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.onetwo.common.excel.ExcelBufferReader;
 import org.onetwo.common.excel.ExcelUtils;
-import org.onetwo.common.excel.RowMapperSheetBufferReader;
+import org.onetwo.common.excel.RowMapperWorkbookBufferReader;
 import org.onetwo.common.excel.SSFRowMapper;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 	private static final Logger logger = MyLoggerFactory.getLogger(ExcelFileItemReader.class);
 	
 	private Workbook workbook;
-	private Sheet sheet;
-	private RowMapperSheetBufferReader<T> reader;
+//	private Sheet sheet;
+	private ExcelBufferReader<T> reader;
 	private SSFRowMapper<T> rowMapper;
 	private boolean strict = true;
 	private Resource resource;
@@ -81,9 +81,10 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 
 		this.workbook = ExcelUtils.readWorkbook(resource.getInputStream());
 		
-		int sheetIndex = 0;
-		sheet = workbook.getSheetAt(sheetIndex);
-		reader = new RowMapperSheetBufferReader<T>(sheet, sheetIndex, this.rowMapper);
+//		int sheetIndex = 0;
+//		sheet = workbook.getSheetAt(sheetIndex);
+//		reader = new RowMapperSheetBufferReader<T>(sheet, sheetIndex, this.rowMapper);
+		reader = new RowMapperWorkbookBufferReader<T>(workbook, this.rowMapper);
 		reader.initReader();
 		/*for (int i = 0; i < linesToSkip; i++) {
 			readRow();

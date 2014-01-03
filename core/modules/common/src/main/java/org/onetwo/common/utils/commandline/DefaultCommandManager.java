@@ -49,7 +49,8 @@ public class DefaultCommandManager implements CommandManager {
 	}
 	
 	public String helpDoc(){
-		StringBuilder help = new StringBuilder("help document : \n");
+//		StringBuilder help = new StringBuilder("help document : \n");
+		StringBuilder help = new StringBuilder();
 		if(this.commands==null || this.commands.isEmpty()){
 			help.append("no commands!");
 			return help.toString();

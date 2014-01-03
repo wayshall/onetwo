@@ -44,19 +44,29 @@ public class CmdRunner {
 	protected void waitForCommand() {
 		InputStreamReader reader = null;
 		try {
+			System.out.print("please input > ");
 			reader = new InputStreamReader(System.in);
 			BufferedReader br = new BufferedReader(reader);
 			String str = null;
 			CmdContext cmdContext = createCmdContext(br);
 			while ((str = br.readLine()) != null) {
 				Command cmd = cmdManager.getCommand(str);
-				if(cmd!=null)
-					cmd.execute(cmdContext);
+				if(cmd!=null){
+					try {
+						cmd.execute(cmdContext);
+					} catch (Exception e) {
+						logger.error("execute command error: " + e.getMessage(), e);
+						System.out.println("execute command error : " + e.getMessage()+", see detail in log file!");
+					}
+					System.out.print("please input > ");
+				}
 			}
 
-		} catch (Exception e) {
-			logger.error("execute command error!", e);
+		} catch (IOException e) {
+			logger.error("input error : " + e.getMessage(), e);
+			System.out.println("input error : " + e.getMessage()+", see detail in log file!");
 		} finally{
+			System.out.println("goodbye!");
 			LangUtils.closeIO(reader);
 		}
 	}
