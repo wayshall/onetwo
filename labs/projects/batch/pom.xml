@@ -32,6 +32,12 @@
 	</dependency>
 	
 	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-batch</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-poi</artifactId>
 	  <version>${onetwo.version}</version>

@@ -14,20 +14,25 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 //@Component
-public class PsamReader implements ItemReader<PsamEntity>{
+public class ExportPsamReader implements ItemReader<PsamEntity>{
 
 	@Resource
 	private PsamService psamService;
 	private Iterator<PsamEntity> psamIterator;
 	private Map<Object, Object> params;
+	private boolean loaddata;
 	
-	@PostConstruct
+//	@PostConstruct
 	public void loadDatas(){
 		List<PsamEntity> psamList = this.psamService.findByParams(params);
 		this.psamIterator = psamList.iterator();
+		this.loaddata = true;
 	}
 
 	public PsamEntity read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+		if(!loaddata){
+			loadDatas();
+		}
 		if(this.psamIterator.hasNext()){
 			return this.psamIterator.next();
 		}else{
