@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
@@ -69,6 +71,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	}
 
 	private void initialize(String[] aliases) {
+		Assert.notEmpty(aliases, "aliases is emtpy!");
 		this.aliases = new String[ aliases.length ];
 		this.propNames = new String[ aliases.length ];
 

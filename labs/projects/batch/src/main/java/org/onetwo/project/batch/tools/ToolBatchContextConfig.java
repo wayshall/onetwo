@@ -7,6 +7,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.plugins.batch.ExcelFileItemReader;
+import org.onetwo.plugins.batch.HibernateQueryPagingItemReader;
 import org.onetwo.project.batch.tools.entity.PsamEntity;
 import org.onetwo.project.batch.tools.service.ExportPsamReader;
 import org.onetwo.project.batch.tools.service.ExportPsamWriter;
@@ -19,7 +20,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.HibernateCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,7 +42,7 @@ public class ToolBatchContextConfig {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private int psamCount = 10000;
+	private int psamCount = 50;
 	
 //	@Autowired
 //	private ItemReader<PsamEntity> psamReader;
@@ -62,11 +62,17 @@ public class ToolBatchContextConfig {
 	
 	@Bean
 	public ItemReader<PsamEntity> exportPsamReader(){
-		HibernateCursorItemReader<PsamEntity> reader = new HibernateCursorItemReader<PsamEntity>();
+//		HibernateCursorItemReader<PsamEntity> reader = new HibernateCursorItemReader<PsamEntity>();
+//		HibernateQueryCursorItemReader<PsamEntity> reader = new HibernateQueryCursorItemReader<PsamEntity>();
+		HibernateQueryPagingItemReader<PsamEntity> reader = new HibernateQueryPagingItemReader<PsamEntity>();
 		reader.setFetchSize(100);
 		Map<String, Object> params = LangUtils.asMap("areaCode", "5500", "startId", 30000L, "endId", 30099L);
-		reader.setQueryString("from PsamEntity e where e.areaCode=:areaCode and id >= :startId and id <= :endId");
+//		reader.setQueryString("from PsamEntity e where e.areaCode=:areaCode and id >= :startId and id <= :endId");
+		reader.setQueryString("select * from term_psam where area_Code=:areaCode and id >= :startId and id <= :endId");
+		reader.setHql(false);
 		reader.setParameterValues(params);
+		reader.setEntityClass(PsamEntity.class);
+		reader.setResultTransformer(true);
 //		reader.setUseStatelessSession(true);
 		reader.setSessionFactory(sessionFactory);
 		return reader;
