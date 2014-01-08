@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 
 public class CmdRunner {
 
-	protected Logger logger = Logger.getLogger(CmdRunner.class);
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	protected CommandManager cmdManager;
 	
