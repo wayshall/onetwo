@@ -39,6 +39,16 @@
 			</list>
 		</property>
   	</bean>
-  	
+  	<bean id="hibernateTestReader" class="org.springframework.batch.item.database.HibernateCursorItemReader" scope="step">
+		<property name="fetchSize" value="1000"/>
+		<property name="queryString" value="from UserEntity t where t.id >= :userId">
+		</property>
+		<property name="parameterValues">
+			<map>
+				<entry key="userId" value="1"/>
+			</map>
+		</property>
+		<perperty name="sessionFactory" ref="sessionFactory"></perperty>
+	</bean>
 
 </beans>

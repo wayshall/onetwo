@@ -50,7 +50,7 @@ public class AbstractBodyTag extends BodyTagSupport {
 			throw new JspException(msg);
 	}
 	
-	protected void write(String content){
+	public void write(String content){
 		try {
 			this.pageContext.getOut().write(content);
 		} catch (IOException e) {

@@ -10,6 +10,7 @@ import org.onetwo.common.utils.convert.Types;
 import org.onetwo.project.batch.tools.entity.PsamEntity;
 import org.onetwo.project.batch.tools.entity.PsamEntity.PsamFactory;
 import org.onetwo.project.batch.tools.entity.PsamEntity.PsamStatus;
+import org.springframework.stereotype.Component;
 
 public class ImportExcelMapper extends AbstractRowMapper<PsamEntity>{
 
