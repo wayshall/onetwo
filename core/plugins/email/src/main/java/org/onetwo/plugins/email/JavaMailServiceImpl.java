@@ -41,7 +41,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 			}
 		} catch (Exception e) {
 //			logger.error("发送邮件失败："+e.getMessage(), e);
-			throw new MessagingException("发送邮件失败："+e.getMessage());
+			throw new MessagingException("发送邮件失败："+e.getMessage(), e);
 		}
 	}
 

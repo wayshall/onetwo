@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -38,6 +39,12 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	private boolean ajaxSupported = false;
 	private String ajaxZoneName;
 //	private String ajaxInstName;
+	
+	private DatagridRenderListener datagridRenderListener;
+	
+	public DataGridTag(){
+		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
+	}
 	
 	@Override
 	public GridTagBean createComponent() {
@@ -78,6 +85,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 				this.component.setBodyContent(bc.getString());
 			}
 			this.pageContext.include(getTemplate());
+			if(this.datagridRenderListener!=null){
+				this.datagridRenderListener.afterRender(this, component);
+			}
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{

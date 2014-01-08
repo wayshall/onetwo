@@ -7,6 +7,7 @@ import org.onetwo.common.utils.commandline.CmdRunner;
 import org.onetwo.common.utils.commandline.DefaultCommandManager;
 import org.onetwo.common.utils.commandline.ExitCommand;
 import org.onetwo.common.utils.commandline.HelpCommand;
+import org.onetwo.plugins.batch.cmd.JobCommand;
 import org.onetwo.project.batch.BatchConfig;
 import org.slf4j.Logger;
 

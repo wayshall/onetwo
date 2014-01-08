@@ -1,4 +1,4 @@
-package org.onetwo.project.batch.tools;
+package org.onetwo.plugins.batch.cmd;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import org.onetwo.common.utils.commandline.AbstractCommand;
 import org.onetwo.common.utils.commandline.CmdContext;
 import org.slf4j.Logger;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 
@@ -24,13 +25,20 @@ public class JobCommand extends AbstractCommand {
 		JobLauncher jobLauncher = SpringApplication.getInstance().getBean(JobLauncher.class);
 		try {
 			Job job = SpringApplication.getInstance().getBean(Job.class, getKey());
-			jobLauncher.run(job, 
-								new JobParametersBuilder()
-									.addDate("runDate", new Date())
-									.toJobParameters());
+			jobLauncher.run(job, getJobParameter());
 		} catch (Exception e) {
-			logger.error("{} error: " + e.getMessage(), getKey(), e);
+			handleException(e);
 		}
 		
+	}
+	
+	protected void handleException(Exception e){
+		logger.error("{} error: " + e.getMessage(), getKey(), e);
+	}
+	
+	protected JobParameters getJobParameter(){
+		return new JobParametersBuilder()
+				.addDate("runDate", new Date())
+				.toJobParameters();
 	}
 }

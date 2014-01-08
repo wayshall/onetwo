@@ -60,10 +60,11 @@ public class ToolBatchContextConfig {
 					.build();
 	}
 	
-//	@Bean
-	public ItemReader<PsamEntity> psamReader2(){
+	@Bean
+	public ItemReader<PsamEntity> exportPsamReader(){
 		HibernateCursorItemReader<PsamEntity> reader = new HibernateCursorItemReader<PsamEntity>();
-		Map<String, Object> params = LangUtils.asMap("areaCode", "5500", "startId", 1L, "endId", 10L);
+		reader.setFetchSize(100);
+		Map<String, Object> params = LangUtils.asMap("areaCode", "5500", "startId", 30000L, "endId", 30099L);
 		reader.setQueryString("from PsamEntity e where e.areaCode=:areaCode and id >= :startId and id <= :endId");
 		reader.setParameterValues(params);
 //		reader.setUseStatelessSession(true);
@@ -72,7 +73,7 @@ public class ToolBatchContextConfig {
 	}
 
 	@Bean
-	public ItemReader<PsamEntity> exportPsamReader(){
+	public ItemReader<PsamEntity> exportPsamReader2(){
 		ExportPsamReader reader = new ExportPsamReader();
 		Map<Object, Object> params = LangUtils.asMap("areaCode", "5500", "id:>=", 30000L, "id:<=", 30099L);
 		reader.setParams(params);

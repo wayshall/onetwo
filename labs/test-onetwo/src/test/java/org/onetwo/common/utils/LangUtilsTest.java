@@ -25,6 +25,8 @@ public class LangUtilsTest {
 		System.out.println("voted: " + (voted &=true));
 		voted = false;
 		System.out.println("voted: " + (voted &=true));
+		str = "ntyg168@163.com";
+		System.out.println("substring: " + str.length());
 	}
 	@Test
 	public void testTimeUnit(){
