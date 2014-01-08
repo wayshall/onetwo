@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 
@@ -211,5 +212,16 @@ public class LangUtilsTest {
 		value = 0.775;
 		rs = (String)LangUtils.formatValue(value, "#0.00#");
 		Assert.assertEquals(String.valueOf(0.775), rs);
+	}
+	
+	@Test
+	public void test10to16(){
+		String cardNo10 = "6124895493223875970";
+		System.out.println("cardno: " + cardNo10.length());
+		Long max = Long.MAX_VALUE;
+		Assert.assertEquals(expected, actual);
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo16 = Long.toHexString(Types.convertValue(cardNo10, Long.class));
+		System.out.println("cardNo16: " + cardNo16);
 	}
 }

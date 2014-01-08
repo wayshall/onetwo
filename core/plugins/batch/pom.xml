@@ -19,6 +19,7 @@
  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hibernate.version>4.2.3.Final</hibernate.version>
   </properties>
 
  
@@ -39,6 +40,13 @@
 	  <artifactId>onetwo-poi</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-hibernate</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
 	
 	<dependency>
 	    <groupId>org.springframework.batch</groupId>
