@@ -42,6 +42,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private DatagridRenderListener datagridRenderListener;
 	
+	private boolean exportable;
+	
 	public DataGridTag(){
 		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
 	}
@@ -113,6 +115,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setSearchForm(searchForm);
 		component.setAjaxSupported(ajaxSupported);
 		component.setPage(TagUtils.toPage(dataSource));
+		component.setExportable(exportable);
 		
 		ajaxZoneName = getName();// + AJAX_POSTFIX;
 //		ajaxInstName = getName() + AJAX_INST_POSTFIX;
@@ -188,6 +191,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	public void setAjaxSupported(boolean ajaxSupported) {
 		this.ajaxSupported = ajaxSupported;
+	}
+
+	public void setExportable(boolean exportable) {
+		this.exportable = exportable;
 	}
 
 }
