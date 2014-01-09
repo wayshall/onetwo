@@ -3,10 +3,12 @@ package org.onetwo.common.excel;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 
+@JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
 public class FieldModel {
 
 	private String label;
@@ -210,7 +212,7 @@ public class FieldModel {
 	}
 
 	public String getStyle() {
-		return StringUtils.defaultValues(style, getParentRow().getFieldStyle(), "");
+		return StringUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");
 	}
 
 	public void setStyle(String style) {
@@ -218,7 +220,7 @@ public class FieldModel {
 	}
 
 	public String getFont() {
-		return StringUtils.defaultValues(font, getParentRow().getFieldFont(), "");
+		return StringUtils.defaultValues(font, getParentRow()==null?"":getParentRow().getFieldFont(), "");
 	}
 
 	public void setFont(String font) {
@@ -226,7 +228,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderFont() {
-		return StringUtils.defaultValues(headerFont, getParentRow().getFieldHeaderFont(), "");
+		return StringUtils.defaultValues(headerFont, getParentRow()==null?"":getParentRow().getFieldHeaderFont(), "");
 	}
 
 	public void setHeaderFont(String headerFont) {
@@ -234,7 +236,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderStyle() {
-		return StringUtils.defaultValues(headerStyle, getParentRow().getFieldHeaderStyle(), "");
+		return StringUtils.defaultValues(headerStyle, getParentRow()==null?"":getParentRow().getFieldHeaderStyle(), "");
 	}
 
 	public void setHeaderStyle(String headerStyle) {

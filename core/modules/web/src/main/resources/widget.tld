@@ -243,8 +243,14 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <description><![CDATA[action]]></description>
+      <description><![CDATA[toolbar]]></description>
       <name>toolbar</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[exportable]]></description>
+      <name>exportable</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

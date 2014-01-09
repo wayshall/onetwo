@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.excel.DatagridExcelModelBuilder;
 import org.onetwo.common.excel.DefaultXmlTemplateExcelFacotory;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
@@ -392,5 +393,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	public static class MvcBeanNames {
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
+	}
+	
+	@Bean
+	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
+		return new DatagridExcelModelBuilder();
 	}
 }

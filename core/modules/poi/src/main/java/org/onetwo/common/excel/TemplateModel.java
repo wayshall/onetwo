@@ -2,9 +2,11 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+@JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
 public class TemplateModel {
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
@@ -51,6 +53,13 @@ public class TemplateModel {
 	public void setRows(List<RowModel> rows) {
 //		this.freezer.checkOperation("setRows");
 		this.rows = rows;
+	}
+	
+	public TemplateModel addRow(RowModel row){
+		if(this.rows==null)
+			this.rows = LangUtils.newArrayList();
+		this.rows.add(row);
+		return this;
 	}
 
 	public String getLabel() {
