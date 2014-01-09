@@ -19,8 +19,7 @@ public class HibernateQueryPagingItemReader<E> extends HibernatePagingItemReader
 			
 			HibernateNativeQueryProvider<E> queryProvider = new HibernateNativeQueryProvider<E>();
 			queryProvider.setSqlQuery(sqlQueryString);
-			queryProvider.setEntityClass(entityClass);
-			queryProvider.setResultTransformer(resultTransformer);
+			queryProvider.setResultClass(entityClass, resultTransformer);
 			setQueryProvider(queryProvider);
 		}
 		super.afterPropertiesSet();
