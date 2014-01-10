@@ -11,6 +11,10 @@ public class HibernateQueryPagingItemReader<E> extends HibernatePagingItemReader
 
 	private boolean resultTransformer = false;
 	
+	public HibernateQueryPagingItemReader(){
+		setPageSize(1000);
+	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(!isHql()){
