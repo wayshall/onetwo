@@ -14,11 +14,11 @@ import org.springframework.batch.core.launch.JobLauncher;
 
 public class JobCommand extends AbstractCommand {
 
+	private static final Logger logger = MyLoggerFactory.getLogger(JobCommand.class);
+	
 	public JobCommand(String key) {
 		super(key);
 	}
-
-	private static final Logger logger = MyLoggerFactory.getLogger(JobCommand.class);
 	
 	@Override
 	public void doExecute(CmdContext context) {

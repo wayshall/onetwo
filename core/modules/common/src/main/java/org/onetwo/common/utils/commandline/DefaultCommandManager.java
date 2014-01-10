@@ -8,7 +8,7 @@ import org.onetwo.common.utils.Assert;
 
 public class DefaultCommandManager implements CommandManager {
 	
-	public static final String UNKONW_COMMAND = "unknow";
+	public static final String UNKONW_COMMAND = HelpCommand.NAME;//"unknow";
 	
 	public static class UnknowCommand extends AbstractCommand {
 		
@@ -27,7 +27,7 @@ public class DefaultCommandManager implements CommandManager {
 	
 	public DefaultCommandManager(){
 		commands = new LinkedHashMap<String, Command>();
-		addCommand(new UnknowCommand());
+//		addCommand(new UnknowCommand());
 	}
 	
 	public CommandManager addCommand(Command cmd){
