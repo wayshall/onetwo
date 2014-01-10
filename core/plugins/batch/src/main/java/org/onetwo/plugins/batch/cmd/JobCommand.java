@@ -25,7 +25,7 @@ public class JobCommand extends AbstractCommand {
 		JobLauncher jobLauncher = SpringApplication.getInstance().getBean(JobLauncher.class);
 		try {
 			Job job = SpringApplication.getInstance().getBean(Job.class, getKey());
-			jobLauncher.run(job, getJobParameter());
+			jobLauncher.run(job, buildJobParameter(context));
 		} catch (Exception e) {
 			handleException(e);
 		}
@@ -36,7 +36,7 @@ public class JobCommand extends AbstractCommand {
 		logger.error("{} error: " + e.getMessage(), getKey(), e);
 	}
 	
-	protected JobParameters getJobParameter(){
+	protected JobParameters buildJobParameter(CmdContext context) throws Exception {
 		return new JobParametersBuilder()
 				.addDate("runDate", new Date())
 				.toJobParameters();
