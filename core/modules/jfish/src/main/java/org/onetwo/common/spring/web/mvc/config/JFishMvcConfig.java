@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.excel.DatagridExcelModelBuilder;
 import org.onetwo.common.excel.DefaultXmlTemplateExcelFacotory;
+import org.onetwo.common.excel.ExcelView;
+import org.onetwo.common.excel.ModelGeneratorFactory;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
@@ -248,6 +250,13 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	public View xmlView() {
 		MarshallingView view = new MarshallingView();
 		view.setMarshaller(jaxb2Marshaller());
+		return view;
+	}
+	
+	@Bean
+	public View excelVIew(){
+		ExcelView view = new ExcelView();
+		view.setModelGeneratorFactory((ModelGeneratorFactory)xmlTemplateGeneratorFactory());
 		return view;
 	}
 

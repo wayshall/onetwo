@@ -412,6 +412,12 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     <attribute>
+      <description><![CDATA[exportable]]></description>
+      <name>exportable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
       <description><![CDATA[orderable]]></description>
       <name>orderable</name>
       <required>false</required>

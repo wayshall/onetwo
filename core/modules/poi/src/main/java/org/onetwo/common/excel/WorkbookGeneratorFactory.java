@@ -6,18 +6,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 
-public class WorkbookGeneratorFactory implements XmlTemplateGeneratorFactory {
+public class WorkbookGeneratorFactory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory {
 	
 	private Map<String, WorkbookModel> workbookModelCache = new ConcurrentHashMap<String, WorkbookModel>();
 	
 	@Override
 	public TemplateGenerator create(String template, Map<String, Object> context) {
 //		return DefaultExcelGeneratorFactory.createWorkbookGenerator(template, context);
-		return createWorkbookGenerator(getWorkbookModel(template, true), context);
+		return create(getWorkbookModel(template, true), context);
 	}
 	
-
-	public TemplateGenerator createWorkbookGenerator(WorkbookModel workbook, Map<String, Object> context){
+	@Override
+	public TemplateGenerator create(WorkbookModel workbook, Map<String, Object> context){
 		TemplateGenerator generator = new WorkbookExcelGeneratorImpl(workbook, context);
 		return generator;
 	}
