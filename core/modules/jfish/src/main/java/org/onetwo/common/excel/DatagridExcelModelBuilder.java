@@ -27,15 +27,17 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 											.filter(ExcelUtils.JSON_FILTER_ROW, "row", "title")
 											.filter(ExcelUtils.JSON_FILTER_FIELD, "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range");
 		String json = jsonMapper.toJson(workbook);
-		tag.write("<input name=exporter value='"+json+"'/>");
+		tag.write("<input name=exporter type=hidden value='"+json+"'/>");
 	}
 	
 	private RowModel buildRow(RowTagBean rowTag){
 		RowModel row = new RowModel();
 		row.setType(rowTag.getType().toString());
 		row.setName(rowTag.getName());
+		row.setRenderHeader(rowTag.isRenderHeader());
 		for(FieldTagBean fieldTag : rowTag.getFields()){
-			row.addField(buildField(fieldTag));
+			if(fieldTag.isExportable())
+				row.addField(buildField(fieldTag));
 		}
 		return row;
 	}

@@ -18,7 +18,7 @@ import org.springframework.core.io.Resource;
  * @author wayshall
  *
  */
-public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFactory, InitializingBean {
+public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory, InitializingBean {
 	private static final String DEFAULT_BASE_TEMPLATE_DIR = "/WEB-INF/excel/";
 	
 //	private Map<String, TemplateModel> TemplateModelCache = new HashMap<String, TemplateModel>();
@@ -65,7 +65,13 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 	
 	@Override
 	public TemplateGenerator create(String template, Map<String, Object> context) {
-		return DefaultExcelGeneratorFactory.createWorkbookGenerator(getWorkbookModel(template), context);
+		return create(getWorkbookModel(template), context);
+	}
+	
+	@Override
+	public TemplateGenerator create(WorkbookModel workbook, Map<String, Object> context){
+		TemplateGenerator generator = new WorkbookExcelGeneratorImpl(workbook, context);
+		return generator;
 	}
 	
 	
