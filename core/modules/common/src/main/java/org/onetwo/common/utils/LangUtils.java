@@ -36,6 +36,7 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.annotation.BeanOrder;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.map.M;
@@ -1455,5 +1456,9 @@ public class LangUtils {
 		}else{
 			throw new UnsupportedOperationException("unsupported type: "+ elemetns.getClass());
 		}
+	}
+	
+	public static String decToHexString(String decStr){
+		return Long.toHexString(Types.convertValue(decStr, Long.class));
 	}
 }
