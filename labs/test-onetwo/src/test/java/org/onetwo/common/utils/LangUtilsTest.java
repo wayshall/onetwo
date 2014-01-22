@@ -223,4 +223,14 @@ public class LangUtilsTest {
 		String cardNo16 = LangUtils.decToHexString(cardNo10);
 		System.out.println("cardNo16: " + cardNo16);
 	}
+	
+	@Test
+	public void test16to10(){
+		String cardNo16 = "5500000000000582";
+		System.out.println("cardNo16: " + cardNo16.length());
+		Long max = Long.MAX_VALUE;
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo10 = Long.toOctalString(Types.convertValue(cardNo16, Long.class));
+		System.out.println("cardNo10: " + cardNo10);
+	}
 }
