@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.io.FileSystemResource;
 
 @Configuration
 @JFishProfile
@@ -109,7 +110,9 @@ public class ToolBatchContextConfig {
 	@Bean
 	public ItemReader<PsamEntity> importPsamReader(){
 		ExcelFileItemReader<PsamEntity> reader = new ExcelFileItemReader<PsamEntity>();
-		reader.setResource(SpringUtils.classpath("psam_lingnantong.xls"));
+		String path = "E:/mydev/java_workspace/bitbucket/onetwo/labs/projects/batch/src/test/resources/psam_lingnantong.xls";
+//		reader.setResource(SpringUtils.classpath("psam_lingnantong.xls"));
+		reader.setResource(new FileSystemResource(path));
 		reader.setRowMapper(new ImportExcelMapper());
 		return reader;
 	}
