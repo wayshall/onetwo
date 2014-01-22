@@ -219,9 +219,18 @@ public class LangUtilsTest {
 		String cardNo10 = "6124895493223875970";
 		System.out.println("cardno: " + cardNo10.length());
 		Long max = Long.MAX_VALUE;
-		Assert.assertEquals(expected, actual);
 		System.out.println("max: "+max+", length:" + max.toString().length());
 		String cardNo16 = Long.toHexString(Types.convertValue(cardNo10, Long.class));
 		System.out.println("cardNo16: " + cardNo16);
+	}
+	
+	@Test
+	public void test16to10(){
+		String cardNo16 = "5500000000000582";
+		System.out.println("cardNo16: " + cardNo16.length());
+		Long max = Long.MAX_VALUE;
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo10 = Long.toOctalString(Types.convertValue(cardNo16, Long.class));
+		System.out.println("cardNo10: " + cardNo10);
 	}
 }
