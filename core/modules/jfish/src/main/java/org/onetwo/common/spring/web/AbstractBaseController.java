@@ -56,9 +56,13 @@ abstract public class AbstractBaseController {
 		return REDIRECT + path;
 	}
 	
-	public void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
+	protected void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
 		redirectAttributes.addFlashAttribute(MESSAGE, StringUtils.trimToEmpty(msg));
 		redirectAttributes.addFlashAttribute(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+	}
+
+	protected WebHelper webHelper(){
+		return JFishWebUtils.webHelper();
 	}
 
 	

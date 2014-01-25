@@ -6,10 +6,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.excel.DatagridExcelModelBuilder;
-import org.onetwo.common.excel.DefaultXmlTemplateExcelFacotory;
-import org.onetwo.common.excel.ExcelView;
-import org.onetwo.common.excel.ModelGeneratorFactory;
+import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
@@ -55,7 +52,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
@@ -236,6 +232,12 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		jspResoler.setPrefix("/WEB-INF/views/");
 		return jspResoler;
 	}
+	
+	@Bean
+	public XmlTemplateExcelViewResolver excelResolver(){
+		XmlTemplateExcelViewResolver resolver = new XmlTemplateExcelViewResolver();
+		return resolver;
+	}
 
 	@Bean
 	public View jsonView() {
@@ -253,12 +255,12 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return view;
 	}
 	
-	@Bean
-	public View excelVIew(){
-		ExcelView view = new ExcelView();
+	/*@Bean
+	public View excelView(){
+		JsonExcelView view = new JsonExcelView();
 		view.setModelGeneratorFactory((ModelGeneratorFactory)xmlTemplateGeneratorFactory());
 		return view;
-	}
+	}*/
 
 	/*@Bean
 	public View jfishExcelView() {
@@ -388,7 +390,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Bean
 	public XmlTemplateGeneratorFactory xmlTemplateGeneratorFactory(){
-		String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
+		/*String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
 		DefaultXmlTemplateExcelFacotory factory = null;
 		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
 			factory = new DefaultXmlTemplateExcelFacotory();
@@ -396,7 +398,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}else{
 			logger.warn("there is not bean implements [" + className + "]");
 		}
-		return factory;
+		return factory;*/
+		return excelResolver().getXmlTemplateGeneratorFactory();
 	}
 	
 
@@ -404,8 +407,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
 	}
 	
-	@Bean
+	/*@Bean
 	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
 		return new DatagridExcelModelBuilder();
-	}
+	}*/
 }
