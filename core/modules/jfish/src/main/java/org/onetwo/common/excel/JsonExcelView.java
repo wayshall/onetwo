@@ -24,9 +24,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.util.WebUtils;
 
-public class ExcelView extends AbstractView implements InitializingBean {
+public class JsonExcelView extends AbstractView implements InitializingBean {
 	
-	private final static Logger logger = MyLoggerFactory.getLogger(ExcelView.class);
+	private final static Logger logger = MyLoggerFactory.getLogger(JsonExcelView.class);
 	
 	public final static String DEFAULT_CONTENT_TYPE = "application/msexcel";
 	
@@ -34,7 +34,7 @@ public class ExcelView extends AbstractView implements InitializingBean {
 	
 	private ModelGeneratorFactory modelGeneratorFactory;
 	
-	public ExcelView(){
+	public JsonExcelView(){
 		this.setContentType(DEFAULT_CONTENT_TYPE);
 	}
 	

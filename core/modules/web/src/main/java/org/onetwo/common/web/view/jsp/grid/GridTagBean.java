@@ -35,7 +35,7 @@ public class GridTagBean extends HtmlElement {
 	private boolean ajaxSupported = false;
 	private String ajaxZoneName;
 //	private String ajaxInstName;
-	private boolean exportable;
+//	private boolean exportable;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -195,12 +195,4 @@ public class GridTagBean extends HtmlElement {
 		this.ajaxZoneName = ajaxZoneName;
 	}
 
-	public boolean isExportable() {
-		return exportable;
-	}
-
-	public void setExportable(boolean exportable) {
-		this.exportable = exportable;
-	}
-	
 }

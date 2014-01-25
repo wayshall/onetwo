@@ -249,12 +249,6 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <description><![CDATA[exportable]]></description>
-      <name>exportable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
       <description><![CDATA[generatedForm]]></description>
       <name>generatedForm</name>
       <required>false</required>
@@ -410,12 +404,6 @@
       <name>render</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <description><![CDATA[exportable]]></description>
-      <name>exportable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <description><![CDATA[orderable]]></description>

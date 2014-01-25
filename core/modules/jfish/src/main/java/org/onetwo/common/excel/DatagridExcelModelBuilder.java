@@ -11,8 +11,8 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 
 	@Override
 	public void afterRender(DataGridTag tag, GridTagBean tagBean) {
-		if(!tagBean.isExportable())
-			return ;
+		/*if(!tagBean.isExportable())
+			return ;*/
 		WorkbookModel workbook = new WorkbookModel();
 		TemplateModel template = new TemplateModel();
 		template.setLabel(tagBean.getLabel());
