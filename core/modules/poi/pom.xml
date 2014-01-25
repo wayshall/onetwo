@@ -29,6 +29,12 @@
     </dependency>
 	
 	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-jackson</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
 	  <groupId>commons-io</groupId>
 	  <artifactId>commons-io</artifactId>
 	</dependency>
