@@ -34,7 +34,8 @@ public class SimpleFormDataProvider implements FormDataProvider {
 		if(field.isModelAttribute()){
 			if(this.accessor!=null){
 				try {
-					val = this.accessor.getPropertyValue(field.getValue());
+					if(this.accessor.isReadableProperty(field.getValue()))
+						val = this.accessor.getPropertyValue(field.getValue());
 				} catch (BeansException e) {
 					logger.error("getPropertyValue error : " + e.getMessage());
 				}
