@@ -53,6 +53,7 @@ public class JobCommand extends AbstractCommand {
 			runTimeString = context.getCmdInput().readLine();
 			if(StringUtils.isBlank(runTimeString)){
 				runTimeString = DateUtil.formatDateTime(new Date());
+				break;
 			}else{
 				Date runTime = DateUtil.parseDateTime(runTimeString);
 				if(runTime!=null)
