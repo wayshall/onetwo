@@ -29,6 +29,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 abstract public class ExcelUtils {
 	
+	public static final String JSON_FILTER_TEMPLATE = "templateModelFilter";
+	public static final String JSON_FILTER_ROW = "rowModelFilter";
+	public static final String JSON_FILTER_FIELD = "fieldModelFilter";
+	
 	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
 	
 	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);

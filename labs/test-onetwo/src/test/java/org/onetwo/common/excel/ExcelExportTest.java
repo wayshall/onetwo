@@ -1,13 +1,18 @@
 package org.onetwo.common.excel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -76,6 +81,27 @@ public class ExcelExportTest {
 		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
 		g.generateIt();
 		g.write(path);
+	}
+
+	@Test
+	public void testExportByJsonTemplate() {
+//		System.out.println("style:"+ReflectUtils.getStaticFieldValue(CellStyle.class, "ALIGN_LEFT"));
+		
+		Date startTest = new Date();
+		String path = FileUtils.getResourcePath("");
+		path += "org/onetwo/common/excel/export_test_json.xls";
+		System.out.println("path: " + path);
+		
+		String templatePath = FileUtils.getResourcePath("org/onetwo/common/excel/jsonTemplate.js");
+		String jsonTemplate = FileUtils.readAsString(templatePath);
+		WorkbookModel workbook = JsonMapper.IGNORE_EMPTY.fromJson(jsonTemplate, WorkbookModel.class);
+		Assert.assertNotNull(workbook);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createWorkbookGenerator(workbook, context);
+		g.generateTo(path);
+		
+		File gfile = new File(path);
+		Assert.assertTrue(gfile.exists());
+		Assert.assertTrue(gfile.lastModified()>startTest.getTime());
 	}
 
 	@Test

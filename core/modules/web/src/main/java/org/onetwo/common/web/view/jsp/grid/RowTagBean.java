@@ -65,4 +65,7 @@ public class RowTagBean extends HtmlElement{
 	public void setRenderHeader(boolean renderHeader) {
 		this.renderHeader = renderHeader;
 	}
+	public RowType getType() {
+		return type;
+	}
 }

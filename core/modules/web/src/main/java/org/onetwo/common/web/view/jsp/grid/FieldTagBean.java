@@ -38,6 +38,9 @@ public class FieldTagBean extends HtmlElement {
 	private String searchItemValue;
 	
 
+	private boolean exportable;
+	
+
 	/*public void render(Writer out){
 		try {
 			out.write(bodyContent);
@@ -206,6 +209,14 @@ public class FieldTagBean extends HtmlElement {
 
 	public void setSearchFieldName(String searchFieldName) {
 		this.searchFieldName = searchFieldName;
+	}
+
+	public boolean isExportable() {
+		return exportable;
+	}
+
+	public void setExportable(boolean exportable) {
+		this.exportable = exportable;
 	}
 
 }

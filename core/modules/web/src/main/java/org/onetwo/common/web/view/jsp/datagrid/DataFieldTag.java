@@ -30,6 +30,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private Object searchItems;
 	private String searchItemLabel;
 	private String searchItemValue;
+	private boolean exportable;
 	
 	@Override
 	public FieldTagBean createComponent() {
@@ -75,6 +76,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setSearchItems(searchItems);
 		component.setSearchItemLabel(searchItemLabel);
 		component.setSearchItemValue(searchItemValue);
+		
+		component.setExportable(exportable);
 	}
 	
 	
@@ -142,6 +145,10 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setSearchItemValue(String searchItemValue) {
 		this.searchItemValue = searchItemValue;
+	}
+
+	public void setExportable(boolean exportable) {
+		this.exportable = exportable;
 	}
 
 }
