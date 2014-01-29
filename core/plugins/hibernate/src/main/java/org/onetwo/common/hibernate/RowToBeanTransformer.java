@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
@@ -20,13 +21,20 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	private boolean isInitialized;
 	private String[] aliases;
 	private String[] propNames;
+	private boolean checkAlias;
+
+
 
 	public RowToBeanTransformer(Class<?> resultClass) {
+		this(resultClass, true);
+	}
+	public RowToBeanTransformer(Class<?> resultClass, boolean checkAlias) {
 		if ( resultClass == null ) {
 			throw new IllegalArgumentException( "resultClass cannot be null" );
 		}
 		isInitialized = false;
 		this.resultClass = resultClass;
+		this.checkAlias = checkAlias;
 	}
 
 	/**
@@ -44,7 +52,8 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 				initialize( aliases );
 			}
 			else {
-				check( aliases );
+				if(checkAlias)
+					check( aliases );
 			}
 			
 			result = resultClass.newInstance();
@@ -69,6 +78,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	}
 
 	private void initialize(String[] aliases) {
+		Assert.notEmpty(aliases, "aliases is emtpy!");
 		this.aliases = new String[ aliases.length ];
 		this.propNames = new String[ aliases.length ];
 
@@ -119,4 +129,9 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 		result = 31 * result + ( aliases != null ? Arrays.hashCode( aliases ) : 0 );
 		return result;
 	}
+
+	public void setCheckAlias(boolean checkAlias) {
+		this.checkAlias = checkAlias;
+	}
+	
 }

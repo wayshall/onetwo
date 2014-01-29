@@ -5,9 +5,9 @@ import java.util.Map;
 import org.onetwo.common.utils.MyUtils;
 
 @SuppressWarnings("unchecked")
-public class ColumnTotalExecutor implements FieldExecutor{
+public class ColumnTotalExecutor {
 
-	@Override
+//	@Override
 	public void process(Map context, FieldModel field, Object dataSourceValue) {
 		String key = field.getParentRow().getName()+"_"+field.getName()+"_columnTotal";
 		Number total = (Number) context.get(key);

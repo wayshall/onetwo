@@ -10,11 +10,15 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 
 public class ExcelTest {
 	
@@ -146,6 +150,58 @@ public class ExcelTest {
 		});
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_exportds.xls";
 		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_exportds.xml", context);
+		g.generateIt();
+		g.write(path);
+	}
+	
+	@Test
+	public void testExportMutilSheetWithWorkbook(){
+		System.out.println("===========================>>>>>testExportMutilSheetWithWorkbook ");
+		Map<String, Object> context = new HashMap<String, Object>();
+		final List<?> datalist = list;
+		context.put("data", new ExportDatasource() {
+			
+			@Override
+			public List<?> getSheetDataList(int i) {
+				int toIndex = 10*(i+1);
+				if(toIndex>datalist.size())
+					toIndex = datalist.size();
+				
+				return datalist.subList(10*i, toIndex);
+			}
+
+			@Override
+			public String getSheetLabel(int sheetIndex) {
+				return "报表" + sheetIndex;
+			}
+			
+		});
+//		context.put("sheet2", datalist.subList(count/2, count));sheet和xml的template名称冲突
+		context.put("data2", datalist.subList(count/2, count));
+		context.put("listener", new EmptyWorkbookListener(){
+
+			@Override
+			public void afterCreateCell(Cell cell, int cellIndex) {
+//				LangUtils.println("afterCreateCell ${0} ", cellIndex);
+			}
+			
+		});
+		context.put("nameLength", new FieldValueExecutor() {
+			
+			@Override
+			public Object execute(FieldModel field, ExecutorModel executorModel, ExcelValueParser parser, Object fieldValue, Object preResult) {
+				Integer rs = (fieldValue==null?0:fieldValue.toString().length());
+				LangUtils.println("${0}:${1}", fieldValue, (fieldValue==null?0:fieldValue.toString().length()));
+				if(preResult!=null){
+					rs += (Integer) preResult;
+				}
+				return rs;
+			}
+		});
+		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_workbook.xls";
+		System.out.println("path: " + path);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createWorkbookGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
+//		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);
 		g.generateIt();
 		g.write(path);
 	}

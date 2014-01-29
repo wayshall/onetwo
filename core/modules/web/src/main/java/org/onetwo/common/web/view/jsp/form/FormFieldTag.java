@@ -174,8 +174,14 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		this.readOnly = readOnly;
 	}
 
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
+	public void setDisabled(String disabled) {
+		String codePrefix = "code:";
+		if(disabled.startsWith(codePrefix)){
+			String code = disabled.substring(codePrefix.length());
+			this.disabled = !checkPermission(code);
+		}else{
+			this.disabled = Types.convertValue(disabled, boolean.class);
+		}
 	}
 
 	public void setPermission(String permission) {

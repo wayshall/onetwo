@@ -15,7 +15,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.tuple.StandardProperty;
 import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.ds.SwitcherInfo;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -62,12 +65,20 @@ public final class HibernateUtils {
 	
 	private static SessionFactory sessionFactory;
 	
-	static void initSessionFactory(SessionFactory sessionFactory) {
+	public static void initSessionFactory(SessionFactory sessionFactory) {
 		HibernateUtils.sessionFactory = sessionFactory;
 	}
 
 	public static void init(Object object){
 		Hibernate.initialize(object);
+	}
+	
+	public static SessionFactory getSessionFactory() {
+		if(JFishMultipleSessionFactory.class.isInstance(sessionFactory)){
+			SwitcherInfo switcher = SpringApplication.getInstance().getContextHolder().getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
+			return ((JFishMultipleSessionFactory) sessionFactory).getSessionFactory(switcher.getCurrentSwitcherName());
+		}
+		return sessionFactory;
 	}
 
 	public static ClassMetadata getClassMeta(Session s, Class<?> entityClass){
@@ -79,7 +90,7 @@ public final class HibernateUtils {
 	}
 	
 	public static ClassMetadata getClassMeta(String entityClass){
-		return sessionFactory.getClassMetadata(entityClass);
+		return getSessionFactory().getClassMetadata(entityClass);
 	}
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass){
@@ -87,7 +98,7 @@ public final class HibernateUtils {
 	}
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass, boolean throwIfNoteFound){
-		ClassMetadata meta = sessionFactory.getClassMetadata(entityClass);
+		ClassMetadata meta = getSessionFactory().getClassMetadata(entityClass);
 		if(meta==null && throwIfNoteFound)
 			throw new BaseException("can not find the entity["+entityClass+"], check it please!");
 		return meta;

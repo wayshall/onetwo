@@ -1,9 +1,5 @@
 package org.onetwo.common.spring.web.mvc.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.slf4j.Logger;
@@ -19,11 +15,7 @@ public class JFishMvcApplicationContext extends SpringProfilesWebApplicationCont
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	public JFishMvcApplicationContext(){
-		final List<Class<?>> annoClasses = new ArrayList<Class<?>>();
-		annoClasses.add(JFishMvcConfig.class);
-		
-		JFishPluginManagerFactory.getPluginManager().registerPluginMvcContextClasses(annoClasses);
-		
-		this.register(annoClasses.toArray(new Class[annoClasses.size()]));
+		this.setPluginManagerInitializer(new JFishPluginManagerInitializer());
 	}
+	
 }

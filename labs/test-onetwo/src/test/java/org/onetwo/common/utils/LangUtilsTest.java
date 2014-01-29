@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 
@@ -25,6 +26,8 @@ public class LangUtilsTest {
 		System.out.println("voted: " + (voted &=true));
 		voted = false;
 		System.out.println("voted: " + (voted &=true));
+		str = "ntyg168@163.com";
+		System.out.println("substring: " + str.length());
 	}
 	@Test
 	public void testTimeUnit(){
@@ -178,5 +181,57 @@ public class LangUtilsTest {
 		str = null;
 		rs = LangUtils.fixedLengthString(str, length, "0");
 		Assert.assertEquals("000000000000", rs);
+	}
+	
+	@Test
+	public void testDataFormat(){
+		double value = 2002.2456;
+		String rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.25), rs);
+
+		value = 2002.2;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.20), rs);
+
+		Integer intValue = 2002;
+		rs = (String)LangUtils.formatValue(intValue, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.00), rs);
+
+		value = 0.525;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.53), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.78), rs);
+		
+		value = 0.001;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.00), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.00#");
+		Assert.assertEquals(String.valueOf(0.775), rs);
+	}
+	
+	@Test
+	public void test10to16(){
+		String cardNo10 = "6124895493223875970";
+		System.out.println("cardno: " + cardNo10.length());
+		Long max = Long.MAX_VALUE;
+//		Assert.assertEquals(expected, actual);
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo16 = LangUtils.decToHexString(cardNo10);
+		System.out.println("cardNo16: " + cardNo16);
+	}
+	
+	@Test
+	public void test16to10(){
+		String cardNo16 = "5500000000000582";
+		System.out.println("cardNo16: " + cardNo16.length());
+		Long max = Long.MAX_VALUE;
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo10 = Long.toOctalString(Types.convertValue(cardNo16, Long.class));
+		System.out.println("cardNo10: " + cardNo10);
 	}
 }

@@ -31,7 +31,7 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 	}
 	
 
-	@Override
+//	@Override
 	public String getMapperName() {
 		return this.getClass().getName();
 	}
@@ -62,7 +62,7 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 		return 1;
 	}
 
-	@Override
+//	@Override
 	public CellValueConvertor getCellValueConvertor(String type) {
 		if(convertors==null || convertors.isEmpty())
 			return null;

@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
 
@@ -25,9 +27,15 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 	private Properties config;
 	private String prefix;
 	
+	@Autowired
+	private JFishPropertyPlaceholder configHolder;
+	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(config==null){
+			config = configHolder.getMergedConfig();
+		}
 		Assert.notEmpty(config);
 		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
@@ -37,11 +45,18 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		while(names.hasMoreElements()){
 			String propertyName = names.nextElement().toString();
 			String value = config.getProperty(propertyName);
-			if(hasPrefix && propertyName.startsWith(prefix)){
-				propertyName = propertyName.substring(prefix.length());
+			if(hasPrefix){
+				if(propertyName.startsWith(prefix)){
+					propertyName = propertyName.substring(prefix.length());
+					bw.setPropertyValue(propertyName, value);
+					logger.info("set property: {}={} ", propertyName, value);
+				}else{
+					logger.info("ignore property: {}", propertyName);
+				}
+			}else{
+				bw.setPropertyValue(propertyName, value);
+				logger.info("set property: {}={} ", propertyName, value);
 			}
-			bw.setPropertyValue(propertyName, value);
-			logger.info("set property: {}={} ", propertyName, value);
 		}
 	}
 

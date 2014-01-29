@@ -1,19 +1,26 @@
 package org.onetwo.common.excel;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Sheet;
 
 public class SheetData {
-	private final HSSFSheet sheet;
+	private final Sheet sheet;
 	private final Object datasource;
-	public SheetData(HSSFSheet sheet, Object dataSourceValue) {
+	private final int sheetIndex;
+	
+	public SheetData(WorkbookData workbookData, Sheet sheet, Object dataSourceValue) {
 		super();
 		this.sheet = sheet;
 		this.datasource = dataSourceValue;
+		this.sheetIndex = workbookData.getWorkbook().getSheetIndex(sheet);
 	}
-	public HSSFSheet getSheet() {
+	public Sheet getSheet() {
 		return sheet;
 	}
 	public Object getDatasource() {
 		return datasource;
 	}
+	public int getSheetIndex() {
+		return sheetIndex;
+	}
+	
 }

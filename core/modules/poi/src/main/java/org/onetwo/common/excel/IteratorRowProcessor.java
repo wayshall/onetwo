@@ -3,8 +3,8 @@ package org.onetwo.common.excel;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -31,7 +31,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 	
 	@SuppressWarnings("rawtypes")
 	public void processIterator(RowDataContext rowContext) {
-		HSSFSheet sheet = rowContext.getSheet();
+		Sheet sheet = rowContext.getSheet();
 		RowModel iterator = rowContext.getRowModel();
 		
 		Object dataSourceValue = this.getGenerator().getExcelValueParser().parseValue(iterator.getDatasource(), null, null);
@@ -49,7 +49,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 			UtilTimerStack.push(iterator.getName());
 			
 			ele = it.next();
-			HSSFRow row = createRow(sheet, iterator, ele);
+			Row row = createRow(sheet, iterator, ele);
 			
 			if(context!=null){
 				context.put(iterator.getName(), ele);
@@ -68,17 +68,8 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 				}*/
 				
 				//Cell cell = createCell(sheet, row, field);
-
 				this.processField(getFieldRootValue(ele, field), row, field, "");
 				// putInContext(field.getName(), v);
-
-				if (field.getExecutors() == null)
-					continue;
-
-				for (FieldExecutor exe : field.getExecutors()) {
-					if (exe != null)
-						exe.process(context, field, dataSourceValue);
-				}
 				
 				/*if(profile){
 					UtilTimerStack.pop(field.getName());

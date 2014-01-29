@@ -22,6 +22,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -149,6 +150,18 @@ final public class SpringUtils {
 				logger.error("ignore load this properties["+location+"] , error : " + e.getMessage());
 		}
 		return prop;
+	}
+	
+	public static PropertiesFactoryBean createPropertiesBySptring(String...classpaths) {
+		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
+		pfb.setIgnoreResourceNotFound(true);
+		org.springframework.core.io.Resource[] resources = new org.springframework.core.io.Resource[classpaths.length];
+		int index = 0;
+		for(String classpath : classpaths){
+			resources[index++] = classpath(classpath);
+		}
+		pfb.setLocations(resources);
+		return pfb;
 	}
 	
 	public static AutowireCapableBeanFactory findAutoWiringBeanFactory(ApplicationContext context) {

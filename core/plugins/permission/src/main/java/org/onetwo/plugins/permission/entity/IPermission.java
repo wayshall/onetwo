@@ -4,6 +4,10 @@ package org.onetwo.plugins.permission.entity;
 public interface IPermission {
 //	public Long getId();
 //	public void setId(Long id);
+
+	public Boolean isHidden();
+	public void setHidden(Boolean hidden);
+	
 	public Integer getSort();
 	public void setSort(Integer sort);
 	public String getName();

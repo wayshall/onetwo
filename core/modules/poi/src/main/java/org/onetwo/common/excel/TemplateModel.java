@@ -2,9 +2,11 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+@JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
 public class TemplateModel {
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
@@ -21,7 +23,18 @@ public class TemplateModel {
 	private String datasource;
 	private Integer sizePerSheet;
 	
+	private String columnWidth;
+	
+//	private Map<Integer, Short> columnWidthMap = LangUtils.newHashMap();
+	
+	
 	public TemplateModel(){
+	}
+	
+	public void initModel(WorkbookData workbookData){
+		for(RowModel row : rows){
+			row.initModel(workbookData);
+		}
 	}
 
 	public String getName() {
@@ -40,6 +53,13 @@ public class TemplateModel {
 	public void setRows(List<RowModel> rows) {
 //		this.freezer.checkOperation("setRows");
 		this.rows = rows;
+	}
+	
+	public TemplateModel addRow(RowModel row){
+		if(this.rows==null)
+			this.rows = LangUtils.newArrayList();
+		this.rows.add(row);
+		return this;
 	}
 
 	public String getLabel() {
@@ -82,7 +102,15 @@ public class TemplateModel {
 
 	public void setMultiSheet(boolean multiSheet) {
 		this.multiSheet = multiSheet;
-	} 
+	}
+
+	public String getColumnWidth() {
+		return columnWidth;
+	}
+
+	public void setColumnWidth(String columnWidth) {
+		this.columnWidth = columnWidth;
+	}
 	
 	/*public boolean isMultiSheet(){
 		return this.sizePerSheet!=null && this.sizePerSheet>0 && StringUtils.isNotBlank(datasource);

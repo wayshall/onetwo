@@ -137,7 +137,7 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		}
 		reg.getEventListenerGroup(EventType.SAVE_UPDATE).appendListeners(saveOrUpdateEventListeners);
 //		reg.getEventListenerGroup(EventType.SAVE_UPDATE).appendListener(new SaveOrUpdateTimeListener());
-		HibernateUtils.initSessionFactory(sf);
+//		HibernateUtils.initSessionFactory(sf);
 		return sf;
 	}
 

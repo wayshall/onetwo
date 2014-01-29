@@ -20,7 +20,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		this.convertors = convertors;
 	}
 	
-	@Override
+//	@Override
 	public String getMapperName() {
 		return this.getClass().getName();
 	}
@@ -68,7 +68,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		return getCellValueConvertor(type.getSimpleName());
 	}
 
-	@Override
+//	@Override
 	public CellValueConvertor getCellValueConvertor(String type) {
 		if(convertors==null || convertors.isEmpty())
 			return null;

@@ -36,6 +36,8 @@
 				<module>../permission</module>
 				<module>../hibernate</module>
 				<module>../dq</module>
+				<module>../email</module>
+				<module>../batch</module>
 	  	</modules>
 	  </profile>
 	</profiles>
