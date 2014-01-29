@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -233,5 +235,12 @@ public class LangUtilsTest {
 		System.out.println("max: "+max+", length:" + max.toString().length());
 		String cardNo10 = Long.toOctalString(Types.convertValue(cardNo16, Long.class));
 		System.out.println("cardNo10: " + cardNo10);
+	}
+	
+	@Test
+	public void testEncodeUrl() throws Exception{
+		String url = "aa=#user";
+		String encodeUrl = LangUtils.encodeUrl(url);
+		Assert.assertEquals("aa%3D%23user", encodeUrl);
 	}
 }
