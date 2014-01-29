@@ -34,6 +34,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 //	private String permission;
 //	private boolean showable = true;
 	private boolean modelAttribute = true;
+	
+	private boolean showLoadingText = true;
 
 //	private boolean ignoreField;
 	
@@ -59,6 +61,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setReadOnly(readOnly);
 		component.setDisabled(disabled);
 		component.setModelAttribute(modelAttribute);
+		component.setShowLoadingText(showLoadingText);
 		
 		switch (type) {
 			case input:
@@ -198,6 +201,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setEmptyOptionLabel(String emptyOptionLabel) {
 		this.emptyOptionLabel = emptyOptionLabel;
+	}
+
+	public void setShowLoadingText(boolean showLoadingText) {
+		this.showLoadingText = showLoadingText;
 	}
 
 }

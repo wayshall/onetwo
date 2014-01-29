@@ -33,7 +33,7 @@ public class ExcelExportTest {
 		}
 	}
 	
-	private Map context;
+	private Map<String, Object> context;
 	
 	
 	@Before

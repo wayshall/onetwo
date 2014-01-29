@@ -11,23 +11,27 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 
 	@Override
 	public void afterRender(DataGridTag tag, GridTagBean tagBean) {
-		/*if(!tagBean.isExportable())
-			return ;*/
+		if(!tagBean.isExportable())
+			return ;
 		WorkbookModel workbook = new WorkbookModel();
 		TemplateModel template = new TemplateModel();
-		template.setLabel(tagBean.getLabel());
+		template.setLabel(tagBean.getTitle());
 		template.setName(tagBean.getName());
 		for(RowTagBean rowTag : tagBean.getRows()){
 			RowModel row = buildRow(rowTag);
+			if(row.isIterator()){
+				row.setDatasource(tagBean.getExportDataSource());
+			}
 			template.addRow(row);
 		}
 		workbook.addSheet(template);
 		JsonMapper jsonMapper = JsonMapper.ignoreEmpty()
 											.filter(ExcelUtils.JSON_FILTER_TEMPLATE, "multiSheet", "varName")
-											.filter(ExcelUtils.JSON_FILTER_ROW, "row", "title")
-											.filter(ExcelUtils.JSON_FILTER_FIELD, "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range");
+											.filter(ExcelUtils.JSON_FILTER_ROW, "row", "title", "space", "span", "height")
+											.filter(ExcelUtils.JSON_FILTER_FIELD, "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range", "colspan", "rowspan");
 		String json = jsonMapper.toJson(workbook);
-		tag.write("<input name=exporter type=hidden value='"+json+"'/>");
+//		tag.write("<input name=exporter type=hidden value='"+json+"'/>");
+		tagBean.setExportJsonTemplate(json);
 	}
 	
 	private RowModel buildRow(RowTagBean rowTag){

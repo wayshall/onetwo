@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.excel.DatagridExcelModelBuilder;
 import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
@@ -34,6 +35,7 @@ import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.log.AccessLogger;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
+import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -236,9 +238,15 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Bean
 	public XmlTemplateExcelViewResolver excelResolver(){
 		XmlTemplateExcelViewResolver resolver = new XmlTemplateExcelViewResolver();
+		resolver.setViewClass(JsonExcelView.class);
 		return resolver;
 	}
 
+	@Bean
+	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
+		return new DatagridExcelModelBuilder();
+	}
+	
 	@Bean
 	public View jsonView() {
 		JsonView jview = SpringUtils.getHighestOrder(applicationContext, JsonView.class);
@@ -302,6 +310,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		bean.setMediaTypes(mediaType());
 		bean.setDefaultContentType(MediaType.TEXT_HTML);
 		bean.setIgnoreAcceptHeader(true);
+		bean.setFavorParameter(true);
 		return bean;
 	}
 

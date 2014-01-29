@@ -27,6 +27,7 @@ public class FormFieldTagBean extends HtmlElement {
 	private boolean disabled;
 	
 	private boolean modelAttribute = true;
+	private boolean showLoadingText = true;
 	
 	public boolean isHtmlTypeRender(){
 		return FormFieldType.html == type;
@@ -141,6 +142,14 @@ public class FormFieldTagBean extends HtmlElement {
 
 	public void setErrorPath(String errorPath) {
 		this.errorPath = errorPath;
+	}
+
+	public boolean isShowLoadingText() {
+		return showLoadingText;
+	}
+
+	public void setShowLoadingText(boolean showLoadingText) {
+		this.showLoadingText = showLoadingText;
 	}
 
 	
