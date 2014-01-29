@@ -6,7 +6,6 @@ import java.util.List;
 public interface IMenu<T extends IMenu<T, F>, F extends IFunction<T>> extends IPermission {
 
 	String getUrl();
-
 	void setUrl(String url);
 
 	String getMethod();

@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.excel.DefaultXmlTemplateExcelFacotory;
+import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
@@ -52,14 +52,15 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.MappedInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -172,6 +173,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}*/
 	}
 
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+		configurer.registerCallableInterceptors(new TimeoutCallableProcessingInterceptor());
+		configurer.setDefaultTimeout(10000);
+	}
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -227,6 +232,12 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		jspResoler.setPrefix("/WEB-INF/views/");
 		return jspResoler;
 	}
+	
+	@Bean
+	public XmlTemplateExcelViewResolver excelResolver(){
+		XmlTemplateExcelViewResolver resolver = new XmlTemplateExcelViewResolver();
+		return resolver;
+	}
 
 	@Bean
 	public View jsonView() {
@@ -243,6 +254,13 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		view.setMarshaller(jaxb2Marshaller());
 		return view;
 	}
+	
+	/*@Bean
+	public View excelView(){
+		JsonExcelView view = new JsonExcelView();
+		view.setModelGeneratorFactory((ModelGeneratorFactory)xmlTemplateGeneratorFactory());
+		return view;
+	}*/
 
 	/*@Bean
 	public View jfishExcelView() {
@@ -372,19 +390,25 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Bean
 	public XmlTemplateGeneratorFactory xmlTemplateGeneratorFactory(){
-		String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
-		XmlTemplateGeneratorFactory factory = null;
+		/*String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
+		DefaultXmlTemplateExcelFacotory factory = null;
 		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
 			factory = new DefaultXmlTemplateExcelFacotory();
 //			factory.setCacheTemplate(true);
 		}else{
 			logger.warn("there is not bean implements [" + className + "]");
 		}
-		return factory;
+		return factory;*/
+		return excelResolver().getXmlTemplateGeneratorFactory();
 	}
 	
 
 	public static class MvcBeanNames {
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
 	}
+	
+	/*@Bean
+	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
+		return new DatagridExcelModelBuilder();
+	}*/
 }

@@ -1,30 +1,28 @@
 package org.onetwo.common.excel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 
-@SuppressWarnings("unchecked")
+@JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
 public class FieldModel {
 
 	private String label;
 	private String name;
 	private String value;
+	private String dataFormat;
 	
 	private boolean columnTotal;
 	private boolean rowTotal;
 	
 	private RowModel parentRow;
 	
-	private List<FieldExecutor> executors;
-	
 	private RowModel row;
 	
-	private boolean init;
 	
 	private String defaultValue;
 
@@ -39,11 +37,26 @@ public class FieldModel {
 	
 	private String rootValue;
 	
-	private List<FieldListener> listeners;
-
+//	private List<FieldListener> listeners;
+	private List<ExecutorModel> fieldValueExecutors;
+	
 	public FieldModel() {
 	}
 
+	public void initModel(WorkbookData workbookData){
+		if(fieldValueExecutors==null){
+			fieldValueExecutors = Collections.EMPTY_LIST;
+		}else{
+			for(ExecutorModel exe : fieldValueExecutors){
+				FieldValueExecutor exeInst = (FieldValueExecutor)workbookData.getExcelValueParser().parseValue(exe.getExecutor(), null, null);
+				if(exeInst==null)
+					throw new BaseException("no FieldValueExecutor found: " + exe.getExecutor());
+				exe.setFieldValueExecutor(exeInst);
+			}
+		}
+	}
+	
+	
 	public String getName() {
 		return name;
 	}
@@ -95,21 +108,6 @@ public class FieldModel {
 
 	public void setParentRow(RowModel parentRow) {
 		this.parentRow = parentRow;
-	}
-
-	public List<FieldExecutor> getExecutors() {
-		if(!init){
-			if(executors==null)
-				executors = new ArrayList<FieldExecutor>();
-			if(this.columnTotal)
-				this.executors.add(new ColumnTotalExecutor());
-			init = true;
-		}
-		return executors;
-	}
-
-	public void setExecutors(List<FieldExecutor> executors) {
-		this.executors = executors;
 	}
 
 	public RowModel getRow() {
@@ -169,22 +167,6 @@ public class FieldModel {
 		}
 		return value;
 	}
-	
-	/*public static int parsegetColspanValue(CellContext context, String colspan) {
-		int value = 1;
-		if(StringUtils.isNotBlank(colspan)){
-			if(context!=null)
-				value = context.parser.parseIntValue(colspan, context.objectValue);
-			else if(IS_DIGIT.matcher(colspan).matches())
-				value = Integer.parseInt(colspan);
-			else
-				value = 1;
-		}
-		if(value < 1) {
-			value = 1;
-		}
-		return value;
-	}*/
 
 	public void setColspan(String colspan) {
 		this.colspan = colspan;
@@ -229,18 +211,8 @@ public class FieldModel {
 		return this.rowspan != null || this.colspan != null;
 	}
 
-	public void setListeners(String listeners) {
-		this.listeners = ReflectUtils.toInstanceList(listeners);
-	}
-
-	public List<FieldListener> getListeners() {
-		if(listeners==null)
-			listeners = Collections.EMPTY_LIST;
-		return listeners;
-	}
-
 	public String getStyle() {
-		return StringUtils.defaultValues(style, getParentRow().getFieldStyle(), "");
+		return StringUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");
 	}
 
 	public void setStyle(String style) {
@@ -248,7 +220,7 @@ public class FieldModel {
 	}
 
 	public String getFont() {
-		return StringUtils.defaultValues(font, getParentRow().getFieldFont(), "");
+		return StringUtils.defaultValues(font, getParentRow()==null?"":getParentRow().getFieldFont(), "");
 	}
 
 	public void setFont(String font) {
@@ -256,7 +228,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderFont() {
-		return StringUtils.defaultValues(headerFont, getParentRow().getFieldHeaderFont(), "");
+		return StringUtils.defaultValues(headerFont, getParentRow()==null?"":getParentRow().getFieldHeaderFont(), "");
 	}
 
 	public void setHeaderFont(String headerFont) {
@@ -264,7 +236,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderStyle() {
-		return StringUtils.defaultValues(headerStyle, getParentRow().getFieldHeaderStyle(), "");
+		return StringUtils.defaultValues(headerStyle, getParentRow()==null?"":getParentRow().getFieldHeaderStyle(), "");
 	}
 
 	public void setHeaderStyle(String headerStyle) {
@@ -278,5 +250,22 @@ public class FieldModel {
 	public void setRootValue(String rootValue) {
 		this.rootValue = rootValue;
 	}
+
+	public String getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
+	}
+
+	public List<ExecutorModel> getFieldValueExecutors() {
+		return fieldValueExecutors;
+	}
+
+	public void setFieldValueExecutors(List<ExecutorModel> fieldValueExecutors) {
+		this.fieldValueExecutors = fieldValueExecutors;
+	}
+
 	
 }

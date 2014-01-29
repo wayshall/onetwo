@@ -20,12 +20,15 @@ public enum Env {
 		return toString().toLowerCase();
 	}
 	
-	public static Env of(String value){
+	public static Env of(String envstr){
 		Env env = null;
 		try {
-			env = valueOf(value.toUpperCase());
+			String value = envstr.toUpperCase();
+			if(value.indexOf('-')!=-1)
+				value = value.replace('-', '_');
+			env = valueOf(value);
 		} catch (Exception e) {
-			MyLoggerFactory.getLogger(Env.class).error("no env found: {}", value);
+			MyLoggerFactory.getLogger(Env.class).error("no env found: " + envstr, e);
 			env = DEV;
 		}
 		return env;

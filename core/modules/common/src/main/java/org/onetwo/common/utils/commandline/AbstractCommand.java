@@ -1,5 +1,6 @@
 package org.onetwo.common.utils.commandline;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ abstract public class AbstractCommand implements Command{
 
 	@Override
 	public String helpDoc() {
-		return doc;
+		return StringUtils.defaultIfBlank(doc, "no help docuement!");
 	}
 
 	@Override
@@ -51,6 +52,16 @@ abstract public class AbstractCommand implements Command{
 
 	public CommandManager getCommandManager() {
 		return commandManager;
+	}
+
+
+	public String getKey() {
+		return key;
+	}
+
+
+	public String getDoc() {
+		return doc;
 	}
 
 }

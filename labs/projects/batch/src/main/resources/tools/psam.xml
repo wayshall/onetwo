@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbook>
+	<sheets>
+		<template label="psam卡数据">
+			<rows>
+				<row type="iterator" datasource="#psamList" index="index" renderHeader="true" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD">
+					<fields>
+						<field value=":id" name="id" label="主键" />
+						<field value=":psamNo" name="psamNo" label="psam号"/>
+						<field value=":areaCode" name="areaCode" label="地区代码"/>
+						<field value=":startDate" name="startDate" label="开始日期"/>
+						<field value=":endDate" name="endDate" label="结束日期"/>
+						<field value="status.name" name="status" label="状态"/>
+						<field value="psamFactory.label" name="psamFactory" label="生成厂家"/>
+					</fields>
+				</row>
+				
+			</rows>
+		</template>
+	</sheets>
+</workbook>

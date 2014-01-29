@@ -29,8 +29,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.Ordered;
 
-public class JFishMultipleSessionFactory implements SessionFactory, InitializingBean, ApplicationContextAware {
+public class JFishMultipleSessionFactory implements SessionFactory, Ordered, InitializingBean, ApplicationContextAware {
 
 //	public static final String SESSIONFACTORY_KEY = "SessionFactory";
 	public static final String DEFAULT_SESSIONFACTORY = SwitcherInfo.DEFAULT_SWITCHER_NAME;// + SESSIONFACTORY_KEY;
@@ -76,6 +77,9 @@ public class JFishMultipleSessionFactory implements SessionFactory, Initializing
 		return sf;
 	}
 	
+	public SessionFactory getSessionFactory(String name){
+		return sessionFactories.get(name);
+	}
 
 	public void setDefaultSessionFactory(SessionFactory defaultSessionFactory) {
 		this.defaultSessionFactory = defaultSessionFactory;
@@ -209,6 +213,11 @@ public class JFishMultipleSessionFactory implements SessionFactory, Initializing
 
 	public TypeHelper getTypeHelper() {
 		return getCurrentSessionFactory().getTypeHelper();
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 

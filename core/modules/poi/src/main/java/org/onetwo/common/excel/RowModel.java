@@ -3,8 +3,11 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonFilter;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+@JsonFilter(ExcelUtils.JSON_FILTER_ROW)
 public class RowModel {
 	public static final String DEFAULT_NAME = "entity";
 	public static class Type {
@@ -19,6 +22,7 @@ public class RowModel {
 	private String datasource;
 	private int space;
 	private String span;
+	private short height;
 	private String index;
 	
 	private boolean renderHeader;
@@ -35,6 +39,12 @@ public class RowModel {
 	private List<FieldModel> fields = new ArrayList<FieldModel>();
 	
 	public RowModel(){
+	}
+
+	public void initModel(WorkbookData workbookData){
+		for(FieldModel field : fields){
+			field.initModel(workbookData);
+		}
 	}
 	
 	public int size(){
@@ -92,6 +102,14 @@ public class RowModel {
 
 	public void setFields(List<FieldModel> fields) {
 		this.fields = fields;
+	}
+	
+	public RowModel addField(FieldModel field){
+		if(fields==null)
+			fields = LangUtils.newArrayList();
+//		field.setParentRow(this);
+		fields.add(field);
+		return this;
 	}
 
 	public int getSpace() {
@@ -187,6 +205,14 @@ public class RowModel {
 	
 	public boolean hasFieldProcessor(){
 		return StringUtils.isNotBlank(fieldProcessor);
+	}
+
+	public short getHeight() {
+		return height;
+	}
+
+	public void setHeight(short height) {
+		this.height = height;
 	}
 	
 	/*public RowExecutor getExecutorInstance() {

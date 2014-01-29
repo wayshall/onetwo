@@ -1,6 +1,7 @@
 package org.onetwo.common.excel;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,9 @@ import ognl.Ognl;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
@@ -23,23 +27,49 @@ import org.springframework.core.io.Resource;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-@SuppressWarnings("unchecked")
 abstract public class ExcelUtils {
+	
+	public static final String JSON_FILTER_TEMPLATE = "templateModelFilter";
+	public static final String JSON_FILTER_ROW = "rowModelFilter";
+	public static final String JSON_FILTER_FIELD = "fieldModelFilter";
+	
+	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
 	
 	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);
 	
 
-	public static TemplateModel readTemplate(String path){
+	public static <T> T readTemplate(String path){
 		Resource config = new ClassPathResource(path);
 		return readTemplate(config);
 	}
 	
-	public static TemplateModel readTemplate(Resource config){
+
+	public static WorkbookModel readAsWorkbookModel(String path){
+		return readAsWorkbookModel(new ClassPathResource(path));
+	}
+	
+	public static WorkbookModel readAsWorkbookModel(Resource config){
+		WorkbookModel model = null;
+		Object m = ExcelUtils.readTemplate(config);
+		if(TemplateModel.class.isInstance(m)){
+			model = new WorkbookModel();
+			model.addSheet((TemplateModel)m);
+		}else{
+			model = (WorkbookModel) m;
+		}
+		return model;
+	}
+	
+	public static <T> T readTemplate(Resource config){
 		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("workbook", WorkbookModel.class);
+		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);
+		xstream.alias("fieldValueExecutors", List.class);
+		xstream.alias("fieldValueExecutor", ExecutorModel.class);
 //		xstream.useAttributeFor(Number.class);
 //		xstream.useAttributeFor(boolean.class);
 //		xstream.useAttributeFor(String.class); 
@@ -50,18 +80,18 @@ abstract public class ExcelUtils {
 		}
 		
 		
-		TemplateModel template = null;
+		Object template = null;
 		try {
 			if(config.exists()){
-				template = (TemplateModel) xstream.fromXML(new FileInputStream(config.getFile()));
+				template = xstream.fromXML(new FileInputStream(config.getFile()));
 			}else{
-				template = (TemplateModel) xstream.fromXML(config.getInputStream());
+				template = xstream.fromXML(config.getInputStream());
 			}
 		} catch (Exception e) {
 			throw new ServiceException("读取模板["+config+"]配置出错：" + e.getMessage(), e);
 		} 
 		
-		return template;
+		return (T)template;
 	}
 	
 	public static void setCellValue(Cell cell, Object value){
@@ -147,6 +177,26 @@ abstract public class ExcelUtils {
 			logger.error("["+exp+"] getValue error : " + e.getMessage());
 		}
 		return value;
+	}
+	
+	public static Workbook readWorkbook(InputStream inp){
+		try {
+			return WorkbookFactory.create(inp);
+		} catch (Exception e) {
+			throw new BaseException("read workbook error by inputStream : " + e.getMessage(), e);
+		} 
+	}
+	
+	public static Workbook readWorkbookFromClasspath(String path){
+		return readWorkbook(new ClassPathResource(path));
+	}
+	
+	public static Workbook readWorkbook(Resource res){
+		try {
+			return WorkbookFactory.create(res.getInputStream());
+		} catch (Exception e) {
+			throw new BaseException("read workbook error by resource : " + e.getMessage(), e);
+		} 
 	}
 	
 	public static void main(String[] args){

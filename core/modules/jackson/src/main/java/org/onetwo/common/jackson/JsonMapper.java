@@ -9,6 +9,8 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import org.codehaus.jackson.map.ser.impl.SimpleBeanPropertyFilter;
+import org.codehaus.jackson.map.ser.impl.SimpleFilterProvider;
 import org.codehaus.jackson.map.util.JSONPObject;
 import org.codehaus.jackson.type.TypeReference;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -55,6 +57,7 @@ public class JsonMapper {
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private SimpleFilterProvider filterProvider = new SimpleFilterProvider();
 	
 
 	public JsonMapper(Inclusion include){
@@ -69,6 +72,18 @@ public class JsonMapper {
 		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		if(fieldVisibility)
 			objectMapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+		this.objectMapper.setFilters(filterProvider);
+	}
+	
+	public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
+		this.objectMapper.getSerializationConfig().addMixInAnnotations(target, mixinSource);
+		this.objectMapper.getDeserializationConfig().addMixInAnnotations(target, mixinSource);
+		return this;
+	}
+	
+	public JsonMapper filter(String id, String...properties){
+		this.filterProvider.addFilter(id, SimpleBeanPropertyFilter.serializeAllExcept(properties));
+		return this;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -92,6 +107,7 @@ public class JsonMapper {
 		try {
 			json = this.objectMapper.writeValueAsString(object);
 		} catch (Exception e) {
+//			e.printStackTrace();
 			if(throwIfError)
 				LangUtils.throwBaseException("parse to json error : " + object, e);
 			else
