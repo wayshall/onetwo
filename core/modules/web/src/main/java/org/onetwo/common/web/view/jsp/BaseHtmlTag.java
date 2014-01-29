@@ -20,6 +20,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	protected String cssStyle;
 	protected String cssClass;
 	protected String onclick;
+	protected String attributes;
 	
 	protected T component;
 
@@ -103,6 +104,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		component.setCssClass(cssClass);
 		component.setCssStyle(cssStyle);
 		component.setOnclick(onclick);
+		component.setAttributes(attributes);
 	}
 
 	@Override
@@ -176,6 +178,9 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 
 	public void setOnclick(String onclick) {
 		this.onclick = onclick;
+	}
+	public void setAttributes(String attributes) {
+		this.attributes = attributes;
 	}
 	
 	

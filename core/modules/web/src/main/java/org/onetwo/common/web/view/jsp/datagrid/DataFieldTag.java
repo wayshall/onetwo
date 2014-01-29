@@ -30,7 +30,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private Object searchItems;
 	private String searchItemLabel;
 	private String searchItemValue;
-	private boolean exportable;
+	private boolean exportable = true;
 	
 	@Override
 	public FieldTagBean createComponent() {

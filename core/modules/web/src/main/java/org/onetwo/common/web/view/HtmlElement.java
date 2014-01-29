@@ -118,6 +118,8 @@ abstract public class HtmlElement {
 			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
 		
 		this.buildExtTagAttributesString(attributesBuf);
+		if(StringUtils.isNotBlank(attributes))
+			attributesBuf.append(" ").append(attributes);
 		return attributesBuf.toString();
 	}
 

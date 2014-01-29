@@ -47,8 +47,8 @@ public class JFishExcelView extends AbstractUrlBasedView {
 		
 		try {
 //			Object template = model.get(TEMPLATE_KEY);
-			String template = getTemplatePath();
-			TemplateGenerator generator = this.xmlTemplateExcelFactory.create(template.toString(), model);
+//			String template = getTemplatePath();
+			TemplateGenerator generator = createTemplateGenerator(model);//this.xmlTemplateExcelFactory.create(template.toString(), model);
 			if(browse){
 				//TODO
 			}else{
@@ -86,6 +86,11 @@ public class JFishExcelView extends AbstractUrlBasedView {
 		}
 	}
 	
+	protected TemplateGenerator createTemplateGenerator(Map<String, Object> model){
+		String template = getTemplatePath();
+		return this.xmlTemplateExcelFactory.create(template.toString(), model);
+	}
+	
 	protected String getTemplatePath(){
 		String template = getUrl();
 		if(template==null)
@@ -120,5 +125,5 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	public boolean checkResource(Locale locale) throws Exception {
 		return this.xmlTemplateExcelFactory.checkTemplate(getTemplatePath());
 	}
-
+	
 }

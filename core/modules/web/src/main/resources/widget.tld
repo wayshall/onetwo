@@ -225,6 +225,12 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
+      <description><![CDATA[exportable]]></description>
+      <name>exportable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
       <description><![CDATA[dataSource]]></description>
       <name>dataSource</name>
       <required>false</required>
@@ -412,7 +418,13 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <description><![CDATA[orderable]]></description>
+      <description><![CDATA[exportable]]></description>
+      <name>exportable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[dataFormat]]></description>
       <name>dataFormat</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -607,6 +619,12 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
+      <description><![CDATA[showLoadingText]]></description>
+      <name>showLoadingText</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
       <description><![CDATA[errorTag]]></description>
       <name>errorTag</name>
       <required>false</required>
@@ -715,6 +733,12 @@
     <attribute>
       <description><![CDATA[The css style definitions for element to use]]></description>
       <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The attributes definitions for element to use]]></description>
+      <name>attributes</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

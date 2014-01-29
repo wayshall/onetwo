@@ -109,7 +109,6 @@ var Common = function () {
 						return false;
 				}
 				
-				$(form).attr("method", "post")
 				var dataAction = $(this).dataAction();
 				if(dataAction){
 					$(form).attr("action", dataAction);
@@ -121,6 +120,9 @@ var Common = function () {
 				}
 				if(!!amethod){//true
 					jfish.appendHiddenMethodParamIfNecessary(form, amethod);
+//					$(form).attr("method", "post")
+					if(amethod!='get')
+						$(form).attr("method", "post")
 				}
 
 				jfish.appendHiddenByDataParams(this, form);
@@ -145,28 +147,32 @@ var Common = function () {
 			}
 		},
 		
-		toInputHidden : function(params){
-			var params = eval("("+params+")");
+		appendAsInputHidden : function(form, paramsData){
+			var params = eval("("+paramsData+")");
 			params_input = "";
 			if(params){
 				for(var p in params){
-					params_input += '<input name="'+p+'" value="'+params[p]+'" type="hidden" />';
+					var hiddenField = $(form).find("#"+p);
+					if(hiddenField.length>0){
+						hiddenField.val(params[p]);
+					}else{
+						$(form).append('<input id="'+p+'" name="'+p+'" value="'+params[p]+'" type="hidden" />');
+					}
 				}
 			}
-			return params_input;
 		},
 		
 		appendHiddenByDataParams : function(e, form){
 			var params = $(e).attr("data-params");
 			if(!!params){
-				var params_input = jfish.toInputHidden(params);
-				$(form).append(params_input);
+				var params_input = jfish.appendAsInputHidden($(form), params);
+//				$(form).append(params_input);
 			}
 		},
 		
 		appendHiddenMethodParamIfNecessary: function(form, method){
 			var methodEle = $('input[name=_method]', $(form));
-			if(methodEle){
+			if(methodEle.length>0){
 				methodEle.val(method);
 			}else{
 				var metadata_input = '<input name="_method" value="'+method+'" type="hidden" />';
@@ -287,6 +293,7 @@ var Common = function () {
 			}
 
 			jfish.appendHiddenMethodParamIfNecessary(form, method);
+//			jfish.appendHiddenByDataParams(this, form);
 
 			if (target) {
 				form.attr('target', target);

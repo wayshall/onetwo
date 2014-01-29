@@ -74,6 +74,20 @@ final public class TagUtils {
 		}
 		return result;
 	}
+
+	public static String appendXlsFormat(String action){
+		return appendParam(action, "format", "xls");
+	}
+	
+	public static String appendParam(String action, String name, String value){
+		String result = action;
+		if (action.indexOf("?")!=-1){
+			result += "&"+name+"="+value;
+		}else{
+			result += "?"+name+"="+value;
+		}
+		return result;
+	}
 	
 
 	public static String getFormVarName(){
