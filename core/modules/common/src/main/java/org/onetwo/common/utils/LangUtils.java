@@ -10,6 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -1460,5 +1462,21 @@ public class LangUtils {
 	
 	public static String decToHexString(String decStr){
 		return Long.toHexString(Types.convertValue(decStr, Long.class));
+	}
+	
+	public static String encodeUrl(String url){
+		try {
+			return URLEncoder.encode(url, UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new BaseException("Unsupported Encoding", e);
+		}
+	}
+	
+	public static String decodeUrl(String url){
+		try {
+			return URLDecoder.decode(url, UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new BaseException("Unsupported Encoding", e);
+		}
 	}
 }

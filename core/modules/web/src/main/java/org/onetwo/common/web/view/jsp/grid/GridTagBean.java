@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
@@ -83,9 +84,9 @@ public class GridTagBean extends HtmlElement {
 	
 	public String getXlsFormatAction(){
 		String action = getActionWithQueryString();
-//		action = TagUtils.appendParam(action, "format", "xls");
-//		action = TagUtils.appendParam(action, "fileName", getTitle());
-//		action = TagUtils.appendParam(action, "exporter", getExportJsonTemplate());
+		action = TagUtils.appendParam(action, "format", "xls");
+		action = TagUtils.appendParam(action, "fileName", getTitle());
+		action = TagUtils.appendParam(action, "exporter", LangUtils.encodeUrl(getExportJsonTemplate()));
 		return action;
 	}
 
