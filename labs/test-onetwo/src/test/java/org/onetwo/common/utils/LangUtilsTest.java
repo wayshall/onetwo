@@ -221,7 +221,7 @@ public class LangUtilsTest {
 		Long max = Long.MAX_VALUE;
 //		Assert.assertEquals(expected, actual);
 		System.out.println("max: "+max+", length:" + max.toString().length());
-		String cardNo16 = Long.toHexString(Types.convertValue(cardNo10, Long.class));
+		String cardNo16 = LangUtils.decToHexString(cardNo10);
 		System.out.println("cardNo16: " + cardNo16);
 	}
 	
