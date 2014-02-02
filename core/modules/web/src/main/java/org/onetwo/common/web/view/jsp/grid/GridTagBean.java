@@ -3,11 +3,9 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
-import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
 import org.onetwo.common.web.view.jsp.datagrid.SearchForm;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
@@ -37,9 +35,6 @@ public class GridTagBean extends HtmlElement {
 	private boolean ajaxSupported = false;
 	private String ajaxZoneName;
 //	private String ajaxInstName;
-	private boolean exportable;
-	private String exportDataSource;
-	private String exportJsonTemplate;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -79,14 +74,6 @@ public class GridTagBean extends HtmlElement {
 	}
 
 	public String getAction() {
-		return action;
-	}
-	
-	public String getXlsFormatAction(){
-		String action = getActionWithQueryString();
-		action = TagUtils.appendParam(action, "format", "xls");
-		action = TagUtils.appendParam(action, "fileName", getTitle());
-		action = TagUtils.appendParam(action, "exporter", LangUtils.encodeUrl(getExportJsonTemplate()));
 		return action;
 	}
 
@@ -207,28 +194,5 @@ public class GridTagBean extends HtmlElement {
 		this.ajaxZoneName = ajaxZoneName;
 	}
 
-	public boolean isExportable() {
-		return exportable;
-	}
-
-	public void setExportable(boolean exportable) {
-		this.exportable = exportable;
-	}
-
-	public String getExportDataSource() {
-		return exportDataSource;
-	}
-
-	public void setExportDataSource(String exportDataSource) {
-		this.exportDataSource = exportDataSource;
-	}
-
-	public String getExportJsonTemplate() {
-		return exportJsonTemplate;
-	}
-
-	public void setExportJsonTemplate(String exportJsonTemplate) {
-		this.exportJsonTemplate = exportJsonTemplate;
-	}
 	
 }

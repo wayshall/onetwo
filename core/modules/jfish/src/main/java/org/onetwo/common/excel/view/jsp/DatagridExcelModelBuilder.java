@@ -1,5 +1,10 @@
-package org.onetwo.common.excel;
+package org.onetwo.common.excel.view.jsp;
 
+import org.onetwo.common.excel.ExcelUtils;
+import org.onetwo.common.excel.FieldModel;
+import org.onetwo.common.excel.RowModel;
+import org.onetwo.common.excel.TemplateModel;
+import org.onetwo.common.excel.WorkbookModel;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.web.view.jsp.datagrid.AbstractDatagridRenderListener;
 import org.onetwo.common.web.view.jsp.datagrid.DataGridTag;
@@ -10,7 +15,8 @@ import org.onetwo.common.web.view.jsp.grid.RowTagBean;
 public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 
 	@Override
-	public void afterRender(DataGridTag tag, GridTagBean tagBean) {
+	public void prepareRender(DataGridTag tag, GridTagBean tagb) {
+		ExportableGridTagBean tagBean = (ExportableGridTagBean) tagb;
 		if(!tagBean.isExportable())
 			return ;
 		WorkbookModel workbook = new WorkbookModel();
@@ -39,7 +45,8 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 		row.setType(rowTag.getType().toString());
 		row.setName(rowTag.getName());
 		row.setRenderHeader(rowTag.isRenderHeader());
-		for(FieldTagBean fieldTag : rowTag.getFields()){
+		for(FieldTagBean ft : rowTag.getFields()){
+			ExportableFieldTagBean fieldTag = (ExportableFieldTagBean) ft;
 			if(fieldTag.isExportable())
 				row.addField(buildField(fieldTag));
 		}

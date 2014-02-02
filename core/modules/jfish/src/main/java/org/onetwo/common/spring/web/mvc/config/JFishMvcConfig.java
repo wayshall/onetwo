@@ -6,8 +6,8 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.excel.DatagridExcelModelBuilder;
 import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
+import org.onetwo.common.excel.view.jsp.DatagridExcelModelBuilder;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
