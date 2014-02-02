@@ -36,6 +36,7 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 	protected JFishExcelView buildView(String viewName) throws Exception {
 		JFishExcelView exceView = (JFishExcelView)super.buildView(viewName);
 		exceView.setFileName(viewName);
+		exceView.setXmlTemplateExcelFactory(xmlTemplateGeneratorFactory);
 		return exceView;
 	}
 

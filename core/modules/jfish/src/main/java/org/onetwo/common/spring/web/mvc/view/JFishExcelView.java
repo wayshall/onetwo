@@ -31,13 +31,15 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	private String suffix = TEMPLATE_SUFFIX;
 	
 	public JFishExcelView(){
-		this.xmlTemplateExcelFactory = SpringApplication.getInstance().getBean(XmlTemplateGeneratorFactory.class);
 	}
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if(xmlTemplateExcelFactory==null){
-			throw new JFishException("there is not excel xml template factory config.");
+			xmlTemplateExcelFactory = SpringApplication.getInstance().getBean(XmlTemplateGeneratorFactory.class);
+			if(xmlTemplateExcelFactory==null){
+				throw new JFishException("there is not excel xml template factory config.");
+			}
 		}
 
 		OutputStream out = null;
@@ -124,6 +126,10 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
 		return this.xmlTemplateExcelFactory.checkTemplate(getTemplatePath());
+	}
+
+	public void setXmlTemplateExcelFactory(XmlTemplateGeneratorFactory xmlTemplateExcelFactory) {
+		this.xmlTemplateExcelFactory = xmlTemplateExcelFactory;
 	}
 	
 }

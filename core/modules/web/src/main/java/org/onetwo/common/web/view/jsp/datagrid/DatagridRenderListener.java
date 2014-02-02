@@ -4,6 +4,7 @@ import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 
 public interface DatagridRenderListener {
 	
-	public void afterRender(DataGridTag tag, GridTagBean tagBean);
+//	public GridTagBean createGridTagBean(DataGridTag tag);
+	public void prepareRender(DataGridTag tag, GridTagBean tagBean);
 
 }

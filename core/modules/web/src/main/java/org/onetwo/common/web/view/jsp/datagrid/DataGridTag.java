@@ -7,7 +7,6 @@ import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.convert.ToBooleanConvertor;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
@@ -43,8 +42,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private DatagridRenderListener datagridRenderListener;
 	
-	private boolean exportable;
-	private String exportDataSource;
 	
 	public DataGridTag(){
 		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
@@ -89,7 +86,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 				this.component.setBodyContent(bc.getString());
 			}
 			if(this.datagridRenderListener!=null){
-				this.datagridRenderListener.afterRender(this, component);
+				this.datagridRenderListener.prepareRender(this, component);
 			}
 			this.pageContext.include(getTemplate());
 		} catch (Exception e) {
@@ -118,8 +115,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setAjaxSupported(ajaxSupported);
 		component.setPage(TagUtils.toPage(dataSource));
 		
-		component.setExportable(exportable);
-		component.setExportDataSource(exportDataSource);
 		
 		ajaxZoneName = getName();// + AJAX_POSTFIX;
 //		ajaxInstName = getName() + AJAX_INST_POSTFIX;
@@ -197,13 +192,5 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		this.ajaxSupported = ajaxSupported;
 	}
 
-	public void setExportable(String exportable) {
-		if(StringUtils.isNotBlank(exportable) && !ToBooleanConvertor.FALSE_VALUE.equals(exportable)){
-			this.exportable = true;
-			this.exportDataSource = exportable;
-		}else{
-			this.exportable = false;
-		}
-	}
 
 }

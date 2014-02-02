@@ -13,6 +13,9 @@ import org.onetwo.common.utils.StringUtils;
 
 public class JsonExcelView extends JFishExcelView {
 
+	public static final String URL_POSFIX = "jfxls";
+	public static final String EXPORT_JSON_PARAM_NAME = "exporter";
+
 	@Override
 	protected TemplateGenerator createTemplateGenerator(Map<String, Object> model) {
 		String exportJson = getExportJson();
@@ -34,7 +37,7 @@ public class JsonExcelView extends JFishExcelView {
 	}
 	
 	protected String getExportJson(){
-		return JFishWebUtils.request().getParameter("exporter");
+		return JFishWebUtils.request().getParameter(EXPORT_JSON_PARAM_NAME);
 	}
 
 }
