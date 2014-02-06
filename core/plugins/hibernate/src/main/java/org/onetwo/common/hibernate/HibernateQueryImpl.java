@@ -9,7 +9,6 @@ import org.hibernate.Query;
 import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("unchecked")
 public class HibernateQueryImpl extends AbstractDataQuery {
@@ -85,11 +84,6 @@ public class HibernateQueryImpl extends AbstractDataQuery {
 			query.setParameter(position++, value);
 		}
 		return this;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
 	}
 	
 	public DataQuery setLimited(final Integer first, final Integer max) {

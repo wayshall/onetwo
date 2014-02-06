@@ -88,11 +88,6 @@ public class JpaQueryImpl extends AbstractDataQuery {
 		}
 		return this;
 	}
-
-	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
-	}
 	
 	public DataQuery setLimited(final Integer first, final Integer size) {
 		if (first >= 0) {

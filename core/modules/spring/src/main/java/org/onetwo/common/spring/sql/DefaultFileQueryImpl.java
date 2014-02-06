@@ -239,12 +239,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		}
 		return this;
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
-	}
-	
+
 	public DataQuery setLimited(final Integer first, final Integer max) {
 		this.firstRecord = first;
 		this.maxRecords = max;

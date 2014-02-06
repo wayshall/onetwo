@@ -13,7 +13,7 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 	public XmlTemplateExcelViewResolver(){
 		this.setViewClass(requiredViewClass());
 		this.setPrefix(DEFAULT_BASE_TEMPLATE_DIR);
-		this.setContentType("application/xls;charset=utf-8");
+		this.setContentType("application/jfxls;charset=utf-8");
 		this.setSuffix(".xml");
 	}
 

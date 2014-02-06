@@ -270,4 +270,19 @@ public final class JFishWebUtils {
 		}
 		return mv;
 	}
+	
+
+	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) throws Exception{
+		return getDownloadFileName(request(), model, defaultFileName);
+	}
+	
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName) throws Exception{
+		String downloadFileName = request.getParameter("fileName");
+		if(StringUtils.isNotBlank(downloadFileName)){
+			downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+		}else{
+			downloadFileName = model.containsKey("fileName")?model.get("fileName").toString():defaultFileName;
+		}
+		return downloadFileName;
+	}
 }

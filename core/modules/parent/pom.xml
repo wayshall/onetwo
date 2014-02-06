@@ -39,7 +39,7 @@
     
     <freemarker.version>2.3.19</freemarker.version>
     <jstl.version>1.2</jstl.version>
-    <servlet.version>2.5</servlet.version>
+    <servlet.version>3.0-alpha-1</servlet.version>
     <jpa.version>2.0.0</jpa.version>
     <validation.version>1.0.0.GA</validation.version>
     
@@ -82,82 +82,6 @@
 	</snapshotRepository>
   </distributionManagement>
    
-   
-  <repositories>
-    
-	<repository>
-		<id>maven2</id>
-		<name>Maven Center Mirror</name>
-      	<url>http://repo1.maven.org/maven2</url>
-      	<releases>
-      		<enabled>true</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-	<repository>
-		<id>guohui-public</id>
-		<name>Guohui Public Mirror</name>
-      	<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
-      	<releases>
-      		<enabled>true</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-snapshots</id>
-		<name>Guohui Snapshots Mirror</name>
-		<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
-      	<releases>
-      		<enabled>false</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>true</enabled>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-thirdparty</id>
-		<name>Guohui thirdparty Mirror</name>
-		<url>http://192.168.1.55:8081/nexus/content/repositories/thirdparty/</url>
-      	<releases>
-      		<enabled>true</enabled>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-    
-  </repositories>
-  
-  
-	<pluginRepositories>
-		<pluginRepository>
-			<id>nexus</id>
-			<name>Team Nexus Repository</name>
-			<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		
-		<pluginRepository>
-			<id>nexus-snapshots</id>
-			<name>Team Nexus snapshots Repository</name>
-			<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 	
 <dependencyManagement>
   <dependencies>
@@ -369,13 +293,14 @@
 	  <version>${javax.activation.version}</version>
 	</dependency>
 
-  <!-- java ee web -->
+  <!-- java ee web 
 	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>servlet-api</artifactId>
 		<version>${servlet.version}</version>
 		<scope>provided</scope>
 	</dependency>
+	-->
 	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>jstl</artifactId>
@@ -436,12 +361,6 @@
 	  <scope>provided</scope>
 	</dependency>
 	
-	<dependency>
-	  <groupId>javax.validation</groupId>
-	  <artifactId>validation-api</artifactId>
-	  <version>${validation.version}</version>
-	</dependency>
-	
 	
 	<!-- jms client begin -->
 	<dependency>
@@ -471,14 +390,6 @@
 	
   <!-- ejb end -->
   
-  
-  
-	<dependency>
-	  <groupId>org.freemarker</groupId>
-	  <artifactId>freemarker</artifactId>
-	  <version>${freemarker.version}</version>
-	</dependency>
-     
      <!-- 
     <dependency>
     	<groupId>com.sun</groupId>
@@ -632,7 +543,7 @@
 	<dependency>
 	  <groupId>javax.servlet</groupId>
 	  <artifactId>servlet-api</artifactId>
-	  <version>3.0-alpha-1</version>
+	  <version>${servlet.version}</version>
 	  <scope>test</scope>
 	</dependency>
 
