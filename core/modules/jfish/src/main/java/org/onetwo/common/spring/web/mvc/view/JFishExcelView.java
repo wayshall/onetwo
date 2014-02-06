@@ -16,7 +16,6 @@ import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class JFishExcelView extends AbstractUrlBasedView {
@@ -32,6 +31,10 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	
 	public JFishExcelView(){
 	}
+	
+	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model) throws Exception{
+		return JFishWebUtils.getDownloadFileName(request, model, fileName);
+	}
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -45,7 +48,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 		OutputStream out = null;
 		
 		boolean browse = "true".equals(JFishWebUtils.req("browse"));
-		String downloadFileName = request.getParameter("fileName");
+		String downloadFileName = getDownloadFileName(request, model);
 		
 		try {
 //			Object template = model.get(TEMPLATE_KEY);
@@ -56,13 +59,10 @@ public class JFishExcelView extends AbstractUrlBasedView {
 			}else{
 //				String requestUri = JFishWebUtils.requestUri();
 				//WebUtils.extractFullFilenameFromUrlPath(requestUri)
-				if(StringUtils.isNotBlank(downloadFileName)){
-					downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
-				}else{
-					downloadFileName = fileName;
-				}
+				
 				response.setContentType(RESPONSE_CONTENT_TYPE); 
-				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName + ".xls");
+				downloadFileName = (downloadFileName.endsWith("xls") || downloadFileName.endsWith("xlsx"))?downloadFileName:(downloadFileName+".xls");
+				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
 
 				out = response.getOutputStream();
 				generator.generateIt();
@@ -104,7 +104,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	}
 
 	public String getContentType() {
-		return DEFAULT_CONTENT_TYPE;
+		return "application/jfxls";
 	}
 
 	public String getFileName() {

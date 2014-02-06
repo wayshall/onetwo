@@ -74,11 +74,6 @@ public class JFishDataQuery extends AbstractDataQuery {
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public DataQuery setPageParameter(Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
-	}
 
 	@Override
 	public DataQuery setLimited(Integer first, Integer size) {

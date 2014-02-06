@@ -295,7 +295,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
 		viewResolver.setUseNotAcceptableStatusCode(true);
 		viewResolver.setOrder(0);
-		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
+//		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
+		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
 		viewResolver.setDefaultViews(views);
 //		viewResolver.setMediaTypes(mediaType());
 //		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);

@@ -100,7 +100,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			}
 			if (isRoot(node))
 				continue;
-			TreeModel<TreeModel<?>> p = (TreeModel<TreeModel<?>>) leafages.get(node.getParentId());
+			TM p = leafages.get(node.getParentId());
 			if (p == null) {
 				if (ignoreNoParentLeafe)
 					logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");

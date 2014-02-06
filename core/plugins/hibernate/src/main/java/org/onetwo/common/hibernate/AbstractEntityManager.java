@@ -209,6 +209,9 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 			}
 		}
 		List datalist = createQuery(extQuery).setPageParameter(page).getResultList();
+		if(!page.isAutoCount()){
+			page.setTotalCount(datalist.size());
+		}
 		page.setResult(datalist);
 	}
 
