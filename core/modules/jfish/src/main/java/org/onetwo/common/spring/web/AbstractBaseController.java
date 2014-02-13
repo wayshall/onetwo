@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
@@ -44,6 +45,9 @@ abstract public class AbstractBaseController {
 
 	@Resource
 	private CodeMessager codeMessager;
+	
+	@Resource
+	private XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver;
 	
 	protected AbstractBaseController(){
 	}
@@ -111,8 +115,10 @@ abstract public class AbstractBaseController {
 	protected ModelAndView exportExcel(String template, String fileName, Object... models){
 		ModelAndView mv = mv(template, models);
 		JFishExcelView view = new JFishExcelView();
-		view.setUrl(template);
+		String path = this.xmlTemplateExcelViewResolver.getPrefix()+template;
+		view.setUrl(path);
 		view.setFileName(fileName);
+		view.setSuffix(this.xmlTemplateExcelViewResolver.getSuffix());
 		mv.setView(view);
 		return mv;
 	}

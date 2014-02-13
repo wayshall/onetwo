@@ -17,6 +17,14 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 		this.setSuffix(".xml");
 	}
 
+	public String getSuffix() {
+		return super.getSuffix();
+	}
+
+	public String getPrefix() {
+		return super.getPrefix();
+	}
+
 	@Override
 	protected Class<?> requiredViewClass() {
 		return JFishExcelView.class;
