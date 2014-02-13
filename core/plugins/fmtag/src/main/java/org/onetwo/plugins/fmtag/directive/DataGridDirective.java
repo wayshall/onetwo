@@ -146,6 +146,7 @@ public class DataGridDirective extends FmtagBaseDirective implements TemplateDir
 				else
 					surl += "&";
 				surl += qstr;
+				index++;
 			}
 		}
 
