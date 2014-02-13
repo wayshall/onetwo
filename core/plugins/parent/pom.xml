@@ -38,6 +38,7 @@
 				<module>../dq</module>
 				<module>../email</module>
 				<module>../batch</module>
+				<module>../jasper</module>
 	  	</modules>
 	  </profile>
 	</profiles>

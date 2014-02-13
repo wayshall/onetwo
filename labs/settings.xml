@@ -178,20 +178,6 @@ under the License.
 		<url>http://nexus_server:8088/nexus/content/groups/public</url>
     </mirror>
      -->
-
-    <mirror>
-      <id>xianda</id>
-      <name>xianda</name>
-      <mirrorOf>*</mirrorOf>
-      <url>http://192.168.1.55:8081/nexus/content/groups/public</url>
-    </mirror>
-
-    <mirror>
-      <id>offical</id>
-      <name>offical</name>
-      <mirrorOf>*</mirrorOf>
-      <url>http://repo1.maven.org/maven2</url>
-    </mirror>
   
 	<!--
 	
@@ -321,7 +307,7 @@ under the License.
 			<repository>
 				<id>dev-public</id>
 				<name>dev Public Mirror</name>
-				<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
+				<url>http://192.168.1.56:8081/nexus/content/groups/public</url>
 				<releases>
 					<enabled>true</enabled>
 				</releases>
@@ -332,7 +318,7 @@ under the License.
 			 <repository>
 				<id>dev-snapshots</id>
 				<name>dev Snapshots Mirror</name>
-				<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
+				<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
 				<releases>
 					<enabled>false</enabled>
 				</releases>
@@ -343,7 +329,7 @@ under the License.
 			 <repository>
 				<id>dev-thirdparty</id>
 				<name>dev thirdparty Mirror</name>
-				<url>http://192.168.1.55:8081/nexus/content/repositories/thirdparty/</url>
+				<url>http://192.168.1.56:8081/nexus/content/repositories/thirdparty/</url>
 				<releases>
 					<enabled>true</enabled>
 				</releases>
@@ -357,7 +343,7 @@ under the License.
 			<pluginRepository>
 				<id>dev-nexus</id>
 				<name>Team Nexus Repository</name>
-				<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
+				<url>http://192.168.1.56:8081/nexus/content/groups/public</url>
 				<snapshots>
 					<enabled>false</enabled>
 				</snapshots>
@@ -369,7 +355,7 @@ under the License.
 			<pluginRepository>
 				<id>dev-nexus-snapshots</id>
 				<name>Team Nexus snapshots Repository</name>
-				<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
+				<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
 				<snapshots>
 					<enabled>true</enabled>
 				</snapshots>

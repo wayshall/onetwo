@@ -21,6 +21,7 @@ import org.springframework.core.io.Resource;
  */
 public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory, InitializingBean {
 	
+//	private static final String DEFAULT_BASE_TEMPLATE_DIR = "/WEB-INF/excel";
 //	private Map<String, TemplateModel> TemplateModelCache = new HashMap<String, TemplateModel>();
 	private SimpleCacheWrapper cache;
 //	private String baseTemplateDir = DEFAULT_BASE_TEMPLATE_DIR;
@@ -44,8 +45,10 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 		return getWorkbookModel(path, cacheTemplate);
 	}
 	
-	protected WorkbookModel getWorkbookModel(String path, boolean checkCache){
+	protected WorkbookModel getWorkbookModel(String templatePath, boolean checkCache){
 		WorkbookModel model = null;
+//		String path = baseTemplateDir + templatePath;
+		String path = templatePath;
 		if(checkCache)
 			model = cache.get(path);
 		
@@ -99,8 +102,9 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 	}
 
 	public Resource getResource(String template) {
-		Resource resource = springApplication.getAppContext().getResource(getFullTemplatePath(template));
-		if(resource==null || !resource.isReadable())
+		String path = getFullTemplatePath(template);
+		Resource resource = springApplication.getAppContext().getResource(path);
+		if(resource==null)
 			return null;
 		return resource;
 	}
