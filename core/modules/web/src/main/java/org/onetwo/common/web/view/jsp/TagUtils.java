@@ -5,9 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.form.FormTagBean;
 
 final public class TagUtils {
@@ -93,6 +100,52 @@ final public class TagUtils {
 	public static String getFormVarName(){
 		return FormTagBean.class.getSimpleName();
 	}
+	
+
+	public static String getRequestUri(HttpServletRequest request){
+		String surl = BaseSiteConfig.getInstance().getBaseURL()+(String)request.getAttribute(BaseInitFilter.REQUEST_URI);
+		return surl;
+	}
+	
+	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
+		String surl = getRequestUri(request);
+		String[] symbols = StringUtils.split(action, "|");
+		int index = 0;
+		for (String symbol : symbols) {
+			if (StringUtils.isBlank(symbol))
+				continue;
+			String qstr = processUrlSymbol(request, symbol, csrfPreventor);
+			if (StringUtils.isNotBlank(qstr)) {
+				if (index == 0)
+					surl += "?";
+				else
+					surl += "&";
+				surl += qstr;
+				index++;
+			}
+		}
+		return surl;
+	}
+	
+	public static String processUrlSymbol(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
+		String str = null;
+		if (symbol.equals(":qstr")) {
+			str = request.getQueryString();
+			if(StringUtils.isBlank(str))
+				return "";
+			CasualMap params = new CasualMap(str);
+			params.filter("pageNo", "order", "orderBy");
+			str = params.toParamString();
+		} else if (symbol.equals(":post2get")) {
+			if(csrfPreventor!=null){
+				str = RequestUtils.getPostParametersWithout(request, "pageNo", "order", "orderBy", csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName())).toParamString();
+			}else{
+				str = RequestUtils.getPostParametersWithout(request, "pageNo", "order", "orderBy").toParamString();
+			}
+		}
+		return str;
+	}
+
 	
 	private TagUtils(){
 	}

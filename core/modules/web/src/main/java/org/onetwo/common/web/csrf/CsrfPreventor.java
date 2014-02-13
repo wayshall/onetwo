@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface CsrfPreventor {
 
+	public String MEHTOD_GET = "get";
 	public static final String DEFAULT_CSRF_TOKEN_FIELD = "_jfish_token";
 	
 	public String getFieldOfTokenFieldName();

@@ -43,8 +43,8 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 */
 	@Override
 	public void validateToken(Object controller, HttpServletRequest request, HttpServletResponse response){
-//		if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
-//			return ;
+		/*if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
+			return ;*/
 		
 		if(!isValidCsrf(controller, request))
 			return ;

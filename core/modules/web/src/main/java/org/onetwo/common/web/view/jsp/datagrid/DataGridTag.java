@@ -8,8 +8,8 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
-import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
@@ -41,6 +41,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private String ajaxInstName;
 	
 	private DatagridRenderListener datagridRenderListener;
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 	
 	
 	public DataGridTag(){
@@ -126,12 +127,16 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	protected String buildActionString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-		if(StringUtils.isNotBlank(action))
-			return action;
-		
-		String surl = BaseSiteConfig.getInstance().getBaseURL()+(String)request.getAttribute(BaseInitFilter.REQUEST_URI);
-		return surl;
+		if(StringUtils.isBlank(action)){
+			String surl = TagUtils.getRequestUri(request);
+			return surl;
+		}
+		if(action.startsWith(":")){
+			return TagUtils.parseAction(request, action, this.csrfPreventor);
+		}
+		return action;
 	}
+	
 
 	protected String buildQueryString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
@@ -139,7 +144,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		if(StringUtils.isBlank(str))
 			return "";
 		CasualMap params = new CasualMap(str);
-		params.filter("pageNo");
+		params.filter("pageNo"); 
+		params.filter(this.csrfPreventor.getFieldOfTokenFieldName());
+		params.filter(request.getParameter(this.csrfPreventor.getFieldOfTokenFieldName()));
 		str = params.toParamString();
 		return str;
 	}

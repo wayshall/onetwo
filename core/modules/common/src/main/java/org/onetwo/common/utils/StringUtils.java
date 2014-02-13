@@ -678,6 +678,8 @@ public abstract class StringUtils {
 
 	public static boolean matchPrefix(String key, String... prefixs) {
 		for (String prefix : prefixs) {
+			if(StringUtils.isBlank(prefix))
+				continue;
 			VerySimpleStartMatcher match = VerySimpleStartMatcher.create(prefix);
 			if (match.match(key)) {
 				return true;
