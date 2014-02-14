@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -339,6 +340,9 @@ public class FileUtils {
 	public static String readAsString(File file){
 		return readAsStringWith(file, DEFAULT_CHARSET, null);
 	}
+	public static String readAsString(File file, String charset){
+		return readAsStringWith(file, charset, null);
+	}
 	
 	public static String readAsStringWith(File file, String charset, Map<String, Object> context){
 		return StringUtils.join(readAsListWithMap(file, charset, context), "");
@@ -635,19 +639,28 @@ public class FileUtils {
     }
     
     public static void writeStringToFile(File file, String charset, String data){
-        OutputStreamWriter w = null;
+        Writer w = writer(file, charset);
         try {
-        	if(StringUtils.isBlank(charset)){
-        		w = new OutputStreamWriter(openOutputStream(file));
-        	}else{
-        		w = new OutputStreamWriter(openOutputStream(file), charset);
-        	}
             w.write(data);
         } catch(Exception e){
         	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
         }finally {
             IOUtils.closeQuietly(w);
         }
+    }
+    
+    public static Writer writer(File file, String charset){
+    	OutputStreamWriter w = null;
+        try {
+        	if(StringUtils.isBlank(charset)){
+        		w = new OutputStreamWriter(openOutputStream(file));
+        	}else{
+        		w = new OutputStreamWriter(openOutputStream(file), charset);
+        	}
+        } catch(Exception e){
+        	throw new BaseException("create writer error : " + e.getMessage(), e);
+        }
+        return w;
     }
     
 	
@@ -775,6 +788,42 @@ public class FileUtils {
 			reslist[index++] = new ResourceAdapterImpl(obj);
 		}
 		return reslist;
+	}
+	
+	public static void createIfNotExists(File file){
+		try {
+			if(!file.exists()){
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new BaseException("create new file error!", e);
+		}
+	}
+	
+
+	public static File mergeFiles(String charset, String mergedFileName, String dir, String postfix){
+		File[] files = listFiles(dir, postfix);
+		return mergeFiles(charset, mergedFileName, files);
+	}
+	public static File mergeFiles(String charset, String mergedFileName, File...files){
+		File mergedFile = new File(mergedFileName);
+		createIfNotExists(mergedFile);
+		Writer writer = writer(mergedFile, charset);
+		try {
+			for(File file : files){
+				writer.write("\n================="+getFileName(file.getPath())+" start =====================");
+				List<String> lines = readAsList(file, charset);
+				for(String line : lines){
+					writer.write(line);
+				}
+				writer.write("\n================="+getFileName(file.getPath())+" end =================================");
+			}
+		} catch (Exception e) {
+			throw new BaseException("merge file error", e);
+		} finally{
+			IOUtils.closeQuietly(writer);
+		}
+		return mergedFile;
 	}
 	
 	public static void main(String[] args) {
