@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +119,7 @@ public class JFishList<E> implements List<E>, Serializable {
 			if(e!=null)
 				add(e);
 	}
-
+	
 	public JFishList<E> addCollection(Collection<E> objects) {
 		if(LangUtils.isEmpty(objects))
 			return this;
@@ -170,6 +172,21 @@ public class JFishList<E> implements List<E>, Serializable {
 		return StringUtils.join(this, separator);
 	}
 
+	public JFishList<E> sort(Comparator<? super E> c){
+		Collections.sort(this, c);
+		return this;
+	}
+
+	public JFishList<E> sortByProperty(final String property){
+		Collections.sort(this, new Comparator<E>() {
+		    public int compare(E o1, E o2){
+		    	Comparable<Object> p1 = (Comparable<Object>) ReflectUtils.getProperty(o1, property);
+		    	Comparable<Object> p2 = (Comparable<Object>) ReflectUtils.getProperty(o2, property);
+		    	return p1.compareTo(p2);
+		    }
+		});
+		return this;
+	}
 
 	public <T> List<T> getPropertyList(final String name){
 		final List<T> propValues = new ArrayList<T>();
