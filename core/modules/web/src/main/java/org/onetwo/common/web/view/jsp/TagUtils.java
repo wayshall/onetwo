@@ -107,8 +107,25 @@ final public class TagUtils {
 		return surl;
 	}
 	
+
+	public static String getRequsetUriWithQueryString(HttpServletRequest request){
+		String surl = getRequestUri(request);
+		String queryString = request.getQueryString();
+		if(StringUtils.isBlank(queryString))
+			return surl;
+		if(surl.contains("?")){
+			surl += "&" + queryString;
+		}else{
+			surl += "?" + queryString;
+		}
+		return surl;
+	}
+	
 	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
 		String surl = getRequestUri(request);
+		if(StringUtils.isBlank(action)){
+			return surl;
+		}
 		String[] symbols = StringUtils.split(action, "|");
 		int index = 0;
 		for (String symbol : symbols) {
@@ -142,6 +159,8 @@ final public class TagUtils {
 			}else{
 				str = RequestUtils.getPostParametersWithout(request, "pageNo", "order", "orderBy").toParamString();
 			}
+		}else{
+			str = symbol;
 		}
 		return str;
 	}
