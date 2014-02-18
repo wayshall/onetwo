@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import javax.imageio.ImageIO;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ public class FileUtils {
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
+	public static final String NEW_LINE = "\n";
 
 	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
@@ -793,30 +796,73 @@ public class FileUtils {
 	public static void createIfNotExists(File file){
 		try {
 			if(!file.exists()){
-				file.createNewFile();
+				if(!file.createNewFile()){
+					throw new BaseException("create new file error!");
+				}
 			}
 		} catch (IOException e) {
 			throw new BaseException("create new file error!", e);
 		}
 	}
 	
-
-	public static File mergeFiles(String charset, String mergedFileName, String dir, String postfix){
-		File[] files = listFiles(dir, postfix);
-		return mergeFiles(charset, mergedFileName, files);
-	}
-	public static File mergeFiles(String charset, String mergedFileName, File...files){
-		File mergedFile = new File(mergedFileName);
-		createIfNotExists(mergedFile);
-		Writer writer = writer(mergedFile, charset);
+	public static void createOrDelete(File file){
 		try {
-			for(File file : files){
-				writer.write("\n================="+getFileName(file.getPath())+" start =====================");
-				List<String> lines = readAsList(file, charset);
-				for(String line : lines){
-					writer.write(line);
+			if(!file.exists()){
+				if(!file.createNewFile()){
+					throw new BaseException("create new file error!");
 				}
-				writer.write("\n================="+getFileName(file.getPath())+" end =================================");
+			}else{
+				if(!file.delete()){
+					throw new BaseException("delete file error!");
+				}
+			}
+		} catch (IOException e) {
+			throw new BaseException("create new file error!", e);
+		}
+	}
+	
+	/*****
+	 * 合并文件
+	 * @param charset
+	 * @param mergedFileName
+	 * @param dir
+	 * @param postfix
+	 * @return
+	 */
+	public static File mergeFiles(String charset, String mergedFileName, String dir, String postfix){
+		return mergeFiles(MergeFileConfig.build(charset, mergedFileName, dir, postfix, null));
+	}
+
+	public static File mergeFiles(MergeFileConfig config){
+		File mergedFile = new File(config.getMergedFileName());
+		createOrDelete(mergedFile);
+		Writer writer = writer(mergedFile, config.getCharset());
+		try {
+			MergeFileListener listener = config.getListener();
+			int fileIndex = 0;
+			JFishList<File> fileList = JFishList.wrap(config.getFiles());
+			fileList.sort(new Comparator<File>() {
+
+				@Override
+				public int compare(File o1, File o2) {
+					return o1.getPath().compareTo(o2.getPath());
+				}
+				
+			});
+			for(File file : fileList){
+				if(listener!=null)
+					listener.onStart(writer, file, fileIndex);
+				List<String> lines = readAsList(file, config.getCharset());
+				int lineIndex = 0;
+				for(String line : lines){
+					if(listener!=null)
+						listener.writeLine(writer, file, fileIndex, line, lineIndex);
+					else
+						writer.write(line+NEW_LINE);
+				}
+				if(listener!=null)
+					listener.onEnd(writer, file, fileIndex);
+				fileIndex++;
 			}
 		} catch (Exception e) {
 			throw new BaseException("merge file error", e);
