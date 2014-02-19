@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonParser.Feature;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +16,10 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 
 import test.entity.UserEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonMapperTest {
 
@@ -216,6 +217,20 @@ public class JsonMapperTest {
 		JsonMapper jm = JsonMapper.ignoreEmpty();
 		String json = jm.toJson(bean);
 		System.out.println("testJsonIgnoreField: " + json);
+		Assert.assertEquals("{\"email\":\"test@email.com\",\"birthday\":\"2012-11-23\"}", json);
+	}
+	
+
+	@Test
+	public void testTestDefaultBeanPropertyFilter() throws Exception{
+		TestJsonBean bean = new TestJsonBean();
+		bean.setName("test bean");
+		bean.setEmail("test@email.com");
+		bean.setBirthday(DateUtil.parse("2012-11-23"));
+
+		JsonMapper jm = JsonMapper.ignoreEmpty().defaultFiler(new TestDefaultBeanPropertyFilter());
+		String json = jm.toJson(bean);
+		System.out.println("testTestDefaultBeanPropertyFilter: " + json);
 		Assert.assertEquals("{\"email\":\"test@email.com\",\"birthday\":\"2012-11-23\"}", json);
 	}
 	

@@ -3,9 +3,10 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_ROW)
 public class RowModel {
