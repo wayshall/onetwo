@@ -4,6 +4,7 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -14,7 +15,7 @@ public class JFishRestTemplate extends RestTemplate {
 		super();
 		for(HttpMessageConverter<?> converter : this.getMessageConverters()){
 			if(MappingJacksonHttpMessageConverter.class.isInstance(converter)){
-				((MappingJacksonHttpMessageConverter)converter).setObjectMapper(JsonMapper.IGNORE_NULL.getObjectMapper());
+				((MappingJackson2HttpMessageConverter)converter).setObjectMapper(JsonMapper.IGNORE_NULL.getObjectMapper());
 				break;
 			}
 			

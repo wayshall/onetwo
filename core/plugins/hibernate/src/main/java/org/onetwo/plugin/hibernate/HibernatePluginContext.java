@@ -23,6 +23,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+
 
 @Configuration
 public class HibernatePluginContext implements InitializingBean  {
@@ -84,6 +87,11 @@ public class HibernatePluginContext implements InitializingBean  {
 	@Bean
 	public TimestampEventListener timestampEventListener(){
 		return new TimestampEventListener();
+	}
+	
+	@Bean
+	public Module hibernateModule(){
+		return new Hibernate4Module();
 	}
 	
 }
