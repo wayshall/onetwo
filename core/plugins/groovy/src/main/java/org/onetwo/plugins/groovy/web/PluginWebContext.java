@@ -1,11 +1,12 @@
-package pluginarchetype.model;
+package org.onetwo.plugins.groovy.web;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ComponentScan(basePackageClasses=PluginModelContext.class)
-public class PluginModelContext {
+@ComponentScan(basePackageClasses=PluginWebContext.class)
+public class PluginWebContext {
+	
 	
 }
