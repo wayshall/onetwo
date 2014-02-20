@@ -30,7 +30,7 @@ public class SimpleFormDataProvider implements FormDataProvider {
 
 	@Override
 	public Object getFieldValue(FormFieldTagBean field) {
-		Object val = field.getValue();
+		Object val = "";
 		if(field.isModelAttribute()){
 			if(this.accessor!=null){
 				try {
