@@ -25,7 +25,6 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 
 		UtilTimerStack.push(CONTROLLER_TIME_KEY);
 		
-		request.setAttribute("now", new NiceDate());
 		WebHelper helper = JFishWebUtils.webHelper(request);
 		String requestUri = urlPathHelper.getLookupPathForRequest(request);
 		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
@@ -48,6 +47,11 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 //	private final static String TYPE_MISMATCH = "typeMismatch";
 	
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+		if(modelAndView!=null){
+			modelAndView.addObject("now", new NiceDate());
+		}else{
+			request.setAttribute("now", new NiceDate());
+		}
 		/*if(modelAndView!=null && modelAndView.getModelMap()!=null){
 			BeanPropertyBindingResult br = null;
 			for(Map.Entry<String, Object> entry : modelAndView.getModelMap().entrySet()){

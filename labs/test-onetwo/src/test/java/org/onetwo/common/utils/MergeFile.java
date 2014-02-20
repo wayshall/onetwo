@@ -2,13 +2,13 @@ package org.onetwo.common.utils;
 
 import java.io.File;
 import java.io.Writer;
-import java.util.Date;
 
 public class MergeFile {
 	
 	public static void main(String[] args){
-		String mergeDir = "E:/mydev/java_workspace/xianda/dbproc/";
-		String mergedFileName = "proc-all-"+DateUtil.format("yyyy-MM-dd-HHmmss", new Date())+".sql";
+		String mergeDir = "D:/mydev/workspace/dbproc/";
+//		String mergedFileName = "proc-all-"+DateUtil.format("yyyy-MM-dd-HHmmss", new Date())+".sql";
+		String mergedFileName = "proc-all.sql";
 		FileUtils.mergeFiles(MergeFileConfig.build("unicode", mergeDir+mergedFileName, 
 				mergeDir+"proc", ".sql", new DefaultMergeListener(){
 
@@ -26,7 +26,7 @@ public class MergeFile {
 							String[] lineUppers = StringUtils.split(lineUpper, " ");
 							if(lineUppers[1].equals("PROCEDURE") || lineUppers[1].equals("FUNCTION")){
 								String fileName = FileUtils.getFileName(file.getPath());
-								System.out.println("add comment before line["+lineIndex+"].");
+								System.out.println("add comment before line: "+line+"");
 								writer.write("----------------"+fileName+"----------------\n");
 							}
 						}

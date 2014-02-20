@@ -3,6 +3,8 @@ package org.onetwo.common.db;
 import org.onetwo.common.utils.Page;
 
 abstract public class AbstractDataQuery implements DataQuery{
+	
+	public static final int PARAMETER_START_INDEX = 0;
 
 	private boolean cacheable;
 

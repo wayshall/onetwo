@@ -6,6 +6,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.csrf.CsrfPreventor;
@@ -114,6 +115,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setGeneratedForm(generatedForm);
 		component.setSearchForm(searchForm);
 		component.setAjaxSupported(ajaxSupported);
+		if(!Page.class.isInstance(dataSource))
+			component.setPagination(false);
 		component.setPage(TagUtils.toPage(dataSource));
 		
 		

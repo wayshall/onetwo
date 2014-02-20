@@ -71,7 +71,7 @@ public class JpaQueryImpl extends AbstractDataQuery {
 	public DataQuery setParameters(List<Object> params) {
 		if(params==null || params.isEmpty())
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position++, value);
 		}
@@ -82,7 +82,7 @@ public class JpaQueryImpl extends AbstractDataQuery {
 	public DataQuery setParameters(Object[] params) {
 		if(ArrayUtils.hasNotElement(params))
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position++, value);
 		}

@@ -2,9 +2,10 @@ package org.onetwo.common.json;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.onetwo.common.jackson.JsonDateOnlySerializer;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 //@JsonIgnoreProperties({"name"})
 public class TestJsonBean {

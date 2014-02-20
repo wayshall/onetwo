@@ -59,6 +59,8 @@ public class DefaultDynamicQueryInterceptor extends DynamicQueryInterceptorAdapt
 		StringBuilder orderByStr = new StringBuilder();
 		int index = 0;
 		for(QValue<String, String[]> ob : orderBys){
+			if(StringUtils.isBlank(ob.key) || LangUtils.isEmpty(ob.value))
+				continue;
 			if(index!=0)
 				orderByStr.append(", ");
 			
