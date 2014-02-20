@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -14,6 +17,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.jasperreports.AbstractJasperReportsSingleFormatView;
 
 public class JasperReslover extends UrlBasedViewResolver implements InitializingBean {
+	public static final String REPORT_DATA_KEY = "reportData";
 	public static final String DEFAULT_BASE_TEMPLATE_DIR = "/WEB-INF/jasper/";
 	public static final Map<String, Class<?>> VIEW_CLASS_MAPPER;
 	
@@ -25,6 +29,7 @@ public class JasperReslover extends UrlBasedViewResolver implements Initializing
 	
 
 	private Boolean exposePathVariablesHolder;
+	private DataSource dataSource;
 	
 	public JasperReslover(){
 		this.setPrefix(DEFAULT_BASE_TEMPLATE_DIR);
@@ -37,7 +42,7 @@ public class JasperReslover extends UrlBasedViewResolver implements Initializing
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
+		this.dataSource = SpringUtils.getBean(getApplicationContext(), DataSource.class);
 	}
 
 	@Override
@@ -74,6 +79,8 @@ public class JasperReslover extends UrlBasedViewResolver implements Initializing
 		
 //		view.setContentType("application/msexcel");
 		
+		view.setJdbcDataSource(dataSource);
+		view.setReportDataKey(REPORT_DATA_KEY);
 		view.setRequestContextAttribute(getRequestContextAttribute());
 		view.setAttributesMap(getAttributesMap());
 		if (this.getExposePathVariablesHolder() != null) {
