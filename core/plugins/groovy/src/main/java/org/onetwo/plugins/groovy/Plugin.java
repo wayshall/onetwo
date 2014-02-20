@@ -1,11 +1,11 @@
-package org.onetwo.plugins;
+package org.onetwo.plugins.groovy;
 
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.plugins.groovy.model.PluginModelContext;
+import org.onetwo.plugins.groovy.web.PluginWebContext;
 
-import org.onetwo.plugins.app.PluginAppContext;
-import org.onetwo.plugins.mvc.PluginMvcContext;
 
 
 public class Plugin extends AbstractJFishPlugin<Plugin> {
@@ -24,13 +24,13 @@ public class Plugin extends AbstractJFishPlugin<Plugin> {
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginAppContext.class);
+		annoClasses.add(PluginModelContext.class);
 	}
 
 	
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginMvcContext.class);
+		annoClasses.add(PluginWebContext.class);
 	}
 
 

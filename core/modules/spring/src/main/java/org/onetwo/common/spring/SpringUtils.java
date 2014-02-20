@@ -196,6 +196,13 @@ final public class SpringUtils {
 		return registerBean(context, null, beanClass, params);
 	}
 	public static <T> T registerBean(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+		registerBeanDefinition(context, beanName, beanClass, params);
+		T bean = (T) context.getBean(beanName);
+		if(bean==null)
+			throw new BaseException("register spring bean error : " + beanClass);
+		return bean;
+	}
+	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
 		BeanFactory bf = context;
 		if(!BeanDefinitionRegistry.class.isInstance(bf)){
 			bf = context.getAutowireCapableBeanFactory();
@@ -206,11 +213,9 @@ final public class SpringUtils {
 		if(StringUtils.isBlank(beanName)){
 			beanName = StringUtils.uncapitalize(beanClass.getSimpleName());
 		}
-		bdr.registerBeanDefinition(beanName, createBeanDefinition(beanClass, params));
-		T bean = (T) context.getBean(beanName);
-		if(bean==null)
-			throw new BaseException("register spring bean error : " + beanClass);
-		return bean;
+		BeanDefinition bd = createBeanDefinition(beanClass, params);
+		bdr.registerBeanDefinition(beanName, bd);
+		return bd;
 	}
 	
 	/*****
