@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.sql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +15,6 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Page;
 
 public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends AbstractDataQuery implements QueryOrderByable {
 
@@ -89,6 +89,14 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			query.compile();
 			dataQuery = createDataQuery(query);
 			
+			int position = 0;
+			for(Object value : query.getValues()){
+				dataQuery.setParameter(position++, value);
+			}
+			
+			setLimitResult();
+			return dataQuery;
+			
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
 			if(this.parserContext==null)
 				this.parserContext = ParserContext.create();
@@ -108,12 +116,16 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			}
 		}
 		
+		setLimitResult();
+		
+		return dataQuery;
+	}
+	
+	private void setLimitResult(){
 		if(firstRecord>0)
 			dataQuery.setFirstResult(firstRecord);
 		if(maxRecords>0)
 			dataQuery.setMaxResults(maxRecords);
-		
-		return dataQuery;
 	}
 
 	public DataQuery setParameter(int index, Object value) {
