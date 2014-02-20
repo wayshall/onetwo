@@ -6,7 +6,7 @@ import org.onetwo.common.lexer.AbstractParser.JTokenValueCollection;
 abstract public class AbstractSqlVarObject extends SqlObjectImpl implements SqlVarObject{
 
 	protected String varname = null;
-	protected boolean named = false;
+	private boolean named = false;
 	
 	public AbstractSqlVarObject() {
 		super();
@@ -24,6 +24,10 @@ abstract public class AbstractSqlVarObject extends SqlObjectImpl implements SqlV
 //	@Override
 	public boolean isNamed() {
 		return named;
+	}
+
+	public void setNamed(boolean named) {
+		this.named = named;
 	}
 
 	protected String getString(JTokenValueCollection<SqlTokenKey> tokens, int varCount){

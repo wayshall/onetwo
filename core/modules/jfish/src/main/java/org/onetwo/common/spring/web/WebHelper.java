@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.PluginConfig;
+import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.WebContextUtils;
+import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.HandlerMapping;
@@ -77,6 +79,17 @@ public class WebHelper {
 	public String getQueryString(){
 		String qs = this.request.getQueryString();
 		return qs;
+	}
+	
+	public String getRequsetUriWithQueryString(){
+		String url = TagUtils.getRequsetUriWithQueryString(request);
+		return url;
+	}
+	
+	public String getXlsFormatAction(){
+		String action = TagUtils.getRequsetUriWithQueryString(request);
+		action = TagUtils.appendParam(action, "format", JsonExcelView.URL_POSFIX);
+		return action;
 	}
 	
 	public UserDetail getCurrentUserLogin(){
@@ -157,6 +170,12 @@ public class WebHelper {
 
 	public void setRequestExtension(String requestExtension) {
 		this.requestExtension = requestExtension;
+	}
+	
+	public boolean isFormat(String ext){
+		if(StringUtils.isBlank(ext))
+			return false;
+		return ext.equalsIgnoreCase(getRequestExtension());
 	}
 
 	public Object getControllerHandler() {
