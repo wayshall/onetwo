@@ -52,21 +52,20 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 	@Bean
 	public Validator beanValidator() {
 		Validator validator = null;
-		if (ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
-			Class<?> clazz;
-			try {
-				String className = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean";
-				clazz = ClassUtils.forName(className, org.onetwo.common.utils.ClassUtils.getDefaultClassLoader());
-			} catch (ClassNotFoundException e) {
-				throw new BeanInitializationException("Could not find default validator", e);
-			} catch (LinkageError e) {
-				throw new BeanInitializationException("Could not find default validator", e);
-			}
-			validator = (Validator) BeanUtils.instantiate(clazz);
-			LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
-			vfb.setValidationMessageSource(validateMessageSource());
-//			vfb.setTraversableResolver(new EmptyTraversableResolver());
+//		if (ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
+		Class<?> clazz;
+		try {
+			String className = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean";
+			clazz = ClassUtils.forName(className, org.onetwo.common.utils.ClassUtils.getDefaultClassLoader());
+		} catch (ClassNotFoundException e) {
+			throw new BeanInitializationException("Could not find default validator", e);
+		} catch (LinkageError e) {
+			throw new BeanInitializationException("Could not find default validator", e);
 		}
+		validator = (Validator) BeanUtils.instantiate(clazz);
+		LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
+		vfb.setValidationMessageSource(validateMessageSource());
+//			vfb.setTraversableResolver(new EmptyTraversableResolver());
 		return validator;
 	}
 	

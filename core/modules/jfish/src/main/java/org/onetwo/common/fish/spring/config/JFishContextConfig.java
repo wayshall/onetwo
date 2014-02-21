@@ -2,8 +2,6 @@ package org.onetwo.common.fish.spring.config;
 
 import java.util.Properties;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
@@ -11,6 +9,7 @@ import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
@@ -51,6 +50,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	@Value("${jfish.base.packages}")
 	private String jfishBasePackages;
 
+	private ContextPluginManager contextPluginManager;
 
 	public JFishContextConfig() {
 		// this.jfAppConfigurator =
@@ -87,10 +87,6 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		return jfAppConfigurator;
 	}
 
-	@Bean
-	public JFishPluginManager jfishPluginManager() {
-		return JFishPluginManagerFactory.getPluginManager();
-	}
 
 	@Bean
 	public RestTemplate restTemplate() {

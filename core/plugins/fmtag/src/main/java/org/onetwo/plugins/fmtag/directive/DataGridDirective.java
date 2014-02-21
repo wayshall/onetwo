@@ -11,7 +11,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.plugins.fmtag.FmtagPlugin;
+import org.onetwo.plugins.fmtag.FmtagWebPlugin;
 import org.springframework.web.servlet.support.RequestContext;
 
 import freemarker.core.Environment;
@@ -61,7 +61,7 @@ public class DataGridDirective extends FmtagBaseDirective implements TemplateDir
 		this.doAfterRenderInnerBody(dg, env, params);
 
 		dg.sortFieldsByShowOrder();
-		String template = DirectivesUtils.getParameterByString(params, PARAMS_TEMPLATE, FmtagPlugin.getTemplatePath(DEFAULT_TEMPLATE));
+		String template = DirectivesUtils.getParameterByString(params, PARAMS_TEMPLATE, FmtagWebPlugin.getTemplatePath(DEFAULT_TEMPLATE));
 		this.renderTempalte(env, params, dg, template);
 	}
 	

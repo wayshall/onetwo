@@ -7,5 +7,7 @@ public interface ContextPlugin {
 	void init(ContextPluginMeta pluginMeta);
 	
 	void onJFishContextClasses(List<Class<?>> annoClasses);
+	
+//	<T> T getExtComponent(Class<T> extClasss);
 
 }
