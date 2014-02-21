@@ -2,10 +2,10 @@ package org.onetwo.plugins.codegen;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 
 
-public class CodegenPlugin extends AbstractJFishPlugin<CodegenPlugin> {
+public class CodegenPlugin extends AbstractContextPlugin<CodegenPlugin> {
 
 	private static CodegenPlugin instance;
 	
@@ -19,18 +19,11 @@ public class CodegenPlugin extends AbstractJFishPlugin<CodegenPlugin> {
 		annoClasses.add(CodegenAppContext.class);
 	}
 
+
 	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(CodegenContext.class);
-	}
-	
 	public void setPluginInstance(CodegenPlugin plugin){
 		instance = plugin;
 	}
 
-	@Override
-	public boolean registerMvcResources() {
-		return true;
-	}
 
 }

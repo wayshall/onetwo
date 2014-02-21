@@ -16,6 +16,11 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+/****
+ * 非web应用程序上下文
+ * @author weishao
+ *
+ */
 public class SpringConfigApplicationContext extends AbstractRefreshableConfigApplicationContext {
 	
 

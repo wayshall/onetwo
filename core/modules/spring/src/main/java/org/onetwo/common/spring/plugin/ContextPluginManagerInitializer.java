@@ -5,6 +5,11 @@ import java.util.List;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 
+/*****
+ * 插件管理器初始化
+ * @author weishao
+ *
+ */
 public class ContextPluginManagerInitializer implements PluginManagerInitializer {
 	
 	@Override
@@ -23,7 +28,9 @@ public class ContextPluginManagerInitializer implements PluginManagerInitializer
 	}
 	
 	protected ContextPluginManager createPluginManager(String appEnvironment){
-		return new SpringContextPluginManager<DefaultContextPluginMeta<ContextPlugin>>(appEnvironment);
+		ContextPluginManager contextPluginManager = new SpringContextPluginManager<ContextPluginMeta>(appEnvironment);
+		ContextPluginManagerFactory.initContextPluginManager(contextPluginManager);
+		return contextPluginManager;
 	}
 	
 }

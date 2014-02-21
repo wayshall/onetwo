@@ -210,6 +210,7 @@ abstract public class BaseController<E> extends AbstractBaseController implement
 	
 	protected BaseController(){
 		this.entityClass = ReflectUtils.getSuperClassGenricType(this.getClass());
+//		this.pluginManager = JFishPluginManagerFactory.getPluginManager();
 	}
 
 	@Override

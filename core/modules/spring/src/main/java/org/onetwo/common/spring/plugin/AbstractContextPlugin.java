@@ -2,22 +2,20 @@ package org.onetwo.common.spring.plugin;
 
 import java.util.List;
 
-abstract public class AbstractContextPlugin<P extends ContextPlugin, T extends ContextPluginMeta> implements ContextPlugin{
+abstract public class AbstractContextPlugin<T> implements ContextPlugin{
 
-	protected T pluginMeta;
+	protected ContextPluginMeta pluginMeta;
 	
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void init(ContextPluginMeta pluginMeta) {
-		this.pluginMeta = (T)pluginMeta;
-		this.setPluginInstance((P)this);
+		this.pluginMeta = pluginMeta;
+		this.setPluginInstance((T)this);
 	}
 	
-	abstract public void setPluginInstance(P plugin);
+	abstract public void setPluginInstance(T plugin);
 
 
-	public T getPluginMeta() {
+	public ContextPluginMeta getPluginMeta() {
 		return pluginMeta;
 	}
 
@@ -25,5 +23,10 @@ abstract public class AbstractContextPlugin<P extends ContextPlugin, T extends C
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 	}
+
+	/*@Override
+	public <T> T getExtComponent(Class<T> extClasss) {
+		return null;
+	}*/
 
 }

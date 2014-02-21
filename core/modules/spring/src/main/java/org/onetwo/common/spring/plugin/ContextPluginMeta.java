@@ -3,7 +3,9 @@ package org.onetwo.common.spring.plugin;
 
 public interface ContextPluginMeta {
 	
-	public ContextPlugin getJfishPlugin();
+	public ContextPlugin getContextPlugin();
+	
+	public PluginInfo getPluginInfo();
 	
 
 }

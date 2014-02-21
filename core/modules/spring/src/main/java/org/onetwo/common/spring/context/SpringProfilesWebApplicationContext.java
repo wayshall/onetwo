@@ -3,18 +3,20 @@ package org.onetwo.common.spring.context;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /***
- * service上下文初始化
+ * webapp(not jfish)上下文初始化
  * initialize in web app start 
  * config in web.xml
  * plugin init, 
@@ -24,6 +26,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 @SuppressWarnings("unchecked")
 public class SpringProfilesWebApplicationContext extends AnnotationConfigWebApplicationContext {
 
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
 	private PluginManagerInitializer pluginManagerInitializer = new ContextPluginManagerInitializer();
 	private String appEnvironment;
 	private Class<?>[] annotatedClasses;

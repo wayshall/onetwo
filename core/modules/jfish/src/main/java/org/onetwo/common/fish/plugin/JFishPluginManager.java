@@ -2,7 +2,6 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.springframework.web.context.WebApplicationContext;
 
 /****
@@ -10,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author way
  *
  */
-public interface JFishPluginManager extends ContextPluginManager{
+public interface JFishPluginManager {
 
 	public String JFISH_PLUGIN_MANAGER_KEY = "org.onetwo.common.fish.plugin.JFishPluginManager";
 

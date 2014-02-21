@@ -2,10 +2,10 @@ package org.onetwo.plugins.jasper;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 
 
-public class JasperPlugin extends AbstractJFishPlugin<JasperPlugin> {
+public class JasperPlugin extends AbstractContextPlugin<JasperPlugin> {
 
 	private static JasperPlugin instance;
 	
@@ -14,21 +14,11 @@ public class JasperPlugin extends AbstractJFishPlugin<JasperPlugin> {
 		return instance;
 	}
 
-	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
-	}
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(JasperPluginContext.class);
 	}
-
-	
-	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(JasperMvcContext.class);
-	}
-
 
 	public void setPluginInstance(JasperPlugin plugin){
 		instance = plugin;
