@@ -1,25 +1,30 @@
 package org.onetwo.common.fish.plugin;
 
+import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
-import org.onetwo.common.spring.plugin.PluginInfo;
 
-public class DefaultJFishPluginMeta extends DefaultContextPluginMeta<JFishPlugin> implements JFishPluginMeta {
+public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements JFishPluginMeta {
 
 	private final PluginNameParser pluginNameParser;
-	private final PluginWebResourceMeta webResourceMeta;
-	private final PluginConfig pluginConfig;
+	private PluginWebResourceMeta webResourceMeta;
+	private PluginConfig pluginConfig;
+//	private final ContextPlugin contextPlugin;
+	private JFishPlugin jfishPlugin;
 	
-	public DefaultJFishPluginMeta(PluginInfo pluginInfo, PluginNameParser parser) {
-		super(pluginInfo);
+	public DefaultJFishPluginMeta(JFishPlugin jfishPlugin, ContextPlugin contextPlugin, JFishPluginInfo pluginInfo, PluginNameParser parser) {
+		super(contextPlugin, pluginInfo);
+		this.jfishPlugin = jfishPlugin;
 		this.pluginNameParser = parser;
-		PluginConfig pc = this.getJfishPlugin().getPluginConfig();
-		pc.init(this);
-		this.pluginConfig = pc;
+		if(jfishPlugin!=null){
+			PluginConfig pc = this.getJFishPlugin().getPluginConfig();
+			pc.init(this);
+			this.pluginConfig = pc;
+		}
 		this.webResourceMeta = new PluginWebResourceMeta(pluginInfo);
 	}
 
 	public Class<?> getRootClass(){
-		return getJfishPlugin().getClass();
+		return getContextPlugin().getClass();
 	}
 	
 	public boolean isClassOfThisPlugin(Class<?> clazz){
@@ -38,8 +43,13 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta<JFishPlugin
 		return pluginNameParser;
 	}
 
+	/*@Override
+	public JFishPlugin getContextPlugin() {
+		return JFishPluginUtils.getJFishPlugin(super.getContextPlugin());
+	}*/
+
 	@Override
-	public JFishPlugin getJfishPlugin() {
-		return JFishPluginUtils.getJFishPlugin(super.getJfishPlugin());
+	public JFishPlugin getJFishPlugin() {
+		return jfishPlugin;
 	}
 }

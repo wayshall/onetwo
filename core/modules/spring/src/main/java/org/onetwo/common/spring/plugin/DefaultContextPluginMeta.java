@@ -1,17 +1,17 @@
 package org.onetwo.common.spring.plugin;
 
-import org.onetwo.common.utils.ReflectUtils;
 
 
-public class DefaultContextPluginMeta<T extends ContextPlugin> implements ContextPluginMeta {
+public class DefaultContextPluginMeta implements ContextPluginMeta {
 
 	private final PluginInfo pluginInfo;
-	private final T jfishPlugin;
+	private final ContextPlugin contextPlugin;
 	
-	public DefaultContextPluginMeta(PluginInfo pluginInfo) {
+	public DefaultContextPluginMeta(ContextPlugin contextPlugin, PluginInfo pluginInfo) {
 		super();
 		this.pluginInfo = pluginInfo;
-		this.jfishPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
+//		this.contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
+		this.contextPlugin = contextPlugin;
 	}
 
 	public PluginInfo getPluginInfo() {
@@ -19,8 +19,8 @@ public class DefaultContextPluginMeta<T extends ContextPlugin> implements Contex
 	}
 
 	@Override
-	public T getJfishPlugin() {
-		return jfishPlugin;
+	public ContextPlugin getContextPlugin() {
+		return contextPlugin;
 	}
 
 	

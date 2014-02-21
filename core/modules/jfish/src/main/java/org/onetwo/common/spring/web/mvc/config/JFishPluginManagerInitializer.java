@@ -1,21 +1,23 @@
 package org.onetwo.common.spring.web.mvc.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
+import org.onetwo.common.fish.plugin.DefaultPluginManager;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
+import org.onetwo.common.spring.plugin.ContextPluginManagerFactory;
+import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 
-public class JFishPluginManagerInitializer implements PluginManagerInitializer {
+/***
+ * jfish项目的插件管理项目初始化
+ * @author weishao
+ *
+ */
+public class JFishPluginManagerInitializer extends ContextPluginManagerInitializer implements PluginManagerInitializer {
 
 	@Override
-	public List<Class<?>> initPluginContext(String appEnvironment) {
-		final List<Class<?>> annoClasses = new ArrayList<Class<?>>();
-		annoClasses.add(JFishMvcConfig.class);
-		
-		JFishPluginManagerFactory.getPluginManager().registerPluginMvcContextClasses(annoClasses);
-		
-		return annoClasses;
+	protected ContextPluginManager createPluginManager(String appEnvironment){
+		ContextPluginManager contextPluginManager = new DefaultPluginManager(appEnvironment);
+		ContextPluginManagerFactory.initContextPluginManager(contextPluginManager);
+		return contextPluginManager;
 	}
 
 }

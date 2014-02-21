@@ -93,8 +93,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	private JFishMvcConfigurerListenerManager listenerManager = new JFishMvcConfigurerListenerManager();
 	
-	@Autowired
-	protected JFishPluginManager jfishPluginManager;
+	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 
 	@Autowired
 	private JFishAppConfigrator jfishAppConfigurator;
@@ -175,6 +174,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}*/
 	}
 
+	@Bean
+	public JFishPluginManager jfishPluginManager(){
+		return this.jfishPluginManager;
+	}
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
 		configurer.registerCallableInterceptors(new TimeoutCallableProcessingInterceptor());
 		configurer.setDefaultTimeout(10000);

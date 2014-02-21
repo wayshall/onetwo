@@ -3,10 +3,9 @@ package org.onetwo.plugins.dq;
 import java.util.List;
 
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
-import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
 
-public class DqPlugin extends AbstractContextPlugin<DqPlugin, DefaultContextPluginMeta<DqPlugin>> {
+public class DqPlugin extends AbstractContextPlugin<DqPlugin> {
 
 	private static DqPlugin instance;
 	
@@ -23,7 +22,7 @@ public class DqPlugin extends AbstractContextPlugin<DqPlugin, DefaultContextPlug
 
 
 	public void setPluginInstance(DqPlugin plugin){
-		instance = plugin;
+		instance = (DqPlugin)plugin;
 	}
 
 }

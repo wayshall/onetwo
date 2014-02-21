@@ -3,10 +3,9 @@ package org.onetwo.plugin.hibernate;
 import java.util.List;
 
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
-import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
 
-public class HibernatePlugin extends AbstractContextPlugin<HibernatePlugin, DefaultContextPluginMeta<HibernatePlugin>> {
+public class HibernatePlugin extends AbstractContextPlugin<HibernatePlugin> {
 
 	private static HibernatePlugin instance;
 	
@@ -24,7 +23,7 @@ public class HibernatePlugin extends AbstractContextPlugin<HibernatePlugin, Defa
 
 	@Override
 	public void setPluginInstance(HibernatePlugin plugin){
-		instance = plugin;
+		instance = (HibernatePlugin)plugin;
 	}
 
 }
