@@ -2,7 +2,6 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 
 /*******
@@ -11,7 +10,8 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
  * @author weishao
  *
  */
-public interface JFishPlugin extends ContextPlugin, JFishPluginLifeCycleListener{
+public interface JFishPlugin extends JFishPluginLifeCycleListener{
+	void init(JFishPluginMeta pluginMeta);
 
 	void onMvcContextClasses(List<Class<?>> annoClasses);
 	

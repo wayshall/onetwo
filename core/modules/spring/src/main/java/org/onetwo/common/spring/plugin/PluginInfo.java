@@ -17,8 +17,8 @@ public class PluginInfo {
 		public static final String SCOPE = "scope";
 	}
 	
-	public static PluginInfo newFrom(PropConfig prop){
-		PluginInfo info = new PluginInfo();
+	public void init(PropConfig prop){
+		PluginInfo info = this;
 		info.name = prop.getAndThrowIfEmpty(PKeys.NAME);
 		info.version = prop.getProperty(PKeys.VERSION, "1.0");
 		info.pluginClass = prop.getAndThrowIfEmpty(PKeys.PLUGIN_CLASS);
@@ -39,7 +39,6 @@ public class PluginInfo {
 		prop.remove(PKeys.DESC);
 		prop.remove(PKeys.SCOPE);
 		info.properties = prop;
-		return info;
 	}
 
 	private String version;

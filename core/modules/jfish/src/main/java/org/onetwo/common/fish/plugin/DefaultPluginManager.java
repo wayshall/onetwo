@@ -6,17 +6,19 @@ import java.util.Map;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
+import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.spring.plugin.SpringContextPluginManager;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
-import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.utils.propconf.PropConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -27,6 +29,10 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager, JFishMvcConfigurerListener {
 	
+
+	public DefaultPluginManager(String appEnvironment) {
+		super(appEnvironment);
+	}
 
 	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
 	
@@ -41,10 +47,10 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 //	private PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 	
 //	private ApplicationContext applicationContext;
+//	private final ContextPluginManager contextPluginManager;
+	
 
-	public DefaultPluginManager(){
-		super(BaseSiteConfig.getInstance().getAppEnvironment());
-	}
+
 	
 	/*@Override
 	public void afterPropertiesSet() throws Exception {
@@ -62,11 +68,35 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	public void setPluginNameParser(PluginNameParser pluginNameParser) {
 		this.pluginNameParser = pluginNameParser;
 	}
-	
+
 	
 	@Override
-	protected JFishPluginMeta createPluginMeta(PluginInfo plugin) {
-		return new DefaultJFishPluginMeta(plugin, pluginNameParser);
+	protected PluginInfo buildPluginInfo(PropConfig prop){
+		PluginInfo info = new JFishPluginInfo();
+		info.init(prop);
+		return info;
+	}
+	
+	protected void doInitSinglePlugin(PluginInfo plugin){
+		JFishPluginMeta meta = createPluginMeta(plugin);
+		plugin.setInitialized();
+		pluginMetas.add(meta);
+		logger.info("init plugin["+plugin+"]..." );
+
+		meta.getContextPlugin().init(meta);
+		if(meta.getJFishPlugin()!=null)
+			meta.getJFishPlugin().init(meta);
+	}
+	
+	@Override
+	protected JFishPluginMeta createPluginMeta(PluginInfo pluginInfo) {
+		JFishPluginInfo jfishPluginInfo = (JFishPluginInfo) pluginInfo;
+		ContextPlugin contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
+		JFishPlugin jfishPlugin = null;
+		if(StringUtils.isNotBlank(jfishPluginInfo.getWebPluginClass())){
+			jfishPlugin = ReflectUtils.newInstance(jfishPluginInfo.getWebPluginClass());
+		}
+		return new DefaultJFishPluginMeta(jfishPlugin, contextPlugin, jfishPluginInfo, pluginNameParser);
 	}
 
 	@Override
@@ -87,7 +117,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
-				logger.info("stop plugin["+meta.getJfishPlugin()+"]..." );
+				logger.info("stop plugin["+meta.getContextPlugin()+"]..." );
 				JFishPluginUtils.getJFishPlugin(meta).onStopWebAppConext();
 			}
 			
@@ -159,7 +189,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			protected void doIt(JFishPluginMeta element) {
-				element.getJfishPlugin().onJFishContextClasses(annoClasses);
+				element.getContextPlugin().onJFishContextClasses(annoClasses);
 			}
 			
 		});

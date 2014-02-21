@@ -3,10 +3,9 @@ package org.onetwo.plugins.email;
 import java.util.List;
 
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
-import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
 
-public class EmailPlugin extends AbstractContextPlugin<EmailPlugin, DefaultContextPluginMeta<EmailPlugin>> {
+public class EmailPlugin extends AbstractContextPlugin<EmailPlugin> {
 
 	private static EmailPlugin instance;
 	
@@ -22,7 +21,7 @@ public class EmailPlugin extends AbstractContextPlugin<EmailPlugin, DefaultConte
 
 
 	public void setPluginInstance(EmailPlugin plugin){
-		instance = plugin;
+		instance = (EmailPlugin)plugin;
 	}
 
 }

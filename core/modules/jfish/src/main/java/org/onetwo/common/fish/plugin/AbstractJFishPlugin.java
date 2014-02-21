@@ -2,17 +2,27 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.springframework.web.context.WebApplicationContext;
 
-public abstract class AbstractJFishPlugin<T extends JFishPlugin> extends AbstractContextPlugin<T, JFishPluginMeta> implements JFishPlugin{
-	
+public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
+
+	private JFishPluginMeta pluginMeta;
+	private PluginConfig pluginConfig = new DefaultPluginConfig();
 
 	@Override
 	public void onStartWebAppConext(WebApplicationContext appContext) {
 	}
 	
+
+	@Override
+	public void init(JFishPluginMeta pluginMeta) {
+		this.pluginMeta = pluginMeta;
+		this.setPluginInstance((T)this);
+	}
+
+	abstract public void setPluginInstance(T plugin);
+
 
 	@Override
 	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
@@ -32,11 +42,6 @@ public abstract class AbstractJFishPlugin<T extends JFishPlugin> extends Abstrac
 
 
 	@Override
-	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-	}
-
-
-	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
 	}
 
@@ -49,7 +54,12 @@ public abstract class AbstractJFishPlugin<T extends JFishPlugin> extends Abstrac
 
 	@Override
 	public PluginConfig getPluginConfig() {
-		return new DefaultPluginConfig();
+		return pluginConfig;
+	}
+
+
+	public JFishPluginMeta getPluginMeta() {
+		return pluginMeta;
 	}
 
 
