@@ -49,6 +49,7 @@ public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
+	public static final Pattern DIGIT = Pattern.compile("[0-9]+");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
@@ -1400,6 +1401,13 @@ public class LangUtils {
 		return actualValue;
 	}
 
+	/*****
+	 * 填充字符串，如果s的长度少于alength，则在左边填充(aleng-s.length)个append
+	 * @param s 
+	 * @param alength
+	 * @param append
+	 * @return
+	 */
 	public static String padLeft(String s, int alength, String append){
 		return pad(s, alength, append.charAt(0), true);
 	}
@@ -1478,5 +1486,9 @@ public class LangUtils {
 		} catch (UnsupportedEncodingException e) {
 			throw new BaseException("Unsupported Encoding", e);
 		}
+	}
+	
+	public static boolean isDigitString(String str){
+		return DIGIT.matcher(str).matches();
 	}
 }

@@ -11,8 +11,9 @@ public class ToLongConvertor implements TypeConvert <Long> {
             return ((Number) value).longValue();
         if (c == Boolean.class)
             return ((Boolean) value).booleanValue() ? 1L : 0L;
-        if (c == Character.class)
+        if (c == Character.class){
             return (long)((Character) value).charValue();
+        }
         return Long.parseLong(value.toString().trim());
 
 	}

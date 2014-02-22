@@ -7,7 +7,6 @@ public class ToIntegerConvertor implements TypeConvert<Integer> {
 	@Override
 	public Integer convert(Object value, Class<?> componentType) {
 		return longConvertor.convert(value, componentType).intValue();
-
 	}
 
 }

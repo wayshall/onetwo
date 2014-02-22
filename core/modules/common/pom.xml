@@ -60,6 +60,11 @@
 	  <groupId>commons-beanutils</groupId>
 	  <artifactId>commons-beanutils</artifactId>
 	</dependency>
+	
+	<dependency>
+	  <groupId>com.google.guava</groupId>
+	  <artifactId>guava</artifactId>
+	</dependency>
 		
   </dependencies>
   
