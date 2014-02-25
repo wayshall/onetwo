@@ -1,10 +1,16 @@
 package org.onetwo.common.excel;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -13,6 +19,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.interfaces.excel.ExcelValueParser;
+import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -24,8 +31,11 @@ public class DefaultRowProcessor implements RowProcessor {
 	protected PoiExcelGenerator generator;
 	private ConcurrentHashMap<String, CellStyle> styleCache = new ConcurrentHashMap<String, CellStyle>();
 	
+	private CellListener cellListener;
+	
 	public DefaultRowProcessor(PoiExcelGenerator excelGenerator){
 		this.generator = excelGenerator;
+//		this.cellListener = new CellListenerAdapter();
 	}
 
 	public PoiExcelGenerator getGenerator() {
@@ -34,6 +44,14 @@ public class DefaultRowProcessor implements RowProcessor {
 
 	public void setGenerator(PoiExcelGenerator generator) {
 		this.generator = generator;
+	}
+
+	public CellListener getCellListener() {
+		return cellListener;
+	}
+
+	public void setCellListener(CellListener cellListener) {
+		this.cellListener = cellListener;
 	}
 
 	public void processRow(RowDataContext rowContext) {
@@ -118,6 +136,8 @@ public class DefaultRowProcessor implements RowProcessor {
 	protected void doFieldValueExecutors(FieldModel field, ExcelValueParser parser, Object fieldValue){
 		if(!field.getFieldValueExecutors().isEmpty()){
 			for(ExecutorModel executor : field.getFieldValueExecutors()){
+				if(!executor.getFieldValueExecutor().apply(field, fieldValue))
+					continue;
 				Object preValue = parser.getContext().get(executor.getName());
 				preValue = executor.getFieldValueExecutor().execute(field, executor, parser, fieldValue, preValue);
 				parser.getContext().put(executor.getName(), preValue);
@@ -262,13 +282,16 @@ public class DefaultRowProcessor implements RowProcessor {
 		return fieldValue;
 	}
 	
+	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, Row row, FieldModel field, int cellIndex, Object defValue){
+		return new CellContext(parser, objectValue, objectValueIndex, row, field, cellIndex, defValue);
+	}
 	
 	protected void processField(Object root, Row row, FieldModel field, Object defValue){
 //		String pname = "processField";
 //		UtilTimerStack.push(pname);
 		int cellIndex = row.getLastCellNum();
 		if(root==null){
-			CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex, defValue);
+			CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex, defValue);
 			this.processSingleField(cellContext);
 		}else{
 			List<Object> rootList = LangUtils.asList(root);
@@ -278,7 +301,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
 			try{
 				for (int i = 0; i < rootList.size(); i++) {
-					CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
+					CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
 					this.processSingleField(cellContext);
 					rowCount += cellContext.getRowSpanCount();
 				}
@@ -302,15 +325,62 @@ public class DefaultRowProcessor implements RowProcessor {
 
 		this.doFieldValueExecutors(field, cellContext.parser, v);
 		
-		v = LangUtils.formatValue(v, field.getDataFormat());
-		setCellValue(cell, v);
+//		v = formatValue(v, field.getDataFormat());
+		setCellValue(field, cell, v);
 		
 		
 		cellContext.addRowSpanCount(cellContext.getRowSpan());
 	}
+	
 
-	protected void setCellValue(Cell cell, Object value) {
-		ExcelUtils.setCellValue(cell, value);
+	protected Object formatValue(Object value, String dataFormat){
+		Object actualValue;
+		if(value instanceof Date){
+			if(StringUtils.isBlank(dataFormat))
+				dataFormat = DateUtil.Date_Time;
+//			actualValue = DateUtil.format(dataFormat, (Date)value);
+			actualValue = value;
+		}else if(value instanceof Number && dataFormat != null) {
+			NumberFormat nf = new DecimalFormat(dataFormat);
+			nf.setRoundingMode(RoundingMode.HALF_UP);
+			actualValue = nf.format(value);
+		}else{
+			actualValue = value;
+		}
+		return actualValue;
+	}
+
+	protected void processCellTypeByValue(FieldModel field, Cell cell, Object value){
+		if(value==null){
+			cell.setCellType(Cell.CELL_TYPE_BLANK);
+			return ;
+		}
+		value = formatValue(value, field.getDataFormat());
+		if(Number.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(((Number)value).doubleValue());
+		}else if(String.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_STRING);
+			cell.setCellValue(value.toString());
+		}else if(Boolean.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_BOOLEAN);
+			cell.setCellValue((Boolean)value);
+		}else if(Date.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+			cell.setCellValue((Date)value);
+		}else if(Calendar.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+			cell.setCellValue((Calendar)value);
+		}else{
+			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
+			cell.setCellValue(cellValue);
+		}
+	}
+	protected void setCellValue(FieldModel field, Cell cell, Object value) {
+		if(this.cellListener!=null)
+			this.cellListener.beforeSetValue(cell, value);
+//		ExcelUtils.setCellValue(cell, value);;
+		this.processCellTypeByValue(field, cell, value);
 	}
 	
 	/*protected int parseIntValue(String expr, Object root) {
