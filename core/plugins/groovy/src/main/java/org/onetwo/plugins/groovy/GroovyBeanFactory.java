@@ -1,6 +1,5 @@
 package org.onetwo.plugins.groovy;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,10 +10,10 @@ import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.plugins.groovy.annotation.GroovyBean;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -31,8 +30,8 @@ public class GroovyBeanFactory implements InitializingBean {
 	
 	private final Logger logger = MyLoggerFactory.getLogger(GroovyBeanFactory.class);
 
-	@javax.annotation.Resource
-	private GroovyPluginConfig groovyPluginConfig;
+//	@javax.annotation.Resource
+//	private GroovyPluginConfig groovyPluginConfig;
 	
 	@javax.annotation.Resource
 	private ApplicationContext applicationContext;
@@ -49,35 +48,42 @@ public class GroovyBeanFactory implements InitializingBean {
 	}
 
 	protected void scanGroovySourceAsBean(String... packagesToScan){
-		List<File> groovyFiles = scanner.scan(new ScanResourcesCallback<File>(){
+		List<Resource> groovyFiles = scanner.scan(false, new ScanResourcesCallback<Resource>(){
 
-			@Override
+			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
 				return metadataReader.getAnnotationMetadata().hasAnnotation(GroovyBean.class.getName());
-			}
+			}*/
 
 			@Override
-			public File doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
-				try {
-					return resource.getFile();
-				} catch (IOException e) {
-					throw new BaseException("get file error for resouce: " + resource);
-				}
+			public Resource doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
+				/*if(!metadataReader.getAnnotationMetadata().hasAnnotation(GroovyBean.class.getName()))
+					return null;*/
+				return resource;
 			}
 			
 		}, packagesToScan);
 		
-		if(LangUtils.isEmpty(groovyFiles))
+		if(LangUtils.isEmpty(groovyFiles)){
 			logger.info("no groovy source found in dir : " + Joiner.on(",").join(packagesToScan));
+			return ;
+		}
 		
-		DefaultListableBeanFactory dbf = (DefaultListableBeanFactory) applicationContext;
-		for(File source : groovyFiles){
+		BeanDefinitionRegistry dbf = SpringUtils.getBeanDefinitionRegistry(applicationContext, true);
+		for(Resource source : groovyFiles){
 			GenericBeanDefinition gbd = new GenericBeanDefinition();
 			gbd.setBeanClassName(GroovyScriptFactory.class.getName());
 			gbd.setAttribute(ScriptFactoryPostProcessor.LANGUAGE_ATTRIBUTE, LANGUAGE);
 			gbd.setAttribute(ScriptFactoryPostProcessor.REFRESH_CHECK_DELAY_ATTRIBUTE, CHECK_DELAY);
-			gbd.getConstructorArgumentValues().addIndexedArgumentValue(0, source.getPath());
-			String beanName = FileUtils.getFileNameWithoutExt(source.getPath());
+			
+			String fileName = source.getFilename();
+			try {
+				gbd.getConstructorArgumentValues().addIndexedArgumentValue(0, source.getURL().toString());
+			} catch (IOException e) {
+				throw new BaseException("get file error for resouce: " + source);
+			}
+			String beanName = FileUtils.getFileNameWithoutExt(fileName);
+			beanName = StringUtils.uncapitalize(beanName);
 			dbf.registerBeanDefinition(beanName, gbd);
 			logger.info("register groovy bean : " + beanName);
 		}

@@ -205,14 +205,24 @@ final public class SpringUtils {
 	
 
 	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
-		BeanFactory bf = context;
-		if(!BeanDefinitionRegistry.class.isInstance(bf)){
-			bf = context.getAutowireCapableBeanFactory();
-			if(!BeanDefinitionRegistry.class.isInstance(bf))
-				throw new BaseException("this context can not rigister spring bean : " + context);
-		}
-		BeanDefinitionRegistry bdr = (BeanDefinitionRegistry) bf;
+		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
+	}
+	
+
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context, boolean throwIfNull){
+		BeanDefinitionRegistry bdr = null;
+		if(!BeanDefinitionRegistry.class.isInstance(context)){
+			BeanFactory bf = context.getAutowireCapableBeanFactory();
+			if(BeanDefinitionRegistry.class.isInstance(bf))
+				bdr = (BeanDefinitionRegistry) bf;
+		}else{
+			bdr = (BeanDefinitionRegistry) context;
+		}
+
+		if(bdr==null && throwIfNull)
+			throw new BaseException("this context can not rigister spring bean : " + context);
+		return bdr;
 	}
 	
 	/****

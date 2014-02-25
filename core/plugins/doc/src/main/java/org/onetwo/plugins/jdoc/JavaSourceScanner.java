@@ -45,13 +45,15 @@ public class JavaSourceScanner {
 	public List<JClassDoc> scan(String... packagesToScan){
 		List<JClassDoc> jclassDoc = this.scaner.scan(new ScanResourcesCallback<JClassDoc>() {
 
-			@Override
+			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
 				return isDocClass(metadataReader);
-			}
+			}*/
 
 			@Override
 			public JClassDoc doWithCandidate(final MetadataReader metadataReader, Resource resource, int count) {
+				if(isDocClass(metadataReader))
+					return null;
 				String clsName = metadataReader.getClassMetadata().getClassName();
 				
 				String source = getSourceFilePath(clsName);

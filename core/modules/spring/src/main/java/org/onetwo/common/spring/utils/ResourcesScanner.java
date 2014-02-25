@@ -9,5 +9,6 @@ public interface ResourcesScanner {
 	public List<Class<?>> scanClasses(String... packagesToScan);
 
 	public <T> List<T> scan(ScanResourcesCallback<T> filter, String... packagesToScan);
+	public <T> List<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan);
 
 }
