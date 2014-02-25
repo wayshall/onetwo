@@ -10,12 +10,12 @@ public class GroovyPluginConfig {
 
 	private PropertiesWraper wrapper;
 	
-	public String getSrcModelDir(){
-		return wrapper.getAndThrowIfEmpty("src.model.dir");
+	public String getModelPackage(){
+		return wrapper.getAndThrowIfEmpty("package.model");
 	}
 	
-	public String getSrcWebDir(){
-		return wrapper.getAndThrowIfEmpty("src.web.dir");
+	public String getControllerPackage(){
+		return wrapper.getAndThrowIfEmpty("package.controller");
 	}
 	
 	@Resource

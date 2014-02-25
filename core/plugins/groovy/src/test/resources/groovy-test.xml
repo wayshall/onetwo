@@ -21,7 +21,8 @@
 						http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="false">
 	
+	<context:component-scan base-package="org.onetwo.plugins.groovy.model"></context:component-scan>
 	<context:annotation-config/>
-	<bean class="org.onetwo.plugins.groovy.GroovyConfig"></bean>
-	<bean class="org.onetwo.plugins.groovy.PluginModelContext"></bean>
+	<bean class="org.onetwo.plugins.groovy.GroovySiteConfig"></bean>
+	<bean class="org.onetwo.plugins.groovy.model.PluginModelContext"></bean>
 </beans>

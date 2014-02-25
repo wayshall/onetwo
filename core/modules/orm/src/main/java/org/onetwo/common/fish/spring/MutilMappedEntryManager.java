@@ -71,13 +71,13 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		if (!LangUtils.isEmpty(packagesToScan)) {
 			List<ScanedClassContext> entryClassNameList = scanner.scan(new ScanResourcesCallback<ScanedClassContext>() {
 
-				@Override
+				/*@Override
 				public boolean isCandidate(MetadataReader metadataReader) {
-					/*String className = metadataReader.getClassMetadata().getClassName();
+					String className = metadataReader.getClassMetadata().getClassName();
 					Class<?> clazz = ReflectUtils.loadClass(className);
-					return isSupported(clazz);*/
+					return isSupported(clazz);
 					return isSupported(metadataReader);
-				}
+				}*/
 
 				@Override
 				public ScanedClassContext doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
@@ -85,6 +85,8 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 					if(clazz==null){
 						clazz = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
 					}*/
+					if(!isSupported(metadataReader))
+						return null;
 					return new ScanedClassContext(metadataReader);
 				}
 

@@ -66,15 +66,17 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		
 		List<Class<?>> childMenuClass = scaner.scan(new ScanResourcesCallback<Class<?>>(){
 
-			@Override
+			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
 				if (metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
 					return true;
 				return false;
-			}
+			}*/
 
 			@Override
 			public Class<?> doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
+				if (!metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
+					return null;
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
 				return cls;
 			}

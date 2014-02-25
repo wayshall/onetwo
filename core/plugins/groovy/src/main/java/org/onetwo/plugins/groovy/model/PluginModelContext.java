@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
+import org.onetwo.plugins.groovy.GroovyBeanFactory;
 import org.onetwo.plugins.groovy.GroovyPluginConfig;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -33,5 +34,13 @@ public class PluginModelContext {
 	@Bean
 	public ScriptFactoryPostProcessor scriptFactoryPostProcessor(){
 		return new ScriptFactoryPostProcessor();
+	}
+	
+	@Bean
+	public GroovyBeanFactory groovyBeanFactory(){
+		GroovyBeanFactory gbf =  new GroovyBeanFactory();
+		GroovyPluginConfig config = groovyPluginConfig();
+		gbf.setPackagesToScan(config.getModelPackage());
+		return gbf;
 	}
 }
