@@ -49,10 +49,10 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 		if(row==null)
 			throw new BaseException("the cell of row has not created yet : " + field.getName());
 
-		CellContext cellContext = new CellContext(this.generator.getExcelValueParser(), ele, rowCount, row, field, cellIndex, "");
+		CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), ele, rowCount, row, field, cellIndex, "");
 		cell = createCell(cellContext);
 		
-		setCellValue(cell, cellValue);
+		setCellValue(field, cell, cellValue);
 		
 		return cell;
 	}

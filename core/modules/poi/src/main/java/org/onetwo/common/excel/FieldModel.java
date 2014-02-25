@@ -8,6 +8,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.google.common.collect.Lists;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
 public class FieldModel {
@@ -38,6 +39,8 @@ public class FieldModel {
 	
 	private String rootValue;
 	
+	private String sumValueAs;
+	
 //	private List<FieldListener> listeners;
 	private List<ExecutorModel> fieldValueExecutors;
 	
@@ -45,10 +48,20 @@ public class FieldModel {
 	}
 
 	public void initModel(WorkbookData workbookData){
+		if(StringUtils.isNotBlank(sumValueAs)){
+			if(fieldValueExecutors==null)
+				fieldValueExecutors = Lists.newArrayList();
+			ExecutorModel em = new ExecutorModel();
+			em.setName(sumValueAs);
+			em.setFieldValueExecutor(new SumFieldValueExecutor());
+			fieldValueExecutors.add(em);
+		}
 		if(fieldValueExecutors==null){
 			fieldValueExecutors = Collections.EMPTY_LIST;
 		}else{
 			for(ExecutorModel exe : fieldValueExecutors){
+				if(exe.getFieldValueExecutor()!=null)
+					continue;
 				FieldValueExecutor exeInst = (FieldValueExecutor)workbookData.getExcelValueParser().parseValue(exe.getExecutor(), null, null);
 				if(exeInst==null)
 					throw new BaseException("no FieldValueExecutor found: " + exe.getExecutor());
@@ -266,6 +279,14 @@ public class FieldModel {
 
 	public void setFieldValueExecutors(List<ExecutorModel> fieldValueExecutors) {
 		this.fieldValueExecutors = fieldValueExecutors;
+	}
+
+	public String getSumValueAs() {
+		return sumValueAs;
+	}
+
+	public void setSumValueAs(String sumValueAs) {
+		this.sumValueAs = sumValueAs;
 	}
 
 	

@@ -3,6 +3,7 @@ package org.onetwo.common.excel;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -95,7 +95,7 @@ abstract public class ExcelUtils {
 	}
 	
 	public static void setCellValue(Cell cell, Object value){
-		if(value==null){
+		/*if(value==null){
 			cell.setCellValue("");
 			return ;
 		}
@@ -104,6 +104,30 @@ abstract public class ExcelUtils {
 //			cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
 			HSSFRichTextString cellValue = new HSSFRichTextString(DateUtil.formatDateTime((Date)value));
 			cell.setCellValue(cellValue);
+		}else{
+			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
+			cell.setCellValue(cellValue);
+		}*/
+		
+		if(value==null){
+			cell.setCellType(Cell.CELL_TYPE_BLANK);
+			return ;
+		}
+		if(Number.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(((Number)value).doubleValue());
+		}else if(String.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_STRING);
+			cell.setCellValue(value.toString());
+		}else if(Boolean.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_BOOLEAN);
+			cell.setCellValue((Boolean)value);
+		}else if(Date.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+			cell.setCellValue((Date)value);
+		}else if(Calendar.class.isInstance(value)){
+			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+			cell.setCellValue((Calendar)value);
 		}else{
 			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
 			cell.setCellValue(cellValue);

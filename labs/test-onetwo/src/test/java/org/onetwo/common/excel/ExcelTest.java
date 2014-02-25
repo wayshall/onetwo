@@ -14,11 +14,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.interfaces.TemplateGenerator;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.LangUtils;
 
 public class ExcelTest {
 	
@@ -186,18 +184,7 @@ public class ExcelTest {
 			}
 			
 		});
-		context.put("nameLength", new FieldValueExecutor() {
-			
-			@Override
-			public Object execute(FieldModel field, ExecutorModel executorModel, ExcelValueParser parser, Object fieldValue, Object preResult) {
-				Integer rs = (fieldValue==null?0:fieldValue.toString().length());
-				LangUtils.println("${0}:${1}", fieldValue, (fieldValue==null?0:fieldValue.toString().length()));
-				if(preResult!=null){
-					rs += (Integer) preResult;
-				}
-				return rs;
-			}
-		});
+		context.put("sumField", new SumFieldValueExecutor());
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_workbook.xls";
 		System.out.println("path: " + path);
 		TemplateGenerator g = DefaultExcelGeneratorFactory.createWorkbookGenerator("org/onetwo/common/excel/export_multi_sheets_with_workbook.xml", context);

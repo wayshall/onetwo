@@ -22,6 +22,11 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PropertiesWraper implements VariableSupporter {
+	
+	public static final PropertiesWraper wrap(Properties properties){
+		return new PropertiesWraper(properties);
+	}
+	
 	private static Comparator<String> NAME_LENGTH_COMPARATOR = new Comparator<String>() {
 
 		@Override

@@ -202,6 +202,8 @@ final public class SpringUtils {
 			throw new BaseException("register spring bean error : " + beanClass);
 		return bean;
 	}
+	
+
 	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
 		BeanFactory bf = context;
 		if(!BeanDefinitionRegistry.class.isInstance(bf)){
@@ -210,6 +212,18 @@ final public class SpringUtils {
 				throw new BaseException("this context can not rigister spring bean : " + context);
 		}
 		BeanDefinitionRegistry bdr = (BeanDefinitionRegistry) bf;
+		return registerBeanDefinition(bdr, beanName, beanClass, params);
+	}
+	
+	/****
+	 * 注册bean定义
+	 * @param bdr
+	 * @param beanName
+	 * @param beanClass
+	 * @param params
+	 * @return
+	 */
+	public static BeanDefinition registerBeanDefinition(BeanDefinitionRegistry bdr, String beanName, Class<?> beanClass, Object...params){
 		if(StringUtils.isBlank(beanName)){
 			beanName = StringUtils.uncapitalize(beanClass.getSimpleName());
 		}
