@@ -1,9 +1,12 @@
 package org.onetwo.common.utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.onetwo.common.exception.BaseException;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -66,20 +69,33 @@ final public class CommonBizUtils {
 
 	public static String generatedIdCardNo(){
 		int provinceCode = PROVINCE_CODE_LIST.get(RandUtils.randomInt(PROVINCE_CODE_LIST.size()));
-		return generatedIdCardNo(provinceCode);
-	}
-
-	public static String generatedIdCardNo(String province){
-		int provinceCode = PROVINCE_CODE_MAP.inverse().get(province);
-		return generatedIdCardNo(provinceCode);
+		return generatedIdCardNo(provinceCode, null);
 	}
 	
-	public static String generatedIdCardNo(int provinceCode){
+
+	public static String generatedIdCardNo(String province){
+		return generatedIdCardNo(province, null);
+	}
+
+	public static String generatedIdCardNo(String province, String birthYearStr){
+		int provinceCode = PROVINCE_CODE_MAP.inverse().get(province);
+		return generatedIdCardNo(provinceCode, birthYearStr);
+	}
+	
+	public static String generatedIdCardNo(int provinceCode, String birthYearStr){
 		StringBuilder idCardNo = new StringBuilder();
 		idCardNo.append(provinceCode)//2
-				.append(RandUtils.randomString(4))//4 市县
-				.append("19").append(YEARS[RandUtils.randomInt(YEARS.length)]).append(RandUtils.randomInt(10))//4 year
-				.append(RandUtils.randomWithPadLeft(13, "0", 0)).append(RandUtils.randomWithPadLeft(29, "0", 0))//4 month day
+				.append(RandUtils.randomString(4));//4 市县
+		if(StringUtils.isBlank(birthYearStr)){
+			idCardNo.append("19").append(YEARS[RandUtils.randomInt(YEARS.length)]).append(RandUtils.randomInt(10));//4 year
+		}else{
+			Date birthYear = DateUtil.parseByPatterns(birthYearStr, "yyyy");
+			if(birthYear==null)
+				throw new BaseException("error birth year: " + birthYearStr);
+			birthYearStr = DateUtil.format("yyyy", birthYear);
+			idCardNo.append(birthYearStr);
+		}
+		idCardNo.append(RandUtils.randomWithPadLeft(13, "0", 0)).append(RandUtils.randomWithPadLeft(29, "0", 0))//4 month day
 				.append(RandUtils.randomString(3));
 		
 		int total = 0;
