@@ -28,14 +28,15 @@ public class ExcelTest {
 	public void setup(){
 		list = new ArrayList<CityCompainInfo>();
 		CityCompainInfo city;
-		for(long i=0; i<count; i++){
+		for(int i=0; i<count; i++){
 			city = new CityCompainInfo();
-			city.setId(i);
+			city.setId(Long.valueOf(i));
 			city.setName("name"+i);
 			city.setPhone("phone"+i);
 			city.setPostcode("postcode"+i);
 			city.setAddress("address"+i);
 			city.setFax("fax"+i);
+			city.setFaxType(i%3);
 			
 			list.add(city);
 		}

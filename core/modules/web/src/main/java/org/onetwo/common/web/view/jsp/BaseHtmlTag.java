@@ -182,6 +182,8 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	public void setAttributes(String attributes) {
 		this.attributes = attributes;
 	}
-	
+	public T getComponent() {
+		return component;
+	}
 	
 }

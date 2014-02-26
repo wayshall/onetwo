@@ -31,6 +31,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String searchItemLabel;
 	private String searchItemValue;
 	
+	private DataFieldValueListener dataFieldValueListener;
+	
 	@Override
 	public FieldTagBean createComponent() {
 		return new FieldTagBean();
@@ -47,17 +49,29 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		row.addField(component);
 		CurrentRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, CurrentRowData.class);
 		if(cdata!=null){
+			Object dataFieldValue= null;
 			if(!component.isAutoRender()){
 				BodyContent bc = getBodyContent();
 				if(bc!=null){
-					cdata.putValue(component.getValue(), bc.getString(), dataFormat);
+					dataFieldValue = cdata.putValue(component.getValue(), bc.getString(), dataFormat);
 				}
 	//			return EVAL_BODY_INCLUDE;
 			}else{
-				cdata.translateValue(component.getValue(), dataFormat);
+				dataFieldValue = cdata.translateValue(component.getValue(), dataFormat);
 			}
+			notifyDataFieldValueListener(cdata, dataFieldValue);
 		}
 		return EVAL_PAGE;
+	}
+	
+	/***
+	 * 通知DataFieldValueListener
+	 * @param rowData
+	 * @param dataFieldValue
+	 */
+	private void notifyDataFieldValueListener(CurrentRowData rowData, Object dataFieldValue){
+		if(this.dataFieldValueListener!=null)
+			this.dataFieldValueListener.afterTranslateValue(rowData, this, dataFieldValue);
 	}
 	protected void populateComponent() throws JspException{
 		super.populateComponent();

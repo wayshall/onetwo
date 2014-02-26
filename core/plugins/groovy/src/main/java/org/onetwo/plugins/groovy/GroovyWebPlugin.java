@@ -3,7 +3,6 @@ package org.onetwo.plugins.groovy;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.plugins.groovy.web.PluginWebContext;
 
 
 
@@ -23,7 +22,7 @@ public class GroovyWebPlugin extends AbstractJFishPlugin<GroovyWebPlugin> {
 	
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PluginWebContext.class);
+//		annoClasses.add(PluginWebContext.class);
 	}
 
 

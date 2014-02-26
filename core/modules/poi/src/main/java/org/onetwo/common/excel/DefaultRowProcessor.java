@@ -65,7 +65,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		for (FieldModel field : rowModel.getFields()) {
 			field.setParentRow(rowModel);
 			//cell = createCell(sheet, row, field);
-			this.processField(getFieldRootValue(null, field), row, field, getDefaultFieldValue(field));
+			this.processField(getFieldRootValue(null, field), row, field);
 		}
 	}
 	
@@ -282,16 +282,16 @@ public class DefaultRowProcessor implements RowProcessor {
 		return fieldValue;
 	}
 	
-	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, Row row, FieldModel field, int cellIndex, Object defValue){
-		return new CellContext(parser, objectValue, objectValueIndex, row, field, cellIndex, defValue);
+	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, Row row, FieldModel field, int cellIndex){
+		return new CellContext(parser, objectValue, objectValueIndex, row, field, cellIndex, getDefaultFieldValue(field));
 	}
 	
-	protected void processField(Object root, Row row, FieldModel field, Object defValue){
+	protected void processField(Object root, Row row, FieldModel field){
 //		String pname = "processField";
 //		UtilTimerStack.push(pname);
 		int cellIndex = row.getLastCellNum();
 		if(root==null){
-			CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex, defValue);
+			CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex);
 			this.processSingleField(cellContext);
 		}else{
 			List<Object> rootList = LangUtils.asList(root);
@@ -301,7 +301,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
 			try{
 				for (int i = 0; i < rootList.size(); i++) {
-					CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex, defValue);
+					CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex);
 					this.processSingleField(cellContext);
 					rowCount += cellContext.getRowSpanCount();
 				}
@@ -317,7 +317,9 @@ public class DefaultRowProcessor implements RowProcessor {
 //		Row row = cellContext.row;
 		Cell cell = createCell(cellContext);
 		FieldModel field = cellContext.field;
-		Object v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
+		Object v = cellContext.getFieldValue();
+		if(v==null)
+			v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
 
 		/*for(FieldListener fl : field.getListeners()){
 			v = fl.getCellValue(cell, v);
@@ -398,6 +400,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		public final Row row;
 		public final FieldModel field;
 		public final Object defFieldValue;
+		private Object fieldValue;
 		private final int cellIndex;
 
 		private int rowSpanCount = 0;
@@ -480,6 +483,14 @@ public class DefaultRowProcessor implements RowProcessor {
 
 		public int getRowSpanCount() {
 			return rowSpanCount;
+		}
+
+		public Object getFieldValue() {
+			return fieldValue;
+		}
+
+		public void setFieldValue(Object fieldValue) {
+			this.fieldValue = fieldValue;
 		}
 		
 	}
