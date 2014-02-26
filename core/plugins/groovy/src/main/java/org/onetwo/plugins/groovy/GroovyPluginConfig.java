@@ -11,7 +11,7 @@ public class GroovyPluginConfig {
 	private PropertiesWraper wrapper;
 	
 	public String getModelPackage(){
-		return wrapper.getAndThrowIfEmpty("package.model");
+		return wrapper.getProperty("package.model", "");
 	}
 	
 	public String getControllerPackage(){

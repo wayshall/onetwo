@@ -7,7 +7,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
-import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.scripting.groovy.GroovyScriptFactory;
 import org.springframework.scripting.support.ScriptFactoryPostProcessor;
 
@@ -44,25 +42,12 @@ public class GroovyBeanFactory implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		scanner = new JFishResourcesScanner(DEFAULT_RESOURCE_PATTERN);
-		scanGroovySourceAsBean(packagesToScan);
+		if(!LangUtils.isEmpty(packagesToScan))
+			scanGroovySourceAsBean(packagesToScan);
 	}
 
 	protected void scanGroovySourceAsBean(String... packagesToScan){
-		List<Resource> groovyFiles = scanner.scan(false, new ScanResourcesCallback<Resource>(){
-
-			/*@Override
-			public boolean isCandidate(MetadataReader metadataReader) {
-				return metadataReader.getAnnotationMetadata().hasAnnotation(GroovyBean.class.getName());
-			}*/
-
-			@Override
-			public Resource doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
-				/*if(!metadataReader.getAnnotationMetadata().hasAnnotation(GroovyBean.class.getName()))
-					return null;*/
-				return resource;
-			}
-			
-		}, packagesToScan);
+		List<Resource> groovyFiles = scanner.scanResources(packagesToScan);
 		
 		if(LangUtils.isEmpty(groovyFiles)){
 			logger.info("no groovy source found in dir : " + Joiner.on(",").join(packagesToScan));
