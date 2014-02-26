@@ -8,6 +8,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -53,6 +54,17 @@ public class JFishResourcesScanner implements ResourcesScanner {
 			
 		}, packagesToScan);
 	}
+	@Override
+	public List<Resource> scanResources(String... packagesToScan) {
+		return scan(false, new ScanResourcesCallback<Resource>(){
+
+			@Override
+			public Resource doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
+				return resource;
+			}
+			
+		}, packagesToScan);
+	}
 	
 
 	@Override
@@ -67,6 +79,9 @@ public class JFishResourcesScanner implements ResourcesScanner {
 		try {
 			int count = 0;
 			for (String pack : packagesToScan) {
+				if(StringUtils.isBlank(pack))
+					continue;
+				
 				pack = resolveBasePackage(pack);
 				if(!pack.endsWith("/"))
 					pack += "/";
