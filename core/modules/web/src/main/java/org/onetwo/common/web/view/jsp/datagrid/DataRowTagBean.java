@@ -91,7 +91,7 @@ public class DataRowTagBean extends RowTagBean {
 			return LangUtils.formatValue(value, dataFormat);
 		}
 		
-		public void translateValue(String name, String dataFormat){
+		public Object translateValue(String name, String dataFormat){
 			Object value = "";
 			try {
 				if(StringUtils.isNotBlank(name)){
@@ -102,10 +102,13 @@ public class DataRowTagBean extends RowTagBean {
 				throw new BaseException("translate value error, name["+name+"], original["+originData+"]", e);
 			}
 			this.translateData.put(name, value);
+			return value;
 		}
 		
-		public void putValue(String name, Object value, String dataFormat){
-			this.translateData.put(name, formatValue(value, dataFormat));
+		public Object putValue(String name, Object value, String dataFormat){
+			Object actualValue = formatValue(value, dataFormat);
+			this.translateData.put(name, actualValue);
+			return actualValue;
 		}
 		
 	}

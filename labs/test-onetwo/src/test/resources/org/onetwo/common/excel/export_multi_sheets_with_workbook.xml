@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbook listener="#listener">
 	<sheets>
-	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="1:100;2:100">
+	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="1:50;2:50">
 	
 			<rows>
 			
 				<row height="1000" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
 					<fields>
-						<field value="'报名客户资料'" colspan="4"/>
+						<field value="'报名客户资料'" colspan="6"/>
 					</fields>
 				</row>
 				
-				<row name="element" type="iterator" datasource="#sheet1.datasource" renderHeader="true" fieldProcessor="#fieldProcessor" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"> 
+				<row name="element" type="title" > 
+					<fields>
+						<field name="id" label="主键" sumValueAs="idTotalValue">
+						</field>
+						<field name="name" label="名称">
+						</field>
+						<field name="phone" label="电话" />
+						<field name="postcode" label="邮编" />
+						<field name="address" label="地址" />
+						<field name="fax" label="传真0" />
+						<field name="fax" label="传真1" />
+						<field name="fax" label="传真2" />
+					</fields>
+				</row>
+				
+				<row name="element" type="iterator" datasource="#sheet1.datasource" fieldProcessor="#fieldProcessor" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"> 
 					<fields>
 						<field name=":id" label="主键" sumValueAs="idTotalValue">
 						</field>
@@ -20,7 +35,9 @@
 						<field name=":phone" label="电话" />
 						<field name=":postcode" label="邮编" />
 						<field name=":address" label="地址" />
-						<field name=":fax" label="传真" />
+						<field name=":fax0" label="传真0" />
+						<field name=":fax1" label="传真1" />
+						<field name=":fax2" label="传真2" />
 					</fields>
 				</row>
 				

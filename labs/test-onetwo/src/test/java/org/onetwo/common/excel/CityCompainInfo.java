@@ -6,6 +6,7 @@ public class CityCompainInfo {
 	private String name;
 	private String phone;
 	private String fax;
+	private int faxType;
 	private String address;
 	private String postcode;
 
@@ -34,7 +35,25 @@ public class CityCompainInfo {
 	}
 
 	public String getFax() {
-		return fax;
+		return faxType;
+	}
+
+	public String getFax0() {
+		if(faxType==0)
+			return fax + faxType;
+		return "";
+	}
+
+	public String getFax1() {
+		if(faxType==1)
+			return fax + faxType;
+		return "";
+	}
+
+	public String getFax2() {
+		if(faxType==2)
+			return fax + faxType;
+		return "";
 	}
 
 	public void setFax(String fax) {
@@ -55,5 +74,13 @@ public class CityCompainInfo {
 
 	public void setPostcode(String postcode) {
 		this.postcode = postcode;
+	}
+
+	public int getFaxType() {
+		return faxType;
+	}
+
+	public void setFaxType(int faxType) {
+		this.faxType = faxType;
 	}
 }
