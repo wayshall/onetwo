@@ -23,7 +23,11 @@ public class CmdRunner {
 	 * @throws IOException
 	 */
 	public void run(String[] args) {
-		startAppContext(args);
+		try {
+			startAppContext(args);
+		} catch (Exception e) {
+			logger.error("startAppContext error : " + e.getMessage(), e);
+		}
 		loadCommand(args);
 		waitForCommand();
 	}

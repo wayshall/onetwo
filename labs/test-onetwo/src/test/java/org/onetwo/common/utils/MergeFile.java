@@ -22,7 +22,7 @@ public class MergeFile {
 					@Override
 					public void writeLine(Writer writer, File file, int fileIndex, String line, int lineIndex) throws Exception {
 						String lineUpper = line.trim().toUpperCase();
-						if(lineUpper.startsWith("ALTER")){
+						if(lineUpper.startsWith("ALTER") || lineUpper.startsWith("CREATE")){
 							String[] lineUppers = StringUtils.split(lineUpper, " ");
 							if(lineUppers[1].equals("PROCEDURE") || lineUppers[1].equals("FUNCTION")){
 								String fileName = FileUtils.getFileName(file.getPath());

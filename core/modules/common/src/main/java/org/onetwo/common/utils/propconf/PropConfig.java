@@ -31,7 +31,7 @@ public class PropConfig implements VariableSupporter {
 	
 	protected VariableConfig config = new VariablePropConifg(this);
 
-	protected List<String> files = new ArrayList<String>(1);
+	protected List<String> files = new ArrayList<String>(5);
 	
 	protected String configName;
 	

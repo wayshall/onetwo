@@ -147,6 +147,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 		if(StringUtils.isNotBlank(conf.getOverrideDir())){
 			String overridePath = sqldirPath+"/"+conf.getOverrideDir();
+			logger.info("scan database dialect dir : " + overridePath);
 			File[] dbsqlfiles = FileUtils.listFiles(overridePath, conf.getPostfix());
 
 			if(logger.isInfoEnabled())

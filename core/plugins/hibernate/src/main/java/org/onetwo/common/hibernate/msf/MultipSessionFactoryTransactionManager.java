@@ -9,11 +9,14 @@ import org.springframework.orm.hibernate4.SessionFactoryUtils;
 @SuppressWarnings("serial")
 public class MultipSessionFactoryTransactionManager extends HibernateTransactionManager {
 	
+	public static final int DEFAULT_TIMEOUT_IN_SECONDS = 120;
+	
 //	@Autowired
 //	private JFishMultipleSessionFactory multipleSessionFactory;
 	
 	public MultipSessionFactoryTransactionManager(){
 		this.setAutodetectDataSource(false);
+		this.setDefaultTimeout(DEFAULT_TIMEOUT_IN_SECONDS);
 	}
 
 
