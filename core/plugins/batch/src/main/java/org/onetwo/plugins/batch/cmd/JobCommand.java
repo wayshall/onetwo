@@ -39,11 +39,15 @@ public class JobCommand extends AbstractCommand {
 		logger.error("{} error: " + e.getMessage(), getKey(), e);
 	}
 	
-	protected JobParameters buildJobParameter(CmdContext context) throws Exception {
+	private JobParameters buildJobParameter(CmdContext context) throws Exception {
 		String runTimeString = inputRunTime(context);
-		return new JobParametersBuilder()
-				.addString("runTime", runTimeString)
-				.toJobParameters();
+		JobParametersBuilder jpb =  new JobParametersBuilder()
+				.addString("runTime", runTimeString);
+		addToJobParametersBuilder(context, jpb);
+		return jpb.toJobParameters();
+	}
+	
+	protected void addToJobParametersBuilder(CmdContext context, JobParametersBuilder jobParametersBuilder)throws Exception {
 	}
 	
 	protected String inputRunTime(CmdContext context) throws IOException{

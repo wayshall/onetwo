@@ -19,7 +19,7 @@ import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
-	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "delete", "insert", "create");
+	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
 	private static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;

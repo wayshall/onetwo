@@ -72,6 +72,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
 			if(StringUtils.isNotBlank(conf.getOverrideDir())){
 				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**/*"+conf.getPostfix();
+				logger.info("scan database dialect dir : " + sqldirPath);
 				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
 				if(!LangUtils.isEmpty(dbsqlfiles)){
 					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
