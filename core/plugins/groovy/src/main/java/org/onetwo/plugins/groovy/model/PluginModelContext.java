@@ -16,6 +16,8 @@ import org.springframework.scripting.support.ScriptFactoryPostProcessor;
 //@ComponentScan(basePackageClasses=PluginModelContext.class)
 public class PluginModelContext {
 
+	public static final String GROOVY_CONFIG_PATH = "/groovy/groovyconfig.properties";
+	
 	@Resource
 	private AppConfig appConfig;
 	
@@ -28,7 +30,7 @@ public class PluginModelContext {
 	@Bean
 	public PropertiesFactoryBean groovyPluginProperties() {
 		String envLocation = "/groovy/groovyconfig-" + appConfig.getAppEnvironment() + ".properties";
-		return SpringUtils.createPropertiesBySptring("/groovy/groovyconfig.properties", envLocation);
+		return SpringUtils.createPropertiesBySptring(GROOVY_CONFIG_PATH, envLocation);
 	}
 
 	@Bean
