@@ -338,11 +338,14 @@ public class DefaultRowProcessor implements RowProcessor {
 	protected Object formatValue(Object value, String dataFormat){
 		Object actualValue;
 		if(value instanceof Date){
-			if(StringUtils.isBlank(dataFormat))
+			if(StringUtils.isBlank(dataFormat)){
 				dataFormat = DateUtil.Date_Time;
-//			actualValue = DateUtil.format(dataFormat, (Date)value);
-			actualValue = value;
-		}else if(value instanceof Number && dataFormat != null) {
+				actualValue = DateUtil.format(dataFormat, (Date)value);
+//				actualValue = value;
+			}else{
+				actualValue = DateUtil.format(dataFormat, (Date)value);
+			}
+		}else if(value instanceof Number && StringUtils.isNotBlank(dataFormat)) {
 			NumberFormat nf = new DecimalFormat(dataFormat);
 			nf.setRoundingMode(RoundingMode.HALF_UP);
 			actualValue = nf.format(value);
