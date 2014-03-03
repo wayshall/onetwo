@@ -102,6 +102,17 @@
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-batch</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-groovy</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
 	
 	<dependency>
 	  <groupId>org.apache.openejb</groupId>
@@ -175,4 +186,6 @@
 	</dependency>
     
   </dependencies>
+  
+  
 </project>

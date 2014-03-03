@@ -15,24 +15,36 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 	private Workbook workbook;
 	private int sheetCount = 0;
 //	private List<String> names;
+
+	/***
+	 * 当前sheet的总行数
+	 */
 	private int rowCount = 0;
 	private boolean initialized;
 	private SSFRowMapper<T> mapper;
 
 	private ExcelBufferReader<T> currentSheetReader;
 	private int currentSheetIndex = 0;
-	/***
-	 * 当前sheet的总行数
-	 */
-	private int currentRowCount = 0;
-	/*****
-	 * 当前读取行数
-	 */
-	private int currentRowNumber = 0;
+//	private int currentRowCount = 0;
 	
+	/***
+	 * 是否忽略null行（即返回null的行）
+	 */
+	private boolean ignoreNullRow;
+	
+	/*****
+	 * 累计行数
+	 */
+	private int grandTotalRowNumber = 0;
+	
+
 	public RowMapperWorkbookBufferReader(Workbook workbook, SSFRowMapper<T> mapper){
+		this(workbook, true, mapper);
+	}
+	public RowMapperWorkbookBufferReader(Workbook workbook, boolean ignoreNullRow, SSFRowMapper<T> mapper){
 		this.workbook = workbook;
 		this.mapper = mapper;
+		this.ignoreNullRow = ignoreNullRow;
 	}
 	
 	@Override
@@ -54,9 +66,9 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 	private ExcelBufferReader<T> newReaderIfHasSheet(){
 		if(hasSheet()){
 			Sheet sheet = workbook.getSheetAt(currentSheetIndex);
-			this.currentRowNumber = 0;
-			this.currentRowCount = sheet.getPhysicalNumberOfRows();
-			ExcelBufferReader<T> reader = new RowMapperSheetBufferReader<T>(sheet, currentSheetIndex, mapper);
+//			this.currentRowNumber = 0;
+//			this.currentRowCount = sheet.getPhysicalNumberOfRows();
+			ExcelBufferReader<T> reader = new RowMapperSheetBufferReader<T>(sheet, currentSheetIndex, isIgnoreNullRow(), mapper);
 			reader.initReader();
 			currentSheetIndex++;
 			return reader;
@@ -78,16 +90,20 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 			return null;
 			
 		if(this.currentSheetReader.isEnd()){
+			//累计每张sheet的行数
+			this.grandTotalRowNumber += this.currentSheetReader.getCurrentRowNumber();
 			this.currentSheetReader = newReaderIfHasSheet();
 			if(this.currentSheetReader==null)
 				return null;
 		}
 		
 		T obj = this.currentSheetReader.read();
-		this.currentRowNumber++;
+//		this.currentRowNumber++;
 		//如果有空行，继续读取下一条
-		if(obj==null && !isEnd())
+		if(obj==null && !isEnd()){
+			logger.info("ignore null row {}", getCurrentRowNumber());
 			obj = read();
+		}
 		return obj;
 	}
 
@@ -101,7 +117,19 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 
 	@Override
 	public boolean isEnd() {
-		return currentSheetIndex>=sheetCount && currentRowNumber>=currentRowCount;
+		return currentSheetIndex>=sheetCount && this.currentSheetReader.isEnd();
+	}
+
+	public int getCurrentRowNumber() {
+		return grandTotalRowNumber + this.currentSheetReader.getCurrentRowNumber();
+	}
+
+	public boolean isIgnoreNullRow() {
+		return ignoreNullRow;
+	}
+
+	public void setIgnoreNullRow(boolean ignoreNullRow) {
+		this.ignoreNullRow = ignoreNullRow;
 	}
 	
 }
