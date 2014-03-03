@@ -5,11 +5,13 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
+import org.slf4j.Logger;
 
 public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 	
-//	private static final Logger logger = MyLoggerFactory.getLogger(SheetBufferReader.class);
+	private static final Logger logger = MyLoggerFactory.getLogger(RowMapperSheetBufferReader.class);
 	
 	private Sheet sheet;
 	private int sheetIndex = 0;
@@ -35,6 +37,7 @@ public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 			names = mapper.mapTitleRow(sheetIndex, sheet);
 			currentRowNumber = mapper.getDataRowStartIndex();
 		}
+		logger.info("the sheet {} has total row number: {}", sheetIndex, rowCount);
 		this.initialized = true;
 	}
 
