@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 
-public class DefaultSheetBufferReader implements ExcelBufferReader<Row> {
+public class SimpleSheetBufferReader implements ExcelBufferReader<Row> {
 	
 //	private static final Logger logger = MyLoggerFactory.getLogger(SheetBufferReader.class);
 	
@@ -15,7 +15,7 @@ public class DefaultSheetBufferReader implements ExcelBufferReader<Row> {
 	
 	private int currentRowNumber = 0;
 	
-	public DefaultSheetBufferReader(Sheet sheet){
+	public SimpleSheetBufferReader(Sheet sheet){
 		this.sheet = sheet;
 	}
 	
@@ -43,4 +43,10 @@ public class DefaultSheetBufferReader implements ExcelBufferReader<Row> {
 			return null;
 		}
 	}
+
+	public int getCurrentRowNumber() {
+		return currentRowNumber;
+	}
+	
+	
 }

@@ -29,7 +29,7 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 	private Resource resource;
 	private boolean noInput = false;
 //	private int linesToSkip = 0;
-	private int lineCount = 0;
+	private int actualReadLineCount = 0;
 	
 	public ExcelFileItemReader(){
 		setName(ClassUtils.getShortName(FlatFileItemReader.class));
@@ -57,13 +57,13 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 			return null;
 		}
 		T data = this.reader.read();
-		lineCount++;
+		actualReadLineCount++;
 		return data;
 	}
 
 	@Override
 	protected void doClose() throws Exception {
-		lineCount = 0;
+		actualReadLineCount = 0;
 		if (reader != null) {
 			reader = null;
 		}
@@ -114,5 +114,14 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
+
+	public int getActualReadLineCount() {
+		return actualReadLineCount;
+	}
+
+	public int getCurrentRowNumber() {
+		return reader.getCurrentRowNumber();
+	}
+
 
 }

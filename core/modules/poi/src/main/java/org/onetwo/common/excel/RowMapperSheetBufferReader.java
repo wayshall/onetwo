@@ -22,10 +22,18 @@ public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 	
 	private int currentRowNumber = 0;
 	
+	private boolean ignoreNullRow;
+	
+
 	public RowMapperSheetBufferReader(Sheet sheet, int sheetIndex, SSFRowMapper<T> mapper){
+		this(sheet, sheetIndex, true, mapper);
+	}
+	
+	public RowMapperSheetBufferReader(Sheet sheet, int sheetIndex, boolean ignoreNullRow, SSFRowMapper<T> mapper){
 		this.sheet = sheet;
 		this.sheetIndex = sheetIndex;
 		this.mapper = mapper;
+		this.ignoreNullRow = ignoreNullRow;
 	}
 	
 	@Override
@@ -50,6 +58,10 @@ public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 			Row row = sheet.getRow(currentRowNumber);
 			T value = mapper.mapDataRow(sheet, names, row, currentRowNumber);
 			currentRowNumber++;
+			if(value==null && isIgnoreNullRow() && !isEnd()){
+				logger.info("ignore null row {}", currentRowNumber);
+				value = read();
+			}
 			return value;
 		}else{
 			return null;
@@ -66,6 +78,18 @@ public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 
 	public int getRowCount() {
 		return rowCount;
+	}
+
+	public boolean isIgnoreNullRow() {
+		return ignoreNullRow;
+	}
+
+	public void setIgnoreNullRow(boolean ignoreNullRow) {
+		this.ignoreNullRow = ignoreNullRow;
+	}
+
+	public int getCurrentRowNumber() {
+		return currentRowNumber;
 	}
 	
 }
