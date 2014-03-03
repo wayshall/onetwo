@@ -7,6 +7,7 @@ import org.onetwo.common.excel.RowMapperWorkbookBufferReader;
 import org.onetwo.common.excel.SSFRowMapper;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
@@ -32,6 +33,17 @@ public class ExcelFileItemReader<T> extends AbstractItemCountingItemStreamItemRe
 	
 	public ExcelFileItemReader(){
 		setName(ClassUtils.getShortName(FlatFileItemReader.class));
+	}
+	
+	/****
+	 * 不经过容器，直接读取
+	 * @param resource
+	 * @param rowMapper
+	 */
+	public void fastOpen(Resource resource, SSFRowMapper<T> rowMapper){
+		this.resource = resource;
+		this.rowMapper = rowMapper;
+		this.open(new ExecutionContext());
 	}
 	@Override
 	public void afterPropertiesSet() throws Exception {

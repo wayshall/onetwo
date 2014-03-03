@@ -3,11 +3,13 @@ package org.onetwo.common.excel;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
+import org.slf4j.Logger;
 
 public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 	
-//	private static final Logger logger = MyLoggerFactory.getLogger(SheetBufferReader.class);
+	private static final Logger logger = MyLoggerFactory.getLogger(RowMapperWorkbookBufferReader.class);
 	
 //	private Sheet sheet;
 	private Workbook workbook;
@@ -19,7 +21,13 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 
 	private ExcelBufferReader<T> currentSheetReader;
 	private int currentSheetIndex = 0;
+	/***
+	 * 当前sheet的总行数
+	 */
 	private int currentRowCount = 0;
+	/*****
+	 * 当前读取行数
+	 */
 	private int currentRowNumber = 0;
 	
 	public RowMapperWorkbookBufferReader(Workbook workbook, SSFRowMapper<T> mapper){
@@ -39,6 +47,7 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 		if(rowCount>0){
 			this.currentSheetReader = newReaderIfHasSheet();
 		}
+		logger.info("the workbook has total row number: {}", rowCount);
 		this.initialized = true;
 	}
 	
@@ -75,6 +84,10 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 		}
 		
 		T obj = this.currentSheetReader.read();
+		this.currentRowNumber++;
+		//如果有空行，继续读取下一条
+		if(obj==null && !isEnd())
+			obj = read();
 		return obj;
 	}
 
