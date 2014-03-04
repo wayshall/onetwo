@@ -35,7 +35,7 @@ public class CityCompainInfo {
 	}
 
 	public String getFax() {
-		return faxType;
+		return fax;
 	}
 
 	public String getFax0() {

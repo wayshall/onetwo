@@ -4,13 +4,12 @@ import java.lang.reflect.Method;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.plugins.dq.annotations.Name;
 
 import test.entity.UserEntity;
 
 public class ClassTest {
 	
-	public void queryPageByUserName(Page<UserEntity> page, @Name("userName") String userName){
+	public void queryPageByUserName(Page<UserEntity> page, String userName){
 		
 	}
 	
