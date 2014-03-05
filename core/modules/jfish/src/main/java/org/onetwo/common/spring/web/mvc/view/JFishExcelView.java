@@ -13,12 +13,16 @@ import org.onetwo.common.exception.SystemErrorCode.ServiceErrorCode;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class JFishExcelView extends AbstractUrlBasedView {
+	private static final Logger logger = MyLoggerFactory.getLogger(JFishExcelView.class);
+	
 	public static final String FILENAME_KEY = "fileName";
 	public static final String TEMPLATE_SUFFIX = ".xml";
 	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=GBK";
@@ -69,6 +73,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 				generator.write(out);
 			}
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			if(LangUtils.isError(e, ServiceErrorCode.RESOURCE_NOT_FOUND)){
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}else{
