@@ -59,7 +59,8 @@ public class LoggerInterceptor extends WebInterceptorAdapter  {
 		info.setOperatorTime(new Date());
 		info.setDatas(contextHolder.getDataChangedContext());
 		
-		accessLogger.logOperation(info);
+		if(accessLogger!=null)
+			accessLogger.logOperation(info);
 	}
 
 	@Override
