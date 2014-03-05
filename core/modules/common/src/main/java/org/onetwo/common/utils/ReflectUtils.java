@@ -129,6 +129,16 @@ public class ReflectUtils {
 		return values;
 	}
 
+	public static <T> Collection<T> w(Object[] elements, String propName) {
+		Collection<T> values = new ArrayList<T>(elements.length);
+		T val = null;
+		for(Object obj : elements){
+			val = (T)getProperty(obj, propName);
+			values.add(val);
+		}
+		return values;
+	}
+
 	public static Object getProperty(Object element, String propName) {
 		return getProperty(element, propName, true);
 	}
