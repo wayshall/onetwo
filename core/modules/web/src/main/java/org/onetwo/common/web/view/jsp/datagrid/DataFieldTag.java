@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.ToBooleanConvertor;
-import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
+import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.GridRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean;
@@ -47,10 +47,10 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 			throw new JspException("field tag must nested in a row tag.");
 
 		row.addField(component);
-		CurrentRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, CurrentRowData.class);
+		GridRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, GridRowData.class);
 		if(cdata!=null){
 			Object dataFieldValue= null;
-			if(!component.isAutoRender()){
+			/*if(!component.isAutoRender()){
 				BodyContent bc = getBodyContent();
 				if(bc!=null){
 					dataFieldValue = cdata.putValue(component.getValue(), bc.getString(), dataFormat);
@@ -58,7 +58,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	//			return EVAL_BODY_INCLUDE;
 			}else{
 				dataFieldValue = cdata.translateValue(component.getValue(), dataFormat);
-			}
+			}*/
+			cdata.translateFieldValue(this);
 			notifyDataFieldValueListener(cdata, dataFieldValue);
 		}
 		return EVAL_PAGE;
@@ -69,13 +70,14 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	 * @param rowData
 	 * @param dataFieldValue
 	 */
-	private void notifyDataFieldValueListener(CurrentRowData rowData, Object dataFieldValue){
+	private void notifyDataFieldValueListener(GridRowData rowData, Object dataFieldValue){
 		if(this.dataFieldValueListener!=null)
 			this.dataFieldValueListener.afterTranslateValue(rowData, this, dataFieldValue);
 	}
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
 		component.setValue(value);
+		component.setDataFormat(dataFormat);
 		component.setColspan(colspan);
 		component.setRender(render);
 		component.setOrderable(orderable);

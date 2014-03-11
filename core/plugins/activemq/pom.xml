@@ -8,7 +8,7 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 	
-  <artifactId>onetwo-plugins-activemq</artifactId>
+  <artifactId>onetwo-plugin-activemq</artifactId>
   <packaging>jar</packaging>
 
   <name>onetwo-plugin-activemq</name>

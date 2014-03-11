@@ -22,7 +22,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private static final String AJAX_POSTFIX = "Ajax";
 //	private static final String AJAX_INST_POSTFIX = "AjaxInst";
 	
-	private String template = TagUtils.getTagPage("datagrid/grid.jsp");
+	private String template = "datagrid/grid.jsp";
 	private Object dataSource;
 	private int colspan = 0;
 
@@ -90,7 +90,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			if(this.datagridRenderListener!=null){
 				this.datagridRenderListener.prepareRender(this, component);
 			}
-			this.pageContext.include(getTemplate());
+			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
@@ -159,7 +159,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		return template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public void setDataSource(Object dataSource) {

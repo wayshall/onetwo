@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
+import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.GridRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
@@ -38,7 +38,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 		if(component.isIterator()){
 			Iterator<?> it = grid.getPage().getResult().iterator();
 			component.setIterator(it);
-			component.setDatas(new ArrayList<Object>());
+			component.setDatas(new ArrayList<GridRowData>(grid.getPage().getResult().size()));
 		}
 		
 		setComponentIntoRequest(getRowVarName(), component);
@@ -53,7 +53,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 			if(it.hasNext()){
 				Object data = it.next();
 				int index = 0;
-				CurrentRowData cdata = new CurrentRowData(data, index);
+				GridRowData cdata = GridRowData.create(component, data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
 				if(StringUtils.isNotBlank(component.getName()))
@@ -70,7 +70,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				return SKIP_BODY;
 			}
 		}else{
-			CurrentRowData cdata = new CurrentRowData(LangUtils.newHashMap(), 0);
+			GridRowData cdata = GridRowData.create(component, LangUtils.newHashMap(), 0);
 			setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 			
 			component.setCurrentRowData(cdata);
@@ -92,9 +92,9 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 	public int doAfterBody() throws JspException {
 		if(component.isIterator()){
 			component.setFieldTagCompletion(true);
-			CurrentRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, CurrentRowData.class);
+			GridRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, GridRowData.class);
 			if(preData!=null){
-				component.getDatas().add(preData);//preData.getTranslateData()
+				component.addRowData(preData);//preData.getTranslateData()
 			}
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){
@@ -102,7 +102,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				int index = 0;
 				if(preData!=null)
 					index = preData.getIndex()+1;
-				CurrentRowData cdata = new CurrentRowData(data, index);
+				GridRowData cdata = GridRowData.create(component, data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
 				if(StringUtils.isNotBlank(getName()))
