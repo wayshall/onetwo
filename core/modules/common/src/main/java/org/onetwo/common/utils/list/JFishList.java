@@ -57,6 +57,16 @@ public class JFishList<E> implements List<E>, Serializable {
 	public static <T> JFishList<T> wrap(T... e){
 		return new JFishList<T>(e);
 	}
+	
+	public static JFishList<Integer> intList(int start, int length){
+		JFishList<Integer> list = newList(length);
+		int end = start + length;
+		for (int i = start; i < end; i++) {
+			list.add(i);
+		}
+		return list;
+	}
+	
 	public static <T> JFishList<T> wrapObject(Object e){
 		if(JFishList.class.isInstance(e))
 			return (JFishList<T>)e;

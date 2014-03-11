@@ -12,6 +12,7 @@ public class FieldTagBean extends HtmlElement {
 	}
 
 	private String value;
+	private String dataFormat;
 	private int colspan = 1;
 //	String link;
 	private RenderType render;
@@ -208,6 +209,14 @@ public class FieldTagBean extends HtmlElement {
 
 	public void setSearchFieldName(String searchFieldName) {
 		this.searchFieldName = searchFieldName;
+	}
+
+	public String getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 
 }
