@@ -12,7 +12,7 @@
 			<input type="checkbox" name="${field.name}" value="${chbValue }" id="${field.name}${chbValue}" class="dg-checkbox-field"/>
 		</c:when>
 		<c:otherwise>
-			${entity.translateData[field.value]}
+			${entity[field.value]}
 		</c:otherwise>
 	</c:choose>
 

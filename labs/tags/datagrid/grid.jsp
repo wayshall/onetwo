@@ -48,8 +48,8 @@
 			<layout:define name="grid_custombar"/>
 			</div>
 			
-			<div class="well">
 			<c:if test="${_gridBean.toolbar }">
+			<div class="well">
 				<div class="btn-group pull-right">
 					<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
 						&nbsp;&nbsp;&nbsp;操作&nbsp;&nbsp;&nbsp;
@@ -57,13 +57,15 @@
 					</a>
 					<ul class="dropdown-menu">
 						<layout:define name="grid_toolbar"/>
+						<c:if test="${_gridBean.exportable }">
+						<li>
+						<a href="${_gridBean.xlsFormatAction }">导出</a>
+						</li>
+						</c:if>
 					</ul>
 				</div>
-			</c:if>
-			<c:if test="${_gridBean.exportable }">
-			<a class="btn btn-primary" href="${_gridBean.xlsFormatAction }">导出</a>
-			</c:if>
 			</div>
+			</c:if>
 				
 			<table border="0" cellspacing="0"  class="table table-bordered table-striped">
 				<c:if test="${not empty _gridBean.bodyContent }">

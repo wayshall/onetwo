@@ -104,4 +104,23 @@ public class JFishListTest {
 		Assert.assertEquals(1, groups.get("bb").size());
 		Assert.assertEquals(2, groups.get("cc").size());
 	}
+	
+
+	@Test
+	public void testGroupByPropertyName(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = TestUtils.createUserList("aa", 3);
+		List<UserEntity> bb = TestUtils.createUserList("bb", 1);
+		List<UserEntity> cc = TestUtils.createUserList("cc", 2);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		Map<String, List<UserEntity>> groups = JFishList.wrap(all).groupBy("userName");
+		
+		System.out.println("groups:" + groups);
+		Assert.assertEquals(3, groups.get("aa").size());
+		Assert.assertEquals(1, groups.get("bb").size());
+		Assert.assertEquals(2, groups.get("cc").size());
+	}
 }

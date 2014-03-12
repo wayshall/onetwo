@@ -97,7 +97,7 @@ public class DataRowTagBean extends RowTagBean {
 		public Object getOriginData() {
 			return originData;
 		}
-		public Map<String, Object> getTranslateData() {
+		private Map<String, Object> getTranslateData() {
 			return translateData;
 		}
 
@@ -168,6 +168,9 @@ public class DataRowTagBean extends RowTagBean {
 			return translateData.containsValue(value);
 		}
 		public Object get(Object key) {
+			if("translateData".equals(key)){//兼容tag里的${entity.translateData[field.value]}
+				return getTranslateData();
+			}
 			return translateData.get(key);
 		}
 		public Object put(String key, Object value) {

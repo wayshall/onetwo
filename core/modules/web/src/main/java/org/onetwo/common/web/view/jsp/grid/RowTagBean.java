@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.grid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class RowTagBean extends HtmlElement{
 	
 	private GridTagBean gridTagBean;
 //	protected List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
-	private Map<String, FieldTagBean> fields = new HashMap<String, FieldTagBean>();
+	private Map<String, FieldTagBean> fields = new LinkedHashMap<String, FieldTagBean>();
 	private RowType type;
 	private boolean renderHeader;
 

@@ -45,8 +45,20 @@ public interface BaseEntityManager extends CreateQueryable {
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
 
 	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties);
+	/*****
+	 * {@link #findByProperties(Class, Map)} 同义词
+	 * @param entityClass
+	 * @param properties
+	 * @return
+	 */
 	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties);
 
+	/*****
+	 * 根据属性查询列表
+	 * @param entityClass
+	 * @param properties
+	 * @return
+	 */
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
 	
 //	public <T> List<T> findList(QueryBuilder squery);

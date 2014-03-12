@@ -16,7 +16,8 @@ import org.springframework.scripting.support.ScriptFactoryPostProcessor;
 //@ComponentScan(basePackageClasses=PluginModelContext.class)
 public class PluginModelContext {
 
-	public static final String GROOVY_CONFIG_PATH = "/groovy/groovyconfig.properties";
+	private static final String GROOVY_CONFIG_BASE = "/groovy/groovy-config";
+	public static final String GROOVY_CONFIG_PATH = GROOVY_CONFIG_BASE + ".properties";
 	
 	@Resource
 	private AppConfig appConfig;
@@ -29,7 +30,7 @@ public class PluginModelContext {
 	
 	@Bean
 	public PropertiesFactoryBean groovyPluginProperties() {
-		String envLocation = "/groovy/groovyconfig-" + appConfig.getAppEnvironment() + ".properties";
+		String envLocation = GROOVY_CONFIG_BASE + "-" + appConfig.getAppEnvironment() + ".properties";
 		return SpringUtils.createPropertiesBySptring(GROOVY_CONFIG_PATH, envLocation);
 	}
 
