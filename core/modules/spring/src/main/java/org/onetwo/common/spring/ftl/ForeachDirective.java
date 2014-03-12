@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
@@ -20,11 +21,14 @@ public class ForeachDirective implements NamedDirective {
 
 	public static final String PARAMS_LIST = "list";
 	public static final String PARAMS_SEPARATOR = "separator";
+	public static final String PARAMS_JOINER = "joiner";
 
 	@Override
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 		TemplateModel listModel = FtlUtils.getRequiredParameter(params, PARAMS_LIST);
-		String separator = FtlUtils.getParameterByString(params, PARAMS_SEPARATOR, "");
+		String joiner = FtlUtils.getParameterByString(params, PARAMS_JOINER, "");
+		if(StringUtils.isBlank(joiner))
+			joiner = FtlUtils.getParameterByString(params, PARAMS_SEPARATOR, "");//兼容当初定义错的写法
 		
 		Object datas = null;
 		if(listModel instanceof BeanModel){
@@ -42,7 +46,7 @@ public class ForeachDirective implements NamedDirective {
 				loopVars[1] = FtlUtils.wrapAsModel(index);
 			
 			if(index!=0)
-				env.getOut().write(separator);
+				env.getOut().write(joiner);
 			
 			body.render(env.getOut());
 			index++;

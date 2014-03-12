@@ -259,6 +259,20 @@ public class JFishList<E> implements List<E>, Serializable {
 		return maps;
 	}
 	
+	public <K> Map<K, List<E>> groupBy(final String propName){
+		final ListMap<K, E> maps = ListMap.newLinkedListMap();
+		each(new NoIndexIt<E>() {
+
+			@Override
+			protected void doIt(E element) throws Exception {
+				K rs = (K)ReflectUtils.getProperty(element, propName);
+				maps.putElement(rs, element);
+			}
+			
+		});
+		return maps;
+	}
+	
 	/*public void doInResult(It<E> it, final List<?> result){
 		List<String> strs = new ArrayList<String>();
 		this.each(new It<E>(){
