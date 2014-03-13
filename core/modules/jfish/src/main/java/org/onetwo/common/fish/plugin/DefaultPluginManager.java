@@ -221,7 +221,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 					rspath = StringUtils.appendEndWith(rspath, "/");
 					config.addPluginTemplateLoader(e.getPluginInfo().getName(), rspath);
 					
-					logger.info("add plugin["+e+"]resource path : " + rspath);
+					logger.info("add plugin["+e.getPluginInfo().getName()+"]resource path : " + rspath);
 				}
 				
 				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onMvcBuildFreeMarkerConfigurer(config, hasBuilt);
