@@ -1,6 +1,5 @@
 package org.onetwo.plugins.activemq.model;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,14 +41,14 @@ public class PluginModelContext implements InitializingBean {
 	@Resource
 	private ApplicationContext applicationContext;
 	
-	@Resource
-    private ConnectionFactory connectionFactory;
+//	@Resource
+//    private ConnectionFactory connectionFactory;
 
 	@Resource
 	private AppConfig appConfig;
 	
-//	@Resource
-//	private Properties activemqConfig;
+	@Resource
+	private Properties activemqConfig;
 //	private PropertiesWraper activemqConfigWraper;
 
 	@Bean
@@ -60,12 +59,6 @@ public class PluginModelContext implements InitializingBean {
 
 	@Bean
 	public PropertiesWraper activemqConfigWrapper() {
-		Properties activemqConfig;
-		try {
-			activemqConfig = activemqConfig().getObject();
-		} catch (IOException e) {
-			throw new BaseException("get active config error", e);
-		}
 		PropertiesWraper activemqConfigWraper = PropertiesWraper.wrap(activemqConfig);
 		return activemqConfigWraper;
 	}
@@ -75,7 +68,7 @@ public class PluginModelContext implements InitializingBean {
 		ActiveMQConnectionFactory pcf = new ActiveMQConnectionFactory();
 		PropertiesWraper activemqConfigWraper = activemqConfigWrapper();
 		String brokerURL = activemqConfigWraper.getAndThrowIfEmpty(ACTIVEMQ_BROKER_URL);
-//		pcf.setBrokerURL("tcp://localhost:61616");
+//		String brokerURL = "tcp://localhost:61616";
 		logger.info("activemq server broker url: " + brokerURL);
 		pcf.setBrokerURL(brokerURL);
 		return pcf;
@@ -99,7 +92,7 @@ public class PluginModelContext implements InitializingBean {
 	@Bean
 	public JmsTemplate jmsTemplate(){
 		JmsTemplate jmst = new JmsTemplate();
-		jmst.setConnectionFactory(this.connectionFactory);
+		jmst.setConnectionFactory(connectionFactory());
 		return jmst;
 	}
 
@@ -113,6 +106,7 @@ public class PluginModelContext implements InitializingBean {
 			logger.info("registered activemq queue : " + queueName);
 		}
 		
+		ConnectionFactory connectionFactory = connectionFactory();
 		List<MessageReceiver> messageReceivers = SpringUtils.getBeans(applicationContext, MessageReceiver.class);
 		for(MessageReceiver<Object> messageReceiver : messageReceivers){
 			MessageListenerAdapter adapter = new MessageListenerAdapter(messageReceiver);
