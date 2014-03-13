@@ -36,7 +36,7 @@ public class PropertiesWraper implements VariableSupporter {
 		
 	};
 	
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger logger = LoggerFactory.getLogger(PropertiesWraper.class);
 	
 	protected Properties config = new Properties();
 

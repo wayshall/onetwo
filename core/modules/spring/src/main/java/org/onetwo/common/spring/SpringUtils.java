@@ -193,7 +193,7 @@ final public class SpringUtils {
 	
 
 	public static <T> T registerBean(ApplicationContext context, Class<?> beanClass, Object...params){
-		return registerBean(context, null, beanClass, params);
+		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
 	public static <T> T registerBean(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);

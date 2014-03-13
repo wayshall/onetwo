@@ -17,6 +17,7 @@
  	<modules>
 		<module>o2o-model</module>
 		<module>o2o-web</module>
+		<module>o2o-manager</module>
 	</modules>
 	
 
