@@ -1,5 +1,6 @@
 package org.onetwo.plugins.activemq.model;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,6 +33,7 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 //@ComponentScan(basePackageClasses=PluginModelContext.class)
 public class PluginModelContext implements InitializingBean {
 
+	private static final String ACTIVEMQ_BROKER_URL = "broker.url";
 	private static final String ACTIVEMQ_CONFIG_BASE = "/activemq/activemq-config";
 	public static final String ACTIVEMQ_CONFIG_PATH = ACTIVEMQ_CONFIG_BASE + ".properties";
 	
@@ -46,19 +48,36 @@ public class PluginModelContext implements InitializingBean {
 	@Resource
 	private AppConfig appConfig;
 	
-	@Resource
-	private Properties activemqConfig;
+//	@Resource
+//	private Properties activemqConfig;
+//	private PropertiesWraper activemqConfigWraper;
 
 	@Bean
 	public PropertiesFactoryBean activemqConfig() {
 		String envLocation = ACTIVEMQ_CONFIG_BASE + "-" + appConfig.getAppEnvironment() + ".properties";
 		return SpringUtils.createPropertiesBySptring(ACTIVEMQ_CONFIG_PATH, envLocation);
 	}
+
+	@Bean
+	public PropertiesWraper activemqConfigWrapper() {
+		Properties activemqConfig;
+		try {
+			activemqConfig = activemqConfig().getObject();
+		} catch (IOException e) {
+			throw new BaseException("get active config error", e);
+		}
+		PropertiesWraper activemqConfigWraper = PropertiesWraper.wrap(activemqConfig);
+		return activemqConfigWraper;
+	}
 	
 	@Bean
 	public ActiveMQConnectionFactory activeMQConnectionFactory(){
 		ActiveMQConnectionFactory pcf = new ActiveMQConnectionFactory();
-		pcf.setBrokerURL("tcp://localhost:61616");
+		PropertiesWraper activemqConfigWraper = activemqConfigWrapper();
+		String brokerURL = activemqConfigWraper.getAndThrowIfEmpty(ACTIVEMQ_BROKER_URL);
+//		pcf.setBrokerURL("tcp://localhost:61616");
+		logger.info("activemq server broker url: " + brokerURL);
+		pcf.setBrokerURL(brokerURL);
 		return pcf;
 	}
 
@@ -86,8 +105,9 @@ public class PluginModelContext implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		PropertiesWraper wraper = PropertiesWraper.wrap(activemqConfig);
-		List<String> queueNames = wraper.getPropertyWithSplit("queue", ",");
+		PropertiesWraper activemqConfigWraper = activemqConfigWrapper();
+		
+		List<String> queueNames = activemqConfigWraper.getPropertyWithSplit("queue", ",");
 		for(String queueName :queueNames){
 			SpringUtils.registerBean(applicationContext, queueName, ActiveMQQueue.class, "physicalName", queueName);
 			logger.info("registered activemq queue : " + queueName);
