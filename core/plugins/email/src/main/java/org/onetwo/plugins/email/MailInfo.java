@@ -1,10 +1,11 @@
 package org.onetwo.plugins.email;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class MailInfo {
+public class MailInfo implements Serializable{
 	
 	public static MailInfo create(String from, String...to){
 		MailInfo m = new MailInfo();
