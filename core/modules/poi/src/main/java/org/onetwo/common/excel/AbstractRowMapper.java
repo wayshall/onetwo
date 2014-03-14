@@ -36,6 +36,7 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 		return this.getClass().getName();
 	}
 
+	@Override
 	public T mapDataRow(Sheet sheet, List<String> names, Row row, int rowIndex){
 		return this.mapDataRow(names, row, rowIndex);
 	}
@@ -48,7 +49,7 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 		return this.mapTitleRow(sheet);
 	}
 	
-	public List<String> mapTitleRow(Sheet sheet) {
+	protected List<String> mapTitleRow(Sheet sheet) {
 		try {
 			Row titleRow = sheet.getRow(0);
 			return ExcelUtils.getRowValues(titleRow);
