@@ -50,6 +50,24 @@ public abstract class WorkbookReaderFactory {
 		}
 		
 	}
+	
+	public static class DoubleConvertor implements CellValueConvertor{
+
+		@Override
+		public Double convert(Cell cell) {
+			if(cell==null)
+				return null;
+			int type = cell.getCellType();
+			Double value = null;
+			if(Cell.CELL_TYPE_STRING==type){
+				value = Double.parseDouble(cell.getStringCellValue());
+			}else if(Cell.CELL_TYPE_NUMERIC==type){
+				value = cell.getNumericCellValue();
+			}
+			return value;
+		}
+		
+	}
 
 	public static class StringConvertor implements CellValueConvertor{
 
@@ -105,6 +123,8 @@ public abstract class WorkbookReaderFactory {
 		convertors.put("int", new IntegerConvertor());
 		convertors.put("integer", new IntegerConvertor());
 		convertors.put("long", new LongConvertor());
+		convertors.put("double", new DoubleConvertor());
+		convertors.put("float", new DoubleConvertor());
 		convertors.put("string", new StringConvertor());
 		convertors.put("date", new DateConvertor());
 	}
