@@ -1,5 +1,8 @@
 package org.onetwo.common.excel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
@@ -14,6 +17,40 @@ public class ExcelBufferReaderTest {
 	
 	@Before
 	public void init(){
+	}
+
+	@Test
+	public void testTitleMapper(){
+		String path = "card_index.xlsx";
+//		this.workbook = ExcelUtils.readWorkbookFromClasspath(path);
+		BeanRowMapper<CardEntity> beanMapper = BeanRowMapper.map(CardEntity.class, 0, "cardNo", 1, "userName", 2, "cardPwd", 3, "cardType.id", 4, "cardType.cardBean.cardNo");
+
+		List<String> cardNos = Arrays.asList("111111", "222222", "33333", "44444");
+		WorkbookReader reader = WorkbookReaderFactory.createWorkbookByMapper(beanMapper);
+		List<CardEntity> cardList = reader.readFirstSheet(path);
+		Assert.assertEquals(4, cardList.size());
+		int rowIndex = 0;
+		for(CardEntity card : cardList){
+			Assert.assertEquals(cardNos.get(rowIndex), card.getCardNo());
+			rowIndex++;
+		}
+	}
+
+	@Test
+	public void testTitleMapperByName(){
+		String path = "card_cnname.xlsx";
+//		this.workbook = ExcelUtils.readWorkbookFromClasspath(path);
+		BeanRowMapper<CardEntity> beanMapper = BeanRowMapper.map(CardEntity.class, "卡号", "cardNo", "姓名", "userName", "密码", "cardPwd", "类型", "cardType.id", "卡号2", "cardType.cardBean.cardNo");
+
+		List<String> cardNos = Arrays.asList("111111", "222222", "33333", "44444");
+		WorkbookReader reader = WorkbookReaderFactory.createWorkbookByMapper(beanMapper);
+		List<CardEntity> cardList = reader.readFirstSheet(path);
+		Assert.assertEquals(4, cardList.size());
+		int rowIndex = 0;
+		for(CardEntity card : cardList){
+			Assert.assertEquals(cardNos.get(rowIndex), card.getCardNo());
+			rowIndex++;
+		}
 	}
 
 	@Test
@@ -34,6 +71,7 @@ public class ExcelBufferReaderTest {
 		}
 		Assert.assertEquals(((RowMapperSheetBufferReader)reader).getRowCount(), 5);
 	}
+	
 	@Test
 	public void testWorkbook(){
 		this.workbook = ExcelUtils.readWorkbookFromClasspath(path);
