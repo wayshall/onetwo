@@ -7,8 +7,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.excel.ExcelReader.CellValueConvertor;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -16,7 +18,7 @@ import com.google.common.collect.Maps;
 
 public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	
-	public static enum MapperType {
+	private static enum MapperType {
 		DEFAULT,
 		NAME,
 		CELL_INDEX
@@ -90,6 +92,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 
 	@Override
 	public T mapDataRow(List<String> names, Row row, int rowIndex) {
+		if(isIgnoreRow(row))
+			return null;
 		int cellCount = row.getPhysicalNumberOfCells();
 		
 		T bean = newBean();
@@ -113,7 +117,17 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		return bean;
 	}
 	
+	protected boolean isIgnoreRow(Row row){
+		return false;
+	}
 
+	/***
+	 * 自定义获取对应列的值
+	 * @param cell
+	 * @param titleName
+	 * @param cellINdex
+	 * @return
+	 */
 	protected Object getCellValue(Cell cell, String titleName, int cellINdex){
 		return null;
 	}
@@ -126,21 +140,29 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	 * @param cellValue
 	 */
 	protected void setBeanProperty(BeanWrapper bw, String name, Cell cell, Object cellValue){
+		if(StringUtils.isBlank(name))
+			return ;
 		Object value = null;
-		if(cellValue==null && autoGetCellValue){
-			CellValueConvertor convertor = this.getCellValueConvertor(name);
-			if(convertor==null){
-				Class<?> type = bw.getPropertyType(name);
-				convertor = this.getCellValueConvertor(type.getSimpleName());
+		try {
+			if(cellValue==null && autoGetCellValue){
+				CellValueConvertor convertor = this.getCellValueConvertor(name);
+				if(convertor==null){
+					Class<?> type = bw.getPropertyType(name);
+					if(type!=null)
+						convertor = this.getCellValueConvertor(type.getSimpleName());
+				}
+				if(convertor!=null)
+					value = convertor.convert(cell);
+				else
+					value = ExcelUtils.getCellValue(cell);
+			}else{
+				value = cellValue;
 			}
-			if(convertor!=null)
-				value = convertor.convert(cell);
-			else
-				value = ExcelUtils.getCellValue(cell);
-		}else{
-			value = cellValue;
+			if(value!=null)
+				bw.setPropertyValue(name, value);
+		} catch (Exception e) {
+			throw new BaseException("set property["+name+"] error, value: "+value, e);
 		}
-		bw.setPropertyValue(name, value);
 	}
 	
 	protected String getPropertyName(Cell cell, String name, int cellINdex){
