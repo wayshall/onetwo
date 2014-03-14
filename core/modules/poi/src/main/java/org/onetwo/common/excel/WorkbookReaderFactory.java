@@ -163,6 +163,11 @@ public abstract class WorkbookReaderFactory {
 		return wb;
 	}
 
+	public static WorkbookReader createWorkbookByMapper(SSFRowMapper<?> rowMapper){
+		WorkbookReader wb = new DefaultRowMapperWorkbookReader(rowMapper);
+		return wb;
+	}
+
 	public static ExcelReader createDefaultExcelReader(){
 		ExcelReader wb = new DefaultPOIExcelReader();
 		return wb;
