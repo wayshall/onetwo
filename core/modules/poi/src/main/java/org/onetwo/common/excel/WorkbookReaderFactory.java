@@ -3,9 +3,9 @@ package org.onetwo.common.excel;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.onetwo.common.excel.ExcelReader.CellValueConvertor;
 import org.onetwo.common.excel.ListRowMapper.StringListRowMapper;
 import org.onetwo.common.utils.DateUtil;
 
@@ -13,12 +13,26 @@ import org.onetwo.common.utils.DateUtil;
 @SuppressWarnings("unchecked")
 public abstract class WorkbookReaderFactory {
 	
-	public static class IntegerConvertor implements CellValueConvertor{
+	abstract public static class AbstractCellValueConvertor implements CellValueConvertor {
 
-		@Override
-		public Integer convert(Cell cell) {
+		public Object convert(Cell cell) {
 			if(cell==null)
 				return null;
+			Object val = doConvert(cell);
+			return val;
+		}
+		
+		protected String getAsString(Cell cell){
+			cell.setCellType(Cell.CELL_TYPE_STRING);
+			return cell.getStringCellValue();
+		}
+		abstract protected Object doConvert(Cell cell);
+	}
+	
+	public static class IntegerConvertor extends AbstractCellValueConvertor {
+
+		@Override
+		public Integer doConvert(Cell cell) {
 			int type = cell.getCellType();
 			Integer value = null;
 			if(Cell.CELL_TYPE_STRING==type){
@@ -26,18 +40,18 @@ public abstract class WorkbookReaderFactory {
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.intValue();
+			}else{
+				value = Integer.parseInt(getAsString(cell));
 			}
 			return value;
 		}
 		
 	}
 	
-	public static class LongConvertor implements CellValueConvertor{
+	public static class LongConvertor extends AbstractCellValueConvertor {
 
 		@Override
-		public Long convert(Cell cell) {
-			if(cell==null)
-				return null;
+		public Long doConvert(Cell cell) {
 			int type = cell.getCellType();
 			Long value = null;
 			if(Cell.CELL_TYPE_STRING==type){
@@ -45,40 +59,40 @@ public abstract class WorkbookReaderFactory {
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.longValue();
+			}else{
+				value = Long.parseLong(getAsString(cell));
 			}
 			return value;
 		}
 		
 	}
 	
-	public static class DoubleConvertor implements CellValueConvertor{
+	public static class DoubleConvertor extends AbstractCellValueConvertor {
 
 		@Override
-		public Double convert(Cell cell) {
-			if(cell==null)
-				return null;
+		public Double doConvert(Cell cell) {
 			int type = cell.getCellType();
 			Double value = null;
 			if(Cell.CELL_TYPE_STRING==type){
 				value = Double.parseDouble(cell.getStringCellValue());
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getNumericCellValue();
+			}else{
+				value = Double.parseDouble(getAsString(cell));
 			}
 			return value;
 		}
 		
 	}
 
-	public static class StringConvertor implements CellValueConvertor{
+	public static class StringConvertor extends AbstractCellValueConvertor {
 
 		@Override
-		public String convert(Cell cell) {
-			if(cell==null)
-				return null;
+		public String doConvert(Cell cell) {
 			int type = cell.getCellType();
 			String value = null;
 			if(Cell.CELL_TYPE_STRING==type){
-				value = cell.getStringCellValue();
+				value = cell.getStringCellValue().trim();
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				if(dvalue!=null){
@@ -96,12 +110,10 @@ public abstract class WorkbookReaderFactory {
 		}
 		
 	}
-	public static class DateConvertor implements CellValueConvertor{
+	public static class DateConvertor extends AbstractCellValueConvertor {
 
 		@Override
-		public Date convert(Cell cell) {
-			if(cell==null)
-				return null;
+		public Date doConvert(Cell cell) {
 			int type = cell.getCellType();
 			Date value = null;
 			if(Cell.CELL_TYPE_STRING==type){
@@ -109,7 +121,7 @@ public abstract class WorkbookReaderFactory {
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getDateCellValue();
 			}else {
-				value = null;
+				value = DateUtil.parse(getAsString(cell));
 			}
 			return value;
 		}
@@ -120,16 +132,16 @@ public abstract class WorkbookReaderFactory {
 	
 	static{
 		convertors = new HashMap<String, CellValueConvertor>();
-		convertors.put("int", new IntegerConvertor());
-		convertors.put("integer", new IntegerConvertor());
-		convertors.put("long", new LongConvertor());
-		convertors.put("double", new DoubleConvertor());
-		convertors.put("float", new DoubleConvertor());
-		convertors.put("string", new StringConvertor());
-		convertors.put("date", new DateConvertor());
+		convertors.put(int.class.getSimpleName(), new IntegerConvertor());
+		convertors.put(Integer.class.getSimpleName().toLowerCase(), new IntegerConvertor());
+		convertors.put(Long.class.getSimpleName().toLowerCase(), new LongConvertor());
+		convertors.put(Double.class.getSimpleName().toLowerCase(), new DoubleConvertor());
+		convertors.put(Float.class.getSimpleName().toLowerCase(), new DoubleConvertor());
+		convertors.put(String.class.getSimpleName().toLowerCase(), new StringConvertor());
+		convertors.put(Date.class.getSimpleName().toLowerCase(), new DateConvertor());
 	}
 
-	public static Map<String, WorkbookReader> WORKBOOK_CACHES = new HashMap<String, WorkbookReader>();
+	private static Map<String, WorkbookReader> WORKBOOK_CACHES = new ConcurrentHashMap<String, WorkbookReader>();
 	static {
 		WorkbookReader listWb = new DefaultRowMapperWorkbookReader(new ListRowMapper());
 //		listWb.setRowMapper(new ListRowMapper());
@@ -166,17 +178,6 @@ public abstract class WorkbookReaderFactory {
 		WORKBOOK_CACHES.put(key, wb);
 		return wb;
 	}
-
-	/*public static WorkbookReader getWorkbookByMapper(Class<? extends SSFRowMapper<?>> rowMapperClass){
-		String key = rowMapperClass.getName();
-		WorkbookReader wb = WORKBOOK_CACHES.get(key);
-		if(wb!=null)
-			return wb;
-		wb = new DefaultWorkbookReader();
-		wb.setRowMapper(ReflectUtils.newInstance(rowMapperClass));
-		WORKBOOK_CACHES.put(key, wb);
-		return wb;
-	}*/
 
 	public static WorkbookReader getWorkbookByMapper(SSFRowMapper<?> rowMapper){
 		WorkbookReader wb = new DefaultRowMapperWorkbookReader(rowMapper);
