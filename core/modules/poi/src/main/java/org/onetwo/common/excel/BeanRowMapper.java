@@ -109,6 +109,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			if(i<=cellCount){
 				cell = row.getCell(i);
 			}
+			if(cell==null)
+				continue;
 			Object cellValue = getCellValue(cell, name, i);
 			String propertyName = getPropertyName(cell, name, i);
 			this.setBeanProperty(bw, propertyName, cell, cellValue);
