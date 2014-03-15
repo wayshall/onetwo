@@ -491,10 +491,11 @@ public class LangUtils {
 	}
 	
 	public static BaseException asBaseException(String msg, Exception e){
-		if(e==null)
+		if(e==null){
 			return new BaseException(msg);
-		else if(e instanceof BaseException)
+		}else if(e instanceof BaseException){
 			return (BaseException) e;
+		}
 		
 		BaseException se = null;
 		if(msg==null)

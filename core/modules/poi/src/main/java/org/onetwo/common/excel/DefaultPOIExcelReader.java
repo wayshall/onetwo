@@ -13,9 +13,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class DefaultPOIExcelReader implements ExcelReader {
@@ -71,8 +73,10 @@ public class DefaultPOIExcelReader implements ExcelReader {
 				}
 			}
 			return datas;
-		} catch (Exception e) {
-			throw new ServiceException("read excel file error.", e);
+		}catch (ServiceException e) {
+			throw e;
+		}catch (Exception e) {
+			throw new BaseException("read excel file error.", e);
 		}
 	}
 	
@@ -92,8 +96,10 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		try {
 			in = new FileInputStream(file);
 			workbook = createWorkbook(in);
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new ServiceException("read excel error : " + file.getPath(), e);
+			throw new BaseException("read excel error : " + file.getPath(), e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}
@@ -116,8 +122,10 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		try {
 //			br.mark(1024*10);
 			workbook = WorkbookFactory.create(in);
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new ServiceException("Workbook reset error : " + in, e);
+			throw new BaseException("read excel inputstream error : " + in, e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}

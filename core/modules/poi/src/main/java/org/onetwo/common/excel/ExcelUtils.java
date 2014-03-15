@@ -144,13 +144,6 @@ abstract public class ExcelUtils {
 			value = cell.getStringCellValue();
 		}else if(Cell.CELL_TYPE_NUMERIC==type){
 			value = cell.getNumericCellValue();
-			if(value!=null && value.toString().indexOf(".")!=-1){
-				String str = value.toString();
-				int index = str.indexOf(".");
-				str = str.substring(index+1);
-				if(str.equals("0"))
-					value = ((Double)value).longValue();
-			}
 		}else if(Cell.CELL_TYPE_FORMULA==type){
 			value = cell.getCellFormula();
 		}else if(Cell.CELL_TYPE_BOOLEAN==type){
