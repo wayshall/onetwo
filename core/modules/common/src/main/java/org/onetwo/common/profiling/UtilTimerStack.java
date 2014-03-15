@@ -1,5 +1,8 @@
 package org.onetwo.common.profiling;
 
+import org.onetwo.common.log.MyLoggerFactory;
+import org.slf4j.Logger;
+
 
 /****
  * copy from struts 2
@@ -11,6 +14,7 @@ public class UtilTimerStack
     // A reference to the current ProfilingTimerBean
     protected static ThreadLocal<ProfilingTimerBean> current = new ThreadLocal<ProfilingTimerBean>();
 
+	public static final String PROFILE_LOGGER = "profileLogger";
     public static final String ACTIVATE_PROPERTY = "onetwo.profile.activate";
 
     /**
@@ -28,8 +32,9 @@ public class UtilTimerStack
     private static TimeLogger timeLogger;
 
     static {
+    	final Logger logger = MyLoggerFactory.getLogger(PROFILE_LOGGER);
         active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
-		timeLogger = new Log4jTimeLogger();
+		timeLogger = new Log4jTimeLogger(logger);
     }
 
     

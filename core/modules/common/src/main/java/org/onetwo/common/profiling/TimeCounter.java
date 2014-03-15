@@ -7,11 +7,23 @@ import org.onetwo.common.utils.LangUtils;
 
 public class TimeCounter {
 
+	public static TimeCounter create(Object target){
+		TimeCounter t = new TimeCounter(target);
+		return t;
+	}
+	public static TimeCounter start(Object target){
+		TimeCounter t = new TimeCounter(target);
+		t.start();
+		return t;
+	}
+
 	private Object target;
 	private Date start;
 	private Date stop;
 	private long costTime;
 	private boolean printMemory;
+	private StringBuilder message = new StringBuilder();
+    private TimeLogger timeLogger = TimeLogger.INSTANCE;
 
 
 	public TimeCounter(Object target) {
@@ -23,6 +35,10 @@ public class TimeCounter {
 	}
 
 	public Date start() {
+		if(printMemory){
+			message.append(LangUtils.statisticsMemory(""));
+		}
+		
 		long start = System.currentTimeMillis();
 		this.start = new Date(start);
 		return this.start;
@@ -35,7 +51,8 @@ public class TimeCounter {
 	}
 	
 	public Date restart(Object target) {
-		System.out.print("restart...");
+		timeLogger.log("restart time counter...");
+		this.message = new StringBuilder();
 		this.target = target;
 		return start();
 	}
@@ -44,13 +61,14 @@ public class TimeCounter {
 		long stopMills = System.currentTimeMillis();
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
-		String msg = this.target + " ----->>> start time[" + DateUtil.formatDateTimeMillis(start)
-				+ "], stop time[" + DateUtil.formatDateTimeMillis(this.stop)
-				+ "], cost time[" + this.costTime+" (millis), " + (this.costTime / 1000) + " (second)]";
+		message.append(this.target)
+				.append(" ----->>> start time[").append(DateUtil.formatDateTimeMillis(start))
+				.append("], stop time[").append(DateUtil.formatDateTimeMillis(this.stop))
+				.append("], cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]");
 		if(printMemory){
-			msg += "\n" + LangUtils.statisticsMemory("");
+			message.append("\n").append(LangUtils.statisticsMemory(""));
 		}
-		System.out.println(msg);
+		timeLogger.log(message.toString());
 		return this.stop;
 	}
 	
