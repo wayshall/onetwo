@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
@@ -93,65 +91,33 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		InputStream in = null;
 		try {
 			in = new FileInputStream(file);
-			workbook = WorkbookFactory.create(in);
+			workbook = createWorkbook(in);
 		} catch (Exception e) {
-			IOUtils.closeQuietly(in);
-			workbook = createWorkbookByExt(file);
+			throw new ServiceException("read excel error : " + file.getPath(), e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}
 		return workbook;
 	}
 	
-	private Workbook createWorkbookByExt(File file){
-		Workbook workbook = null;
-		InputStream in = null;
-		try {
-			in = new FileInputStream(file);
-			workbook = createWorkbook(in, file.getName().endsWith(".xlsx"));
-		} catch (Exception e) {
-			IOUtils.closeQuietly(in);
-			try {
-				in = new FileInputStream(file);
-				workbook = createWorkbook(in, !file.getName().endsWith(".xlsx"));
-			} catch (Exception ee) {
-				throw new ServiceException("createWorkbook error : " + file.getPath(), ee);
-			}
-		}finally{
-			IOUtils.closeQuietly(in);
-		}
-		return workbook;
-	}
-	
+	/*
 	protected Workbook createWorkbook(InputStream in, boolean isXssf) {
 		Workbook workbook = null;
 		try {
-			if(isXssf){
-				workbook = new XSSFWorkbook(in);
-			}else{
-				workbook = new HSSFWorkbook(in);
-			}
+			workbook = WorkbookFactory.create(in);
 		} catch (Exception e) {
 			throw new ServiceException("createWorkbook error : " + in, e);
 		}
 		return workbook;
-	}
+	}*/
 	
 	protected Workbook createWorkbook(InputStream in){
 		Workbook workbook = null;
 		try {
 //			br.mark(1024*10);
-			workbook = createWorkbook(in, true);
+			workbook = WorkbookFactory.create(in);
 		} catch (Exception e) {
-			try {
-				if(in.markSupported()){
-					in.mark(1024*10);//10kb
-				}
-				in.reset();
-			} catch (Exception ee) {
-				throw new ServiceException("Workbook reset error : " + in, ee);
-			}
-			workbook = createWorkbook(in, false);
+			throw new ServiceException("Workbook reset error : " + in, e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}

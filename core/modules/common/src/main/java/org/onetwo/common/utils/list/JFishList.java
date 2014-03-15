@@ -259,7 +259,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return maps;
 	}
 	
-	public <K> Map<K, List<E>> groupBy(final String propName){
+	public <K> ListMap<K, E> groupBy(final String propName){
 		final ListMap<K, E> maps = ListMap.newLinkedListMap();
 		each(new NoIndexIt<E>() {
 

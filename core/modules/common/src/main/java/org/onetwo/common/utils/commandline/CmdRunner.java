@@ -29,7 +29,7 @@ public class CmdRunner {
 			logger.error("startAppContext error : " + e.getMessage(), e);
 		}
 		loadCommand(args);
-		waitForCommand();
+		onRuning();
 	}
 	
  
@@ -46,6 +46,11 @@ public class CmdRunner {
 		return new SimpleCmdContext(br);
 	}
 
+
+	protected void onRuning() {
+		this.waitForCommand();
+	}
+	
 	protected void waitForCommand() {
 		InputStreamReader reader = null;
 		try {
