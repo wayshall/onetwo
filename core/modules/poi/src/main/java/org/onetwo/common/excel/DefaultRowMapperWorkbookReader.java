@@ -44,12 +44,12 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		return (List<T>)map.values().iterator().next();
 	}
 	
-	@Override
+	/*@Override
 	public <T> List<T> readFirstSheet(InputStream in, boolean excel2007) {
 		Workbook workbook = createWorkbook(in, excel2007);
 		Map<String, List<?>> map = readData(workbook, 0, 1);
 		return (List<T>)map.values().iterator().next();
-	}
+	}*/
 
 	public Map<String, List<?>> readData(String path){
 		Workbook workbook = createWorkbook(path);
@@ -62,12 +62,12 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		return readData(workbook);
 	}
 	
-	@Override
+	/*@Override
 	public Map<String, List<?>> readData(InputStream in, boolean excel2007) {
 		Assert.notNull(in);
 		Workbook workbook = createWorkbook(in, excel2007);
 		return readData(workbook);
-	}
+	}*/
 
 	public Map<String, List<?>> readData(File file){
 		Assert.notNull(file);
