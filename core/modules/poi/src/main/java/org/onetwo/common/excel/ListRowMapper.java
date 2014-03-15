@@ -1,6 +1,5 @@
 package org.onetwo.common.excel;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +13,8 @@ public class ListRowMapper extends AbstractRowMapper<Object[]> {
 
 		@Override
 		protected Object getCellValue(Cell cell){
-			Object obj = super.getCellValue(cell);
-			if(Number.class.isInstance(obj)){
-				obj = new BigDecimal(obj.toString());
-			}
-			return obj.toString();
+			cell.setCellType(Cell.CELL_TYPE_STRING);
+			return cell.getStringCellValue();
 		}
 	}
 
@@ -44,6 +40,8 @@ public class ListRowMapper extends AbstractRowMapper<Object[]> {
 		Object val = null;
 		for (int i = 0; i < cellCount; i++) {
 			Cell cell = row.getCell(i);
+			if(cell==null)
+				continue;
 			val = getCellValue(cell);
 			list.add(val);
 		}
