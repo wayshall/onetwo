@@ -113,7 +113,7 @@ public class DataRowTagBean extends RowTagBean {
 		public Object translateFieldValue(DataFieldTag dft){
 			FieldTagBean component = dft.getComponent();
 			Object dataFieldValue= null;
-			if(!component.isAutoRender()){
+			if(component.isHtmlRender()){
 				BodyContent bc = dft.getBodyContent();
 				if(bc!=null){
 					dataFieldValue = putValue(component.getValue(), bc.getString(), component.getDataFormat());
