@@ -1,17 +1,26 @@
 package org.onetwo.app.task;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import org.onetwo.common.cmd.SpringCmdRunner;
+import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 import org.onetwo.common.utils.commandline.DefaultCommandManager;
 import org.onetwo.common.utils.commandline.HelpCommand;
+import org.slf4j.Logger;
 
 
 public class Main {
 
+	private static final Logger logger = MyLoggerFactory.getLogger(Main.class);
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		final Executor executor = Executors.newSingleThreadExecutor();
 		new SpringCmdRunner(){
 
 			@Override
@@ -28,7 +37,8 @@ public class Main {
 			
 			@Override
 			protected void onRuning() {
-				new MainTaskProcessor().doTask();
+				final MainTaskProcessor processor = SpringApplication.getInstance().getBean(MainTaskProcessor.class);
+				processor.doProcess();
 				super.onRuning();
 			}
 			
