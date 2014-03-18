@@ -17,7 +17,7 @@ public class SimpleTaskListenerRegistry {
 
 	private void registedDefaultListeners(){
 		Map<TaskType, TaskListenerGroup> listenerMap = Maps.newHashMap();
-		prepareListener(listenerMap, type, listener);
+//		prepareListener(listenerMap, type, listener);
 	}
 	
 	private <T> void prepareListener(Map<TaskType, TaskListenerGroup> listenerMap, TaskType<T> type, TaskListener listener){
