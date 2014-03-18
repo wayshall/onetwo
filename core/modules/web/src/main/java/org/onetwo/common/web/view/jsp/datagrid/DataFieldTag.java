@@ -49,8 +49,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		row.addField(component);
 		GridRowData cdata = getComponentFromRequest(DataRowTag.CURRENT_ROW_DATA, GridRowData.class);
 		if(cdata!=null){
-			Object dataFieldValue= null;
-			/*if(!component.isAutoRender()){
+			/*Object dataFieldValue= null;
+			if(!component.isAutoRender()){
 				BodyContent bc = getBodyContent();
 				if(bc!=null){
 					dataFieldValue = cdata.putValue(component.getValue(), bc.getString(), dataFormat);
@@ -59,7 +59,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 			}else{
 				dataFieldValue = cdata.translateValue(component.getValue(), dataFormat);
 			}*/
-			cdata.translateFieldValue(this);
+			Object dataFieldValue = cdata.translateFieldValue(this);
 			notifyDataFieldValueListener(cdata, dataFieldValue);
 		}
 		return EVAL_PAGE;
