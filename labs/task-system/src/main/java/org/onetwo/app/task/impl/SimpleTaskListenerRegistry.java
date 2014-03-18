@@ -1,11 +1,14 @@
-package org.onetwo.app.task;
+package org.onetwo.app.task.impl;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+import org.onetwo.app.task.TaskListener;
+import org.onetwo.app.task.TaskListenerGroup;
+import org.onetwo.app.task.TaskListenerRegistry;
+import org.onetwo.app.task.TaskType;
 
 @SuppressWarnings("rawtypes")
-public class SimpleTaskListenerRegistry {
+public class SimpleTaskListenerRegistry implements TaskListenerRegistry {
 
 	private Map<TaskType, TaskListenerGroup> listenerMap;
 	
@@ -16,23 +19,26 @@ public class SimpleTaskListenerRegistry {
 	}
 
 	private void registedDefaultListeners(){
-		Map<TaskType, TaskListenerGroup> listenerMap = Maps.newHashMap();
+//		Map<TaskType, TaskListenerGroup> listenerMap = Maps.newHashMap();
 //		prepareListener(listenerMap, type, listener);
 	}
 	
-	private <T> void prepareListener(Map<TaskType, TaskListenerGroup> listenerMap, TaskType<T> type, TaskListener listener){
+	public static <T> void prepareListener(Map<TaskType, TaskListenerGroup> listenerMap, TaskType<T> type, TaskListener listener){
 		TaskListenerGroup<T> group = new TaskListenerGroup<T>(type);
 		group.addListener(listener);
 		listenerMap.put(type, group);
-		this.listenerMap = listenerMap;
 	}
 	
 	public <T> TaskListenerGroup<T> getTaskListenerGroup(TaskType<T> type){
 		TaskListenerGroup<T> group = this.listenerMap.get(type);
+		if(group==null){
+			group = new TaskListenerGroup<T>(type);
+			this.listenerMap.put(type, group);
+		}
 		return group;
 	}
 
-	public <T> SimpleTaskListenerRegistry registed(TaskType<T> type, TaskListener...listeners){
+	public <T> TaskListenerRegistry registed(TaskType<T> type, TaskListener...listeners){
 		TaskListenerGroup<T> group = getTaskListenerGroup(type);
 		group.addListeners(listeners);
 		return this;
