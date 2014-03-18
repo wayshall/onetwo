@@ -2,8 +2,6 @@ package org.onetwo.app.task;
 
 public class TaskType<T> {
 	
-	public static final TaskType<T>
-	
 	private final String name;
 	private final Class<T> listenerType;
 	
