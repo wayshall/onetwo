@@ -4,10 +4,17 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 
-public class WorkbookModel {
+public class WorkbookModel implements PoiModel {
 	private String listener;
 	
 	private List<TemplateModel> sheets;
+	
+	@Override
+	public void initModel(){
+		for(TemplateModel template : sheets){
+			 template.initModel();
+		}
+	}
 
 	public List<TemplateModel> getSheets() {
 		return sheets;

@@ -100,10 +100,27 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		return this.workbookData.getWorkbook();
 	}
 
+	private void initWorkbookData(){
+		for(RowModel row : this.tempalte.getRows()){
+			for(FieldModel field : row.getFields()){
+				for(ExecutorModel model : field.getValueExecutors()){
+					if(model.getInstance()!=null){
+						this.workbookData.addFieldValueExecutor(model, model.getInstance());
+					}else{
+						FieldValueExecutor executor = (FieldValueExecutor)this.workbookData.getExcelValueParser().parseValue(model.getExecutor(), null, null);
+						if(executor!=null)
+							this.workbookData.addFieldValueExecutor(model, executor);
+					}
+				}
+				
+			}
+		}
+	}
 
 	@Override
 	public void generateIt() {
-		this.tempalte.initModel(workbookData);
+		this.initWorkbookData();
+		
 		ExportDatasource ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
 			ds = new ListExportDatasource(tempalte, Collections.EMPTY_LIST);
@@ -171,7 +188,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 				UtilTimerStack.push(rowname);
 			}
 //			Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
-			RowDataContext datacontext = new RowDataContext(sheetData, row);
+			RowDataContext datacontext = new RowDataContext(workbookData, sheetData, row);
 			this.rowProcessors.get(row.getType()).processRow(datacontext);
 			if(printTime){
 				UtilTimerStack.pop(rowname);
