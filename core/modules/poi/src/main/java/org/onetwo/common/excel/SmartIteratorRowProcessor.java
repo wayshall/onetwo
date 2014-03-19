@@ -18,10 +18,10 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //		Cell cell = createCell(row.getSheet(), row, field, -1, ele);
 //		Object ele = cellContext.objectValue;
 		Row row = cellContext.getCurrentRow();
-		FieldModel field = cellContext.field;
+		FieldModel field = cellContext.getField();
 		int cellIndex = cellContext.getCellIndex();
 		
-		Object v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
+		Object v = getFieldValue(cellContext.getObjectValue(), field, cellContext.getDefFieldValue());
 		cellContext.setFieldValue(v);
 		
 		if(Collection.class.isInstance(v)){
@@ -30,12 +30,16 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //			Row currentRow = null;
 //			int cellIndex = row.getLastCellNum();
 			for(Object value : values){
-				this.doFieldValueExecutors(field, cellContext.parser, value);
+				cellContext.setFieldValue(value);
+				this.doFieldValueExecutors(cellContext);
 //				currentRow = row.getSheet().getRow(row.getRowNum()+rowCount);
-				this.createSingleCell(cellContext.objectValue, row, field, rowCount, cellIndex, value);
+				this.createSingleCell(cellContext, rowCount, cellIndex, value);
 //				cellIndex = cell.getColumnIndex();
 				rowCount++;
 				cellContext.addRowSpanCount(1);
+				
+				//clear
+				cellContext.setFieldValue(null);
 			}
 		}else{
 //			this.createSingleCell(ele, row, field, cellIndex, v);
@@ -45,15 +49,15 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
 	}
 	
-	private Cell createSingleCell(Object ele, Row row, FieldModel field, int rowCount, int cellIndex, Object cellValue){
+	private Cell createSingleCell(CellContext cellContext, int rowCount, int cellIndex, Object cellValue){
 		Cell cell = null;
-		if(row==null)
-			throw new BaseException("the cell of row has not created yet : " + field.getName());
+		if(cellContext==null)
+			throw new BaseException("the cell of row has not created yet : " + cellContext.getField().getName());
 
-		CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), ele, rowCount, row, field, cellIndex);
-		cell = createCell(cellContext);
+		CellContext subCellContext = createCellContext(this.generator.getExcelValueParser(), cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getField(), cellIndex);
+		cell = createCell(subCellContext);
 		
-		setCellValue(field, cell, cellValue);
+		setCellValue(cellContext.getField(), cell, cellValue);
 		
 		return cell;
 	}

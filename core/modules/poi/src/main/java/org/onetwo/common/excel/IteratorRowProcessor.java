@@ -61,14 +61,16 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 			for (int i = 0; i < iterator.size(); i++) {
 				
 				field = iterator.getField(i);
-				field.setParentRow(iterator);
+//				field.setParentRow(iterator);
 
 				/*if(profile){
 					UtilTimerStack.push(field.getName());
 				}*/
 				
 				//Cell cell = createCell(sheet, row, field);
-				this.processField(getFieldRootValue(ele, field), row, field);
+				rowContext.setCurrentRow(row);
+				this.processField(getFieldRootValue(ele, field), rowContext, field);
+				rowContext.setCurrentRow(null);
 				// putInContext(field.getName(), v);
 				
 				/*if(profile){

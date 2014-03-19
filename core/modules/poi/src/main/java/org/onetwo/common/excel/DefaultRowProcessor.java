@@ -63,9 +63,11 @@ public class DefaultRowProcessor implements RowProcessor {
 		
 //		Cell cell = null;
 		for (FieldModel field : rowModel.getFields()) {
-			field.setParentRow(rowModel);
+//			field.setParentRow(rowModel);
 			//cell = createCell(sheet, row, field);
-			this.processField(getFieldRootValue(null, field), row, field);
+			rowContext.setCurrentRow(row);
+			this.processField(getFieldRootValue(null, field), rowContext, field);
+			rowContext.setCurrentRow(null);
 		}
 	}
 	
@@ -133,14 +135,19 @@ public class DefaultRowProcessor implements RowProcessor {
 		return row;
 	}
 	
-	protected void doFieldValueExecutors(FieldModel field, ExcelValueParser parser, Object fieldValue){
-		if(!field.getFieldValueExecutors().isEmpty()){
-			for(ExecutorModel executor : field.getFieldValueExecutors()){
-				if(!executor.getFieldValueExecutor().apply(field, fieldValue))
+	protected void doFieldValueExecutors(CellContext cellContext){
+		FieldModel field = cellContext.getField();
+		ExcelValueParser parser = cellContext.getParser();
+		if(!field.getValueExecutors().isEmpty()){
+			for(ExecutorModel model : field.getValueExecutors()){
+				FieldValueExecutor executor = cellContext.getRowContext().getWorkbookData().getFieldValueExecutor(model);
+				if(executor==null)
+					throw new BaseException("not found executor: " + model.getExecutor());
+				if(!executor.apply(cellContext, model))
 					continue;
-				Object preValue = parser.getContext().get(executor.getName());
-				preValue = executor.getFieldValueExecutor().execute(field, executor, parser, fieldValue, preValue);
-				parser.getContext().put(executor.getName(), preValue);
+				Object preValue = parser.getContext().get(model.getName());
+				preValue = executor.execute(cellContext, model, preValue);
+				parser.getContext().put(model.getName(), preValue);
 			}
 		}
 	}
@@ -282,16 +289,19 @@ public class DefaultRowProcessor implements RowProcessor {
 		return fieldValue;
 	}
 	
-	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, Row row, FieldModel field, int cellIndex){
-		return new CellContext(parser, objectValue, objectValueIndex, row, field, cellIndex, getDefaultFieldValue(field));
+	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, RowDataContext rowContext, FieldModel field, int cellIndex){
+		CellContext cellContext = new CellContext(parser, objectValue, objectValueIndex, rowContext, field, cellIndex, getDefaultFieldValue(field));
+		rowContext.putCellContext(field.getName(), cellContext);
+		return cellContext;
 	}
 	
-	protected void processField(Object root, Row row, FieldModel field){
+	protected void processField(Object root, RowDataContext rowContext, FieldModel field){
+		Row row = rowContext.getCurrentRow();
 //		String pname = "processField";
 //		UtilTimerStack.push(pname);
 		int cellIndex = row.getLastCellNum();
 		if(root==null){
-			CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), null, 0, row, field, cellIndex);
+			CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), root, 0,  rowContext, field, cellIndex);
 			this.processSingleField(cellContext);
 		}else{
 			List<Object> rootList = LangUtils.asList(root);
@@ -301,7 +311,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.generator.getExcelValueParser().getContext().put("rootValue", rootList);
 			try{
 				for (int i = 0; i < rootList.size(); i++) {
-					CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount, row, field, cellIndex);
+					CellContext cellContext = createCellContext(this.generator.getExcelValueParser(), rootList.get(i), rowCount,  rowContext, field, cellIndex);
 					this.processSingleField(cellContext);
 					rowCount += cellContext.getRowSpanCount();
 				}
@@ -325,7 +335,8 @@ public class DefaultRowProcessor implements RowProcessor {
 			v = fl.getCellValue(cell, v);
 		}*/
 
-		this.doFieldValueExecutors(field, cellContext.parser, v);
+		cellContext.setFieldValue(v);
+		this.doFieldValueExecutors(cellContext);
 		
 //		v = formatValue(v, field.getDataFormat());
 		setCellValue(field, cell, v);
@@ -397,27 +408,29 @@ public class DefaultRowProcessor implements RowProcessor {
 	}*/
 	
 	public class CellContext {
-		public final ExcelValueParser parser;
-		public final Object objectValue;
-		public final int rowCount;
-		public final Row row;
-		public final FieldModel field;
-		public final Object defFieldValue;
+		private final ExcelValueParser parser;
+		private final Object objectValue;
+		private final int rowCount;
+		private final RowDataContext rowContext;
+		private final Row row;
+		private final FieldModel field;
+		private final Object defFieldValue;
 		private Object fieldValue;
 		private final int cellIndex;
 
 		private int rowSpanCount = 0;
 //		private Object fieldValue;
 		
-		public CellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, Row row, FieldModel field, int cellIndex, Object defValue) {
+		public CellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, RowDataContext rowContext, FieldModel field, int cellIndex, Object defValue) {
 			super();
+			this.rowContext = rowContext;
+			this.row = rowContext.getCurrentRow();
 			this.parser = parser;
 			this.objectValue = objectValue;
 			if(objectValueIndex<1){
 				objectValueIndex = row.getRowNum();
 			}
 			this.rowCount = objectValueIndex;
-			this.row = row;
 			this.field = field;
 			//row.getLastCellNum()
 			this.cellIndex = cellIndex;
@@ -494,6 +507,30 @@ public class DefaultRowProcessor implements RowProcessor {
 
 		public void setFieldValue(Object fieldValue) {
 			this.fieldValue = fieldValue;
+		}
+
+		public FieldModel getField() {
+			return field;
+		}
+
+		public ExcelValueParser getParser() {
+			return parser;
+		}
+
+		public Object getObjectValue() {
+			return objectValue;
+		}
+
+		public Row getRow() {
+			return row;
+		}
+
+		public Object getDefFieldValue() {
+			return defFieldValue;
+		}
+
+		public RowDataContext getRowContext() {
+			return rowContext;
 		}
 		
 	}
