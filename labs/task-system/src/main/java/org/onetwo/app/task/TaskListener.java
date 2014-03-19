@@ -2,7 +2,7 @@ package org.onetwo.app.task;
 
 public interface TaskListener {
 	
-	void onOffered(TaskData task);
+	void onQueued(TaskData task);
 	
 	Object onExecute(TaskData task);
 	
