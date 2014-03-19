@@ -19,11 +19,7 @@
 						http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="true">
 
-	<context:component-scan base-package="com.qyscard.bussync"></context:component-scan>
 	<context:annotation-config />
-	<bean class="org.onetwo.plugin.hibernate.HibernatePluginContext" />
-	<bean class="org.onetwo.plugins.dq.DqPluginContext" />
-	<bean class="com.qyscard.bussync.BusSyncContextConfig" />
 
 	<!-- real task -->
 	<bean id="dataSyncTaskJobDetail"
@@ -35,7 +31,7 @@
 	<bean id="dataSyncTaskTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="dataSyncTaskJobDetail" />
-		<property name="cronExpression" value="#{timerConfig.dataSyncTaskCronExpression}" />
+		<property name="cronExpression" value="#{taskConfig.dataSyncTaskCronExpression}" />
 	</bean>
 	
 	<bean id="schedulerFactory"
@@ -48,13 +44,4 @@
 		<property name="startupDelay" value="5"/>
 	</bean>
 	
-	<bean id="sessionFactory" class="org.onetwo.common.hibernate.ExtLocalSessionFactoryBean" >
-    	<property name="dataSource" ref="dataSource"/>
-    	<property name="packagesToScan">
-			<list>
-				<value>${jfish.base.packages}</value>
-			</list>
-		</property>
-  	</bean>
-
 </beans>

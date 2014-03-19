@@ -23,7 +23,7 @@ public class TimeCounter {
 	private long costTime;
 	private boolean printMemory;
 	private StringBuilder message = new StringBuilder();
-    private TimeLogger timeLogger = TimeLogger.INSTANCE;
+    private JFishLogger timeLogger = JFishLogger.INSTANCE;
 
 
 	public TimeCounter(Object target) {

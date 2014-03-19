@@ -5,16 +5,16 @@ import java.util.List;
 
 import org.onetwo.common.utils.list.JFishList;
 
-public class TaskListenerGroup<T> {
+public class TaskListenerGroup {
 	
-	private TaskType<T> taskType;
+	private TaskType taskType;
 	private List<TaskListener> listeners;
 	
-	public TaskListenerGroup(TaskType<T> taskType) {
+	public TaskListenerGroup(TaskType taskType) {
 		super();
 		this.taskType = taskType;
 	}
-	public TaskType<T> getTaskType() {
+	public TaskType getTaskType() {
 		return taskType;
 	}
 	
