@@ -29,11 +29,14 @@ public class CmdRunner {
 			logger.error("startAppContext error : " + e.getMessage(), e);
 		}
 		loadCommand(args);
+		initAfterLoadCommand(args);
 		onRuning();
 	}
 	
- 
+
 	protected void startAppContext(String[] args) {
+	}
+	protected void initAfterLoadCommand(String[] args) {
 	}
 
 	protected void loadCommand(String[] args) {

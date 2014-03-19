@@ -1,11 +1,17 @@
 package org.onetwo.common.excel;
 
+import java.util.Collections;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 public class ExecutorModel {
 
 	private String name;
 	private String executor;
-
-	private FieldValueExecutor fieldValueExecutor;
+	private FieldValueExecutor instance;
+	
+	private Map<String, String> attributes;
 
 	public String getName() {
 		return name;
@@ -23,12 +29,25 @@ public class ExecutorModel {
 		this.executor = executor;
 	}
 
-	public FieldValueExecutor getFieldValueExecutor() {
-		return fieldValueExecutor;
+	public FieldValueExecutor getInstance() {
+		return instance;
 	}
 
-	public void setFieldValueExecutor(FieldValueExecutor iteratorRowValueExecutor) {
-		this.fieldValueExecutor = iteratorRowValueExecutor;
+	public void setInstance(FieldValueExecutor instance) {
+		this.instance = instance;
 	}
+
+	public Map<String, String> getAttributes() {
+		return attributes==null?Collections.EMPTY_MAP:attributes;
+	}
+
+	public void addAttribute(String name, String value) {
+		if(this.attributes==null){
+			this.attributes = Maps.newHashMap();
+		}
+		this.attributes.put(name, value);
+	}
+	
+	
 
 }

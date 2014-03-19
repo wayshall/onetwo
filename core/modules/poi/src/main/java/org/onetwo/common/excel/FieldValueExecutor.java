@@ -1,11 +1,11 @@
 package org.onetwo.common.excel;
 
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
+import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
 
 public interface FieldValueExecutor {
 	
-	public boolean apply(FieldModel field, Object fieldVallue);
+	public boolean apply(CellContext cellContext, ExecutorModel executorModel);
 	
-	public Object execute(FieldModel field, ExecutorModel executorModel, ExcelValueParser parser, Object fieldVallue, Object preResult);
+	public Object execute(CellContext cellContext, ExecutorModel executorModel, Object preResult);
 
 }
