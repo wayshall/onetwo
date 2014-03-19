@@ -143,7 +143,7 @@ public class DefaultRowProcessor implements RowProcessor {
 				FieldValueExecutor executor = cellContext.getRowContext().getWorkbookData().getFieldValueExecutor(model);
 				if(executor==null)
 					throw new BaseException("not found executor: " + model.getExecutor());
-				if(!executor.apply(cellContext))
+				if(!executor.apply(cellContext, model))
 					continue;
 				Object preValue = parser.getContext().get(model.getName());
 				preValue = executor.execute(cellContext, model, preValue);
@@ -290,7 +290,9 @@ public class DefaultRowProcessor implements RowProcessor {
 	}
 	
 	protected CellContext createCellContext(ExcelValueParser parser, Object objectValue, int objectValueIndex, RowDataContext rowContext, FieldModel field, int cellIndex){
-		return new CellContext(parser, objectValue, objectValueIndex, rowContext, field, cellIndex, getDefaultFieldValue(field));
+		CellContext cellContext = new CellContext(parser, objectValue, objectValueIndex, rowContext, field, cellIndex, getDefaultFieldValue(field));
+		rowContext.putCellContext(field.getName(), cellContext);
+		return cellContext;
 	}
 	
 	protected void processField(Object root, RowDataContext rowContext, FieldModel field){
