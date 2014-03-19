@@ -5,7 +5,7 @@ import java.util.Date;
 import org.onetwo.common.utils.DateUtil;
 
 
-public class TimerOutputer implements TimeLogger {
+public class TimerOutputer implements JFishLogger {
 	
 	@Override
 	public void log(String msg){

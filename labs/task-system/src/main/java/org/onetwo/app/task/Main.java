@@ -1,8 +1,5 @@
 package org.onetwo.app.task;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import org.onetwo.common.cmd.SpringCmdRunner;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -20,7 +17,6 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final Executor executor = Executors.newSingleThreadExecutor();
 		new SpringCmdRunner(){
 
 			@Override

@@ -18,26 +18,11 @@ public class TaskConfig extends AppConfig {
 		super("siteConfig.properties");
 	}
 	
+	public int getTaskConsumerCount(){
+		return getInt("consumer.count", 1);
+	}
+	
 	public String getDataSyncTaskCronExpression(){
-		return getAndThrowIfEmpty("dataSyncTask.cronExpression");
-	}
-	
-	public String  getIp(){
-		return getProperty("tac.ip");
-	}
-	
-	public String  getPort(){
-		return getProperty("tac.port");
-	}
-	
-	public int  getEveryTime(){
-		String num = getProperty("every.time");
-		if(num==null||"".equals(num)){
-			return 0;
-		}else{
-			return  Integer.parseInt(num); 
-		}
-		
-		
+		return getProperty("dataSyncTask.cronExpression");
 	}
 }

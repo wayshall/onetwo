@@ -2,8 +2,8 @@ package org.onetwo.app.task;
 
 public interface TaskListenerRegistry {
 
-	public <T> TaskListenerGroup<T> getTaskListenerGroup(TaskType<T> type);
+	public  TaskListenerGroup getTaskListenerGroup(TaskType type);
 
-	public <T> TaskListenerRegistry registed(TaskType<T> type, TaskListener... listeners);
+	public  TaskListenerRegistry registed(TaskType type, TaskListener... listeners);
 
 }
