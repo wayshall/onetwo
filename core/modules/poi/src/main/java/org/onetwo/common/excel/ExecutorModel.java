@@ -4,8 +4,7 @@ public class ExecutorModel {
 
 	private String name;
 	private String executor;
-
-	private FieldValueExecutor fieldValueExecutor;
+	private FieldValueExecutor instance;
 
 	public String getName() {
 		return name;
@@ -23,12 +22,12 @@ public class ExecutorModel {
 		this.executor = executor;
 	}
 
-	public FieldValueExecutor getFieldValueExecutor() {
-		return fieldValueExecutor;
+	public FieldValueExecutor getInstance() {
+		return instance;
 	}
 
-	public void setFieldValueExecutor(FieldValueExecutor iteratorRowValueExecutor) {
-		this.fieldValueExecutor = iteratorRowValueExecutor;
+	public void setInstance(FieldValueExecutor instance) {
+		this.instance = instance;
 	}
 
 }
