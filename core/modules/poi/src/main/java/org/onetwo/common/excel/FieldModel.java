@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -21,7 +22,7 @@ public class FieldModel {
 	private boolean columnTotal;
 	private boolean rowTotal;
 	
-	private RowModel parentRow;
+//	private RowModel parentRow;
 	
 	private RowModel row;
 	
@@ -38,35 +39,22 @@ public class FieldModel {
 	private String headerStyle;
 	
 	private String rootValue;
-	
+
 	private String sumValueAs;
 	
 //	private List<FieldListener> listeners;
-	private List<ExecutorModel> fieldValueExecutors;
+	private List<ExecutorModel> valueExecutors;
 	
 	public FieldModel() {
 	}
 
-	public void initModel(WorkbookData workbookData){
+	public void initModel(){
 		if(StringUtils.isNotBlank(sumValueAs)){
-			if(fieldValueExecutors==null)
-				fieldValueExecutors = Lists.newArrayList();
-			ExecutorModel em = new ExecutorModel();
-			em.setName(sumValueAs);
-			em.setFieldValueExecutor(new SumFieldValueExecutor());
-			fieldValueExecutors.add(em);
-		}
-		if(fieldValueExecutors==null){
-			fieldValueExecutors = Collections.EMPTY_LIST;
-		}else{
-			for(ExecutorModel exe : fieldValueExecutors){
-				if(exe.getFieldValueExecutor()!=null)
-					continue;
-				FieldValueExecutor exeInst = (FieldValueExecutor)workbookData.getExcelValueParser().parseValue(exe.getExecutor(), null, null);
-				if(exeInst==null)
-					throw new BaseException("no FieldValueExecutor found: " + exe.getExecutor());
-				exe.setFieldValueExecutor(exeInst);
-			}
+			ExecutorModel model = new ExecutorModel();
+			model.setName(sumValueAs);
+			model.setExecutor(sumValueAs);
+			model.setInstance(new SumFieldValueExecutor());
+			addExecutorModel(model);
 		}
 	}
 	
@@ -117,12 +105,12 @@ public class FieldModel {
 	}
 
 	public RowModel getParentRow() {
-		return parentRow;
+		return row;
 	}
 
-	public void setParentRow(RowModel parentRow) {
+	/*public void setParentRow(RowModel parentRow) {
 		this.parentRow = parentRow;
-	}
+	}*/
 
 	public RowModel getRow() {
 		return row;
@@ -170,7 +158,7 @@ public class FieldModel {
 				colspanValue = Integer.parseInt(colspan);
 			else */
 			if(context!=null)
-				value = context.parser.parseIntValue(colspan, context.objectValue);
+				value = context.getParser().parseIntValue(colspan, context.getObjectValue());
 			else
 				colspanValue = 1;
 		}else{
@@ -197,7 +185,7 @@ public class FieldModel {
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
 			if(context!=null)
-				value = context.parser.parseIntValue(rowspan, context.objectValue);
+				value = context.getParser().parseIntValue(rowspan, context.getObjectValue());
 			else
 				rowspanValue = 1;
 		}else{
@@ -273,12 +261,18 @@ public class FieldModel {
 		this.dataFormat = dataFormat;
 	}
 
-	public List<ExecutorModel> getFieldValueExecutors() {
-		return fieldValueExecutors;
+	public List<ExecutorModel> getValueExecutors() {
+		return valueExecutors==null?Collections.EMPTY_LIST:valueExecutors;
+	}
+	
+	public void addExecutorModel(ExecutorModel model){
+		if(this.valueExecutors==null)
+			this.valueExecutors = Lists.newArrayList();
+		this.valueExecutors.add(model);
 	}
 
-	public void setFieldValueExecutors(List<ExecutorModel> fieldValueExecutors) {
-		this.fieldValueExecutors = fieldValueExecutors;
+	public void setValueExecutors(List<ExecutorModel> valueExecutors) {
+		this.valueExecutors = valueExecutors;
 	}
 
 	public String getSumValueAs() {

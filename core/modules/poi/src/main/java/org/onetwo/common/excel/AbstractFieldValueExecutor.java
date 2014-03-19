@@ -1,21 +1,21 @@
 package org.onetwo.common.excel;
 
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
+import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
 
 abstract public class AbstractFieldValueExecutor implements FieldValueExecutor {
 
 	@Override
-	public boolean apply(FieldModel field, Object fieldVallue) {
+	public boolean apply(CellContext cellContext) {
 		return true;
 	}
 
 	@Override
-	public Object execute(FieldModel field, ExecutorModel executorModel, ExcelValueParser parser, Object fieldVallue, Object preResult) {
-		return doExecute(field, fieldVallue, preResult);
+	public Object execute(CellContext cellContext, ExecutorModel executorModel, Object preResult) {
+		return doExecute(cellContext, preResult);
 	}
 	
 
-	abstract public Object doExecute(FieldModel field, Object fieldVallue, Object preResult);
+	abstract public Object doExecute(CellContext cellContext, Object preResult);
 	
 
 }
