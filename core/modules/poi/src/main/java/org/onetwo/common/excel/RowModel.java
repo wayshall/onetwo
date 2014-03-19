@@ -35,6 +35,8 @@ public class RowModel {
 	
 	private String fieldProcessor;
 	
+	private TemplateModel template;
+	
 //	private String executorClass;
 	
 	private List<FieldModel> fields = new ArrayList<FieldModel>();
@@ -42,9 +44,10 @@ public class RowModel {
 	public RowModel(){
 	}
 
-	public void initModel(WorkbookData workbookData){
+	public void initModel(){
 		for(FieldModel field : fields){
-			field.initModel(workbookData);
+			field.initModel();
+			field.setRow(this);
 		}
 	}
 	
@@ -108,7 +111,7 @@ public class RowModel {
 	public RowModel addField(FieldModel field){
 		if(fields==null)
 			fields = LangUtils.newArrayList();
-//		field.setParentRow(this);
+		field.setRow(this);
 		fields.add(field);
 		return this;
 	}
@@ -214,6 +217,14 @@ public class RowModel {
 
 	public void setHeight(short height) {
 		this.height = height;
+	}
+
+	public TemplateModel getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(TemplateModel template) {
+		this.template = template;
 	}
 	
 	/*public RowExecutor getExecutorInstance() {
