@@ -32,9 +32,10 @@ public class TemplateModel {
 	public TemplateModel(){
 	}
 	
-	public void initModel(WorkbookData workbookData){
+	public void initModel(){
 		for(RowModel row : rows){
-			row.initModel(workbookData);
+			row.setTemplate(this);
+			row.initModel();
 		}
 	}
 

@@ -37,7 +37,7 @@
 						<field name=":address" label="地址" />
 						<field name=":fax0" label="传真0" />
 						<field name=":fax1" label="传真1" />
-						<field name=":fax2" label="传真2" />
+						<field name=":fax2" label="传真2" sumValueAs="idTotalValue2" sumValueField=":id" sumValueCondition="id>5"/>
 					</fields>
 				</row>
 				
@@ -46,6 +46,7 @@
 					<fields>
 						<field value="'idTotal'" />
 						<field value="#idTotalValue.longValue()" />
+						<field value="#idTotalValue2.longValue()" />
 					</fields>
 				</row>
 				
