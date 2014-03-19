@@ -50,13 +50,14 @@ abstract public class ExcelUtils {
 	
 	public static WorkbookModel readAsWorkbookModel(Resource config){
 		WorkbookModel model = null;
-		Object m = ExcelUtils.readTemplate(config);
+		PoiModel m = ExcelUtils.readTemplate(config);
 		if(TemplateModel.class.isInstance(m)){
 			model = new WorkbookModel();
 			model.addSheet((TemplateModel)m);
 		}else{
 			model = (WorkbookModel) m;
 		}
+		model.initModel();
 		return model;
 	}
 	
@@ -216,10 +217,4 @@ abstract public class ExcelUtils {
 		} 
 	}
 	
-	public static void main(String[] args){
-		String path = "excel.xml";
-		TemplateModel template = readTemplate(path);
-		System.out.println("name: " + template.getName());
-	}
-
 }
