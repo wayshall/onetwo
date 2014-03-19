@@ -69,8 +69,8 @@ abstract public class ExcelUtils {
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);
-		xstream.alias("fieldValueExecutors", List.class);
-		xstream.alias("fieldValueExecutor", ExecutorModel.class);
+		xstream.alias("valueExecutors", List.class);
+		xstream.alias("valueExecutor", ExecutorModel.class);
 //		xstream.useAttributeFor(Number.class);
 //		xstream.useAttributeFor(boolean.class);
 //		xstream.useAttributeFor(String.class); 
@@ -192,7 +192,7 @@ abstract public class ExcelUtils {
 		try {
 			value = Ognl.getValue(exp, context, root);
 		} catch (Exception e) {
-			logger.error("["+exp+"] getValue error : " + e.getMessage());
+			logger.info("["+exp+"] getValue error : " + e.getMessage());
 		}
 		return value;
 	}

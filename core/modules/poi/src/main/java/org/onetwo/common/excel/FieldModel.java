@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -41,6 +39,8 @@ public class FieldModel {
 	private String rootValue;
 
 	private String sumValueAs;
+	private String sumValueField;
+	private String sumValueCondition;
 	
 //	private List<FieldListener> listeners;
 	private List<ExecutorModel> valueExecutors;
@@ -54,6 +54,8 @@ public class FieldModel {
 			model.setName(sumValueAs);
 			model.setExecutor(sumValueAs);
 			model.setInstance(new SumFieldValueExecutor());
+			model.addAttribute(SumFieldValueExecutor.SUM_VALUE_FIELD, sumValueField);
+			model.addAttribute(SumFieldValueExecutor.SUM_VALUE_CONDITION, sumValueCondition);
 			addExecutorModel(model);
 		}
 	}
@@ -281,6 +283,22 @@ public class FieldModel {
 
 	public void setSumValueAs(String sumValueAs) {
 		this.sumValueAs = sumValueAs;
+	}
+
+	public String getSumValueField() {
+		return sumValueField;
+	}
+
+	public void setSumValueField(String sumValueField) {
+		this.sumValueField = sumValueField;
+	}
+
+	public String getSumValueCondition() {
+		return sumValueCondition;
+	}
+
+	public void setSumValueCondition(String sumValueCondition) {
+		this.sumValueCondition = sumValueCondition;
 	}
 
 	
