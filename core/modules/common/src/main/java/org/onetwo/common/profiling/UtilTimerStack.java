@@ -29,7 +29,7 @@ public class UtilTimerStack
     private static boolean active;
     private static boolean nanoTime;
     
-    private static TimeLogger timeLogger;
+    private static JFishLogger timeLogger;
 
     static {
     	final Logger logger = MyLoggerFactory.getLogger(PROFILE_LOGGER);
@@ -38,11 +38,11 @@ public class UtilTimerStack
     }
 
     
-    public static TimeLogger getOuputer() {
+    public static JFishLogger getOuputer() {
 		return timeLogger;
 	}
 
-	public static void setOuputer(TimeLogger ouputer) {
+	public static void setOuputer(JFishLogger ouputer) {
 		UtilTimerStack.timeLogger = ouputer;
 	}
 

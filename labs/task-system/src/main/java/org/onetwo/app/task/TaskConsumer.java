@@ -22,7 +22,7 @@ public class TaskConsumer {
 		TaskData task = null;
 		for(;;){
 			task = taskQueue.take();
-			logger.info("take task: {}", task.getName());
+			logger.info("thread[{}] take task: {}", Thread.currentThread().getId(), task.getName());
 			doProcess(task);
 		}
 	}

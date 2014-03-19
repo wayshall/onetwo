@@ -4,10 +4,10 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
 
 
-public class Log4jTimeLogger implements TimeLogger {
+public class Log4jTimeLogger implements JFishLogger {
 //	private static final Logger logger = MyLoggerFactory.getLogger(PROFILE_LOGGER);
 	
-	private TimeLogger outer = new TimerOutputer();
+	private JFishLogger outer = new TimerOutputer();
 	private final Logger logger;
 	
 

@@ -3,7 +3,9 @@ package org.onetwo.app.task;
 
 public interface TaskQueue {
 
-	public boolean offer(TaskData e);
+	public boolean offerTask(TaskData taskData);
+	
+	public void putTask(TaskData e) throws InterruptedException;
 
 	public TaskData take() throws InterruptedException;
 
