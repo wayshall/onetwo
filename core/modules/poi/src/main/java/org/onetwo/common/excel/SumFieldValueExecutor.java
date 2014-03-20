@@ -16,7 +16,7 @@ public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
 
 	@Override
 	public boolean apply(CellContext cellContext, ExecutorModel executorModel) {
-		if(!cellContext.getField().getRow().isIterator())
+		if(!cellContext.getFieldModel().getRow().isIterator())
 			return false;
 		
 		String sumValueCondition = executorModel.getAttributes().get(SUM_VALUE_CONDITION);

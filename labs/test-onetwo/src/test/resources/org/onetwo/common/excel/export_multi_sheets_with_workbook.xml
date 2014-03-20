@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbook listener="#listener">
+	<vars>
+		<var name="sheetBarFieldStyle" value="fillPattern:@SOLID_FOREGROUND;fillForegroundColor:8;alignment:@ALIGN_CENTER;verticalAlignment:@VERTICAL_CENTER;"/>
+		<var name="sheetBarFieldFont" value="boldweight:@BOLDWEIGHT_BOLD;color:9;fontHeightInPoints:18;fontName:宋体"/>
+		<var name="titleFieldStyle" value="borderBottom:@BORDER_THIN;borderLeft:@BORDER_THIN;borderTop:@BORDER_THIN;borderRight:@BORDER_THIN;fillPattern:@SOLID_FOREGROUND;fillForegroundColor:13;alignment:@ALIGN_CENTER;verticalAlignment:@VERTICAL_CENTER;"/>
+		<var name="titleFieldFont" value="boldweight:@BOLDWEIGHT_BOLD;fontHeightInPoints:11;fontName:宋体;"/>
+		<var name="dataFieldStyle" value="borderBottom:@BORDER_THIN;borderLeft:@BORDER_THIN;borderTop:@BORDER_THIN;borderRight:@BORDER_THIN;alignment:@ALIGN_CENTER;verticalAlignment:@VERTICAL_CENTER;"/>
+		<var name="dataFieldFont" value="fontHeightInPoints:10;fontName:ARIAL;"/>
+		
+		<var name="sheetWidth" value="1:50;2:50"/>
+	</vars>
 	<sheets>
-	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="1:50;2:50">
+	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="#sheetWidth">
 	
 			<rows>
 			
-				<row height="1000" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+				<row height="1000" fieldStyle="#sheetBarFieldStyle" fieldFont="#sheetBarFieldFont">
 					<fields>
-						<field value="'报名客户资料'" colspan="6"/>
+						<field value="'报名客户资料'" colspan="8"/>
 					</fields>
 				</row>
 				
-				<row name="element" type="title" > 
+				<row name="element" type="title" fieldHeaderStyle="#titleFieldStyle" fieldHeaderFont="#titleFieldFont"> 
 					<fields>
 						<field name="id" label="主键" sumValueAs="idTotalValue">
 						</field>
@@ -26,7 +36,7 @@
 					</fields>
 				</row>
 				
-				<row name="element" type="iterator" datasource="#sheet1.datasource" fieldProcessor="#fieldProcessor" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"> 
+				<row name="element" type="iterator" datasource="#sheet1.datasource" fieldProcessor="#fieldProcessor" fieldStyle="#dataFieldStyle" fieldFont="#dataFieldFont"> 
 					<fields>
 						<field name=":id" label="主键" sumValueAs="idTotalValue">
 						</field>
@@ -42,11 +52,12 @@
 				</row>
 				
 				
-				<row>
+				<row fieldStyle="#titleFieldStyle" fieldFont="#titleFieldFont">
 					<fields>
 						<field value="'idTotal'" />
 						<field value="#idTotalValue.longValue()" />
 						<field value="#idTotalValue2.longValue()" />
+						<field value="" colspan="5"/>
 					</fields>
 				</row>
 				
@@ -55,7 +66,7 @@
 	<template name="sheet2" label="报名客户资料2" >
 			<rows>
 			
-				<row span="2" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+				<row span="2" fieldStyle="alignment:@ALIGN_CENTER;verticalAlignment:@VERTICAL_CENTER;" fieldFont="boldweight:@BOLDWEIGHT_BOLD">
 					<fields>
 						<field value="'报名客户资料2'" rowspan="2" colspan="4"/>
 					</fields>
