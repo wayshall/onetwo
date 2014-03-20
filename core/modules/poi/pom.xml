@@ -35,18 +35,14 @@
 	</dependency>
 	
 	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
 	  <groupId>commons-io</groupId>
 	  <artifactId>commons-io</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.springframework</groupId>
-	  <artifactId>spring-core</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.springframework</groupId>
-	  <artifactId>spring-beans</artifactId>
 	</dependency>
 	
 	<!-- excel begin -->

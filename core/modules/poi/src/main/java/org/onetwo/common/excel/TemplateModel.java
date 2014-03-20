@@ -8,7 +8,7 @@ import org.onetwo.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
-public class TemplateModel {
+public class TemplateModel implements PoiModel{
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
 	private String name;

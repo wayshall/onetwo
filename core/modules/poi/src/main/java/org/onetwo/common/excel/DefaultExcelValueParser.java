@@ -45,6 +45,13 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		
 		return fieldValue;
 	}
+
+	public Object parseValue(String expr){
+		if(StringUtils.isBlank(expr))
+			return "";
+		Object fieldValue = ExcelUtils.getValue(expr, context, null);
+		return fieldValue;
+	}
 	
 	public boolean isSymbol(String value){
 		if(value==null || !value.startsWith(":"))

@@ -64,6 +64,8 @@ abstract public class ExcelUtils {
 	public static <T> T readTemplate(Resource config){
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("workbook", WorkbookModel.class);
+		xstream.alias("vars", List.class);
+		xstream.alias("var", VarModel.class);
 		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("rows", List.class);
@@ -192,7 +194,7 @@ abstract public class ExcelUtils {
 		try {
 			value = Ognl.getValue(exp, context, root);
 		} catch (Exception e) {
-			logger.info("["+exp+"] getValue error : " + e.getMessage());
+//			logger.info("["+exp+"] getValue error : " + e.getMessage());
 		}
 		return value;
 	}

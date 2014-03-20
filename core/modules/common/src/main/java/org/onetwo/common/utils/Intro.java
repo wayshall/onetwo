@@ -18,6 +18,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.onetwo.common.exception.BaseException;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 public class Intro<T> {
 	
 	public static <E> Intro<E> wrap(Class<E> clazz){
@@ -34,6 +37,10 @@ public class Intro<T> {
 	private final Map<String, PropertyDescriptor> propertyDescriptors;
 	private Map<String, Field> _fieldMaps;
 	private ReentrantLock fieldLock = new ReentrantLock();
+
+//	private List<Field> allFields;
+	private Map<String, Field> _allFieldMap;
+	private ReentrantLock allFieldLock = new ReentrantLock();
 
 	public Intro(Class<T> clazz) {
 		Assert.notNull(clazz);
@@ -74,16 +81,27 @@ public class Intro<T> {
 	}
 	
 	public List<Field> getAllFields() {
-		List<Class<?>> classes = findSuperClasses(clazz);
-		Field[] fs = null;
-		List<Field> fields = new ArrayList<Field>(getFields());
-		for (Class<?> cls : classes) {
-			fs = cls.getDeclaredFields();
-			for (Field f : fs) {
-				fields.add(f);
+		if(_allFieldMap!=null)
+			return Lists.newArrayList(_allFieldMap.values());
+		
+		allFieldLock.lock();
+		try {
+			if(_allFieldMap!=null)//dbcheck
+				return Lists.newArrayList(_allFieldMap.values());
+			
+			List<Class<?>> classes = findSuperClasses(clazz);
+			Field[] fs = null;
+			_allFieldMap = Maps.newHashMap(getFieldMaps());
+			for (Class<?> cls : classes) {
+				fs = cls.getDeclaredFields();
+				for (Field f : fs) {
+					_allFieldMap.put(f.getName(), f);
+				}
 			}
+		} finally{
+			allFieldLock.unlock();
 		}
-		return fields;
+		return Lists.newArrayList(_allFieldMap.values());
 	}
 	
 	public Map<String, PropertyDescriptor> getPropertyDescriptors() {
@@ -156,6 +174,14 @@ public class Intro<T> {
 	public Field getField(String fieldName){
 		return getFieldMaps().get(fieldName);
 	}
+	
+	public boolean containsField(String fieldName, boolean includeParent){
+		if(includeParent){
+			return _allFieldMap.containsKey(fieldName);
+		}else{
+			return _fieldMaps.containsKey(fieldName);
+		}
+	}
 
 	public Field getField(String fieldName, boolean parent){
 		if(parent){
@@ -168,6 +194,13 @@ public class Intro<T> {
 		}else{
 			return getFieldMaps().get(fieldName);
 		}
+	}
+	
+	public Field getStaticField(String fieldName){
+		Field f = getField(fieldName);
+		if(Modifier.isStatic(f.getModifiers()))
+			return f;
+		return null;
 	}
 	
 

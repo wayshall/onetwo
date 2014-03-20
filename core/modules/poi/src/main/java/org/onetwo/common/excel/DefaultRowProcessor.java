@@ -136,11 +136,11 @@ public class DefaultRowProcessor implements RowProcessor {
 	}
 	
 	protected void doFieldValueExecutors(CellContext cellContext){
-		FieldModel field = cellContext.getField();
+		FieldModel field = cellContext.getFieldModel();
 		ExcelValueParser parser = cellContext.getParser();
 		if(!field.getValueExecutors().isEmpty()){
 			for(ExecutorModel model : field.getValueExecutors()){
-				FieldValueExecutor executor = cellContext.getRowContext().getWorkbookData().getFieldValueExecutor(model);
+				FieldValueExecutor executor = cellContext.getRowContext().getSheetData().getFieldValueExecutor(model);
 				if(executor==null)
 					throw new BaseException("not found executor: " + model.getExecutor());
 				if(!executor.apply(cellContext, model))
@@ -156,7 +156,7 @@ public class DefaultRowProcessor implements RowProcessor {
 	protected Cell createCell(CellContext cellContext){
 		int cellIndex = cellContext.getCellIndex();
 		Row row = cellContext.getCurrentRow();
-		FieldModel field = cellContext.field;
+		FieldModel field = cellContext.fieldModel;
 		Sheet sheet = cellContext.getSheet();
 		
 		int rowNum = cellContext.rowCount;
@@ -168,7 +168,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		Cell cell = createCell(row, cellIndex);
 //		System.out.println("cell width: " +sheet.getColumnWidth(cellIndex)+" w:" + sheet.getDefaultColumnWidth());
 		
-		CellStyle cstyle = this.buildCellStyle(field);
+		CellStyle cstyle = this.buildCellStyle(cellContext);
 		if(cstyle!=null){
 			cell.setCellStyle(cstyle);
 		}
@@ -178,7 +178,10 @@ public class DefaultRowProcessor implements RowProcessor {
 		int colspan = cellContext.getColSpan();
 		if(colspan>1){
 			for(int i=1; i<colspan;i++){
-				createCell(row, ++cellIndex);
+				Cell colspanCell = createCell(row, ++cellIndex);
+				if(cstyle!=null){
+					colspanCell.setCellStyle(cstyle);
+				}
 //				row.createCell(++cellIndex);
 			}
 		}
@@ -204,12 +207,20 @@ public class DefaultRowProcessor implements RowProcessor {
 		return field.getFont();
 	}
 
-	protected CellStyle buildCellStyle(FieldModel field){
+	protected CellStyle buildCellStyle(CellContext cellContext){
+		FieldModel field = cellContext.getFieldModel();
+		
 		String styleString = getStyle(field);
 		String fontString = getFont(field);
 		if(StringUtils.isBlank(styleString) && StringUtils.isBlank(fontString)){
 			return null;
 		}
+		
+		if(StringUtils.isNotBlank(styleString))
+			styleString = (String)cellContext.getParser().parseValue(styleString);
+		
+		if(StringUtils.isNotBlank(fontString))
+			fontString = (String)cellContext.getParser().parseValue(fontString);
 		
 		String key = styleString + fontString;
 		CellStyle cstyle = this.styleCache.get(key);
@@ -223,16 +234,20 @@ public class DefaultRowProcessor implements RowProcessor {
 		bw.setAutoGrowNestedPaths(true);
 		
 		Map<String, String> styleMap = this.generator.getPropertyStringParser().parseStyle(styleString);
-		for(Entry<String, String> entry : styleMap.entrySet()){
-			if(isField(entry.getValue())){
-				Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, entry.getValue().trim().toUpperCase());
-				ReflectUtils.setProperty(cstyle, entry.getKey(), styleValue);
-			}else{
-				bw.setPropertyValue(entry.getKey(), entry.getValue());
+		try {
+			for(Entry<String, String> entry : styleMap.entrySet()){
+				if(isStaticField(CellStyle.class, entry.getValue())){
+					Object styleValue = ReflectUtils.getStaticFieldValue(CellStyle.class, getStaticField(entry.getValue()));
+					ReflectUtils.setProperty(cstyle, entry.getKey(), styleValue);
+				}else{
+					bw.setPropertyValue(entry.getKey(), entry.getValue());
+				}
 			}
+		} catch (Exception e) {
+			throw new BaseException("" + cellContext.getLocation()+" buildCellStyle error: " + e.getMessage(), e);
 		}
 		
-		Font font = buildCellFont(field, fontString);
+		Font font = buildCellFont(cellContext, fontString);
 		if(font!=null){
 			cstyle.setFont(font);
 		}
@@ -241,19 +256,20 @@ public class DefaultRowProcessor implements RowProcessor {
 		
 		return cstyle;
 	}
-	
-	protected boolean isField(String value){
-//		return value.startsWith("&");
-		for(char ch : value.toCharArray()){
-			if('_'==ch)
-				continue;
-			else if(!Character.isUpperCase(ch))
-				return false;
+
+	protected boolean isStaticField(Class<?> clazz, String value){
+		if(value.startsWith("@")){
+			return true;
 		}
-		return true;
+		return ReflectUtils.getIntro(clazz).containsField(value, true);
+	}
+	protected String getStaticField(String value){
+		if(value.startsWith("@"))
+			return value.substring(1);
+		return value;
 	}
 	
-	protected Font buildCellFont(FieldModel field, String fontString){
+	protected Font buildCellFont(CellContext cellContext, String fontString){
 		if(StringUtils.isBlank(fontString))
 			return null;
 		
@@ -263,8 +279,8 @@ public class DefaultRowProcessor implements RowProcessor {
 
 		Map<String, String> fontMap = this.generator.getPropertyStringParser().parseStyle(fontString);
 		for(Entry<String, String> entry : fontMap.entrySet()){
-			if(isField(entry.getValue())){
-				Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, entry.getValue().trim().toUpperCase());
+			if(isStaticField(Font.class, entry.getValue())){
+				Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, getStaticField(entry.getValue()));
 				ReflectUtils.setProperty(font, entry.getKey(), styleValue);
 			}else{
 				bw.setPropertyValue(entry.getKey(), entry.getValue());
@@ -326,7 +342,7 @@ public class DefaultRowProcessor implements RowProcessor {
 	protected void processSingleField(CellContext cellContext){
 //		Row row = cellContext.row;
 		Cell cell = createCell(cellContext);
-		FieldModel field = cellContext.field;
+		FieldModel field = cellContext.fieldModel;
 		Object v = cellContext.getFieldValue();
 		if(v==null)
 			v = getFieldValue(cellContext.objectValue, field, cellContext.defFieldValue);
@@ -413,7 +429,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		private final int rowCount;
 		private final RowDataContext rowContext;
 		private final Row row;
-		private final FieldModel field;
+		private final FieldModel fieldModel;
 		private final Object defFieldValue;
 		private Object fieldValue;
 		private final int cellIndex;
@@ -431,7 +447,7 @@ public class DefaultRowProcessor implements RowProcessor {
 				objectValueIndex = row.getRowNum();
 			}
 			this.rowCount = objectValueIndex;
-			this.field = field;
+			this.fieldModel = field;
 			//row.getLastCellNum()
 			this.cellIndex = cellIndex;
 			this.defFieldValue = defValue;
@@ -471,7 +487,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			if(colspan < 1) {
 				colspan = 1;
 			}*/
-			return field.getColspanValue(this);
+			return fieldModel.getColspanValue(this);
 		}
 		
 		public int getRowSpan(){
@@ -484,7 +500,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			}*/
 //			String name = field.getName()+"-rowspan";
 //			UtilTimerStack.push(name);
-			int rowspan = field.getRowpanValue(this);
+			int rowspan = fieldModel.getRowpanValue(this);
 //			UtilTimerStack.pop(name);
 			return rowspan;
 		}
@@ -509,8 +525,8 @@ public class DefaultRowProcessor implements RowProcessor {
 			this.fieldValue = fieldValue;
 		}
 
-		public FieldModel getField() {
-			return field;
+		public FieldModel getFieldModel() {
+			return fieldModel;
 		}
 
 		public ExcelValueParser getParser() {
@@ -533,5 +549,8 @@ public class DefaultRowProcessor implements RowProcessor {
 			return rowContext;
 		}
 		
+		public String getLocation(){
+			return rowContext.getLocation()+" -> " + fieldModel.getLabel();
+		}
 	}
 }

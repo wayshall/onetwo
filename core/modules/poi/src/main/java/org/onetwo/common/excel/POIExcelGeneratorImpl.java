@@ -17,6 +17,11 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
+/****
+ * 单sheet生成器
+ * @author weishao
+ *
+ */
 public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implements PoiExcelGenerator{
 	
 	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
@@ -37,7 +42,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	private PropertyStringParser propertyStringParser = ExcelUtils.DEFAULT_PROPERTY_STRING_PARSER;
 	
 	public POIExcelGeneratorImpl() {
-		this.workbookData = new WorkbookData(new HSSFWorkbook(), new DefaultExcelValueParser(null));
+		this.workbookData = new WorkbookData(null, new HSSFWorkbook(), new DefaultExcelValueParser(null));
 		this.init();
 	}
 
@@ -45,7 +50,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		this(template, null);
 	}
 	public POIExcelGeneratorImpl(TemplateModel template, Map<String, Object> context) {
-		this(new WorkbookData(new HSSFWorkbook(), new DefaultExcelValueParser(context)), template);
+		this(new WorkbookData(null, new HSSFWorkbook(), new DefaultExcelValueParser(context)), template);
 	}
 	public POIExcelGeneratorImpl(WorkbookData workbook, TemplateModel template) {
 		this.workbookData = workbook;
@@ -100,26 +105,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		return this.workbookData.getWorkbook();
 	}
 
-	private void initWorkbookData(){
-		for(RowModel row : this.tempalte.getRows()){
-			for(FieldModel field : row.getFields()){
-				for(ExecutorModel model : field.getValueExecutors()){
-					if(model.getInstance()!=null){
-						this.workbookData.addFieldValueExecutor(model, model.getInstance());
-					}else{
-						FieldValueExecutor executor = (FieldValueExecutor)this.workbookData.getExcelValueParser().parseValue(model.getExecutor(), null, null);
-						if(executor!=null)
-							this.workbookData.addFieldValueExecutor(model, executor);
-					}
-				}
-				
-			}
-		}
-	}
-
 	@Override
 	public void generateIt() {
-		this.initWorkbookData();
+//		this.initWorkbookData();
 		
 		ExportDatasource ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
@@ -154,14 +142,16 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		int sheetIndex = getWorkbook().getSheetIndex(sheet);
 		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);
 		
-		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
+		/*Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(this.tempalte.getColumnWidth());
 		if(LangUtils.isNotEmpty(columnMap)){
 			for(Entry<Integer, Short> entry : columnMap.entrySet()){
 				sheet.setColumnWidth(entry.getKey(), entry.getValue()*256);
 			}
-		}
+		}*/
 		
-		SheetData sdata = new SheetData(getWorkbookData(), sheet, datalist);
+		SheetData sdata = createSheetData(getWorkbookData(), sheet, datalist);
+		this.buildColumnWidth(sdata);
+		
 		this.getExcelValueParser().getContext().put(tempalte.getVarName(), sdata);
 		try{
 			this.generateSheet(sdata);
@@ -169,6 +159,40 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			this.getExcelValueParser().getContext().remove(tempalte.getVarName());
 		}
 		
+	}
+	
+	private void buildColumnWidth(SheetData sdata){
+		String columnWidth = sdata.getSheetModel().getColumnWidth();
+		columnWidth = (String)sdata.getExcelValueParser().parseValue(columnWidth);
+		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(columnWidth);
+		if(LangUtils.isNotEmpty(columnMap)){
+			for(Entry<Integer, Short> entry : columnMap.entrySet()){
+				sdata.getSheet().setColumnWidth(entry.getKey(), entry.getValue()*256);
+			}
+		}
+	}
+	
+	private SheetData createSheetData(WorkbookData workbookData, Sheet sheet, Object dataSourceValue){
+		SheetData sdata = new SheetData(getWorkbookData(), tempalte, sheet, dataSourceValue);
+		this.initSheetData(sdata);
+		return sdata;
+	}
+
+	private void initSheetData(SheetData sdata){
+		for(RowModel row : this.tempalte.getRows()){
+			for(FieldModel field : row.getFields()){
+				for(ExecutorModel model : field.getValueExecutors()){
+					if(model.getInstance()!=null){
+						sdata.addFieldValueExecutor(model, model.getInstance());
+					}else{
+						FieldValueExecutor executor = (FieldValueExecutor)this.workbookData.getExcelValueParser().parseValue(model.getExecutor(), null, null);
+						if(executor!=null)
+							sdata.addFieldValueExecutor(model, executor);
+					}
+				}
+				
+			}
+		}
 	}
 	
 	private void generateSheet(SheetData sheetData) {
@@ -188,7 +212,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 				UtilTimerStack.push(rowname);
 			}
 //			Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
-			RowDataContext datacontext = new RowDataContext(workbookData, sheetData, row);
+			RowDataContext datacontext = createRowDataContext(sheetData, row);
 			this.rowProcessors.get(row.getType()).processRow(datacontext);
 			if(printTime){
 				UtilTimerStack.pop(rowname);
@@ -212,6 +236,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		//System.out.println("generate excel success!");
 	}
 	
+	private RowDataContext createRowDataContext(SheetData sheetData, RowModel rowModel){
+		return new RowDataContext(sheetData, rowModel);
+	}
 
 	public PropertyStringParser getPropertyStringParser() {
 		return propertyStringParser;
