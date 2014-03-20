@@ -1,6 +1,6 @@
 package org.onetwo.common.utils.list;
 
-public interface Predicate {
+public interface Predicate<T> {
 
-    public boolean evaluate(Object object);
+    public boolean apply(T object);
 }
