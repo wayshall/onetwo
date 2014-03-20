@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
+import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -271,6 +272,11 @@ final public class SpringUtils {
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		bw.setAutoGrowNestedPaths(true);
+		return bw;
+	}
+	
+	public static BeanMapWrapper newBeanMapWrapper(Object obj){
+		BeanMapWrapper bw = new BeanMapWrapper(obj);
 		return bw;
 	}
 	

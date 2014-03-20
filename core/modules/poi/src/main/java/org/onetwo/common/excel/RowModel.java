@@ -9,7 +9,7 @@ import org.onetwo.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_ROW)
-public class RowModel {
+public class RowModel implements PoiModel {
 	public static final String DEFAULT_NAME = "entity";
 	public static class Type {
 		public static final String TITLE_KEY = "title";

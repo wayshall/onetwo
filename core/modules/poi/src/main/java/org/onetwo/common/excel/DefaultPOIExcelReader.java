@@ -54,14 +54,21 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	 * @param endSheet not include
 	 * @return
 	 */
-	public <T> Map<String, T> readData(Workbook workbook, ExcelDataExtractor<T> extractor, int startSheet, int endSheet){
+	public <T> Map<String, T> readData(Workbook workbook, ExcelDataExtractor<T> extractor, int startSheet, int readCount){
 		Assert.notNull(workbook);
 		try {
 			int sheetCount = workbook.getNumberOfSheets();
 			Sheet sheet = null;
 			Map<String, T> datas = new LinkedHashMap<String, T>();
-			for(int i=0; i<sheetCount; i++){
-				if((startSheet==-1 && endSheet==-1) || (i>=startSheet && i<endSheet)){
+			
+			if(startSheet<0)
+				startSheet = 0;
+			if(readCount<0)
+				readCount = sheetCount;
+			
+			int hasReadCount = 0;
+			for(int i=startSheet; i<sheetCount; i++){
+				if(hasReadCount<readCount){
 					sheet = workbook.getSheetAt(i);
 					String name = sheet.getSheetName();
 					if(sheet.getPhysicalNumberOfRows()<1)
@@ -70,6 +77,8 @@ public class DefaultPOIExcelReader implements ExcelReader {
 						name = "" + i;
 					T extractData = extractor.extractData(sheet, i);
 					datas.put(name, extractData);
+					
+					hasReadCount++;
 				}
 			}
 			return datas;

@@ -7,11 +7,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 import com.google.common.collect.Maps;
 
@@ -96,8 +96,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		int cellCount = row.getPhysicalNumberOfCells();
 		
 		T bean = newBean();
-		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(bean);
-		bw.setAutoGrowNestedPaths(true);
+		BeanMapWrapper bw = SpringUtils.newBeanMapWrapper(bean);
 		
 		String name = null;
 		for(int i=0; i<names.size(); i++){
@@ -140,7 +139,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	 * @param cell
 	 * @param cellValue
 	 */
-	protected void setBeanProperty(BeanWrapper bw, String name, Cell cell, Object cellValue){
+	protected void setBeanProperty(BeanMapWrapper bw, String name, Cell cell, Object cellValue){
 		if(StringUtils.isBlank(name))
 			return ;
 		Object value = null;

@@ -882,9 +882,7 @@ public class LangUtils {
 	}
 	
 	public static List emptyIfNull(List list){
-		if(list==null)
-			return Collections.EMPTY_LIST;
-		return list;
+		return list==null?Collections.EMPTY_LIST:list;
 	}
 	
 	public static <T> T notNullValue(Object obj, Class<T> type){
