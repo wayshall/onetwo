@@ -18,7 +18,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 //		Cell cell = createCell(row.getSheet(), row, field, -1, ele);
 //		Object ele = cellContext.objectValue;
 		Row row = cellContext.getCurrentRow();
-		FieldModel field = cellContext.getField();
+		FieldModel field = cellContext.getFieldModel();
 		int cellIndex = cellContext.getCellIndex();
 		
 		Object v = getFieldValue(cellContext.getObjectValue(), field, cellContext.getDefFieldValue());
@@ -52,12 +52,12 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 	private Cell createSingleCell(CellContext cellContext, int rowCount, int cellIndex, Object cellValue){
 		Cell cell = null;
 		if(cellContext==null)
-			throw new BaseException("the cell of row has not created yet : " + cellContext.getField().getName());
+			throw new BaseException("the cell of row has not created yet : " + cellContext.getFieldModel().getName());
 
-		CellContext subCellContext = createCellContext(this.generator.getExcelValueParser(), cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getField(), cellIndex);
+		CellContext subCellContext = createCellContext(this.generator.getExcelValueParser(), cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
 		cell = createCell(subCellContext);
 		
-		setCellValue(cellContext.getField(), cell, cellValue);
+		setCellValue(cellContext.getFieldModel(), cell, cellValue);
 		
 		return cell;
 	}

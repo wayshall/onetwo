@@ -16,6 +16,10 @@ public interface WorkbookReader {
 	public Map<String, List<?>> readData(String path);
 	public Map<String, List<?>> readData(File file);
 	public Map<String, List<?>> readData(InputStream in);
+	
+	public Map<String, List<?>> readData(String path, int startSheet, int readCount);
+	public Map<String, List<?>> readData(InputStream in, int startSheet, int readCount);
+	public Map<String, List<?>> readData(File file, int startSheet, int readCount);
 //	public Map<String, List<?>> readData(InputStream in, boolean excel2007);
 	
 //	public SSFRowMapper<?> getRowMapper();

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.common.collect.Lists;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
-public class FieldModel {
+public class FieldModel implements PoiModel {
 
 	private String label;
 	private String name;
