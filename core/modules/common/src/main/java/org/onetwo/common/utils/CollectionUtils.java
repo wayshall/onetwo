@@ -23,41 +23,7 @@ import org.onetwo.common.utils.list.Predicate;
 public abstract class CollectionUtils {
 
     private static Integer INTEGER_ONE = new Integer(1);
-
-    public static boolean addIgnoreNull(Collection collection, Object object) {
-        return (object == null ? false : collection.add(object));
-    }
     
-	public static List asList(Object array){
-		if(array==null)
-			return null;
-		List list = null;
-		if(array instanceof Collection){
-			list = stripNull((Collection) array);
-		}else if(array.getClass().isArray()){
-			list = stripNull((Object[]) array);
-		}else{
-			list = new ArrayList();
-			list.add(array);
-		}
-		return list;
-	}
-	
-	public static List stripNull(Collection collection){
-		return stripNull(collection.toArray());
-	}
-	
-	public static List stripNull(Object[] array){
-		if(array==null || array.length<1)
-			return null;
-		List list = new ArrayList();
-		for(Object obj : array){
-			if(obj==null || ( obj instanceof String && StringUtils.isBlank(obj.toString())))
-				continue;
-			list.add(obj);
-		}
-		return list;
-	}
 	
 	public static boolean isEmpty(Collection collection) {
 		return (collection == null || collection.isEmpty());
@@ -354,10 +320,10 @@ public abstract class CollectionUtils {
      * @param collection  the collection to get the input from, may be null
      * @param predicate  the predicate to use as a filter, may be null
      */
-    public static void filter(Collection collection, Predicate predicate) {
+    public static <T> void filter(Collection<T> collection, Predicate<T> predicate) {
         if (collection != null && predicate != null) {
-            for (Iterator it = collection.iterator(); it.hasNext();) {
-                if (predicate.evaluate(it.next()) == false) {
+            for (Iterator<T> it = collection.iterator(); it.hasNext();) {
+                if (predicate.apply(it.next()) == false) {
                     it.remove();
                 }
             }

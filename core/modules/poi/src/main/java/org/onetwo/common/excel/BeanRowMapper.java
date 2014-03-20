@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	
 	private static enum MapperType {
-		DEFAULT,
+//		DEFAULT,
 		NAME,
 		CELL_INDEX
 	}
@@ -27,24 +27,45 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		BeanRowMapper<R> rowMapper = new BeanRowMapper<R>(clazz, propertyMapper);
 		return rowMapper;
 	}
+	
+	public static <R> BeanRowMapper<R> map(int dataRowStartIndex, Class<R> clazz, Object...propertyMapper){
+		BeanRowMapper<R> rowMapper = new BeanRowMapper<R>(dataRowStartIndex, clazz, propertyMapper);
+		return rowMapper;
+	}
 
 	private Class<T> clazz;
 	private Map<Object, String> propertyMapper = Maps.newHashMap();
 	private MapperType mapperType;
 	private boolean autoGetCellValue = true;
+	//0-based
+	private int dataRowStartIndex = 1;
 	
+
 	public BeanRowMapper(Class<T> clazz, Object...propertyMapper) {
-		this(clazz, WorkbookReaderFactory.convertors);
+		this(1, clazz, propertyMapper);
+	}
+
+	public BeanRowMapper(Class<T> clazz, Map<String, CellValueConvertor> convertors) {
+		this(1, clazz, convertors);
+	}
+	public BeanRowMapper(int dataRowStartIndex, Class<T> clazz, Object...propertyMapper) {
+		this(dataRowStartIndex, clazz, WorkbookReaderFactory.convertors);
 		if(!LangUtils.isEmpty(propertyMapper)){
 			this.propertyMapper = LangUtils.asMap(propertyMapper);
 		}
+		this.dataRowStartIndex = dataRowStartIndex;
 	}
 	
-	public BeanRowMapper(Class<T> clazz, Map<String, CellValueConvertor> convertors) {
+	public BeanRowMapper(int dataRowStartIndex, Class<T> clazz, Map<String, CellValueConvertor> convertors) {
 		super(convertors);
 		this.clazz = clazz;
+		this.dataRowStartIndex = dataRowStartIndex;
 	}
-	
+
+	@Override
+	public int getDataRowStartIndex() {
+		return dataRowStartIndex;
+	}
 	
 	
 	public BeanRowMapper<T> autoGetCellValue(boolean autoGetCellValue) {
@@ -59,14 +80,18 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 
 	@Override
 	public List<String> mapTitleRow(int sheetIndex, Sheet sheet){
-		this.autoMapperType();
-		return this.mapTitleRow(sheet);
+		List<String> titleNames = this.mapTitleRow(sheet);
+		this.autoMapperType(titleNames);
+		return titleNames;
 	}
 	
-	private MapperType autoMapperType(){
-		mapperType = MapperType.DEFAULT;
-		if(LangUtils.isEmpty(propertyMapper))
+	private MapperType autoMapperType(List<String> titleNames){
+		if(LangUtils.isEmpty(propertyMapper)){
+			mapperType = MapperType.NAME;
+			for(String name : titleNames)
+				this.propertyMapper.put(name, name);
 			return mapperType;
+		}
 		Object key = this.propertyMapper.keySet().iterator().next();
 		if(key instanceof Number){
 			mapperType = MapperType.CELL_INDEX;
@@ -99,9 +124,44 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		BeanMapWrapper bw = SpringUtils.newBeanMapWrapper(bean);
 		
 		String name = null;
-		for(int i=0; i<names.size(); i++){
+		String propertyName;
+		Object cellValue;
+		for(int cellIndex=0; cellIndex<cellCount; cellIndex++){
 			Cell cell = null;
-			if(LangUtils.isNotEmpty(names))
+			switch (mapperType) {
+				case NAME:
+					if(LangUtils.isNotEmpty(names) && cellIndex<names.size())
+						name = names.get(cellIndex);
+					
+					if(cellIndex<=cellCount){
+						cell = row.getCell(cellIndex);
+					}
+					if(cell==null)
+						continue;
+					cellValue = getCellValue(cell, name, cellIndex);
+					if(!this.propertyMapper.containsKey(name))
+						continue;
+					propertyName = this.propertyMapper.get(name);
+					this.setBeanProperty(bw, propertyName, cell, cellValue);
+					break;
+	
+				case CELL_INDEX:
+					if(!this.propertyMapper.containsKey(cellIndex))
+						continue;
+
+					if(cellIndex<=cellCount){
+						cell = row.getCell(cellIndex);
+					}
+					cellValue = getCellValue(cell, name, cellIndex);
+					propertyName = this.propertyMapper.get(cellIndex);
+					this.setBeanProperty(bw, propertyName, cell, cellValue);
+					break;
+					
+				default:
+					throw new UnsupportedOperationException("maptype:"+mapperType);
+			}
+			
+			/*if(LangUtils.isNotEmpty(names) && i<names.size())
 				name = names.get(i);
 //			if(name==null)
 //				throw new ServiceException("no title " + names.get(i));
@@ -112,10 +172,11 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 				continue;
 			Object cellValue = getCellValue(cell, name, i);
 			String propertyName = getPropertyName(cell, name, i);
-			this.setBeanProperty(bw, propertyName, cell, cellValue);
+			this.setBeanProperty(bw, propertyName, cell, cellValue);*/
 		}
 		return bean;
 	}
+	
 	
 	protected boolean isIgnoreRow(Row row){
 		return false;
@@ -163,24 +224,6 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		} catch (Exception e) {
 			throw new BaseException("set property["+name+"] error, value: "+value, e);
 		}
-	}
-	
-	protected String getPropertyName(Cell cell, String name, int cellINdex){
-		String propertyName = null;
-		switch (mapperType) {
-			case NAME:
-				propertyName = this.propertyMapper.get(name);
-				break;
-				
-			case CELL_INDEX:
-				propertyName = this.propertyMapper.get(cellINdex);
-				break;
-	
-			default:
-				propertyName = name;
-				break;
-		}
-		return propertyName;
 	}
 
 	@Override
