@@ -20,6 +20,7 @@ import java.util.TreeSet;
 
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.L;
+import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -388,6 +389,84 @@ final public class CUtils {
 	
 	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
+	}
+	
+    public static <T> void filter(Collection<T> collection, Predicate<T> predicate) {
+    	CollectionUtils.filter(collection, predicate);
+    }
+	
+    /*****
+     * list1中存在，list2中找不到的元素
+     * @param list1
+     * @param list2
+     * @param predicate
+     */
+    public static <T> List<T> difference(List<T> list1, List<T> list2, NotInPredicate<T> notInPredicate) {
+    	List<T> diff = LangUtils.newArrayList();
+    	for(T e : list1){
+    		if(notInPredicate.apply(e, list2))
+    			diff.add(e);
+    	}
+       return Collections.unmodifiableList(diff);
+    }
+    public static <T> List<T> difference(List<T> list1, List<T> list2, final String...properties) {
+    	return difference(list1, list2, new NotInPredicate<T>() {
+			@Override
+			public boolean apply(T e, List<T> list) {
+				return !contains(list, e, properties);
+			}
+		});
+    }
+	
+	public static interface NotInPredicate<T> {
+		boolean apply(T e, List<T> list);
+	}
+	
+	public static interface EqualsPredicate<T> {
+		boolean apply(T e1, T e2);
+	}
+	
+	public static <T> boolean contains(Collection<T> c, T element, EqualsPredicate<T> equalsPredicate){
+		if(LangUtils.isNotEmpty(c)){
+			for(T e : c){
+				if(equalsPredicate.apply(e, element))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	public static <T> boolean contains(Collection<T> c, T element, final String...properties){
+		return contains(c, element, new EqualsPredicate<T>(){
+			@Override
+			public boolean apply(T e1, T e2) {
+				return isEquals(e1, e2, properties);
+			}
+		});
+	}
+
+	
+	public static <T> boolean isEquals(T e1, T e2, EqualsPredicate<T> equalsPredicate){
+		return equalsPredicate.apply(e1, e2);
+	}
+	
+	public static <T> boolean isEquals(final T e1, final T e2, final String...properties){
+		if(e1==e2)
+			return true;
+		if(e1==null || e2==null)
+			return false;
+		return isEquals(e1, e2, new EqualsPredicate<T>(){
+
+			@Override
+			public boolean apply(T e1, T e2) {
+				for(String p : properties){
+					if(!ReflectUtils.getProperty(e1, p).equals(ReflectUtils.getProperty(e2, p)))
+						return false;
+				}
+				return true;
+			}
+			
+		});
 	}
 	
 	private CUtils(){
