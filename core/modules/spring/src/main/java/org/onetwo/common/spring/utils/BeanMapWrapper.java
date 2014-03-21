@@ -6,6 +6,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -103,6 +104,14 @@ public class BeanMapWrapper implements PropertyAccessor {
 		}
 		
 	}
+	@Override
+	public void setPropertyValue(PropertyValue pv) throws BeansException {
+		if(mapData){
+			throw new UnsupportedOperationException();
+		}else{
+			beanWrapper.setPropertyValue(pv);
+		}
+	}
 
 
 	@Override
@@ -127,6 +136,8 @@ public class BeanMapWrapper implements PropertyAccessor {
 		}
 		
 	}
+
+
 	
 
 }
