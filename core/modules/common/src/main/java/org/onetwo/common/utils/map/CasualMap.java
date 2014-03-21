@@ -1,6 +1,5 @@
 package org.onetwo.common.utils.map;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,10 +8,9 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.VerySimpleStartMatcher;
-import org.onetwo.common.utils.list.L;
 
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
-public class CasualMap extends IncreaseMap{
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class CasualMap extends ListMap<Object, Object>{
 	
 	public CasualMap(){super();};
 
@@ -35,9 +33,9 @@ public class CasualMap extends IncreaseMap{
 			String[] pv = StringUtils.split(param, "=");
 			
 			if(pv.length < 2){
-				increasePut(pv[0], "");
+				putElement(pv[0], "");
 			}else{
-				increasePut(pv[0], pv[1]);
+				putElement(pv[0], pv[1]);
 			}
 		}
 	}
@@ -49,10 +47,12 @@ public class CasualMap extends IncreaseMap{
 	public CasualMap addWithout(Map map, String...prefixs){
 		if(map==null || map.isEmpty())
 			return this;
-		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
+		for(Map.Entry<Object, List<Object>> entry : (Set<Map.Entry<Object, List<Object>>>)map.entrySet()){
 			if(matchPrefix(entry.getKey().toString(), prefixs))
 				continue;
-			put(entry.getKey(), entry.getValue());
+			for(Object v : entry.getValue()){
+				putElement(entry.getKey(), v);
+			}
 		}
 		return this;
 	}
@@ -90,10 +90,9 @@ public class CasualMap extends IncreaseMap{
 			}else{
 				values = new Object[]{val};
 			}
-			if(values.length==1)
-				put(entry.getKey(), values[0]);
-			else
-				put(entry.getKey(), values);
+			for(Object v : values){
+				putElement(entry.getKey(), v);
+			}
 		}
 		return this;
 	}
@@ -101,10 +100,10 @@ public class CasualMap extends IncreaseMap{
 	public String toParamString(){
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
-		for(Map.Entry entry : (Set<Map.Entry>)entrySet()){
+		for(Map.Entry<Object, List<Object>> entry : (Set<Map.Entry<Object, List<Object>>>)entrySet()){
 			if(entry.getValue()==null)
 				continue;
-			List values = L.tolist(entry.getValue(), true);
+			List values = entry.getValue();
 			for(Object value : values){
 				if(index!=0)
 					sb.append("&");
@@ -115,27 +114,4 @@ public class CasualMap extends IncreaseMap{
 		return sb.toString();
 	}
 	
-	public Map diffence(Map map){
-		if(map==null || map.isEmpty())
-			return Collections.EMPTY_MAP;
-		CasualMap rs = new CasualMap();
-		Object myValue=null;
-		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
-			if(!containsKey(entry.getKey()))
-				continue;
-			myValue = this.get(entry.getKey());
-			if(myValue==null){
-				if(entry.getValue()!=null){
-					rs.put(entry.getKey(), myValue);
-					rs.increasePut(entry.getKey(), entry.getValue());
-				}
-			}else{
-				if(!myValue.equals(entry.getValue())){
-					rs.put(entry.getKey(), myValue);
-					rs.increasePut(entry.getKey(), entry.getValue());
-				}
-			}
-		}
-		return rs;
-	}
 }

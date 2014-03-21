@@ -31,17 +31,17 @@ public class CasualMapTest {
 	@Test
 	public void testParams(){
 		CasualMap map1 = new CasualMap("aa=aa-value&bb=bb-value");
-		Assert.assertEquals("aa-value", map1.get("aa"));
-		Assert.assertEquals("bb-value", map1.get("bb"));
+		Assert.assertEquals("aa-value", map1.get("aa").get(0));
+		Assert.assertEquals("bb-value", map1.get("bb").get(0));
 		
 		CasualMap addMap = new CasualMap();
-		addMap.put("dd", "dd-value");
-		addMap.put("dd", "dd-value2");
-		addMap.put("test-ee", "testee-value");
-		addMap.put("test-dd", "testdd-value");
+		addMap.putElement("dd", "dd-value");
+		addMap.putElement("dd", "dd-value2");
+		addMap.putElement("test-ee", "testee-value");
+		addMap.putElement("test-dd", "testdd-value");
 		
 		CasualMap map2 = new CasualMap("aa=aa-value&bb=bb-value");
-		map2.put("cc", new String[]{"cc-value", "cc2-value"});
+		map2.putElements("cc", new String[]{"cc-value", "cc2-value"});
 		map2.addWithout(addMap, "test-");
 		
 		CasualMap map = map2.subtract(map1);
@@ -53,32 +53,32 @@ public class CasualMapTest {
 	@Test
 	public void testFilterParams(){
 		CasualMap map1 = new CasualMap("aa=aa-value&bb=bb-value");
-		Assert.assertEquals("aa-value", map1.get("aa"));
-		Assert.assertEquals("bb-value", map1.get("bb"));
+		Assert.assertEquals("aa-value", map1.get("aa").get(0));
+		Assert.assertEquals("bb-value", map1.get("bb").get(0));
 		
 		CasualMap addMap = new CasualMap();
-		addMap.put("dd", "dd-value");
-		addMap.put("test-ee", "testee-value");
-		addMap.put("test-dd", "testdd-value");
-		addMap.put("aa-test-dd", "testdd-value");
+		addMap.putElement("dd", "dd-value");
+		addMap.putElement("test-ee", "testee-value");
+		addMap.putElement("test-dd", "testdd-value");
+		addMap.putElement("aa-test-dd", "testdd-value");
 		
 		map1.addHttpParameterWithout(addMap, "*test*");
 		System.out.println("map1:" + map1);
-		Assert.assertEquals("{aa=aa-value, bb=bb-value, dd=dd-value}", map1.toString());
+		Assert.assertEquals("{aa=[aa-value], bb=[bb-value], dd=[dd-value]}", map1.toString());
 	}
 
 	
 	@Test
 	public void testFilterSelf(){
 		CasualMap map1 = new CasualMap("aa=aa-value&bb=bb-value");
-		map1.put("dd", "dd-value");
-		map1.put("test-ee", "testee-value");
-		map1.put("test-dd", "testdd-value");
-		map1.put("aa-test-dd", "testdd-value");
+		map1.putElement("dd", "dd-value");
+		map1.putElement("test-ee", "testee-value");
+		map1.putElement("test-dd", "testdd-value");
+		map1.putElement("aa-test-dd", "testdd-value");
 		
 		map1.filter("*test*");
 		System.out.println("map1:" + map1);
-		Assert.assertEquals("{aa=aa-value, bb=bb-value, dd=dd-value}", map1.toString());
+		Assert.assertEquals("{aa=[aa-value], bb=[bb-value], dd=[dd-value]}", map1.toString());
 	}
 	
 	
