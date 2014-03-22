@@ -25,12 +25,12 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 
 	private Map<K, List<V>> map;
 	
-	private ListMap(){
+	protected ListMap(){
 		this(new LinkedHashMap<K, List<V>>());
 	}
 	
 	
-	private ListMap(Map<K, List<V>> map) {
+	protected ListMap(Map<K, List<V>> map) {
 		super();
 		this.map = map;
 	}
@@ -43,6 +43,17 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 			map.put(key, list);
 		}
 		list.add(value);
+		return list;
+	}
+
+	public List<V> putElements(K key, V... values){
+		List<V> list = get(key);
+		if(list==null){
+			list = LangUtils.newArrayList();
+			map.put(key, list);
+		}
+		for(V v : values)
+			list.add(v);
 		return list;
 	}
 
@@ -116,6 +127,18 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 		return map.hashCode();
 	}
 	
-	
+
+    public String toString() {
+    	StringBuilder str = new StringBuilder("{");
+    	int index = 0;
+    	for(Map.Entry<K, List<V>> entry : (Set<Map.Entry<K, List<V>>>)entrySet()){
+    		if(index!=0)
+    			str.append(", ");
+			str.append(entry.getKey()).append("=").append(entry.getValue());
+			index++;
+		}
+    	str.append("}");
+    	return str.toString();
+    }
 	
 }

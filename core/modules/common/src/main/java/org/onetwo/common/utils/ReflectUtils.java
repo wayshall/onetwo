@@ -34,7 +34,6 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
-import org.onetwo.common.utils.list.ListFun;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.M;
 
@@ -1545,18 +1544,6 @@ public class ReflectUtils {
 		return results;
 	}
 
-	public static <T> List<T> newInstance(Class<T> clazz, int count,
-			ListFun<T> closure) {
-		List<T> results = new ArrayList<T>();
-		for (int i = 0; i < count; i++) {
-			T result = ReflectUtils.newInstance(clazz);
-			if (closure != null)
-				closure.exe(result, i, null);
-			results.add(result);
-		}
-		return results;
-	}
-	
 
 	public static PropertyDescriptor newProperty(Class clazz, String propName){
 		try {
