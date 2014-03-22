@@ -34,6 +34,8 @@
 		<property name="cronExpression" value="#{taskConfig.dataSyncTaskCronExpression}" />
 	</bean>
 	
+	<util:properties id="quartzConfig" location="quartz.properties"></util:properties>
+	
 	<bean id="schedulerFactory"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
@@ -41,6 +43,7 @@
 				<ref bean="dataSyncTaskTrigger" />
 			</list>
 		</property>
+		<property name="quartzProperties" ref="quartzConfig"/>
 		<property name="startupDelay" value="5"/>
 	</bean>
 	

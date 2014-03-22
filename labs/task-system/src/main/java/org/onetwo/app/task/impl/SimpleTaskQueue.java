@@ -47,7 +47,7 @@ public class SimpleTaskQueue implements TaskQueue {
 			String ts1 = DateUtil.formatDateTimeMillis(new Date());
 			this.taskQueue.put(taskData);
 			String ts2 = DateUtil.formatDateTimeMillis(new Date());
-			logger.info(">>> thread[{}] prepare to put task[{}] to queue at "+ts1+", and has putted task[{}] to queue "+ts2+" .", Thread.currentThread().getId(), taskData.getName());
+			logger.info(">>> thread[{}] prepare to put task[{}] to queue at "+ts1+", and has putted to queue "+ts2+" .", Thread.currentThread().getId(), taskData.getName());
 		} catch (InterruptedException e) {
 			logger.error(">>> thread is interrupted: " + taskData.getName(), e);
 			Thread.currentThread().interrupt();
