@@ -50,6 +50,12 @@
 	  <groupId>org.apache.poi</groupId>
 	  <artifactId>poi</artifactId>
 	  <version>${poi.version}</version>
+	  <exclusions>
+	  	<exclusion>
+	  		<groupId>javax.servlet</groupId>
+	  		<artifactId>servlet-api</artifactId>
+	  	</exclusion>
+	  </exclusions>
 	</dependency>
 	
 	<dependency>
