@@ -18,6 +18,7 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 	
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private static final String CONTROLLER_TIME_KEY = "mvc execute";
+	public static final String NOW_KEY = "now";
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if(!isMethodHandler(handler))
@@ -48,9 +49,9 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 	
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		if(modelAndView!=null){
-			modelAndView.addObject("now", new NiceDate());
+			modelAndView.addObject(NOW_KEY, new NiceDate());
 		}else{
-			request.setAttribute("now", new NiceDate());
+			request.setAttribute(NOW_KEY, new NiceDate());
 		}
 		/*if(modelAndView!=null && modelAndView.getModelMap()!=null){
 			BeanPropertyBindingResult br = null;

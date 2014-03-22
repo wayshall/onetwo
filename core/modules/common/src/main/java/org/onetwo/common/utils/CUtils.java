@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -393,6 +394,16 @@ final public class CUtils {
 	
     public static <T> void filter(Collection<T> collection, Predicate<T> predicate) {
     	CollectionUtils.filter(collection, predicate);
+    }
+	
+    public static <K, V> void filter(Map<K, V> map, Predicate<Entry<K, V>> predicate) {
+    	if (map != null && predicate != null) {
+            for (Iterator<Entry<K, V>> it = map.entrySet().iterator(); it.hasNext();) {
+                if (predicate.apply(it.next()) == false) {
+                    it.remove();
+                }
+            }
+        }
     }
 	
     /*****
