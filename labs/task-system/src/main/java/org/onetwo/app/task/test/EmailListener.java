@@ -11,7 +11,7 @@ public class EmailListener extends TaskListenerAdapter {
 	@Override
 	public Object onExecute(TaskData task) {
 		JFishLogger.INSTANCE.log("<<< execute task: " + task.getName());
-		LangUtils.await(3);
+		LangUtils.await(10);
 		return null;
 	}
 }
