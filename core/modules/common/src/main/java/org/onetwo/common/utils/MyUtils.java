@@ -281,7 +281,7 @@ public class MyUtils {
 			return null;
 		List list = new ArrayList();
 		for (Object obj : array) {
-			if (L.NullOrEmptyTrue.evaluate(obj))
+			if (L.NullOrEmptyTrue.apply(obj))
 				continue;
 			list.add(obj);
 		}
