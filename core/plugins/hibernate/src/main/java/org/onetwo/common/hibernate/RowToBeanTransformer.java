@@ -52,7 +52,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 				initialize( aliases );
 			}
 			else {
-				if(checkAlias)
+				if(checkAlias)//如果是游标的方式，第一次之后不能获取列名，没必要重复检查
 					check( aliases );
 			}
 			
