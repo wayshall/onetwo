@@ -491,14 +491,14 @@ public abstract class StringUtils {
 
 	public static String join(Object[] array, String separator) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(array, separator, 0, array.length);
 	}
 
 	public static String join(Object[] array, String separator, SimpleBlock<Object, String> it) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(array, separator, 0, array.length, it);
 	}
@@ -511,7 +511,7 @@ public abstract class StringUtils {
 
 		// handle null, zero and one elements before building a buffer
 		if (iterator == null) {
-			return null;
+			return EMPTY;
 		}
 		if (!iterator.hasNext()) {
 			return EMPTY;
@@ -547,14 +547,14 @@ public abstract class StringUtils {
 
 	public static String join(Collection collection, String separator) {
 		if (collection == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(collection.iterator(), separator);
 	}
 
 	public static String join(Collection collection, String separator, SimpleBlock<Object, String> it) {
 		if (collection == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(collection.iterator(), separator, it);
 	}
@@ -565,7 +565,7 @@ public abstract class StringUtils {
 
 	public static String join(Object[] array, String separator, int startIndex, int endIndex, SimpleBlock<Object, String> it) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		if (separator == null) {
 			separator = EMPTY;

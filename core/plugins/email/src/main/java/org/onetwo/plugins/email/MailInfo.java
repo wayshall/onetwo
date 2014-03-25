@@ -3,7 +3,11 @@ package org.onetwo.plugins.email;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.list.JFishList;
 
 public class MailInfo implements Serializable{
 	
@@ -33,7 +37,7 @@ public class MailInfo implements Serializable{
 	private boolean template;
 	private boolean mimeMail;
 	
-	private File[] attachments;
+	private JFishList<File> attachments = JFishList.create();
 	
 	private Map<String, Object> templateContext;
 
@@ -110,11 +114,29 @@ public class MailInfo implements Serializable{
 	}
 
 	public File[] getAttachments() {
-		return attachments;
+		return attachments.toArray(new File[0]);
+	}
+
+	public MailInfo addAttachment(File attachment) {
+		if(attachment==null)
+			return this;
+		attachments.add(attachment);
+		this.mimeMail = true;
+		return this;
 	}
 
 	public MailInfo attachments(File... attachments) {
-		this.attachments = attachments;
+		if(LangUtils.isEmpty(attachments))
+			return this;
+		this.attachments  = JFishList.wrapObject(attachments);
+		this.mimeMail = true;
+		return this;
+	}
+
+	public MailInfo attachmentList(List<File> attachments) {
+		if(LangUtils.isEmpty(attachments))
+			return this;
+		this.attachments = JFishList.wrap(attachments);
 		this.mimeMail = true;
 		return this;
 	}

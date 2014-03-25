@@ -30,14 +30,14 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 	}
 
 	public void write(String path) {
-		FileOutputStream file = null;
+		FileOutputStream fos = null;
 		try {
-			file = new FileOutputStream(path);
-			this.getWorkbook().write(file);
+			fos = new FileOutputStream(path);
+			this.getWorkbook().write(fos);
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		} finally {
-			LangUtils.closeIO(file);
+			LangUtils.closeIO(fos);
 		}
 	}
 
