@@ -57,8 +57,8 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		for(NamespaceProperties<NamespaceProperty> nsp : (Collection<NamespaceProperties<NamespaceProperty>>)namespacelist){
 			if(nsp.isGlobal())
 				continue;
-			dqInterface = ReflectUtils.loadClass(nsp.getNamespace());
 			
+			dqInterface = loadQueryClass(nsp);
 			QueryCreator creator = dqInterface.getAnnotation(QueryCreator.class);
 			if(creator!=null){
 				Object cqbean = SpringUtils.getBean(applicationContext, creator.value());
@@ -76,7 +76,13 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		}
 	}
 
-
+	private Class<?> loadQueryClass(NamespaceProperties<NamespaceProperty> nsp){
+		try {
+			return ReflectUtils.loadClass(nsp.getNamespace());
+		} catch (Exception e) {
+			throw new BaseException("load class for query error: " + e.getMessage(), e);
+		}
+	}
 	
 
 	@Override
