@@ -885,6 +885,10 @@ public class LangUtils {
 		return list==null?Collections.EMPTY_LIST:list;
 	}
 	
+	public static List defIfEmpty(List list, List def){
+		return emptyIfNull(list).isEmpty()?def:list;
+	}
+	
 	public static <T> T notNullValue(Object obj, Class<T> type){
 		if(obj!=null)
 			return (T)obj;
