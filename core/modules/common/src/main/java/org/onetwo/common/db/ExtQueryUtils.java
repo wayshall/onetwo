@@ -118,12 +118,27 @@ public abstract class ExtQueryUtils {
 	}
 	
 	public static String buildCountSql(String sql, String countValue){
-		String countField = "*";
-		String hql = StringUtils.substringAfter(sql, "from ");
-		if(StringUtils.isBlank(hql)){
-			hql = StringUtils.substringAfter(sql, "FROM ");
+		String[] tokens = StringUtils.split(sql.toLowerCase(), " ");
+		
+		int groupIndex = ArrayUtils.indexOf(tokens, "group");
+		if(groupIndex!=-1 && tokens.length>(groupIndex+1) && "by".equals(tokens[groupIndex+1])){
+			sql = "select count(*) from ( " + sql + " )";
+			return sql;
 		}
-		hql = StringUtils.substringBefore(hql, " order by ");
+		
+		int unionIndex = ArrayUtils.indexOf(tokens, "union");
+		if(unionIndex!=-1){
+			sql = "select count(*) from ( " + sql + " )";
+			return sql;
+		}
+		
+		String countField = "*";
+		String hql = sql;
+		if(ArrayUtils.contains(tokens, "from"))
+			hql = StringUtils.substringAfter(hql, "from ");
+		int orderByIndex = ArrayUtils.indexOf(tokens, "order");
+		if(orderByIndex!=-1 && tokens.length>(orderByIndex+1) && "by".equals(tokens[orderByIndex+1]))
+			hql = StringUtils.substringBefore(hql, " order by ");
 
 		if(StringUtils.isNotBlank(countValue))
 			countField = countValue;

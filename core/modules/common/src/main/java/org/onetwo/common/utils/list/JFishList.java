@@ -17,6 +17,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.map.ListMap;
 
 
@@ -257,6 +258,75 @@ public class JFishList<E> implements List<E>, Serializable {
 			
 		});
 		return maps;
+	}
+	
+	private class SumResult {
+		
+		private Double total = 0D;
+
+		public Double getTotal() {
+			return total;
+		}
+
+		public void setTotal(Double total) {
+			this.total = total;
+		}
+		
+	}
+	
+	public String join(final String joiner, final SimpleBlock<E, String> block){
+		final StringBuilder str = new StringBuilder();
+		each(new It<E>() {
+
+			@Override
+			public boolean doIt(E element, int index) {
+				if(index!=0)
+					str.append(joiner);
+				str.append(block.execute(element));
+				return true;
+			}
+			
+		});
+		return str.toString();
+	}
+
+	public String join(final String joiner, final String propName){
+		return join(joiner, new SimpleBlock<E, String>() {
+
+			@Override
+			public String execute(E object) {
+				Object value = ReflectUtils.getProperty(object, propName);
+				return value==null?"":value.toString();
+			}
+			
+		});
+	}
+	
+	public Double sum(final SimpleBlock<E, Double> block){
+		final SumResult total = new SumResult();
+		each(new NoIndexIt<E>() {
+
+			@Override
+			protected void doIt(E element) throws Exception {
+				Double rs = block.execute(element);
+				if(rs!=null)
+					total.setTotal(total.getTotal()+rs);
+			}
+			
+		});
+		return total.getTotal();
+	}
+	
+	public Double sum(final String propName){
+		return sum(new SimpleBlock<E, Double>() {
+
+			@Override
+			public Double execute(E object) {
+				Object value = ReflectUtils.getProperty(object, propName);
+				return value==null?null:Types.convertValue(value, Double.class);
+			}
+			
+		});
 	}
 	
 	public <K> ListMap<K, E> groupBy(final String propName){
