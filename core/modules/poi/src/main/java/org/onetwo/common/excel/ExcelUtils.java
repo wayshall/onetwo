@@ -68,6 +68,7 @@ abstract public class ExcelUtils {
 		xstream.alias("var", VarModel.class);
 		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
+		xstream.alias("sheet", TemplateModel.class);
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);

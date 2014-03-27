@@ -3,6 +3,7 @@ package org.onetwo.common.interfaces.excel;
 import java.util.Map;
 
 public interface ExcelValueParser {
+//	public void putVar(String name, Object value);
 	public Map<String, Object> getContext();
 	public Object parseValue(String expr, Object rootForExpr, Object objForSymbol);
 	public Object parseValue(String expr);

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.onetwo.common.profiling.JFishLogger;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -46,7 +47,9 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 
 //		FieldProcessor fieldProcessor = getFieldProcessor(iterator, context);
 		for (Object ele = null; it.hasNext(); index++) {
-			UtilTimerStack.push(iterator.getName());
+//			UtilTimerStack.push(iterator.getName());
+			if(index%1000==0)
+				JFishLogger.INSTANCE.log("create row " + index);
 			
 			ele = it.next();
 			Row row = createRow(sheet, iterator, ele);
@@ -79,7 +82,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 
 			}
 
-			UtilTimerStack.pop(iterator.getName());
+//			UtilTimerStack.pop(iterator.getName());
 		}
 		if(context!=null){
 			context.remove(iterator.getName());

@@ -67,6 +67,9 @@ public class CmdRunner {
 				if(cmd!=null){
 					try {
 						cmd.execute(cmdContext);
+					} catch (CommandLineException e) {
+						logger.error("command line error: " + e.getMessage());
+						System.out.println("command line error : " + e.getMessage());
 					} catch (Exception e) {
 						logger.error("execute command error: " + e.getMessage(), e);
 						System.out.println("execute command error : " + e.getMessage()+", see detail in log file!");
