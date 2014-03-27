@@ -12,7 +12,12 @@ public class TemplateModel implements PoiModel{
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
 	private String name;
+	/****
+	 * 放到上下中的变量名
+	 */
 	private String varname;
+	
+	private String condition;
 	
 	private List<RowModel> rows;
 	
@@ -113,6 +118,15 @@ public class TemplateModel implements PoiModel{
 	public void setColumnWidth(String columnWidth) {
 		this.columnWidth = columnWidth;
 	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+	
 	
 	/*public boolean isMultiSheet(){
 		return this.sizePerSheet!=null && this.sizePerSheet>0 && StringUtils.isNotBlank(datasource);

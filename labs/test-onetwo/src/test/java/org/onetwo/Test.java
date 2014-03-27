@@ -1,9 +1,7 @@
 package org.onetwo;
 
-import java.util.Date;
+import org.onetwo.common.utils.LangUtils;
 
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.DateUtil.DateType;
 
 
 
@@ -20,15 +18,15 @@ public class Test {
 	}
 	
 	public static void main(String[] args){
-		String date = "2014-01-19";
-		Date monthDate = DateUtil.parseByPatterns(date, "yyyy-MM");
-		monthDate = DateUtil.beginningOf(monthDate, DateType.month);
-		String startDate = DateUtil.formatDate(monthDate);
-		System.out.println("startDate: " + startDate);
-		
-		monthDate = DateUtil.endOf(monthDate, DateType.month);
-		String endDate = DateUtil.formatDate(monthDate);
-		System.out.println("endDate: " + endDate);
+		test(new int[]{});
+	}
+	
+	public static void test(Object objs){
+		System.out.println("objs: " + objs);
+	}
+	
+	public static void test(Object[] objs){
+		System.out.println("objs: " + objs);
 	}
 	
 }

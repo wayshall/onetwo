@@ -15,6 +15,10 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 		return new ListMap<K, V>(new HashMap<K, List<V>>());
 	}
 	
+	public static <K, V> ListMap<K, V> newListMap(int size){
+		return new ListMap<K, V>(new HashMap<K, List<V>>(size));
+	}
+	
 	public static <K, V> ListMap<K, V> newLinkedListMap(){
 		return new ListMap<K, V>(new LinkedHashMap<K, List<V>>());
 	}

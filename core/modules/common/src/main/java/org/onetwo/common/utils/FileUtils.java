@@ -762,8 +762,12 @@ public class FileUtils {
     }
     
 	public static void makeDirs(String path){
+		makeDirs(path, !new File(path).isDirectory());
+	}
+    
+	public static void makeDirs(String path, boolean file){
 		File outDir = new File(path);
-		if(outDir.isFile())
+		if(file)
 			outDir = outDir.getParentFile();
 		
 		if(!outDir.exists())
