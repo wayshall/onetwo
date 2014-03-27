@@ -41,6 +41,11 @@ public interface SystemErrorCode {
 		public static final String SEND_SMS_ERROR = BASE_CODE+"SEND SMS ERROR";//发送短信错误
 	}
 	
+	public static class CommandLineErrorCode {
+		public static final String BASE_CODE = "[COMMAND ERROR]";//前缀
+		public static final String COMMAND_NOT_FOUND = BASE_CODE+"COMMAND NOT FOUND";//错误的指令
+	}
+	
 	public static class OtherErrorCode {
 		public static final String BASE_CODE = "[OTHER ERROR]";//前缀
 		/**

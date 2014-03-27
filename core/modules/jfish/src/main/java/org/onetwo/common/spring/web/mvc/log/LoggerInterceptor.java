@@ -46,6 +46,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter  {
 		OperatorLogInfo info = new OperatorLogInfo();
 		String url = request.getMethod() + "|" + request.getRequestURL();
 		info.setUrl(url);
+		info.setParameters(request.getParameterMap());
 		
 		UserDetail userdetail = JFishWebUtils.getUserDetail();
 		if(userdetail!=null){

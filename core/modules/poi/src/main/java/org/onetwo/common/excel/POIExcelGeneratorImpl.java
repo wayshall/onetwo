@@ -110,16 +110,24 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	public void generateIt() {
 //		this.initWorkbookData();
 		
+		boolean createSheet = true;
+		if(StringUtils.isNotBlank(tempalte.getCondition())){
+			createSheet = (Boolean)workbookData.getExcelValueParser().parseValue(tempalte.getCondition());
+		}
+		if(!createSheet){
+			logger.info("condition[ {} = {} ], ignore create sheet.", tempalte.getCondition(), createSheet);
+			return ;
+		}
 		ExportDatasource ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
-			ds = new ListExportDatasource(tempalte, Collections.EMPTY_LIST);
+			ds = new ListExportDatasource(this.workbookData, tempalte, Collections.EMPTY_LIST);
 		}else{
 			Object dsObj = getExcelValueParser().parseValue(tempalte.getDatasource(), null, null);
 			if(dsObj instanceof ExportDatasource){
 				ds = (ExportDatasource) dsObj;
 			}else{
 				List<?> datalist = LangUtils.asList(dsObj);
-				ds = new ListExportDatasource(tempalte, datalist);
+				ds = new ListExportDatasource(this.workbookData, tempalte, datalist);
 			}
 		}
 		

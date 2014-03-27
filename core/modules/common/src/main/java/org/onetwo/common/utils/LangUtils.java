@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,22 +119,20 @@ public class LangUtils {
 
 
 		@Override
-		public Object ifList(Object obj) {
-			List list = (List) obj;
+		public Object ifList(List list) {
 			if(list.isEmpty())
 				return null;
 			return list.get(0);
 		}
 		
 		@Override
-		public Object ifArray(Object obj) {
-			Object[] array = (Object[]) obj;
-			return array.length>0?array[0]:null;
+		public Object ifArray(Object[] array) {
+			int length = Array.getLength(array);
+			return length==0?null:Array.get(array, 0);
 		}
 
 		@Override
-		public Object ifCollection(Object obj) {
-			Collection col = (Collection) obj;
+		public Object ifCollection(Collection col) {
 			if(col.isEmpty())
 				return null;
 			return col.iterator().next();
@@ -144,8 +143,10 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifMap(Object obj) {
-			return obj;
+		public Object ifMap(Map<?, ?> obj) {
+			if(LangUtils.isEmpty(obj))
+				return null;
+			return obj.entrySet().iterator().next().getValue();
 		}
 
 		@Override
@@ -158,7 +159,7 @@ public class LangUtils {
 	public static TypeJudge NotNullObject = new TypeJudgeAdapter(){
 
 		@Override
-		public Object ifArray(Object array) {
+		public Object ifArray(Object[] array) {
 			return EMPTY_ARRAY;
 		}
 
@@ -172,7 +173,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifCollection(Object obj) {
+		public Object ifCollection(Collection<?> obj) {
 			return Collections.emptySet();
 		}
 
@@ -192,7 +193,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifList(Object obj) {
+		public Object ifList(List<?> obj) {
 			return Collections.EMPTY_LIST;
 		}
 
@@ -202,7 +203,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifMap(Object obj) {
+		public Object ifMap(Map<?, ?> obj) {
 			return Collections.EMPTY_MAP;
 		}
 
@@ -218,7 +219,7 @@ public class LangUtils {
 
 	};
 
-	public static final TypeJudgeAdapter STRING_CAST_TYPEJUDGE = new TypeJudgeAdapter(){
+	/*public static final TypeJudgeAdapter STRING_CAST_TYPEJUDGE = new TypeJudgeAdapter(){
 
 		@Override
 		public Object ifList(Object obj) {
@@ -352,7 +353,7 @@ public class LangUtils {
 			return result;
 		}
 		
-	};
+	};*/
 	
 	public static final double MB_SIZE = 1000.0*1000.0;
 	public static final double KB_SIZE = 1000.0;
@@ -619,21 +620,30 @@ public class LangUtils {
 	public static String toString(Object obj){
 		if(obj==null)
 			return "NULL";
-		String result = "";
+		StringBuilder result = new StringBuilder("");
 		if(isBaseType(obj.getClass())){
-			result += obj;
+			result.append(obj);
 		}else if(obj instanceof Class){
-			result += ((Class)obj).getName();
+			result.append(((Class)obj).getName());
 		}else if(obj instanceof Date){
-			result += DateUtil.formatDateTime((Date)obj);
+			result.append(DateUtil.formatDateTime((Date)obj));
 		}else if(obj instanceof String){
-			result += obj.toString();
+			result.append(obj);
 		}else if(obj instanceof Number){
-			result += ((Number)obj).toString();
+			result.append(((Number)obj).toString());
 		}else if(obj instanceof Map){
-			result += ((Map)obj).toString();
+//			result += ((Map)obj).toString();
+			result.append("{");
+			int index = 0;
+			for(Entry<Object, Object> entry : ((Map<Object, Object>)obj).entrySet()){
+				if(index!=0)
+					result.append(", ");
+				result.append(toString(entry.getKey())).append(":").append(toString(entry.getValue()));
+				index++;
+			}
+			result.append("}");
 		}else if(obj instanceof Exception){
-			result = toString((Exception)obj, true);
+			result.append(toString((Exception)obj, true));
 		}else if(obj instanceof Collection){
 			Collection<?> list = CUtils.toCollection(obj);
 			if(isEmpty(list))
@@ -651,17 +661,17 @@ public class LangUtils {
 			for(Object o : list){
 				strs.add(toString(o));
 			}
-			result += "["+StringUtils.join(strs, ", ")+"]";
+			result.append("[").append(StringUtils.join(strs, ", ")).append("]");
 		}else if(obj.getClass().isArray()){
 			List<?> list = CUtils.tolist(obj, false);
-			result += "["+StringUtils.join(list, ", ")+"]";
+			result.append("[").append(StringUtils.join(list, ", ")).append("]");
 		}else if(obj.getClass()==Object.class){
 			return obj.toString();
 		}else{
 			Map props = ReflectUtils.toMap(obj);
-			result += props.toString();
+			result.append(props.toString());
 		}
-		return result;
+		return result.toString();
 	}
 	
 
@@ -861,14 +871,20 @@ public class LangUtils {
 		Object result = executor.all(obj);
 		if(Collection.class.isAssignableFrom(type)){
 			if(List.class.isAssignableFrom(type)){
-				result = executor.ifList(obj);
+				result = executor.ifList((List)obj);
 			}else {
-				result = executor.ifCollection(obj);
+				result = executor.ifCollection((Collection)obj);
 			}
 		}else if(Map.class.isAssignableFrom(type)){
-			result = executor.ifMap(obj);
+			result = executor.ifMap((Map)obj);
 		}else if(type.isArray()){
-			result = executor.ifArray(obj);
+			/*Class<?> ctype = type.getComponentType();
+			if(ctype.isPrimitive()){
+				result = executor.ifPrimitiveArray(obj, ctype);
+			}else{
+				result = executor.ifArray((Object[])obj);
+			}*/
+			result = executor.ifArray((Object[])obj);
 		}else{
 			result = executor.other(obj, type);
 		}
@@ -879,6 +895,19 @@ public class LangUtils {
 		if(obj==null)
 			return null;
 		return (T)judgeType(obj, FirstObject);
+	}
+	
+	public static <T> T getFirst(Object obj, Class<T> clazz){
+		if(obj==null)
+			return null;
+		return (T)judgeType(obj, FirstObject);
+	}
+	
+	public static <T> T getFirstOrCreate(Object obj, Class<T> clazz){
+		if(obj==null)
+			return ReflectUtils.newInstance(clazz);
+		Object val = (T)judgeType(obj, FirstObject);
+		return (T)(val==null?ReflectUtils.newInstance(clazz):val);
 	}
 	
 	public static List emptyIfNull(List list){
@@ -1195,21 +1224,11 @@ public class LangUtils {
 	}
 	
 	public static <T> T strCastTo(String str, Class<T> toType){
-		return (T)judgeType(str, toType, STRING_CAST_TYPEJUDGE);
+		return Types.convertValue(str, toType);
 	}
 	
 	public static <T> T tryCastTo(Object val, Class<T> toType){
-		Assert.notNull(toType);
-		T reVal = null;
-		if(!toType.isInstance(val)){
-			if(val instanceof String){
-				reVal = strCastTo(val.toString(), toType);
-			}
-		}
-		if(reVal==null){
-			reVal = (T) val;
-		}
-		return reVal;
+		return Types.convertValue(val, toType);
 	}
 	
 	/*********

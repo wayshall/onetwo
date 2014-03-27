@@ -23,6 +23,7 @@ import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
+import org.onetwo.common.utils.map.ListMap;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -237,6 +238,12 @@ final public class CUtils {
 		if(size<=0)
 			return new HashMap<K, V>();
 		return new HashMap<K, V>(size);
+	}
+
+	public static <K, V> ListMap<K, V> newListMap(int size){
+		if(size<=0)
+			return ListMap.newListMap();
+		return ListMap.newListMap(size);
 	}
 
 	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int size){

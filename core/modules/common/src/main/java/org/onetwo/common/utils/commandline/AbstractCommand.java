@@ -30,7 +30,7 @@ abstract public class AbstractCommand implements Command{
 	}
 
 	@Override
-	public void execute(CmdContext context) {
+	public void execute(CmdContext context) throws Exception {
 		System.out.println("");
 		System.out.println("===========================================");
 		doExecute(context);
@@ -38,7 +38,7 @@ abstract public class AbstractCommand implements Command{
 		System.out.println("");
 	}
 
-	abstract public void doExecute(CmdContext context) ;
+	abstract public void doExecute(CmdContext context) throws Exception ;
 
 	@Override
 	public String helpDoc() {
