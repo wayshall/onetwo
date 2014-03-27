@@ -10,10 +10,13 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
+import com.google.common.collect.Maps;
+
 public class DefaultExcelValueParser implements ExcelValueParser {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
-	
+
 	private Map<String, Object> context;
+	private Map<String, Object> varMap = Maps.newHashMap();
 	
 	public DefaultExcelValueParser(){
 		this(null);
@@ -29,6 +32,10 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			context.put(TheFunction.ALIAS_NAME, TheFunction.getInstance());
 		}
 	}
+	
+	public void putVar(String name, Object value){
+		this.varMap.put(name, value);
+	}
 
 	public Map<String, Object> getContext() {
 		return context;
@@ -38,10 +45,16 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		if(StringUtils.isBlank(expr))
 			return "";
 		Object fieldValue = null;
-		if(isSymbol(expr))
+		if(isSymbol(expr)){
 			fieldValue = parseSymbol(expr, obj);
-		else
+		}else{
+			if(expr.startsWith("#")){
+				fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;
+			}
 			fieldValue = ExcelUtils.getValue(expr, context, obj);
+		}
 		
 		return fieldValue;
 	}
@@ -49,7 +62,13 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 	public Object parseValue(String expr){
 		if(StringUtils.isBlank(expr))
 			return "";
-		Object fieldValue = ExcelUtils.getValue(expr, context, null);
+		Object fieldValue = null;
+		if(expr.startsWith("#")){
+			fieldValue = varMap.get(expr.substring(1));
+			if(fieldValue!=null)
+				return fieldValue;
+		}
+		fieldValue = ExcelUtils.getValue(expr, context, null);
 		return fieldValue;
 	}
 	

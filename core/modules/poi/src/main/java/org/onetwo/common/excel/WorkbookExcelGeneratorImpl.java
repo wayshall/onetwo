@@ -19,12 +19,12 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 //	private Map<String, Object> context;
 
 	public WorkbookExcelGeneratorImpl(WorkbookModel workbookModel, Map<String, Object> context){
+		DefaultExcelValueParser excelValueParser = new DefaultExcelValueParser(context);
 		for(VarModel var : workbookModel.getVars()){
 			if(context.containsKey(var.getName()))
 				throw new BaseException("var is exist: " + var.getName());
-			context.put(var.getName(), var.getValue());
+			excelValueParser.putVar(var.getName(), var.getValue());
 		}
-		ExcelValueParser excelValueParser = new DefaultExcelValueParser(context);
 //		this.context = context;
 		WorkbookListener workbookListener = null;
 		if(StringUtils.isNotBlank(workbookModel.getListener()))
