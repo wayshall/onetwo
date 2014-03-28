@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.utils.StringUtils;
 
 /***
@@ -19,19 +19,21 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 //	private Map<String, Object> context;
 
 	public WorkbookExcelGeneratorImpl(WorkbookModel workbookModel, Map<String, Object> context){
+		DefaultExcelValueParser excelValueParser = new DefaultExcelValueParser(context);
 		for(VarModel var : workbookModel.getVars()){
 			if(context.containsKey(var.getName()))
 				throw new BaseException("var is exist: " + var.getName());
-			context.put(var.getName(), var.getValue());
+			excelValueParser.putVar(var.getName(), var.getValue());
 		}
-		ExcelValueParser excelValueParser = new DefaultExcelValueParser(context);
 //		this.context = context;
+//		Object data = context.get("reportData0");
 		WorkbookListener workbookListener = null;
 		if(StringUtils.isNotBlank(workbookModel.getListener()))
-			workbookListener = (WorkbookListener)excelValueParser.parseValue(workbookModel.getListener(), null, workbookModel);
+			workbookListener = (WorkbookListener)excelValueParser.parseValue(workbookModel.getListener(), workbookModel, null);
 		if(workbookListener==null)
 			workbookListener = WorkbookData.EMPTY_WORKBOOK_LISTENER;
 		this.workbookData = new WorkbookData(workbookModel, new HSSFWorkbook(), excelValueParser, workbookListener);
+		this.workbookData.initData();
 		
 	}
 	@Override

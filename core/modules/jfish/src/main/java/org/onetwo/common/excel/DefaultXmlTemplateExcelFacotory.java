@@ -1,10 +1,7 @@
 package org.onetwo.common.excel;
 
-import java.util.Map;
-
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode.ServiceErrorCode;
-import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
@@ -19,17 +16,17 @@ import org.springframework.core.io.Resource;
  * @author wayshall
  *
  */
-public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory, InitializingBean {
+public class DefaultXmlTemplateExcelFacotory extends AbstractWorkbookTemplateFactory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory, InitializingBean {
 	
 //	private static final String DEFAULT_BASE_TEMPLATE_DIR = "/WEB-INF/excel";
 //	private Map<String, TemplateModel> TemplateModelCache = new HashMap<String, TemplateModel>();
 	private SimpleCacheWrapper cache;
 //	private String baseTemplateDir = DEFAULT_BASE_TEMPLATE_DIR;
 	private String baseTemplateDir;
-	private boolean cacheTemplate = BaseSiteConfig.getInstance().isProduct();
 	private SpringApplication springApplication;
 	
-	public DefaultXmlTemplateExcelFacotory(){;
+	public DefaultXmlTemplateExcelFacotory(){
+		super(BaseSiteConfig.getInstance().isProduct());
 	}
 	
 	
@@ -56,7 +53,7 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 			Resource resource = getResource(path);
 			if(resource==null)
 				throw new ServiceException("can not find valid excel template: " + path, ServiceErrorCode.RESOURCE_NOT_FOUND);
-			model = ExcelUtils.readAsWorkbookModel(resource);
+			model = readAsWorkbookModel(resource);
 			
 			if(checkCache)
 				cache.put(path, model);
@@ -69,18 +66,6 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 		return (getBaseTemplateDir()==null?"":getBaseTemplateDir()) + path;
 	}
 	
-	@Override
-	public TemplateGenerator create(String template, Map<String, Object> context) {
-		return create(getWorkbookModel(template), context);
-	}
-	
-	@Override
-	public TemplateGenerator create(WorkbookModel workbook, Map<String, Object> context){
-		TemplateGenerator generator = new WorkbookExcelGeneratorImpl(workbook, context);
-		return generator;
-	}
-	
-	
 	public String getBaseTemplateDir() {
 		return baseTemplateDir;
 	}
@@ -88,13 +73,6 @@ public class DefaultXmlTemplateExcelFacotory implements XmlTemplateGeneratorFact
 	public void setBaseTemplateDir(String baseTemplateDir) {
 		this.baseTemplateDir = baseTemplateDir;
 	}
-	public boolean isCacheTemplate() {
-		return cacheTemplate;
-	}
-	public void setCacheTemplate(boolean cacheTemplate) {
-		this.cacheTemplate = cacheTemplate;
-	}
-
 
 	@Override
 	public boolean checkTemplate(String template) {

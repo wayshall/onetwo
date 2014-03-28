@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.excel.data.RowContextData;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.profiling.JFishLogger;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -19,7 +21,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		this.titleRowProcessor = titleRowProcessor;
 	}
 
-	public void processRow(RowDataContext rowContext) {
+	public void processRow(RowContextData rowContext) {
 		
 		if(rowContext.getRowModel().isRenderHeader()){
 //			RowModel header = rowModel.copy();
@@ -30,26 +32,30 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void processIterator(RowDataContext rowContext) {
-		Sheet sheet = rowContext.getSheet();
+	public void processIterator(RowContextData rowContext) {
+//		Sheet sheet = rowContext.getSheet();
 		RowModel iterator = rowContext.getRowModel();
 		
-		Object dataSourceValue = this.getGenerator().getExcelValueParser().parseValue(iterator.getDatasource(), null, null);
+		Object dataSourceValue = rowContext.parseValue(iterator.getDatasource());
 //		Object dataSourceValue = rowContext.getSheetDatas();
 		Iterator it = LangUtils.convertIterator(dataSourceValue);
 		if(it==null)
 			return ;
 
 		int index = 0;
-		Map context = this.generator.getExcelValueParser().getContext();
+		Map context = rowContext.getSelfContext();
 		String indexName = StringUtils.isBlank(iterator.getIndex())?"rowIndex":iterator.getIndex();
 
 //		FieldProcessor fieldProcessor = getFieldProcessor(iterator, context);
 		for (Object ele = null; it.hasNext(); index++) {
-			UtilTimerStack.push(iterator.getName());
+//			UtilTimerStack.push(iterator.getName());
+			if(index%1000==0)
+				JFishLogger.INSTANCE.log("create row " + index);
 			
 			ele = it.next();
-			Row row = createRow(sheet, iterator, ele);
+			rowContext.setCurrentRowObject(ele);
+			Row row = createRow(rowContext);
+			rowContext.setCurrentRow(row);
 			
 			if(context!=null){
 				context.put(iterator.getName(), ele);
@@ -57,33 +63,23 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 			}
 
 			FieldModel field = null;
-
-			for (int i = 0; i < iterator.size(); i++) {
-				
-				field = iterator.getField(i);
-//				field.setParentRow(iterator);
-
-				/*if(profile){
-					UtilTimerStack.push(field.getName());
-				}*/
-				
-				//Cell cell = createCell(sheet, row, field);
-				rowContext.setCurrentRow(row);
-				this.processField(getFieldRootValue(ele, field), rowContext, field);
+			try {
+				for (int i = 0; i < iterator.size(); i++) {
+					field = iterator.getField(i);
+					this.processField(getFieldRootValue(rowContext, field), rowContext, field);
+				}
+			} catch (Exception e) {
+				throw new BaseException("generate field["+field.getName()+"] error: "+e.getMessage() , e);
+			}finally{
 				rowContext.setCurrentRow(null);
-				// putInContext(field.getName(), v);
-				
-				/*if(profile){
-					UtilTimerStack.pop(field.getName());
-				}*/
-
+				rowContext.setCurrentRowObject(null);
+				if(context!=null){
+					context.remove(iterator.getName());
+					context.remove(indexName);
+				}
 			}
 
-			UtilTimerStack.pop(iterator.getName());
-		}
-		if(context!=null){
-			context.remove(iterator.getName());
-			context.remove(indexName);
+//			UtilTimerStack.pop(iterator.getName());
 		}
 	}
 }

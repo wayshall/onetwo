@@ -1,11 +1,6 @@
 package org.onetwo;
 
-import java.util.Date;
-
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.DateUtil.DateType;
-
-
+import java.util.regex.Pattern;
 
 
 
@@ -18,17 +13,14 @@ public class Test {
 	public class Child extends Parent {
 //		public static final String s1 = "c1";
 	}
+
+	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args){
-		String date = "2014-01-19";
-		Date monthDate = DateUtil.parseByPatterns(date, "yyyy-MM");
-		monthDate = DateUtil.beginningOf(monthDate, DateType.month);
-		String startDate = DateUtil.formatDate(monthDate);
-		System.out.println("startDate: " + startDate);
-		
-		monthDate = DateUtil.endOf(monthDate, DateType.month);
-		String endDate = DateUtil.formatDate(monthDate);
-		System.out.println("endDate: " + endDate);
+		boolean rs = IS_DIGIT.matcher("10").matches();
+		System.out.println("match: " + rs);
+		rs = IS_DIGIT.matcher("10").find();
+		System.out.println("match: " + rs);
 	}
 	
 }
