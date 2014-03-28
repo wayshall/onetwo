@@ -3,6 +3,7 @@ package org.onetwo.common.excel;
 import java.util.Collections;
 import java.util.List;
 
+import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.utils.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -69,9 +70,9 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getValue() {
-		if(StringUtils.isBlank(value)){
+		/*if(StringUtils.isBlank(value)){
 			value = getName();
-		}
+		}*/
 		return value;
 	}
 
@@ -81,8 +82,9 @@ public class FieldModel implements PoiModel {
 	
 	public String getVar(){
 		String var = "";
-		if(StringUtils.isNotBlank(value)){
-			var = value;
+//		if(StringUtils.isNotBlank(getValue())){
+		if(getValue()!=null){
+			var = getValue();
 		}else{
 			var = name;
 		}
@@ -149,7 +151,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	
-	public int getColspanValue(CellContext context) {
+	public int getColspanValue(CellContextData context) {
 		/*if(colspanValue!=null)
 			return colspanValue;*/
 		
@@ -159,7 +161,7 @@ public class FieldModel implements PoiModel {
 				colspanValue = Integer.parseInt(colspan);
 			else */
 			if(context!=null)
-				value = context.getParser().parseIntValue(colspan, context.getObjectValue());
+				value = context.parseIntValue(colspan);
 			else
 				colspanValue = 1;
 		}else{
@@ -176,7 +178,7 @@ public class FieldModel implements PoiModel {
 	}
 
 
-	public int getRowpanValue(CellContext context) {
+	public int getRowpanValue(CellContextData context) {
 		/*if(rowspanValue!=null)
 			return rowspanValue;*/
 		
@@ -186,7 +188,7 @@ public class FieldModel implements PoiModel {
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
 			if(context!=null)
-				value = context.getParser().parseIntValue(rowspan, context.getObjectValue());
+				value = context.parseIntValue(rowspan);
 			else
 				rowspanValue = 1;
 		}else{

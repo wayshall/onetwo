@@ -2,6 +2,8 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 
+import org.onetwo.common.excel.data.WorkbookData;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
 public class ListExportDatasource implements ExportDatasource {
@@ -19,7 +21,14 @@ public class ListExportDatasource implements ExportDatasource {
 	}
 	
 	protected boolean isExpr(String str){
-		return str!=null && str.startsWith("%{") && str.endsWith("%}");
+		if(StringUtils.isBlank(str))
+			return false;
+		str = str.trim();
+		return str.startsWith("%{") && str.endsWith("}");
+	}
+	
+	protected String getExpr(String str){
+		return str.substring(2, str.length()-1);
 	}
 
 	@Override
@@ -53,9 +62,11 @@ public class ListExportDatasource implements ExportDatasource {
 		}*/
 		//以前label是不能写表达式的，为了兼容旧的写法，增加显式表达式语法
 		if(isExpr(label)){
-			Object val = workbookData.getExcelValueParser().parseValue(label);
+			label = getExpr(label);
+			Object val = workbookData.parseValue(label);
 			label = StringUtils.emptyIfNull(val);
 		}
+		Assert.hasText(label, "sheetName must not be null, empty, or blank. label:"+tempalte.getLabel());
 		if(tempalte.isMultiSheet()){
 			return label + sheetIndex;
 		}else{
