@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -30,7 +31,7 @@ public class DefaultCellStyleBuilder {
 		return field.getFont();
 	}
 
-	protected CellStyle buildCellStyle(CellContext cellContext){
+	protected CellStyle buildCellStyle(CellContextData cellContext){
 		FieldModel field = cellContext.getFieldModel();
 		
 		String styleString = getStyle(field);
@@ -40,10 +41,10 @@ public class DefaultCellStyleBuilder {
 		}
 		
 		if(StringUtils.isNotBlank(styleString))
-			styleString = (String)cellContext.getParser().parseValue(styleString);
+			styleString = (String)cellContext.parseValue(styleString);
 		
 		if(StringUtils.isNotBlank(fontString))
-			fontString = (String)cellContext.getParser().parseValue(fontString);
+			fontString = (String)cellContext.parseValue(fontString);
 		
 		String key = styleString + fontString;
 		CellStyle cstyle = this.styleCache.get(key);
@@ -102,7 +103,7 @@ public class DefaultCellStyleBuilder {
 		}
 	}
 	
-	protected Font buildCellFont(CellContext cellContext, String fontString){
+	protected Font buildCellFont(CellContextData cellContext, String fontString){
 		if(StringUtils.isBlank(fontString))
 			return null;
 		

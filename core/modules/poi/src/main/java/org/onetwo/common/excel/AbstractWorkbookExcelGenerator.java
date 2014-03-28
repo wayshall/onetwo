@@ -1,11 +1,13 @@
 package org.onetwo.common.excel;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerator {
@@ -24,14 +26,20 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 	}
 
 	@Override
-	public void generateTo(String path) {
+	public File generateTo(String path) {
 		this.generateIt();
-		this.write(path);
+		return this.write(path);
 	}
 
-	public void write(String path) {
+	public File write(String path) {
+		File file = new File(path);
+		if(!file.getParentFile().exists()){
+			FileUtils.makeDirs(file.getParentFile().getPath(), false);
+		}
+
 		FileOutputStream fos = null;
 		try {
+			
 			fos = new FileOutputStream(path);
 			this.getWorkbook().write(fos);
 		} catch (Exception e) {
@@ -39,6 +47,7 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 		} finally {
 			LangUtils.closeIO(fos);
 		}
+		return file;
 	}
 
 	abstract public Workbook getWorkbook();

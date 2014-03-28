@@ -10,7 +10,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -246,20 +245,6 @@ public class JFishList<E> implements List<E>, Serializable {
 		return c;
 	}
 	
-	public <K> Map<K, List<E>> groupBy(final SimpleBlock<E, K> block){
-		final ListMap<K, E> maps = ListMap.newLinkedListMap();
-		each(new NoIndexIt<E>() {
-
-			@Override
-			protected void doIt(E element) throws Exception {
-				K rs = block.execute(element);
-				maps.putElement(rs, element);
-			}
-			
-		});
-		return maps;
-	}
-	
 	private class SumResult {
 		
 		private Double total = 0D;
@@ -329,18 +314,29 @@ public class JFishList<E> implements List<E>, Serializable {
 		});
 	}
 	
-	public <K> ListMap<K, E> groupBy(final String propName){
+	public <K> ListMap<K, E> groupBy(final SimpleBlock<E, K> block){
 		final ListMap<K, E> maps = ListMap.newLinkedListMap();
 		each(new NoIndexIt<E>() {
 
 			@Override
 			protected void doIt(E element) throws Exception {
-				K rs = (K)ReflectUtils.getProperty(element, propName);
+				K rs = block.execute(element);
 				maps.putElement(rs, element);
 			}
 			
 		});
 		return maps;
+	}
+	
+	public <K> ListMap<K, E> groupBy(final String propName){
+		return groupBy(new SimpleBlock<E, K>() {
+
+			@Override
+			public K execute(E object) {
+				return (K)ReflectUtils.getProperty(object, propName);
+			}
+			
+		});
 	}
 	
 	/*public void doInResult(It<E> it, final List<?> result){
