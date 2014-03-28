@@ -1,8 +1,8 @@
 package org.onetwo.common.excel;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.interfaces.TemplateGenerator;
 
 /******
@@ -13,7 +13,8 @@ import org.onetwo.common.interfaces.TemplateGenerator;
 //@SuppressWarnings("rawtypes")
 abstract public class DefaultExcelGeneratorFactory {
 	
-	private static Map<String, WorkbookModel> TemplateModelCache = new ConcurrentHashMap<String, WorkbookModel>();
+//	private static Map<String, WorkbookModel> TemplateModelCache = new ConcurrentHashMap<String, WorkbookModel>();
+	private static final WorkbookGeneratorFactory WF = new WorkbookGeneratorFactory();
 
 	public static PoiExcelGenerator createExcelGenerator(TemplateModel template, Map<String, Object> context){
 		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template, context);
@@ -32,27 +33,20 @@ abstract public class DefaultExcelGeneratorFactory {
 		return generator;
 	}
 	
-	public static PoiExcelGenerator createExcelGenerator(String templatePath, Map<String, Object> context){
-		return createExcelGenerator(getTemplateModel(templatePath, true), context);
+	public static TemplateGenerator createExcelGenerator(String templatePath, Map<String, Object> context){
+		return WF.create(templatePath, context);
 	}
-	
-	public static PoiExcelGenerator createExcelGenerator(String templatePath, boolean cacheTemplate, Map<String, Object> context){
-		return createExcelGenerator(getTemplateModel(templatePath, cacheTemplate), context);
-	}
-
 	
 	public static TemplateGenerator createWorkbookGenerator(String templatePath, Map<String, Object> context){
-		return createWorkbookGenerator(getWorkbookModel(templatePath), context);
+//		return createWorkbookGenerator(getWorkbookModel(templatePath), context);
+		return WF.create(templatePath, context);
 	}
 	
-	public static TemplateGenerator createWorkbookGenerator(String templatePath, boolean cacheTemplate, Map<String, Object> context){
-		return createWorkbookGenerator(getWorkbookModel(templatePath, cacheTemplate), context);
-	}
 	public static TemplateGenerator createWorkbookGenerator(WorkbookModel workbook, Map<String, Object> context){
 		TemplateGenerator generator = new WorkbookExcelGeneratorImpl(workbook, context);
 		return generator;
 	}
-	
+	/*
 	public static TemplateModel getTemplateModel(String path, boolean fromCache){
 		return getWorkbookModel(path, fromCache).getSheet(0);
 	}
@@ -71,6 +65,6 @@ abstract public class DefaultExcelGeneratorFactory {
 			TemplateModelCache.put(path, model);
 		}
 		return model;
-	}
+	}*/
 
 }

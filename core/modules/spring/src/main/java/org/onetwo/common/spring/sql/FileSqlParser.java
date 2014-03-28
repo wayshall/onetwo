@@ -2,17 +2,16 @@ package org.onetwo.common.spring.sql;
 
 import java.io.StringWriter;
 import java.util.Locale;
-import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplate;
+import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplateConfigurer;
 import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplate {
+public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends DynamicFreemarkerTemplateConfigurer {
 	public static final String QUERY_POSTFIX = ".query";//for ftl
 	
 	private JFishNamedSqlFileManager<T> sqlManager;
@@ -39,13 +38,15 @@ public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFr
 			}
 		});
 	}
-	
+
+	@Override
 	protected void buildConfigration(Configuration cfg) {
 		cfg.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX);
 	}
 
 
-	public String parseSql(String name, Map<Object, Object> context){
+	@Override
+	public String parse(String name, Object context){
 		Template template = getTemplate(name+QUERY_POSTFIX);
 		StringWriter sw = new StringWriter();
 		try {

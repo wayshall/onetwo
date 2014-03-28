@@ -19,6 +19,7 @@ import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
 
 public class ExcelTest {
+//	private WorkbookGeneratorFactory wf = new WorkbookGeneratorFactory();
 	
 	private List<CityCompainInfo> list;
 	private int count = 100;
@@ -121,7 +122,7 @@ public class ExcelTest {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("data", list);
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_test.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_test.xml", context);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_test.xml", context);
 		g.generateIt();
 		g.write(path);
 	}
@@ -148,7 +149,7 @@ public class ExcelTest {
 			
 		});
 		String path = FileUtils.getResourcePath(outputPath)+"export_multi_sheets_with_exportds.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_exportds.xml", context);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_multi_sheets_with_exportds.xml", context);
 		g.generateIt();
 		g.write(path);
 	}
@@ -200,7 +201,7 @@ public class ExcelTest {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("data", list);
 		String path = FileUtils.getResourcePath(outputPath)+"city_company_reflect.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company.xml", context);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company.xml", context);
 		g.generateIt();
 		g.write(path);
 	}
@@ -211,7 +212,7 @@ public class ExcelTest {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("data", list);
 		String path = FileUtils.getResourcePath(outputPath)+"city_company_reflect_ognl.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company_span_ognl.xml", context);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company_span_ognl.xml", context);
 		g.generateIt();
 		g.write(path);
 	}
@@ -221,7 +222,7 @@ public class ExcelTest {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("data", list);
 		String path = FileUtils.getResourcePath(outputPath)+"city_company_ognl.xls";
-		PoiExcelGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company_ognl.xml", context);
+		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/template_city_company_ognl.xml", context);
 		g.generateIt();
 		g.write(path);
 	}

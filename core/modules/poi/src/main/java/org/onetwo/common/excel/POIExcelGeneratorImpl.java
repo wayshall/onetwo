@@ -9,7 +9,10 @@ import java.util.Map.Entry;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
+import org.onetwo.common.excel.data.ExcelValueParser;
+import org.onetwo.common.excel.data.RowContextData;
+import org.onetwo.common.excel.data.SheetData;
+import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
@@ -112,7 +115,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		
 		boolean createSheet = true;
 		if(StringUtils.isNotBlank(tempalte.getCondition())){
-			createSheet = (Boolean)workbookData.getExcelValueParser().parseValue(tempalte.getCondition());
+			createSheet = (Boolean)workbookData.parseValue(tempalte.getCondition());
 		}
 		if(!createSheet){
 			logger.info("condition[ {} = {} ], ignore create sheet.", tempalte.getCondition(), createSheet);
@@ -122,7 +125,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		if(StringUtils.isBlank(tempalte.getDatasource())){
 			ds = new ListExportDatasource(this.workbookData, tempalte, Collections.EMPTY_LIST);
 		}else{
-			Object dsObj = getExcelValueParser().parseValue(tempalte.getDatasource(), null, null);
+			Object dsObj = workbookData.parseValue(tempalte.getDatasource());
 			if(dsObj instanceof ExportDatasource){
 				ds = (ExportDatasource) dsObj;
 			}else{
@@ -161,18 +164,18 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		SheetData sdata = createSheetData(getWorkbookData(), sheet, datalist);
 		this.buildColumnWidth(sdata);
 		
-		this.getExcelValueParser().getContext().put(tempalte.getVarName(), sdata);
+		sdata.getSelfContext().put(tempalte.getVarName(), sdata);
 		try{
 			this.generateSheet(sdata);
 		}finally{
-			this.getExcelValueParser().getContext().remove(tempalte.getVarName());
+			sdata.getSelfContext().remove(tempalte.getVarName());
 		}
 		
 	}
 	
 	private void buildColumnWidth(SheetData sdata){
 		String columnWidth = sdata.getSheetModel().getColumnWidth();
-		columnWidth = (String)sdata.getExcelValueParser().parseValue(columnWidth);
+		columnWidth = (String)sdata.parseValue(columnWidth);
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(columnWidth);
 		if(LangUtils.isNotEmpty(columnMap)){
 			for(Entry<Integer, Short> entry : columnMap.entrySet()){
@@ -202,6 +205,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 				
 			}
 		}
+		sdata.initData();
 	}
 	
 	private void generateSheet(SheetData sheetData) {
@@ -221,7 +225,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 				UtilTimerStack.push(rowname);
 			}
 //			Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
-			RowDataContext datacontext = createRowDataContext(sheetData, row);
+			RowContextData datacontext = createRowDataContext(sheetData, row);
 			this.rowProcessors.get(row.getType()).processRow(datacontext);
 			if(printTime){
 				UtilTimerStack.pop(rowname);
@@ -245,8 +249,10 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		//System.out.println("generate excel success!");
 	}
 	
-	private RowDataContext createRowDataContext(SheetData sheetData, RowModel rowModel){
-		return new RowDataContext(sheetData, rowModel);
+	private RowContextData createRowDataContext(SheetData sheetData, RowModel rowModel){
+		RowContextData data = new RowContextData(sheetData, rowModel);
+		data.initData();
+		return data;
 	}
 
 	public PropertyStringParser getPropertyStringParser() {
