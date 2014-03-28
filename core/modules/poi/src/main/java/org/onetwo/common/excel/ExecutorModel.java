@@ -11,6 +11,9 @@ public class ExecutorModel {
 	private String executor;
 	private FieldValueExecutor instance;
 	
+	/**
+	 * 扩展属性
+	 */
 	private Map<String, String> attributes;
 
 	public String getName() {

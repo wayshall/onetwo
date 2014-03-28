@@ -1,5 +1,6 @@
 package org.onetwo.common.excel;
 
+import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
@@ -14,13 +15,13 @@ public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
 	private static final Logger logger = MyLoggerFactory.getLogger(SumFieldValueExecutor.class);
 
 	@Override
-	public boolean apply(CellContext cellContext, ExecutorModel executorModel) {
+	public boolean apply(CellContextData cellContext, ExecutorModel executorModel) {
 		if(!cellContext.getFieldModel().getRow().isIterator())
 			return false;
 		
 		String sumValueCondition = executorModel.getAttributes().get(SUM_VALUE_CONDITION);
 		if(StringUtils.isNotBlank(sumValueCondition)){
-			Boolean apply = (Boolean)cellContext.getParser().parseValue(sumValueCondition, cellContext.getObjectValue(), null);
+			Boolean apply = (Boolean)cellContext.parseValue(sumValueCondition);
 			if(apply==null || !apply)
 				return false;
 		}
@@ -29,12 +30,12 @@ public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
 	}
 	
 	@Override
-	public Object doExecute(CellContext cellContext, ExecutorModel executorModel, Object preResult) {
+	public Object doExecute(CellContextData cellContext, ExecutorModel executorModel, Object preResult) {
 		String sumValueField = executorModel.getAttributes().get(SUM_VALUE_FIELD);
 		Object fieldvalue = cellContext.getFieldValue();
 		if(StringUtils.isNotBlank(sumValueField)){
 //			fieldvalue = cellContext.getParser().parseValue(sumValueField, cellContext.getObjectValue(), null);
-			CellContext sumFieldCellContext = cellContext.getRowContext().getCellContext(sumValueField);
+			CellContextData sumFieldCellContext = cellContext.getRowContext().getCellContext(sumValueField);
 			if(sumFieldCellContext==null)
 				throw new BaseException("not found cell for name: " + sumValueField);
 			fieldvalue = sumFieldCellContext.getFieldValue();

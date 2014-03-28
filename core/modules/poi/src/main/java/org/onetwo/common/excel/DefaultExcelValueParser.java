@@ -4,16 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
+import com.google.common.collect.Maps;
+
 public class DefaultExcelValueParser implements ExcelValueParser {
-	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
-	
+	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
+
 	private Map<String, Object> context;
+	private Map<String, Object> varMap = Maps.newHashMap();
 	
 	public DefaultExcelValueParser(){
 		this(null);
@@ -29,28 +32,53 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			context.put(TheFunction.ALIAS_NAME, TheFunction.getInstance());
 		}
 	}
+	
+	public void putVar(String name, Object value){
+		this.varMap.put(name, value);
+		this.context.put(name, value);
+	}
 
 	public Map<String, Object> getContext() {
 		return context;
 	} 
 
-	public Object parseValue(String expr, Object obj, Object objForSymbol){
+	/*public Object parseValue(String expr, Object obj, Object objForSymbol){
 		if(StringUtils.isBlank(expr))
 			return "";
 		Object fieldValue = null;
-		if(isSymbol(expr))
+		if(isSymbol(expr)){
 			fieldValue = parseSymbol(expr, obj);
-		else
+		}else{
+			if(expr.startsWith("#")){
+				fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;
+			}
 			fieldValue = ExcelUtils.getValue(expr, context, obj);
+		}
 		
+		return fieldValue;
+	}*/
+
+	public Object parseValue(String expr, Object root, Map<String, Object> context){
+		if(StringUtils.isBlank(expr))
+			return "";
+		Object fieldValue = null;
+		if(isSymbol(expr)){
+			fieldValue = parseSymbol(expr, root);
+		}else{
+			if(expr.startsWith("#")){
+				fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;
+			}
+			fieldValue = ExcelUtils.getValue(expr, context, root);
+		}
 		return fieldValue;
 	}
 
 	public Object parseValue(String expr){
-		if(StringUtils.isBlank(expr))
-			return "";
-		Object fieldValue = ExcelUtils.getValue(expr, context, null);
-		return fieldValue;
+		return parseValue(expr, null, context);
 	}
 	
 	public boolean isSymbol(String value){
@@ -81,6 +109,11 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		} catch (Exception e) {
 			throw new ServiceException("parseSymbol error on["+obj+"] : "+ value);
 		}
+	}
+
+//	@Override
+	public int parseIntValue(String expr) {
+		return parseIntValue(expr, null);
 	}
 
 	public int parseIntValue(String expr, Object root) {

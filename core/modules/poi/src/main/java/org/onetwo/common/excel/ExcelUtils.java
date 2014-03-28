@@ -28,6 +28,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 abstract public class ExcelUtils {
+	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);
 	
 	public static final String JSON_FILTER_TEMPLATE = "templateModelFilter";
 	public static final String JSON_FILTER_ROW = "rowModelFilter";
@@ -35,7 +36,6 @@ abstract public class ExcelUtils {
 	
 	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
 	
-	private final static Logger logger = MyLoggerFactory.getLogger(ExcelUtils.class);
 	
 
 	public static <T> T readTemplate(String path){
@@ -61,13 +61,15 @@ abstract public class ExcelUtils {
 		return model;
 	}
 	
-	public static <T> T readTemplate(Resource config){
+
+	public static XStream registerExcelModel(){
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("workbook", WorkbookModel.class);
 		xstream.alias("vars", List.class);
 		xstream.alias("var", VarModel.class);
 		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
+		xstream.alias("sheet", TemplateModel.class);
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
 		xstream.alias("field", FieldModel.class);
@@ -81,10 +83,15 @@ abstract public class ExcelUtils {
 		for(Class<?> btype : LangUtils.getBaseTypeClass()){
 			xstream.useAttributeFor(btype);
 		}
-		
+		return xstream;
+	}
+	
+	public static <T> T readTemplate(Resource config){
+		XStream xstream = registerExcelModel();
 		
 		Object template = null;
 		try {
+			
 			if(config.exists()){
 				template = xstream.fromXML(new FileInputStream(config.getFile()));
 			}else{

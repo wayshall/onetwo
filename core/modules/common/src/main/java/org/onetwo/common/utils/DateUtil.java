@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
@@ -37,6 +38,15 @@ abstract public class DateUtil {
 		}
 
 	}
+	
+
+    public static final Pattern PATTERN_YYYY_MM_DD_HH_MM_SS = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
+    public static final Pattern PATTERN_YYYY_MM_DD_HH_MM = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
+    public static final Pattern PATTERN_YYYY_MM_DD_HH = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9]$");
+    public static final Pattern PATTERN_YYYY_MM_DD = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]$");
+    public static final Pattern PATTERN_YYYY_MM = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9]$");
+    public static final Pattern PATTERN_YYYY = Pattern.compile("^\\d{4}$");
+    public static final Pattern PATTERN_HH_MM = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
 
     public static final int MILLIS_PER_SECOND = 1000;
 	public static final int SECONDS_PER_MINUTE = 60;
@@ -47,6 +57,8 @@ abstract public class DateUtil {
     public static final int MILLIS_PER_HOUR = SECONDS_PER_HOUR * MILLIS_PER_SECOND;
     public static final int MILLIS_PER_MINUTE = SECONDS_PER_MINUTE * MILLIS_PER_SECOND;
 
+	public static final String Year_Only = "yyyy";
+	public static final String Year_Month = "yyyy-MM";
 	public static final String Date_Only = "yyyy-MM-dd";
 	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss SSS";
@@ -301,10 +313,15 @@ abstract public class DateUtil {
 	}
 
 	public static Date parse(String dateStr) {
+		String p = matchPattern(dateStr);
+		return parseByPatterns(dateStr, p);
+	}
+
+	private static Date parse2(String dateStr) {
 		return parse(dateStr, "-", ":");
 	}
 	
-	public static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
+	private static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		
@@ -675,6 +692,54 @@ abstract public class DateUtil {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		return cal;
+	}
+	
+	public static boolean isYyyy_MM_dd_HH_mm_ss(String dateStr){
+		return PATTERN_YYYY_MM_DD_HH_MM_SS.matcher(dateStr).matches();
+	}
+	
+	public static boolean isYyyy_MM_dd_HH_mm(String dateStr){
+		return PATTERN_YYYY_MM_DD_HH_MM.matcher(dateStr).matches();
+	}
+	
+	public static boolean isYyyy_MM_dd_HH(String dateStr){
+		return PATTERN_YYYY_MM_DD_HH.matcher(dateStr).matches();
+	}
+	
+	public static boolean isYyyy_MM_dd(String dateStr){
+		return PATTERN_YYYY_MM_DD.matcher(dateStr).matches();
+	}
+	
+	public static boolean isYyyy_MM(String dateStr){
+		return PATTERN_YYYY_MM.matcher(dateStr).matches();
+	}
+	
+	public static boolean isYyyy(String dateStr){
+		return PATTERN_YYYY.matcher(dateStr).matches();
+	}
+	
+	public static boolean isHH_mm(String dateStr){
+		return PATTERN_HH_MM.matcher(dateStr).matches();
+	}
+	
+	public static String matchPattern(String dateStr){
+		if(isYyyy(dateStr)){
+			return Year_Only;
+		}else if(isYyyy_MM(dateStr)){
+			return Year_Month;
+		}else if(isYyyy_MM_dd(dateStr)){
+			return Date_Only;
+		}else if(isYyyy_MM_dd_HH(dateStr)){
+			return "yyyy-MM-dd HH";
+		}else if(isYyyy_MM_dd_HH_mm(dateStr)){
+			return "yyyy-MM-dd HH:mm";
+		}else if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
+			return Date_Time;
+		}else if(isHH_mm(dateStr)){
+			return "HH:mm";
+		}else{
+			return null;
+		}
 	}
 
 	public static void main(String[] args) {

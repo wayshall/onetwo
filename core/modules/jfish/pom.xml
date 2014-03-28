@@ -169,7 +169,6 @@
 			<artifactId>maven-source-plugin</artifactId>
 		</plugin>
   	</plugins>
-    <finalName>${artifactId}</finalName>
   </build>
   
   

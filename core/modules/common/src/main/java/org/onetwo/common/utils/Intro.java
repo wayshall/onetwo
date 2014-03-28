@@ -81,7 +81,7 @@ public class Intro<T> {
 	}
 	
 	public List<Field> getAllFields() {
-		if(_allFieldMap!=null)
+		/*if(_allFieldMap!=null)
 			return Lists.newArrayList(_allFieldMap.values());
 		
 		allFieldLock.lock();
@@ -100,8 +100,38 @@ public class Intro<T> {
 			}
 		} finally{
 			allFieldLock.unlock();
-		}
+		}*/
+		_loadAllFields();
+		
 		return Lists.newArrayList(_allFieldMap.values());
+	}
+	
+	public Map<String, Field> getAllFieldMap() {
+		_loadAllFields();
+		return _allFieldMap;
+	}
+
+	private void _loadAllFields() {
+		if(_allFieldMap!=null)
+			return ;
+		
+		allFieldLock.lock();
+		try {
+			if(_allFieldMap!=null)//dbcheck
+				return ;
+
+			_allFieldMap = Maps.newHashMap(getFieldMaps());
+			List<Class<?>> classes = findSuperClasses(clazz);
+			Field[] fs = null;
+			for (Class<?> cls : classes) {
+				fs = cls.getDeclaredFields();
+				for (Field f : fs) {
+					_allFieldMap.put(f.getName(), f);
+				}
+			}
+		} finally{
+			allFieldLock.unlock();
+		}
 	}
 	
 	public Map<String, PropertyDescriptor> getPropertyDescriptors() {
@@ -177,7 +207,7 @@ public class Intro<T> {
 	
 	public boolean containsField(String fieldName, boolean includeParent){
 		if(includeParent){
-			return _allFieldMap.containsKey(fieldName);
+			return getAllFieldMap().containsKey(fieldName);
 		}else{
 			return _fieldMaps.containsKey(fieldName);
 		}
@@ -185,12 +215,7 @@ public class Intro<T> {
 
 	public Field getField(String fieldName, boolean parent){
 		if(parent){
-			List<Field> fields = getAllFields();
-			for (Field f : fields) {
-				if (f.getName().equals(fieldName))
-					return f;
-			}
-			return null;
+			return getAllFieldMap().get(fieldName);
 		}else{
 			return getFieldMaps().get(fieldName);
 		}
