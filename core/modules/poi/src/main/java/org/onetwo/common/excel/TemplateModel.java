@@ -27,7 +27,7 @@ public class TemplateModel implements PoiModel{
 	private String label;
 	private boolean multiSheet;
 	private String datasource;
-	private Integer sizePerSheet;
+	private Integer sizePerSheet = 60000;
 	
 	private String columnWidth;
 	

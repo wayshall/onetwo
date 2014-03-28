@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerator {
@@ -32,8 +33,9 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 
 	public File write(String path) {
 		File file = new File(path);
-		if(!file.getParentFile().exists())
-			file.getParentFile().mkdirs();
+		if(!file.getParentFile().exists()){
+			FileUtils.makeDirs(file.getParentFile().getPath(), false);
+		}
 
 		FileOutputStream fos = null;
 		try {
