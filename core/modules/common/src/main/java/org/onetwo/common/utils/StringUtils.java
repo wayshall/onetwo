@@ -17,6 +17,9 @@ public abstract class StringUtils {
 	public static final String ENCODING = "UTF-8";
 	public static final String EMPTY = "";
 
+	public static String emptyIfNull(Object str){
+		return str==null?EMPTY:str.toString();
+	}
 
     public static String lowerCase(String str) {
         if (str == null) {

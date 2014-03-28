@@ -17,6 +17,23 @@ import org.onetwo.common.utils.list.L;
 public class LangUtilsTest {
 	
 	@Test
+	public void testFormatValue(){
+		Object val = LangUtils.formatValue(0.755, "#0.00#");
+		Assert.assertEquals("0.755", val);
+		val = LangUtils.formatValue(0.755, "#.##");
+		Assert.assertEquals("0.76", val);
+		val = LangUtils.formatValue(1, "0.00");
+		Assert.assertEquals("1.00", val);
+		val = LangUtils.formatValue(0.755, "0.00");
+		Assert.assertEquals("0.76", val);
+		val = LangUtils.formatValue(0.1, "0.00");
+		Assert.assertEquals("0.10", val);
+		val = LangUtils.formatValue(1253.1, "0.00");
+		Assert.assertEquals("1253.10", val);
+		val = LangUtils.formatValue(1253.1222222, "0.00");
+		Assert.assertEquals("1253.12", val);
+	}
+	@Test
 	public void testHash(){
 		String str = "hellohello_helloh_ellohello";
 		System.out.println("hash: " + str.hashCode());

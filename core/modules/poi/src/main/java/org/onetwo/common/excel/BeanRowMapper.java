@@ -174,7 +174,11 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			String propertyName = getPropertyName(cell, name, i);
 			this.setBeanProperty(bw, propertyName, cell, cellValue);*/
 		}
+		this.afterMapOneDataRow(bean, row, rowIndex);
 		return bean;
+	}
+	
+	protected void afterMapOneDataRow(T data, Row row, int rowIndex){
 	}
 	
 	

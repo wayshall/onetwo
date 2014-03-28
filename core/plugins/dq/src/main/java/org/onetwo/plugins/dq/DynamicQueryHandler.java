@@ -11,6 +11,7 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ClassUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private CreateQueryable em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
+	private boolean debug = true;
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	
@@ -80,30 +82,33 @@ public class DynamicQueryHandler implements InvocationHandler {
 		Class<?> resultClass = dmethod.getResultClass();
 		Class<?> componentClass = dmethod.getComponentClass();
 		String queryName = dmethod.getQueryName();
+
+		if(debug)
+			logger.info("{}: {}", method.getName(), LangUtils.toString(args));
 		
 		Object result = null;
+		Object[] methodArgs = null;
 		if(Page.class.isAssignableFrom(resultClass)){
 			Page<?> page = (Page<?>)args[0];
 			
 //			Object[] trimPageArgs = ArrayUtils.remove(args, 0);
-			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
-//			methodArgs = appendEntityClass(componentClass, methodArgs);
-//			t.stop();
+			methodArgs = dmethod.toArrayByArgs(args, componentClass);
 			result = em.getFileNamedQueryFactory().findPage(queryName, page, methodArgs);
 			
 		}else if(List.class.isAssignableFrom(resultClass)){
-			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
-//			t.stop();
+			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			result = em.getFileNamedQueryFactory().findList(queryName, methodArgs);
 			
 		}else if(DataQuery.class.isAssignableFrom(resultClass)){
-			Object[] methodArgs = dmethod.toArrayByArgs(args, null);
-//			t.stop();
+			methodArgs = dmethod.toArrayByArgs(args, null);
+//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			return dq;
 			
 		}else{
-			Object[] methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			if(dmethod.isExecuteUpdate()){
 				DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 				result = dq.executeUpdate();

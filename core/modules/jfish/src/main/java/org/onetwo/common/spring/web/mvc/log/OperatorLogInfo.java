@@ -2,6 +2,7 @@ package org.onetwo.common.spring.web.mvc.log;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 import org.onetwo.common.log.DataChangedContext;
 
@@ -13,6 +14,8 @@ public class OperatorLogInfo implements Serializable {
 	private String url;
 	private boolean success = true;
 	private String message = "";
+	private Map<String, String[]> parameters;
+	
 	
 	private DataChangedContext datas;
 	
@@ -57,6 +60,12 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public void setDatas(DataChangedContext datas) {
 		this.datas = datas;
+	}
+	public Map<String, String[]> getParameters() {
+		return parameters;
+	}
+	public void setParameters(Map<String, String[]> parameters) {
+		this.parameters = parameters;
 	}
 	
 }
