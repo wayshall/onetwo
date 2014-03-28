@@ -22,7 +22,7 @@ public class TaskConsumer {
 		TaskData task = null;
 		for(;;){
 			task = taskQueue.take();
-			logger.info("thread[{}] take task: {}", Thread.currentThread().getId(), task.getName());
+			logger.info("task consumer thread[{}] take task: {}", Thread.currentThread().getId(), task.getName());
 			doProcess(task);
 		}
 	}
@@ -30,7 +30,7 @@ public class TaskConsumer {
 	protected void doProcess(TaskData task){
 		List<TaskListener> listeners = this.taskListenerRegistry.getTaskListenerGroup(task.getType()).getListeners();
 		for(TaskListener taskListener : listeners){
-			logger.info("execute task listenr[{}] for task {}", taskListener.getClass(), task.getName());
+			logger.info("task consumer execute task listenr[{}] for task {}", taskListener.getClass(), task.getName());
 			Object result = taskListener.onExecute(task);
 			taskListener.afterExecute(task, result);
 		}
