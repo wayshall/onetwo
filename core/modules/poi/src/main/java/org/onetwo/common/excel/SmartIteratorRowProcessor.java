@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.exception.BaseException;
 
 public class SmartIteratorRowProcessor extends IteratorRowProcessor {
@@ -14,14 +15,14 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
 	@Override
 //	protected void processSingleField(Object ele, Row row, FieldModel field, Object defValue, int cellIndex){
-	protected void processSingleField(CellContext cellContext){
+	protected void processSingleField(CellContextData cellContext){
 //		Cell cell = createCell(row.getSheet(), row, field, -1, ele);
 //		Object ele = cellContext.objectValue;
-		Row row = cellContext.getCurrentRow();
-		FieldModel field = cellContext.getFieldModel();
+//		Row row = cellContext.getCurrentRow();
+//		FieldModel field = cellContext.getFieldModel();
 		int cellIndex = cellContext.getCellIndex();
 		
-		Object v = getFieldValue(cellContext.getObjectValue(), field, cellContext.getDefFieldValue());
+		Object v = getFieldValue(cellContext);
 		cellContext.setFieldValue(v);
 		
 		if(Collection.class.isInstance(v)){
@@ -49,12 +50,12 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
 	}
 	
-	private Cell createSingleCell(CellContext cellContext, int rowCount, int cellIndex, Object cellValue){
+	private Cell createSingleCell(CellContextData cellContext, int rowCount, int cellIndex, Object cellValue){
 		Cell cell = null;
 		if(cellContext==null)
 			throw new BaseException("the cell of row has not created yet : " + cellContext.getFieldModel().getName());
 
-		CellContext subCellContext = createCellContext(this.generator.getExcelValueParser(), cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
+		CellContextData subCellContext = createCellContext(cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
 		cell = createCell(subCellContext);
 		
 		setCellValue(cellContext.getFieldModel(), cell, cellValue);
