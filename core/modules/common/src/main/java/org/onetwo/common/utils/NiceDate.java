@@ -148,6 +148,16 @@ public class NiceDate {
 		return this;
 	}
 	
+	public NiceDate nextMonth(int amount){
+		DateUtil.addMonth(calendar, amount);
+		return this;
+	}
+	
+	public NiceDate nextYear(int amount){
+		DateUtil.addYear(calendar, amount);
+		return this;
+	}
+	
 	/*public NiceDate increaseDay(int numb){
 		DateUtil.increaseDay(calendar, numb);
 		return this;
