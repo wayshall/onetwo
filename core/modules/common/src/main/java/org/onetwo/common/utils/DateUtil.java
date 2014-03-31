@@ -564,6 +564,19 @@ abstract public class DateUtil {
 		calendar.add(Calendar.MONTH, numb);
 	}
 
+	public static void addYear(Calendar calendar, int numb) {
+		Assert.notNull(calendar, "calendar can not be null");
+		calendar.add(Calendar.YEAR, numb);
+	}
+
+	public static Date addYear(Date date, int numb) {
+		Assert.notNull(date, "date can not be null");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		addYear(calendar, numb);
+		return calendar.getTime();
+	}
+
 	public static long secondToMicroSecond(long microSecond) {
 		return microSecond * UNIT_SECOND;
 	}
