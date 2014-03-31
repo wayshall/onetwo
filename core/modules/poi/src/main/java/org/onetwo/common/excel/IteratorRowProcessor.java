@@ -69,7 +69,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 					this.processField(getFieldRootValue(rowContext, field), rowContext, field);
 				}
 			} catch (Exception e) {
-				throw new BaseException("generate field["+field.getName()+"] error: "+e.getMessage() , e);
+				throw new BaseException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);
 			}finally{
 				rowContext.setCurrentRow(null);
 				rowContext.setCurrentRowObject(null);
