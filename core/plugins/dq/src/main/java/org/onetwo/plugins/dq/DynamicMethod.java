@@ -104,6 +104,10 @@ public class DynamicMethod {
 							values.add(obj);
 							index++;
 						}
+						//parserContext
+						if(parserContext==null)
+							parserContext = ParserContext.create();
+						parserContext.put(mp.getParameterName(), listValue);
 					}else{
 						values.add(mp.getParameterName());
 						values.add(pvalue);
