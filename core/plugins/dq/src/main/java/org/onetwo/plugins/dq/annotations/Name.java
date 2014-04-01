@@ -13,4 +13,10 @@ public @interface Name {
 	
 	public boolean queryParam() default true;
 	
+	/***
+	 * 在queryParam=true前提下，如果参数是数组和列表，使用name+index重新生成参数名称
+	 * @return
+	 */
+	public boolean renamedUseIndex() default false;
+	
 }
