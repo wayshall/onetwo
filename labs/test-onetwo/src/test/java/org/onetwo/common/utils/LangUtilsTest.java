@@ -1,6 +1,8 @@
 package org.onetwo.common.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,9 @@ public class LangUtilsTest {
 		Assert.assertEquals("1253.10", val);
 		val = LangUtils.formatValue(1253.1222222, "0.00");
 		Assert.assertEquals("1253.12", val);
+		
+		BigDecimal bd = new BigDecimal("1.44445");
+		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());
 	}
 	@Test
 	public void testHash(){
