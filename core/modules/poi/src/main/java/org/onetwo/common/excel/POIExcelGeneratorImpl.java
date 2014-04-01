@@ -138,10 +138,15 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		if(tempalte.isMultiSheet()){
 			List<?> datalist = null;
 			int i = 0;
+//			boolean createAtleastOneSheet = false;
 			while(LangUtils.isNotEmpty( (datalist = ds.getSheetDataList(i)) )){
 				logger.info("{} sheet, data size: {}", i, datalist.size());
 				this.generateSheet(ds.getSheetLabel(i), datalist);
 				i++;
+			}
+			//如果一个sheet也没有，创建一个空的
+			if(i==0){
+				this.generateSheet(ds.getSheetLabel(i), Collections.EMPTY_LIST);
 			}
 		}else{
 			this.generateSheet(ds.getSheetLabel(0), ds.getSheetDataList(0));
