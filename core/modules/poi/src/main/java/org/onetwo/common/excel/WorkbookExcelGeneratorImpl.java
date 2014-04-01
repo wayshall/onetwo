@@ -5,7 +5,6 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 
 /***
@@ -20,11 +19,6 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 
 	public WorkbookExcelGeneratorImpl(WorkbookModel workbookModel, Map<String, Object> context){
 		DefaultExcelValueParser excelValueParser = new DefaultExcelValueParser(context);
-		for(VarModel var : workbookModel.getVars()){
-			if(context.containsKey(var.getName()))
-				throw new BaseException("var is exist: " + var.getName());
-			excelValueParser.putVar(var.getName(), var.getValue());
-		}
 //		this.context = context;
 //		Object data = context.get("reportData0");
 		WorkbookListener workbookListener = null;
@@ -34,7 +28,6 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 			workbookListener = WorkbookData.EMPTY_WORKBOOK_LISTENER;
 		this.workbookData = new WorkbookData(workbookModel, new HSSFWorkbook(), excelValueParser, workbookListener);
 		this.workbookData.initData();
-		
 	}
 	@Override
 	public void generateIt() {

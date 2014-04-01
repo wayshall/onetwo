@@ -236,7 +236,23 @@ public class DefaultRowProcessor implements RowProcessor {
 		return cellContext;
 	}
 	
+	/***
+	 * 是否创建cell
+	 * @param rowContext
+	 * @param field
+	 * @return
+	 */
+	private boolean canCreateCell(RowContextData rowContext, FieldModel field){
+		if(StringUtils.isNotBlank(field.getCondition())){
+			return (Boolean)rowContext.parseValue(field.getCondition());
+		}
+		return true;
+	}
+	
 	protected void processField(Object root, RowContextData rowContext, FieldModel field){
+		if(!canCreateCell(rowContext, field))
+			return ;
+		
 		Row row = rowContext.getCurrentRow();
 //		String pname = "processField";
 //		UtilTimerStack.push(pname);
