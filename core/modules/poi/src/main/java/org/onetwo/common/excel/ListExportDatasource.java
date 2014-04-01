@@ -19,17 +19,6 @@ public class ListExportDatasource implements ExportDatasource {
 		this.datalist = datalist;
 		this.workbookData = workbookData;
 	}
-	
-	protected boolean isExpr(String str){
-		if(StringUtils.isBlank(str))
-			return false;
-		str = str.trim();
-		return str.startsWith("%{") && str.endsWith("}");
-	}
-	
-	protected String getExpr(String str){
-		return str.substring(2, str.length()-1);
-	}
 
 	@Override
 	public List<?> getSheetDataList(int i) {
@@ -61,8 +50,8 @@ public class ListExportDatasource implements ExportDatasource {
 			});
 		}*/
 		//以前label是不能写表达式的，为了兼容旧的写法，增加显式表达式语法
-		if(isExpr(label)){
-			label = getExpr(label);
+		if(ExcelUtils.isExpr(label)){
+			label = ExcelUtils.getExpr(label);
 			Object val = workbookData.parseValue(label);
 			label = StringUtils.emptyIfNull(val);
 		}

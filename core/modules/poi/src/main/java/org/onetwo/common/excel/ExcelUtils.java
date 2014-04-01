@@ -20,6 +20,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -36,7 +37,16 @@ abstract public class ExcelUtils {
 	
 	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
 	
+	public static boolean isExpr(String str){
+		if(StringUtils.isBlank(str))
+			return false;
+		str = str.trim();
+		return str.startsWith("%{") && str.endsWith("}");
+	}
 	
+	public static String getExpr(String str){
+		return str.substring(2, str.length()-1);
+	}
 
 	public static <T> T readTemplate(String path){
 		Resource config = new ClassPathResource(path);

@@ -5,8 +5,11 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.excel.DefaultExcelValueParser;
 import org.onetwo.common.excel.EmptyWorkbookListener;
+import org.onetwo.common.excel.ExcelUtils;
+import org.onetwo.common.excel.VarModel;
 import org.onetwo.common.excel.WorkbookListener;
 import org.onetwo.common.excel.WorkbookModel;
+import org.onetwo.common.exception.BaseException;
 
 import com.google.common.collect.Maps;
 
@@ -45,6 +48,19 @@ public class WorkbookData extends AbstractExcelContextData {
 	}
 
 	public void initData(){
+		Map<String, Object> context = this.excelValueParser.getContext();
+		for(VarModel var : workbookModel.getVars()){
+			if(context.containsKey(var.getName()))
+				throw new BaseException("var is exist: " + var.getName());
+			String expr = var.getValue();
+			Object value = var.getValue();
+			if(ExcelUtils.isExpr(expr)){
+				expr = ExcelUtils.getExpr(expr);
+				value = parseValue(expr);
+			}
+			excelValueParser.putVar(var.getName(), value);
+		}
+		
 	}
 	
 	protected AbstractExcelContextData getParentContextData(){

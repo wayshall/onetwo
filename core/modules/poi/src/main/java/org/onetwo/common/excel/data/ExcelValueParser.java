@@ -4,6 +4,7 @@ import java.util.Map;
 
 public interface ExcelValueParser {
 //	public void putVar(String name, Object value);
+	public void putVar(String name, Object value);
 	public Map<String, Object> getContext();
 	public Object parseValue(String expr, Object root, Map<String, Object> context);
 	public int parseIntValue(String expr, Object root);
