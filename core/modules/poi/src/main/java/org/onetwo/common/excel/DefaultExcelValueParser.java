@@ -10,13 +10,11 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
-import com.google.common.collect.Maps;
-
 public class DefaultExcelValueParser implements ExcelValueParser {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 
 	private Map<String, Object> context;
-	private Map<String, Object> varMap = Maps.newHashMap();
+//	private Map<String, Object> varMap = Maps.newHashMap();
 	
 	public DefaultExcelValueParser(){
 		this(null);
@@ -34,7 +32,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 	}
 	
 	public void putVar(String name, Object value){
-		this.varMap.put(name, value);
+//		this.varMap.put(name, value);
 		this.context.put(name, value);
 	}
 
@@ -68,7 +66,10 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			fieldValue = parseSymbol(expr, root);
 		}else{
 			if(expr.startsWith("#")){
-				fieldValue = varMap.get(expr.substring(1));
+				/*fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;*/
+				fieldValue = context.get(expr.substring(1));
 				if(fieldValue!=null)
 					return fieldValue;
 			}

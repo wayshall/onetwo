@@ -95,8 +95,19 @@ public class DynamicMethod {
 			}else if(mp.hasParameterAnnotation(Name.class)){
 				Name name = mp.getParameterAnnotation(Name.class);
 				if(name.queryParam()){
-					values.add(mp.getParameterName());
-					values.add(pvalue);
+					if(name.renamedUseIndex()){
+						List<?> listValue = LangUtils.asList(pvalue);
+						int index = 0;
+						//parem0, value0, param1, value1, ...
+						for(Object obj : listValue){
+							values.add(mp.getParameterName()+index);
+							values.add(obj);
+							index++;
+						}
+					}else{
+						values.add(mp.getParameterName());
+						values.add(pvalue);
+					}
 				}else{
 					//parserContext
 					if(parserContext==null)

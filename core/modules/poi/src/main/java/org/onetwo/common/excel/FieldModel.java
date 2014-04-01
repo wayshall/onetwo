@@ -16,6 +16,7 @@ public class FieldModel implements PoiModel {
 	private String name;
 	private String value;
 	private String dataFormat;
+	private String condition;
 	
 	private boolean columnTotal;
 	private boolean rowTotal;
@@ -300,6 +301,14 @@ public class FieldModel implements PoiModel {
 
 	public void setSumValueCondition(String sumValueCondition) {
 		this.sumValueCondition = sumValueCondition;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 	
