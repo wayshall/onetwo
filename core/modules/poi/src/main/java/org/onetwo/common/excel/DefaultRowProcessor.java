@@ -316,7 +316,8 @@ public class DefaultRowProcessor implements RowProcessor {
 		}else if(value instanceof Number && StringUtils.isNotBlank(dataFormat)) {
 			NumberFormat nf = new DecimalFormat(dataFormat);
 			nf.setRoundingMode(RoundingMode.HALF_UP);
-			actualValue = nf.format(value);
+//			actualValue = nf.format(value);
+			actualValue = Double.parseDouble(nf.format(value));
 		}else{
 			actualValue = value;
 		}
