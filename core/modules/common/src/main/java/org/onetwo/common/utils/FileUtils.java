@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -433,23 +435,41 @@ public class FileUtils {
 		if (destFile.isHidden() || !destFile.canWrite())
 			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
 
-		BufferedInputStream fin = null;
+//		BufferedInputStream fin = null;
 		BufferedOutputStream fout = null;
 		try {
 //			System.out.println("creating the file : " + destFile.getPath());
-			fin = new BufferedInputStream(new FileInputStream(srcFile));
+//			fin = new BufferedInputStream(new FileInputStream(srcFile));
 			fout = new BufferedOutputStream(new FileOutputStream(destFile));
+			copyFileToOutputStream(fout, srcFile);
+		} catch (Exception e) {
+			throw new BaseException("copy file error", e);
+		} finally {
+//			IOUtils.closeQuietly(fin);
+			IOUtils.closeQuietly(fout);
+		}
+	}
+	
+
+	public static void copyFileToOutputStream(OutputStream out, File srcFile) {
+		Assert.notNull(srcFile);
+		Assert.notNull(out);
+
+		BufferedInputStream fin = null;
+		BufferedOutputStream fout = null;
+		try {
+			fin = new BufferedInputStream(new FileInputStream(srcFile));
+			fout = new BufferedOutputStream(out);
 			byte[] buf = new byte[1024 * 5];
 			int count = 0;
 			while ((count = fin.read(buf, 0, buf.length)) != -1) {
 				fout.write(buf, 0, count);
 			}
-//			System.out.println("file is created!");
 		} catch (Exception e) {
 			throw new BaseException("copy file error", e);
 		} finally {
 			IOUtils.closeQuietly(fin);
-			IOUtils.closeQuietly(fout);
+//			IOUtils.closeQuietly(fout);
 		}
 	}
 
@@ -539,10 +559,15 @@ public class FileUtils {
 		return path.substring(0, index);
 	}
 
+
+	public static List<File> listFile(File dirFile) {
+		return listFile(dirFile, (Pattern)null);
+	}
+	
 	public static List<File> listFile(File dirFile, Pattern pattern) {
 		File[] files = dirFile.listFiles();
 		if (files == null)
-			return null;
+			return Collections.EMPTY_LIST;
 
 		List<File> fileList = new ArrayList<File>();
 		for (File f : files) {
@@ -774,6 +799,15 @@ public class FileUtils {
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+path);
 	}
+    
+	public static void makeDirs(File outDir, boolean file){
+		if(file)
+			outDir = outDir.getParentFile();
+		
+		if(!outDir.exists())
+			if(!outDir.mkdirs())
+				throw new RuntimeException("can't create output dir:"+outDir.getPath());
+	}
 	
 	public static File getMavenProjectDir(){
 		String baseDirPath = FileUtils.getResourcePath("");
@@ -874,6 +908,77 @@ public class FileUtils {
 			IOUtils.closeQuietly(writer);
 		}
 		return mergedFile;
+	}
+	
+	public static long size(File...files){
+		Assert.notEmpty(files);
+		long size = 0;
+		for(File f : files){
+			size += f.length();
+		}
+		return size;
+	}
+	
+	public static double sizeAsKb(File...files){
+		return size(files)/1024.0;
+	}
+	
+	public static double sizeAsMb(File...files){
+		return size(files)/1024.0/1024.0;
+	}
+	
+	/****
+	 * 
+	 * @param targetZipFilePath 目标文件
+	 * @param file
+	 * @return
+	 */
+	public static File zipfile(String targetZipFilePath, File file){
+		return zipfile(targetZipFilePath, file, file.isFile());
+	}
+	
+	public static File zipfile(String targetZipFilePath, File file, boolean isfile){
+		if(isfile){
+			return zipfiles(targetZipFilePath, file);
+		}else{
+			List<File> files = listFile(file);
+			return zipfiles(targetZipFilePath, files.toArray(new File[0]));
+		}
+	}
+
+	/****
+	 * 压缩文件
+	 * @param file
+	 * @return
+	 */
+	public static File zipfile(File file){
+		String targetZipFilePath = getNewFilenameBy(file, ".zip");
+		return zipfile(targetZipFilePath, file);
+	}
+
+	public static String getNewFilenameBy(File file, String newPostfix){
+		String targetZipFilePath = file.getParent() + File.separator + FileUtils.getFileNameWithoutExt(file.getPath()) + newPostfix;
+		return targetZipFilePath;
+	}
+	
+	public static File zipfiles(String targetZipFilePath, File...files){
+		Assert.notEmpty(files);
+		File zipfile = new File(targetZipFilePath);
+		makeDirs(zipfile, true);
+		ZipOutputStream zipout = null;
+		try {
+			zipout = new ZipOutputStream(new FileOutputStream(zipfile));
+			for(File f : files){
+				ZipEntry zipentry = new ZipEntry(f.getName());
+				zipout.putNextEntry(zipentry);
+				copyFileToOutputStream(zipout, f);
+			}
+		} catch (Exception e) {
+			throw new BaseException("zip file error: " + e.getMessage(), e);
+		} finally{
+			close(zipout);
+		}
+		return zipfile;
 	}
 	
 	public static void main(String[] args) {
