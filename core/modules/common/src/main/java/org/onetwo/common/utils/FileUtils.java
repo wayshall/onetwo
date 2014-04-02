@@ -43,7 +43,8 @@ public class FileUtils {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(FileUtils.class);
 
-	public static final String DEFAULT_CHARSET = "utf-8";
+	public static final String UTF8 = "utf-8";
+	public static final String DEFAULT_CHARSET = UTF8;
 	public static final int DEFAULT_BUF_SIZE = 1024 * 4;
 	public static final String PACKAGE = "package";
 	public static final String PATH = "#path:";
@@ -465,6 +466,7 @@ public class FileUtils {
 			while ((count = fin.read(buf, 0, buf.length)) != -1) {
 				fout.write(buf, 0, count);
 			}
+			fout.flush();
 		} catch (Exception e) {
 			throw new BaseException("copy file error", e);
 		} finally {
@@ -969,10 +971,12 @@ public class FileUtils {
 		try {
 			zipout = new ZipOutputStream(new FileOutputStream(zipfile));
 			for(File f : files){
-				ZipEntry zipentry = new ZipEntry(f.getName());
+				String entryName = f.getName();
+				ZipEntry zipentry = new ZipEntry(entryName);
 				zipout.putNextEntry(zipentry);
 				copyFileToOutputStream(zipout, f);
 			}
+			zipout.finish();
 		} catch (Exception e) {
 			throw new BaseException("zip file error: " + e.getMessage(), e);
 		} finally{
