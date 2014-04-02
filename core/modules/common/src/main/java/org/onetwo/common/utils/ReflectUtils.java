@@ -155,7 +155,7 @@ public class ReflectUtils {
 		try{
 			return getIntro(getObjectClass(element)).getPropertyValue(element, propName);
 		}catch(Exception e){
-			logger.error("get property["+propName+"] error: " + element);
+			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
 			if(throwIfError)
 				throw LangUtils.asBaseException(e);
 		}

@@ -1,4 +1,4 @@
-package org.onetwo.app.task.test;
+package com.qyscard.task.test;
 
 import org.onetwo.app.task.TaskData;
 import org.onetwo.app.task.TaskType;

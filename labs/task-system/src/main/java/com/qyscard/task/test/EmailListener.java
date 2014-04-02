@@ -1,15 +1,15 @@
-package org.onetwo.app.task.test;
+package com.qyscard.task.test;
 
-import org.onetwo.app.task.TaskData;
-import org.onetwo.app.task.TaskListener;
 import org.onetwo.app.task.TaskListenerAdapter;
 import org.onetwo.common.profiling.JFishLogger;
 import org.onetwo.common.utils.LangUtils;
 
-public class EmailListener extends TaskListenerAdapter {
+import com.qyscard.task.entity.TaskQueueEntity;
+
+public class EmailListener extends TaskListenerAdapter<TaskQueueEntity> {
 
 	@Override
-	public Object onExecute(TaskData task) {
+	public Object onExecute(TaskQueueEntity task) {
 		JFishLogger.INSTANCE.log("<<< execute task: " + task.getName());
 		LangUtils.await(10);
 		return null;

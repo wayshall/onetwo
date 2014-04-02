@@ -1,15 +1,16 @@
-package org.onetwo.app.task.job;
+package com.qyscard.task.job;
 
 import javax.annotation.Resource;
 
 import org.onetwo.app.task.TaskQueue;
-import org.onetwo.app.task.test.MyEmailInfo;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.timer.JobTask;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.qyscard.task.test.MyEmailInfo;
 
 @Component
 public class DataSyncTask implements JobTask {

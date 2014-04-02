@@ -1,4 +1,4 @@
-package com.qyscard.bussync;
+package com.qyscard.task;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
