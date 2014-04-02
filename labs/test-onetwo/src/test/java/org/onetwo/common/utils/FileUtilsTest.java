@@ -57,5 +57,38 @@ public class FileUtilsTest {
 		Assert.assertTrue(rs);
 	}
 	
+	@Test
+	public void testZipfile(){
+		String dir = FileUtils.getResourcePath("")+"/org/onetwo/common/excel";
+		File zipfile = FileUtils.zipfile(new File(dir));
+		System.out.println("zipfile: " + zipfile.getPath());
+		System.out.println("zipfile: " + zipfile.getName());
+		Assert.assertEquals("excel.zip", zipfile.getName());
+	}
+	
+	@Test
+	public void testGetNewFilenameBy(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/excel/bus_copy.xls";
+		String zippath = FileUtils.getNewFilenameBy(new File(filepath), ".zip");
+		System.out.println("zippath: " + zippath);
+		Assert.assertTrue(zippath.endsWith("\\org\\onetwo\\common\\excel\\bus_copy.zip"));
+	}
+	
+	@Test
+	public void testSize(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/excel/bus_copy.xls";
+		Double size = Double.valueOf(FileUtils.size(new File(filepath)));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1216000, size.longValue());
+		
+		size = FileUtils.sizeAsKb(new File(filepath));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1187, size.longValue());
+		
+		size = FileUtils.sizeAsMb(new File(filepath));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1, size.longValue());
+	}
+	
 
 }
