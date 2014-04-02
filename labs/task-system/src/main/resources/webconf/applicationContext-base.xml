@@ -21,4 +21,31 @@
 						http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="true">
 	
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+	<beans profile="product">
+		<bean id="dataSource" class="org.onetwo.common.ds.DatasourceFactoryBean">
+			<property name="implementClass" value="com.mchange.v2.c3p0.ComboPooledDataSource"/>
+			<property name="prefix" value="jdbc."/>
+		</bean>
+	</beans>
+
+	<beans profile="test">
+		<bean id="dataSource" class="org.onetwo.common.ds.DatasourceFactoryBean">
+			<property name="implementClass" value="com.mchange.v2.c3p0.ComboPooledDataSource"/>
+			<property name="prefix" value="jdbc."/>
+		</bean>
+	</beans>
+
+	<beans profile="dev">
+		<bean id="dataSource" class="org.onetwo.common.ds.DatasourceFactoryBean">
+			<property name="implementClass" value="com.mchange.v2.c3p0.ComboPooledDataSource"/>
+			<property name="prefix" value="jdbc."/>
+		</bean>
+	</beans>
+	
 </beans>

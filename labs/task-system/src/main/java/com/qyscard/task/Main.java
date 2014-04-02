@@ -1,5 +1,7 @@
-package org.onetwo.app.task;
+package com.qyscard.task;
 
+import org.onetwo.app.task.MainTaskProcessor;
+import org.onetwo.app.task.TaskConfig;
 import org.onetwo.common.cmd.SpringCmdRunner;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -7,6 +9,8 @@ import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 import org.onetwo.common.utils.commandline.DefaultCommandManager;
 import org.onetwo.common.utils.commandline.HelpCommand;
 import org.slf4j.Logger;
+
+import com.qyscard.task.utils.TaskContextConfig;
 
 
 public class Main {

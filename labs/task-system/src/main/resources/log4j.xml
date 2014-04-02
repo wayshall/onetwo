@@ -27,9 +27,9 @@
 	</appender>
 
 	<appender name="LOGFILE" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="./logs/bus-sync.log" />
+		<param name="File" value="./logs/task-system.log" />
 		<param name="Append" value="true" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd_HH" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss}: %-5p %c{2} - %m\n" />
 		</layout>
