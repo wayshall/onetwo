@@ -1,11 +1,11 @@
 package org.onetwo.app.task;
 
-public interface TaskListener {
+public interface TaskListener<T extends TaskData> {
 	
-	void onQueued(TaskData task);
+	void onQueued(T task);
 	
-	Object onExecute(TaskData task);
+	Object onExecute(T task);
 	
-	void afterExecute(TaskData task, Object result);
+	void afterExecute(T task, Object result);
 
 }

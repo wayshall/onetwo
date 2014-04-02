@@ -1,16 +1,21 @@
-package org.onetwo.app.task;
+package com.qyscard.task.utils;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.app.task.MainTaskProcessor;
+import org.onetwo.app.task.TaskConfig;
+import org.onetwo.app.task.TaskListenerRegistry;
+import org.onetwo.app.task.TaskQueue;
 import org.onetwo.app.task.impl.SimpleTaskListenerRegistry;
 import org.onetwo.app.task.impl.SimpleTaskQueue;
-import org.onetwo.app.task.job.DataSyncTask;
-import org.onetwo.app.task.test.EmailListener;
-import org.onetwo.app.task.test.TaskTypeConstant;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+
+import com.qyscard.task.job.DataSyncTask;
+import com.qyscard.task.test.EmailListener;
+import com.qyscard.task.test.TaskTypeConstant;
 
 @Configuration
 @JFishProfile
