@@ -66,6 +66,7 @@ public class FileUtilsTest {
 		Assert.assertEquals("excel.zip", zipfile.getName());
 	}
 	
+	
 	@Test
 	public void testGetNewFilenameBy(){
 		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/excel/bus_copy.xls";
