@@ -692,11 +692,19 @@ public class LangUtils {
 		return result;
 	}
 	
+
+	public static String changeCharset(String str, String toCharset){
+		return changeCharset(str, null, toCharset);
+	}
 	public static String changeCharset(String str, String fromCharset, String toCharset){
 		String result = null;
 		Assert.notNull(str);
 		try {
-			result = new String(str.getBytes(fromCharset), toCharset);
+			if(StringUtils.isBlank(fromCharset)){
+				result = new String(str.getBytes(), toCharset);
+			}else{
+				result = new String(str.getBytes(fromCharset), toCharset);
+			}
 		} catch (UnsupportedEncodingException e) {
 			throwBaseException(e);
 		}
