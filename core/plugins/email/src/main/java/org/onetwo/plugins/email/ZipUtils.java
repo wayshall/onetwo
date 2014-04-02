@@ -7,13 +7,11 @@ import java.util.List;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
-import org.slf4j.Logger;
 
 public class ZipUtils {
-	private static final Logger logger = MyLoggerFactory.getLogger(ZipUtils.class);
+//	private static final Logger logger = MyLoggerFactory.getLogger(ZipUtils.class);
 
 	public static File zipfile(String targetZipFilePath, File file){
 		return zipfile(targetZipFilePath, file, file.isFile());
@@ -47,7 +45,7 @@ public class ZipUtils {
 			for(File f : files){
 				String entryName = f.getName();
 				ZipEntry zipentry = new ZipEntry(entryName);
-				logger.info("put entry: " + entryName);
+//				logger.info("put entry: " + entryName);
 				zipout.putNextEntry(zipentry);
 				FileUtils.copyFileToOutputStream(zipout, f);
 			}
