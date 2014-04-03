@@ -188,7 +188,9 @@ public class FieldModel implements PoiModel {
 			/*if(IS_DIGIT.matcher(rowspan).matches())
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
-			if(context!=null)
+			if(ExcelUtils.IS_DIGIT.matcher(rowspan).matches())
+				rowspanValue = Integer.parseInt(rowspan);
+			else if(context!=null)
 				value = context.parseIntValue(rowspan);
 			else
 				rowspanValue = 1;

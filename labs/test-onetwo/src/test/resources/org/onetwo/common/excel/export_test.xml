@@ -23,7 +23,7 @@
 				<field name="cardNo" rowspan="cardBeans.size()" value="cardNo+'--for--test--'+cardPwd"/>
 				<field name="cardPwd" rowspan="cardBeans.size()"/>
 				<!-- 一列多行  属性是list，每列的值是list元素 -->
-				<field name="properties"/>
+				<field name="properties" rowspan="properties.size()"/>
 				<!-- 一列多行 属性是list，每列的值是list元素的某个属性-->
 				<field name="name" rootValue="cardBeans">
 				</field>

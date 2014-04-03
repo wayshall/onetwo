@@ -11,7 +11,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
 public class DefaultExcelValueParser implements ExcelValueParser {
-	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
+	public static final Pattern IS_DIGIT = ExcelUtils.IS_DIGIT;
 
 	private Map<String, Object> context;
 //	private Map<String, Object> varMap = Maps.newHashMap();
@@ -62,6 +62,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		if(StringUtils.isBlank(expr))
 			return "";
 		Object fieldValue = null;
+		Map<String, Object> vcontext = context==null?this.context:context;
 		if(isSymbol(expr)){
 			fieldValue = parseSymbol(expr, root);
 		}else{
@@ -69,11 +70,11 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 				/*fieldValue = varMap.get(expr.substring(1));
 				if(fieldValue!=null)
 					return fieldValue;*/
-				fieldValue = context.get(expr.substring(1));
+				fieldValue = vcontext.get(expr.substring(1));
 				if(fieldValue!=null)
 					return fieldValue;
 			}
-			fieldValue = ExcelUtils.getValue(expr, context, root);
+			fieldValue = ExcelUtils.getValue(expr, vcontext, root);
 		}
 		return fieldValue;
 	}
@@ -126,7 +127,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			return Integer.parseInt(expr);
 		}
 		
-		Number v = (Number)parseValue(expr, root, null);
+		Number v = (Number)parseValue(expr, root, context);
 		return v==null?0:v.intValue();
 	}
 	
