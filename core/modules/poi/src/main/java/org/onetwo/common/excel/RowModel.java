@@ -25,6 +25,7 @@ public class RowModel implements PoiModel {
 	private String span;
 	private short height;
 	private String index;
+	private String condition;
 	
 	private boolean renderHeader;
 
@@ -225,6 +226,14 @@ public class RowModel implements PoiModel {
 
 	public void setTemplate(TemplateModel template) {
 		this.template = template;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 	
 	/*public RowExecutor getExecutorInstance() {
