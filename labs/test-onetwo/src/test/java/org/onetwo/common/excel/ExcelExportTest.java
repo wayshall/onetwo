@@ -106,7 +106,20 @@ public class ExcelExportTest {
 
 	@Test
 	public void testOgnl(){
-		Object val = ExcelUtils.getValue("[#data[0].{cardBeans}.{beans}]", context, null);
-		System.out.println("val: " + val);
+		Object val = ExcelUtils.getValue("#data[0].cardBeans", context, null);
+		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
+		Assert.assertEquals(5, LangUtils.size(val));
+		//大括号把结果放到一个列表里
+		val = ExcelUtils.getValue("#data[0].{cardBeans}", context, null);
+		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
+		Assert.assertEquals(1, LangUtils.size(val));
+		
+		val = ExcelUtils.getValue("#data[0].cardBeans[0].{name}", context, null);
+		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
+		Assert.assertEquals(1, LangUtils.size(val));
+		
+		val = ExcelUtils.getValue("#data[0].{cardBeans}[0].{name}", context, null);
+		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
+		Assert.assertEquals(5, LangUtils.size(val));
 	}
 }
