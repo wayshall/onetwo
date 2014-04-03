@@ -16,6 +16,7 @@ import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -107,6 +108,17 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	public Workbook getWorkbook() {
 		return this.workbookData.getWorkbook();
 	}
+	
+
+	public static boolean isMultipleAndNotEmpty(Object obj){
+		if(obj==null)
+			return false;
+		Object mobj = obj;
+		if(Page.class.isInstance(obj)){
+			mobj = LangUtils.cast(obj, Page.class).getResult();
+		}
+		return LangUtils.isMultipleAndNotEmpty(mobj);
+	}
 
 	@Override
 	public void generateIt() {
@@ -120,13 +132,13 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			logger.info("condition[ {} = {} ], ignore create sheet.", tempalte.getCondition(), createSheet);
 			return ;
 		}
-		ExportDatasource ds = null;
+		SheetDatasource<?> ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
 			ds = new ListExportDatasource(this.workbookData, tempalte, Collections.EMPTY_LIST);
 		}else{
 			Object dsObj = workbookData.parseValue(tempalte.getDatasource());
-			if(dsObj instanceof ExportDatasource){
-				ds = (ExportDatasource) dsObj;
+			if(dsObj instanceof SheetDatasource){
+				ds = (SheetDatasource<?>) dsObj;
 			}else{
 				List<?> datalist = LangUtils.asList(dsObj);
 				ds = new ListExportDatasource(this.workbookData, tempalte, datalist);
@@ -135,17 +147,21 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		
 
 		SheetData sdata = createSheetData(getWorkbookData());
+		sdata.setTotalSheet(1);
 		if(tempalte.isMultiSheet()){
-			int totalPage = -1;//no limit
-			if(ds instanceof PageExportDatasource){
-				totalPage = LangUtils.cast(ds, PageExportDatasource.class).getTotalPages();
-			}
-			sdata.setTotalSheet(totalPage);
-			
-			List<?> datalist = null;
+			Object dataObject = null;
 			int i = 0;
 //			boolean createAtleastOneSheet = false;
-			while(LangUtils.isNotEmpty( (datalist = ds.getSheetDataList(i)) )){
+			while((dataObject = ds.getSheetDataList(i))!=null && isMultipleAndNotEmpty(dataObject) ){
+				List<?> datalist = null;
+				if(Page.class.isInstance(dataObject)){
+					Page<?> page = (Page<?>) dataObject;
+					datalist = page.getResult();
+					if(i==0)
+						sdata.setTotalSheet(page.getTotalPages());
+				}else{
+					datalist = LangUtils.asList(dataObject);
+				}
 				logger.info("{} sheet, data size: {}", i, datalist.size());
 				sdata.setDatasource(datalist);
 				this.generateSheet(ds.getSheetLabel(i), sdata);

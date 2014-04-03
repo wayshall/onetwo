@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
 public class TemplateModel implements PoiModel{
+	public static final int DEFAULT_SIZE_PER_SHEET = 60000;
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
 	private String name;
@@ -27,7 +28,7 @@ public class TemplateModel implements PoiModel{
 	private String label;
 	private boolean multiSheet;
 	private String datasource;
-	private Integer sizePerSheet = 60000;
+	private Integer sizePerSheet;
 	
 	private String columnWidth;
 	
@@ -96,7 +97,7 @@ public class TemplateModel implements PoiModel{
 	}
 
 	public Integer getSizePerSheet() {
-		return sizePerSheet;
+		return sizePerSheet==null?DEFAULT_SIZE_PER_SHEET:sizePerSheet;
 	}
 
 	public void setSizePerSheet(Integer sizePerSheet) {
