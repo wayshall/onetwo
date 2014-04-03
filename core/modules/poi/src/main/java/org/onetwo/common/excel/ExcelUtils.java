@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import ognl.Ognl;
 
@@ -34,6 +35,8 @@ abstract public class ExcelUtils {
 	public static final String JSON_FILTER_TEMPLATE = "templateModelFilter";
 	public static final String JSON_FILTER_ROW = "rowModelFilter";
 	public static final String JSON_FILTER_FIELD = "fieldModelFilter";
+	
+	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static final PropertyStringParser DEFAULT_PROPERTY_STRING_PARSER = new DefaultPropertyStringParser();
 	
@@ -211,7 +214,8 @@ abstract public class ExcelUtils {
 		try {
 			value = Ognl.getValue(exp, context, root);
 		} catch (Exception e) {
-//			logger.info("["+exp+"] getValue error : " + e.getMessage());
+//			logger.info("["+exp+"] getValue error : " + e.getMessage(), e);
+			logger.info("["+exp+"] getValue error : " + e.getMessage());
 		}
 		return value;
 	}

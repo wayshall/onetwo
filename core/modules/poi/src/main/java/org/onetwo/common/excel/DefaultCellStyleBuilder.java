@@ -40,11 +40,13 @@ public class DefaultCellStyleBuilder {
 			return null;
 		}
 		
-		if(StringUtils.isNotBlank(styleString))
+		if(StringUtils.isNotBlank(styleString) && styleString.startsWith("#")){
 			styleString = (String)cellContext.parseValue(styleString);
+		}
 		
-		if(StringUtils.isNotBlank(fontString))
+		if(StringUtils.isNotBlank(fontString) && fontString.startsWith("#")){
 			fontString = (String)cellContext.parseValue(fontString);
+		}
 		
 		String key = styleString + fontString;
 		CellStyle cstyle = this.styleCache.get(key);
