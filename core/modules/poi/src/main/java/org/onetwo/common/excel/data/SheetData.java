@@ -10,20 +10,24 @@ import org.onetwo.common.excel.TemplateModel;
 import com.google.common.collect.Maps;
 
 public class SheetData extends AbstractExcelContextData {
-	private final Sheet sheet;
+	private Sheet sheet;
 	private final Object datasource;
-	private final int sheetIndex;
+	private int sheetIndex;
 	private final WorkbookData workbookData;
 	private final TemplateModel sheetModel;
 
 	private Map<ExecutorModel, FieldValueExecutor> fieldValueExecutors;
 	
-	public SheetData(WorkbookData workbookData, TemplateModel sheetModel, Sheet sheet, Object dataSourceValue) {
+	public SheetData(WorkbookData workbookData, TemplateModel sheetModel, Object dataSourceValue) {
 		this.workbookData = workbookData;
-		this.sheet = sheet;
+//		this.sheet = sheet;
 		this.datasource = dataSourceValue;
-		this.sheetIndex = workbookData.getWorkbook().getSheetIndex(sheet);
 		this.sheetModel = sheetModel;
+	}
+
+	public void setSheet(Sheet sheet) {
+		this.sheet = sheet;
+		this.sheetIndex = workbookData.getWorkbook().getSheetIndex(sheet);
 	}
 
 	public void initData(){

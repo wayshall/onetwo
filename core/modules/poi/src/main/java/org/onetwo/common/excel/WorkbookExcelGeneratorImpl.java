@@ -23,7 +23,7 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 //		Object data = context.get("reportData0");
 		WorkbookListener workbookListener = null;
 		if(StringUtils.isNotBlank(workbookModel.getListener()))
-			workbookListener = (WorkbookListener)excelValueParser.parseValue(workbookModel.getListener(), workbookModel, null);
+			workbookListener = (WorkbookListener)excelValueParser.parseValue(workbookModel.getListener(), workbookModel, context);
 		if(workbookListener==null)
 			workbookListener = WorkbookData.EMPTY_WORKBOOK_LISTENER;
 		this.workbookData = new WorkbookData(workbookModel, new HSSFWorkbook(), excelValueParser, workbookListener);

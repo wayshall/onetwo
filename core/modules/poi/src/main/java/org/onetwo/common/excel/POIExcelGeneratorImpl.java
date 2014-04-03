@@ -14,7 +14,6 @@ import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.excel.data.SheetData;
 import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -141,20 +140,22 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 //			boolean createAtleastOneSheet = false;
 			while(LangUtils.isNotEmpty( (datalist = ds.getSheetDataList(i)) )){
 				logger.info("{} sheet, data size: {}", i, datalist.size());
-				this.generateSheet(ds.getSheetLabel(i), datalist);
+				SheetData sdata = createSheetData(getWorkbookData(), datalist);
+				this.generateSheet(ds.getSheetLabel(i), datalist, sdata);
 				i++;
 			}
 			//如果一个sheet也没有，创建一个空的
 			if(i==0){
-				this.generateSheet(ds.getSheetLabel(i), Collections.EMPTY_LIST);
+				SheetData sdata = createSheetData(getWorkbookData(), Collections.EMPTY_LIST);
+				this.generateSheet(ds.getSheetLabel(i), Collections.EMPTY_LIST, sdata);
 			}
 		}else{
-			this.generateSheet(ds.getSheetLabel(0), ds.getSheetDataList(0));
+			this.generateSheet(ds.getSheetLabel(0), ds.getSheetDataList(0), null);
 		}
 		
 	}
 	
-	private void generateSheet(String sheetname, List<?> datalist){
+	private void generateSheet(String sheetname, List<?> datalist, SheetData sdata){
 		Sheet sheet = getWorkbook().createSheet(sheetname);
 		int sheetIndex = getWorkbook().getSheetIndex(sheet);
 		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);
@@ -166,16 +167,12 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}*/
 		
-		SheetData sdata = createSheetData(getWorkbookData(), sheet, datalist);
-		this.buildColumnWidth(sdata);
-		
-		sdata.getSelfContext().put(tempalte.getVarName(), sdata);
-		try{
-			this.generateSheet(sdata);
-		}finally{
-			sdata.getSelfContext().remove(tempalte.getVarName());
+		if(sdata==null){
+			sdata = createSheetData(getWorkbookData(), datalist);
 		}
-		
+		sdata.setSheet(sheet);
+		this.buildColumnWidth(sdata);
+		this.generateSheet(sdata);
 	}
 	
 	private void buildColumnWidth(SheetData sdata){
@@ -189,8 +186,8 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}
 	}
 	
-	private SheetData createSheetData(WorkbookData workbookData, Sheet sheet, Object dataSourceValue){
-		SheetData sdata = new SheetData(getWorkbookData(), tempalte, sheet, dataSourceValue);
+	private SheetData createSheetData(WorkbookData workbookData, Object dataSourceValue){
+		SheetData sdata = new SheetData(getWorkbookData(), tempalte, dataSourceValue);
 		this.initSheetData(sdata);
 		return sdata;
 	}
@@ -220,38 +217,29 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 //		sheet = workbook.createSheet(tempalte.getName());
 		//for (RowModel row : this.tempalte.getRows()) {
 //		int columns = 0;
-		boolean printTime = UtilTimerStack.isActive();
-		String rowname = "";
-		for (int i = 0; i < rows.size(); i++) {
-			RowModel row = rows.get(i);
-
-			if(printTime){
-				rowname = row.getType()+"-"+row.getName()+i;
-				UtilTimerStack.push(rowname);
+//		boolean printTime = UtilTimerStack.isActive();
+//		String rowname = "";
+		
+		sheetData.getSelfContext().put(tempalte.getVarName(), sheetData);
+		try{
+			for (int i = 0; i < rows.size(); i++) {
+				RowModel row = rows.get(i);
+				/*if(printTime){
+					rowname = row.getType()+"-"+row.getName()+i;
+					UtilTimerStack.push(rowname);
+				}*/
+//				Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
+				RowContextData datacontext = createRowDataContext(sheetData, row);
+				this.rowProcessors.get(row.getType()).processRow(datacontext);
+				/*if(printTime){
+					UtilTimerStack.pop(rowname);
+				}*/
 			}
-//			Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
-			RowContextData datacontext = createRowDataContext(sheetData, row);
-			this.rowProcessors.get(row.getType()).processRow(datacontext);
-			if(printTime){
-				UtilTimerStack.pop(rowname);
-			}
-			
-			/*if (i == rows.size() - 1) {
-				List<FieldModel> models = row.getFields();
-				for (FieldModel fieldModel : models) {
-					int cols = fieldModel.getColspanValue(null);
-					columns += cols;
-				}
-				
-			}*/
+		}finally{
+			sheetData.getSelfContext().remove(tempalte.getVarName());
 		}
 		
-		//cost a big time
-		/*for (int j = 0; j < columns; j++) {
-			sheet.autoSizeColumn(j);
-		}*/
 		
-		//System.out.println("generate excel success!");
 	}
 	
 	private RowContextData createRowDataContext(SheetData sheetData, RowModel rowModel){

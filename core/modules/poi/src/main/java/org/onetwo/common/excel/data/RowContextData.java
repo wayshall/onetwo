@@ -27,8 +27,8 @@ public class RowContextData extends AbstractExcelContextData {
 	}
 
 	protected Object getRootObject() {
-//		return currentRowObject;
-		return null;
+		return currentRowObject;
+//		return null;
 	}
 	
 	@Override
