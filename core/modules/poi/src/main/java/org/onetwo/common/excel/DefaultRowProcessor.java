@@ -199,9 +199,13 @@ public class DefaultRowProcessor implements RowProcessor {
 	}
 	
 	private Cell createCell(Row row, int cellIndex){
-		Cell cell = row.createCell(cellIndex);
-		this.generator.getWorkbookData().getWorkbookListener().afterCreateCell(cell, cellIndex);
-		return cell;
+		try {
+			Cell cell = row.createCell(cellIndex);
+			this.generator.getWorkbookData().getWorkbookListener().afterCreateCell(cell, cellIndex);
+			return cell;
+		} catch (Exception e) {
+			throw new BaseException("error", e);
+		}
 	}
 	
 
