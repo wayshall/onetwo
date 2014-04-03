@@ -17,6 +17,7 @@ import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.profiling.Timeit;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.Page;
 
 public class ExcelTest {
 //	private WorkbookGeneratorFactory wf = new WorkbookGeneratorFactory();
@@ -160,15 +161,16 @@ public class ExcelTest {
 		Map<String, Object> context = new HashMap<String, Object>();
 		final List<?> datalist = list;
 		final int pageSize = 30;
-		context.put("data", new PageExportDatasource() {
-			
-			@Override
-			public int getTotalPages() {
-				return datalist.size()%pageSize==0?(datalist.size()/pageSize):(datalist.size()/pageSize+1);
-			}
+		context.put("data", new SheetDatasource<Page>() {
 
 			@Override
-			public List<?> getSheetDataList(int i) {
+			public Page getSheetDataList(int i) {
+				Page page = Page.create();
+				page.setPageSize(pageSize);
+				if(i==0){
+//					int totalPage = datalist.size()%pageSize==0?(datalist.size()/pageSize):(datalist.size()/pageSize+1);
+					page.setTotalCount(datalist.size());
+				}
 				int fromIndex = pageSize*i;
 				if(fromIndex>datalist.size())
 					return null;
@@ -176,7 +178,9 @@ public class ExcelTest {
 				if(toIndex>datalist.size())
 					toIndex = datalist.size();
 				
-				return datalist.subList(fromIndex, toIndex);
+				List<?> result = datalist.subList(fromIndex, toIndex);
+				page.setResult(result);
+				return page;
 			}
 
 			@Override
