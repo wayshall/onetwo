@@ -159,15 +159,24 @@ public class ExcelTest {
 		System.out.println("===========================>>>>>testExportMutilSheetWithWorkbook ");
 		Map<String, Object> context = new HashMap<String, Object>();
 		final List<?> datalist = list;
-		context.put("data", new ExportDatasource() {
+		final int pageSize = 30;
+		context.put("data", new PageExportDatasource() {
 			
 			@Override
+			public int getTotalPages() {
+				return datalist.size()%pageSize==0?(datalist.size()/pageSize):(datalist.size()/pageSize+1);
+			}
+
+			@Override
 			public List<?> getSheetDataList(int i) {
-				int toIndex = 10*(i+1);
+				int fromIndex = pageSize*i;
+				if(fromIndex>datalist.size())
+					return null;
+				int toIndex = pageSize*(i+1);
 				if(toIndex>datalist.size())
 					toIndex = datalist.size();
 				
-				return datalist.subList(10*i, toIndex);
+				return datalist.subList(fromIndex, toIndex);
 			}
 
 			@Override
