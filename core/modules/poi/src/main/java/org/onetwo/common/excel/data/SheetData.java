@@ -11,18 +11,23 @@ import com.google.common.collect.Maps;
 
 public class SheetData extends AbstractExcelContextData {
 	private Sheet sheet;
-	private final Object datasource;
+	private Object datasource;
 	private int sheetIndex;
 	private final WorkbookData workbookData;
 	private final TemplateModel sheetModel;
+	private int totalSheet = 1;
 
 	private Map<ExecutorModel, FieldValueExecutor> fieldValueExecutors;
 	
-	public SheetData(WorkbookData workbookData, TemplateModel sheetModel, Object dataSourceValue) {
+	public SheetData(WorkbookData workbookData, TemplateModel sheetModel) {
 		this.workbookData = workbookData;
 //		this.sheet = sheet;
-		this.datasource = dataSourceValue;
+//		this.datasource = dataSourceValue;
 		this.sheetModel = sheetModel;
+	}
+
+	public void setDatasource(Object datasource) {
+		this.datasource = datasource;
 	}
 
 	public void setSheet(Sheet sheet) {
@@ -77,6 +82,18 @@ public class SheetData extends AbstractExcelContextData {
 	@Override
 	protected ExcelValueParser getExcelValueParser() {
 		return workbookData.getExcelValueParser();
+	}
+
+	public int getTotalSheet() {
+		return totalSheet;
+	}
+
+	public void setTotalSheet(int totalSheet) {
+		this.totalSheet = totalSheet;
+	}
+	
+	public boolean isLastSheet(){
+		return (sheetIndex+1)==totalSheet;
 	}
 	
 }
