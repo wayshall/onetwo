@@ -133,29 +133,37 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}
 		
-		
+
+		SheetData sdata = createSheetData(getWorkbookData());
 		if(tempalte.isMultiSheet()){
+			int totalPage = -1;//no limit
+			if(ds instanceof PageExportDatasource){
+				totalPage = LangUtils.cast(ds, PageExportDatasource.class).getTotalPages();
+			}
+			sdata.setTotalSheet(totalPage);
+			
 			List<?> datalist = null;
 			int i = 0;
 //			boolean createAtleastOneSheet = false;
 			while(LangUtils.isNotEmpty( (datalist = ds.getSheetDataList(i)) )){
 				logger.info("{} sheet, data size: {}", i, datalist.size());
-				SheetData sdata = createSheetData(getWorkbookData(), datalist);
-				this.generateSheet(ds.getSheetLabel(i), datalist, sdata);
+				sdata.setDatasource(datalist);
+				this.generateSheet(ds.getSheetLabel(i), sdata);
 				i++;
 			}
 			//如果一个sheet也没有，创建一个空的
 			if(i==0){
-				SheetData sdata = createSheetData(getWorkbookData(), Collections.EMPTY_LIST);
-				this.generateSheet(ds.getSheetLabel(i), Collections.EMPTY_LIST, sdata);
+				sdata.setDatasource(Collections.EMPTY_LIST);
+				this.generateSheet(ds.getSheetLabel(i), sdata);
 			}
 		}else{
-			this.generateSheet(ds.getSheetLabel(0), ds.getSheetDataList(0), null);
+			sdata.setDatasource(ds.getSheetDataList(0));
+			this.generateSheet(ds.getSheetLabel(0), sdata);
 		}
 		
 	}
 	
-	private void generateSheet(String sheetname, List<?> datalist, SheetData sdata){
+	private void generateSheet(String sheetname, SheetData sdata){
 		Sheet sheet = getWorkbook().createSheet(sheetname);
 		int sheetIndex = getWorkbook().getSheetIndex(sheet);
 		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);
@@ -167,9 +175,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}*/
 		
-		if(sdata==null){
+		/*if(sdata==null){
 			sdata = createSheetData(getWorkbookData(), datalist);
-		}
+		}*/
 		sdata.setSheet(sheet);
 		this.buildColumnWidth(sdata);
 		this.generateSheet(sdata);
@@ -186,8 +194,8 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}
 	}
 	
-	private SheetData createSheetData(WorkbookData workbookData, Object dataSourceValue){
-		SheetData sdata = new SheetData(getWorkbookData(), tempalte, dataSourceValue);
+	private SheetData createSheetData(WorkbookData workbookData){
+		SheetData sdata = new SheetData(getWorkbookData(), tempalte);
 		this.initSheetData(sdata);
 		return sdata;
 	}
@@ -229,6 +237,12 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 					UtilTimerStack.push(rowname);
 				}*/
 //				Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
+				if(StringUtils.isNotBlank(row.getCondition())){
+					Boolean createRow = (Boolean)sheetData.parseValue(row.getCondition());
+					if(createRow==null || !createRow){
+						continue;
+					}
+				}
 				RowContextData datacontext = createRowDataContext(sheetData, row);
 				this.rowProcessors.get(row.getType()).processRow(datacontext);
 				/*if(printTime){

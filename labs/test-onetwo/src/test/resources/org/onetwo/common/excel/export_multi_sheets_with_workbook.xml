@@ -11,7 +11,7 @@
 		<var name="sheetWidth" value="1:50;2:50"/>
 	</vars>
 	<sheets>
-	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="#sheetWidth">
+	<template name="sheet1" label="报名客户资料1" datasource="#data" columnWidth="#sheetWidth" multiSheet="true">
 	
 			<rows>
 			
@@ -52,7 +52,7 @@
 				</row>
 				
 				
-				<row fieldStyle="#titleFieldStyle" fieldFont="#titleFieldFont">
+				<row fieldStyle="#titleFieldStyle" fieldFont="#titleFieldFont" condition="#sheet1.lastSheet">
 					<fields>
 						<field value="'idTotal'" />
 						<field value="#idTotalValue.longValue()" />

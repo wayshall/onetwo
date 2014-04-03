@@ -1521,4 +1521,8 @@ public class LangUtils {
 	public static boolean isDigitString(String str){
 		return DIGIT.matcher(str).matches();
 	}
+	
+	public static <T> T cast(Object obj, Class<T> clazz){
+		return clazz.cast(obj);
+	}
 }
