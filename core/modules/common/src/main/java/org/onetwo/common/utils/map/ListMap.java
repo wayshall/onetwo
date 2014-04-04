@@ -86,6 +86,13 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 		return map.get(key);
 	}
 
+	public V getFirstValue(Object key) {
+		List<V> list = map.get(key);
+		if(LangUtils.isEmpty(list))
+			return null;
+		return list.get(0);
+	}
+
 
 	public List<V> put(K key, List<V> value) {
 		return map.put(key, value);

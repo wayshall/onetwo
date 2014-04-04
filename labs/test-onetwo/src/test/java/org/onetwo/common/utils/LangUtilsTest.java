@@ -1,9 +1,7 @@
 package org.onetwo.common.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -20,8 +18,8 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testFormatValue(){
-		String hex = LangUtils.hex2Bytes("BC092A11");
-		System.out.println("hex: " + hex);
+		long dec = LangUtils.hexToLong("BC092A11");
+		Assert.assertEquals(3154717201L, dec);
 		Object val = LangUtils.formatValue(0.755, "#0.00#");
 		Assert.assertEquals("0.755", val);
 		val = LangUtils.formatValue(1.9, "0.00");
