@@ -320,8 +320,11 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			protected void doIt(E element) throws Exception {
+				if(element==null)
+					return ;
 				K rs = block.execute(element);
-				maps.putElement(rs, element);
+				if(rs!=null)
+					maps.putElement(rs, element);
 			}
 			
 		});
