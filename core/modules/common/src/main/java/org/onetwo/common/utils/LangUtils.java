@@ -1090,12 +1090,7 @@ public class LangUtils {
 	}
 	
 	public static boolean equals(Object obj1, Object obj2){
-		if(obj1==null && obj2==null)
-			return true;
-		else if(obj1!=null)
-			return obj1.equals(obj2);
-		else
-			return obj2.equals(obj1);
+		return obj1==obj2 || (obj1!=null && obj2!=null && obj1.equals(obj2));
 	}
 	
 	public static BufferedReader asBufferedReader(InputStream in){
@@ -1496,6 +1491,10 @@ public class LangUtils {
 		}else{
 			throw new UnsupportedOperationException("unsupported type: "+ elemetns.getClass());
 		}
+	}
+	
+	public static Long hexToLong(String hexStr){
+		return Long.parseLong(hexStr, 16);
 	}
 	
 	public static String decToHexString(String decStr){

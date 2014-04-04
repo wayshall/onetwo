@@ -1,6 +1,7 @@
 package org.onetwo.common.utils;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,16 @@ import org.junit.Test;
 import org.springframework.util.ClassUtils;
 
 public class FileUtilsTest {
+	
+	@Test
+	public void testAnsi(){
+		String path = FileUtils.getResourcePath("")+"/ansi.txt";
+		List<String> datalist = FileUtils.readAsList(path, "gbk");
+		for(String data : datalist){
+//			System.out.println("data: " + data);
+			Assert.assertTrue(data.startsWith("非记名卡"));
+		}
+	}
 	
 	@Test
 	public void testParentPath(){
