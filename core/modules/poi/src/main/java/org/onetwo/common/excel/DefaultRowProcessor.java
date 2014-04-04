@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -225,6 +226,8 @@ public class DefaultRowProcessor implements RowProcessor {
 		if(fieldValue==null){
 			fieldValue = cellData.getDefFieldValue();
 		}
+
+		fieldValue = formatValue(fieldValue, field.getDataFormat());
 		
 		return fieldValue;
 	}
@@ -329,7 +332,10 @@ public class DefaultRowProcessor implements RowProcessor {
 			cell.setCellType(Cell.CELL_TYPE_BLANK);
 			return ;
 		}
-		value = formatValue(value, field.getDataFormat());
+		String df = field.getDataFormat();
+		if(StringUtils.isNotBlank(df)){
+			cell.getCellStyle().setDataFormat(HSSFDataFormat.getBuiltinFormat(df));
+		}
 		if(Number.class.isInstance(value)){
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			cell.setCellValue(((Number)value).doubleValue());
