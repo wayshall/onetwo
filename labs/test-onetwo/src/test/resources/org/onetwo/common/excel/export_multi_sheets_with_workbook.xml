@@ -21,7 +21,7 @@
 				</row>
 				<row name="element" type="iterator" datasource="#data2" renderHeader="true" fieldProcessor="#fieldProcessor"> 
 					<fields>
-						<field name=":id" label="主键" />
+						<field name=":id" label="主键"  dataFormat="0.00"/>
 						<field name=":name" label="名称" />
 						<field name=":phone" label="电话" />
 						<field name=":postcode" label="邮编" />
@@ -44,7 +44,7 @@
 				
 				<row name="element" type="title" fieldHeaderStyle="#titleFieldStyle" fieldHeaderFont="#titleFieldFont"> 
 					<fields>
-						<field name="id" label="主键" sumValueAs="idTotalValue">
+						<field name="id" label="主键" sumValueAs="idTotalValue" dataFormat="0.00">
 						</field>
 						<field name="name" label="名称">
 						</field>
