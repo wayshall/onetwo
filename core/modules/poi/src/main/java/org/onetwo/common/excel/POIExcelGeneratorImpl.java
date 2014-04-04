@@ -153,6 +153,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			int i = 0;
 //			boolean createAtleastOneSheet = false;
 			while((dataObject = ds.getSheetDataList(i))!=null && isMultipleAndNotEmpty(dataObject) ){
+				sdata.setSheetIndexOfSheets(i);
 				List<?> datalist = null;
 				if(Page.class.isInstance(dataObject)){
 					Page<?> page = (Page<?>) dataObject;
