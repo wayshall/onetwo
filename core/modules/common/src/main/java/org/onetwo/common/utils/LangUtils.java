@@ -1502,6 +1502,16 @@ public class LangUtils {
 		return Long.toHexString(Types.convertValue(decStr, Long.class));
 	}
 	
+	public static String decToHexString(String decStr, int length){
+		String str = Long.toHexString(Types.convertValue(decStr, Long.class));
+		return LangUtils.padLeft(str, length, "0");
+	}
+	
+	public static String decToRadixString(String decStr, int radix, int length){
+		String str = Long.toString(Types.convertValue(decStr, Long.class), radix);
+		return LangUtils.padLeft(str, length, "0");
+	}
+	
 	public static String encodeUrl(String url){
 		try {
 			return URLEncoder.encode(url, UTF8);
