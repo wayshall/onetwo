@@ -12,7 +12,8 @@ import com.google.common.collect.Maps;
 public class SheetData extends AbstractExcelContextData {
 	private Sheet sheet;
 	private Object datasource;
-	private int sheetIndex;
+	private int sheetIndexOfWorkbook;
+	private int sheetIndexOfSheets = 0;//一份多表格报表中的第几个
 	private final WorkbookData workbookData;
 	private final TemplateModel sheetModel;
 	private int totalSheet = 1;
@@ -32,7 +33,7 @@ public class SheetData extends AbstractExcelContextData {
 
 	public void setSheet(Sheet sheet) {
 		this.sheet = sheet;
-		this.sheetIndex = workbookData.getWorkbook().getSheetIndex(sheet);
+		this.sheetIndexOfWorkbook = workbookData.getWorkbook().getSheetIndex(sheet);
 	}
 
 	public void initData(){
@@ -54,8 +55,8 @@ public class SheetData extends AbstractExcelContextData {
 	public Object getDatasource() {
 		return datasource;
 	}
-	public int getSheetIndex() {
-		return sheetIndex;
+	public int getSheetIndexOfWorkbook() {
+		return sheetIndexOfWorkbook;
 	}
 	public FieldValueExecutor getFieldValueExecutor(ExecutorModel model){
 		return this.fieldValueExecutors.get(model);
@@ -93,7 +94,15 @@ public class SheetData extends AbstractExcelContextData {
 	}
 	
 	public boolean isLastSheet(){
-		return (sheetIndex+1)==totalSheet;
+		return (sheetIndexOfSheets+1)==totalSheet;
+	}
+
+	public int getSheetIndexOfSheets() {
+		return sheetIndexOfSheets;
+	}
+
+	public void setSheetIndexOfSheets(int sheetIndexOfSheets) {
+		this.sheetIndexOfSheets = sheetIndexOfSheets;
 	}
 	
 }
