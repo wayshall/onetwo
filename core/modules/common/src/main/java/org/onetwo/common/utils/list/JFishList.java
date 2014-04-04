@@ -10,7 +10,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -312,6 +314,29 @@ public class JFishList<E> implements List<E>, Serializable {
 			}
 			
 		});
+	}
+	
+
+	public <K, V> Map<K, V> toMap(final String keyProperty){
+		return toMap(keyProperty, null, false);
+	}
+
+	public <K, V> Map<K, V> toMap(final String keyProperty, final String valueProperty, final boolean throwIfRepeatKey){
+		final Map<K, V> maps = LangUtils.newHashMap();
+		each(new NoIndexIt<E>() {
+
+			@Override
+			protected void doIt(E element) throws Exception {
+				K k = (K)(StringUtils.isBlank(keyProperty)?element:ReflectUtils.getProperty(element, keyProperty));
+				Assert.notNull(k);
+				if(throwIfRepeatKey && maps.containsKey(k))
+					throw new BaseException("key["+k+"] has exist, it's value : " + maps.get(k));
+				V v = (V)(StringUtils.isBlank(valueProperty)?element:ReflectUtils.getProperty(element, valueProperty));
+				maps.put(k, v);
+			}
+			
+		});
+		return maps;
 	}
 	
 	public <K> ListMap<K, E> groupBy(final SimpleBlock<E, K> block){
