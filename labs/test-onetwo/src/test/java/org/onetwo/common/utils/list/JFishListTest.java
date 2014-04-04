@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.TestUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.SimpleBlock;
 
@@ -104,7 +105,7 @@ public class JFishListTest {
 		Assert.assertEquals(1, groups.get("bb").size());
 		Assert.assertEquals(2, groups.get("cc").size());
 	}
-	
+
 
 	@Test
 	public void testGroupByPropertyName(){
@@ -122,6 +123,41 @@ public class JFishListTest {
 		Assert.assertEquals(3, groups.get("aa").size());
 		Assert.assertEquals(1, groups.get("bb").size());
 		Assert.assertEquals(2, groups.get("cc").size());
+	}
+
+	@Test
+	public void testToMap(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		UserEntity aa = TestUtils.createUser("aa", 3);
+		UserEntity bb = TestUtils.createUser("bb", 1);
+		UserEntity cc = TestUtils.createUser("cc", 2);
+		all.add(aa);
+		all.add(bb);
+		all.add(cc);
+		
+		Map<String, UserEntity> groups = JFishList.wrap(all).toMap("userName");
+		
+		System.out.println("groups:" + groups);
+		Assert.assertTrue(groups.get("aa").getAge().equals(3));
+		Assert.assertTrue(groups.get("bb").getAge().equals(1));
+		Assert.assertTrue(groups.get("cc").getAge().equals(2));
+		
+
+		cc = TestUtils.createUser("cc", 2);
+		all.add(cc);
+		Map<String, Integer> map2 = JFishList.wrap(all).toMap("userName", "age", false);
+		
+		System.out.println("map2:" + map2);
+		Assert.assertTrue(map2.get("aa").equals(3));
+		Assert.assertTrue(map2.get("bb").equals(1));
+		Assert.assertTrue(map2.get("cc").equals(2));
+
+		try {
+			map2 = JFishList.wrap(all).toMap("userName", "age", true);
+			Assert.fail();
+		} catch (Exception e) {
+			Assert.assertTrue(BaseException.class.isInstance(e));
+		}
 	}
 	
 
