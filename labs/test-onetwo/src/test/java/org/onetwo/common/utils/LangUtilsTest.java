@@ -22,6 +22,12 @@ public class LangUtilsTest {
 	public void testFormatValue(){
 		Object val = LangUtils.formatValue(0.755, "#0.00#");
 		Assert.assertEquals("0.755", val);
+		val = LangUtils.formatValue(1.9, "0.00");
+		System.out.println("val: " + val);
+		Assert.assertEquals("1.90", val);
+		val = LangUtils.formatValue(0, "0.00");
+		System.out.println("val: " + val);
+		Assert.assertEquals("0.00", val);
 		val = LangUtils.formatValue(0.755, "#.##");
 		Assert.assertEquals("0.76", val);
 		val = LangUtils.formatValue(1, "0.00");
