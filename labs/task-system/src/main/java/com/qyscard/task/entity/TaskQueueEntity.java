@@ -22,6 +22,10 @@ import com.qyscard.task.utils.TaskUtils;
 @Table(name="TASK_QUEUE")
 @TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskQueueEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1000)
 public class TaskQueueEntity implements Serializable, TaskData {
+	
+	public static enum BizType {
+		EMAIL
+	}
 
 	/**
 	 * 
@@ -29,7 +33,7 @@ public class TaskQueueEntity implements Serializable, TaskData {
 	private static final long serialVersionUID = -935205537821315792L;
 	private Long id;
 	private String name;
-	private String bizType;
+	private BizType bizType;
 	private String status;
 	private Integer currentTimes;
 	private Integer tryTimes;
