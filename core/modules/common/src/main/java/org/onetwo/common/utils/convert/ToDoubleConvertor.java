@@ -1,11 +1,19 @@
 package org.onetwo.common.utils.convert;
 
-public class ToDoubleConvertor implements TypeConvert<Double> {
+public class ToDoubleConvertor extends AbstractTypeConvert<Double> {
+
+	public ToDoubleConvertor() {
+		super();
+	}
+
+	public ToDoubleConvertor(Double defValue) {
+		super(defValue);
+	}
 
 	@Override
-	public Double convert(Object value, Class<?> componentType) {
-		if (value == null)
-            return 0.0;
+	public Double doConvert(Object value, Class<?> componentType) {
+//		if (value == null)
+//            return 0.0;
         Class<?> c = value.getClass();
         if (c.getSuperclass() == Number.class)
             return ((Number) value).doubleValue();

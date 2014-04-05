@@ -17,14 +17,22 @@ public class DefaultTypeConvertors implements Convertor {
 	
 	public DefaultTypeConvertors(){
 		register(new ToStringConvertor(), String.class);
-		register(new ToLongConvertor(), Long.class, Long.TYPE);
-		register(new ToIntegerConvertor(), Integer.class, Integer.TYPE);
-		register(new ToShortConvertor(), Short.class, Short.TYPE);
-		register(new ToDoubleConvertor(), Double.class, Double.TYPE);
-		register(new ToFloatConvertor(), Float.class, Float.TYPE);
-		register(new ToBooleanConvertor(), Boolean.class, Boolean.TYPE);
-		register(new ToByteConvertor(), Byte.class, Byte.TYPE);
-		register(new ToCharConvertor(), Character.class, Character.TYPE);
+		register(new ToLongConvertor(null), Long.class);
+		register(new ToLongConvertor(0L), Long.TYPE);
+		register(new ToIntegerConvertor(null), Integer.class);
+		register(new ToIntegerConvertor(0), Integer.TYPE);
+		register(new ToShortConvertor(null), Short.class);
+		register(new ToShortConvertor((short)0), Short.TYPE);
+		register(new ToDoubleConvertor(), Double.class);
+		register(new ToDoubleConvertor(0.0D), Double.TYPE);
+		register(new ToFloatConvertor(null), Float.class);
+		register(new ToFloatConvertor(0.0f), Float.TYPE);
+		register(new ToBooleanConvertor(null), Boolean.class);
+		register(new ToBooleanConvertor(false), Boolean.TYPE);
+		register(new ToByteConvertor(null), Byte.class);
+		register(new ToByteConvertor((byte)0), Byte.TYPE);
+		register(new ToCharConvertor(null), Character.class);
+		register(new ToCharConvertor('\u0000'), Character.TYPE);
 		register(new ToDateConvertor(), Date.class);
 		
 		register(new ToBigDecemalConvertor(), BigDecimal.class);
@@ -37,10 +45,11 @@ public class DefaultTypeConvertors implements Convertor {
 	 * @see org.onetwo.common.utils.convert.TypeConvertor#register(org.onetwo.common.utils.convert.TypeConvert, java.lang.Class)
 	 */
 	@Override
-	public final Convertor register(TypeConvert<?> convertor, Class<?>... classes){
-		for(Class<?> cls : classes){
-			convertors.put(cls, convertor);
-		}
+	public final Convertor register(TypeConvert<?> convertor, Class<?> clazz){
+//		for(Class<?> cls : classes){
+//			convertors.put(cls, convertor);
+//		}
+		convertors.put(clazz, convertor);
 		return this;
 	}
 	
@@ -56,13 +65,15 @@ public class DefaultTypeConvertors implements Convertor {
 	 */
 	@Override
 	public <T> T convert(Object value, Class<T> targetClass){
+		T val = null;
 		if(targetClass==null)
 			throw new BaseException("targetClass can not be null, value: " + value);
 		if(targetClass.isEnum()){
-			return (T)getTypeConvertor(targetClass.getSuperclass()).convert(value, targetClass);
+			val = (T)getTypeConvertor(targetClass.getSuperclass()).convert(value, targetClass);
 		}else{
-			return getTypeConvertor(targetClass).convert(value, targetClass);
+			val = getTypeConvertor(targetClass).convert(value, targetClass);
 		}
+		return val;
 	}
 	
 	/* (non-Javadoc)

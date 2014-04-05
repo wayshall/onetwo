@@ -5,16 +5,16 @@ import java.lang.reflect.Array;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class ToArrayConvertor extends AbstractTypeConvert<Object>{
+public class ToArrayConvertor extends AbstractWithConvertorTypeConvert<Object>{
 
 	public ToArrayConvertor(Convertor convertor) {
 		super(convertor);
 	}
 
 	@Override
-	public Object convert(Object source, Class<?> componentType) {
-		if(source==null)
-			return LangUtils.EMPTY_STRING_ARRAY;
+	public Object doConvert(Object source, Class<?> componentType) {
+//		if(source==null)
+//			return LangUtils.EMPTY_STRING_ARRAY;
 		
 		Object result = LangUtils.EMPTY_ARRAY;
 		if(source.getClass().isArray()){

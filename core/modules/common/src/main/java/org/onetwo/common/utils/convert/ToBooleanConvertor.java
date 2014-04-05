@@ -1,14 +1,20 @@
 package org.onetwo.common.utils.convert;
 
-public class ToBooleanConvertor implements TypeConvert<Boolean> {
+public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 
 	public static final String FALSE_VALUE = "false";
 	public static final String NO_VALUE = "no";
 
+	
+	public ToBooleanConvertor(Boolean defValue) {
+		super(defValue);
+	}
+
+
 	@Override
-	public Boolean convert(Object value, Class<?> componentType) {
-		if (value == null)
-			return false;
+	public Boolean doConvert(Object value, Class<?> componentType) {
+//		if (value == null)
+//			return false;
 		Class<?> c = value.getClass();
 		if (c.getSuperclass() == Number.class)
 			return ((Number) value).intValue() != 0;
