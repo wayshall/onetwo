@@ -2,8 +2,7 @@ package org.onetwo.common.utils.convert;
 
 public interface Convertor {
 
-	public Convertor register(TypeConvert<?> convertor,
-			Class<?>... classes);
+	public Convertor register(TypeConvert<?> convertor, Class<?> clazz);
 
 	public <T> T convert(Object value, Class<T> targetClass);
 
