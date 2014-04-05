@@ -1,11 +1,18 @@
 package org.onetwo.common.utils.convert;
 
-public class ToIntegerConvertor implements TypeConvert<Integer> {
+public class ToIntegerConvertor extends AbstractTypeConvert<Integer> {
 
-	private ToLongConvertor longConvertor = new ToLongConvertor();
+	private ToLongConvertor longConvertor;
 	
+	public ToIntegerConvertor(Integer defValue) {
+		super(defValue);
+		this.longConvertor = new ToLongConvertor(defValue==null?null:defValue.longValue());
+	}
+
+
+
 	@Override
-	public Integer convert(Object value, Class<?> componentType) {
+	public Integer doConvert(Object value, Class<?> componentType) {
 		return longConvertor.convert(value, componentType).intValue();
 	}
 
