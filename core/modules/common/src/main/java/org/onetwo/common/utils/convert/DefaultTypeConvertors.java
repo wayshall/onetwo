@@ -65,9 +65,11 @@ public class DefaultTypeConvertors implements Convertor {
 	 */
 	@Override
 	public <T> T convert(Object value, Class<T> targetClass){
-		T val = null;
 		if(targetClass==null)
 			throw new BaseException("targetClass can not be null, value: " + value);
+		if(targetClass.isInstance(value))
+			return (T) value;
+		T val = null;
 		if(targetClass.isEnum()){
 			val = (T)getTypeConvertor(targetClass.getSuperclass()).convert(value, targetClass);
 		}else{
