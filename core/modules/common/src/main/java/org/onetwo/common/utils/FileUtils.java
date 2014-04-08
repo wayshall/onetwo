@@ -158,7 +158,7 @@ public class FileUtils {
 			if(path==null)
 				return fileName;*/
 			realPath = cld.getResource("").getPath()+fileName;
-			logger.info("Default ClassLoader path2: "+ path);
+			logger.info("Default ClassLoader path2: "+ realPath);
 			if(StringUtils.isBlank(realPath)){
 				logger.info("FileUtils ClassLoader path3: "+ path);
 				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
@@ -167,9 +167,9 @@ public class FileUtils {
 			}
 		}else{
 			realPath = path.getPath();
-			if(realPath.indexOf("\\")!=-1)
-				realPath = realPath.replace("\\", "/");
 		}
+		if(realPath.indexOf("\\")!=-1)
+			realPath = realPath.replace("\\", "/");
 //		if(realPath.startsWith("/"))
 //			realPath = realPath.substring(1);
 		return realPath;
