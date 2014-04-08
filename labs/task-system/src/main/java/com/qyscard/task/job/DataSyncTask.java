@@ -10,8 +10,6 @@ import org.onetwo.common.utils.list.NoIndexIt;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.qyscard.task.test.MyEmailInfo;
-
 @Component
 public class DataSyncTask implements JobTask {
 	private final Logger logger = MyLoggerFactory.getLogger(DataSyncTask.class);
