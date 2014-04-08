@@ -877,6 +877,7 @@ public class FileUtils {
 		File mergedFile = new File(config.getMergedFileName());
 		createOrDelete(mergedFile);
 		Writer writer = writer(mergedFile, config.getCharset());
+		MergeFileContext context = new MergeFileContext(writer);
 		try {
 			MergeFileListener listener = config.getListener();
 			int fileIndex = 0;
@@ -889,21 +890,33 @@ public class FileUtils {
 				}
 				
 			});
+			
+			int totalLineIndex = 0;
+			if(listener!=null)
+				listener.onStart(context);
+			
 			for(File file : fileList){
+				context.setFile(file);
+				context.setFileIndex(fileIndex);
+				
 				if(listener!=null)
-					listener.onStart(writer, file, fileIndex);
+					listener.onFileStart(context);
 				List<String> lines = readAsList(file, config.getCharset());
 				int lineIndex = 0;
 				for(String line : lines){
+					context.setTotalLineIndex(totalLineIndex);
 					if(listener!=null)
-						listener.writeLine(writer, file, fileIndex, line, lineIndex);
+						listener.writeLine(context, line, lineIndex);
 					else
 						writer.write(line+NEW_LINE);
+					totalLineIndex++;
 				}
 				if(listener!=null)
-					listener.onEnd(writer, file, fileIndex);
+					listener.onFileEnd(context);
 				fileIndex++;
 			}
+			if(listener!=null)
+				listener.onEnd(context);
 		} catch (Exception e) {
 			throw new BaseException("merge file error", e);
 		} finally{
