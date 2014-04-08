@@ -6,6 +6,14 @@ public interface TaskListener<T extends TaskData> {
 	
 	Object onExecute(T task);
 	
-	void afterExecute(T task, Object result);
+	/****
+	 * 发生异常时回调
+	 * 如果再抛出异常，则不再处理
+	 * @param task
+	 * @param e
+	 */
+	void onException(T task, Exception e);
+	
+//	void afterExecute(T task, Object result);
 
 }
