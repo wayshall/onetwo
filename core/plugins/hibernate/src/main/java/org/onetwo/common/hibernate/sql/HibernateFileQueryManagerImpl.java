@@ -8,6 +8,7 @@ import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.Assert;
@@ -15,16 +16,20 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
-
+/****
+ * 文件的命名查询管理
+ * @author wayshall
+ *
+ */
 public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory<HibernateNamedInfo> {
 	
 	private JFishNamedSqlFileManager<HibernateNamedInfo> sqlFileManager;
 	private FileSqlParser<HibernateNamedInfo> parser;
 	
-	public HibernateFileQueryManagerImpl(String dbname, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
-		sqlFileManager = new JFishNamedSqlFileManager<HibernateNamedInfo> (dbname, watchSqlFile, HibernateNamedInfo.class);
+		sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, HibernateNamedInfo.class);
 //		this.baseEntityManager = baseEntityManager;
 		FileSqlParser<HibernateNamedInfo> p = new FileSqlParser<HibernateNamedInfo>(sqlFileManager);
 		p.initialize();

@@ -244,6 +244,9 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		return jp;
 	}
 	
+	protected void extBuildNamedInfoBean(T propBean){
+	}
+	
 	/***********
 	 * build a map: 
 	 * key is name of beanClassOfProperty
@@ -266,17 +269,18 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		T propBean = null;
 		boolean newBean = true;
 		String preKey = null;
-		String val = "";
+//		String val = "";
 		Map<String, T> namedProperties = LangUtils.newHashMap();
 		for(String key : keyNames){
 			if(preKey!=null)
 				newBean = !key.startsWith(preKey);
 			if(newBean){
 				if(propBean!=null){
+					extBuildNamedInfoBean(propBean);
 					namedProperties.put(propBean.getName(), propBean);
 				}
 				propBean = ReflectUtils.newInstance(beanClassOfProperty);
-				val = wrapper.getAndThrowIfEmpty(key);
+				String val = wrapper.getAndThrowIfEmpty(key);
 				/*if(key.endsWith(IGNORE_NULL_KEY)){
 					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
 				}*/
@@ -288,7 +292,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				propBean.setSrcfile(f);
 				propBean.setConfig(jp.getConfig());
 			}else{
-				val = wrapper.getProperty(key, "");
+				String val = wrapper.getProperty(key, "");
 				String prop = key.substring(preKey.length());
 				if(prop.indexOf('.')!=-1){
 					prop = StringUtils.toJavaName(prop, '.', false);

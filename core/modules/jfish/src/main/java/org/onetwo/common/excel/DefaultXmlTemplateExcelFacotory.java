@@ -82,8 +82,6 @@ public class DefaultXmlTemplateExcelFacotory extends AbstractWorkbookTemplateFac
 	public Resource getResource(String template) {
 		String path = getFullTemplatePath(template);
 		Resource resource = springApplication.getAppContext().getResource(path);
-		if(resource==null)
-			return null;
 		return resource;
 	}
 

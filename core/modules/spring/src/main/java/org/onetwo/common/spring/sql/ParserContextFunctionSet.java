@@ -3,7 +3,7 @@ package org.onetwo.common.spring.sql;
 import org.onetwo.common.utils.StringUtils;
 
 public class ParserContextFunctionSet {
-	public static final String CONTEXT_KEY = "helper";
+	public static final String CONTEXT_KEY = "_helper";//helper
 	private static final ParserContextFunctionSet instance = new ParserContextFunctionSet();
 	
 	public static ParserContextFunctionSet getInstance() {

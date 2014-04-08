@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,11 +66,13 @@ public class TaskQueueEntity implements Serializable, TaskData {
 		this.name = name;
 	}
 
-	public String getBizType() {
+	
+	@Enumerated(EnumType.STRING)
+	public BizType getBizType() {
 		return bizType;
 	}
 
-	public void setBizType(String bizType) {
+	public void setBizType(BizType bizType) {
 		this.bizType = bizType;
 	}
 
