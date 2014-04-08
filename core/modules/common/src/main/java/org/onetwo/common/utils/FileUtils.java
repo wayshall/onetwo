@@ -160,7 +160,7 @@ public class FileUtils {
 			realPath = cld.getResource("").getPath()+fileName;
 			logger.info("Default ClassLoader path2: "+ realPath);
 			if(StringUtils.isBlank(realPath)){
-				logger.info("FileUtils ClassLoader path3: "+ path);
+				logger.info("FileUtils ClassLoader path3: "+ realPath);
 				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
 				if(StringUtils.isBlank(realPath))
 					throw new BaseException("get resource path error: " + fileName);
