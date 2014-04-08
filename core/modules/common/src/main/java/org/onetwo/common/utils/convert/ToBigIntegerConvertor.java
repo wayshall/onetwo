@@ -3,12 +3,12 @@ package org.onetwo.common.utils.convert;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class ToBigIntegerConvertor implements TypeConvert<BigInteger> {
+public class ToBigIntegerConvertor extends AbstractTypeConvert<BigInteger> {
 
 	@Override
-	public BigInteger convert(Object value, Class<?> componentType) {
-		if (value == null)
-            return BigInteger.valueOf(0L);
+	public BigInteger doConvert(Object value, Class<?> componentType) {
+//		if (value == null)
+//            return BigInteger.valueOf(0L);
         Class<?> c = value.getClass();
         if(c==BigInteger.class)
         	return (BigInteger)value;

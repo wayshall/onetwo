@@ -2,13 +2,11 @@ package org.onetwo.common.utils.convert;
 
 
 @SuppressWarnings("rawtypes")
-public class ToEnumConvertor implements TypeConvert<Enum<?>> {
+public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Enum<?> convert(Object value, Class<?> componentType) {
-		if (value == null)
-            return null;
+	public Enum<?> doConvert(Object value, Class<?> componentType) {
 		if(Integer.class.isInstance(value)){
 			Enum<?>[] values = (Enum<?>[]) componentType.getEnumConstants();
 			int ordinal = (Integer)value;
