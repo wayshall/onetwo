@@ -152,15 +152,24 @@ public class FileUtils {
 		URL path = null;
 		path = cld.getResource(fileName);
 		
-		logger.info("file path: "+ path);
+		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
-			path = FileUtils.class.getClassLoader().getResource(fileName);
+			/*path = FileUtils.class.getClassLoader().getResource(fileName);
 			if(path==null)
-				return fileName;
+				return fileName;*/
+			realPath = cld.getResource("").getPath()+fileName;
+			logger.info("Default ClassLoader path2: "+ path);
+			if(StringUtils.isBlank(realPath)){
+				logger.info("FileUtils ClassLoader path3: "+ path);
+				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
+				if(StringUtils.isBlank(realPath))
+					throw new BaseException("get resource path error: " + fileName);
+			}
+		}else{
+			realPath = path.getPath();
+			if(realPath.indexOf("\\")!=-1)
+				realPath = realPath.replace("\\", "/");
 		}
-		realPath = path.getPath();
-		if(realPath.indexOf("\\")!=-1)
-			realPath = realPath.replace("\\", "/");
 //		if(realPath.startsWith("/"))
 //			realPath = realPath.substring(1);
 		return realPath;
