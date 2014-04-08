@@ -22,7 +22,7 @@ public class TaskConsumer {
 		TaskData task = null;
 		for(;;){
 			task = taskQueue.take();
-			logger.info("task consumer thread[{}] take task: {}", Thread.currentThread().getId(), task.getName());
+			logger.info("consumer_thread[{}] take task: {}", Thread.currentThread().getId(), task.getName());
 			doProcess(task);
 		}
 	}
@@ -31,8 +31,18 @@ public class TaskConsumer {
 		List<TaskListener> listeners = this.taskListenerRegistry.getTaskListenerGroup(task.getType()).getListeners();
 		for(TaskListener taskListener : listeners){
 			logger.info("task consumer execute task listenr[{}] for task {}", taskListener.getClass(), task.getName());
-			Object result = taskListener.onExecute(task);
-			taskListener.afterExecute(task, result);
+			Object result = null;
+			try {
+				result = taskListener.onExecute(task);
+			} catch (Exception e) {
+				logger.error("consumer_thread[{"+Thread.currentThread().getId()+"}] TaskListener["+taskListener+"] of task["+task.getName()+"] execute error: " + e.getMessage());
+				try {
+					taskListener.onException(task, e);
+				} catch (Exception e2) {
+					logger.error("consumer_thread[{"+Thread.currentThread().getId()+"}] TaskListener["+taskListener+"] of task["+task.getName()+"] catchException  error: " + e2.getMessage());
+				}
+			}
+//			taskListener.afterExecute(task, result);
 		}
 	}
 

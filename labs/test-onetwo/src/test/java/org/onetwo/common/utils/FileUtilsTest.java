@@ -13,8 +13,16 @@ public class FileUtilsTest {
 	
 	@Test
 	public void testAnsi(){
-		String path = FileUtils.getResourcePath("")+"/ansi.txt";
+//		String path = FileUtils.getResourcePath("")+"/ansi.txt";
+		String path = "/ansi.txt";
 		List<String> datalist = FileUtils.readAsList(path, "gbk");
+		for(String data : datalist){
+//			System.out.println("data: " + data);
+			Assert.assertTrue(data.startsWith("非记名卡"));
+		}
+		
+		path = FileUtils.getResourcePath("")+"/ansi.txt";
+		datalist = FileUtils.readAsList(path, "gbk");
 		for(String data : datalist){
 //			System.out.println("data: " + data);
 			Assert.assertTrue(data.startsWith("非记名卡"));
