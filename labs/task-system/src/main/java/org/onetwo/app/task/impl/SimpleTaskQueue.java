@@ -18,7 +18,7 @@ public class SimpleTaskQueue implements TaskQueue {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(SimpleTaskQueue.class);
 	
-	private BlockingQueue<TaskData> taskQueue = Queues.newArrayBlockingQueue(10);
+	private BlockingQueue<TaskData> taskQueue = Queues.newArrayBlockingQueue(1000);
 //	private final SimpleTaskListenerRegistry taskListenerRegistry;
 	
 	private TaskListenerRegistry taskListenerRegistry;
@@ -33,10 +33,7 @@ public class SimpleTaskQueue implements TaskQueue {
 			return false;
 		if(this.taskQueue.offer(taskData)){
 			logger.info(">>> thread[{}] offer task[{}] to queue .", Thread.currentThread().getId(), taskData.getName());
-			List<TaskListener> listeners = taskListenerRegistry.getTaskListenerGroup(taskData.getType()).getListeners();
-			for(TaskListener taskListener : listeners){
-				taskListener.onQueued(taskData);
-			}
+			this.executeOnQueued(taskData);
 			return true;
 		}
 		return false;
@@ -45,17 +42,27 @@ public class SimpleTaskQueue implements TaskQueue {
 	public void putTask(TaskData taskData){
 		try {
 			String ts1 = DateUtil.formatDateTimeMillis(new Date());
+			
 			this.taskQueue.put(taskData);
+			
 			String ts2 = DateUtil.formatDateTimeMillis(new Date());
 			logger.info(">>> thread[{}] prepare to put task[{}] to queue at "+ts1+", and has putted to queue "+ts2+" .", Thread.currentThread().getId(), taskData.getName());
 		} catch (InterruptedException e) {
-			logger.error(">>> thread is interrupted: " + taskData.getName(), e);
+			logger.error(">>> thread[{"+Thread.currentThread().getId()+"}] is interrupted: " + taskData.getName(), e);
 			Thread.currentThread().interrupt();
 			return ;
 		}
+		this.executeOnQueued(taskData);
+	}
+	
+	private void executeOnQueued(TaskData taskData){
 		List<TaskListener> listeners = taskListenerRegistry.getTaskListenerGroup(taskData.getType()).getListeners();
 		for(TaskListener taskListener : listeners){
-			taskListener.onQueued(taskData);
+			try {
+				taskListener.onQueued(taskData);
+			} catch (Exception e) {
+				logger.error(">>> thread[{"+Thread.currentThread().getId()+"}] TaskListener["+taskListener+"] of task["+taskData.getName()+"] onQueued error: " + e.getMessage(), e);
+			}
 		}
 	}
 	

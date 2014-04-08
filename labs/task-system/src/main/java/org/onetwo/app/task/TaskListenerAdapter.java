@@ -14,10 +14,10 @@ public class TaskListenerAdapter<T extends TaskData> implements TaskListener<T> 
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public void afterExecute(T task, Object result) {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 }
