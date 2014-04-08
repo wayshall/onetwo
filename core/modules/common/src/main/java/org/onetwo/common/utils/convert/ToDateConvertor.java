@@ -4,12 +4,12 @@ import java.util.Date;
 
 import org.onetwo.common.utils.DateUtil;
 
-public class ToDateConvertor implements TypeConvert<Date> {
+public class ToDateConvertor extends AbstractTypeConvert<Date> {
 	
 	@Override
-	public Date convert(Object value, Class<?> componentType) {
-		if(value==null)
-			return null;
+	public Date doConvert(Object value, Class<?> componentType) {
+//		if(value==null)
+//			return null;
 		Class<?> vtype = value.getClass();
 		Date date = null;
 		if(Date.class.isAssignableFrom(vtype)){
