@@ -1,11 +1,13 @@
 package org.onetwo.common.utils.convert;
 
-public class ToLongConvertor implements TypeConvert <Long> {
+public class ToLongConvertor extends AbstractTypeConvert<Long> {
+	
+	public ToLongConvertor(Long defValue) {
+		super(defValue);
+	}
 
 	@Override
-	public Long convert(Object value, Class<?> componentType) {
-		if (value == null)
-            return 0L;
+	public Long doConvert(Object value, Class<?> componentType) {
         Class<?> c = value.getClass();
         if (c.getSuperclass() == Number.class)
             return ((Number) value).longValue();

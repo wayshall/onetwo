@@ -63,7 +63,12 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 			for ( int i = 0; i < aliases.length; i++ ) {
 				if(propNames[i]==null)
 					continue;
-				val = Types.convertValue(tuple[i], bw.getPropertyType(propNames[i]));
+				val = tuple[i];
+				if(val!=null){
+					Class<?> propertyType = bw.getPropertyType(propNames[i]);
+					if(propertyType!=null && !propertyType.isInstance(val))
+						val = Types.convertValue(val, propertyType);
+				}
 				bw.setPropertyValue(propNames[i], val);
 			}
 		}

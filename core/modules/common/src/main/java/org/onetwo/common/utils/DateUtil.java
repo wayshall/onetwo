@@ -47,6 +47,7 @@ abstract public class DateUtil {
     public static final Pattern PATTERN_YYYY_MM = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9]$");
     public static final Pattern PATTERN_YYYY = Pattern.compile("^\\d{4}$");
     public static final Pattern PATTERN_HH_MM = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
+    public static final Pattern PATTERN_HH_MM_SS = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
 
     public static final int MILLIS_PER_SECOND = 1000;
 	public static final int SECONDS_PER_MINUTE = 60;
@@ -735,6 +736,10 @@ abstract public class DateUtil {
 		return PATTERN_HH_MM.matcher(dateStr).matches();
 	}
 	
+	public static boolean isHH_mm_ss(String dateStr){
+		return PATTERN_HH_MM_SS.matcher(dateStr).matches();
+	}
+	
 	public static String matchPattern(String dateStr){
 		if(isYyyy(dateStr)){
 			return Year_Only;
@@ -750,6 +755,8 @@ abstract public class DateUtil {
 			return Date_Time;
 		}else if(isHH_mm(dateStr)){
 			return "HH:mm";
+		}else if(isHH_mm_ss(dateStr)){
+			return "HH:mm:ss";
 		}else{
 			return null;
 		}
