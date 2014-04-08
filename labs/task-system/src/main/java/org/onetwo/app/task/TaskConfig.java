@@ -18,6 +18,10 @@ public class TaskConfig extends AppConfig {
 		super("siteConfig.properties");
 	}
 	
+	public int getQueueCapacity(){
+		return getInt("queue.capacity", 1000);
+	}
+	
 	public int getTaskConsumerCount(){
 		return getInt("consumer.count", 1);
 	}

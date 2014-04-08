@@ -99,6 +99,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
 			if(this.parserContext==null)
 				this.parserContext = ParserContext.create();
+			this.parserContext.put(SqlFunctionHelper.CONTEXT_KEY, SqlFunctionHelper.getSqlFunctionDialet(info.getDataBaseType()));
 			this.parserContext.putAll(params);
 			String parsedSql = this.parser.parse(countQuery?info.getCountName():info.getFullName(), parserContext);
 			dataQuery = createDataQuery(parsedSql, resultClass);
