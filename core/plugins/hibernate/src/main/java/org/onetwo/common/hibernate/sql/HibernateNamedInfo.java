@@ -4,6 +4,7 @@ import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 
 public class HibernateNamedInfo extends JFishNamedFileQueryInfo {
 
+//	private DataBase dataBaseType;
 	private boolean hql;
 
 	public boolean isHql() {
@@ -33,5 +34,4 @@ public class HibernateNamedInfo extends JFishNamedFileQueryInfo {
 		sql = sql.replace("IN_TRANSACTION_${date}", "in_transaction");*/
 		return sql;
 	}
-	
 }

@@ -32,7 +32,7 @@ public class TaskContextConfig {
 	
 	@Bean
 	public TaskQueue taskQueue(){
-		TaskQueue taskQueue = new SimpleTaskQueue(taskListenerRegistry());
+		TaskQueue taskQueue = new SimpleTaskQueue(taskConfig().getQueueCapacity());
 		return taskQueue;
 	}
 	

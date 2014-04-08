@@ -8,6 +8,7 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -35,7 +36,7 @@ public class HibernateFileQueryManagerFactoryBean implements FactoryBean<FileNam
 	public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(appConfig, "appConfig can not be null.");
 		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
-		String db = JdbcUtils.getDataBase(dataSource).toString();
+		DataBase db = JdbcUtils.getDataBase(dataSource);
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, baseEntityManager, listener);
 		fq.initQeuryFactory(baseEntityManager);
