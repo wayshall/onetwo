@@ -1,9 +1,7 @@
 package org.onetwo.common.utils;
 
-import java.io.File;
-import java.io.Writer;
 
-public class MergeFile {
+public class CompileDbprocMergeFile {
 	
 	public static void main(String[] args){
 		String mergeDir = "D:/mydev/workspace/dbproc/";
@@ -13,27 +11,27 @@ public class MergeFile {
 				mergeDir+"proc", ".sql", new DefaultMergeListener(){
 
 					@Override
-					public void onStart(Writer writer, File file, int fileIndex) throws Exception {
-						String fileName = FileUtils.getFileName(file.getPath());
-						System.out.println("merege file["+fileIndex+"] : " + fileName);
-						writer.write("\n");
+					public void onFileStart(MergeFileContext context) throws Exception {
+						String fileName = FileUtils.getFileName(context.getFile().getPath());
+						System.out.println("merege file["+context.getFileIndex()+"] : " + fileName);
+						context.getWriter().write("\n");
 					}
 
 					@Override
-					public void writeLine(Writer writer, File file, int fileIndex, String line, int lineIndex) throws Exception {
+					public void writeLine(MergeFileContext context, String line, int lineIndex) throws Exception {
 						String lineUpper = line.trim().toUpperCase();
 						if(lineUpper.startsWith("ALTER") || lineUpper.startsWith("CREATE")){
 							String[] lineUppers = StringUtils.split(lineUpper, " ");
 							if(lineUppers[1].equals("PROCEDURE") || lineUppers[1].equals("FUNCTION")){
-								String fileName = FileUtils.getFileName(file.getPath());
+								String fileName = FileUtils.getFileName(context.getFile().getPath());
 								System.out.println("add comment before line: "+line+"");
-								writer.write("----------------"+fileName+"----------------\n");
+								context.getWriter().write("----------------"+fileName+"----------------\n");
 							}
 						}
-						if(fileIndex!=0 && lineUpper.contains("USE [ICCARD]")){
+						if(context.getFileIndex()!=0 && lineUpper.contains("USE [ICCARD]")){
 							System.out.println("ignore line["+lineIndex+"]: " + line);
 						}else{
-							super.writeLine(writer, file, fileIndex, line, lineIndex);
+							super.writeLine(context, line, lineIndex);
 						}
 					}
 			
