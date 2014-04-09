@@ -99,7 +99,7 @@ public class FreemarkerStringTemplateLoaderTest {
 	public void testComsterModel() throws Exception{
 		StringTemplateLoader st = new StringTemplateLoader();
 		String tname = "hello";
-		st.putTemplate(tname, "hello：${_func.to_date('2014-01-19', 'yyyy-MM-dd')}");
+		st.putTemplate(tname, "hello：${_func.to_date(startDate, 'yyyy-MM-dd')}");
 		cfg.setTemplateLoader(st); 
 		cfg.setDefaultEncoding("UTF-8"); 
 
@@ -107,6 +107,7 @@ public class FreemarkerStringTemplateLoaderTest {
 
 		ParserContext root = ParserContext.create();
 		root.put(SqlFunctionHelper.CONTEXT_KEY, SqlFunctionHelper.getSqlFunctionDialet(DataBase.Oracle));
+		root.put("startDate", "2014-01-19");
 //		BeanModel m = new BeanModel(new OracleSqlFunctionDialet(), FtlUtils.BEAN_WRAPPER);
 //		root.put("_func", new OracleSqlFunctionDialet()); 
 		StringWriter writer = new StringWriter(); 

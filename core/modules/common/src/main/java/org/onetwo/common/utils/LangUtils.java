@@ -50,7 +50,7 @@ public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
-	public static final Pattern DIGIT = Pattern.compile("[0-9]+");
+	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
@@ -1227,7 +1227,13 @@ public class LangUtils {
 	}
 	
 	public static <T> T strCastTo(String str, Class<T> toType){
-		return Types.convertValue(str, toType);
+		if(List.class.isAssignableFrom(toType)){
+			return (T)Types.asList(str, String.class);
+		}else if(toType.isArray()){
+			return (T)Types.asArray(str, String.class);
+		}else{
+			return Types.convertValue(str, toType);
+		}
 	}
 	
 	public static <T> T tryCastTo(Object val, Class<T> toType){

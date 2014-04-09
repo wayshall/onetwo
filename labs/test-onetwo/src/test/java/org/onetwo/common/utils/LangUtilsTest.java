@@ -271,4 +271,25 @@ public class LangUtilsTest {
 		String encodeUrl = LangUtils.encodeUrl(url);
 		Assert.assertEquals("aa%3D%23user", encodeUrl);
 	}
+	
+
+	
+	@Test
+	public void testDigit(){
+		String str = "123";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "0";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "3";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "003";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "a3";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+		str = "3ssd";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+		str = "34 33";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+	}
 }
+
