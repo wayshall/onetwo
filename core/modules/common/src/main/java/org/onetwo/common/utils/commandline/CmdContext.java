@@ -1,6 +1,7 @@
 package org.onetwo.common.utils.commandline;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 public interface CmdContext {
 	
@@ -11,6 +12,7 @@ public interface CmdContext {
 	public void setVar(Object key, Object value);
 	
 	public BufferedReader getCmdInput();
+	public String nextInput(String tips, String def, InputValidator...validators) throws IOException;
 	
 	public void setCmdInput(BufferedReader input);
 

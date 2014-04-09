@@ -6,11 +6,11 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
-import org.springframework.beans.BeanWrapper;
 
 public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	/**
@@ -57,7 +57,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 			}
 			
 			result = resultClass.newInstance();
-			BeanWrapper bw = SpringUtils.newBeanWrapper(result);
+			BeanMapWrapper bw = SpringUtils.newBeanMapWrapper(result);
 
 			Object val;
 			for ( int i = 0; i < aliases.length; i++ ) {

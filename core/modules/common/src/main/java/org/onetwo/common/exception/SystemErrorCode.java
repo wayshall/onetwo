@@ -44,6 +44,7 @@ public interface SystemErrorCode {
 	public static class CommandLineErrorCode {
 		public static final String BASE_CODE = "[COMMAND ERROR]";//前缀
 		public static final String COMMAND_NOT_FOUND = BASE_CODE+"COMMAND NOT FOUND";//错误的指令
+		public static final String COMMAND_STOP = BASE_CODE+"COMMAND STOP";//错误的指令
 	}
 	
 	public static class OtherErrorCode {

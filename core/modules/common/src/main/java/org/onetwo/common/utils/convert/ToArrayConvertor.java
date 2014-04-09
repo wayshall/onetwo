@@ -29,6 +29,8 @@ public class ToArrayConvertor extends AbstractWithConvertorTypeConvert<Object>{
 		}else if(Number.class.isAssignableFrom(componentType)){
 			result = asArray(source, componentType);
 		}else {
+			//otherwise process as string
+			result = asStringArray(source);
 		}
 		return result;
 	}
