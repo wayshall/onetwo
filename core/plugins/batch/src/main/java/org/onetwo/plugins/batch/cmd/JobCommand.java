@@ -24,14 +24,10 @@ public class JobCommand extends AbstractCommand {
 	}
 	
 	@Override
-	public void doExecute(CmdContext context) {
+	public void doExecute(CmdContext context) throws Exception {
 		JobLauncher jobLauncher = SpringApplication.getInstance().getBean(JobLauncher.class);
-		try {
-			Job job = SpringApplication.getInstance().getBean(Job.class, getKey());
-			jobLauncher.run(job, buildJobParameter(context));
-		} catch (Exception e) {
-			handleException(e);
-		}
+		Job job = SpringApplication.getInstance().getBean(Job.class, getKey());
+		jobLauncher.run(job, buildJobParameter(context));
 		
 	}
 	
