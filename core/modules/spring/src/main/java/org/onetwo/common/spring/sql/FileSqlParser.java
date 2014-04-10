@@ -12,9 +12,14 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends DynamicFreemarkerTemplateConfigurer {
+	public static final String FTL_PREFIX = "[ftl]";//for ftl
 	public static final String QUERY_POSTFIX = ".query";//for ftl
 	
 	private JFishNamedSqlFileManager<T> sqlManager;
+	
+	public String asFtlContent(String content){
+		return FTL_PREFIX + content;
+	}
 	
 	public FileSqlParser(final JFishNamedSqlFileManager<T> sqlm) {
 		super();
@@ -30,7 +35,10 @@ public class FileSqlParser<T extends JFishNamedFileQueryInfo> extends DynamicFre
 				if(name.endsWith(Locale.CHINA.toString()) || name.endsWith(Locale.CHINESE.toString())){
 					return null;
 				}
-				
+
+				if(name.startsWith(FTL_PREFIX)){
+					return name.substring(FTL_PREFIX.length());
+				}
 				boolean count = JFishNamedFileQueryInfo.isCountName(name);
 				String realName = JFishNamedFileQueryInfo.trimCountPostfix(name);
 				JFishNamedFileQueryInfo info = sqlManager.getNamedQueryInfo(realName);
