@@ -1,5 +1,7 @@
 package org.onetwo.common.spring.sql;
 
+import java.util.Map;
+
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.utils.LangUtils;
@@ -8,6 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 public class JFishNamedFileQueryInfo extends NamespaceProperty {
+	public static final String ATTRS_KEY = "attrs";
 	public static final String COUNT_POSTFIX = "-count";
 
 	public static boolean isCountName(String name){
@@ -26,6 +29,8 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	
 	
 	private Class<?> mappedEntityClass;
+	
+	final private Map<String, String> attrs = LangUtils.newHashMap();
 
 
 	public String getSql() {
@@ -85,6 +90,9 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 		return isIgnoreNull();
 	}*/
 
+	public Map<String, String> getAttrs() {
+		return attrs;
+	}
 	public DataBase getDataBaseType() {
 		return dataBaseType;
 	}

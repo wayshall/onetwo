@@ -8,10 +8,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.BeanWrapper;
 
 import com.google.common.collect.Maps;
 
@@ -121,38 +121,38 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		int cellCount = row.getPhysicalNumberOfCells();
 		
 		T bean = newBean();
-		BeanMapWrapper bw = SpringUtils.newBeanMapWrapper(bean);
+		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
 		
-		String name = null;
+		String titleLable = null;
 		String propertyName;
 		Object cellValue;
 		for(int cellIndex=0; cellIndex<cellCount; cellIndex++){
 			Cell cell = null;
 			switch (mapperType) {
-				case NAME:
+				case NAME://列名映射到对象属性
 					if(LangUtils.isNotEmpty(names) && cellIndex<names.size())
-						name = names.get(cellIndex);
+						titleLable = names.get(cellIndex);
 					
 					if(cellIndex<=cellCount){
 						cell = row.getCell(cellIndex);
 					}
 					if(cell==null)
 						continue;
-					cellValue = getCellValue(cell, name, cellIndex);
-					if(!this.propertyMapper.containsKey(name))
+					cellValue = getCellValue(cell, titleLable, cellIndex);
+					if(!this.propertyMapper.containsKey(titleLable))
 						continue;
-					propertyName = this.propertyMapper.get(name);
+					propertyName = this.propertyMapper.get(titleLable);
 					this.setBeanProperty(bw, propertyName, cell, cellValue);
 					break;
 	
-				case CELL_INDEX:
+				case CELL_INDEX://列数映射到对象属性
 					if(!this.propertyMapper.containsKey(cellIndex))
 						continue;
 
 					if(cellIndex<=cellCount){
 						cell = row.getCell(cellIndex);
 					}
-					cellValue = getCellValue(cell, name, cellIndex);
+					cellValue = getCellValue(cell, titleLable, cellIndex);
 					propertyName = this.propertyMapper.get(cellIndex);
 					this.setBeanProperty(bw, propertyName, cell, cellValue);
 					break;
@@ -204,7 +204,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	 * @param cell
 	 * @param cellValue
 	 */
-	protected void setBeanProperty(BeanMapWrapper bw, String name, Cell cell, Object cellValue){
+	protected void setBeanProperty(BeanWrapper bw, String name, Cell cell, Object cellValue){
 		if(StringUtils.isBlank(name))
 			return ;
 		Object value = null;

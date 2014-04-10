@@ -270,7 +270,12 @@ final public class SpringUtils {
 	}
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
-		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		BeanWrapper bw = null;
+		if(Map.class.isInstance(obj)){
+			bw = new BeanMapWrapper(obj);
+		}else{
+			bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		}
 		bw.setAutoGrowNestedPaths(true);
 		return bw;
 	}
