@@ -122,13 +122,13 @@ public abstract class ExtQueryUtils {
 		
 		int groupIndex = ArrayUtils.indexOf(tokens, "group");
 		if(groupIndex!=-1 && tokens.length>(groupIndex+1) && "by".equals(tokens[groupIndex+1])){
-			sql = "select count(*) from ( " + sql + " )";
+			sql = "select count(*) from ( " + sql + " ) count_view";
 			return sql;
 		}
 		
 		int unionIndex = ArrayUtils.indexOf(tokens, "union");
 		if(unionIndex!=-1){
-			sql = "select count(*) from ( " + sql + " )";
+			sql = "select count(*) from ( " + sql + " ) count_view";
 			return sql;
 		}
 		

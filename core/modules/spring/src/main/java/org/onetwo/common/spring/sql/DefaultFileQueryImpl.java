@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.sql;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,8 +100,18 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
 			if(this.parserContext==null)
 				this.parserContext = ParserContext.create();
+			
 			this.parserContext.put(SqlFunctionHelper.CONTEXT_KEY, SqlFunctionHelper.getSqlFunctionDialet(info.getDataBaseType()));
 			this.parserContext.putAll(params);
+			if(LangUtils.isNotEmpty(info.getAttrs())){
+				//parse attrs value by ftl
+				Map<String, String> attrs = LangUtils.newHashMap(info.getAttrs().size());
+				for(Entry<String, String> entry : info.getAttrs().entrySet()){
+					String value = this.parser.parse(parser.asFtlContent(entry.getValue()), parserContext);
+					attrs.put(entry.getKey(), value);
+				}
+				this.parserContext.put(JFishNamedFileQueryInfo.ATTRS_KEY, Collections.unmodifiableMap(attrs));
+			}
 			String parsedSql = this.parser.parse(countQuery?info.getCountName():info.getFullName(), parserContext);
 			dataQuery = createDataQuery(parsedSql, resultClass);
 			

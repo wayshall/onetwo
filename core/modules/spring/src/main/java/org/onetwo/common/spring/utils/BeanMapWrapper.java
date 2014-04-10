@@ -2,27 +2,28 @@ package org.onetwo.common.spring.utils;
 
 import java.util.Map;
 
-import org.onetwo.common.spring.SpringUtils;
-import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.core.convert.TypeDescriptor;
 
-public class BeanMapWrapper implements PropertyAccessor {
+public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor {
 
-	private BeanWrapper beanWrapper;
+//	private BeanWrapper beanWrapper;
 	private Map<Object, Object> data;
 	private boolean mapData;
 	
 	public BeanMapWrapper(Object obj){
+		super(obj);
 		if(Map.class.isInstance(obj)){
 			data = (Map<Object, Object>) obj;
 			this.mapData = true;
 		}else{
-			beanWrapper = SpringUtils.newBeanWrapper(obj);
+//			beanWrapper = SpringUtils.newBeanWrapper(obj);
 		}
+		setAutoGrowNestedPaths(true);
 	}
 	
 
@@ -30,7 +31,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			data.put(propertyName, value);
 		}else{
-			beanWrapper.setPropertyValue(propertyName, value);
+			super.setPropertyValue(propertyName, value);
 		}
 	}
 	
@@ -38,7 +39,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			return data.get(propertyName);
 		}else{
-			return beanWrapper.getPropertyValue(propertyName);
+			return super.getPropertyValue(propertyName);
 		}
 	}
 
@@ -48,7 +49,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			return true;
 		}else{
-			return beanWrapper.isReadableProperty(propertyName);
+			return super.isReadableProperty(propertyName);
 		}
 	}
 
@@ -58,7 +59,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			return true;
 		}else{
-			return beanWrapper.isWritableProperty(propertyName);
+			return super.isWritableProperty(propertyName);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			return null;
 		}else{
-			return beanWrapper.getPropertyType(propertyName);
+			return super.getPropertyType(propertyName);
 		}
 	}
 
@@ -79,7 +80,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			return null;
 		}else{
-			return beanWrapper.getPropertyTypeDescriptor(propertyName);
+			return super.getPropertyTypeDescriptor(propertyName);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			data.putAll(map);
 		}else{
-			beanWrapper.setPropertyValues(map);
+			super.setPropertyValues(map);
 		}
 		
 	}
@@ -100,7 +101,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			throw new UnsupportedOperationException();
 		}else{
-			beanWrapper.setPropertyValues(pvs);
+			super.setPropertyValues(pvs);
 		}
 		
 	}
@@ -109,7 +110,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			throw new UnsupportedOperationException();
 		}else{
-			beanWrapper.setPropertyValue(pv);
+			super.setPropertyValue(pv);
 		}
 	}
 
@@ -120,7 +121,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			throw new UnsupportedOperationException();
 		}else{
-			beanWrapper.setPropertyValues(pvs, ignoreUnknown);
+			super.setPropertyValues(pvs, ignoreUnknown);
 		}
 		
 	}
@@ -132,7 +133,7 @@ public class BeanMapWrapper implements PropertyAccessor {
 		if(mapData){
 			throw new UnsupportedOperationException();
 		}else{
-			beanWrapper.setPropertyValues(pvs, ignoreUnknown, ignoreInvalid);
+			super.setPropertyValues(pvs, ignoreUnknown, ignoreInvalid);
 		}
 		
 	}
