@@ -22,6 +22,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
+		private NamespaceProperties namespaceInfo;
 		private String namespace;
 		private PropertiesWraper config;
 		private ResourceAdapter srcfile;
@@ -58,6 +59,14 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 
 		public void setConfig(PropertiesWraper config) {
 			this.config = config;
+		}
+
+		public NamespaceProperties getNamespaceInfo() {
+			return namespaceInfo;
+		}
+
+		public void setNamespaceInfo(NamespaceProperties namespaceInfo) {
+			this.namespaceInfo = namespaceInfo;
 		}
 		
 		

@@ -12,7 +12,7 @@ import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.sql.ParserContext;
-import org.onetwo.common.spring.sql.SqlFunctionHelper;
+import org.onetwo.common.spring.sql.SqlFunctionFactory;
 import org.onetwo.common.utils.LangUtils;
 
 import test.entity.UserEntity;
@@ -106,7 +106,7 @@ public class FreemarkerStringTemplateLoaderTest {
 		Template template = cfg.getTemplate(tname); 
 
 		ParserContext root = ParserContext.create();
-		root.put(SqlFunctionHelper.CONTEXT_KEY, SqlFunctionHelper.getSqlFunctionDialet(DataBase.Oracle));
+		root.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(DataBase.Oracle));
 		root.put("startDate", "2014-01-19");
 //		BeanModel m = new BeanModel(new OracleSqlFunctionDialet(), FtlUtils.BEAN_WRAPPER);
 //		root.put("_func", new OracleSqlFunctionDialet()); 
@@ -116,7 +116,7 @@ public class FreemarkerStringTemplateLoaderTest {
 		Assert.assertEquals("hello：to_date('2014-01-19', 'yyyy-MM-dd')", writer.toString());
 		
 
-		root.put(SqlFunctionHelper.CONTEXT_KEY, SqlFunctionHelper.getSqlFunctionDialet(DataBase.Sqlserver));
+		root.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(DataBase.Sqlserver));
 		writer = new StringWriter(); 
 		template.process(root, writer); 
 		System.out.println(writer.toString()); 
