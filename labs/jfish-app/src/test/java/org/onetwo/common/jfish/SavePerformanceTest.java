@@ -100,8 +100,6 @@ public class SavePerformanceTest extends SpringTxJUnitTestCase {
 		for(int i=0; i<insertCount; i++){
 			UserEntity user = createUserEntity(i, "testJFishBatchSave");
 			list.add(user);
-//			System.out.println("id:"+user.getId());
-//			Assert.assertNotNull(user.getId());
 		}
 		int total = jdao.batchInsert(list);
 		UtilTimerStack.pop(name);
