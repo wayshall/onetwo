@@ -46,6 +46,13 @@ public class DefaultFileSqlParser<T extends JFishNamedFileQueryInfo> extends Dyn
 			}
 		});
 	}
+	
+	
+
+	@Override
+	public void initParser() {
+		this.initialize();
+	}
 
 	@Override
 	protected void buildConfigration(Configuration cfg) {

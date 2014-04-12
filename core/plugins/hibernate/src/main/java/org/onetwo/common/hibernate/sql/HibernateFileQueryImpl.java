@@ -1,8 +1,11 @@
 package org.onetwo.common.hibernate.sql;
 
+import org.hibernate.NonUniqueResultException;
+import org.hibernate.Query;
 import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.utils.Assert;
@@ -42,7 +45,14 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedI
 		}
 		return dataQuery;
 	}
-	
+
+	public <T> T getSingleResult() {
+		try {
+			return createDataQueryIfNecessarry().getSingleResult();
+		} catch (NonUniqueResultException e) {
+			throw new BaseException("sql: " + getRawQuery(DataQuery.class).getRawQuery(Query.class).getQueryString() , e);
+		}
+	}
 
 
 }
