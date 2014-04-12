@@ -10,8 +10,9 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 public class JFishNamedFileQueryInfo extends NamespaceProperty {
-	public static final String ATTRS_KEY = "attrs";
 	public static final String COUNT_POSTFIX = "-count";
+	public static final String TEMPLATE_KEY = "template";
+	public static final String TEMPLATE_DOT_KEY = TEMPLATE_KEY + DOT_KEY;
 
 	public static boolean isCountName(String name){
 		return name.endsWith(COUNT_POSTFIX);
@@ -92,6 +93,9 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 
 	public Map<String, String> getAttrs() {
 		return attrs;
+	}
+	public String getTemplateName(String attr){
+		return getFullName() + "."+TEMPLATE_DOT_KEY + attr;
 	}
 	public DataBase getDataBaseType() {
 		return dataBaseType;
