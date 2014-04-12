@@ -22,19 +22,16 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
-		private NamespaceProperties namespaceInfo;
+		public static final char DOT_KEY = '.';
+		private PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo;
 		private String namespace;
 		private PropertiesWraper config;
 		private ResourceAdapter srcfile;
-	
+		
 		public String getNamespace() {
 			return namespace;
 		}
 	
-		public void setNamespace(String namespace) {
-			this.namespace = namespace;
-		}
-		
 		public String getFullName(){
 			if(GLOBAL_NS_KEY.equals(namespace))
 				return getName();
@@ -61,12 +58,13 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			this.config = config;
 		}
 
-		public NamespaceProperties getNamespaceInfo() {
+		public PropertiesNamespaceInfo<? extends NamespaceProperty> getNamespaceInfo() {
 			return namespaceInfo;
 		}
 
-		public void setNamespaceInfo(NamespaceProperties namespaceInfo) {
+		void setNamespaceInfo(PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo) {
 			this.namespaceInfo = namespaceInfo;
+			this.namespace = namespaceInfo.getNamespace();
 		}
 		
 		
@@ -125,7 +123,9 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 	}
 
-	public static final String NOTE = "--";
+	public static final String COMMENT = "--";
+	public static final String MULTIP_COMMENT_START = "/*";
+	public static final String MULTIP_COMMENT_END = "*/";
 	public static final String CONFIG_PREFIX = "@@";
 	public static final String NAME_PREFIX = "@";
 	public static final String EQUALS_MARK = "=";
@@ -203,10 +203,23 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 
 			boolean matchConfig = false;
 			boolean matchName = false;
+			boolean multiCommentStart = false;
 			for(int i=0; i<fdatas.size(); i++){
 				line = fdatas.get(i).trim();
-				if(line.startsWith(NOTE))
+				if(line.startsWith(COMMENT)){
 					continue;
+				}
+				
+				if(line.startsWith(MULTIP_COMMENT_START)){
+					multiCommentStart = true;
+					continue;
+				}else if(line.endsWith(MULTIP_COMMENT_END)){
+					multiCommentStart = false;
+					continue;
+				}
+				if(multiCommentStart){
+					continue;
+				}
 				if(line.startsWith(NAME_PREFIX)){//@开始到=结束，作为key，其余部分作为value
 					if(value!=null){
 						if(matchConfig){
@@ -260,13 +273,13 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	 * build a map: 
 	 * key is name of beanClassOfProperty
 	 * value is instance of beanClassOfProperty
-	 * @param f
+	 * @param resource
 	 * @param namespace
 	 * @param wrapper
 	 * @param beanClassOfProperty
 	 * @return
 	 */
-	protected Map<String, T> buildPropertiesAsNamedInfos(ResourceAdapter f, final String namespace, JFishProperties jp, Class<T> beanClassOfProperty){
+	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter resource, JFishProperties jp, Class<T> beanClassOfProperty){
 		PropertiesWraper wrapper = jp.getProperties();
 		List<String> keyNames = wrapper.sortedKeys();
 		if(isDebug()){
@@ -279,14 +292,14 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		boolean newBean = true;
 		String preKey = null;
 //		String val = "";
-		Map<String, T> namedProperties = LangUtils.newHashMap();
+//		Map<String, T> namedProperties = LangUtils.newHashMap();
 		for(String key : keyNames){
 			if(preKey!=null)
 				newBean = !key.startsWith(preKey);
 			if(newBean){
 				if(propBean!=null){
 					extBuildNamedInfoBean(propBean);
-					namedProperties.put(propBean.getName(), propBean);
+					namespaceInfo.put(propBean.getName(), propBean, true);
 				}
 				propBean = ReflectUtils.newInstance(beanClassOfProperty);
 				String val = wrapper.getAndThrowIfEmpty(key);
@@ -295,35 +308,43 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				}*/
 				propBean.setName(key);
 				propBean.setValue(val);
-				propBean.setNamespace(namespace);
+//				propBean.setNamespace(namespace);
 				newBean = false;
-				preKey = key+".";
-				propBean.setSrcfile(f);
+				preKey = key+NamespaceProperty.DOT_KEY;
+				propBean.setSrcfile(resource);
 				propBean.setConfig(jp.getConfig());
+				propBean.setNamespaceInfo(namespaceInfo);
 			}else{
 				String val = wrapper.getProperty(key, "");
 				String prop = key.substring(preKey.length());
-				if(prop.indexOf('.')!=-1){
-					prop = StringUtils.toJavaName(prop, '.', false);
-				}
+				/*if(prop.startsWith(NamespaceProperty.ATTRS_DOT_KEY)){
+					//no convert to java property name
+				}else{
+					if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
+						prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+					}
+				}*/
 				setNamedInfoProperty(propBean, prop, val);
 			}
 		}
 		if(propBean!=null){
-			namedProperties.put(propBean.getName(), propBean);
+			namespaceInfo.put(propBean.getName(), propBean, true);
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("================ {} named query start ================", namespace);
-			for(JFishNameValuePair prop : namedProperties.values()){
+			logger.info("================ {} named query start ================", namespaceInfo.getNamespace());
+			for(JFishNameValuePair prop : namespaceInfo.getNamedProperties()){
 				logger.info(prop.getName()+": \t"+prop);
 			}
-			logger.info("================ {} named query end ================", namespace);
+			logger.info("================ {} named query end ================", namespaceInfo.getNamespace());
 		}
 		
-		return namedProperties;
+//		return namedProperties;
 	}
 	
-	protected void setNamedInfoProperty(Object bean, String prop, Object val){
+	protected void setNamedInfoProperty(T bean, String prop, Object val){
+		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
+			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+		}
 		try {
 			ReflectUtils.setExpr(bean, prop, val);
 		} catch (Exception e) {

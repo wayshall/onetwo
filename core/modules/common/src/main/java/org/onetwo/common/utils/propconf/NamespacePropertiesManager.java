@@ -6,7 +6,7 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 
 public interface NamespacePropertiesManager<T extends NamespaceProperty> extends JFishPropertiesManager<T>{
 
-	public NamespaceProperties<T> getNamespaceProperties(String namespace);
+	public PropertiesNamespaceInfo<T> getNamespaceProperties(String namespace);
 	public boolean containsNamespace(String namespace);
-	public Collection<NamespaceProperties<T>> getAllNamespaceProperties();
+	public Collection<PropertiesNamespaceInfo<T>> getAllNamespaceProperties();
 }
