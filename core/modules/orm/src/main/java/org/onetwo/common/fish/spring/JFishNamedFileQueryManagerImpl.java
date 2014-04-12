@@ -9,6 +9,8 @@ import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.fish.JFishDataQuery;
 import org.onetwo.common.fish.JFishEntityManager;
+import org.onetwo.common.jdbc.DataBase;
+import org.onetwo.common.spring.sql.DefaultFileSqlParser;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
@@ -25,12 +27,12 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
 	private FileSqlParser<JFishNamedFileQueryInfo> parser;
 	
-	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, String dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, DataBase dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class);
 //		this.baseEntityManager = jem;
 		
-		FileSqlParser<JFishNamedFileQueryInfo> p = new FileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
+		DefaultFileSqlParser<JFishNamedFileQueryInfo> p = new DefaultFileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
 		p.initialize();
 		this.parser = p;
 	}
