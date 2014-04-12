@@ -280,9 +280,9 @@ final public class SpringUtils {
 		return bw;
 	}
 	
-	public static BeanMapWrapper newBeanMapWrapper(Object obj){
+	/*public static BeanMapWrapper newBeanMapWrapper(Object obj){
 		BeanMapWrapper bw = new BeanMapWrapper(obj);
 		return bw;
-	}
+	}*/
 	
 }
