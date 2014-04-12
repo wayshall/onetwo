@@ -28,12 +28,14 @@ public class StringTemplateFileSqlParserTest {
 		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testParserQuery");
 		parserContext = ParserContext.create();
 		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
 		NamedInfoAttrsParser attrParser = new NamedInfoAttrsParser(parser, parserContext, info);
 		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
 		this.parserContext.put("userName", "way");
+		this.parserContext.put("datestr", "2014-04-19");
 		String sql = this.parser.parse(info.getFullName(), parserContext);
 		System.out.println("sql: " + sql);
-		Assert.assertEquals("select id from ( select id from tableName where userName like '%way' )", sql);
+		Assert.assertEquals("select id from ( select id from tableName where userName like '%way' ) where startDate >= convert(datetime, 201404)", sql);
 	}
 	
 	@Test
@@ -43,6 +45,7 @@ public class StringTemplateFileSqlParserTest {
 		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
 		NamedInfoAttrsParser attrParser = new NamedInfoAttrsParser(parser, parserContext, info);
 		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
 		this.parserContext.put("userName", "way");
 		String sql = this.parser.parse(info.getFullName(), parserContext);
 		System.out.println("sql: " + sql);

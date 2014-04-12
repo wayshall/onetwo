@@ -56,7 +56,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		try {
 			return this.doInvoke(proxy, method, args);
 		} catch (Throwable e) {
-			throw new BaseException("invoke query["+method.getName()+"] error : " + e.getMessage(), e);
+			throw new BaseException("invoke query["+method.getDeclaringClass().getSimpleName()+"."+method.getName()+"] error : " + e.getMessage(), e);
 		}
 		
 	}
