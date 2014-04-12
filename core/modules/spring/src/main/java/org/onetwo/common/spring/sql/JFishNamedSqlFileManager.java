@@ -11,13 +11,14 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManagerImpl;
+import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoManagerImpl;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends NamespacePropertiesManagerImpl<T> {
+public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends PropertiesNamespaceInfoManagerImpl<T> {
+	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY;
 	public static final String SQL_POSTFIX = ".sql";
 	
 	public static class DialetNamedSqlConf<E> extends JFishPropertyConf<E> {
@@ -115,8 +116,28 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 		return allSqlFiles;
 	}
 	
+	private boolean isAttrsProperty(String prop){
+		return prop.startsWith(ATTRS_KEY);
+	}
+	
+	private String getAttrsProperty(String prop){
+		return prop.substring(ATTRS_KEY.length());
+	}
 
-	protected void setNamedInfoProperty(Object bean, String prop, Object val){
-		SpringUtils.newBeanWrapper(bean).setPropertyValue(prop, val);
+	protected void setNamedInfoProperty(T bean, String prop, Object val){
+		if(prop.startsWith(JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY)){
+			//no convert to java property name
+		}else{
+			if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
+				prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+			}
+		}
+		
+		if(isAttrsProperty(prop)){
+			String attrProp = getAttrsProperty(prop);
+			bean.getAttrs().put(attrProp, val.toString());
+		}else{
+			SpringUtils.newBeanWrapper(bean).setPropertyValue(prop, val);
+		}
 	}
 }

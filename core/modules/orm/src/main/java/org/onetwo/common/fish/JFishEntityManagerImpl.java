@@ -69,7 +69,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	public void afterPropertiesSet() throws Exception{
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDbName(), watchSqlFile, listener);
+		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDb(), watchSqlFile, listener);
 		this.fileNamedQueryFactory.initQeuryFactory(this);
 		
 //		this.entityManagerWraper = jfishDao.getEntityManagerWraper();

@@ -11,6 +11,7 @@ import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -31,7 +32,7 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
 		sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, HibernateNamedInfo.class);
 //		this.baseEntityManager = baseEntityManager;
-		FileSqlParser<HibernateNamedInfo> p = new FileSqlParser<HibernateNamedInfo>(sqlFileManager);
+		FileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>(sqlFileManager);
 		p.initialize();
 		this.parser = p;
 	}

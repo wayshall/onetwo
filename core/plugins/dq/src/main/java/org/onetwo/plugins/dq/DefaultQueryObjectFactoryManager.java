@@ -12,7 +12,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
-import org.onetwo.common.utils.propconf.NamespaceProperties;
+import org.onetwo.common.utils.propconf.PropertiesNamespaceInfo;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 import org.onetwo.plugins.dq.annotations.QueryCreator;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		Class<?> dqInterface = null;
 		String beanName = null;
 		CreateQueryable cq = null;
-		for(NamespaceProperties<NamespaceProperty> nsp : (Collection<NamespaceProperties<NamespaceProperty>>)namespacelist){
+		for(PropertiesNamespaceInfo<NamespaceProperty> nsp : (Collection<PropertiesNamespaceInfo<NamespaceProperty>>)namespacelist){
 			if(nsp.isGlobal())
 				continue;
 			
@@ -76,7 +76,7 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		}
 	}
 
-	private Class<?> loadQueryClass(NamespaceProperties<NamespaceProperty> nsp){
+	private Class<?> loadQueryClass(PropertiesNamespaceInfo<NamespaceProperty> nsp){
 		try {
 			return ReflectUtils.loadClass(nsp.getNamespace());
 		} catch (Exception e) {
