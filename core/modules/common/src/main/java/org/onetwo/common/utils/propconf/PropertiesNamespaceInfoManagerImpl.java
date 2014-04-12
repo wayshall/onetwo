@@ -6,30 +6,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 
-public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends AbstractPropertiesManager<T> implements NamespacePropertiesManager<T>{
+public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> extends AbstractPropertiesManager<T> implements NamespacePropertiesManager<T>{
 
-	public class CommonNamespaceProperties implements NamespaceProperties<T> {
+	public class CommonNamespaceProperties implements PropertiesNamespaceInfo<T> {
 		private final String namespace;
 		private ResourceAdapter source;
-		private final Map<String, T> namedProperties;
+		private Map<String, T> namedProperties;
 		
 		public CommonNamespaceProperties(String namespace){
 			this.namespace = namespace;
 			this.namedProperties = LangUtils.newHashMap();
 		}
-		public CommonNamespaceProperties(String namespace, ResourceAdapter source, Map<String, T> namedProperties) {
+		public CommonNamespaceProperties(String namespace, ResourceAdapter source) {
 			super();
 			this.namespace = namespace;
 			this.source = source;
-			this.namedProperties = namedProperties;
+			this.namedProperties = LangUtils.newHashMap();
+//			this.namedProperties = namedProperties;
 		}
 
 		@Override
@@ -52,12 +53,18 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		@Override
 		public void addAll(Map<String, T> namedInfos, boolean throwIfExist) {
 			for(Entry<String, T> entry : namedInfos.entrySet()){
-				if(throwIfExist && this.namedProperties.containsKey(entry.getKey())){
-					NamespaceProperty exitProp = this.namedProperties.get(entry.getKey());
-					throw new BaseException("int file["+entry.getValue().getSrcfile()+"], sql key["+entry.getKey()+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile());
-				}
-				this.namedProperties.put(entry.getKey(), entry.getValue());
+				put(entry.getKey(), entry.getValue(), throwIfExist);
 			}
+		}
+		@Override
+		public void put(String name, T info, boolean throwIfExist) {
+			Assert.hasText(name);
+			Assert.notNull(info);
+			if(throwIfExist && this.namedProperties.containsKey(name)){
+				NamespaceProperty exitProp = this.namedProperties.get(name);
+				throw new BaseException("int file["+info.getSrcfile()+"], sql key["+name+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile());
+			}
+			this.namedProperties.put(name, info);
 		}
 		@Override
 		public boolean isGlobal() {
@@ -84,16 +91,16 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 
 	
-	Map<String, NamespaceProperties<T>> namespaceProperties;
+	Map<String, PropertiesNamespaceInfo<T>> namespaceProperties;
 	
 //	private List<Properties> sqlfiles;
 //	private PropertiesWraper wrapper;
 	private Map<String, T> namedQueryCache;
 
-	public NamespacePropertiesManagerImpl(JFishPropertyConf conf) {
+	public PropertiesNamespaceInfoManagerImpl(JFishPropertyConf conf) {
 		super(conf);
 		if(conf.getPropertyBeanClass()==null){
-			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), NamespacePropertiesManagerImpl.class);
+			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), PropertiesNamespaceInfoManagerImpl.class);
 			conf.setPropertyBeanClass(clz);
 		}
 	}
@@ -125,16 +132,16 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 	
 	private boolean isGlobalNamespace(String namespace){
-		return GLOBAL_NS_KEY.endsWith(namespace) || !namespace.contains(".");
+		return GLOBAL_NS_KEY.equals(namespace) || !namespace.contains(".");
 	}
 	
-	protected Map<String, NamespaceProperties<T>> autoScanSqlDir(ResourceAdapter[] sqlfileArray){
+	protected Map<String, PropertiesNamespaceInfo<T>> autoScanSqlDir(ResourceAdapter[] sqlfileArray){
 		if(LangUtils.isEmpty(sqlfileArray)){
 			logger.info("no named sql file found.");
 			return Collections.EMPTY_MAP;
 		}
 		
-		Map<String, NamespaceProperties<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
+		Map<String, PropertiesNamespaceInfo<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
 		for(ResourceAdapter f : sqlfileArray){
 			logger.info("parse named sql file: {}", f);
 			this.scanAndParseSqlFile(nsproperties, f, true);
@@ -143,33 +150,36 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 
 
-	protected NamespaceProperties<T> scanAndParseSqlFile(Map<String, NamespaceProperties<T>> nsproperties, ResourceAdapter f, boolean throwIfExist){
+	protected PropertiesNamespaceInfo<T> scanAndParseSqlFile(Map<String, PropertiesNamespaceInfo<T>> namespacesMap, ResourceAdapter f, boolean throwIfExist){
 		logger.info("scan and parse sql file : " + f);
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
-		if(isGlobalNamespace(namespace)){
+		boolean globalNamespace = isGlobalNamespace(namespace);
+		if(globalNamespace){
 			namespace = GLOBAL_NS_KEY;
 		}
 		
-		Map<String, T> namedinfos = buildNamedInfos(namespace, f);
+
+		PropertiesNamespaceInfo<T> np = null;
+		if(globalNamespace){
+			np = namespacesMap.get(namespace);
+			if(np==null){
+				np = new GlobalNamespaceProperties();
+				namespacesMap.put(np.getNamespace(), np);
+			}
+//			np.addAll(namedinfos, throwIfExist);
+		}else{
+			if(throwIfExist && namespacesMap.containsKey(namespace)){
+				throw new BaseException("sql namespace has already exist : " + namespace);
+			}
+			np = new CommonNamespaceProperties(namespace, f);
+		}
+		
+		buildNamedInfosToNamespaceFromResource(np, f);
 		/*if(namedinfos.isEmpty())
 			return null;*/
 
-		NamespaceProperties<T> np = null;
-		if(isGlobalNamespace(namespace)){
-			np = nsproperties.get(namespace);
-			if(np==null){
-				np = new GlobalNamespaceProperties();
-				nsproperties.put(np.getNamespace(), np);
-			}
-			np.addAll(namedinfos, throwIfExist);
-		}else{
-			if(throwIfExist && nsproperties.containsKey(namespace)){
-				throw new BaseException("sql namespace has already exist : " + namespace);
-			}
-			np = new CommonNamespaceProperties(namespace, f, namedinfos);
-		}
-		nsproperties.put(namespace, np);
+		namespacesMap.put(namespace, np);
 		
 		for(T nsp : np.getNamedProperties()){
 			this.namedQueryCache.put(nsp.getFullName(), nsp);
@@ -178,14 +188,21 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 		return np;
 	}
 
-	protected Map<String, T> buildNamedInfos(String ns, ResourceAdapter f){
-		JFishProperties pf = loadSqlFile(f);
-		if(pf==null)
-			return Collections.EMPTY_MAP;
-		logger.info("build [{}] sql file : {}", ns, f);
+	protected void buildNamedInfosToNamespaceFromResource(PropertiesNamespaceInfo<T> np, ResourceAdapter file){
+		JFishProperties jproperties = loadSqlFile(file);
+		if(jproperties==null){
+//			return Collections.EMPTY_MAP;
+			return ;
+		}
+		logger.info("build [{}] sql file : {}", np.getNamespace(), file);
 //		PropertiesWraper wrapper = new PropertiesWraper(pf);
-		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, pf, (Class<T>)conf.getPropertyBeanClass());
-		return namedInfos;
+//		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, pf, (Class<T>)conf.getPropertyBeanClass());
+		try {
+			this.buildPropertiesAsNamedInfos(np, file, jproperties, (Class<T>)conf.getPropertyBeanClass());
+		} catch (Exception e) {
+			throw new BaseException("build named info error in " + file.getName() + " : " + e.getMessage(), e);
+		}
+//		return namedInfos;
 	}
 	
 
@@ -211,11 +228,11 @@ public class NamespacePropertiesManagerImpl<T extends NamespaceProperty> extends
 	}
 
 	@Override
-	public NamespaceProperties<T> getNamespaceProperties(String namespace) {
+	public PropertiesNamespaceInfo<T> getNamespaceProperties(String namespace) {
 		return namespaceProperties.get(namespace);
 	}
 
-	public Collection<NamespaceProperties<T>> getAllNamespaceProperties() {
+	public Collection<PropertiesNamespaceInfo<T>> getAllNamespaceProperties() {
 		return namespaceProperties.values();
 	}
 	
