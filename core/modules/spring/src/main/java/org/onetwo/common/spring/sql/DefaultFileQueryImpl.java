@@ -73,9 +73,9 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	
 //	abstract protected String parseSql(String queryName, Map<Object, Object> params);
 	protected DataQuery createDataQueryIfNecessarry(){
-		String sql = countQuery?info.getCountSql():info.getSql();
 		
 		if(info.getFileSqlParserType()==FileSqlParserType.IGNORENULL){
+			String sql = countQuery?info.getCountSql():info.getSql();
 			DynamicQuery query = DynamicQueryFactory.createJFishDynamicQuery(sql, resultClass);
 			for(Entry<Object, Object> entry : this.params.entrySet()){
 				if(entry.getKey() instanceof Integer){
@@ -118,6 +118,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			dataQuery = createDataQuery(parsedSql, resultClass);
 			
 		}else{
+			String sql = countQuery?info.getCountSql():info.getSql();
 			dataQuery = createDataQuery(sql, resultClass);
 		}
 

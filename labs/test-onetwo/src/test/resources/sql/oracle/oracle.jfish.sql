@@ -1,5 +1,5 @@
 @testParserQuery = 
-	select id from ( ${template['subsql']} )
+	select id from ( ${template['subsql']} ) where startDate >= convert(datetime, ${_func.dateAs(datestr, 'yyyyMM')})
 @testParserQuery.template.subsql = select id from tableName where userName like '%${userName}'
 @testParserQuery.parser = template
 
