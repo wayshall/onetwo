@@ -16,8 +16,9 @@ WHERE
      supp.state = :state
      AND
      supp.Type_Id = :typeID
-@searchPageListSupplier.ignore.null=true
+     /**
 @searchPageListSupplier.mapped.entity=com.yooyo.ymcard.model.common.vo.SearchPageListSupplierVo
+**/
 @searchPageListSupplier.count.sql=select count(*) from zjk_supplier_discount
 
 --test check exist
