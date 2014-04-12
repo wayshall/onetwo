@@ -24,17 +24,25 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 		
 		addDirective(new ForeachDirective());
 		this.templateLoader = new StringTemplateLoader();
-		
+	}
+	
+	
+
+	@Override
+	public void initParser() {
+		this.initialize();
 		for(PropertiesNamespaceInfo<T> namespace : this.sqlManager.getAllNamespaceProperties()){
 			for(T info : namespace.getNamedProperties()){
 				this.templateLoader.putTemplate(info.getFullName(), info.getSql());
-				this.templateLoader.putTemplate(info.getCountName(), info.getSql());
+				this.templateLoader.putTemplate(info.getCountName(), info.getCountSql());
 				for(Entry<String, String> entry : info.getAttrs().entrySet()){
 					this.templateLoader.putTemplate(info.getTemplateName(entry.getKey()), entry.getValue());
 				}
 			}
 		}
 	}
+
+
 
 	@Override
 	protected void buildConfigration(Configuration cfg) {
