@@ -21,7 +21,7 @@ public class DynamicFreemarkerTemplateConfigurer extends AbstractFreemarkerTempl
 		return templateProvider;
 	}
 
-	public void setTemplateProvider(StringTemplateProvider templateProvider) {
+	final public void setTemplateProvider(StringTemplateProvider templateProvider) {
 		this.templateProvider = templateProvider;
 	}
 	
