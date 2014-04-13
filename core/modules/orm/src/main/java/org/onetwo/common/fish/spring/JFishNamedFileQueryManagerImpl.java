@@ -29,12 +29,12 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	
 	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, DataBase dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
-		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class);
 //		this.baseEntityManager = jem;
 		
-		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> p = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
-		p.initialize();
+		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> p = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
+//		p.initialize();
 		this.parser = p;
+		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class, p);
 	}
 
 
@@ -44,6 +44,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	@Override
 	public void buildNamedQueryInfos() {
 		this.sqlFileManager.build();
+//		this.parser.initParser();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoListener;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoManagerImpl;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.core.io.Resource;
@@ -46,7 +47,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	}*/
 	protected final DataBase databaseType;
 	
-	public JFishNamedSqlFileManager(final DataBase databaseType, final boolean watchSqlFile, final Class<T> propertyBeanClass) {
+	public JFishNamedSqlFileManager(final DataBase databaseType, final boolean watchSqlFile, final Class<T> propertyBeanClass, PropertiesNamespaceInfoListener<T> listener) {
 		super(new DialetNamedSqlConf<T>(){
 			{
 				setDatabaseType(databaseType);
@@ -54,7 +55,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 				setWatchSqlFile(watchSqlFile);
 				setPropertyBeanClass(propertyBeanClass);
 			}
-		});
+		}, listener);
 		this.databaseType = databaseType;
 	}
 
