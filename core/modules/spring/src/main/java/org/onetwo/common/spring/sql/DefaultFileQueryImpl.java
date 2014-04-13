@@ -103,7 +103,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			
 			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
 			this.parserContext.putAll(params);
-			NamedInfoAttrsParser attrParser = new NamedInfoAttrsParser(parser, parserContext, info);
+			TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
 			this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
 			/*if(LangUtils.isNotEmpty(info.getAttrs())){
 				//parse attrs value by ftl

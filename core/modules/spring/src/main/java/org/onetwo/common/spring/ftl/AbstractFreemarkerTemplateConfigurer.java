@@ -5,9 +5,11 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
@@ -21,6 +23,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 	static {
 		INSTANCE.setSimpleMapWrapper(true);
 	}
+
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private Configuration configuration;
 	
