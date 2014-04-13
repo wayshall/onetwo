@@ -6,7 +6,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 
@@ -20,15 +19,26 @@ import freemarker.template.Configuration;
  */
 public class StringFreemarkerTemplateConfigurer extends DynamicFreemarkerTemplateConfigurer {
 
-	private final DefaultStringTemplateProvider templateProvider;
+	private DynamicTemplateLoader dynamicTemplateLoader;
 	
 	public StringFreemarkerTemplateConfigurer(){
-		this(null);
+		this((Map<String, StringTemplate>)null);
 	}
 
 	public StringFreemarkerTemplateConfigurer(Map<String, StringTemplate> mapper) {
 		super();
-		this.templateProvider = new DefaultStringTemplateProvider(mapper);
+		setTemplateProvider(new DefaultStringTemplateProvider(mapper));
+		this.dynamicTemplateLoader = new DynamicTemplateLoader(getTemplateProvider());
+	}
+
+	public StringFreemarkerTemplateConfigurer(DefaultStringTemplateProvider templateProvider) {
+		super();
+		setTemplateProvider(templateProvider);
+		this.dynamicTemplateLoader = new DynamicTemplateLoader(getTemplateProvider());
+	}
+
+	public DefaultStringTemplateProvider getTemplateProvider() {
+		return (DefaultStringTemplateProvider)super.getTemplateProvider();
 	}
 
 	@Override
@@ -37,28 +47,27 @@ public class StringFreemarkerTemplateConfigurer extends DynamicFreemarkerTemplat
 	}
 
 
-	public StringFreemarkerTemplateConfigurer map(String name, String content){
-		templateProvider.getMapper().put(name, new StringWraperTemplate(content));
+	public StringFreemarkerTemplateConfigurer putTemplate(String name, String content){
+		getTemplateProvider().getMapper().put(name, new StringWraperTemplate(content));
 		return this;
 	}
 
 	public boolean isMapped(String name){
-		return templateProvider.getMapper().containsKey(name);
+		return getTemplateProvider().getMapper().containsKey(name);
 	}
 
-	public StringFreemarkerTemplateConfigurer map(String name, File file){
-		templateProvider.getMapper().put(name, new FileWraperTemplate(file));
+	public StringFreemarkerTemplateConfigurer putTemplate(String name, File file){
+		getTemplateProvider().getMapper().put(name, new FileWraperTemplate(file));
 		return this;
 	}
 
-	public StringFreemarkerTemplateConfigurer map(String name, StringTemplate st){
-		templateProvider.getMapper().put(name, st);
+	public StringFreemarkerTemplateConfigurer putTemplate(String name, StringTemplate st){
+		getTemplateProvider().getMapper().put(name, st);
 		return this;
 	}
 
 	protected TemplateLoader getTempateLoader(){
-		Assert.notNull(templateProvider);
-		return new DynamicTemplateLoader(templateProvider);
+		return dynamicTemplateLoader;
 	}
 	
 	public class DefaultStringTemplateProvider implements StringTemplateProvider{
