@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
@@ -96,13 +97,16 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 //	private List<Properties> sqlfiles;
 //	private PropertiesWraper wrapper;
 	private Map<String, T> namedQueryCache;
+	
+	final private PropertiesNamespaceInfoListener<T> listener;
 
-	public PropertiesNamespaceInfoManagerImpl(JFishPropertyConf conf) {
+	public PropertiesNamespaceInfoManagerImpl(JFishPropertyConf conf, PropertiesNamespaceInfoListener<T> listener) {
 		super(conf);
 		if(conf.getPropertyBeanClass()==null){
 			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), PropertiesNamespaceInfoManagerImpl.class);
 			conf.setPropertyBeanClass(clz);
 		}
+		this.listener = listener;
 	}
 	
 	protected JFishPropertyConf getConf() {
@@ -110,11 +114,14 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 	}
 
 	public void build(){
-		this.namedQueryCache = LangUtils.newHashMap();
+		this.namedQueryCache = new ConcurrentHashMap<String, T>();
 		ResourceAdapter[] sqlfileArray = scanMatchSqlFiles(conf);
 		this.namespaceProperties = this.autoScanSqlDir(sqlfileArray);
 		this.buildSqlFileMonitor(sqlfileArray);
-		
+
+		if(this.listener!=null){
+			this.listener.afterBuild(sqlfileArray, namespaceProperties);
+		}
 		/*logger.info("all named query : ");
 		for(T prop : this.namedQueryCache.values()){
 			logger.info(prop.toString());
@@ -127,8 +134,11 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 			logger.warn("no file relaoded : " + file);
 			return ;
 		}*/
-		this.scanAndParseSqlFile(this.namespaceProperties, file, false);
+		PropertiesNamespaceInfo<T> namepsaceInfo = this.scanAndParseSqlFile(this.namespaceProperties, file, false);
 		logger.warn("file relaoded : " + file);
+		if(listener!=null){
+			listener.afterReload(file, namepsaceInfo);
+		}
 	}
 	
 	private boolean isGlobalNamespace(String namespace){

@@ -16,11 +16,11 @@ public class StringTemplateFileSqlParserTest {
 	
 	@Before
 	public void before(){
-		this.fileManager = new HibernateNamedSqlFileManager(DataBase.Oracle, false, HibernateNamedInfo.class);
-		fileManager.build();
-		StringTemplateLoaderFileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>(fileManager);
-		p.initialize();
+		StringTemplateLoaderFileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>();
 		this.parser = p;
+		this.fileManager = new HibernateNamedSqlFileManager(DataBase.Oracle, false, HibernateNamedInfo.class, p);
+		fileManager.build();
+//		this.parser.initParser();
 	}
 	
 	@Test
@@ -29,7 +29,7 @@ public class StringTemplateFileSqlParserTest {
 		parserContext = ParserContext.create();
 		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
 		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
-		NamedInfoAttrsParser attrParser = new NamedInfoAttrsParser(parser, parserContext, info);
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
 		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
 		this.parserContext.put("userName", "way");
 		this.parserContext.put("datestr", "2014-04-19");
@@ -43,7 +43,7 @@ public class StringTemplateFileSqlParserTest {
 		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testParserQuery2");
 		parserContext = ParserContext.create();
 		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
-		NamedInfoAttrsParser attrParser = new NamedInfoAttrsParser(parser, parserContext, info);
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
 		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
 		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
 		this.parserContext.put("userName", "way");

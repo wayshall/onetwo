@@ -30,9 +30,11 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
-		sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, HibernateNamedInfo.class);
+		StringTemplateLoaderFileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>();
+//		p.initParser();
+		this.parser = p;
+		sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, HibernateNamedInfo.class, p);
 //		this.baseEntityManager = baseEntityManager;
-		this.parser = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>(sqlFileManager);
 	}
 
 	public HibernateNamedInfo getNamedQueryInfo(String name) {
@@ -41,7 +43,6 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	@Override
 	public void buildNamedQueryInfos() {
 		this.sqlFileManager.build();
-		parser.initParser();
 	}
 	
 	public HibernateFileQueryImpl createHibernateFileQuery(String queryName, Object... args){
