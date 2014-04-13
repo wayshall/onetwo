@@ -10,14 +10,14 @@ import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-public class NamedInfoAttrsParser implements TemplateHashModel {
+public class TemplateInNamedQueryParser implements TemplateHashModel {
 	public static final String DOT = ".";
 	
 	private final FileSqlParser<?> parser;
 	private final ParserContext parserContext;
 	private final JFishNamedFileQueryInfo query;
 	
-	public NamedInfoAttrsParser(FileSqlParser<?> parser, ParserContext parserContext, JFishNamedFileQueryInfo query) {
+	public TemplateInNamedQueryParser(FileSqlParser<?> parser, ParserContext parserContext, JFishNamedFileQueryInfo query) {
 		super();
 		this.parser = parser;
 		this.parserContext = parserContext;
