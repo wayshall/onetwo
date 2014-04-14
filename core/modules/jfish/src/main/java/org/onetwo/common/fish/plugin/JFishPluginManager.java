@@ -6,6 +6,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 /****
  * jfish plugin manager interface
+ * 扫描管理 JFishPlugin 接口的实现者
+ * 基于web项目的插件接口，非web项目插件见{@linkplain ContextPluginManager}
  * @author way
  *
  */
