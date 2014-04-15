@@ -15,6 +15,10 @@ public @interface Name {
 	
 	public boolean queryParam() default true;
 	
+	/****
+	 * 注意，此处设置只对query.setParameter有用，生成的sql仍需自己控制是否生成参数
+	 * @return
+	 */
 	public IfNull ifParamNull() default IfNull.Calm;
 	
 	/***
