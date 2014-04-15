@@ -3,6 +3,7 @@ package org.onetwo.common.hibernate.msf;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
+import org.onetwo.common.exception.BaseException;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.SessionFactoryUtils;
 
@@ -32,7 +33,7 @@ public class MultipSessionFactoryTransactionManager extends HibernateTransaction
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		if(!JFishMultipleSessionFactory.class.isInstance(sessionFactory)){
-			throw new UnsupportedOperationException("the implementor is not supported multip sessionFactory: " + sessionFactory);
+			throw new BaseException("the implementor is not supported multip sessionFactory: " + sessionFactory);
 		}
 		super.setSessionFactory(sessionFactory);
 	}
