@@ -26,7 +26,8 @@ public class TaskOperationEntity implements Serializable {
 	private Long taskId;
 	private String taskStatus;
 	private Date operatorTime;
-	private String operatorId;
+	private Long operatorId;
+	private String operatorName;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskOperationEntityGenerator") 
@@ -63,12 +64,20 @@ public class TaskOperationEntity implements Serializable {
 		this.operatorTime = operatorTime;
 	}
 
-	public String getOperatorId() {
+	public Long getOperatorId() {
 		return operatorId;
 	}
 
-	public void setOperatorId(String operatorId) {
+	public void setOperatorId(Long operatorId) {
 		this.operatorId = operatorId;
+	}
+
+	public String getOperatorName() {
+		return operatorName;
+	}
+
+	public void setOperatorName(String operatorName) {
+		this.operatorName = operatorName;
 	}
 
 }
