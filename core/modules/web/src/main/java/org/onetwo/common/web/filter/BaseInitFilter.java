@@ -34,6 +34,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	public static final String LOCALE_SESSION_ATTRIBUTE = WebLocaleUtils.ATTRIBUTE_KEY;//I18nInterceptor.DEFAULT_SESSION_ATTRIBUTE;
 
 	public static final String RELOAD = "reload";
+	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
@@ -42,8 +43,13 @@ public class BaseInitFilter extends IgnoreFiler {
 
 
 	protected void initApplication(FilterConfig config) {
+		
 		super.initApplication(config);
 		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
+		
+		String libraryPath = System.getProperty(JNA_LIBRARY_PATH);
+		logger.info("jna.library.path: {}", libraryPath);
+		
 		Object webconfig = getWebConfig(siteConfig);
 		
 		//webconfig
@@ -58,6 +64,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		SpringApplication.initApplication(app);
 		
 		UtilTimerStack.active(timeProfiler);
+		
 	}
 	
 	protected BaseSiteConfig getBaseSiteConfig(){
