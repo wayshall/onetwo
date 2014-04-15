@@ -2,6 +2,7 @@ package org.onetwo.common.excel;
 
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
@@ -31,6 +32,10 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 	}
 	
 
+	public boolean isCache() {
+		return BaseSiteConfig.getInstance().isProduct();
+	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(this.xmlTemplateGeneratorFactory==null){
