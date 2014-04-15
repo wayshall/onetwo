@@ -40,28 +40,37 @@ public class BaseInitFilter extends IgnoreFiler {
 	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
 	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
+	
+	private WebConfigProvider webConfigProvider;
 
 
 	protected void initApplication(FilterConfig config) {
 		
 		super.initApplication(config);
-		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
 		
 		String libraryPath = System.getProperty(JNA_LIBRARY_PATH);
 		logger.info("jna.library.path: {}", libraryPath);
 		
-		Object webconfig = getWebConfig(siteConfig);
-		
-		//webconfig
-		siteConfig.setWebAppConfigurator(webconfig);
-		siteConfig.getFreezer().freezing();
-		
 		ServletContext context = config.getServletContext();
-		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
-		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		SpringApplication.initApplication(app);
+		
+		webConfigProvider = SpringApplication.getInstance().getBean(WebConfigProvider.class);
+		if(webConfigProvider!=null){
+			logger.info("find webConfigProvider : {}", webConfigProvider);
+		}else{
+			logger.info("no webConfigProvider found.");
+		}
+
+
+		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
+		Object webconfig = getWebConfig(siteConfig);
+		//webconfig
+		siteConfig.setWebAppConfigurator(webconfig);
+		siteConfig.getFreezer().freezing();
+		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
+		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
 		UtilTimerStack.active(timeProfiler);
 		
@@ -72,7 +81,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	}
 	
 	protected Object getWebConfig(BaseSiteConfig siteConfig){
-		return siteConfig;
+		return webConfigProvider==null?null:webConfigProvider.createWebConfig(siteConfig);
 	}
 
 	public String[] getFilterInitializers(FilterConfig config){
@@ -109,14 +118,10 @@ public class BaseInitFilter extends IgnoreFiler {
 		try {
 			
 			this.reloadConfigIfNecessary(request);
-
 //			addP3P(response);
-			
 			processLocale(request, response);
 
 			filterChain.doFilter(request, response);
-			
-//			setErrorCount(session, 0);
 		}catch (ServletException e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
 			throw e;

@@ -20,13 +20,19 @@ import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
+/***
+ * 为了避免与jasper冲突，foarmt为jfxls
+ * {@link ExtJasperReportsXlsView}
+ * @author weishao
+ *
+ */
 public class JFishExcelView extends AbstractUrlBasedView {
 	private static final Logger logger = MyLoggerFactory.getLogger(JFishExcelView.class);
 	
 	public static final String FILENAME_KEY = "fileName";
 	public static final String TEMPLATE_SUFFIX = ".xml";
 	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=GBK";
-	public static final String DEFAULT_CONTENT_TYPE = "application/xls";
+	public static final String DEFAULT_CONTENT_TYPE = "application/jfxls";//
 	
 	private XmlTemplateGeneratorFactory xmlTemplateExcelFactory;
 
@@ -109,7 +115,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 	}
 
 	public String getContentType() {
-		return "application/jfxls";
+		return DEFAULT_CONTENT_TYPE;
 	}
 
 	public String getFileName() {
