@@ -2,6 +2,12 @@ package org.onetwo.common.spring.plugin;
 
 import java.util.List;
 
+/****
+ * spring 上下文插件接口管理者
+ * 扫描管理 ContextPlugin 接口的实现者
+ * @author wayshall
+ *
+ */
 public interface ContextPluginManager {
 
 	/****
