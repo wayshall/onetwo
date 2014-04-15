@@ -11,6 +11,11 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.StringUtils;
 
+/****
+ * 以后缀jfxls的地址，首先尝试从参数exporter获取json模板，如果没有，则去寻找xml模板
+ * @author weishao
+ *
+ */
 public class JsonExcelView extends JFishExcelView {
 
 	public static final String URL_POSFIX = "jfxls";

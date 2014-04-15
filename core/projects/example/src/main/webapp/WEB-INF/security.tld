@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+  <description>security tag</description>
+  <display-name>"security tags"</display-name>
+  <tlib-version>2.2</tlib-version>
+  <short-name>security</short-name>
+  <uri>/security</uri>
+  
+  
+  <tag>
+    <description><![CDATA[hasPermission]]></description>
+    <name>hasPermission</name>
+    <tag-class>org.onetwo.plugins.permission.tag.HasPermissionTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description><![CDATA[active]]></description>
+      <name>code</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  
+  
+</taglib>

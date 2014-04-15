@@ -17,6 +17,13 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView;
 
+/****
+ * media-type.properties 里配置的format为xls
+ * contentType: application/vnd.ms-excel
+ * 
+ * @author weishao
+ *
+ */
 public class ExtJasperReportsXlsView  extends JasperReportsXlsView {
 
 	
