@@ -191,6 +191,24 @@
 	  <scope>system</scope>
 	  <systemPath>${basedir}/lib/SizeOf.jar</systemPath>
 	</dependency>
+	
+	<dependency>
+		<groupId>org.eclipse.jdt.core.compiler</groupId>
+		<artifactId>ecj</artifactId>
+		<version>3.7.2</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.google.code.maven-play-plugin.org.eclipse.jdt</groupId>
+		<artifactId>org.eclipse.jdt.core</artifactId>
+		<version>3.8.0.v_C18</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.eclipse.equinox</groupId>
+		<artifactId>common</artifactId>
+		<version>3.6.200-v20130402-1505</version>
+	</dependency>
     
   </dependencies>
   
