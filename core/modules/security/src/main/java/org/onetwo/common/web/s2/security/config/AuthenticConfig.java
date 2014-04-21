@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.Freezer;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.web.s2.security.Authenticator;
 
@@ -16,7 +17,7 @@ import org.onetwo.common.web.s2.security.Authenticator;
 public class AuthenticConfig {
 
 	public static String DEFAULT_CONIFG_NAME = "DEFAULT_AUTHENTIC_CONIFG";
-	public static AuthenticConfig DEFAULT_CONIFG = new AuthenticConfig(DEFAULT_CONIFG_NAME, true, false, false, false);//if no authentic config 
+	public static AuthenticConfig DEFAULT_CONIFG = new AuthenticConfig(DEFAULT_CONIFG_NAME, true, false, false, false).freezing();//if no authentic config 
 	
 	public static String TYPE_URL = "url";
 	public static String TYPE_ANNOTATION = "annotation";
@@ -40,8 +41,9 @@ public class AuthenticConfig {
 	protected String type = TYPE_ANNOTATION;
 	
 	protected String redirect;
-
-
+	
+	private Freezer freezer = Freezer.create(AuthenticConfig.class);
+	
 	public AuthenticConfig(boolean ignore) {
 		this.name = DEFAULT_CONIFG_NAME;
 		this.ignore = ignore;
@@ -54,6 +56,11 @@ public class AuthenticConfig {
 		
 		this.checkTimeout = checkTimeout;
 		this.throwIfTimeout =  throwIfTimeout;
+	}
+	
+	public AuthenticConfig freezing() {
+		freezer.freezing();
+		return this;
 	}
 
 	/****
@@ -80,14 +87,17 @@ public class AuthenticConfig {
 //	}
 
 	public void setName(String name) {
+		this.freezer.checkOperation();
 		this.name = name;
 	}
 
 	public void setAuthenticators(List<Authenticator> authenticators) {
+		this.freezer.checkOperation();
 		this.authenticators = authenticators;
 	}
 
 	public void setOnlyAuthenticator(boolean onlyAuthenticator) {
+		this.freezer.checkOperation();
 		this.onlyAuthenticator = onlyAuthenticator;
 	}
 
@@ -100,6 +110,7 @@ public class AuthenticConfig {
 	}
 
 	public void addAuthenticator(Authenticator authenticator) {
+		this.freezer.checkOperation();
 		Assert.notNull(authenticator);
 		if(this.authenticators==null)
 			this.authenticators = new ArrayList<Authenticator>(5);
@@ -112,6 +123,7 @@ public class AuthenticConfig {
 	}
 
 	public void setIgnore(boolean ignore) {
+		this.freezer.checkOperation();
 		this.ignore = ignore;
 	}
 
@@ -120,6 +132,7 @@ public class AuthenticConfig {
 	}
 
 	public void setCheckLogin(boolean checkLogin) {
+		this.freezer.checkOperation();
 		this.checkLogin = checkLogin;
 	}
 
@@ -128,6 +141,7 @@ public class AuthenticConfig {
 	}
 
 	public void setCheckTimeout(boolean checkTimeout) {
+		this.freezer.checkOperation();
 		this.checkTimeout = checkTimeout;
 	}
 
@@ -136,6 +150,7 @@ public class AuthenticConfig {
 	}
 
 	public void setThrowIfTimeout(boolean throwIfTimeout) {
+		this.freezer.checkOperation();
 		this.throwIfTimeout = throwIfTimeout;
 	}
 	
@@ -152,6 +167,7 @@ public class AuthenticConfig {
 	}
 
 	public void setType(String type) {
+		this.freezer.checkOperation();
 		this.type = type;
 	}
 
@@ -160,6 +176,7 @@ public class AuthenticConfig {
 	}
 
 	public void setAuthenticationName(String authenticationName) {
+		this.freezer.checkOperation();
 		this.authenticationName = authenticationName;
 	}
 
@@ -168,6 +185,7 @@ public class AuthenticConfig {
 	}
 
 	public void setPermissions(String... permissions) {
+		this.freezer.checkOperation();
 		this.permissions = permissions;
 	}
 
@@ -176,6 +194,7 @@ public class AuthenticConfig {
 	}
 
 	public void setRedirect(String redirect) {
+		this.freezer.checkOperation();
 		this.redirect = redirect;
 	}
 
@@ -184,6 +203,7 @@ public class AuthenticConfig {
 	}
 
 	public void setRoles(String[] roles) {
+		this.freezer.checkOperation();
 		this.roles = roles;
 	}
 
