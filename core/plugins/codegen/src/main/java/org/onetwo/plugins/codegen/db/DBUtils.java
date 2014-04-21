@@ -243,11 +243,11 @@ public class DBUtils {
 	}
 	
 	public static Object getValueByFieldFromResultSet(String colName, Class requiredType, ResultSet rs) throws SQLException{
-		if(requiredType.isArray())
-			requiredType = requiredType.getComponentType();
 		if (requiredType == null) {
 			return getResultSetValue(rs, colName);
 		}
+		if(requiredType.isArray())
+			requiredType = requiredType.getComponentType();
 
 		Object value = null;
 		boolean wasNullCheck = false;

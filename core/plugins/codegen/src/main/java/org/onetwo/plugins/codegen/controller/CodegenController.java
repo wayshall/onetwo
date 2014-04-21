@@ -11,6 +11,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
+import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.codegen.generator.CommonlContextBuilder;
 import org.onetwo.plugins.codegen.generator.DefaultCodegenServiceImpl;
 import org.onetwo.plugins.codegen.generator.DefaultTableManager;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@CsrfValid(false)
 public class CodegenController extends PluginSupportedController {
 
 	@Autowired
