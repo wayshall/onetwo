@@ -201,9 +201,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		
 		String viewName = null;
 		if(authentic){
-			AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
-			viewName = context!=null?context.getConfig().getRedirect():"";
-			model.addAttribute(PRE_URL, JFishWebUtils.requestUri());
+			viewName = getAuthenticView(request);
+			model.addAttribute(PRE_URL, getPreurl(request));
 //			if(JFishWebUtils.isRedirect(viewName))
 //				viewName = appendPreurlForAuthentic(viewName);
 		}else {
@@ -217,6 +216,18 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		error.setViewName(viewName);
 		error.setAuthentic(authentic);
 		return error;
+	}
+	
+	protected String getPreurl(HttpServletRequest request){
+		String preurl = StringUtils.isBlank(request.getParameter(PRE_URL))?JFishWebUtils.requestUri():request.getParameter(PRE_URL);
+//		return encode(preurl);
+		return preurl;
+	}
+	
+	protected String getAuthenticView(HttpServletRequest request){
+		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
+		String view = context!=null?context.getConfig().getRedirect():"";
+		return view;
 	}
 	
 	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request){

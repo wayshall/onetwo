@@ -2,6 +2,8 @@ package org.onetwo;
 
 import java.util.regex.Pattern;
 
+import org.onetwo.common.exception.BaseException;
+
 
 
 public class Test {
@@ -17,10 +19,16 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args){
-		boolean rs = IS_DIGIT.matcher("10").matches();
-		System.out.println("match: " + rs);
-		rs = IS_DIGIT.matcher("10").find();
-		System.out.println("match: " + rs);
+		test2(args);
+	}
+	
+	public static void test2(String[] args){
+		test(args);
+	}
+	
+	public static void test(String[] args){
+		String a = Thread.currentThread().getStackTrace()[1].getMethodName();
+		throw new BaseException(a);
 	}
 	
 }
