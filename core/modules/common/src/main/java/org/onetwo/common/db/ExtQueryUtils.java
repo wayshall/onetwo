@@ -122,6 +122,7 @@ public abstract class ExtQueryUtils {
 		
 		int groupIndex = ArrayUtils.indexOf(tokens, "group");
 		if(groupIndex!=-1 && tokens.length>(groupIndex+1) && "by".equals(tokens[groupIndex+1])){
+			sql = StringUtils.substringBefore(sql, " order by ", groupIndex);
 			sql = "select count(*) from ( " + sql + " ) count_view";
 			return sql;
 		}
