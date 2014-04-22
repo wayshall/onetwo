@@ -316,6 +316,20 @@ public abstract class StringUtils {
 		return str.substring(0, pos);
 	}
 
+	public static String substringBefore(String str, String separator, int fromIndex) {
+		if (isEmpty(str) || separator == null) {
+			return str;
+		}
+		if (separator.length() == 0) {
+			return EMPTY;
+		}
+		int pos = str.indexOf(separator, fromIndex);
+		if (pos == -1) {
+			return str;
+		}
+		return str.substring(0, pos);
+	}
+
 	public static String[] splitWorker(String str, String separatorChars, int max, boolean preserveAllTokens) {
 		// Performance tuned for 2.0 (JDK1.4)
 		// Direct code is quicker than StringTokenizer.
