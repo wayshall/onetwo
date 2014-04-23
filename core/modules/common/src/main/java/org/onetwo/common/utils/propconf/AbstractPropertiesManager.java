@@ -2,7 +2,6 @@ package org.onetwo.common.utils.propconf;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.common.log.MyLoggerFactory;
@@ -33,7 +32,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 	
 		public String getFullName(){
-			if(GLOBAL_NS_KEY.equals(namespace))
+			if(namespaceInfo.isGlobal())
 				return getName();
 			return namespace+"."+getName();
 		}
