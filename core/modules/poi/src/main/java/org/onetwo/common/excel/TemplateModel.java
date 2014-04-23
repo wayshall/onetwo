@@ -63,6 +63,10 @@ public class TemplateModel implements PoiModel{
 		this.rows = rows;
 	}
 	
+	public boolean isEmpty(){
+		return LangUtils.isEmpty(rows);
+	}
+	
 	public TemplateModel addRow(RowModel row){
 		if(this.rows==null)
 			this.rows = LangUtils.newArrayList();

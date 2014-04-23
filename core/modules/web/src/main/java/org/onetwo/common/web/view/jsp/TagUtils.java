@@ -19,6 +19,7 @@ import org.onetwo.common.web.view.jsp.form.FormTagBean;
 
 final public class TagUtils {
 
+	public static String PARAM_FORMAT = "format";
 	public static String BASE_TAG_DIR = "/WEB-INF/tags/";
 	public static String BASE_VIEW_DIR = "/WEB-INF/views/";
 
@@ -119,6 +120,31 @@ final public class TagUtils {
 			surl += "?" + queryString;
 		}
 		return surl;
+	}
+	
+
+	public static String getRequsetUrlFilterPageNo(HttpServletRequest request){
+		String surl = getRequestUri(request);
+		String queryString = getQueryStringFilterPageNo(request);
+		if(StringUtils.isBlank(queryString))
+			return surl;
+		if(surl.contains("?")){
+			surl += "&" + queryString;
+		}else{
+			surl += "?" + queryString;
+		}
+		return surl;
+	}
+
+
+	public static String getQueryStringFilterPageNo(HttpServletRequest request) {
+		String str = request.getQueryString();
+		if(StringUtils.isBlank(str))
+			return "";
+		CasualMap params = new CasualMap(str);
+		params.filter("pageNo");
+		str = params.toParamString();
+		return str;
 	}
 	
 	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
