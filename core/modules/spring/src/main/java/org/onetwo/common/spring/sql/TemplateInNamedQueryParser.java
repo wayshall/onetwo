@@ -1,9 +1,7 @@
 package org.onetwo.common.spring.sql;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.FtlUtils;
-import org.onetwo.common.utils.propconf.AbstractPropertiesManager;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 import freemarker.template.TemplateHashModel;
@@ -52,7 +50,7 @@ public class TemplateInNamedQueryParser implements TemplateHashModel {
 //			checkKeyIfNamespaceScope(subkey);
 //			value = (String)SpringUtils.newBeanWrapper(queryInfo).getPropertyValue(subkey);
 			checkKeyIfNamespaceScope(key);
-			value = key;
+			value = query.getNamespaceInfo().isGlobal()?key:query.getNamespace()+"."+key;
 		}else{
 //			checkKey(key);
 //			value = query.getAttrs().get(key);
