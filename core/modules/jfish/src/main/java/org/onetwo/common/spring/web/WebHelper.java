@@ -87,8 +87,9 @@ public class WebHelper {
 	}
 	
 	public String getXlsFormatAction(){
-		String action = TagUtils.getRequsetUriWithQueryString(request);
-		action = TagUtils.appendParam(action, "format", JsonExcelView.URL_POSFIX);
+		String action = TagUtils.getRequsetUrlFilterPageNo(request);
+		action = TagUtils.appendParam(action, TagUtils.PARAM_FORMAT, JsonExcelView.URL_POSFIX);
+//		action = TagUtils.appendParam(action, Page.PAGINATION_KEY, "false");
 		return action;
 	}
 	

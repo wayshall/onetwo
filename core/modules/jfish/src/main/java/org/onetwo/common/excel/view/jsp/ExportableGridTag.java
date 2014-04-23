@@ -29,7 +29,11 @@ public class ExportableGridTag extends DataGridTag {
 	}
 
 
-
+	/****
+	 * 默认为false
+	 * 填写要导出的excel数据的表达式
+	 * @param exportable
+	 */
 	public void setExportable(String exportable) {
 		if(StringUtils.isNotBlank(exportable) && !ToBooleanConvertor.FALSE_VALUE.equals(exportable)){
 			this.exportable = true;
