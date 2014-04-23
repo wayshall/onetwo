@@ -3,6 +3,7 @@ package org.onetwo.common.utils.convert;
 public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 
 	public static final String FALSE_VALUE = "false";
+	public static final String TRUE_VALUE = "true";
 	public static final String NO_VALUE = "no";
 
 	

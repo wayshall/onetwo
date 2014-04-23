@@ -56,6 +56,10 @@ public class RowModel implements PoiModel {
 		return this.fields.size();
 	}
 	
+	public boolean isEmpty(){
+		return fields.isEmpty();
+	}
+	
 	public FieldModel getField(int index){
 		return this.fields.get(index);
 	}

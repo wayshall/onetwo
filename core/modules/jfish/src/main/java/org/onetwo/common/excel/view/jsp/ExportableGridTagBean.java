@@ -3,6 +3,7 @@ package org.onetwo.common.excel.view.jsp;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 
@@ -14,10 +15,11 @@ public class ExportableGridTagBean extends GridTagBean {
 	
 	public String getXlsFormatAction(){
 		String action = getActionWithQueryString();
-		action = TagUtils.appendParam(action, "format", JsonExcelView.URL_POSFIX);
-//		action = TagUtils.appendParam(action, "fileName", getTitle());
+		action = TagUtils.appendParam(action, TagUtils.PARAM_FORMAT, JsonExcelView.URL_POSFIX);
+		action = TagUtils.appendParam(action, "fileName", getTitle());
 		action = TagUtils.appendParam(action, Page.PAGINATION_KEY, "false");
-		action = TagUtils.appendParam(action, JsonExcelView.EXPORT_JSON_PARAM_NAME, LangUtils.encodeUrl(getExportJsonTemplate()));
+		if(StringUtils.isNotBlank(getExportJsonTemplate()))
+			action = TagUtils.appendParam(action, JsonExcelView.EXPORT_JSON_PARAM_NAME, LangUtils.encodeUrl(getExportJsonTemplate()));
 		return action;
 	}
 	
