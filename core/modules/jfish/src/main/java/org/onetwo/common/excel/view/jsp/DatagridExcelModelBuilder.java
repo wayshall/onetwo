@@ -19,17 +19,24 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 		ExportableGridTagBean tagBean = (ExportableGridTagBean) tagb;
 		if(!tagBean.isExportable())
 			return ;
-		WorkbookModel workbook = new WorkbookModel();
+		
 		TemplateModel template = new TemplateModel();
 		template.setLabel(tagBean.getTitle());
 		template.setName(tagBean.getName());
 		for(RowTagBean rowTag : tagBean.getRows()){
 			RowModel row = buildRow(rowTag);
+			if(row.isEmpty())
+				continue;
 			if(row.isIterator()){
 				row.setDatasource(tagBean.getExportDataSource());
 			}
 			template.addRow(row);
 		}
+		
+		if(template.isEmpty())
+			return;
+		
+		WorkbookModel workbook = new WorkbookModel();
 		workbook.addSheet(template);
 		JsonMapper jsonMapper = JsonMapper.ignoreEmpty()
 											.filter(ExcelUtils.JSON_FILTER_TEMPLATE, "multiSheet", "varName")
@@ -53,10 +60,11 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 		return row;
 	}
 	
-	private FieldModel buildField(FieldTagBean fieldTag){
+	private FieldModel buildField(FieldTagBean ft){
+		ExportableFieldTagBean fieldTag = (ExportableFieldTagBean)ft;
 		FieldModel field = new FieldModel();
 		field.setName(fieldTag.getName());
-		field.setValue(fieldTag.getValue());
+		field.setValue(fieldTag.getExportValue());
 		field.setLabel(fieldTag.getLabel());
 		return field;
 	}
