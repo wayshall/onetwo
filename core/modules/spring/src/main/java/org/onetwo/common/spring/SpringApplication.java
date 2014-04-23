@@ -70,13 +70,20 @@ public class SpringApplication {
 	}
 
 	public Object getBean(String beanName, boolean throwIfError) {
+		if(!getAppContext().containsBean(beanName)){
+			if(throwIfError)
+				throw new BaseException("not bean["+beanName+"] found! ");
+			else
+				logger.error("no bean["+beanName+"] found! ");
+			return null;
+		}
 		Object bean = null;
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-			logger.error("get bean from spring error! ");
+			logger.error("get bean["+beanName+"] from spring error! ");
 			if(throwIfError)
-				throw new BaseException("get bean from spring error! ", e);
+				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
 		}
 		return bean;
 	}
