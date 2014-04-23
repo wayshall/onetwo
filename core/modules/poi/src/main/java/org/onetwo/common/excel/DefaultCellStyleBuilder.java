@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.onetwo.common.excel.data.CellContextData;
@@ -42,6 +43,10 @@ public class DefaultCellStyleBuilder {
 		
 		if(StringUtils.isNotBlank(styleString) && styleString.startsWith("#")){
 			styleString = (String)cellContext.parseValue(styleString);
+		}
+
+		if(StringUtils.isNotBlank(field.getDataFormat())){
+			styleString += ";dataFormat:"+HSSFDataFormat.getBuiltinFormat(field.getDataFormat());
 		}
 		
 		if(StringUtils.isNotBlank(fontString) && fontString.startsWith("#")){

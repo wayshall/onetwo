@@ -39,6 +39,14 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 			return namespace;
 		}
 
+		/****
+		 * cache key
+		 */
+		@Override
+		public String getKey() {
+			return namespace;
+		}
+
 		@Override
 		public Collection<T> getNamedProperties() {
 			return namedProperties.values();
@@ -78,8 +86,13 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 		private final List<File> sources;
 		
 		private GlobalNamespaceProperties() {
-			super(GLOBAL_NS_KEY);
+			super("");
 			this.sources = LangUtils.newArrayList();
+		}
+
+		@Override
+		public String getKey() {
+			return GLOBAL_NS_KEY;
 		}
 
 		public List<File> getSources() {
@@ -175,7 +188,7 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 			np = namespacesMap.get(namespace);
 			if(np==null){
 				np = new GlobalNamespaceProperties();
-				namespacesMap.put(np.getNamespace(), np);
+				namespacesMap.put(np.getKey(), np);
 			}
 //			np.addAll(namedinfos, throwIfExist);
 		}else{
@@ -183,13 +196,14 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 				throw new BaseException("sql namespace has already exist : " + namespace);
 			}
 			np = new CommonNamespaceProperties(namespace, f);
+			namespacesMap.put(np.getKey(), np);
 		}
 		
 		buildNamedInfosToNamespaceFromResource(np, f);
 		/*if(namedinfos.isEmpty())
 			return null;*/
 
-		namespacesMap.put(namespace, np);
+//		namespacesMap.put(namespace, np);
 		
 		for(T nsp : np.getNamedProperties()){
 			this.namedQueryCache.put(nsp.getFullName(), nsp);

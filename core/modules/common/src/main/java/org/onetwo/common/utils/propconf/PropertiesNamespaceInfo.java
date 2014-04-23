@@ -6,6 +6,7 @@ import java.util.Map;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 public interface PropertiesNamespaceInfo<T extends NamespaceProperty> {
+	public String getKey();
 	public String getNamespace();
 	public Collection<T> getNamedProperties();
 	public T getNamedProperty(String name);
