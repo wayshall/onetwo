@@ -40,6 +40,9 @@ public class LangUtilsTest {
 		Assert.assertEquals("1253.10", val);
 		val = LangUtils.formatValue(1253.1222222, "0.00");
 		Assert.assertEquals("1253.12", val);
+		val = LangUtils.formatValue(1253.1222222, "0");
+		System.out.println("val1: " + val);
+		Assert.assertEquals("1253", val);
 		
 		BigDecimal bd = new BigDecimal("1.44445");
 		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());

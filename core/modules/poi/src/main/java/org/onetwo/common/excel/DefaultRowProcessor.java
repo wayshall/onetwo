@@ -332,10 +332,12 @@ public class DefaultRowProcessor implements RowProcessor {
 			cell.setCellType(Cell.CELL_TYPE_BLANK);
 			return ;
 		}
-		String df = field.getDataFormat();
+		
+		/*String df = field.getDataFormat();
 		if(StringUtils.isNotBlank(df)){
 			cell.getCellStyle().setDataFormat(HSSFDataFormat.getBuiltinFormat(df));
-		}
+		}*/
+//		formatValue(value, df);
 		if(Number.class.isInstance(value)){
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			cell.setCellValue(((Number)value).doubleValue());

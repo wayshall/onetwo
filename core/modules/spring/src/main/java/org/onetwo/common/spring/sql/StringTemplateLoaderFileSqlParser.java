@@ -57,10 +57,11 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 	
 	private void putTemplateByNamespaceInfo(PropertiesNamespaceInfo<T> namespace){
 		for(T info : namespace.getNamedProperties()){
-//			logger.info("put template: {}", info.getFullName());
+			logger.info("put query template: {}", info.getFullName());
 			this.templateLoader.putTemplate(info.getFullName(), info.getSql());
 			this.templateLoader.putTemplate(info.getCountName(), info.getCountSql());
 			for(Entry<String, String> entry : info.getAttrs().entrySet()){
+				logger.info("put query sub template: {}", info.getTemplateName(entry.getKey()));
 				this.templateLoader.putTemplate(info.getTemplateName(entry.getKey()), entry.getValue());
 			}
 		}
