@@ -15,7 +15,7 @@ public class ExportableGridTagBean extends GridTagBean {
 	public String getXlsFormatAction(){
 		String action = getActionWithQueryString();
 		action = TagUtils.appendParam(action, "format", JsonExcelView.URL_POSFIX);
-		action = TagUtils.appendParam(action, "fileName", getTitle());
+//		action = TagUtils.appendParam(action, "fileName", getTitle());
 		action = TagUtils.appendParam(action, Page.PAGINATION_KEY, "false");
 		action = TagUtils.appendParam(action, JsonExcelView.EXPORT_JSON_PARAM_NAME, LangUtils.encodeUrl(getExportJsonTemplate()));
 		return action;
