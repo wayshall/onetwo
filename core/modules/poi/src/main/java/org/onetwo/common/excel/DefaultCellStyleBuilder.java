@@ -37,7 +37,7 @@ public class DefaultCellStyleBuilder {
 		
 		String styleString = getStyle(field);
 		String fontString = getFont(field);
-		if(StringUtils.isBlank(styleString) && StringUtils.isBlank(fontString)){
+		if(StringUtils.isBlank(field.getDataFormat()) && StringUtils.isBlank(styleString) && StringUtils.isBlank(fontString)){
 			return null;
 		}
 		
