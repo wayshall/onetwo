@@ -187,7 +187,7 @@ abstract public class ExcelUtils {
 		for(int i=0; i<cellCount; i++){
 			cell = row.getCell(i);
 			cellValue = ExcelUtils.getCellValue(cell);
-			rowValues.add(cellValue.toString());
+			rowValues.add(cellValue.toString().trim());
 		}
 		return rowValues;
 	}
