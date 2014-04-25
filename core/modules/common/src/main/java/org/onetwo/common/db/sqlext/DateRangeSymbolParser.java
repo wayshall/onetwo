@@ -48,7 +48,8 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 			if(paramlist.size()==1){
 				Date date = getDate(paramlist.get(0));
 				startDate = DateUtil.setDateStart(date);
-				endDate = DateUtil.setDateEnd(date);
+//				endDate = DateUtil.setDateEnd(date);
+				endDate = DateUtil.addDay(startDate, 1);
 			}else{
 				startDate = getDate(paramlist.get(0));
 				endDate = getDate(paramlist.get(1));
