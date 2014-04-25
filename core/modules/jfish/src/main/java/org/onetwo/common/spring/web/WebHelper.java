@@ -15,7 +15,6 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -83,19 +82,12 @@ public class WebHelper {
 	}
 	
 	public String getRequsetUriWithQueryString(){
-		String url = TagUtils.getRequsetUriWithQueryString(request);
+		String url = TagUtils.getUriWithQueryString(request);
 		return url;
 	}
 	
 	public String getXlsFormatAction(){
-		String action = TagUtils.getRequsetUrlFilterPageNo(request);
-		action = TagUtils.appendParam(action, TagUtils.PARAM_FORMAT, JsonExcelView.URL_POSFIX);
-//		action = TagUtils.appendParam(action, Page.PAGINATION_KEY, "false");
-		return action;
-	}
-	
-	public String getXlsFormatActionWithPost(){
-		String action = TagUtils.parseAction(request, ":post2get", CsrfPreventorFactory.getDefault());
+		String action = TagUtils.getUriWithParamsFilterPageNo(request);
 		action = TagUtils.appendParam(action, TagUtils.PARAM_FORMAT, JsonExcelView.URL_POSFIX);
 //		action = TagUtils.appendParam(action, Page.PAGINATION_KEY, "false");
 		return action;

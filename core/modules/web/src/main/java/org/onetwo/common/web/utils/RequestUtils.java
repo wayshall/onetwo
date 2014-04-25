@@ -150,18 +150,17 @@ public abstract class RequestUtils {
 	
 
 	public static CasualMap getPostParametersWithout(HttpServletRequest request, String... prefix){
-		CasualMap all = new CasualMap();
-		if(prefix!=null)
-			all.addHttpParameterWithout(getParameters(request), prefix);
-		Map get = getGetParameter(request);
-		return all.subtract(get);
+		return getParametersWithout(request, prefix).subtract(getGetParameter(request));
+	}
+	
+	public static CasualMap getParametersWithout(HttpServletRequest request, String... prefix){
+		return new CasualMap().addHttpParameterWithout(getParameters(request), prefix);
 	}
 	
 	public static Map getParameters(HttpServletRequest request){
 		Assert.notNull(request);
 		return request.getParameterMap();
 	}
-	
 
 	public static Map getGetParameter(HttpServletRequest request){
 		String q = request.getQueryString();
