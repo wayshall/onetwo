@@ -314,8 +314,7 @@ abstract public class DateUtil {
 	}
 
 	public static Date parse(String dateStr) {
-		String p = matchPattern(dateStr);
-		return parseByPatterns(dateStr, p);
+		return StringUtils.isBlank(dateStr)?null:parseByPatterns(dateStr, matchPattern(dateStr));
 	}
 
 	private static Date parse2(String dateStr) {
