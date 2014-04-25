@@ -6,22 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.L;
+import org.slf4j.Logger;
 
 abstract public class AbstractExtQuery implements ExtQueryInner{
-	protected final Logger logger = Logger.getLogger(SelectExtQueryImpl.class);
+	protected final Logger logger = MyLoggerFactory.getLogger(SelectExtQueryImpl.class);
 
 
 	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")"};
