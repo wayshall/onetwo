@@ -109,7 +109,7 @@ final public class TagUtils {
 	}
 	
 
-	public static String getRequsetUriWithQueryString(HttpServletRequest request){
+	public static String getUriWithQueryString(HttpServletRequest request){
 		String surl = getRequestUri(request);
 		String queryString = request.getQueryString();
 		if(StringUtils.isBlank(queryString))
@@ -123,7 +123,7 @@ final public class TagUtils {
 	}
 	
 
-	public static String getRequsetUrlFilterPageNo(HttpServletRequest request){
+	public static String getUriWithQueryStringFilterPageNo(HttpServletRequest request){
 		String surl = getRequestUri(request);
 		String queryString = getQueryStringFilterPageNo(request);
 		if(StringUtils.isBlank(queryString))
@@ -139,12 +139,23 @@ final public class TagUtils {
 
 	public static String getQueryStringFilterPageNo(HttpServletRequest request) {
 		String str = request.getQueryString();
-		if(StringUtils.isBlank(str))
-			return "";
-		CasualMap params = new CasualMap(str);
-		params.filter("pageNo");
-		str = params.toParamString();
-		return str;
+		return StringUtils.isBlank(str)?"":filterPageParams(new CasualMap(str)).toParamString();
+	}
+
+
+	public static String getUriWithParamsFilterPageNo(HttpServletRequest request) {
+		String surl = getRequestUri(request);
+		String queryString = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, null).toParamString();
+		surl += surl.contains("?")?"":"?" + queryString;
+		return surl;
+	}
+
+
+	public static CasualMap filterPageParams(CasualMap params) {
+		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");
+	}
+	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
+		return csrfPreventor==null?params:params.filter(csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName()));
 	}
 	
 	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
@@ -173,18 +184,9 @@ final public class TagUtils {
 	public static String processUrlSymbol(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
 		String str = null;
 		if (symbol.equals(":qstr")) {
-			str = request.getQueryString();
-			if(StringUtils.isBlank(str))
-				return "";
-			CasualMap params = new CasualMap(str);
-			params.filter("pageNo", "order", "orderBy");
-			str = params.toParamString();
+			str = getQueryStringFilterPageNo(request);
 		} else if (symbol.equals(":post2get")) {
-			if(csrfPreventor!=null){
-				str = RequestUtils.getPostParametersWithout(request, "pageNo", "order", "orderBy", csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName())).toParamString();
-			}else{
-				str = RequestUtils.getPostParametersWithout(request, "pageNo", "order", "orderBy").toParamString();
-			}
+			str = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor).toParamString();
 		}else{
 			str = symbol;
 		}
