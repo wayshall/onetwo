@@ -215,13 +215,13 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	}
 
 	protected String buildFieldQueryString(Object fields, Object values) {
-		List fieldList =  MyUtils.asList(fields);
-		List valueList = ExtQueryUtils.processValue(fields, values, ifNull);
+		List<?> valueList = ExtQueryUtils.processValue(fields, values, ifNull);
 		
 		//ignore null
 		if (valueList == null || valueList.isEmpty())
 			return null;
 
+		List<?> fieldList =  MyUtils.asList(fields);
 		int index = 0;
 		String h = null;
 		StringBuilder causeScript = new StringBuilder();

@@ -2,6 +2,7 @@ package org.onetwo.common.utils;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -814,8 +815,12 @@ public class LangUtils {
 			return 0;
 		if(obj instanceof Collection){
 			return ((Collection)obj).size();
+		}else if(obj instanceof CharSequence){
+			return ((CharSequence)obj).length();
 		}else if(obj instanceof Map){
 			return ((Map)obj).size();
+		}else if(obj instanceof File){
+			return (int)FileUtils.size((File)obj);
 		}else if(obj.getClass().isArray()){
 			return Array.getLength(obj);
 		}else {
@@ -824,7 +829,8 @@ public class LangUtils {
 				if(m!=null)
 					return (Integer)ReflectUtils.invokeMethod(m, obj);
 			}
-			return 1;
+//			return 1;
+			throw new UnsupportedOperationException("can not get size of object : " + obj);
 		}
 	}
 
@@ -965,7 +971,7 @@ public class LangUtils {
 	}
 
 	public static <T> List<T> asList(Object array, boolean trimNull) {
-		return L.trimAndexcludeTheClassElement(trimNull, array);
+		return CUtils.trimAndexcludeTheClassElement(trimNull, array);
 	}
 
 	public static String getRadomString(int length) {
@@ -1027,28 +1033,47 @@ public class LangUtils {
 	public static boolean hasElement(Object obj){
 		if(obj==null)
 			return false;
-		else if(String.class.isAssignableFrom(obj.getClass())){
+		else if(CharSequence.class.isAssignableFrom(obj.getClass())){
 			return StringUtils.isNotBlank(obj.toString());
 		}else if(Collection.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Collection)obj);
 		}else if(obj.getClass().isArray()){
-			return Array.getLength(obj)!=0;
+			if(obj.getClass().getComponentType().isPrimitive()){
+				return Array.getLength(obj)!=0;
+			}else {
+				return hasElement((Object[])obj);
+			}
 		}else if(Map.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Map)obj);
 		}
 		return true;
 	}
 	
+	public static boolean isEmpty(Object obj){
+		return size(obj)==0;
+	}
+	
+
+	public static boolean hasElement(Object[] obj){
+		if(isEmpty(obj))
+			return false;
+		for(Object o : (Object[])obj){
+			if(o!=null)//hasElement(e)
+				return true;
+		}
+		return false;
+	}
+	
 	public static boolean hasElement(Map map){
-		return M.hasElement(map);
+		return !isEmpty(map);
 	}
 	
 	public static boolean isEmpty(Map map){
-		return !M.hasElement(map);
+		return map==null || map.isEmpty();
 	}
 	
 	public static boolean isNotEmpty(Map map){
-		return M.hasElement(map);
+		return !isEmpty(map);
 	}
 	
 	public static boolean hasElement(Collection col){

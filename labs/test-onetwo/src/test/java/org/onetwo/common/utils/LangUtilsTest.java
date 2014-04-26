@@ -2,9 +2,13 @@ package org.onetwo.common.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.enterprise.inject.New;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -276,7 +280,7 @@ public class LangUtilsTest {
 	}
 	
 
-	
+
 	@Test
 	public void testDigit(){
 		String str = "123";
@@ -293,6 +297,29 @@ public class LangUtilsTest {
 		Assert.assertFalse(LangUtils.isDigitString(str));
 		str = "34 33";
 		Assert.assertFalse(LangUtils.isDigitString(str));
+	}
+	@Test
+	public void testHasElement(){
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_MAP));
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_LIST));
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_SET));
+		
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_MAP));
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_LIST));
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_SET));
+		
+		int[] ints = new int[]{};
+		Assert.assertTrue(LangUtils.isEmpty(ints));
+		Assert.assertFalse(LangUtils.hasElement(ints));
+		ints = new int[]{0};
+		Assert.assertTrue(LangUtils.hasElement(ints));
+		
+		Object obj = new Object[]{"aaa", Long.valueOf(1L)};
+		Assert.assertFalse(LangUtils.isEmpty(obj));
+		Assert.assertTrue(LangUtils.hasElement(obj));
+		obj = new Object[]{null, null};
+		Assert.assertFalse(LangUtils.isEmpty(obj));
+		Assert.assertTrue(LangUtils.hasNotElement(obj));
 	}
 }
 
