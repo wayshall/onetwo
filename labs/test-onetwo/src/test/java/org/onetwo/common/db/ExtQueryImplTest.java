@@ -420,7 +420,8 @@ public class ExtQueryImplTest {
 		q.build();
 
 		String sql = "select mag from Magazine mag where ( mag.createTime >= :mag_createTime0 and mag.createTime < :mag_createTime1 ) order by mag.id desc";
-		String paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Thu Oct 27 23:59:59 CST 2011}";
+		String paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011}";
+//		System.out.println("aa:"+q.getParamsValue().getValues().toString());
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
 		
@@ -435,7 +436,7 @@ public class ExtQueryImplTest {
 		q.build();
 
 		sql = "select mag from Magazine mag where ( mag.createTime >= :mag_createTime0 and mag.createTime < :mag_createTime1 ) and ( mag.regiestTime >= :mag_regiestTime2 and mag.regiestTime < :mag_regiestTime3 ) order by mag.id desc";
-		paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011, mag_regiestTime2=Thu Oct 27 00:00:00 CST 2011, mag_regiestTime3=Thu Oct 27 23:59:59 CST 2011}";
+		paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011, mag_regiestTime2=Thu Oct 27 00:00:00 CST 2011, mag_regiestTime3=Fri Oct 28 00:00:00 CST 2011}";
 
 //		System.out.println(q.getSql());
 //		System.out.println((Map)q.getParamsValue().getValues());

@@ -157,24 +157,10 @@ public abstract class L {
 	public static List exclude(Object array, Object... excludeClasses) {//Class... excludeClasses
     	return trimAndexcludeTheClassElement(true, array, excludeClasses);
     }
-    
+
+	@Deprecated
 	public static List trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
-		if (array == null)
-			return NULL_LIST;
-		
-		List list = null;
-		if(array.getClass().isArray()){
-			int length = Array.getLength(array);
-			list = new ArrayList(length);
-			for (int i = 0; i < length; i++) {
-				list.add(Array.get(array, i));
-			}
-		}else
-			list = tolist(array, trimNull);
-		
-		if (excludeClasses!=null && excludeClasses.length>0)
-			strip(list, (Object[]) excludeClasses);
-		return (list == null) ? NULL_LIST : list;
+		return CUtils.trimAndexcludeTheClassElement(trimNull, array, excludeClasses);
 	}
 
 	@Deprecated
