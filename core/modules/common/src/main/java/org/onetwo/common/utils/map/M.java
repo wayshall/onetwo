@@ -33,9 +33,7 @@ public abstract class M {
 	}
 	
 	public static boolean hasElement(Map map){
-		if(map==null || map.isEmpty())
-			return false;
-		return true;
+		return !(map==null || map.isEmpty());
 	}
 	
 	public static BaseMap toBase(Map map) {
