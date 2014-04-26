@@ -80,6 +80,7 @@ public abstract class ExtQueryUtils {
 	public static List processValue(Object fields, Object values, IfNull ifNull, boolean trimNull){
 		List valueList = null;
 		if(LangUtils.hasNotElement(values)){
+//		if(LangUtils.isEmpty(values)){
 			if(ifNull==IfNull.Ignore){
 				return null;
 			}else if(ifNull==IfNull.Throw){
@@ -93,6 +94,22 @@ public abstract class ExtQueryUtils {
 		}
 		return valueList;
 	}
+	
+	/*public static Object processSingleValue(Object fields, Object value, IfNull ifNull){
+		Object rs = null;
+		if(value==null){
+			if(ifNull==IfNull.Ignore){
+				return null;
+			}else if(ifNull==IfNull.Throw){
+				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
+			}else {//calm
+				rs = value;
+			}
+		}else{
+			rs = value;
+		}
+		return rs;
+	}*/
 	
 	public static Map field2Map(Object obj){
 		if (obj == null)

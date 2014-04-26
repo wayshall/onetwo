@@ -61,9 +61,6 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 			throw new ServiceException("the parameter type of "+symbol+" is error, check it!", e);
 		}
 		
-		if(startDate==null && endDate==null)
-			return null;
-		
 		field = this.getFieldName(field);
 		StringBuilder hql = new StringBuilder();
 
