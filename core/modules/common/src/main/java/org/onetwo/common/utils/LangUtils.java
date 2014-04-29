@@ -1416,7 +1416,8 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = appendNotBlank(strs);
+		Object[] objs = strs;
+		String s = appendNotBlank(objs);
 		s = MDFactory.MD5.encrypt(s + System.currentTimeMillis() + getRadomString(6));
 		return s;
 	}
