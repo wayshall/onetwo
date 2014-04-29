@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.NonUniqueResultException;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
@@ -19,6 +20,7 @@ import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.SelectExtQuery;
+import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
@@ -224,16 +226,23 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		}
 	}
 	
-
-	public <T> T findUnique(QueryBuilder squery) {
-		return findUnique((Class<T>)squery.getEntityClass(), squery.getParams());
-	}
-	
-	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return this.findUnique(entityClass, MyUtils.convertParamMap(properties));
-	}
 	
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
+//		return findUnique(entityClass, properties, true);
+		prepareProperties(properties);
+
+		SelectExtQuery extQuery = createSelectExtQuery(entityClass, properties);
+		extQuery.setMaxResults(1);//add: support unique
+		extQuery.build();
+		DataQuery q = createQuery(extQuery);
+		try {
+			return q.getSingleResult();
+		} catch (NonUniqueResultException e) {
+			throw new NotUniqueResultException(e.getMessage(), e);
+		}
+	}
+	
+	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties) {
 //		return findUnique(entityClass, properties, true);
 		prepareProperties(properties);
 
