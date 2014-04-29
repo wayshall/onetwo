@@ -16,7 +16,6 @@ import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
 import org.onetwo.common.fish.spring.JFishDao;
@@ -323,16 +322,9 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public <T> T findUnique(String sql, Object... values) {
-		T entity = null;
-		try {
-			DataQuery dq = jfishDao.createAsDataQuery(sql, (Class<?>)null);
-			dq.setParameters(values);
-			entity = (T) dq.getSingleResult();
-		} catch (Exception e) {
-			logger.error("findUnique error : " + sql, e);
-			throw new BaseException("find the unique result error : " + sql, e);
-		}
-		return entity;
+		DataQuery dq = jfishDao.createAsDataQuery(sql, (Class<?>)null);
+		dq.setParameters(values);
+		return (T) dq.getSingleResult();
 	}
 
 	public <T> T findUnique(String sql, Map<String, Object> values) {
