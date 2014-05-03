@@ -31,11 +31,11 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 	/********
 	 * 
 	 * 创建新的UserDetail对象，这个和{@link org.onetwo.common.web.s2.security.config.annotation.Authentic authentic}注解的checkTimeout属性有关
-	 * 但检测到登录超时，用这个方法创建的UserDetail作为参数传递给{@link org.onetwo.common.sso.SSOService#logout ssoService#logout}方法，回调注销操作
+	 * 但检测到登录超时，用这个方法创建的UserDetail作为参数传递给{@link org.onetwo.common.sso.UserLoginService#logout ssoService#logout}方法，回调注销操作
 	 * @param target
 	 * @return
 	 */
-	abstract protected UserDetail createUserDetail(SecurityTarget target);
+//	abstract protected UserDetail createUserDetail(SecurityTarget target);
 	
 	/***
 	 * 验证登陆是否超时
@@ -88,11 +88,11 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 			return false;*/
 		
 		if(isTimeout(lastLog, now)){//超时
-			UserDetail user = (UserDetail) authoritable;
+			/*UserDetail user = (UserDetail) authoritable;
 			if(user==null){
 				user = this.createUserDetail(target);
 			}
-			logout((UserDetail)user, false);
+			logout((UserDetail)user, false);*/
 			
 //			StrutsUtils.removeCurrentLoginUser();
 //			CookieUtil.removeAllCookies();
@@ -113,8 +113,51 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 		Date timeout = DateUtil.addMinutes(lastLog, BaseSiteConfig.getInstance().getTokenTimeout());
 		return timeout.getTime()<now.getTime();
 	}
-	
+
 	public UserDetail checkLogin(SecurityTarget target) {
+		UserDetail authoritable = target.getAuthoritable();
+		try {
+			String cookietoken = target.getCookieToken();
+			
+			if(StringUtils.isNotBlank(cookietoken)){
+				if(authoritable!=null){
+					if(!cookietoken.equals(authoritable.getToken())){
+						// 如果不相等，以cookietoken为准
+						// 清空sesssion
+						target.removeCurrentLoginUser();
+						authoritable = getCurrentLoginUser(target);
+						// 把用户信息放入session
+						if (authoritable != null) {
+							target.setCurrentLoginUser(authoritable);
+						}
+					}
+				}else{
+					// 如果session为空，cookietoken不为空
+					authoritable = getCurrentLoginUser(target);
+					// 把用户信息放入session
+					if (authoritable != null) {
+						target.setCurrentLoginUser(authoritable);
+					} else {
+						target.removeCookieToken();
+					}
+				}
+			}else{
+				if(authoritable!=null){
+					// 注销退出
+					target.removeCurrentLoginUser();
+					authoritable = null;
+				}else{
+					// session和cookie都为空 ，没有登录
+				}
+			}
+			
+		} catch (Exception e) {
+			handleLoginException(e, "sso login error by token: "+target.getCookieToken());
+		}
+
+		return authoritable;
+	}
+	public UserDetail checkLogin2(SecurityTarget target) {
 		UserDetail authoritable = target.getAuthoritable();
 		try {
 			String cookietoken = target.getCookieToken();

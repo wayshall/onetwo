@@ -38,6 +38,7 @@ public class TomcatServer {
 			tomcat.setBaseDir(webConfig.getServerBaseDir());
 			tomcat.getHost().setAppBase(webConfig.getServerBaseDir());
 			tomcat.getConnector().setURIEncoding("UTF-8");
+			tomcat.getConnector().setRedirectPort(webConfig.getRedirectPort());
 
 			StandardServer server = (StandardServer) tomcat.getServer();
 			AprLifecycleListener listener = new AprLifecycleListener();

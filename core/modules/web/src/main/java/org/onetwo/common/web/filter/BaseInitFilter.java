@@ -19,6 +19,7 @@ import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -118,8 +119,12 @@ public class BaseInitFilter extends IgnoreFiler {
 		try {
 			
 			this.reloadConfigIfNecessary(request);
-//			addP3P(response);
+			if(BaseSiteConfig.getInstance().isCookieP3p())
+				addP3P(response);
 			processLocale(request, response);
+
+//			ResponseUtils.setHttpOnlyCookie(response, "aa2", "bb2", "/", 5, ".a.com");
+//			ResponseUtils.setHttpOnlyCookie(response, "aa1", "bb1", "/", 5, ".b.com");
 
 			filterChain.doFilter(request, response);
 		}catch (ServletException e) {
@@ -141,7 +146,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	}*/
 	
 	protected void addP3P(HttpServletResponse response){
-		response.addHeader("P3P", "CP=\"NON DSP COR CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa CONa HISa TELa OTPa OUR UNRa IND UNI COM NAV INT DEM CNT PRE LOC\"");
+		ResponseUtils.addP3PHeader(response);
 	}
 
 	public static String getRequestURI(HttpServletRequest request) {

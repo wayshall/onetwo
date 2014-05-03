@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
 import org.onetwo.common.web.s2.security.config.AbstractConfigBuilder;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
@@ -31,7 +32,7 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	public AuthenticConfig findAuthenticConfig(Class<?> clazz, Method method) {
 		String configName = method.toGenericString();
 		AuthenticConfig conf = configs.get(configName);
-		if (conf == null) {
+		if (!BaseSiteConfig.getInstance().isProduct() || conf == null) {
 			conf = readConfig(clazz, method);
 		}
 		return conf;

@@ -9,20 +9,31 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.onetwo.common.exception.BaseException;
 
-public class AESEncryptCoder extends AbstractEncryptCoder {
+public class AESEncryptCoder extends AbstractEncryptCoder<SecretKey> {
 
 	private static final String AES_KEY = "AES";
 	private static final int AES_DEFAULT_LENGTH = 128;
 	private static final String AES_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
 	
 //	private final int size = AES_DEFAULT_LENGTH;
-	private final byte[] key;
+	private byte[] key;
+	private final int size;
 	
 
 	public AESEncryptCoder(){
-		this(AES_DEFAULT_LENGTH);
+		this(AES_DEFAULT_LENGTH, true);
 	}
-	public AESEncryptCoder(int size){
+	public AESEncryptCoder(boolean generatedSecretKey){
+		this(AES_DEFAULT_LENGTH, generatedSecretKey);
+	}
+	public AESEncryptCoder(int size, boolean generatedSecretKey){
+		this.size = size;
+		if(generatedSecretKey){
+			key = generatedKey().getEncoded();
+		}
+	}
+
+	public SecretKey generatedKey(){
 		KeyGenerator keyGenerator = null;
 		try {
 			keyGenerator = KeyGenerator.getInstance(AES_KEY);
@@ -32,8 +43,7 @@ public class AESEncryptCoder extends AbstractEncryptCoder {
 		keyGenerator.init(size);
 //		keyGenerator.init(length);
 		SecretKey skey = keyGenerator.generateKey();
-		key = skey.getEncoded();
-		
+		return skey;
 	}
 	
 	@Override

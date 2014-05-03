@@ -6,7 +6,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.authentic.SpringConfigBuilder;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
@@ -67,7 +69,8 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 	
 	protected AuthenticConfig buildConfigByAuthenticAnnotation(Method method, Class<? extends Annotation> annotationClass){
 		AuthenticConfig config = null;
-		Authentic authentic = method.getAnnotation(Authentic.class);
+//		Authentic authentic = method.getAnnotation(Authentic.class);
+		Authentic authentic = AnnotationUtils.findAnnotationWithStopClass(method.getDeclaringClass(), method, Authentic.class, AbstractBaseController.class);
 		if(authentic!=null){
 			config = this.buildAuthenticConfig(getAuthenticName(method), authentic);
 		}else{
