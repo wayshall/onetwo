@@ -1,14 +1,14 @@
 package org.onetwo.common.fish.plugin;
 
 import org.onetwo.common.spring.plugin.PluginInfo;
-import org.onetwo.common.utils.propconf.PropConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 
 public class JFishPluginInfo extends PluginInfo {
 	public static final String WEB_PLUGIN_CLASS = "webPluginClass";
 
 	private String webPluginClass;
 
-	public void init(PropConfig prop){
+	public void init(JFishProperties prop){
 		super.init(prop);
 		if(prop.containsKey(WEB_PLUGIN_CLASS)){
 			webPluginClass = prop.getAndThrowIfEmpty(WEB_PLUGIN_CLASS);

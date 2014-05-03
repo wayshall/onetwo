@@ -35,7 +35,7 @@ public class StringTemplateFileSqlParserTest {
 		this.parserContext.put("datestr", "2014-04-19");
 		String sql = this.parser.parse(info.getFullName(), parserContext);
 		System.out.println("sql: " + sql);
-		Assert.assertEquals("select id from ( select id from tableName where userName like '%way' ) where startDate >= convert(datetime, 201404)", sql);
+		Assert.assertEquals("select id from ( select id from tableName where userName like '%way' ) where startDate >= convert(datetime, 201404)", sql.trim());
 	}
 	
 	@Test

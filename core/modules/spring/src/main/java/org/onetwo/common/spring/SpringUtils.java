@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
+import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -154,7 +155,8 @@ final public class SpringUtils {
 	}
 	
 	public static PropertiesFactoryBean createPropertiesBySptring(String...classpaths) {
-		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
+//		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
+		PropertiesFactoryBean pfb = new JFishPropertiesFactoryBean();
 		pfb.setIgnoreResourceNotFound(true);
 		org.springframework.core.io.Resource[] resources = new org.springframework.core.io.Resource[classpaths.length];
 		int index = 0;

@@ -98,7 +98,7 @@ public class LangUtils {
 		SIMPLE_CLASS = Collections.unmodifiableList(simples);
 	}
 	
-	public static final char[] takeArr = {  '1', '2', '3', '4', '5', '6', '7', 
+	public static final char[] WORD_CHARS = {  '1', '2', '3', '4', '5', '6', '7', 
 			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
 			'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
 			'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
@@ -975,9 +975,9 @@ public class LangUtils {
 	}
 
 	public static String getRadomString(int length) {
-		  char[] result = new char[length]; 
-		  
-		  for (int i = 0, j = 59; i < length; ++i, --j) { 
+		  char[] result = new char[length];
+		  char[] takeArr = WORD_CHARS.clone();
+		  for (int i = 0, j = takeArr.length; i < length; ++i, --j) { 
 			  int take = (int) (Math.random() * j); 
 			  result[i] = takeArr[take]; 
 			  char m = takeArr[j - 1]; 
