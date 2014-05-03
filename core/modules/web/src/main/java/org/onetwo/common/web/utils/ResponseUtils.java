@@ -212,6 +212,13 @@ abstract public class ResponseUtils {
 		if (flush)
 			out.flush();
 	}
+	
+
+	public static void addP3PHeader(HttpServletResponse response){
+		response.addHeader("P3P", "CP=\"NON DSP COR CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa CONa HISa TELa OTPa OUR UNRa IND UNI COM NAV INT DEM CNT PRE LOC\"");
+//		response.addHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
+//		response.addHeader("P3P", "CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
+	}
 
 	public static void main(String[] args) {
 		Date now = new Date();

@@ -92,6 +92,10 @@ public class AnnotationUtils {
 		return findAnnotationWithStopClass(method.getDeclaringClass(), method, annotationClass, DEFAULT_STOP_CLASS);
 	}
 	
+	public static <T extends Annotation> T findMethodAnnotationWithStopClass(Method method, Class<T> annotationClass, Class<?>...stopClass) {
+		return findAnnotationWithStopClass(method.getDeclaringClass(), method, annotationClass, stopClass);
+	}
+	
 	public static <T extends Annotation> T findAnnotationWithStopClass(Class<?> clazz, Method method, Class<T> annotationClass, Class<?>...stopClass) {
 		T annotation = null;
 		if (method != null)

@@ -62,6 +62,11 @@ public class SpringProfilesWebApplicationContext extends AnnotationConfigWebAppl
 		super.prepareRefresh();
 	}
 	
+
+	protected void finishRefresh() {
+		super.finishRefresh();
+	}
+	
 	public PluginManagerInitializer getPluginManagerInitializer() {
 		return pluginManagerInitializer;
 	}

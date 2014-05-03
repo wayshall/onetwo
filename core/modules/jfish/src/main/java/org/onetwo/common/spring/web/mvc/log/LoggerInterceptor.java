@@ -11,9 +11,8 @@ import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.s2.security.AuthenticUtils;
-import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.slf4j.Logger;
+import org.springframework.web.method.HandlerMethod;
 
 public class LoggerInterceptor extends WebInterceptorAdapter  {
 
@@ -39,10 +38,11 @@ public class LoggerInterceptor extends WebInterceptorAdapter  {
 		}
 	}
 	public void log(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		AuthenticationContext authen = AuthenticUtils.getContextFromRequest(request);
+		/*AuthenticationContext authen = AuthenticUtils.getContextFromRequest(request);
 		if(authen==null)
+			return ;*/
+		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
-		
 		OperatorLogInfo info = new OperatorLogInfo();
 		String url = request.getMethod() + "|" + request.getRequestURL();
 		info.setUrl(url);

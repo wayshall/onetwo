@@ -80,14 +80,14 @@ public class AppConfig extends PropConfig {
 			String key = null;
 			while(keys.hasMoreElements()){
 				key = keys.nextElement();
-				logger.info(key+": " + this.config.getOriginalProperty(key));
+				logger.info(key+": " + this.config.getProperty(key));
 			}
 			logger.info("==================================== siteconfig end ====================================");
 		}
 	}
 
 	public String getAppEnvironment(){
-		String env = this.getConfig().getOriginalProperty(APP_ENVIRONMENT, Env.DEV.getValue());
+		String env = this.getConfig().getProperty(APP_ENVIRONMENT, Env.DEV.getValue());
 		return Env.of(env).getValue();
 //		return this.getProperty(APP_ENVIRONMENT, APP_ENVIRONMENT_DEV);
 	}
