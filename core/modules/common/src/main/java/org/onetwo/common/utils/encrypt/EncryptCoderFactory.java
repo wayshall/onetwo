@@ -1,20 +1,24 @@
 package org.onetwo.common.utils.encrypt;
 
+import java.security.KeyPair;
+
+import javax.crypto.SecretKey;
+
 public class EncryptCoderFactory {
 
-	public static EncryptCoder aesCoder(){
+	public static EncryptCoder<SecretKey> aesCoder(){
 		return new AESEncryptCoder();
 	}
-	public static EncryptCoder aesCoder(int size){
-		return new AESEncryptCoder(size);
+	public static EncryptCoder<SecretKey> aesCoder(int size, boolean generatedSecretKey){
+		return new AESEncryptCoder(size, generatedSecretKey);
 	}
 	
-	public static EncryptCoder rsaCoder(){
+	public static EncryptCoder<KeyPair> rsaCoder(){
 		return new RSAEncryptCoder();
 	}
 	
-	public static EncryptCoder rsaCoder(int size){
-		return new RSAEncryptCoder(size);
+	public static EncryptCoder<KeyPair> rsaCoder(int size, boolean generatedKeyPair){
+		return new RSAEncryptCoder(size, generatedKeyPair);
 	}
 
 }

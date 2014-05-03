@@ -22,8 +22,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.exception.ExceptionUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
-import org.onetwo.common.web.s2.security.AuthenticUtils;
-import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.utils.RequestTypeUtils;
 import org.onetwo.common.web.utils.RequestTypeUtils.AjaxKeys;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
@@ -201,8 +199,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		
 		String viewName = null;
 		if(authentic){
-			viewName = getAuthenticView(request);
-			model.addAttribute(PRE_URL, getPreurl(request));
+			viewName = getAuthenticView(request, model);
+//			model.addAttribute(PRE_URL, getPreurl(request));
 //			if(JFishWebUtils.isRedirect(viewName))
 //				viewName = appendPreurlForAuthentic(viewName);
 		}else {
@@ -224,10 +222,12 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		return preurl;
 	}
 	
-	protected String getAuthenticView(HttpServletRequest request){
-		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
+	protected String getAuthenticView(HttpServletRequest request, ModelMap model){
+		model.addAttribute(PRE_URL, getPreurl(request));
+		return "redirect:login";
+		/*AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
 		String view = context!=null?context.getConfig().getRedirect():"";
-		return view;
+		return view;*/
 	}
 	
 	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request){

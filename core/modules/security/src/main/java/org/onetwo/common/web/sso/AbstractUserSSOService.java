@@ -10,7 +10,7 @@ import org.onetwo.common.sso.IUserEntity;
 import org.onetwo.common.sso.IUserLoginEntity;
 import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.sso.UserDataFetcher;
-import org.onetwo.common.utils.SsoTokenable;
+import org.onetwo.common.sso.UserLoginService;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.utils.encrypt.MDFactory;
@@ -20,7 +20,7 @@ import org.onetwo.common.utils.encrypt.MDFactory;
  * @author wayshall
  *
  */
-abstract public class AbstractUserSSOService extends AbstractSSOServiceImpl {
+abstract public class AbstractUserSSOService extends AbstractSSOServiceImpl implements UserLoginService {
 
 	abstract public UserDataFetcher getUserDataFetcher();
 

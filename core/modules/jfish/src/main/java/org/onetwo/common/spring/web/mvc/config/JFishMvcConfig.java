@@ -18,17 +18,16 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerView;
-import org.onetwo.common.spring.web.authentic.SpringAuthenticationInvocation;
-import org.onetwo.common.spring.web.authentic.SpringSecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
+import org.onetwo.common.spring.web.mvc.EmptySecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
+import org.onetwo.common.spring.web.mvc.SecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
-import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
 import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
@@ -78,7 +77,8 @@ import org.springframework.web.servlet.view.xml.MarshallingView;
  */
 @Configuration
 @JFishMvc
-@ComponentScan(basePackageClasses = { JFishMvcConfig.class, SpringAuthenticationInvocation.class })
+//@ComponentScan(basePackageClasses = { JFishMvcConfig.class, SpringAuthenticationInvocation.class })
+@ComponentScan(basePackageClasses = { JFishMvcConfig.class })
 @ImportResource("classpath:mvc/spring-mvc.xml")
 public class JFishMvcConfig extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
 
@@ -113,11 +113,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
 		@Bean
-		public SpringSecurityInterceptor springSecurityInterceptor(){
-			SpringSecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SpringSecurityInterceptor.class);
+		public SecurityInterceptor securityInterceptor(){
+			SecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SecurityInterceptor.class);
 			if(springSecurityInterceptor==null){
-				springSecurityInterceptor = new SpringSecurityInterceptor();
-				springSecurityInterceptor.setOrder(InterceptorOrder.SECURITY);
+				springSecurityInterceptor = new EmptySecurityInterceptor();
 			}
 			return springSecurityInterceptor;
 		}
@@ -129,7 +128,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //				springSecurityInterceptor = new SpringSecurityInterceptor();
 //			}
 //			SpringSecurityInterceptor springSecurityInterceptor = new SpringSecurityInterceptor();
-			return new MappedInterceptor(null, springSecurityInterceptor());
+			return new MappedInterceptor(null, securityInterceptor());
 		}
 
 		/************
@@ -349,9 +348,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		WebExceptionResolver webexception = SpringUtils.getHighestOrder(this.applicationContext, WebExceptionResolver.class);
 		if(webexception==null){
 			webexception = new WebExceptionResolver();
-			webexception.setExceptionMessage(exceptionMessageSource());
-			webexception.setMvcSetting(mvcSetting);
 		}
+		webexception.setExceptionMessage(exceptionMessageSource());
+		webexception.setMvcSetting(mvcSetting);
 		return webexception;
 	}
 
