@@ -17,6 +17,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -154,9 +155,13 @@ final public class SpringUtils {
 		return prop;
 	}
 	
+
 	public static PropertiesFactoryBean createPropertiesBySptring(String...classpaths) {
+		return createPropertiesBySptring(new JFishProperties(), classpaths);
+	}
+	public static PropertiesFactoryBean createPropertiesBySptring(JFishProperties properties, String...classpaths) {
 //		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
-		PropertiesFactoryBean pfb = new JFishPropertiesFactoryBean();
+		PropertiesFactoryBean pfb = new JFishPropertiesFactoryBean(properties);
 		pfb.setIgnoreResourceNotFound(true);
 		org.springframework.core.io.Resource[] resources = new org.springframework.core.io.Resource[classpaths.length];
 		int index = 0;

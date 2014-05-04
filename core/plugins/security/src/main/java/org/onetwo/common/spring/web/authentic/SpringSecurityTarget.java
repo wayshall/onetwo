@@ -84,7 +84,7 @@ public class SpringSecurityTarget implements SecurityTarget {
 	 */
 	@Override
 	public String getCookieToken() {
-		return RequestUtils.getCookieValue(request, tokenKey);
+		return RequestUtils.getUnescapeCookieValue(request, tokenKey);
 	}
 
 	@Override

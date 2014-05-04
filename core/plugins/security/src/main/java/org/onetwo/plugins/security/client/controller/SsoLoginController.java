@@ -21,6 +21,7 @@ public class SsoLoginController extends PluginSupportedController {
 		if(bind.hasErrors()){
 			return DataResult.createFailed("login error!");
 		}
+		ResponseUtils.addP3PHeader(response);
 		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
 		return DataResult.createSucceed("login succeed");
 	}
