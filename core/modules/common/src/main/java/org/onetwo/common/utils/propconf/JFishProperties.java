@@ -103,6 +103,12 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 	public JFishProperties(boolean cacheable, Properties... configs) {
 //		Assert.notEmpty(configs);
+		setConfigs(configs);
+		this.expositor = new VariableExpositor(this, cacheable);
+	}
+	
+	final public void setConfigs(Properties...configs){
+		clear();
 		for(Properties conf : configs){
 //			this.config.putAll(conf);
 			Enumeration<String> names = (Enumeration<String>)conf.propertyNames();
@@ -115,7 +121,6 @@ public class JFishProperties extends Properties implements VariableSupporter {
 				setProperty(qname, conf.getProperty(qname));
 			}
 		}
-		this.expositor = new VariableExpositor(this, cacheable);
 	}
 
 
