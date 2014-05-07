@@ -9,6 +9,7 @@ import org.onetwo.common.web.sso.DefaultSSOServiceImpl;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.client.controller.SsoLoginController;
 import org.onetwo.plugins.security.client.service.ClientSSOUserServiceImpl;
+import org.onetwo.plugins.security.common.SsoConfig;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,11 @@ public class SsoClientContext {
 	public PropertiesFactoryBean ssoClientConfig() {
 		String envLocation = SSO_CLIENT_BASE + "-" + appConfig.getAppEnvironment() + ".properties";
 		return SpringUtils.createPropertiesBySptring(new SsoClientConfig(), SSO_CLIENT_CONFIG_PATH, envLocation);
+	}
+	
+	@Bean
+	public SsoConfig getSsoConfig(){
+		return ssoClientConfig;
 	}
 	
 	@Bean

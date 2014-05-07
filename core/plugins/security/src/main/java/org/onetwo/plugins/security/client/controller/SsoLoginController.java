@@ -10,19 +10,22 @@ import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.plugins.security.client.vo.SsoLoginParams;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/client")
 public class SsoLoginController extends PluginSupportedController {
 
 	@RequestMapping("ssologin")
-	@ResponseBody
-	public DataResult ssologin(@Valid SsoLoginParams login, BindingResult bind, HttpServletResponse response){
+//	@ResponseBody
+	public void ssologin(@Valid SsoLoginParams login, BindingResult bind, HttpServletResponse response){
+		DataResult dr = null;
 		if(bind.hasErrors()){
-			return DataResult.createFailed("login error!");
+			dr = DataResult.createFailed("login error!");
+			ResponseUtils.renderJsonp(response, login.getCallback(), dr);
+			return ;
 		}
 		ResponseUtils.addP3PHeader(response);
 		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
-		return DataResult.createSucceed("login succeed");
+		dr = DataResult.createSucceed("login succeed");
+		ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 	}
 }

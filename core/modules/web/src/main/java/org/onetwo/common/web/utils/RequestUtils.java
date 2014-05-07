@@ -194,5 +194,8 @@ public abstract class RequestUtils {
 			cookieValue = Escape.unescape(cookieValue);
 		return cookieValue;
 	}
-	
+
+	public static String getRefereURL(HttpServletRequest request){
+		return request.getHeader("referer");
+	}
 }
