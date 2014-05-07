@@ -38,6 +38,7 @@ public class FreemarkerTemplate extends DynamicFreemarkerTemplateConfigurer impl
 			FileUtils.makeDirs(new File(context.getOutfile()).getParent());
 			
 			outfile = new File(context.getOutfile());
+			FileUtils.makeDirs(outfile, true);
 			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outfile), this.getEncoding()));
 			context.getContext().put("utils", GenerateUtils.getInstance());
 			template.process(context, out);
