@@ -11,6 +11,7 @@ import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.DefaultSSOServiceImpl;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.SecurityPlugin;
+import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.service.ServerSSOUserServiceImpl;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -42,6 +43,11 @@ public class SsoServerContext {
 	@Bean
 	public SSOUserService ssoUserService(){
 		return new ServerSSOUserServiceImpl();
+	}
+	
+	@Bean
+	public SsoConfig getSsoConfig(){
+		return ssoServerConfig;
 	}
 	
 	@Bean
