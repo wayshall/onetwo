@@ -19,7 +19,8 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args){
-		test2(args);
+		System.out.println(Short.MAX_VALUE);
+//		test2(args);
 	}
 	
 	public static void test2(String[] args){
