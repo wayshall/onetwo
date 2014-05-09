@@ -10,7 +10,7 @@ import org.onetwo.common.fish.utils.JdbcContext;
 public class JFishJdbcTemplateProxy extends BaseJdbcTemplateProxy{
 	
 
-	@Around("org.onetwo.common.fish.aop.JFishPointcut.jdbcTemplate()")
+	@Around("org.onetwo.common.jdbc.JFishPointcut.jdbcTemplate()")
 	public Object doProfiling(ProceedingJoinPoint pjp) throws Throwable{
 		JdbcContext jdbcContext = JFishHolder.getJdbcContex();
 		Context context = new Context(System.currentTimeMillis());

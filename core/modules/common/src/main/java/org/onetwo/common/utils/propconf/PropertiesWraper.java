@@ -22,6 +22,11 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PropertiesWraper implements VariableSupporter {
+	
+	public static final PropertiesWraper wrap(Properties properties){
+		return new PropertiesWraper(properties);
+	}
+	
 	private static Comparator<String> NAME_LENGTH_COMPARATOR = new Comparator<String>() {
 
 		@Override
@@ -31,7 +36,7 @@ public class PropertiesWraper implements VariableSupporter {
 		
 	};
 	
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger logger = LoggerFactory.getLogger(PropertiesWraper.class);
 	
 	protected Properties config = new Properties();
 
@@ -266,6 +271,12 @@ public class PropertiesWraper implements VariableSupporter {
 		return config;
 	}
 	
+	
+	
+	public boolean isEmpty() {
+		return cache.isEmpty();
+	}
+
 	public List<String> sortedKeys(){
 		List<String> keys = new ArrayList<String>();
 		Enumeration<String> keyNames = (Enumeration<String>)this.config.propertyNames();
@@ -274,6 +285,10 @@ public class PropertiesWraper implements VariableSupporter {
 		}
 		Collections.sort(keys, NAME_LENGTH_COMPARATOR);
 		return keys;
+	}
+
+	public String toString() {
+		return config.toString();
 	}
 
 

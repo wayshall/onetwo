@@ -2,10 +2,10 @@ package org.onetwo.plugins.jorm;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 
 
-public class JormPlugin extends AbstractJFishPlugin<JormPlugin> {
+public class JormPlugin extends AbstractContextPlugin<JormPlugin> {
 
 	private static JormPlugin instance;
 	
@@ -14,10 +14,6 @@ public class JormPlugin extends AbstractJFishPlugin<JormPlugin> {
 		return instance;
 	}
 	
-
-	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
-	}
 	
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {

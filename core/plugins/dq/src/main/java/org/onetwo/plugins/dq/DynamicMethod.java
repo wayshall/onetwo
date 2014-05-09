@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParserContext;
@@ -19,7 +20,7 @@ import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
-	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "delete", "insert", "create");
+	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
 	private static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;
@@ -60,6 +61,12 @@ public class DynamicMethod {
 			if(ptype instanceof ParameterizedType){
 				compClass = ReflectUtils.getGenricType(ptype, 0);
 			}
+		}else if(Page.class==rClass){
+			rClass = parameters.get(0).getParameterType();
+//			rClass = parameters.remove(0).getParameterType();
+			if(Page.class == rClass){
+				throw new BaseException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
+			}
 		}
 		
 		resultClass = rClass;
@@ -72,6 +79,23 @@ public class DynamicMethod {
 	
 	public MethodParameter remove(int index){
 		return this.parameters.remove(index);
+	}
+	
+	private boolean addAndCheckParamValue(Name name, List<Object> values, String pname, Object pvalue){
+		IfNull ifnull = name.ifParamNull();
+		if(pvalue==null){
+			switch (ifnull) {
+				case Ignore:
+					return false;
+				case Throw:
+					throw new BaseException("param["+pname+"]' value must not be null");
+				default:
+					break;
+			}
+		}
+		values.add(pname);
+		values.add(pvalue);
+		return true;
 	}
 
 	public Object[] toArrayByArgs(Object[] args, Class<?> componentClass){
@@ -89,8 +113,27 @@ public class DynamicMethod {
 			}else if(mp.hasParameterAnnotation(Name.class)){
 				Name name = mp.getParameterAnnotation(Name.class);
 				if(name.queryParam()){
-					values.add(mp.getParameterName());
-					values.add(pvalue);
+					if(name.renamedUseIndex()){
+						List<?> listValue = LangUtils.asList(pvalue);
+						int index = 0;
+						//parem0, value0, param1, value1, ...
+						for(Object obj : listValue){
+							if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
+								index++;
+							}
+							/*values.add(mp.getParameterName()+index);
+							values.add(obj);
+							index++;*/
+						}
+						//parserContext
+						if(parserContext==null)
+							parserContext = ParserContext.create();
+						parserContext.put(mp.getParameterName(), listValue);
+					}else{
+						addAndCheckParamValue(name, values, mp.getParameterName(), pvalue);
+//						values.add(mp.getParameterName());
+//						values.add(pvalue);
+					}
 				}else{
 					//parserContext
 					if(parserContext==null)
@@ -107,37 +150,6 @@ public class DynamicMethod {
 		if(parserContext!=null){
 			values.add(JNamedQueryKey.ParserContext);
 			values.add(parserContext);
-		}
-		if(componentClass!=null){
-			values.add(JNamedQueryKey.ResultClass);
-			values.add(componentClass);
-		}
-		return values.toArray();
-	}
-	
-	private Object[] toArrayByArgs2(Object[] args, Class<?> componentClass){
-		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
-		
-		Object pvalue = null;
-		for(DynamicMethodParameter mp : parameters){
-			pvalue = args[mp.getParameterIndex()];
-			if(pvalue instanceof ParserContext){
-				values.add(JNamedQueryKey.ParserContext);
-				values.add(pvalue);
-			}else if(!LangUtils.isSimpleTypeObject(pvalue)){
-				Map<?, ?> map = ReflectUtils.toMap(pvalue);
-				String prefix = "";
-				if(mp.hasParameterAnnotation(Name.class)){
-					prefix = mp.getParameterName();
-				}
-				for(Entry<?, ?> entry : map.entrySet()){
-					values.add(prefix+entry.getKey());
-					values.add(entry.getValue());
-				}
-			}else{
-				values.add(mp.getParameterName());
-				values.add(pvalue);
-			}
 		}
 		if(componentClass!=null){
 			values.add(JNamedQueryKey.ResultClass);

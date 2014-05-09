@@ -88,7 +88,7 @@ public class AppConfig extends PropConfig {
 
 	public String getAppEnvironment(){
 		String env = this.getConfig().getOriginalProperty(APP_ENVIRONMENT, Env.DEV.getValue());
-		return Env.of(env).getValue().toLowerCase();
+		return Env.of(env).getValue();
 //		return this.getProperty(APP_ENVIRONMENT, APP_ENVIRONMENT_DEV);
 	}
 	public Env getEnv(){

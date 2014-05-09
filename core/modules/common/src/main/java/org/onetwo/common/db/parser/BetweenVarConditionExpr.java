@@ -17,7 +17,7 @@ public class BetweenVarConditionExpr extends AbstractSqlVarObject implements Sql
 		this.end = end;
 
 		this.varname = SqlParserUtils.parseVarname(start);
-		this.named = start.contains(SqlTokenKey.VARNAME);
+		this.setNamed(start.contains(SqlTokenKey.VARNAME));
 	}
 
 	@Override

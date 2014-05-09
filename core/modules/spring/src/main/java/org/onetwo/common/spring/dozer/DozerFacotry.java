@@ -24,7 +24,7 @@ public class DozerFacotry {
 			cld = ClassUtils.getDefaultClassLoader();
 		List<DozerClassMapper> dozerClasses = scaner.scan(new ScanResourcesCallback<DozerClassMapper>() {
 
-			@Override
+			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
 				String clsName = metadataReader.getClassMetadata().getClassName();
 				if(clsName.startsWith("org.junit") || clsName.endsWith("Test")){
@@ -34,10 +34,12 @@ public class DozerFacotry {
 					return true;
 
 				return false;
-			}
+			}*/
 
 			@Override
 			public DozerClassMapper doWithCandidate(MetadataReader metadataReader, Resource clazz, int count) {
+				if (!metadataReader.getAnnotationMetadata().hasAnnotation(DozerMapping.class.getName()))
+					return null;
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
 				System.out.println("load dozer class: " + cls+", laoder: " + cls.getClassLoader());
 				DozerClassMapper mapper = new DozerClassMapper(cls, cls.getAnnotation(DozerMapping.class));

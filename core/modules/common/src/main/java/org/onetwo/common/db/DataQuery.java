@@ -37,4 +37,8 @@ public interface DataQuery {
 	public DataQuery setQueryConfig(Map<String, Object> configs);
 	
 //	public DataQuery setFlushMode(FlushModeType flushMode);
+	
+	public boolean isCacheable();
+
+	public void setCacheable(boolean cacheable);
 }

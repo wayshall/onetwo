@@ -35,8 +35,30 @@ public abstract class RandUtils {
 			return randomString(diff) + str;
 	}
 	
+	/****
+	 * 
+	 * @param maxInt 0 到 (maxInt-1)
+	 * @return
+	 */
 	public static int randomInt(int maxInt){
 		return randomGenerator.nextInt(maxInt);
+	}
+	public static Object randomValue(Object[] array){
+		Assert.notEmpty(array);
+		return array[randomInt(array.length)];
+	}
+
+
+	public static String randomWithPadLeft(Integer maxInt, String padStr, Integer...excepts){
+		Integer randInt = randomInt(maxInt);
+		while(ArrayUtils.contains(excepts, randInt)){
+			randInt = randomInt(maxInt);
+		}
+		String randStr = randInt.toString();
+		int strLength = String.valueOf(maxInt).length();
+		if(StringUtils.isNotBlank(padStr))
+			randStr = LangUtils.padLeft(randStr, strLength, padStr);
+		return randStr;
 	}
 	
 	public static void main(String[] args){

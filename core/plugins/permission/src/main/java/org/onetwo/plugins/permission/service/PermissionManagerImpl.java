@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PermissionManagerImpl {
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, ? extends IPermission> menuNodeMap;
 
@@ -34,7 +34,7 @@ public class PermissionManagerImpl {
 	public void build(){
 		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		IMenu rootMenu = menuInfoParser.parseTree();
-		logger.info("menu:\n" + rootMenu);
+//		logger.info("menu:\n" + rootMenu);
 		this.menuNodeMap = menuInfoParser.getMenuNodeMap();
 	}
 	

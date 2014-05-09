@@ -45,6 +45,7 @@ public interface ExtQuery {
 		public static final String SQL_SELECT = ":sql-select";
 		public static final String DISTINCT = ":distinct";
 		public static final String COUNT = ":count";
+		public static final String CACHEABLE = ":cacheable";
 		
 		public static final String ASC = ":asc";
 		public static final String DESC = ":desc";

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,9 @@ import java.util.TreeSet;
 
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.L;
+import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
+import org.onetwo.common.utils.map.ListMap;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -237,6 +240,12 @@ final public class CUtils {
 		return new HashMap<K, V>(size);
 	}
 
+	public static <K, V> ListMap<K, V> newListMap(int size){
+		if(size<=0)
+			return ListMap.newListMap();
+		return ListMap.newListMap(size);
+	}
+
 	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int size){
 		if(size<=0)
 			return new LinkedHashMap<K, V>();
@@ -317,6 +326,25 @@ final public class CUtils {
 	public static Collection stripNull(Collection collection) {
 		return strip(collection);
 	}
+
+	public static List trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
+		if (array == null)
+			return NULL_LIST;
+		
+		List list = null;
+		if(array.getClass().isArray()){
+			int length = Array.getLength(array);
+			list = new ArrayList(length);
+			for (int i = 0; i < length; i++) {
+				list.add(Array.get(array, i));
+			}
+		}else
+			list = tolist(array, trimNull);
+		
+		if (excludeClasses!=null && excludeClasses.length>0)
+			strip(list, (Object[]) excludeClasses);
+		return (list == null) ? NULL_LIST : list;
+	}
 	
 	public static Collection strip(Collection collection, final Object... stripValue) {
 		L.StripValuePredicate stripPredicate = new L.StripValuePredicate(false, stripValue);
@@ -388,6 +416,94 @@ final public class CUtils {
 	
 	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
+	}
+	
+    public static <T> void filter(Collection<T> collection, Predicate<T> predicate) {
+    	CollectionUtils.filter(collection, predicate);
+    }
+	
+    public static <K, V> void filter(Map<K, V> map, Predicate<Entry<K, V>> predicate) {
+    	if (map != null && predicate != null) {
+            for (Iterator<Entry<K, V>> it = map.entrySet().iterator(); it.hasNext();) {
+                if (predicate.apply(it.next()) == false) {
+                    it.remove();
+                }
+            }
+        }
+    }
+	
+    /*****
+     * list1中存在，list2中找不到的元素
+     * @param list1
+     * @param list2
+     * @param predicate
+     */
+    public static <T> List<T> difference(List<T> list1, List<T> list2, NotInPredicate<T> notInPredicate) {
+    	List<T> diff = LangUtils.newArrayList();
+    	for(T e : list1){
+    		if(notInPredicate.apply(e, list2))
+    			diff.add(e);
+    	}
+       return Collections.unmodifiableList(diff);
+    }
+    public static <T> List<T> difference(List<T> list1, List<T> list2, final String...properties) {
+    	return difference(list1, list2, new NotInPredicate<T>() {
+			@Override
+			public boolean apply(T e, List<T> list) {
+				return !contains(list, e, properties);
+			}
+		});
+    }
+	
+	public static interface NotInPredicate<T> {
+		boolean apply(T e, List<T> list);
+	}
+	
+	public static interface EqualsPredicate<T> {
+		boolean apply(T e1, T e2);
+	}
+	
+	public static <T> boolean contains(Collection<T> c, T element, EqualsPredicate<T> equalsPredicate){
+		if(LangUtils.isNotEmpty(c)){
+			for(T e : c){
+				if(equalsPredicate.apply(e, element))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	public static <T> boolean contains(Collection<T> c, T element, final String...properties){
+		return contains(c, element, new EqualsPredicate<T>(){
+			@Override
+			public boolean apply(T e1, T e2) {
+				return isEquals(e1, e2, properties);
+			}
+		});
+	}
+
+	
+	public static <T> boolean isEquals(T e1, T e2, EqualsPredicate<T> equalsPredicate){
+		return equalsPredicate.apply(e1, e2);
+	}
+	
+	public static <T> boolean isEquals(final T e1, final T e2, final String...properties){
+		if(e1==e2)
+			return true;
+		if(e1==null || e2==null)
+			return false;
+		return isEquals(e1, e2, new EqualsPredicate<T>(){
+
+			@Override
+			public boolean apply(T e1, T e2) {
+				for(String p : properties){
+					if(!ReflectUtils.getProperty(e1, p).equals(ReflectUtils.getProperty(e2, p)))
+						return false;
+				}
+				return true;
+			}
+			
+		});
 	}
 	
 	private CUtils(){

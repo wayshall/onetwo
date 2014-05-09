@@ -20,10 +20,17 @@
     <onetwo.jfish.version>2.0-SNAPSHOT</onetwo.jfish.version>
     <onetwo.deprecated.version>1.3.0-SNAPSHOT</onetwo.deprecated.version>
 	<onetwo.plugin.version>2.0-SNAPSHOT</onetwo.plugin.version>
+    <hibernate.version>4.2.3.Final</hibernate.version>
   </properties>
 
   <dependencies>
-  	
+  
+  	<dependency>
+		<groupId>org.apache.ant</groupId>
+		<artifactId>ant</artifactId>
+		<version>1.9.3</version>
+	</dependency>
+            
 	<dependency>
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-common</artifactId>
@@ -59,6 +66,14 @@
 	  <artifactId>onetwo-hibernate</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency>
+	
+	<!-- ejb jpa -->
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-entitymanager</artifactId>
+	  <version>${hibernate.version}</version>
+	</dependency>
+	
 	
 	<dependency>
 	  <groupId>org.onetwo</groupId>
@@ -102,11 +117,21 @@
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-batch</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-groovy</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
 	
 	<dependency>
 	  <groupId>org.apache.openejb</groupId>
 	  <artifactId>javaee-api</artifactId>
-	  <version>6.0-3</version>
 	  <scope>provided</scope> 
 	</dependency>
 	 
@@ -163,25 +188,6 @@
 	  <version>1.b.42</version>
 	</dependency>
 	
-	
-	<dependency>
-	  <groupId>org.codehaus.jackson</groupId>
-	  <artifactId>jackson-core-asl</artifactId>
-	  <version>1.9.7</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.codehaus.jackson</groupId>
-	  <artifactId>jackson-mapper-asl</artifactId>
-	  <version>1.9.7</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>com.fasterxml.jackson.core</groupId>
-	  <artifactId>jackson-annotations</artifactId>
-	  <version>2.0.2</version>
-	</dependency>
-	 
 	<dependency>
 	  <groupId>net.sf.dozer</groupId>
 	  <artifactId>dozer</artifactId>
@@ -191,7 +197,28 @@
 	  <groupId>com.carrotsearch</groupId>
 	  <artifactId>java-sizeof</artifactId>
 	  <version>0.0.3</version>
+	  <scope>system</scope>
+	  <systemPath>${basedir}/lib/SizeOf.jar</systemPath>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.eclipse.jdt.core.compiler</groupId>
+		<artifactId>ecj</artifactId>
+		<version>3.7.2</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.google.code.maven-play-plugin.org.eclipse.jdt</groupId>
+		<artifactId>org.eclipse.jdt.core</artifactId>
+		<version>3.8.0.v_C18</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.eclipse.equinox</groupId>
+		<artifactId>common</artifactId>
+		<version>3.6.200-v20130402-1505</version>
 	</dependency>
     
   </dependencies>
+  
 </project>

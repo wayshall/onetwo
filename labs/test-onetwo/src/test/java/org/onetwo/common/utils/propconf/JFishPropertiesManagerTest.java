@@ -11,7 +11,7 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.JFishPropertyC
 
 public class JFishPropertiesManagerTest{
 	
-	static class SubJFishPropertiesManager extends NamespacePropertiesManagerImpl<JFishPropertyInfo> {
+	static class SubJFishPropertiesManager extends PropertiesNamespaceInfoManagerImpl<JFishPropertyInfo> {
 
 		public SubJFishPropertiesManager() {
 			super(new JFishPropertyConf(){
@@ -24,11 +24,11 @@ public class JFishPropertiesManagerTest{
 		}
 		
 	}
-	private NamespacePropertiesManagerImpl<JFishPropertyInfo> pm = null;
+	private PropertiesNamespaceInfoManagerImpl<JFishPropertyInfo> pm = null;
 	
 	@Test
 	public void testFile(){
-		pm = new NamespacePropertiesManagerImpl<JFishPropertyInfo>(new JFishPropertyConf(){
+		pm = new PropertiesNamespaceInfoManagerImpl<JFishPropertyInfo>(new JFishPropertyConf(){
 			{
 				setDir("sql");
 				setOverrideDir("mysql");
@@ -46,7 +46,7 @@ public class JFishPropertiesManagerTest{
 		Assert.assertEquals("select t.*, t.rowid from uc_user t order by t.create_time desc", jpi.getValue());
 		
 		String ns = "org.onetwo.test";
-		NamespaceProperties<JFishPropertyInfo> nsproperties = pm.getNamespaceProperties(ns);
+		PropertiesNamespaceInfo<JFishPropertyInfo> nsproperties = pm.getNamespaceProperties(ns);
 		Assert.assertNotNull(nsproperties);
 		Assert.assertEquals(ns, nsproperties.getNamespace());
 		Assert.assertEquals(ns+".findAll", nsproperties.getNamedProperty("findAll").getFullName());
@@ -69,7 +69,7 @@ public class JFishPropertiesManagerTest{
 	@Test
 	public void testReloadFile() throws Exception{
 
-		pm = new NamespacePropertiesManagerImpl<JFishPropertyInfo>(new JFishPropertyConf(){
+		pm = new PropertiesNamespaceInfoManagerImpl<JFishPropertyInfo>(new JFishPropertyConf(){
 			{
 				setDir("sql");
 				setOverrideDir("mysql");
@@ -92,7 +92,7 @@ public class JFishPropertiesManagerTest{
 		String sqlKey = "findAll";
 		String file = "sql/"+ns+".jfish.sql";
 		
-		NamespaceProperties<JFishPropertyInfo> nsproperties = pm.getNamespaceProperties(ns);
+		PropertiesNamespaceInfo<JFishPropertyInfo> nsproperties = pm.getNamespaceProperties(ns);
 		Assert.assertNotNull(nsproperties);
 		Assert.assertEquals(ns, nsproperties.getNamespace());
 		Assert.assertEquals(ns+"."+sqlKey, nsproperties.getNamedProperty("findAll").getFullName());

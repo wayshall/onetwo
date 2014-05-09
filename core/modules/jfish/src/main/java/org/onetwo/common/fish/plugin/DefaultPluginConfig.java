@@ -1,5 +1,6 @@
 package org.onetwo.common.fish.plugin;
 
+import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 

@@ -60,6 +60,7 @@ public class PaginationFooterUI extends FmUIComponent {
 				else
 					surl += "&";
 				surl += qstr;
+				index++;
 			}
 		}
 

@@ -40,6 +40,11 @@ public class BaseSiteConfig extends AppConfig {
 	
 
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
+	public static final String TIME_PROFILER = "time.profiler";
+	public static final String LOG_OPERATION = "log.operation";
+
+	public static final String SAFE_REQUEST = "safe.request";
+//	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 	
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";
@@ -132,9 +137,9 @@ public class BaseSiteConfig extends AppConfig {
 		this.setProperty("contextRealPath", realPath);
 		if(containsKey(APP_URL_POSTFIX)){
 			this.appUrlPostfix = getProperty(APP_URL_POSTFIX);
-		}else{
+		}/*else{
 			this.appUrlPostfix = ".do";
-		}
+		}*/
 		if(logger.isInfoEnabled()){
 			logger.info("set contextPath: " + cp );
 			logger.info("set ContextRealPath: " + realPath);
@@ -294,5 +299,17 @@ public class BaseSiteConfig extends AppConfig {
 	public void setWebAppConfigurator(Object webAppConfigurator) {
 		this.getFreezer().checkOperation("setWebAppConfigurator");
 		this.webAppConfigurator = webAppConfigurator;
+	}
+	
+	public boolean isSafeRequest(){
+		return getBoolean(SAFE_REQUEST, true);
+	}
+	
+	public boolean isTimeProfiler(){
+		return getBoolean(TIME_PROFILER, isDev());
+	}
+	
+	public boolean isLogOperation(){
+		return getBoolean(LOG_OPERATION, false);
 	}
 }

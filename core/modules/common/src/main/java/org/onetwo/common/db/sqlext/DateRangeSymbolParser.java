@@ -8,6 +8,7 @@ import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.NiceDate;
 
 /****
  * 对in操作符的解释
@@ -47,8 +48,11 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 		try {
 			if(paramlist.size()==1){
 				Date date = getDate(paramlist.get(0));
-				startDate = DateUtil.setDateStart(date);
-				endDate = DateUtil.setDateEnd(date);
+				if(date!=null){
+					startDate = DateUtil.setDateStart(date);
+	//				endDate = DateUtil.setDateEnd(date);
+					endDate = DateUtil.addDay(startDate, 1);
+				}
 			}else{
 				startDate = getDate(paramlist.get(0));
 				endDate = getDate(paramlist.get(1));
@@ -62,10 +66,16 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 
 		if(!this.subQuery(field, symbol, paramlist, paramValues, hql)){
 			hql.append("( ");
-			hql.append(field).append(" >= ");
-			paramValues.addValue(field, startDate, hql);
-			hql.append(" and ").append(field).append(" < ");
-			paramValues.addValue(field, endDate, hql);
+			if(startDate!=null){
+				hql.append(field).append(" >= ");
+				paramValues.addValue(field, startDate, hql);
+				if(endDate!=null)
+					hql.append(" and ");
+			}
+			if(endDate!=null){
+				hql.append(field).append(" < ");
+				paramValues.addValue(field, endDate, hql);
+			}
 			hql.append(" ) ");
 			return hql.toString();
 		}
@@ -77,6 +87,8 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 		Date date = null;
 		if(value instanceof String){
 			date = DateUtil.date(value.toString());
+		}else if(value instanceof NiceDate){
+			date = ((NiceDate)value).getTime();
 		}else{
 			date = (Date)value;
 		}

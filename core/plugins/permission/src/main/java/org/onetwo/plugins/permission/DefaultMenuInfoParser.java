@@ -66,15 +66,17 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		
 		List<Class<?>> childMenuClass = scaner.scan(new ScanResourcesCallback<Class<?>>(){
 
-			@Override
+			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
 				if (metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
 					return true;
 				return false;
-			}
+			}*/
 
 			@Override
 			public Class<?> doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
+				if (!metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
+					return null;
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
 				return cls;
 			}
@@ -142,7 +144,14 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			ptype = (PermissionType) pvalue;
 		}
 		
-
+		Boolean hidden = false;
+		Field menuHiddenField = ReflectUtils.findField(permissionClass, "hidden");
+		if(menuHiddenField!=null){
+			Object hiddenValue = menuHiddenField.get(permissionClass);
+			if(!Boolean.class.isInstance(hiddenValue))
+				throw new BaseException("field[hidden] of " + permissionClass + " must be Boolean.");
+			hidden = (Boolean) hiddenValue;
+		}
 
 		Object nameValue = ReflectUtils.getFieldValue(permissionClass, "name", true);
 		String name = nameValue==null?"":nameValue.toString();
@@ -156,6 +165,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		String code = parseCode(permissionClass);
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
+		perm.setHidden(hidden);
 		this.menuNodeMap.put(perm.getCode(), perm);
 		this.menuNodeMapByClass.put(permissionClass, perm);
 		return perm;

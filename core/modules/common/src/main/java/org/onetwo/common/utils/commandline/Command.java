@@ -6,7 +6,7 @@ public interface Command {
 	
 	public String helpDoc();
 	
-	public void execute(CmdContext context);
+	public void execute(CmdContext context) throws Exception ;
 	
 	public void setCommandManager(CommandManager commandManager);
 	

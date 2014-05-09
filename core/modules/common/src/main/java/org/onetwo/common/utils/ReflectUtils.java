@@ -34,7 +34,6 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
-import org.onetwo.common.utils.list.ListFun;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.M;
 
@@ -129,6 +128,16 @@ public class ReflectUtils {
 		return values;
 	}
 
+	public static <T> Collection<T> w(Object[] elements, String propName) {
+		Collection<T> values = new ArrayList<T>(elements.length);
+		T val = null;
+		for(Object obj : elements){
+			val = (T)getProperty(obj, propName);
+			values.add(val);
+		}
+		return values;
+	}
+
 	public static Object getProperty(Object element, String propName) {
 		return getProperty(element, propName, true);
 	}
@@ -146,7 +155,7 @@ public class ReflectUtils {
 		try{
 			return getIntro(getObjectClass(element)).getPropertyValue(element, propName);
 		}catch(Exception e){
-			logger.error("get property["+propName+"] error: " + element);
+			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
 			if(throwIfError)
 				throw LangUtils.asBaseException(e);
 		}
@@ -894,7 +903,7 @@ public class ReflectUtils {
 		copy(source, target, IGNORE_BLANK);
 	}
 	
-	public static void copy(Object source, Object target, CopyConf conf) {
+	public static void copy(Object source, Object target, CopyConfig conf) {
 		copyByPropNames(source, target, new CopyConfAdapter(conf));
 	}
 	
@@ -1535,18 +1544,6 @@ public class ReflectUtils {
 		return results;
 	}
 
-	public static <T> List<T> newInstance(Class<T> clazz, int count,
-			ListFun<T> closure) {
-		List<T> results = new ArrayList<T>();
-		for (int i = 0; i < count; i++) {
-			T result = ReflectUtils.newInstance(clazz);
-			if (closure != null)
-				closure.exe(result, i, null);
-			results.add(result);
-		}
-		return results;
-	}
-	
 
 	public static PropertyDescriptor newProperty(Class clazz, String propName){
 		try {
@@ -1678,22 +1675,29 @@ public class ReflectUtils {
 				return;
 			
 			Object val = ReflectUtils.getProperty(source, prop);
-			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
-				return;
+			if(isIgnoreValue(val))
+				return ;
+			
 			
 			ReflectUtils.setProperty(target, prop, val);
 			
+		}
+		
+		protected boolean isIgnoreValue(Object val){
+			if(val==null || (String.class.isInstance(val) && StringUtils.isBlank(val.toString())))
+				return true;
+			return false;
 		}
 		
 	};
 	
 
 	
-	private static class CopyConfAdapter implements PropertyCopyer<String> {
+	public static class CopyConfAdapter implements PropertyCopyer<String> {
 		
-		final private CopyConf conf;
+		final private CopyConfig conf;
 		
-		public CopyConfAdapter(CopyConf conf) {
+		public CopyConfAdapter(CopyConfig conf) {
 			super();
 			this.conf = conf;
 		}
@@ -1703,6 +1707,17 @@ public class ReflectUtils {
 			if(ArrayUtils.contains(conf.getIgnoreFields(), prop)){
 				return;//ignore
 			}
+			if(LangUtils.isEmpty(conf.getIncludeFields())){
+				copyValue(source, target, prop);
+			}else{
+				if(ArrayUtils.contains(conf.getIncludeFields(), prop)){
+					copyValue(source, target, prop);
+				}
+			}
+			
+		}
+		
+		private void copyValue(Object source, Object target, String prop){
 			Object value = getProperty(source, prop);
 			if(conf.isIgnoreNull() && value==null)
 				return;
@@ -1712,7 +1727,6 @@ public class ReflectUtils {
 				return;
 			}
 			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
-			
 		}
 	};
 

@@ -18,6 +18,7 @@ public class ParserContext implements Map<Object, Object> {
 	
 	public ParserContext(){
 		context = LangUtils.newHashMap();
+		context.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
 	}
 	
 	public ParserContext(Map<Object, Object> context) {

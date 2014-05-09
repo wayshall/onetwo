@@ -168,7 +168,7 @@ public class ReflectUtilsTest {
 		Assert.assertEquals("  ", user.getDesc());
 		Assert.assertEquals(111, user.getAge());
 		Assert.assertTrue(user.getHeight()==null);
-		
+
 
 		user = new User();
 		user.setHeight(11);
@@ -177,6 +177,14 @@ public class ReflectUtilsTest {
 		Assert.assertEquals(0, user.getAge());
 		Assert.assertEquals(Integer.valueOf(11), user.getHeight());
 		Assert.assertTrue(user.getDesc()==null);
+
+		user = new User();
+		user.setHeight(11);
+		ReflectUtils.copy(map, user, CopyConfig.create().ignoreNull().ignoreBlank().includeFields("age"));
+		Assert.assertNull(user.getUserName());
+		Assert.assertEquals(111, user.getAge());
+		Assert.assertEquals(Integer.valueOf(11), user.getHeight());
+		Assert.assertNull(user.getDesc());
 	}
 	
 	public static class UserSeperator {

@@ -24,7 +24,18 @@
 
  
   <dependencies>
-      
+    
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	 
       <!-- hibernate -->
 	 <dependency>
 	  <groupId>org.hibernate</groupId>
@@ -46,6 +57,13 @@
 	</dependency>
 	 -->
 	 
+	
+	<dependency>
+	  <groupId>com.fasterxml.jackson.datatype</groupId>
+	  <artifactId>jackson-datatype-hibernate4</artifactId>
+	  <version>2.3.0</version>
+	</dependency>   
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

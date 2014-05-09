@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 
 public class CmdRunner {
 
-	protected Logger logger = Logger.getLogger(CmdRunner.class);
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	protected CommandManager cmdManager;
 	
@@ -22,13 +23,20 @@ public class CmdRunner {
 	 * @throws IOException
 	 */
 	public void run(String[] args) {
-		startAppContext(args);
+		try {
+			startAppContext(args);
+		} catch (Exception e) {
+			logger.error("startAppContext error : " + e.getMessage(), e);
+		}
 		loadCommand(args);
-		waitForCommand();
+		initAfterLoadCommand(args);
+		onRuning();
 	}
 	
- 
+
 	protected void startAppContext(String[] args) {
+	}
+	protected void initAfterLoadCommand(String[] args) {
 	}
 
 	protected void loadCommand(String[] args) {
@@ -41,22 +49,43 @@ public class CmdRunner {
 		return new SimpleCmdContext(br);
 	}
 
+
+	protected void onRuning() {
+		this.waitForCommand();
+	}
+	
 	protected void waitForCommand() {
 		InputStreamReader reader = null;
 		try {
+			System.out.print("please input > ");
 			reader = new InputStreamReader(System.in);
 			BufferedReader br = new BufferedReader(reader);
 			String str = null;
 			CmdContext cmdContext = createCmdContext(br);
 			while ((str = br.readLine()) != null) {
 				Command cmd = cmdManager.getCommand(str);
-				if(cmd!=null)
-					cmd.execute(cmdContext);
+				if(cmd!=null){
+					try {
+						cmd.execute(cmdContext);
+					} catch (CommandStopException e) {
+//						logger.error("command line error: " + e.getMessage());
+						System.out.println("command stop " + e.getMessage());
+					} catch (CommandLineException e) {
+//						logger.error("command line error: " + e.getMessage());
+						System.out.println("command line message " + e.getMessage());
+					} catch (Exception e) {
+						logger.error("execute command error: " + e.getMessage(), e);
+						System.out.println("execute command error : " + e.getMessage()+", see detail in log file!");
+					}
+					System.out.print("please input > ");
+				}
 			}
 
-		} catch (Exception e) {
-			logger.error("execute command error!", e);
+		} catch (IOException e) {
+			logger.error("input error : " + e.getMessage(), e);
+			System.out.println("input error : " + e.getMessage()+", see detail in log file!");
 		} finally{
+			System.out.println("goodbye!");
 			LangUtils.closeIO(reader);
 		}
 	}

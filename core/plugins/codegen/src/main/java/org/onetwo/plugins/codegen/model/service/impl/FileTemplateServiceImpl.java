@@ -15,14 +15,14 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
-import org.onetwo.plugins.codegen.model.service.TemplateService;
+import org.onetwo.plugins.codegen.model.service.CodeTemplateService;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class FileTemplateServiceImpl implements TemplateService, StringTemplateProvider {
+public class FileTemplateServiceImpl implements CodeTemplateService, StringTemplateProvider {
 
 	private PathMatchingResourcePatternResolver scaner = new PathMatchingResourcePatternResolver();
 	

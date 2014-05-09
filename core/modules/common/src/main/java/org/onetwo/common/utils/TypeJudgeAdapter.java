@@ -1,26 +1,35 @@
 package org.onetwo.common.utils;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 
 public class TypeJudgeAdapter implements TypeJudge {
 
 	@Override
-	public Object ifList(Object obj) {
+	public Object ifList(List<?> obj) {
 		return obj;
 	}
 	
-	public Object ifCollection(Object obj) {
+	public Object ifCollection(Collection<?> obj) {
 		return obj;
 	}
 
-	public Object ifMap(Object obj) {
+	public Object ifMap(Map<?, ?> obj) {
 		return obj;
 	}
 
 	@Override
-	public Object ifArray(Object array) {
+	public Object ifArray(Object[] array) {
 		return array;
 	}
 	
+	/*@Override
+	public Object ifPrimitiveArray(Object array, Class<?> primitiveType) {
+		return array;
+	}*/
+
 	public Object other(Object obj, Class<?> toType) {
 		Object result;
 		if (toType == Long.class || toType == long.class) {

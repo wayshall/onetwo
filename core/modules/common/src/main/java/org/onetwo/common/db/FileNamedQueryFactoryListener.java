@@ -5,5 +5,5 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 
 public interface FileNamedQueryFactoryListener {
 
-	public void onInitialized(BaseEntityManager em, FileNamedQueryFactory<? extends NamespaceProperty> fq);
+	public void onInitialized(CreateQueryable em, FileNamedQueryFactory<? extends NamespaceProperty> fq);
 }

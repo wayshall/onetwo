@@ -15,14 +15,16 @@ public class FormTagBean extends HtmlElement {
 
 	private List<FormFieldTagBean> fields = LangUtils.newArrayList();
 	private List<FormFieldTagBean> buttons = LangUtils.newArrayList(3);
-	private FormFieldTagBean submit;
+//	private List<FormFieldTagBean> submits = LangUtils.newArrayList(3);
+//	private FormFieldTagBean submit;
 
 	private FormDataProvider provider;
+	private boolean showOnly;
 
 	public void addField(FormFieldTagBean field) {
 		field.setFormBean(this);
 		if(field.getType()==FormFieldType.submit){
-			this.submit = field;
+			this.buttons.add(field);
 		}else if(field.getType()==FormFieldType.button){
 			this.buttons.add(field);
 		}else{
@@ -74,10 +76,6 @@ public class FormTagBean extends HtmlElement {
 		this.provider = provider;
 	}
 
-	public FormFieldTagBean getSubmit() {
-		return submit;
-	}
-
 	public List<FormFieldTagBean> getButtons() {
 		return buttons;
 	}
@@ -85,5 +83,18 @@ public class FormTagBean extends HtmlElement {
 	public String getEncType(){
 		return uploadFile?"multipart/form-data":"application/x-www-form-urlencoded";
 	}
+	
+	public String getId(){
+		return super.getId()+"Form";
+	}
+
+	public boolean isShowOnly() {
+		return showOnly;
+	}
+
+	public void setShowOnly(boolean showOnly) {
+		this.showOnly = showOnly;
+	}
+
 
 }

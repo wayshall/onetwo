@@ -21,7 +21,7 @@ import org.onetwo.common.utils.StringUtils;
 public abstract class ExtQueryUtils {
 	
 	public static class F {
-		public static final String POSTFIX = "_____%&^&*#$#$%____";
+//		public static final String POSTFIX = "_____%&^&*#$#$%____";
 		/*public static final String func(String func){
 			return codeString(func, K.FUNC, "");
 		}
@@ -80,6 +80,7 @@ public abstract class ExtQueryUtils {
 	public static List processValue(Object fields, Object values, IfNull ifNull, boolean trimNull){
 		List valueList = null;
 		if(LangUtils.hasNotElement(values)){
+//		if(LangUtils.isEmpty(values)){
 			if(ifNull==IfNull.Ignore){
 				return null;
 			}else if(ifNull==IfNull.Throw){
@@ -93,6 +94,22 @@ public abstract class ExtQueryUtils {
 		}
 		return valueList;
 	}
+	
+	/*public static Object processSingleValue(Object fields, Object value, IfNull ifNull){
+		Object rs = null;
+		if(value==null){
+			if(ifNull==IfNull.Ignore){
+				return null;
+			}else if(ifNull==IfNull.Throw){
+				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
+			}else {//calm
+				rs = value;
+			}
+		}else{
+			rs = value;
+		}
+		return rs;
+	}*/
 	
 	public static Map field2Map(Object obj){
 		if (obj == null)
@@ -118,12 +135,28 @@ public abstract class ExtQueryUtils {
 	}
 	
 	public static String buildCountSql(String sql, String countValue){
-		String countField = "*";
-		String hql = StringUtils.substringAfter(sql, "from ");
-		if(StringUtils.isBlank(hql)){
-			hql = StringUtils.substringAfter(sql, "FROM ");
+		String[] tokens = StringUtils.split(sql.toLowerCase(), " ");
+		
+		int groupIndex = ArrayUtils.indexOf(tokens, "group");
+		if(groupIndex!=-1 && tokens.length>(groupIndex+1) && "by".equals(tokens[groupIndex+1])){
+			sql = StringUtils.substringBefore(sql, " order by ", groupIndex);
+			sql = "select count(*) from ( " + sql + " ) count_view";
+			return sql;
 		}
-		hql = StringUtils.substringBefore(hql, " order by ");
+		
+		int unionIndex = ArrayUtils.indexOf(tokens, "union");
+		if(unionIndex!=-1){
+			sql = "select count(*) from ( " + sql + " ) count_view";
+			return sql;
+		}
+		
+		String countField = "*";
+		String hql = sql;
+		if(ArrayUtils.contains(tokens, "from"))
+			hql = StringUtils.substringAfter(hql, "from ");
+		int orderByIndex = ArrayUtils.indexOf(tokens, "order");
+		if(orderByIndex!=-1 && tokens.length>(orderByIndex+1) && "by".equals(tokens[orderByIndex+1]))
+			hql = StringUtils.substringBefore(hql, " order by ");
 
 		if(StringUtils.isNotBlank(countValue))
 			countField = countValue;

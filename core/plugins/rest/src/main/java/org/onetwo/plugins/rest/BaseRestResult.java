@@ -2,7 +2,7 @@ package org.onetwo.plugins.rest;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @SuppressWarnings("serial")
 public class BaseRestResult implements Serializable {

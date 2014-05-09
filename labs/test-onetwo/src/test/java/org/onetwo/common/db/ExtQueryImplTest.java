@@ -136,6 +136,7 @@ public class ExtQueryImplTest {
 		params.put(":fetch", "bid");
 		params.put(K.DESC, "name, text");
 		params.put(K.ORDERBY, "object.nameid desc, object.textid asc");
+		params.put(K.IF_NULL, IfNull.Ignore);
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, params);
 		q.build();
 		
@@ -347,6 +348,7 @@ public class ExtQueryImplTest {
 		properties.put(K.SQL_QUERY, true);
 		properties.put(F.sqlFunc("LOWER(name)"), "way");
 		properties.put(F.sqlFunc("substring(name, 5, 1)"), "w");
+		properties.put(K.IF_NULL, IfNull.Ignore);
 
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
@@ -363,6 +365,7 @@ public class ExtQueryImplTest {
 	
 	@Test
 	public void testFunc(){
+//		properties.put(K.SELECT, ".max(@name, @age)");
 		properties.put(K.JOIN_IN, "articles:art");
 		properties.put(K.NO_PREFIX+"art.lastName", "Grisham");
 		properties.put("&LOWER(@name)", "way");
@@ -417,7 +420,8 @@ public class ExtQueryImplTest {
 		q.build();
 
 		String sql = "select mag from Magazine mag where ( mag.createTime >= :mag_createTime0 and mag.createTime < :mag_createTime1 ) order by mag.id desc";
-		String paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Thu Oct 27 23:59:59 CST 2011}";
+		String paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011}";
+//		System.out.println("aa:"+q.getParamsValue().getValues().toString());
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
 		
@@ -432,7 +436,7 @@ public class ExtQueryImplTest {
 		q.build();
 
 		sql = "select mag from Magazine mag where ( mag.createTime >= :mag_createTime0 and mag.createTime < :mag_createTime1 ) and ( mag.regiestTime >= :mag_regiestTime2 and mag.regiestTime < :mag_regiestTime3 ) order by mag.id desc";
-		paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011, mag_regiestTime2=Thu Oct 27 00:00:00 CST 2011, mag_regiestTime3=Thu Oct 27 23:59:59 CST 2011}";
+		paramsting = "{mag_createTime0=Thu Oct 27 00:00:00 CST 2011, mag_createTime1=Fri Oct 28 00:00:00 CST 2011, mag_regiestTime2=Thu Oct 27 00:00:00 CST 2011, mag_regiestTime3=Fri Oct 28 00:00:00 CST 2011}";
 
 //		System.out.println(q.getSql());
 //		System.out.println((Map)q.getParamsValue().getValues());
@@ -578,6 +582,7 @@ public class ExtQueryImplTest {
 		this.properties.put("name:", null);
 		this.properties.put("nickname:not in", "way");
 		this.properties.put(K.DEBUG, true);
+		this.properties.put(K.IF_NULL, IfNull.Ignore);
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createDeleteQuery(Magazine.class, properties);
 		q.build();
 		

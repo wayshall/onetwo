@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.exception.BusinessException;
-import org.onetwo.common.fish.plugin.PluginBaseController;
+import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
+import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.codegen.generator.CommonlContextBuilder;
 import org.onetwo.plugins.codegen.generator.DefaultCodegenServiceImpl;
 import org.onetwo.plugins.codegen.generator.DefaultTableManager;
@@ -19,7 +20,7 @@ import org.onetwo.plugins.codegen.generator.FreemarkerTemplate;
 import org.onetwo.plugins.codegen.generator.GenContext;
 import org.onetwo.plugins.codegen.model.entity.DatabaseEntity;
 import org.onetwo.plugins.codegen.model.entity.TemplateEntity;
-import org.onetwo.plugins.codegen.model.service.TemplateService;
+import org.onetwo.plugins.codegen.model.service.CodeTemplateService;
 import org.onetwo.plugins.codegen.model.service.impl.DatabaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,10 +30,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CodegenController extends PluginBaseController {
+@CsrfValid(false)
+public class CodegenController extends PluginSupportedController {
 
 	@Autowired
-	private TemplateService templateService;
+	private CodeTemplateService templateService;
 	
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;
@@ -47,7 +49,6 @@ public class CodegenController extends PluginBaseController {
 	private JFishAppConfigrator JFishAppConfigrator;
 	
 	public CodegenController(){
-		System.out.println("CodegenController");
 	}
 	@RequestMapping(value={"", "/"})
 	public String index(){
@@ -63,7 +64,6 @@ public class CodegenController extends PluginBaseController {
 
 	@RequestMapping(value="/config", method=RequestMethod.POST)
 	public ModelAndView config(Long dbid, String[] tables, Page<TemplateEntity> tp) throws BusinessException{
-		System.out.println("tables: " + LangUtils.toString(tables));
 		templateService.findTemplatePage(tp);
 		
 //		EntityGridUIBuilder listgridBuilder = new EntityGridUIBuilder(TemplateEntity.class);
