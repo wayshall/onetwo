@@ -13,7 +13,6 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.plugins.security.client.vo.SsoLoginParams;
 import org.onetwo.plugins.security.common.SsoConfig;
-import org.onetwo.plugins.security.server.SsoServerConfig;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -33,7 +32,7 @@ public class SsoLoginController extends PluginSupportedController {
 			return ;
 		}
 		if(!checkSign(login)){
-			logger.error("check sign error, token[{}] : {} ", login.getTk(), login.getSign());
+			logger.error("check sign error");
 			dr = DataResult.createFailed("sign error");
 			ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 			return ;
@@ -46,7 +45,9 @@ public class SsoLoginController extends PluginSupportedController {
 	}
 	
 	private boolean checkSign(SsoLoginParams login){
-		String source = LangUtils.appendNotBlank(login.getTk(), ssoConfig.getSignKey());
-		return MDFactory.MD5.checkEncrypt(source, login.getSign());
+		String source = LangUtils.appendNotBlank(LangUtils.decodeUrl(login.getTk()), "|", ssoConfig.getSignKey());
+		boolean valid = MDFactory.createSHA().checkEncrypt(source, login.getSign());
+		logger.error("check sign, source[{}] : {}", source, login.getSign());
+		return valid;
 	}
 }

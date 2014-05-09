@@ -8,28 +8,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.RoleDetail;
+import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 import org.springframework.web.method.HandlerMethod;
 
 public class SpringSecurityTarget implements SecurityTarget {
 
-	public static SpringSecurityTarget New(HttpServletRequest request, HttpServletResponse response) {
-		return new SpringSecurityTarget(request, response);
+	public static SpringSecurityTarget New(SessionStorer sessionStorer, HttpServletRequest request, HttpServletResponse response) {
+		return new SpringSecurityTarget(sessionStorer, request, response);
 	}
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-	protected HandlerMethod handler;
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
+	final protected HandlerMethod handler;
+	final protected HttpServletRequest request;
+	final protected HttpServletResponse response;
+	final protected SessionStorer sessionStorer;
 
 //	protected String[] roles;
 	protected String sessionKey = UserDetail.USER_DETAIL_KEY ;
@@ -38,15 +38,16 @@ public class SpringSecurityTarget implements SecurityTarget {
 	protected Map<String, Object> datas;
 	
 
-	public SpringSecurityTarget(HttpServletRequest request, HttpServletResponse response) {
-		this(request, response, null);
+	public SpringSecurityTarget(SessionStorer sessionStorer, HttpServletRequest request, HttpServletResponse response) {
+		this(sessionStorer, request, response, null);
 	}
 
-	public SpringSecurityTarget(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+	public SpringSecurityTarget(SessionStorer sessionStorer, HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		super();
 		this.request = request;
 		this.response = response;
 		this.handler = handler;
+		this.sessionStorer = sessionStorer;
 	}
 
 //	@Override
@@ -66,17 +67,20 @@ public class SpringSecurityTarget implements SecurityTarget {
 
 	@Override
 	public UserDetail getAuthoritable() {
-		return WebContextUtils.getAttr(request.getSession(), sessionKey);
+//		return WebContextUtils.getAttr(request.getSession(), sessionKey);
+		return sessionStorer.getUser(sessionKey);
 	}
 
 	@Override
 	public void removeCurrentLoginUser() {
-		WebContextUtils.remove(request.getSession(), sessionKey);
+//		WebContextUtils.remove(request.getSession(), sessionKey);
+		sessionStorer.removeUser(sessionKey);
 	}
 
 	@Override
 	public void setCurrentLoginUser(UserDetail userDetail) {
-		WebContextUtils.attr(request.getSession(), sessionKey, userDetail);
+//		WebContextUtils.attr(request.getSession(), sessionKey, userDetail);
+		sessionStorer.addUser(sessionKey, userDetail);
 	}
 
 	/****
