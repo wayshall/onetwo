@@ -4,9 +4,11 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.SSOService;
+import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.DefaultSSOServiceImpl;
 import org.onetwo.common.web.sso.SSOUserService;
+import org.onetwo.plugins.security.common.HttpSessionStorer;
 import org.onetwo.plugins.security.common.SsoConfig;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -63,6 +65,11 @@ public class SsoClientContext {
 		}
 		return ssoUserService;
 	}*/
+	
+	@Bean
+	public SessionStorer sessionStorer(){
+		return new HttpSessionStorer();
+	}
 	
 	
 }

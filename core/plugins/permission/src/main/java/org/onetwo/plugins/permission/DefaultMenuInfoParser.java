@@ -196,7 +196,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
 		perm.setHidden(hidden);
-		perm.setSyscode(syscode);
+//		perm.setSyscode(syscode);
 		this.menuNodeMap.put(perm.getCode(), perm);
 		this.menuNodeMapByClass.put(permissionClass, perm);
 		return perm;

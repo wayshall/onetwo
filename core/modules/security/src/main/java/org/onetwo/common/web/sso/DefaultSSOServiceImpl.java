@@ -2,10 +2,12 @@ package org.onetwo.common.web.sso;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -29,7 +31,15 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 
 	@Override
 	protected UserDetail getCurrentLoginUserByCookieToken(String token) {
-		return ssoUserService.getCurrentLoginUserByToken(token);
+		try {
+			return ssoUserService.getCurrentLoginUserByToken(token);
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			if(e instanceof ClassNotFoundException){
+				msg = "client no mapped user detail class " + (BaseSiteConfig.getInstance().isProduct()?"":e.getMessage());
+			}
+			throw new ServiceException("sso client get login user error : {} ", msg);
+		}
 	}
 
 

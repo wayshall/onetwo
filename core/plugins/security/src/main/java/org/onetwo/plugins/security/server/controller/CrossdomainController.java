@@ -37,7 +37,6 @@ public class CrossdomainController extends AbstractBaseController {
 			url = TagUtils.appendParam(url, "callback", params.getCallback());
 			String sign = sign(token);
 			url = TagUtils.appendParam(url, "sign", sign);
-			logger.error("sign token[{}] : {}: ", token, sign);
 			
 		}else if("logout".equals(params.getAction())){
 			url = ssoServerConfig.getClientLogoutUrl(params.getSite());
@@ -51,9 +50,11 @@ public class CrossdomainController extends AbstractBaseController {
 		return redirectTo(url);
 	}
 	
-	private String sign(String...params){
-		String source = LangUtils.appendNotBlank(params) + ssoServerConfig.getSignKey();
-		return MDFactory.MD5.encryptWithSalt(source);
+	private String sign(String token){
+		String source = LangUtils.appendNotBlank(token, "|", ssoServerConfig.getSignKey());
+		String entry = MDFactory.createSHA().encryptWithSalt(source);
+		logger.error("sign token[{}] : {}", source, entry);
+		return entry;
 	}
 
 

@@ -81,9 +81,10 @@ salt为8个随机字节。
 	@Test
 	public void testSign(){
 		String DEFAULT_SSO_SIGN_KEY = "asdfa7sd9fa[ko@#$s0df]pips9";
-		String source = LangUtils.appendNotBlank("jQuery1720603777531767264_1399536757938", "MqjrYJDu/jv1BnPeJhWYLojEG1Jg1GUNIHyu2Q==") + DEFAULT_SSO_SIGN_KEY;
+		String source = LangUtils.appendNotBlank("6RmyQ2 t1KFIIvAijFE9wqPFMXNwfSXMiKDvEg==", DEFAULT_SSO_SIGN_KEY);
 		String entrystr = MDFactory.MD5.encryptWithSalt(source);
-		boolean rs = MDFactory.MD5.checkEncrypt("3941DC60D176A40DC5A11D888EDE8DAAE272A57CED574E39", entrystr);
+//		boolean rs = MDFactory.MD5.checkEncrypt(source, "4B4AB0CF1EB5DD19D8B7C24F0D0626F20085AD9EA9D03D02");
+		boolean rs = MDFactory.MD5.checkEncrypt(source, entrystr);
 		Assert.assertEquals(true, rs);
 	}
 

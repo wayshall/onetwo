@@ -39,6 +39,7 @@
 				<module>../email</module>
 				<module>../batch</module>
 				<module>../jasper</module>
+				<module>../security</module>
 	  	</modules>
 	  </profile>
 	</profiles>

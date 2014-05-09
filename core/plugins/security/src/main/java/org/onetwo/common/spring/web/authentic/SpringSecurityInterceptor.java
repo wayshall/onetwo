@@ -2,6 +2,7 @@ package org.onetwo.common.spring.web.authentic;
 
 import java.util.Date;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,6 +10,8 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.SecurityInterceptor;
 import org.onetwo.common.sso.SSOService;
+import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -37,6 +40,9 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	private AuthenticConfigService authenticConfigService;
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 	
+	@Resource
+	private SessionStorer sessionStorer;
+	
 	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	public SpringSecurityInterceptor(){
@@ -57,6 +63,7 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 				SpringUtils.registerBean(applicationContext, AuthenticationInvocation.NAME, SpringAuthenticationInvocation.class);
 			}
 		}
+		Assert.notNull(sessionStorer);
 //		Assert.notNull(this.authenticConfigService, "没有配置验证服务！");
 	}
 
@@ -105,7 +112,7 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	
 	protected SecurityTarget createSecurityTarget(HttpServletRequest request, HttpServletResponse response, Object handler){
 		if(handler instanceof HandlerMethod)
-			return new SpringSecurityTarget(request, response, (HandlerMethod)handler);
+			return new SpringSecurityTarget(sessionStorer, request, response, (HandlerMethod)handler);
 		return null;
 	}
 
