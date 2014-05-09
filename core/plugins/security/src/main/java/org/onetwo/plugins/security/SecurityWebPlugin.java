@@ -3,13 +3,17 @@ package org.onetwo.plugins.security;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.fish.plugin.EmptyJFishMvcConfigurerListener;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.web.authentic.SpringTargetArgumentResolver;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.onetwo.plugins.security.client.SsoClientContext;
 import org.onetwo.plugins.security.client.SsoClientWebContext;
 import org.onetwo.plugins.security.common.SecurityWebContext;
 import org.onetwo.plugins.security.server.SsoServerContext;
 import org.onetwo.plugins.security.server.SsoServerWebContext;
 import org.springframework.core.io.Resource;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 
 public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
@@ -44,6 +48,17 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 		instance = plugin;
 	}
 
+	@Override
+	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+		return new EmptyJFishMvcConfigurerListener(){
+
+			@Override
+			public void onRegisterArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+				argumentResolvers.add(new SpringTargetArgumentResolver());
+			}
+			
+		};
+	}
 
 
 	@Override

@@ -7,6 +7,7 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.springframework.beans.PropertyEditorRegistrar;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 public class EmptyJFishMvcConfigurerListener implements JFishMvcConfigurerListener {
 
@@ -22,6 +23,13 @@ public class EmptyJFishMvcConfigurerListener implements JFishMvcConfigurerListen
 
 	@Override
 	public void onMvcInitContext(JFishMvcApplicationContext applicationContext, JFishMvcConfig mvcConfig) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRegisterArgumentResolvers(
+			List<HandlerMethodArgumentResolver> argumentResolvers) {
 		// TODO Auto-generated method stub
 		
 	}

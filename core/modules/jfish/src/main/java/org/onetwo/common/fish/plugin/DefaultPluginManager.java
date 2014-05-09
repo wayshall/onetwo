@@ -24,6 +24,7 @@ import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
@@ -252,6 +253,18 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			@Override
 			protected void doIt(JFishPluginMeta e) {
 				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onMvcInitContext(applicationContext, mvcConfig);
+			}
+			
+		});
+	}
+
+	@Override
+	public void onRegisterArgumentResolvers(final List<HandlerMethodArgumentResolver> argumentResolvers) {
+		this.pluginMetas.each(new NoIndexIt<JFishPluginMeta>() {
+
+			@Override
+			protected void doIt(JFishPluginMeta e) {
+				JFishPluginUtils.getJFishPlugin(e).getJFishMvcConfigurerListener().onRegisterArgumentResolvers(argumentResolvers);
 			}
 			
 		});
