@@ -157,8 +157,12 @@ public final class JFishWebUtils {
 	}
 	
 	public static <T extends UserDetail> T removeUserDetail(){
-		UserDetail user = session(UserDetail.USER_DETAIL_KEY);
-		removeSession(UserDetail.USER_DETAIL_KEY);
+		return removeUserDetail(UserDetail.USER_DETAIL_KEY);
+	}
+	
+	public static <T extends UserDetail> T removeUserDetail(String key){
+		UserDetail user = session(key);
+		removeSession(key);
 		removeAllSessionAttributes();
 		return (T)user;
 	}

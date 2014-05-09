@@ -20,6 +20,12 @@ public class UserDetailArgumentResolver implements HandlerMethodArgumentResolver
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
+//	private SessionStorer sessionStorer;
+	
+	public UserDetailArgumentResolver(){
+//		SessionStorer ss = SpringApplication.getInstance().getSpringHighestOrder(SessionStorer.class);
+//		this.sessionStorer = ss;
+	}
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {

@@ -19,17 +19,25 @@ public class ExtMenuModel implements TreeModel<ExtMenuModel> {
 	
 	
 	
-	private ExtMenuModel() {
-		super();
+	public ExtMenuModel(Object id, String text, String url) {
+		this(id, text, url, null, null);
 	}
 
-	private ExtMenuModel(Object id, String text, String url, Object parentId,
+	public ExtMenuModel(Object id, String text, String url, Object parentId,
 			Integer sort) {
 		super();
 		this.id = id;
 		this.text = text;
 		this.url = url;
 		this.parentId = parentId;
+		this.sort = sort;
+	}
+	
+	public void setParentId(Object parentId) {
+		this.parentId = parentId;
+	}
+
+	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
 
