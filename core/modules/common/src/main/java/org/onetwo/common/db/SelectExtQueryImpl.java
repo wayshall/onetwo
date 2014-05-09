@@ -33,6 +33,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	
 	private Map<String, Object> queryConfig;
 	
+	private boolean cacheable;
+	
 
 	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
@@ -47,6 +49,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
 		this.countValue = getValueAndRemoveKeyFromParams(K.COUNT, countValue);
+		this.cacheable = getValueAndRemoveKeyFromParams(K.CACHEABLE, cacheable);
 		
 		//query config
 		Object qc = getValueAndRemoveKeyFromParams(K.QUERY_CONFIG, queryConfig);
@@ -87,21 +90,19 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		sql.append(select);
 		if (join != null)
 			sql.append(join);
-		if (params.isEmpty()) {
-			if (orderBy != null)
-				sql.append(orderBy);
-			return this;
+		
+		if (!params.isEmpty()) {
+			this.buildWhere();
+			if(where!=null)
+				sql.append(where);
 		}
 		
-		this.buildWhere();
-		if(where!=null)
-			sql.append(where);
 		if (orderBy != null)
 			sql.append(orderBy);
 
 		if (isDebug()) {
 			logger.info("generated sql : " + sql);
-			logger.info("params : " + (Map) this.paramsValue.getValues());
+			logger.info("params : " + this.paramsValue.getValues());
 		}
 
 		if(isDebug())
@@ -141,6 +142,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			selectKey = K.DISTINCT;
 			selectValule = params.get(selectKey);
 		}
+		params.remove(K.DISTINCT);
+		
 		if (selectValule != null) {
 			params.remove(selectKey);
 			Object[] selectList = null;
@@ -395,6 +398,11 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		return queryConfig;
 	}
 
+
+	@Override
+	public boolean isCacheable() {
+		return cacheable;
+	}
 
 	public static void main(String[] args) {
 

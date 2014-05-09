@@ -16,19 +16,26 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
@@ -36,13 +43,16 @@ public class FileUtils {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(FileUtils.class);
 
-	public static final String DEFAULT_CHARSET = "utf-8";
+	public static final String UTF8 = "utf-8";
+	public static final String DEFAULT_CHARSET = UTF8;
 	public static final int DEFAULT_BUF_SIZE = 1024 * 4;
 	public static final String PACKAGE = "package";
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
-	
+	public static final String NEW_LINE = "\n";
+
+	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
 
 	private FileUtils() {
@@ -142,13 +152,22 @@ public class FileUtils {
 		URL path = null;
 		path = cld.getResource(fileName);
 		
-		logger.info("file path: "+ path);
+		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
-			path = FileUtils.class.getClassLoader().getResource(fileName);
+			/*path = FileUtils.class.getClassLoader().getResource(fileName);
 			if(path==null)
-				return fileName;
+				return fileName;*/
+			realPath = cld.getResource("").getPath()+fileName;
+			logger.info("Default ClassLoader path2: "+ realPath);
+			if(StringUtils.isBlank(realPath)){
+				logger.info("FileUtils ClassLoader path3: "+ realPath);
+				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
+				if(StringUtils.isBlank(realPath))
+					throw new BaseException("get resource path error: " + fileName);
+			}
+		}else{
+			realPath = path.getPath();
 		}
-		realPath = path.getPath();
 		if(realPath.indexOf("\\")!=-1)
 			realPath = realPath.replace("\\", "/");
 //		if(realPath.startsWith("/"))
@@ -336,6 +355,9 @@ public class FileUtils {
 	public static String readAsString(File file){
 		return readAsStringWith(file, DEFAULT_CHARSET, null);
 	}
+	public static String readAsString(File file, String charset){
+		return readAsStringWith(file, charset, null);
+	}
 	
 	public static String readAsStringWith(File file, String charset, Map<String, Object> context){
 		return StringUtils.join(readAsListWithMap(file, charset, context), "");
@@ -356,9 +378,9 @@ public class FileUtils {
 	}
 
 	public static String getFileName(String fileName) {
-		if(fileName.indexOf('\\')!=-1)
-			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(SLASH_CHAR);
+//		if(fileName.indexOf(File.separatorChar)!=-1)
+//			fileName = fileName.replace('\\', SLASH_CHAR);
+		int start = fileName.lastIndexOf(File.separatorChar);
 		return fileName.substring(start+1);
 	}
 
@@ -423,29 +445,42 @@ public class FileUtils {
 		if (destFile.isHidden() || !destFile.canWrite())
 			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
 
+//		BufferedInputStream fin = null;
+		BufferedOutputStream fout = null;
+		try {
+//			System.out.println("creating the file : " + destFile.getPath());
+//			fin = new BufferedInputStream(new FileInputStream(srcFile));
+			fout = new BufferedOutputStream(new FileOutputStream(destFile));
+			copyFileToOutputStream(fout, srcFile);
+		} catch (Exception e) {
+			throw new BaseException("copy file error", e);
+		} finally {
+//			IOUtils.closeQuietly(fin);
+			IOUtils.closeQuietly(fout);
+		}
+	}
+	
+
+	public static void copyFileToOutputStream(OutputStream out, File srcFile) {
+		Assert.notNull(srcFile);
+		Assert.notNull(out);
+
 		BufferedInputStream fin = null;
 		BufferedOutputStream fout = null;
 		try {
-			System.out.println("creating the file : " + destFile.getPath());
 			fin = new BufferedInputStream(new FileInputStream(srcFile));
-			fout = new BufferedOutputStream(new FileOutputStream(destFile));
+			fout = new BufferedOutputStream(out);
 			byte[] buf = new byte[1024 * 5];
 			int count = 0;
 			while ((count = fin.read(buf, 0, buf.length)) != -1) {
 				fout.write(buf, 0, count);
 			}
-			System.out.println("file is created!");
+			fout.flush();
 		} catch (Exception e) {
 			throw new BaseException("copy file error", e);
 		} finally {
-			try {
-				if (fin != null)
-					fin.close();
-				if (fout != null)
-					fout.close();
-			} catch (Exception e) {
-				throw new BaseException("close file error!", e);
-			}
+			IOUtils.closeQuietly(fin);
+//			IOUtils.closeQuietly(fout);
 		}
 	}
 
@@ -464,7 +499,7 @@ public class FileUtils {
 		} else {
 			if (!destFile.exists()) {
 				destFile.mkdirs();
-				System.out.println("create drectory : " + destFile.getPath());
+//				System.out.println("create drectory : " + destFile.getPath());
 			}
 			File[] list = srcFile.listFiles();
 			for (int i = 0; i < list.length; i++) {
@@ -535,10 +570,15 @@ public class FileUtils {
 		return path.substring(0, index);
 	}
 
+
+	public static List<File> listFile(File dirFile) {
+		return listFile(dirFile, (Pattern)null);
+	}
+	
 	public static List<File> listFile(File dirFile, Pattern pattern) {
 		File[] files = dirFile.listFiles();
 		if (files == null)
-			return null;
+			return Collections.EMPTY_LIST;
 
 		List<File> fileList = new ArrayList<File>();
 		for (File f : files) {
@@ -638,19 +678,28 @@ public class FileUtils {
     }
     
     public static void writeStringToFile(File file, String charset, String data){
-        OutputStreamWriter w = null;
+        Writer w = writer(file, charset);
         try {
-        	if(StringUtils.isBlank(charset)){
-        		w = new OutputStreamWriter(openOutputStream(file));
-        	}else{
-        		w = new OutputStreamWriter(openOutputStream(file), charset);
-        	}
             w.write(data);
         } catch(Exception e){
         	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
         }finally {
             IOUtils.closeQuietly(w);
         }
+    }
+    
+    public static Writer writer(File file, String charset){
+    	OutputStreamWriter w = null;
+        try {
+        	if(StringUtils.isBlank(charset)){
+        		w = new OutputStreamWriter(openOutputStream(file));
+        	}else{
+        		w = new OutputStreamWriter(openOutputStream(file), charset);
+        	}
+        } catch(Exception e){
+        	throw new BaseException("create writer error : " + e.getMessage(), e);
+        }
+        return w;
     }
     
 	
@@ -749,13 +798,26 @@ public class FileUtils {
     }
     
 	public static void makeDirs(String path){
+		makeDirs(path, !new File(path).isDirectory());
+	}
+    
+	public static void makeDirs(String path, boolean file){
 		File outDir = new File(path);
-		if(outDir.isFile())
+		if(file)
 			outDir = outDir.getParentFile();
 		
 		if(!outDir.exists())
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+path);
+	}
+    
+	public static void makeDirs(File outDir, boolean file){
+		if(file)
+			outDir = outDir.getParentFile();
+		
+		if(!outDir.exists())
+			if(!outDir.mkdirs())
+				throw new RuntimeException("can't create output dir:"+outDir.getPath());
 	}
 	
 	public static File getMavenProjectDir(){
@@ -763,6 +825,186 @@ public class FileUtils {
 		File baseDir = new File(baseDirPath);
 		baseDir = baseDir.getParentFile().getParentFile();
 		return baseDir;
+	}
+	
+	public static ResourceAdapter adapterResource(Object resource){
+		return new ResourceAdapterImpl(resource);
+	}
+	
+	public static ResourceAdapter[] adapterResources(Object[] resource){
+		if(LangUtils.isEmpty(resource))
+			return EMPTY_RESOURCES;
+		ResourceAdapterImpl[] reslist = new ResourceAdapterImpl[resource.length];
+		int index = 0;
+		for(Object obj : resource){
+			reslist[index++] = new ResourceAdapterImpl(obj);
+		}
+		return reslist;
+	}
+	
+	public static void createIfNotExists(File file){
+		try {
+			if(!file.exists()){
+				if(!file.createNewFile()){
+					throw new BaseException("create new file error!");
+				}
+			}
+		} catch (IOException e) {
+			throw new BaseException("create new file error!", e);
+		}
+	}
+	
+	public static void createOrDelete(File file){
+		try {
+			if(!file.exists()){
+				if(!file.createNewFile()){
+					throw new BaseException("create new file error!");
+				}
+			}else{
+				if(!file.delete()){
+					throw new BaseException("delete file error!");
+				}
+			}
+		} catch (IOException e) {
+			throw new BaseException("create new file error!", e);
+		}
+	}
+	
+	/*****
+	 * 合并文件
+	 * @param charset
+	 * @param mergedFileName
+	 * @param dir
+	 * @param postfix
+	 * @return
+	 */
+	public static File mergeFiles(String charset, String mergedFileName, String dir, String postfix){
+		return mergeFiles(MergeFileConfig.build(charset, mergedFileName, dir, postfix, null));
+	}
+
+	public static File mergeFiles(MergeFileConfig config){
+		File mergedFile = new File(config.getMergedFileName());
+		createOrDelete(mergedFile);
+		Writer writer = writer(mergedFile, config.getCharset());
+		MergeFileContext context = new MergeFileContext(writer);
+		try {
+			MergeFileListener listener = config.getListener();
+			int fileIndex = 0;
+			JFishList<File> fileList = JFishList.wrap(config.getFiles());
+			fileList.sort(new Comparator<File>() {
+
+				@Override
+				public int compare(File o1, File o2) {
+					return o1.getPath().compareTo(o2.getPath());
+				}
+				
+			});
+			
+			int totalLineIndex = 0;
+			if(listener!=null)
+				listener.onStart(context);
+			
+			for(File file : fileList){
+				context.setFile(file);
+				context.setFileIndex(fileIndex);
+				
+				if(listener!=null)
+					listener.onFileStart(context);
+				List<String> lines = readAsList(file, config.getCharset());
+				int lineIndex = 0;
+				for(String line : lines){
+					context.setTotalLineIndex(totalLineIndex);
+					if(listener!=null)
+						listener.writeLine(context, line, lineIndex);
+					else
+						writer.write(line+NEW_LINE);
+					totalLineIndex++;
+				}
+				if(listener!=null)
+					listener.onFileEnd(context);
+				fileIndex++;
+			}
+			if(listener!=null)
+				listener.onEnd(context);
+		} catch (Exception e) {
+			throw new BaseException("merge file error", e);
+		} finally{
+			IOUtils.closeQuietly(writer);
+		}
+		return mergedFile;
+	}
+	
+	public static long size(File...files){
+		Assert.notEmpty(files);
+		long size = 0;
+		for(File f : files){
+			size += f.length();
+		}
+		return size;
+	}
+	
+	public static double sizeAsKb(File...files){
+		return size(files)/1024.0;
+	}
+	
+	public static double sizeAsMb(File...files){
+		return size(files)/1024.0/1024.0;
+	}
+	
+	/****
+	 * 
+	 * @param targetZipFilePath 目标文件
+	 * @param file
+	 * @return
+	 */
+	public static File zipfile(String targetZipFilePath, File file){
+		return zipfile(targetZipFilePath, file, file.isFile());
+	}
+	
+	public static File zipfile(String targetZipFilePath, File file, boolean isfile){
+		if(isfile){
+			return zipfiles(targetZipFilePath, file);
+		}else{
+			List<File> files = listFile(file);
+			return zipfiles(targetZipFilePath, files.toArray(new File[0]));
+		}
+	}
+
+	/****
+	 * 压缩文件
+	 * @param file
+	 * @return
+	 */
+	public static File zipfile(File file){
+		String targetZipFilePath = getNewFilenameBy(file, ".zip");
+		return zipfile(targetZipFilePath, file);
+	}
+
+	public static String getNewFilenameBy(File file, String newPostfix){
+		String targetZipFilePath = file.getParent() + File.separator + FileUtils.getFileNameWithoutExt(file.getPath()) + newPostfix;
+		return targetZipFilePath;
+	}
+	
+	public static File zipfiles(String targetZipFilePath, File...files){
+		Assert.notEmpty(files);
+		File zipfile = new File(targetZipFilePath);
+		makeDirs(zipfile, true);
+		ZipOutputStream zipout = null;
+		try {
+			zipout = new ZipOutputStream(new FileOutputStream(zipfile));
+			for(File f : files){
+				String entryName = f.getName();
+				ZipEntry zipentry = new ZipEntry(entryName);
+				zipout.putNextEntry(zipentry);
+				copyFileToOutputStream(zipout, f);
+			}
+			zipout.finish();
+		} catch (Exception e) {
+			throw new BaseException("zip file error: " + e.getMessage(), e);
+		} finally{
+			close(zipout);
+		}
+		return zipfile;
 	}
 	
 	public static void main(String[] args) {

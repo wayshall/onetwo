@@ -140,50 +140,5 @@
     <finalName>project-test</finalName>
   </build>
   
-  <!-- 
-  <repositories>
-    
-     <repository>
-		<id>guohui-public</id>
-		<name>Guohui Public Mirror</name>
-      	<url>http://192.168.1.55:8081/nexus/content/groups/public</url>
-      	<releases>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-snapshots</id>
-		<name>Guohui Snapshots Mirror</name>
-		<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
-      	<releases>
-      		<enabled>false</enabled>
-      	</releases>
-      	<snapshots>
-      	</snapshots>
-    </repository>
-     <repository>
-		<id>guohui-thirdparty</id>
-		<name>Guohui thirdparty Mirror</name>
-		<url>http://192.168.1.55:8081/nexus/content/repositories/thirdparty/</url>
-      	<releases>
-      	</releases>
-      	<snapshots>
-      		<enabled>false</enabled>
-      	</snapshots>
-    </repository>
-    
-    <repository>
-          <id>org.springframework.maven.milestone</id>
-           <name>Spring Maven Milestone Repository</name>
-           <url>http://maven.springframework.org/milestone</url>
-           <snapshots>
-                   <enabled>false</enabled>
-           </snapshots>
-    </repository>
-    
-  </repositories>
-   --> 
   
 </project>

@@ -3,7 +3,6 @@ package org.onetwo.common.hibernate;
 import java.io.Serializable;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -14,53 +13,51 @@ import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
+import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
-import org.onetwo.common.jdbc.JdbcUtils;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
 public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
 
+	
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	
 	private SessionFactory sessionFactory; 
 	
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
+	@Resource
 	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
 	
-	@Resource
-	private DataSource dataSource;
+//	@Resource
+//	private DataSource dataSource;
 	
-	@Resource
-	private ApplicationContext applicationContext;
+//	@Resource
+//	private ApplicationContext applicationContext;
 	
 //	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
 	
-	@Resource
-	private AppConfig appConfig;
+//	@Resource
+//	private AppConfig appConfig;
+//	@Autowired
+//	private JFishPropertyPlaceholder configHolder;
 
 	public HibernateEntityManagerImpl(){
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(appConfig, "appConfig can not be null.");
-		boolean watchSqlFile = appConfig.isDev();
+//		Assert.notNull(appConfig, "appConfig can not be null.");
+		/*boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		String db = JdbcUtils.getDataBase(dataSource).toString();
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
 		fq.initQeuryFactory(this);
-		this.fileNamedQueryFactory = fq;
+		this.fileNamedQueryFactory = fq;*/
 	}
 
 
@@ -79,7 +76,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 			if(sessionFactory.getClassMetadata(entityClass)!=null){
 				query.addEntity(entityClass);
 			}else{
-				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+				if(LangUtils.isSimpleType(entityClass))
+					query.setResultTransformer(new SingleColumnTransformer(entityClass));
+				else
+					query.setResultTransformer(new RowToBeanTransformer(entityClass));
 			}
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
@@ -116,9 +116,9 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
 		this.checkEntityIdValid(id);
-		T entity = (T)getSession().get(entityClass, id);
-		if(entity==null)
-			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		T entity = (T)getSession().load(entityClass, id);
+//		if(entity==null)
+//			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
 		return entity;
 	}
 
@@ -135,7 +135,13 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public void remove(Object entity) {
 		if(entity==null)
 			return ;
-		getSession().delete(entity);
+		if(entity instanceof ILogicDeleteEntity){
+			ILogicDeleteEntity le = (ILogicDeleteEntity) entity;
+			le.deleted();
+			getSession().update(le);
+		}else{
+			getSession().delete(entity);
+		}
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.onetwo.apache.io.output.ByteArrayOutputStream;
 
-public class IOUtils {
+public final class IOUtils {
     // NOTE: This class is focussed on InputStream, OutputStream, Reader and
     // Writer. Each method should take at least one of these as a parameter,
     // or return one of them.
@@ -66,7 +66,7 @@ public class IOUtils {
     /**
      * Instances should NOT be constructed in standard programming.
      */
-    public IOUtils() {
+    private IOUtils() {
         super();
     }
 

@@ -40,7 +40,7 @@ abstract public class AbstractAuthenticConfigService implements AuthenticConfigS
 	protected AuthenticConfig readConfig(Class<?> clazz, Method method) {
 		AbstractConfigBuilder configBuilder = getConfigBuilder();
 		AuthenticConfig config = configBuilder.buildAuthenConfig(clazz, method);
-		configs.put(method.toGenericString(), config);
+		configs.put(method.toGenericString(), config.freezing());
 		return config;
 	}
 	

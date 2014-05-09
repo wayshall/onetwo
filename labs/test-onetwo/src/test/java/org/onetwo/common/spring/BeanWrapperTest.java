@@ -15,7 +15,40 @@ import test.entity.UserEntity;
 
 public class BeanWrapperTest {
 
+	private static class UserData {
+		private Map<String, String> attrs = LangUtils.newHashMap();
+
+		public Map<String, String> getAttrs() {
+			return attrs;
+		}
+		
+		
+	}
 	private BeanWrapper bw;
+
+	@Test
+	public void testMap(){
+		UserData u = new UserData();
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(user);
+		bw = SpringUtils.newBeanWrapper(u);
+		bw.setAutoGrowNestedPaths(true);
+		
+		bw.setPropertyValue("attrs[id]", "11");
+		Assert.assertEquals(u.getAttrs().get("id"), "11");
+		
+		Map<String, String> attrs = LangUtils.newHashMap();
+		/*bw = SpringUtils.newBeanWrapper(attrs);
+		bw.setAutoGrowNestedPaths(true);
+		try {
+			bw.setPropertyValue("id", "11");
+			Assert.fail();
+		} catch (Exception e) {
+		}*/
+		bw = SpringUtils.newBeanWrapper(attrs);
+		bw.setPropertyValue("id", "11");
+		Assert.assertEquals(attrs.get("id"), "11");
+		
+	}
 
 	@Test
 	public void testBw(){
@@ -40,7 +73,7 @@ public class BeanWrapperTest {
 	@Test
 	public void testBw2(){
 		UserEntity user = new UserEntity();
-		bw = PropertyAccessorFactory.forBeanPropertyAccess(user);
+		bw = new JFishBeanWrapper(user);
 		bw.setAutoGrowNestedPaths(true);
 		
 		bw.setPropertyValue("id", "11");

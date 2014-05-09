@@ -16,6 +16,7 @@ public class Page<T> implements Serializable {
 	public static <T> Page<T> create(){
 		return new Page<T>();
 	}
+	public static final String PAGINATION_KEY = "pagination";
 	public static final String ASC = ":asc";
 	public static final String DESC = ":desc";
 	
@@ -34,6 +35,8 @@ public class Page<T> implements Serializable {
 	protected long totalCount = -1;
 	
 	protected int first = -1;
+	
+	private boolean pagination = true;
 	
 	public Page(){
 	}
@@ -137,7 +140,7 @@ public class Page<T> implements Serializable {
 	}
 
 	public boolean isAutoCount() {
-		return autoCount;
+		return isPagination() && autoCount;
 	}
 
 	public void setAutoCount(final boolean autoCount) {
@@ -263,4 +266,14 @@ public class Page<T> implements Serializable {
 			end = 1;
 		return end;
 	}
+
+	public boolean isPagination() {
+		return pagination;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
+	}
+	
+	
 }

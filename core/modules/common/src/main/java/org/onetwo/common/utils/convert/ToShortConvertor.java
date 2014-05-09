@@ -1,11 +1,16 @@
 package org.onetwo.common.utils.convert;
 
-public class ToShortConvertor implements TypeConvert<Short> {
+public class ToShortConvertor extends AbstractTypeConvert<Short> {
 
-	private ToLongConvertor longConvertor = new ToLongConvertor();
+private ToLongConvertor longConvertor;
+	
+	public ToShortConvertor(Short defValue) {
+		super(defValue);
+		this.longConvertor = new ToLongConvertor(defValue==null?null:defValue.longValue());
+	}
 	
 	@Override
-	public Short convert(Object value, Class<?> componentType) {
+	public Short doConvert(Object value, Class<?> componentType) {
 		return longConvertor.convert(value, componentType).shortValue();
 
 	}

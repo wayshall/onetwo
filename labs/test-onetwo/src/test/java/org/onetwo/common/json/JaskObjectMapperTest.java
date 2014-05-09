@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.junit.Test;
 import org.onetwo.common.jackson.JsonMapper;
 
 import test.entity.UserEntity;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JaskObjectMapperTest {
 
@@ -31,7 +32,7 @@ public class JaskObjectMapperTest {
 			users.add(createUser());
 		}
 
-		JsonMapper jsonmapper = new JsonMapper(Inclusion.ALWAYS);
+		JsonMapper jsonmapper = new JsonMapper(Include.ALWAYS);
 		ObjectMapper objectMapper = jsonmapper.getObjectMapper();
 		
 		String json = jsonmapper.toJson(users);

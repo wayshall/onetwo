@@ -1,6 +1,10 @@
 package org.onetwo.common.web.view.jsp.form;
 
-
+/****
+ * 
+ * @author weishao
+ *
+ */
 public class FormUIFactory {
 	
 	public static FormFieldTagBean createUIBean(FormFieldType type){
@@ -10,6 +14,7 @@ public class FormUIFactory {
 			case password:
 			case hidden:
 			case radio:
+			case file:
 			case checkbox:
 			case textarea:
 				bean = new FormFieldTagBean();

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 
 public class FileWatcherTest {
 	
@@ -30,7 +31,7 @@ public class FileWatcherTest {
 				System.out.println("file change: " + file.getPath());
 				LangUtils.await(10);
 			}
-		}, new File[]{file1, file2, file3});
+		}, new ResourceAdapterImpl<File>(file1), new ResourceAdapterImpl<File>(file2), new ResourceAdapterImpl<File>(file3));
 		
 		LangUtils.CONSOLE.exitIf("exit");
 	}

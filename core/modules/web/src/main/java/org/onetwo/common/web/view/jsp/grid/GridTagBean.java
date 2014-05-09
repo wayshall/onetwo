@@ -7,6 +7,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
+import org.onetwo.common.web.view.jsp.datagrid.SearchForm;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
 
 public class GridTagBean extends HtmlElement {
@@ -26,6 +27,14 @@ public class GridTagBean extends HtmlElement {
 
 	private boolean pagination;
 	private PaginationType paginationType;
+	
+	private SearchForm searchFormBean;
+	private boolean searchForm;
+	
+
+	private boolean ajaxSupported = false;
+	private String ajaxZoneName;
+//	private String ajaxInstName;
 	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
@@ -143,7 +152,45 @@ public class GridTagBean extends HtmlElement {
 	}
 	
 	public boolean isPagination(){
-		return this.pagination;
+		return this.page.isPagination() && this.pagination;
 	}
 
+	public void setSearchForm(boolean searchForm) {
+		this.searchForm = searchForm;
+		if(searchForm){
+			searchFormBean = new SearchForm();
+		}
+	}
+
+	public SearchForm getSearchFormBean() {
+		return searchFormBean;
+	}
+
+	public boolean isSearchForm() {
+		return searchForm;
+	}
+
+	public void addSearchField(FieldTagBean field){
+		if(!searchForm)
+			return ;
+		getSearchFormBean().addField(field);
+	}
+
+	public boolean isAjaxSupported() {
+		return ajaxSupported;
+	}
+
+	public void setAjaxSupported(boolean ajaxSupported) {
+		this.ajaxSupported = ajaxSupported;
+	}
+
+	public String getAjaxZoneName() {
+		return ajaxZoneName;
+	}
+
+	public void setAjaxZoneName(String ajaxZoneName) {
+		this.ajaxZoneName = ajaxZoneName;
+	}
+
+	
 }

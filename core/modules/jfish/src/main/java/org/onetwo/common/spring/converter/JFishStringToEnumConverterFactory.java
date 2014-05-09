@@ -1,9 +1,5 @@
 package org.onetwo.common.spring.converter;
 
-import java.lang.reflect.Method;
-
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
@@ -33,14 +29,15 @@ public class JFishStringToEnumConverterFactory implements ConverterFactory<Strin
 		public T convert(String source) {
 			if(IntValueEnum.class.isAssignableFrom(enumType)){
 				int value = Types.convertValue(source, Integer.class);
-				Method staticMehtod = ReflectUtils.findMethod(enumType, "valueOf", int.class);
+				return Types.asValue(value, enumType);
+				/*Method staticMehtod = ReflectUtils.findMethod(enumType, "valueOf", int.class);
 				Object val;
 				try {
 					val = staticMehtod.invoke(enumType, value);
 				} catch (Exception e) {
 					throw new BaseException("convert to int value enum error, does enum type["+enumType+"] has a valueOf(int) method? ", e);
 				} 
-				return (T) val;
+				return (T) val;*/
 			}else{
 				if (source.length() == 0) {
 					// It's an empty enum identifier: reset the enum value to null.

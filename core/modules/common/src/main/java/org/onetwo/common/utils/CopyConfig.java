@@ -1,7 +1,7 @@
 package org.onetwo.common.utils;
 
 
-public class CopyConfig implements CopyConf {
+public class CopyConfig {
 	
 	public static CopyConfig create() {
 		return new CopyConfig();
@@ -14,31 +14,22 @@ public class CopyConfig implements CopyConf {
 	private boolean throwIfError = false;
 	private boolean checkSetMethod = false;
 	private String[] ignoreFields;
+	private String[] includeFields;
 	
-	@Override
+//	@Override
 	public boolean isIgnoreNull() {
 		return ignoreNull;
 	}
 
-	@Override
+//	@Override
 	public boolean isIgnoreBlank() {
 		return ignoreBlank;
 	}
 
-	@Override
+//	@Override
 	public boolean isIgnoreOther(String property, Object value) {
 		return ignoreOther;
 	}
-
-/*	@Override
-	public boolean isIgnoreAutoCopy() {
-		return ignoreAutoCopy;
-	}
-
-	@Override
-	public void copy(Object source, Object target, String property) {
-		throw new UnsupportedOperationException();
-	}*/
 
 	public CopyConfig ignoreNull() {
 		this.ignoreNull = true;
@@ -62,6 +53,15 @@ public class CopyConfig implements CopyConf {
 	public CopyConfig ignoreFields(String... ignoreFields) {
 		this.ignoreFields = ignoreFields;
 		return this;
+	}
+
+	public CopyConfig includeFields(String... includeFields) {
+		this.includeFields = includeFields;
+		return this;
+	}
+
+	public String[] getIncludeFields() {
+		return includeFields;
 	}
 
 	public boolean isThrowIfError() {

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.excel.ExcelReader.CellValueConvertor;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.StringUtils;
 
@@ -20,7 +19,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		this.convertors = convertors;
 	}
 	
-	@Override
+//	@Override
 	public String getMapperName() {
 		return this.getClass().getName();
 	}
@@ -68,7 +67,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 		return getCellValueConvertor(type.getSimpleName());
 	}
 
-	@Override
+//	@Override
 	public CellValueConvertor getCellValueConvertor(String type) {
 		if(convertors==null || convertors.isEmpty())
 			return null;

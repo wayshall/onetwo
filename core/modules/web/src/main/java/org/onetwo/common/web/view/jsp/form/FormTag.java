@@ -20,6 +20,8 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	
 	private Object dataProvider;
 	
+	private boolean showOnly;
+	
 	@Override
 	public FormTagBean createComponent() {
 		return new FormTagBean();
@@ -47,16 +49,21 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		if(data==null){
 			data = this.pageContext.getRequest().getAttribute(getName());
 		}
+		FormDataProvider provider = createDataProvider(data);
+		
+		this.component.setProvider(provider);
+		
+		return rs;
+	}
+	
+	public static FormDataProvider createDataProvider(Object data){
 		FormDataProvider provider = null;
 		if(FormDataProvider.class.isInstance(data)){
 			provider = (FormDataProvider) data;
 		}else{
 			provider = new SimpleFormDataProvider(data);
 		}
-		
-		this.component.setProvider(provider);
-		
-		return rs;
+		return provider;
 	}
 
 	@Override
@@ -82,6 +89,7 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		component.setAction(action);
 		component.setMethod(method);
 		component.setUploadFile(uploadFile);
+		component.setShowOnly(showOnly);
 		
 		setComponentIntoRequest(TagUtils.getFormVarName(), component);
 	}
@@ -120,6 +128,10 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 
 	public void setDataProvider(Object dataProvider) {
 		this.dataProvider = dataProvider;
+	}
+
+	public void setShowOnly(boolean showOnly) {
+		this.showOnly = showOnly;
 	}
 
 }

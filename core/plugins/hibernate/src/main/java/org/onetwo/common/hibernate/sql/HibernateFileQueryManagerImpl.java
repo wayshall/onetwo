@@ -4,31 +4,37 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.AbstractFileNamedQueryFactory;
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
-
+/****
+ * 文件的命名查询管理
+ * @author wayshall
+ *
+ */
 public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory<HibernateNamedInfo> {
 	
-	private BaseEntityManager baseEntityManager;
 	private JFishNamedSqlFileManager<HibernateNamedInfo> sqlFileManager;
 	private FileSqlParser<HibernateNamedInfo> parser;
 	
-	public HibernateFileQueryManagerImpl(String dbname, boolean watchSqlFile, BaseEntityManager baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
-		sqlFileManager = new JFishNamedSqlFileManager<HibernateNamedInfo> (dbname, watchSqlFile, HibernateNamedInfo.class);
-		this.baseEntityManager = baseEntityManager;
-		FileSqlParser<HibernateNamedInfo> p = new FileSqlParser<HibernateNamedInfo>(sqlFileManager);
-		p.initialize();
+		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
+		StringTemplateLoaderFileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>();
+//		p.initParser();
 		this.parser = p;
+		sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, HibernateNamedInfo.class, p);
+//		this.baseEntityManager = baseEntityManager;
 	}
 
 	public HibernateNamedInfo getNamedQueryInfo(String name) {
@@ -51,7 +57,8 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 		Assert.notNull(type);
 
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
-		HibernateFileQueryImpl jq = new HibernateFileQueryImpl(baseEntityManager, nameInfo, count, parser);
+		HibernateFileQueryImpl jq = new HibernateFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
+//		HibernateFileQueryImpl jq = new TempHibernateFileQueryImpl(baseEntityManager, nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
 			jq.setParameters(LangUtils.asList(args));
@@ -67,7 +74,8 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	
 	public DataQuery createCountQuery(String queryName){
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
-		return new HibernateFileQueryImpl(baseEntityManager, nameInfo, true, parser);
+		return new HibernateFileQueryImpl(getCreateQueryable(), nameInfo, true, parser);
+//		return new TempHibernateFileQueryImpl(baseEntityManager, nameInfo, true, parser);
 	}
 	
 
@@ -103,17 +111,22 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 
 	@Override
 	public <T> Page<T> findPage(String queryName, Page<T> page, Object... params) {
-		DataQuery jq = this.createCountQuery(queryName, params);
-		Long total = jq.getSingleResult();
-		total = (total==null?0:total);
-		page.setTotalCount(total);
-		if(total>0){
-			jq = this.createQuery(queryName, params);
-			jq.setFirstResult(page.getFirst()-1);
-			jq.setMaxResults(page.getPageSize());
-			List<T> datalist = jq.getResultList();
-			page.setResult(datalist);
+		DataQuery jq = null;
+		if(page.isAutoCount()){
+			jq = this.createCountQuery(queryName, params);
+			Long total = jq.getSingleResult();
+			total = (total==null?0:total);
+			page.setTotalCount(total);
+			if(total<1)
+				return page;
 		}
+		
+		jq = this.createQuery(queryName, params);
+		jq.setFirstResult(page.getFirst()-1);
+		jq.setMaxResults(page.getPageSize());
+		List<T> datalist = jq.getResultList();
+		page.setResult(datalist);
+		
 		return page;
 	}
 	

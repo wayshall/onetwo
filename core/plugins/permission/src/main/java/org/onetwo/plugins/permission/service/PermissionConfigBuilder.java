@@ -1,5 +1,6 @@
 package org.onetwo.plugins.permission.service;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -25,7 +26,14 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 		
 		if (method.getAnnotation(ByMenuClass.class)!=null) {
 			ByMenuClass menu = method.getAnnotation(ByMenuClass.class);
-			config = this.buildAuthenticConfig(getAuthenticName(method), ByMenuClass.class.getAnnotation(Authentic.class));
+			
+			/*Authentic authentic = method.getAnnotation(Authentic.class);
+			if(authentic!=null){
+				config = this.buildAuthenticConfig(getAuthenticName(method), authentic);
+			}else{
+				config = this.buildAuthenticConfig(getAuthenticName(method), ByMenuClass.class.getAnnotation(Authentic.class));
+			}*/
+			config = buildConfigByAuthenticAnnotation(method, ByMenuClass.class);
 
 			for(Class<?> codeCls : menu.codeClass()){
 				perms.add(menuInfoParser.parseCode(codeCls));
@@ -34,7 +42,9 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			
 		}else if(method.getAnnotation(ByFunctionClass.class)!=null){
 			ByFunctionClass permClass = method.getAnnotation(ByFunctionClass.class);
-			config = this.buildAuthenticConfig(getAuthenticName(method), ByFunctionClass.class.getAnnotation(Authentic.class));
+			
+//			config = this.buildAuthenticConfig(getAuthenticName(method), ByFunctionClass.class.getAnnotation(Authentic.class));
+			config = buildConfigByAuthenticAnnotation(method, ByFunctionClass.class);
 
 			for(Class<?> codeCls : permClass.codeClass()){
 				perms.add(menuInfoParser.parseCode(codeCls));
@@ -52,6 +62,17 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			config.setPermissions(permissionCodes);
 		}
 
+		return config;
+	}
+	
+	protected AuthenticConfig buildConfigByAuthenticAnnotation(Method method, Class<? extends Annotation> annotationClass){
+		AuthenticConfig config = null;
+		Authentic authentic = method.getAnnotation(Authentic.class);
+		if(authentic!=null){
+			config = this.buildAuthenticConfig(getAuthenticName(method), authentic);
+		}else{
+			config = this.buildAuthenticConfig(getAuthenticName(method), annotationClass.getAnnotation(Authentic.class));
+		}
 		return config;
 	}
 

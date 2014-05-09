@@ -1,11 +1,16 @@
 package org.onetwo.common.utils.convert;
 
-public class ToFloatConvertor implements TypeConvert<Float> {
+public class ToFloatConvertor extends AbstractTypeConvert<Float> {
 
-	private ToDoubleConvertor doubleDelegate = new ToDoubleConvertor();
+	private ToDoubleConvertor doubleDelegate;
+
+	public ToFloatConvertor(Float defValue) {
+		super(defValue);
+		doubleDelegate = new ToDoubleConvertor(defValue==null?null:defValue.doubleValue());
+	}
 	
 	@Override
-	public Float convert(Object value, Class<?> componentType) {
+	public Float doConvert(Object value, Class<?> componentType) {
 		return doubleDelegate.convert(value, componentType).floatValue();
 
 	}

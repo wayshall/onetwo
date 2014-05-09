@@ -2,7 +2,6 @@ package org.onetwo.common.utils.propconf;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.common.log.MyLoggerFactory;
@@ -22,19 +21,18 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
+		public static final char DOT_KEY = '.';
+		private PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo;
 		private String namespace;
-		private File srcfile;
-	
+		private PropertiesWraper config;
+		private ResourceAdapter srcfile;
+		
 		public String getNamespace() {
 			return namespace;
 		}
 	
-		public void setNamespace(String namespace) {
-			this.namespace = namespace;
-		}
-		
 		public String getFullName(){
-			if(GLOBAL_NS_KEY.equals(namespace))
+			if(namespaceInfo.isGlobal())
 				return getName();
 			return namespace+"."+getName();
 		}
@@ -43,14 +41,30 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			return LangUtils.append("{ namespace:", namespace, ", name: ", getName(), "}");
 		}
 
-		public File getSrcfile() {
+		public ResourceAdapter getSrcfile() {
 			return srcfile;
 		}
 
-		public void setSrcfile(File srcfile) {
+		public void setSrcfile(ResourceAdapter srcfile) {
 			this.srcfile = srcfile;
 		}
 
+		public PropertiesWraper getConfig() {
+			return config;
+		}
+
+		public void setConfig(PropertiesWraper config) {
+			this.config = config;
+		}
+
+		public PropertiesNamespaceInfo<? extends NamespaceProperty> getNamespaceInfo() {
+			return namespaceInfo;
+		}
+
+		void setNamespaceInfo(PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo) {
+			this.namespaceInfo = namespaceInfo;
+			this.namespace = namespaceInfo.getNamespace();
+		}
 		
 		
 	}
@@ -108,7 +122,10 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 	}
 
-	public static final String NOTE = "--";
+	public static final String COMMENT = "--";
+	public static final String MULTIP_COMMENT_START = "/*";
+	public static final String MULTIP_COMMENT_END = "*/";
+	public static final String CONFIG_PREFIX = "@@";
 	public static final String NAME_PREFIX = "@";
 	public static final String EQUALS_MARK = "=";
 //	public static final String IGNORE_NULL_KEY = "ignore.null";
@@ -123,13 +140,13 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		this.conf = conf;
 	}
 	
-	protected void buildSqlFileMonitor(File[] sqlfileArray){
+	protected void buildSqlFileMonitor(ResourceAdapter[] sqlfileArray){
 		if(conf.isWatchSqlFile() && fileMonitor==null){
 			fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
 		}
 	}
-	protected File[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
+	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
 		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
@@ -138,6 +155,7 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		
 		if(StringUtils.isNotBlank(conf.getOverrideDir())){
 			String overridePath = sqldirPath+"/"+conf.getOverrideDir();
+			logger.info("scan database dialect dir : " + overridePath);
 			File[] dbsqlfiles = FileUtils.listFiles(overridePath, conf.getPostfix());
 
 			if(logger.isInfoEnabled())
@@ -147,10 +165,10 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				sqlfileArray = (File[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
 			}
 		}
-		return sqlfileArray;
+		return FileUtils.adapterResources(sqlfileArray);
 	}
 	
-	protected String getFileNameNoJfishSqlPostfix(File f){
+	protected String getFileNameNoJfishSqlPostfix(ResourceAdapter f){
 		String fname = f.getName();
 		if(!fname.endsWith(JFISH_SQL_POSTFIX)){
 			return fname;
@@ -159,34 +177,69 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 	}
 	
-	protected Properties loadSqlFile(File f){
+	protected List<String> readResourceAsList(ResourceAdapter f){
+		if(f.isSupportedToFile())
+			return FileUtils.readAsList(f.getFile());
+		else
+			throw new UnsupportedOperationException();
+	}
+	
+	protected JFishProperties loadSqlFile(ResourceAdapter f){
 //		String fname = FileUtils.getFileNameWithoutExt(f.getName());
 		if(!f.getName().endsWith(JFISH_SQL_POSTFIX)){
 			logger.info("file["+f.getName()+" is not a jfish file, ignore it.");
 			return null;
 		}
 		
+		JFishProperties jp = new JFishProperties();
 		Properties pf = new Properties();
+		Properties config = new Properties();
 		try {
-			List<String> fdatas = FileUtils.readAsList(f);
+			List<String> fdatas = readResourceAsList(f);
 			String key = null;
 			StringBuilder value = null;
 			String line = null;
+
+			boolean matchConfig = false;
 			boolean matchName = false;
+			boolean multiCommentStart = false;
 			for(int i=0; i<fdatas.size(); i++){
 				line = fdatas.get(i).trim();
-				if(line.startsWith(NOTE))
+				if(line.startsWith(COMMENT)){
 					continue;
+				}
+				
+				if(line.startsWith(MULTIP_COMMENT_START)){
+					multiCommentStart = true;
+					continue;
+				}else if(line.endsWith(MULTIP_COMMENT_END)){
+					multiCommentStart = false;
+					continue;
+				}
+				if(multiCommentStart){
+					continue;
+				}
 				if(line.startsWith(NAME_PREFIX)){//@开始到=结束，作为key，其余部分作为value
-					if(matchName && value!=null){
-						pf.setProperty(key, value.toString());
+					if(value!=null){
+						if(matchConfig){
+							config.setProperty(key, value.toString());
+						}else{
+							pf.setProperty(key, value.toString());
+						}
 						matchName = false;
+						matchConfig = false;
 					}
 					int eqIndex = line.indexOf(EQUALS_MARK);
 					if(eqIndex==-1)
 						LangUtils.throwBaseException("the jfish sql file lack a equals mark : " + line);
-					matchName = true;
-					key = line.substring(NAME_PREFIX.length(), eqIndex).trim();
+					
+					if(line.startsWith(CONFIG_PREFIX)){
+						matchConfig = true;
+						key = line.substring(CONFIG_PREFIX.length(), eqIndex).trim();
+					}else{
+						matchName = true;
+						key = line.substring(NAME_PREFIX.length(), eqIndex).trim();
+					}
 					value = new StringBuilder();
 					value.append(line.substring(eqIndex+EQUALS_MARK.length()));
 					value.append(" ");
@@ -202,15 +255,31 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			if(StringUtils.isNotBlank(key) && value!=null){
 				pf.setProperty(key, value.toString());
 			}
-			
-			System.out.println("loaded jfish file : " + f.getPath());
+
+			jp.setProperties(new PropertiesWraper(pf));
+			jp.setConfig(new PropertiesWraper(config));
+			System.out.println("loaded jfish file : " + f);
 		} catch (Exception e) {
 			LangUtils.throwBaseException("load jfish file error : " + f, e);
 		}
-		return pf;
+		return jp;
 	}
 	
-	protected Map<String, T> buildPropertiesAsNamedInfos(File f, final String namespace, PropertiesWraper wrapper, Class<T> beanClassOfProperty){
+	protected void extBuildNamedInfoBean(T propBean){
+	}
+	
+	/***********
+	 * build a map: 
+	 * key is name of beanClassOfProperty
+	 * value is instance of beanClassOfProperty
+	 * @param resource
+	 * @param namespace
+	 * @param wrapper
+	 * @param beanClassOfProperty
+	 * @return
+	 */
+	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter resource, JFishProperties jp, Class<T> beanClassOfProperty){
+		PropertiesWraper wrapper = jp.getProperties();
 		List<String> keyNames = wrapper.sortedKeys();
 		if(isDebug()){
 			logger.info("================>>> buildPropertiesAsNamedInfos");
@@ -221,49 +290,60 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		T propBean = null;
 		boolean newBean = true;
 		String preKey = null;
-		String val = "";
-		Map<String, T> namedProperties = LangUtils.newHashMap();
+//		String val = "";
+//		Map<String, T> namedProperties = LangUtils.newHashMap();
 		for(String key : keyNames){
 			if(preKey!=null)
 				newBean = !key.startsWith(preKey);
 			if(newBean){
 				if(propBean!=null){
-					namedProperties.put(propBean.getName(), propBean);
+					extBuildNamedInfoBean(propBean);
+					namespaceInfo.put(propBean.getName(), propBean, true);
 				}
 				propBean = ReflectUtils.newInstance(beanClassOfProperty);
-				val = wrapper.getAndThrowIfEmpty(key);
+				String val = wrapper.getAndThrowIfEmpty(key);
 				/*if(key.endsWith(IGNORE_NULL_KEY)){
 					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
 				}*/
 				propBean.setName(key);
 				propBean.setValue(val);
-				propBean.setNamespace(namespace);
+//				propBean.setNamespace(namespace);
 				newBean = false;
-				preKey = key+".";
-				propBean.setSrcfile(f);
+				preKey = key+NamespaceProperty.DOT_KEY;
+				propBean.setSrcfile(resource);
+				propBean.setConfig(jp.getConfig());
+				propBean.setNamespaceInfo(namespaceInfo);
 			}else{
-				val = wrapper.getProperty(key, "");
+				String val = wrapper.getProperty(key, "");
 				String prop = key.substring(preKey.length());
-				if(prop.indexOf('.')!=-1){
-					prop = StringUtils.toJavaName(prop, '.', false);
-				}
+				/*if(prop.startsWith(NamespaceProperty.ATTRS_DOT_KEY)){
+					//no convert to java property name
+				}else{
+					if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
+						prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+					}
+				}*/
 				setNamedInfoProperty(propBean, prop, val);
 			}
 		}
 		if(propBean!=null){
-			namedProperties.put(propBean.getName(), propBean);
+			namespaceInfo.put(propBean.getName(), propBean, true);
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("================>>> builded named query:");
-			for(JFishNameValuePair prop : namedProperties.values()){
+			logger.info("================ {} named query start ================", namespaceInfo.getNamespace());
+			for(JFishNameValuePair prop : namespaceInfo.getNamedProperties()){
 				logger.info(prop.getName()+": \t"+prop);
 			}
+			logger.info("================ {} named query end ================", namespaceInfo.getNamespace());
 		}
 		
-		return namedProperties;
+//		return namedProperties;
 	}
 	
-	protected void setNamedInfoProperty(Object bean, String prop, Object val){
+	protected void setNamedInfoProperty(T bean, String prop, Object val){
+		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
+			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+		}
 		try {
 			ReflectUtils.setExpr(bean, prop, val);
 		} catch (Exception e) {
@@ -272,14 +352,16 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		}
 	}
 
-	protected void watchFiles(File[] sqlfileArray){
+	protected void watchFiles(ResourceAdapter[] sqlResourceArray){
+		if(LangUtils.isEmpty(sqlResourceArray))
+			return ;
 		this.fileMonitor.watchFile(period, new FileChangeListener() {
 			
 			@Override
 			public void fileChanged(File file) {
-				reloadFile(file);
+				reloadFile(FileUtils.adapterResource(file));
 			}
-		}, sqlfileArray);
+		}, sqlResourceArray);
 	}
 	
 	public boolean isDebug() {
@@ -290,5 +372,5 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 		this.debug = debug;
 	}
 
-	abstract protected void reloadFile(File file);
+	abstract protected void reloadFile(ResourceAdapter file);
 }

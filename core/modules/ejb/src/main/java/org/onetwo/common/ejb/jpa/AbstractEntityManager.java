@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ExtQuery;
@@ -30,7 +31,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class AbstractEntityManager implements EventSource {
+abstract public class AbstractEntityManager extends BaseEntityManagerAdapter implements EventSource {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;

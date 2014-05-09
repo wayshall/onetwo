@@ -1,14 +1,24 @@
 package org.onetwo.common.spring.ftl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.ui.freemarker.SpringTemplateLoader;
 
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.ext.beans.ArrayModel;
 import freemarker.ext.beans.BeanModel;
@@ -203,6 +213,42 @@ final public class FtlUtils {
 			return val;
 		else
 			throw LangUtils.asBaseException("the param["+name+"] can not be null.");*/
+	}
+	
+	public static TemplateLoader getTemplateLoader(ResourceLoader resourceLoader, String... templateLoaderPaths) {
+		Assert.notEmpty(templateLoaderPaths);
+		List<TemplateLoader> loaders = LangUtils.newArrayList(templateLoaderPaths.length);
+		for(String path :templateLoaderPaths){
+			TemplateLoader loader = getTemplateLoaderForPath(resourceLoader, path);
+			loaders.add(loader);
+		}
+		return loaders.size()==1?loaders.get(0):getMultiTemplateLoader(loaders);
+	}
+	
+	public static TemplateLoader getTemplateLoaderForPath(ResourceLoader resourceLoader, String templateLoaderPath) {
+		try {
+			Resource path = resourceLoader.getResource(templateLoaderPath);
+			File file = path.getFile();  // will fail if not resolvable in the file system
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"Template loader path [" + path + "] resolved to file path [" + file.getAbsolutePath() + "]");
+			}
+			return new FileTemplateLoader(file);
+		}
+		catch (IOException ex) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Cannot resolve template loader path [" + templateLoaderPath +
+						"] to [java.io.File]: using SpringTemplateLoader as fallback", ex);
+			}
+			return new SpringTemplateLoader(resourceLoader, templateLoaderPath);
+		}
+		
+	}
+
+	public static TemplateLoader getMultiTemplateLoader(List<TemplateLoader> templateLoaders) {
+		Assert.notEmpty(templateLoaders);
+		TemplateLoader[] loaders = templateLoaders.toArray(new TemplateLoader[templateLoaders.size()]);
+		return new MultiTemplateLoader(loaders);
 	}
 	
 	private FtlUtils(){

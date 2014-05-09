@@ -94,12 +94,6 @@
 	 
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
-	  <artifactId>onetwo-plugin-richmodel</artifactId>
-	  <version>${onetwo.plugin.version}</version>
-	</dependency>
-	 
-	<dependency>
-	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-dq</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
@@ -110,11 +104,6 @@
 	  <scope>compile</scope>
 	</dependency>
 	
-	<dependency>
-	  <groupId>c3p0</groupId>
-	  <artifactId>c3p0</artifactId>
-	</dependency>
-  
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

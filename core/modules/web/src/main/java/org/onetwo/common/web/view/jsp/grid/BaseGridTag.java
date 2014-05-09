@@ -5,8 +5,8 @@ import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 
 @SuppressWarnings("serial")
 abstract public class BaseGridTag<T extends HtmlElement> extends BaseHtmlTag<T> {
-	
 
+	
 	protected String getGridVarName(){
 		return GridTagBean.class.getSimpleName();
 	}

@@ -22,6 +22,12 @@
  
   <dependencies>
 	 
+  
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-jfish</artifactId>
+	  <version>${onetwo.jfish.version}</version>
+	</dependency>
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-hibernate</artifactId>

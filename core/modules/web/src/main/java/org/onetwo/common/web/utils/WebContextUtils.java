@@ -11,7 +11,7 @@ import org.onetwo.common.utils.UserDetail;
 @SuppressWarnings("unchecked")
 final public class WebContextUtils {
 
-	public static final String DEFAULT_TOKEN_FIELD_NAME = "org.onetwo.jfish.form.token";
+//	public static final String DEFAULT_TOKEN_FIELD_NAME = "org.onetwo.jfish.form.token";
 	
 	private WebContextUtils(){}
 	

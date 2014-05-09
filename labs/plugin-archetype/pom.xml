@@ -21,6 +21,12 @@
 
  
   <dependencies>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-jfish</artifactId>
+	  <version>${onetwo.jfish.version}</version>
+	</dependency>
 	 
     <dependency>
       <groupId>junit</groupId>

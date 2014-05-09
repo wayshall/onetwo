@@ -27,7 +27,7 @@ public abstract class L {
 		}
 
 		@Override
-		public boolean evaluate(Object obj) {
+		public boolean apply(Object obj) {
 			if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())))
 				return result;
 			return !result;
@@ -50,7 +50,7 @@ public abstract class L {
 		}
 
 		@Override
-		public boolean evaluate(Object obj) {
+		public boolean apply(Object obj) {
 			if (obj instanceof Class) {
 				if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
 					return result;
@@ -61,10 +61,6 @@ public abstract class L {
 
 	};
 	
-
-	public static <T> EasyList<T> wrap(Collection<T> list){
-		return new EasyList<T>(list);
-	}
 
 	public static List<Long> nList(Long start, Long end) {
 		return aslist(start, end, Long.class);
@@ -88,23 +84,6 @@ public abstract class L {
 		return nList(start.longValue(), end.longValue(), Integer.class);
 	}
 
-	public static <T> EasyList<T> wrapInt(int start, int end, Class<T> clazz) {
-		return wrapNum(Long.valueOf(start), Long.valueOf(end), clazz);
-	}
-
-	public static <T> EasyList<T> wrapNum(Long start, Long end, Class<T> clazz) {
-		List<T> list = nList(start, end, clazz);
-		EasyList easy = new EasyList(list);
-		return easy;
-	}
-	
-	public static EasyList<Long> wrapNum(Long start, Long end) {
-		return wrapNum(start, end, Long.class);
-	}
-	
-	public static EasyList<Integer> wrapNum(Integer start, Integer end) {
-		return wrapNum(start.longValue(), end.longValue(), Integer.class);
-	}
 
 	public static List aslist(Object... array) {
 		return list(true, array);
@@ -178,24 +157,10 @@ public abstract class L {
 	public static List exclude(Object array, Object... excludeClasses) {//Class... excludeClasses
     	return trimAndexcludeTheClassElement(true, array, excludeClasses);
     }
-    
+
+	@Deprecated
 	public static List trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
-		if (array == null)
-			return NULL_LIST;
-		
-		List list = null;
-		if(array.getClass().isArray()){
-			int length = Array.getLength(array);
-			list = new ArrayList(length);
-			for (int i = 0; i < length; i++) {
-				list.add(Array.get(array, i));
-			}
-		}else
-			list = tolist(array, trimNull);
-		
-		if (excludeClasses!=null && excludeClasses.length>0)
-			strip(list, (Object[]) excludeClasses);
-		return (list == null) ? NULL_LIST : list;
+		return CUtils.trimAndexcludeTheClassElement(trimNull, array, excludeClasses);
 	}
 
 	@Deprecated

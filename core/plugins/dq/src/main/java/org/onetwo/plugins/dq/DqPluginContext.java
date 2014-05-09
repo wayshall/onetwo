@@ -1,12 +1,11 @@
 package org.onetwo.plugins.dq;
 
+import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ComponentScan(basePackageClasses=DqPlugin.class)
 public class DqPluginContext {
 
 	public final static String HANDLER_METHOD_CACHE = "DQ_HANDLER_METHOD_CACHE";
@@ -16,7 +15,7 @@ public class DqPluginContext {
 	
 	
 	@Bean
-	public DefaultQueryObjectFactoryManager dynamicNamedQueryDaoFactory(){
+	public FileNamedQueryFactoryListener dynamicNamedQueryDaoFactory(){
 		DefaultQueryObjectFactoryManager queryFactory = new DefaultQueryObjectFactoryManager();
 		
 		JDKDynamicProxyCreator creator = new JDKDynamicProxyCreator();

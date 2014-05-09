@@ -15,6 +15,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.tuple.StandardProperty;
 import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.ds.SwitcherInfo;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -26,11 +30,14 @@ public final class HibernateUtils {
 	public static final Class<? extends Annotation>[] IGNORE_ANNO_CLASSES = new Class[]{ManyToOne.class, ManyToMany.class, OneToMany.class, OneToOne.class, Transient.class};
 	public static final String[] TIMESTAMP_FIELDS = new String[]{"createTime", "lastUpdateTime"};
 	public static final class HiberanteCopyer extends IgnoreAnnosCopyer {
+		private String[] ignoreFields;
+		
 		public HiberanteCopyer() {
 			super(null);
 		}
-		public HiberanteCopyer(Class<? extends Annotation>[] classes) {
+		public HiberanteCopyer(Class<? extends Annotation>[] classes, String... ignoreFields) {
 			super(classes);
+			this.ignoreFields = ignoreFields;
 		}
 
 		@Override
@@ -39,7 +46,16 @@ public final class HibernateUtils {
 				if(ArrayUtils.contains(TIMESTAMP_FIELDS, prop.getName()))
 					return ;
 			}
+			if(ArrayUtils.contains(ignoreFields, prop.getName())){
+				return ;
+			}
 			super.copy(source, target, prop);
+		}
+		
+		protected boolean isIgnoreValue(Object val){
+			if(val==null)
+				return true;
+			return false;
 		}
 		
 	};
@@ -49,12 +65,20 @@ public final class HibernateUtils {
 	
 	private static SessionFactory sessionFactory;
 	
-	static void initSessionFactory(SessionFactory sessionFactory) {
+	public static void initSessionFactory(SessionFactory sessionFactory) {
 		HibernateUtils.sessionFactory = sessionFactory;
 	}
 
 	public static void init(Object object){
 		Hibernate.initialize(object);
+	}
+	
+	public static SessionFactory getSessionFactory() {
+		if(JFishMultipleSessionFactory.class.isInstance(sessionFactory)){
+			SwitcherInfo switcher = SpringApplication.getInstance().getContextHolder().getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
+			return ((JFishMultipleSessionFactory) sessionFactory).getSessionFactory(switcher.getCurrentSwitcherName());
+		}
+		return sessionFactory;
 	}
 
 	public static ClassMetadata getClassMeta(Session s, Class<?> entityClass){
@@ -66,11 +90,18 @@ public final class HibernateUtils {
 	}
 	
 	public static ClassMetadata getClassMeta(String entityClass){
-		return sessionFactory.getClassMetadata(entityClass);
+		return getSessionFactory().getClassMetadata(entityClass);
 	}
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass){
-		return sessionFactory.getClassMetadata(entityClass);
+		return getClassMeta(entityClass, false);
+	}
+	
+	public static ClassMetadata getClassMeta(Class<?> entityClass, boolean throwIfNoteFound){
+		ClassMetadata meta = getSessionFactory().getClassMetadata(entityClass);
+		if(meta==null && throwIfNoteFound)
+			throw new BaseException("can not find the entity["+entityClass+"], check it please!");
+		return meta;
 	}
 	
 	public static boolean setPropertyState(StandardProperty[] props, Object[] currentState, String property, Object value){
@@ -86,20 +117,26 @@ public final class HibernateUtils {
 	
 	
 	/*****
-	 * 复制对象属性，但会忽略那些null值、空白字符和配置了关系的属性
+	 * 复制对象属性，但会忽略那些null值和配置了关系的属性
 	 * @param source
 	 * @param target
 	 */
 	public static <T> void copyWithoutRelations(T source, T target){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
 	}
+	public static <T> void copyIgnoreRelationsAndFields(T source, T target, String... ignoreFields){
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
+	}
 	/****
-	 * 复制对象属性，但会忽略那些null值、空白字符
+	 * 复制对象属性，但会忽略那些null值
 	 * @param source
 	 * @param target
 	 */
 	public static <T> void copy(T source, T target){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, COMMON);
+	}
+	public static <T> void copyIgnore(T source, T target, String... ignoreFields){
+		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(new Class[]{Transient.class}, ignoreFields));
 	}
 	
 	/****

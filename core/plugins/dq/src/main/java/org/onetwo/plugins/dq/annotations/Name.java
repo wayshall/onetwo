@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.onetwo.common.db.ExtQuery.K.IfNull;
+
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Name {
@@ -12,5 +14,17 @@ public @interface Name {
 	public String value();
 	
 	public boolean queryParam() default true;
+	
+	/****
+	 * 注意，此处设置只对query.setParameter有用，生成的sql仍需自己控制是否生成参数
+	 * @return
+	 */
+	public IfNull ifParamNull() default IfNull.Calm;
+	
+	/***
+	 * 在queryParam=true前提下，如果参数是数组和列表，使用name+index重新生成参数名称
+	 * @return
+	 */
+	public boolean renamedUseIndex() default false;
 	
 }

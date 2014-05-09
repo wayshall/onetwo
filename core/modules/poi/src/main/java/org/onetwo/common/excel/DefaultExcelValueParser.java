@@ -4,48 +4,83 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.interfaces.excel.ExcelValueParser;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 
-@SuppressWarnings("rawtypes")
 public class DefaultExcelValueParser implements ExcelValueParser {
-	public static final Pattern IS_DIGIT = Pattern.compile("^\\d$");
-	
+	public static final Pattern IS_DIGIT = ExcelUtils.IS_DIGIT;
+
 	private Map<String, Object> context;
+//	private Map<String, Object> varMap = Maps.newHashMap();
 	
 	public DefaultExcelValueParser(){
 		this(null);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public DefaultExcelValueParser(Map context) {
+	public DefaultExcelValueParser(Map<String, Object> context) {
 		super();
 		if(context==null)
-			context = new HashMap();
+			context = new HashMap<String, Object>();
 		else
 			this.context = context;
 		if(!context.containsKey(TheFunction.ALIAS_NAME)){
 			context.put(TheFunction.ALIAS_NAME, TheFunction.getInstance());
 		}
 	}
+	
+	public void putVar(String name, Object value){
+//		this.varMap.put(name, value);
+		this.context.put(name, value);
+	}
 
 	public Map<String, Object> getContext() {
 		return context;
 	} 
 
-	public Object parseValue(String expr, Object obj, Object objForSymbol){
+	/*public Object parseValue(String expr, Object obj, Object objForSymbol){
 		if(StringUtils.isBlank(expr))
 			return "";
 		Object fieldValue = null;
-		if(isSymbol(expr))
+		if(isSymbol(expr)){
 			fieldValue = parseSymbol(expr, obj);
-		else
+		}else{
+			if(expr.startsWith("#")){
+				fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;
+			}
 			fieldValue = ExcelUtils.getValue(expr, context, obj);
+		}
 		
 		return fieldValue;
+	}*/
+
+	public Object parseValue(String expr, Object root, Map<String, Object> context){
+		if(StringUtils.isBlank(expr))
+			return "";
+		Object fieldValue = null;
+		Map<String, Object> vcontext = context==null?this.context:context;
+		if(isSymbol(expr)){
+			fieldValue = parseSymbol(expr, root);
+		}else{
+			if(expr.startsWith("#")){
+				/*fieldValue = varMap.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;*/
+				fieldValue = vcontext.get(expr.substring(1));
+				if(fieldValue!=null)
+					return fieldValue;
+			}
+			fieldValue = ExcelUtils.getValue(expr, vcontext, root);
+		}
+		return fieldValue;
+	}
+
+	public Object parseValue(String expr){
+		return parseValue(expr, null, context);
 	}
 	
 	public boolean isSymbol(String value){
@@ -78,6 +113,11 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 		}
 	}
 
+//	@Override
+	public int parseIntValue(String expr) {
+		return parseIntValue(expr, null);
+	}
+
 	public int parseIntValue(String expr, Object root) {
 		if(StringUtils.isBlank(expr)){
 			return 0;
@@ -87,7 +127,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			return Integer.parseInt(expr);
 		}
 		
-		Number v = (Number)parseValue(expr, root, null);
+		Number v = (Number)parseValue(expr, root, context);
 		return v==null?0:v.intValue();
 	}
 	

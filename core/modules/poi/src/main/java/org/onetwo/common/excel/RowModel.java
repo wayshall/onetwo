@@ -3,9 +3,13 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class RowModel {
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter(ExcelUtils.JSON_FILTER_ROW)
+public class RowModel implements PoiModel {
 	public static final String DEFAULT_NAME = "entity";
 	public static class Type {
 		public static final String TITLE_KEY = "title";
@@ -19,7 +23,9 @@ public class RowModel {
 	private String datasource;
 	private int space;
 	private String span;
+	private short height;
 	private String index;
+	private String condition;
 	
 	private boolean renderHeader;
 
@@ -30,15 +36,28 @@ public class RowModel {
 	
 	private String fieldProcessor;
 	
+	private TemplateModel template;
+	
 //	private String executorClass;
 	
 	private List<FieldModel> fields = new ArrayList<FieldModel>();
 	
 	public RowModel(){
 	}
+
+	public void initModel(){
+		for(FieldModel field : fields){
+			field.initModel();
+			field.setRow(this);
+		}
+	}
 	
 	public int size(){
 		return this.fields.size();
+	}
+	
+	public boolean isEmpty(){
+		return fields.isEmpty();
 	}
 	
 	public FieldModel getField(int index){
@@ -92,6 +111,14 @@ public class RowModel {
 
 	public void setFields(List<FieldModel> fields) {
 		this.fields = fields;
+	}
+	
+	public RowModel addField(FieldModel field){
+		if(fields==null)
+			fields = LangUtils.newArrayList();
+		field.setRow(this);
+		fields.add(field);
+		return this;
 	}
 
 	public int getSpace() {
@@ -187,6 +214,30 @@ public class RowModel {
 	
 	public boolean hasFieldProcessor(){
 		return StringUtils.isNotBlank(fieldProcessor);
+	}
+
+	public short getHeight() {
+		return height;
+	}
+
+	public void setHeight(short height) {
+		this.height = height;
+	}
+
+	public TemplateModel getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(TemplateModel template) {
+		this.template = template;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 	
 	/*public RowExecutor getExecutorInstance() {
