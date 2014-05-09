@@ -111,9 +111,12 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	}
 	
 	protected SecurityTarget createSecurityTarget(HttpServletRequest request, HttpServletResponse response, Object handler){
-		if(handler instanceof HandlerMethod)
-			return new SpringSecurityTarget(sessionStorer, request, response, (HandlerMethod)handler);
-		return null;
+		SecurityTarget target = null;
+		if(handler instanceof HandlerMethod){
+			target = new SpringSecurityTarget(sessionStorer, request, response, (HandlerMethod)handler);
+			AuthenticUtils.setIntoRequest(request, target);
+		}
+		return target;
 	}
 
 

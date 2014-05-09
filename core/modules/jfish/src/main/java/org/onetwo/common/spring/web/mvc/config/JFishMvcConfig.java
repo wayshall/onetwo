@@ -103,6 +103,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
+		listenerManager.addListener((JFishMvcConfigurerListener)jfishPluginManager);
 	}
 
 	@Configuration
@@ -184,7 +185,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		listenerManager.addListener((JFishMvcConfigurerListener)jfishPluginManager);
 	}
 
 	@Bean
@@ -326,8 +326,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		ModelAndJsonCompatibleResolver modelAndJson = new ModelAndJsonCompatibleResolver(converters);
 		argumentResolvers.add(modelAndJson);*/
 		
-		List<HandlerMethodArgumentResolver> resolvers = SpringUtils.getBeans(applicationContext, HandlerMethodArgumentResolver.class);
-		argumentResolvers.addAll(resolvers);
+/*		List<HandlerMethodArgumentResolver> resolvers = SpringUtils.getBeans(applicationContext, HandlerMethodArgumentResolver.class);
+		argumentResolvers.addAll(resolvers);*/
+		this.listenerManager.notifyOnRegisterArgumentResolvers(argumentResolvers);
 	}
 	
 

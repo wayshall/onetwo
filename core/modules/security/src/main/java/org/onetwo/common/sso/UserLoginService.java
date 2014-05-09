@@ -1,12 +1,10 @@
 package org.onetwo.common.sso;
 
-import java.util.Map;
-
 import org.onetwo.common.utils.UserDetail;
 
 public interface UserLoginService {
 	
-	public UserDetail login(String username, String password, Map<?, ?> params);
+	public UserDetail login(LoginParams loginParams);
 	
 	public void logout(UserDetail userDetail, boolean normal);
 	
