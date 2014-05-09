@@ -28,8 +28,8 @@ public class SqlInfixVarConditionExpr extends AbstractSqlVarObject implements Sq
 		}else{
 			varIds = left;
 		}
-		named = varIds.contains(SqlTokenKey.VARNAME);
-		if(named){
+		setNamed(varIds.contains(SqlTokenKey.VARNAME));
+		if(isNamed()){
 			JTokenValue<SqlTokenKey> tv = varIds.getTokenValue(SqlTokenKey.VARNAME);
 			if(tv==null)
 				throw new BaseException("not found var name in : " + varIds);

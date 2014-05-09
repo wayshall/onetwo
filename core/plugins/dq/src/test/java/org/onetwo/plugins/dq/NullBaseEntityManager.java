@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.BaseEntityManagerAdapter;
+import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -17,7 +19,8 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
-public class NullBaseEntityManager implements BaseEntityManager {
+@SuppressWarnings("unchecked")
+public class NullBaseEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager {
 
 	private FileNamedQueryFactory<NamespaceProperty> fileNamedQueryFactory = new FileNamedQueryFactory(){
 
@@ -28,7 +31,7 @@ public class NullBaseEntityManager implements BaseEntityManager {
 		}
 
 		@Override
-		public void initQeuryFactory(BaseEntityManager em) {
+		public void initQeuryFactory(CreateQueryable em) {
 			// TODO Auto-generated method stub
 			
 		}

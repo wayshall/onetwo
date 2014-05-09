@@ -1,0 +1,67 @@
+/** Home Page **/
+* { padding:0; }
+html, body {
+	width:100%;
+	height:100%;
+	overflow:hidden;
+}
+body { 
+    font-family: "lucida sans", verdana, arial, helvetica, sans-serif;
+	background:url(../../images/bg.jpg);
+	filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+	-moz-background-size:100% 100%;
+    background-size:100% 100%;
+}
+.logo {
+	top:10%;
+	left:6%;
+	width:220px;
+	height:94px;
+	margin:-50px 0 0 -58px;
+	position:absolute;
+	background:url(../../images/logo.png) no-repeat; 
+}
+.right { overflow:hidden; position:absolute; left:81%; bottom:2.5%; }
+.right>a { width:48px; height:48px; float:left; border-radius:24px; background:url(../../images/btn.png) no-repeat; display:block; opacity:0.9; transition:all linear 0.4s; }
+#phone { background-position: -329px -5px; margin-right:20px; }
+#email { background-position: -276px -66px; margin-right:20px; }
+#weibo { background-position: -328px -66px; }
+.login {
+	top:50%;
+	left:50%;
+	width:360px;
+	height:360px;
+	margin:-180px 0 0 -180px;
+	position:absolute;
+	border-radius:180px;
+	background:rgba(255,255,255,0.5);
+	background: -moz-radial-gradient(rgba(255,255,255,1), rgba(255,255,255,0.7) 45%, rgba(255,255,255,0.2) 80%);
+	background: -webkit-radial-gradient(rgba(255,255,255,1), rgba(255,255,255,0.7) 45%, rgba(255,255,255,0.2) 80%);
+	background: -o-radial-gradient(rgba(255,255,255,1), rgba(255,255,255,0.7) 45%, rgba(255,255,255,0.2) 80%);
+}
+.title { margin-top:50px; margin-bottom:12px; }
+.title > div { width:250px; height:52px; background:url(../../images/title.png) no-repeat;  }
+.title>h4 { margin-top:-1px;color:#3493d7; }
+.form-control { width:270px; }
+.form-group>p { display:inline-block; margin-top:-5px; color:#222; font-size:12px; }
+.form-group>p>span { color:#F69; }
+#userPassword,#userName { padding-left:16px; }
+#userPassword,#userName,.btn { 
+	margin-top:2px; 
+	border-radius:100px;
+	-moz-border-radius:100px; 
+	-webkit-border-radius:100px;
+	-o-border-radius:100px;
+}
+.btn { margin-top:18px; width:120px; height:46px; }
+.alert { 
+	text-align:center;
+	border:none;
+	box-shadow:0 1px 2px #999999;
+	width:100%;
+	left:0; top:0;
+	position:absolute;
+	z-index:210;
+}
+.return-login { margin-top:-80px; margin-left:150px; }
+.return-login a { display:block; width:400px; height:437px; background:url(../../images/return-login.png) no-repeat; }

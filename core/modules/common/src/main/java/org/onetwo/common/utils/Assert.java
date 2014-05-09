@@ -27,6 +27,15 @@ abstract public class Assert {
 		isNull(object, "[Assertion failed] - the object argument must be null");
 	}
 
+
+	public static void sizeEqual(Object object, int size) {
+		sizeEqual(object, size, "[Assertion failed] - the object's size must equals "+size);
+	}
+	public static void sizeEqual(Object object, int size, String message) {
+		if(LangUtils.size(object)!=size){
+			throw new IllegalArgumentException(message);
+		}
+	}
 	
 	public static void notNull(Object object, String message) {
 		if (object == null) {

@@ -11,7 +11,7 @@ public class JaxbClassFilter implements ScanResourcesCallback<Class<?>> {
 	public static final JaxbClassFilter Instance = new JaxbClassFilter();
 	
 
-	@Override
+	/*@Override
 	public boolean isCandidate(MetadataReader metadataReader) {
 		String clsName = metadataReader.getClassMetadata().getClassName();
 		if(clsName.startsWith("org.junit.") || clsName.startsWith("org.onetwo.common.test.")){
@@ -21,10 +21,12 @@ public class JaxbClassFilter implements ScanResourcesCallback<Class<?>> {
 			return true;
 
 		return false;
-	}
+	}*/
 
 	@Override
 	public Class<?> doWithCandidate(MetadataReader metadataReader, Resource clazz, int count) {
+		if (!metadataReader.getAnnotationMetadata().hasAnnotation(XmlRootElement.class.getName()))
+			return null;
 		Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
 		return cls;
 	};

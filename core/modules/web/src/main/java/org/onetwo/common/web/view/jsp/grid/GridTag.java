@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.onetwo.common.web.view.jsp.TagUtils;
@@ -21,6 +20,14 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 	@Override
 	public GridTagBean createComponent() {
 		return new GridTagBean();
+	}
+	
+
+	@Override
+	public int doStartTag() throws JspException {
+//		Deque<HtmlElement> tagStack = new ArrayDeque<HtmlElement>();
+//		setTagStack(tagStack);
+		return super.doStartTag();
 	}
 
 	@Override
@@ -58,13 +65,7 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 
 	protected String buildQueryString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-		String str = request.getQueryString();
-		if(StringUtils.isBlank(str))
-			return "";
-		CasualMap params = new CasualMap(str);
-		params.filter("pageNo");
-		str = params.toParamString();
-		return str;
+		return TagUtils.getQueryStringFilterPageNo(request);
 	}
 	
 	

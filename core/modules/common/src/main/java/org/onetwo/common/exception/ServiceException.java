@@ -60,7 +60,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 	
 	protected String getDefaultCode(){
-		return DEFAULT_SYSTEM_ERROR_CODE;
+		return ServiceErrorCode.BASE_CODE;
 	}
 
 	public Object[] getArgs() {

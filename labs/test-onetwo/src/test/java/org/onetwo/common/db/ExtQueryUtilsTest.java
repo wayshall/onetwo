@@ -2,6 +2,8 @@ package org.onetwo.common.db;
 
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import test.entity.UserEntity;
@@ -27,6 +29,33 @@ public class ExtQueryUtilsTest {
 		
 		countSql = ExtQueryUtils.buildCountSql("select * from zjk_supplier where a.bb = :cc", null);
 		System.out.println("countSql: " + countSql);
+	}
+	
+	@Test
+	public void testBuildGroupByCountSql(){
+		String sql = "select * from a where a.aa=:aaName group by a.aa";
+		String countSql = ExtQueryUtils.buildCountSql(sql, null);
+		System.out.println("countSql: " + countSql);
+		String groupBy = "select count(*) from ( " + sql + " ) count_view";
+		Assert.assertEquals(groupBy, countSql);
+	}
+	
+	@Test
+	public void testBuildGroupByAndOrderByCountSql(){
+		String sql = "select * from a where a.aa=:aaName group by a.aa order by a.bb, a.cc";
+		String countSql = ExtQueryUtils.buildCountSql(sql, null);
+		System.out.println("countSql: " + countSql);
+		String groupBy = "select count(*) from ( select * from a where a.aa=:aaName group by a.aa ) count_view";
+		Assert.assertEquals(groupBy, countSql);
+	}
+	
+	@Test
+	public void testBuildGroupByAndOrderByCountSql2(){
+		String sql = "select * from ( (select * from a where a.aa=:aaName group by a.aa) union all (select * from a where a.aa=:aaName group by a.aa) ) tt group by t.aa order by a.bb, a.cc";
+		String countSql = ExtQueryUtils.buildCountSql(sql, null);
+		System.out.println("countSql: " + countSql);
+		String groupBy = "select count(*) from ( select * from ( (select * from a where a.aa=:aaName group by a.aa) union all (select * from a where a.aa=:aaName group by a.aa) ) tt group by t.aa ) count_view";
+		Assert.assertEquals(groupBy, countSql);
 	}
 
 }

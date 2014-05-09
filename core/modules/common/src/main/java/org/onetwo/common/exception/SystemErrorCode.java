@@ -3,7 +3,7 @@ package org.onetwo.common.exception;
 public interface SystemErrorCode {
 	
 	public String APP_ERROR_MESSAGE = "appErrorMessage";
-	public String DEFAULT_SYSTEM_ERROR_CODE = "[ERROR]";
+	public String DEFAULT_SYSTEM_ERROR_CODE = "[SYSTEM ERROR]";
 	
 	public static class JFishErrorCode {
 		public static final String BASE_CODE = "[JFISH ERROR]";//前缀
@@ -39,6 +39,12 @@ public interface SystemErrorCode {
 		public static final String BASE_CODE = "[BUSINESS ERROR]";//前缀
 		public static final String OBJECT_NOT_FOUND = BASE_CODE+"OBJECT NOT FOUND";//找不到对象
 		public static final String SEND_SMS_ERROR = BASE_CODE+"SEND SMS ERROR";//发送短信错误
+	}
+	
+	public static class CommandLineErrorCode {
+		public static final String BASE_CODE = "[COMMAND ERROR]";//前缀
+		public static final String COMMAND_NOT_FOUND = BASE_CODE+"COMMAND NOT FOUND";//错误的指令
+		public static final String COMMAND_STOP = BASE_CODE+"COMMAND STOP";//错误的指令
 	}
 	
 	public static class OtherErrorCode {

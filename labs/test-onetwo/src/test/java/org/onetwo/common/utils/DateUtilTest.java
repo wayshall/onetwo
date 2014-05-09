@@ -13,6 +13,84 @@ import org.onetwo.common.utils.DateUtil.DateType;
 public class DateUtilTest {
 	
 	@Test
+	public void testMatch(){
+		String dateStr = "1984-03-03";
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "19840303";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984/03/03";
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984-3-3";
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		
+		dateStr = "1984-03-43";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984-03-03 11";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		
+		dateStr = "1984-03-03 11:11:11";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984-03-03 11:11";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertTrue(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984-03";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertTrue(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+		
+		dateStr = "1984";
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM(dateStr));
+		Assert.assertTrue(DateUtil.isYyyy(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm(dateStr));
+		Assert.assertFalse(DateUtil.isYyyy_MM_dd_HH_mm_ss(dateStr));
+	}
+	
+	@Test
 	public void testDate(){
 		Date date = DateUtil.parseDate("2013-09-09");
 		System.out.println("date: " + date.toLocaleString());

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -36,7 +37,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 
 @SuppressWarnings("rawtypes")
-public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
+public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
@@ -68,7 +69,7 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 
 	public void afterPropertiesSet() throws Exception{
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDbName(), watchSqlFile, listener);
+		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDb(), watchSqlFile, listener);
 		this.fileNamedQueryFactory.initQeuryFactory(this);
 		
 //		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
@@ -426,5 +427,6 @@ public class JFishEntityManagerImpl implements JFishEntityManager, ApplicationCo
 	public void setWatchSqlFile(boolean watchSqlFile) {
 		this.watchSqlFile = watchSqlFile;
 	}
+
 
 }

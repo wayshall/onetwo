@@ -34,27 +34,45 @@ public class BaseInitFilter extends IgnoreFiler {
 	public static final String LOCALE_SESSION_ATTRIBUTE = WebLocaleUtils.ATTRIBUTE_KEY;//I18nInterceptor.DEFAULT_SESSION_ATTRIBUTE;
 
 	public static final String RELOAD = "reload";
+	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
+	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
+	
+	private WebConfigProvider webConfigProvider;
 
 
 	protected void initApplication(FilterConfig config) {
-		super.initApplication(config);
-		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
-		Object webconfig = getWebConfig(siteConfig);
 		
-		//webconfig
-		siteConfig.setWebAppConfigurator(webconfig);
-		siteConfig.getFreezer().freezing();
+		super.initApplication(config);
+		
+		String libraryPath = System.getProperty(JNA_LIBRARY_PATH);
+		logger.info("jna.library.path: {}", libraryPath);
 		
 		ServletContext context = config.getServletContext();
-		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
-		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		SpringApplication.initApplication(app);
+		
+		webConfigProvider = SpringApplication.getInstance().getBean(WebConfigProvider.class);
+		if(webConfigProvider!=null){
+			logger.info("find webConfigProvider : {}", webConfigProvider);
+		}else{
+			logger.info("no webConfigProvider found.");
+		}
+
+
+		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
+		Object webconfig = getWebConfig(siteConfig);
+		//webconfig
+		siteConfig.setWebAppConfigurator(webconfig);
+		siteConfig.getFreezer().freezing();
+		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
+		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
+		
+		UtilTimerStack.active(timeProfiler);
 		
 	}
 	
@@ -63,7 +81,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	}
 	
 	protected Object getWebConfig(BaseSiteConfig siteConfig){
-		return siteConfig;
+		return webConfigProvider==null?null:webConfigProvider.createWebConfig(siteConfig);
 	}
 
 	public String[] getFilterInitializers(FilterConfig config){
@@ -72,17 +90,14 @@ public class BaseInitFilter extends IgnoreFiler {
 	
 	
 	protected void printRequestTime(boolean push, HttpServletRequest request){
-		boolean active = "true".equals(request.getParameter("printRequestTime"));
-		if(!active)
+		if(!timeProfiler)
 			return ;
-		String url = this.getClass().getSimpleName()+" "+request.getMethod() + ":" + request.getRequestURI();
-		UtilTimerStack.setActive(active);
+		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(push){
 			UtilTimerStack.push(url);
 		}else{
 			UtilTimerStack.pop(url);
 		}
-		UtilTimerStack.setActive(!active);
 	}
 	
 	protected void reloadConfigIfNecessary(HttpServletRequest request){
@@ -103,14 +118,10 @@ public class BaseInitFilter extends IgnoreFiler {
 		try {
 			
 			this.reloadConfigIfNecessary(request);
-
 //			addP3P(response);
-			
 			processLocale(request, response);
 
 			filterChain.doFilter(request, response);
-			
-//			setErrorCount(session, 0);
 		}catch (ServletException e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
 			throw e;

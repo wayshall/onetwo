@@ -1,6 +1,6 @@
 package org.onetwo.common.server;
 
-import org.onetwo.common.server.tomcat.TomcatServer;
+import org.onetwo.common.web.server.tomcat.TomcatServer;
 
 public class JFishAppServer {
 

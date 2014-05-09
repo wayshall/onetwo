@@ -11,11 +11,14 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
@@ -43,6 +46,9 @@ abstract public class AbstractBaseController {
 	@Resource
 	private CodeMessager codeMessager;
 	
+	@Resource
+	private XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver;
+	
 	protected AbstractBaseController(){
 	}
 	
@@ -54,9 +60,13 @@ abstract public class AbstractBaseController {
 		return REDIRECT + path;
 	}
 	
-	public void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
+	protected void addFlashMessage(RedirectAttributes redirectAttributes, String msg){
 		redirectAttributes.addFlashAttribute(MESSAGE, StringUtils.trimToEmpty(msg));
 		redirectAttributes.addFlashAttribute(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+	}
+
+	protected WebHelper webHelper(){
+		return JFishWebUtils.webHelper();
 	}
 
 	
@@ -105,8 +115,10 @@ abstract public class AbstractBaseController {
 	protected ModelAndView exportExcel(String template, String fileName, Object... models){
 		ModelAndView mv = mv(template, models);
 		JFishExcelView view = new JFishExcelView();
-		view.setUrl(template);
+		String path = this.xmlTemplateExcelViewResolver.getPrefix()+template;
+		view.setUrl(path);
 		view.setFileName(fileName);
+		view.setSuffix(this.xmlTemplateExcelViewResolver.getSuffix());
 		mv.setView(view);
 		return mv;
 	}
@@ -158,6 +170,10 @@ abstract public class AbstractBaseController {
 		} finally{
 			IOUtils.closeQuietly(input);
 		}
+	}
+	
+	protected Object singleJson(DataResult object){
+		return SingleReturnWrapper.wrap(object);
 	}
 
 	protected UserDetail getCurrentLoginUser(){

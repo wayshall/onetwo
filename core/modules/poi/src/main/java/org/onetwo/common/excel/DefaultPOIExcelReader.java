@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class DefaultPOIExcelReader implements ExcelReader {
@@ -54,14 +54,21 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	 * @param endSheet not include
 	 * @return
 	 */
-	public <T> Map<String, T> readData(Workbook workbook, ExcelDataExtractor<T> extractor, int startSheet, int endSheet){
+	public <T> Map<String, T> readData(Workbook workbook, ExcelDataExtractor<T> extractor, int startSheet, int readCount){
 		Assert.notNull(workbook);
 		try {
 			int sheetCount = workbook.getNumberOfSheets();
 			Sheet sheet = null;
 			Map<String, T> datas = new LinkedHashMap<String, T>();
-			for(int i=0; i<sheetCount; i++){
-				if((startSheet==-1 && endSheet==-1) || (i>=startSheet && i<endSheet)){
+			
+			if(startSheet<0)
+				startSheet = 0;
+			if(readCount<0)
+				readCount = sheetCount;
+			
+			int hasReadCount = 0;
+			for(int i=startSheet; i<sheetCount; i++){
+				if(hasReadCount<readCount){
 					sheet = workbook.getSheetAt(i);
 					String name = sheet.getSheetName();
 					if(sheet.getPhysicalNumberOfRows()<1)
@@ -70,11 +77,15 @@ public class DefaultPOIExcelReader implements ExcelReader {
 						name = "" + i;
 					T extractData = extractor.extractData(sheet, i);
 					datas.put(name, extractData);
+					
+					hasReadCount++;
 				}
 			}
 			return datas;
-		} catch (Exception e) {
-			throw new ServiceException("read excel file error.", e);
+		}catch (ServiceException e) {
+			throw e;
+		}catch (Exception e) {
+			throw new BaseException("read excel file error.", e);
 		}
 	}
 	
@@ -93,65 +104,37 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		InputStream in = null;
 		try {
 			in = new FileInputStream(file);
-			workbook = WorkbookFactory.create(in);
+			workbook = createWorkbook(in);
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			IOUtils.closeQuietly(in);
-			workbook = createWorkbookByExt(file);
+			throw new BaseException("read excel error : " + file.getPath(), e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}
 		return workbook;
 	}
 	
-	private Workbook createWorkbookByExt(File file){
-		Workbook workbook = null;
-		InputStream in = null;
-		try {
-			in = new FileInputStream(file);
-			workbook = createWorkbook(in, file.getName().endsWith(".xlsx"));
-		} catch (Exception e) {
-			IOUtils.closeQuietly(in);
-			try {
-				in = new FileInputStream(file);
-				workbook = createWorkbook(in, !file.getName().endsWith(".xlsx"));
-			} catch (Exception ee) {
-				throw new ServiceException("createWorkbook error : " + file.getPath(), ee);
-			}
-		}finally{
-			IOUtils.closeQuietly(in);
-		}
-		return workbook;
-	}
-	
+	/*
 	protected Workbook createWorkbook(InputStream in, boolean isXssf) {
 		Workbook workbook = null;
 		try {
-			if(isXssf){
-				workbook = new XSSFWorkbook(in);
-			}else{
-				workbook = new HSSFWorkbook(in);
-			}
+			workbook = WorkbookFactory.create(in);
 		} catch (Exception e) {
 			throw new ServiceException("createWorkbook error : " + in, e);
 		}
 		return workbook;
-	}
+	}*/
 	
 	protected Workbook createWorkbook(InputStream in){
 		Workbook workbook = null;
 		try {
 //			br.mark(1024*10);
-			workbook = createWorkbook(in, true);
+			workbook = WorkbookFactory.create(in);
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			try {
-				if(in.markSupported()){
-					in.mark(1024*10);//10kb
-				}
-				in.reset();
-			} catch (Exception ee) {
-				throw new ServiceException("Workbook reset error : " + in, ee);
-			}
-			workbook = createWorkbook(in, false);
+			throw new BaseException("read excel inputstream error : " + in, e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}

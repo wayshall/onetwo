@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.fish.spring.JNamedQueryKey;
+import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -26,6 +26,10 @@ public class TypeConvertorsTest {
 		Assert.assertTrue(jqk==JNamedQueryKey.ASC);
 		jqk = Types.asValue("ResultClass", JNamedQueryKey.class);
 		Assert.assertTrue(jqk==JNamedQueryKey.ResultClass);
+		
+
+		jqk = Types.asValue(0, JNamedQueryKey.class);
+		Assert.assertTrue(jqk==JNamedQueryKey.ParserContext);
 	}
 	
 	@Test

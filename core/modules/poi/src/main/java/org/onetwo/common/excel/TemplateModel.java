@@ -5,11 +5,20 @@ import java.util.List;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class TemplateModel {
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
+public class TemplateModel implements PoiModel{
+	public static final int DEFAULT_SIZE_PER_SHEET = 60000;
 	private static final String DEFAULLT_VARNAME = "_sheet";
 
 	private String name;
+	/****
+	 * 放到上下中的变量名
+	 */
 	private String varname;
+	
+	private String condition;
 	
 	private List<RowModel> rows;
 	
@@ -21,7 +30,19 @@ public class TemplateModel {
 	private String datasource;
 	private Integer sizePerSheet;
 	
+	private String columnWidth;
+	
+//	private Map<Integer, Short> columnWidthMap = LangUtils.newHashMap();
+	
+	
 	public TemplateModel(){
+	}
+	
+	public void initModel(){
+		for(RowModel row : rows){
+			row.setTemplate(this);
+			row.initModel();
+		}
 	}
 
 	public String getName() {
@@ -40,6 +61,17 @@ public class TemplateModel {
 	public void setRows(List<RowModel> rows) {
 //		this.freezer.checkOperation("setRows");
 		this.rows = rows;
+	}
+	
+	public boolean isEmpty(){
+		return LangUtils.isEmpty(rows);
+	}
+	
+	public TemplateModel addRow(RowModel row){
+		if(this.rows==null)
+			this.rows = LangUtils.newArrayList();
+		this.rows.add(row);
+		return this;
 	}
 
 	public String getLabel() {
@@ -69,7 +101,7 @@ public class TemplateModel {
 	}
 
 	public Integer getSizePerSheet() {
-		return sizePerSheet;
+		return sizePerSheet==null?DEFAULT_SIZE_PER_SHEET:sizePerSheet;
 	}
 
 	public void setSizePerSheet(Integer sizePerSheet) {
@@ -82,7 +114,24 @@ public class TemplateModel {
 
 	public void setMultiSheet(boolean multiSheet) {
 		this.multiSheet = multiSheet;
-	} 
+	}
+
+	public String getColumnWidth() {
+		return columnWidth;
+	}
+
+	public void setColumnWidth(String columnWidth) {
+		this.columnWidth = columnWidth;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+	
 	
 	/*public boolean isMultiSheet(){
 		return this.sizePerSheet!=null && this.sizePerSheet>0 && StringUtils.isNotBlank(datasource);

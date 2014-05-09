@@ -1,30 +1,104 @@
 package org.onetwo.common.hibernate;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.PreDeleteEventListener;
 import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.onetwo.common.ds.JFishMultipleDatasource;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
+import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 
 public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implements ApplicationContextAware {
+	private static final String DEFAULT_HIBERNATE_CONFIG_PREFIX = "hibernate.";
+	private static final String EXT_HIBERNATE_CONFIG_PREFIX = "hib.";
 
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
 	private ApplicationContext applicationContext;
 	private PreInsertEventListener[] preInsertEventListeners;
 	private PreUpdateEventListener[] preUpdateEventListeners;
 	private SaveOrUpdateEventListener[] saveOrUpdateEventListeners;
+	private PreDeleteEventListener[] preDeleteEventListeners;
+	
+	@Autowired
+	private JFishPropertyPlaceholder configHolder;
+	
+	private boolean autoScanMultipleDatasources;
+//	private String masterName;
+	private DataSource dataSourceHolder;
 	
 	public ExtLocalSessionFactoryBean(){
+	}
+	
+	public void afterPropertiesSet() throws IOException {
+		if(getHibernateProperties()==null || getHibernateProperties().isEmpty()){
+			this.setHibernateProperties(autoHibernateConfig());
+		}
+		if(autoScanMultipleDatasources){
+			Map<String, DataSource> datasources = SpringUtils.getBeansAsMap(applicationContext, DataSource.class);
+			logger.info("scan datasources: " + datasources);
+			/*JFishMultipleDatasource mds = new JFishMultipleDatasource();
+			mds.setDatasources(datasources);
+			mds.setMasterDatasource(dataSourceHolder);*/
+//			String beanName = StringUtils.uncapitalize(JFishMultipleDatasource.class.getSimpleName());
+//			SpringUtils.registerSingleton(applicationContext, beanName, mds);
+			JFishMultipleDatasource mds = SpringUtils.registerBean(applicationContext, JFishMultipleDatasource.class, 
+									"datasources", datasources, 
+									"masterDatasource", dataSourceHolder);
+			this.setDataSource(mds);
+		}
+		super.afterPropertiesSet();
+	}
+	
+	
+	public void setAutoScanMultipleDatasources(boolean autoScanMultipleDatasources) {
+		this.autoScanMultipleDatasources = autoScanMultipleDatasources;
+	}
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSourceHolder = dataSource;
+		super.setDataSource(dataSource);
+	}
+	
+	protected Properties autoHibernateConfig(){
+		Properties props = configHolder.getMergedConfig();
+		Properties hibConfig = new Properties();
+		String key = null;
+		logger.info("================ hibernate config ================");
+		for (Map.Entry<Object, Object> e : props.entrySet()){
+			key = e.getKey().toString();
+			if(key.startsWith(DEFAULT_HIBERNATE_CONFIG_PREFIX)){
+				logger.info("{}: {}", key, e.getValue().toString());
+				hibConfig.setProperty(key, e.getValue().toString());
+				
+			}else if(key.startsWith(EXT_HIBERNATE_CONFIG_PREFIX)){
+				key = key.substring(EXT_HIBERNATE_CONFIG_PREFIX.length());
+				logger.info("{}: {}", key, e.getValue().toString());
+				hibConfig.setProperty(key, e.getValue().toString());
+			}
+		}
+		logger.info("================ hibernate config ================");
+		return hibConfig;
 	}
 	
 
@@ -32,6 +106,7 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		/*if(sfb.getInterceptor()==null){
 			sfb.setInterceptor(new TimestampInterceptor());
 		}*/
+		
 		sfb.setNamingStrategy(new ImprovedNamingStrategy());
 		
 		SessionFactory sf = super.buildSessionFactory(sfb);
@@ -50,13 +125,19 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 		}
 		reg.getEventListenerGroup(EventType.PRE_UPDATE).appendListeners(preUpdateEventListeners);
 
+		if(preDeleteEventListeners==null){
+			List<PreDeleteEventListener> preUpdates = SpringUtils.getBeans(applicationContext, PreDeleteEventListener.class);
+			this.preDeleteEventListeners = preUpdates.toArray(new PreDeleteEventListener[0]);
+		}
+		reg.getEventListenerGroup(EventType.PRE_DELETE).appendListeners(preDeleteEventListeners);
+
 		if(saveOrUpdateEventListeners==null){
 			List<SaveOrUpdateEventListener> preUpdates = SpringUtils.getBeans(applicationContext, SaveOrUpdateEventListener.class);
 			this.saveOrUpdateEventListeners = preUpdates.toArray(new SaveOrUpdateEventListener[0]);
 		}
 		reg.getEventListenerGroup(EventType.SAVE_UPDATE).appendListeners(saveOrUpdateEventListeners);
 //		reg.getEventListenerGroup(EventType.SAVE_UPDATE).appendListener(new SaveOrUpdateTimeListener());
-		HibernateUtils.initSessionFactory(sf);
+//		HibernateUtils.initSessionFactory(sf);
 		return sf;
 	}
 
@@ -70,6 +151,10 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 
 	public void setSaveOrUpdateEventListeners(SaveOrUpdateEventListener[] saveOrUpdateEventListeners) {
 		this.saveOrUpdateEventListeners = saveOrUpdateEventListeners;
+	}
+
+	public void setPreDeleteEventListeners(PreDeleteEventListener[] preDeleteEventListeners) {
+		this.preDeleteEventListeners = preDeleteEventListeners;
 	}
 
 	@Override

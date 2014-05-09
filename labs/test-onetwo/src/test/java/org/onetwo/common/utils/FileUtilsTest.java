@@ -1,6 +1,7 @@
 package org.onetwo.common.utils;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,24 @@ import org.junit.Test;
 import org.springframework.util.ClassUtils;
 
 public class FileUtilsTest {
+	
+	@Test
+	public void testAnsi(){
+//		String path = FileUtils.getResourcePath("")+"/ansi.txt";
+		String path = "/ansi.txt";
+		List<String> datalist = FileUtils.readAsList(path, "gbk");
+		for(String data : datalist){
+//			System.out.println("data: " + data);
+			Assert.assertTrue(data.startsWith("非记名卡"));
+		}
+		
+		path = FileUtils.getResourcePath("")+"/ansi.txt";
+		datalist = FileUtils.readAsList(path, "gbk");
+		for(String data : datalist){
+//			System.out.println("data: " + data);
+			Assert.assertTrue(data.startsWith("非记名卡"));
+		}
+	}
 	
 	@Test
 	public void testParentPath(){
@@ -55,6 +74,40 @@ public class FileUtilsTest {
 		System.out.println("c: " + rs);
 		System.out.println("c: " + p.matcher(path).find());
 		Assert.assertTrue(rs);
+	}
+	
+	@Test
+	public void testZipfile(){
+		String dir = FileUtils.getResourcePath("")+"/org/onetwo/common/excel";
+		File zipfile = FileUtils.zipfile(new File(dir));
+		System.out.println("zipfile: " + zipfile.getPath());
+		System.out.println("zipfile: " + zipfile.getName());
+		Assert.assertEquals("excel.zip", zipfile.getName());
+	}
+	
+	
+	@Test
+	public void testGetNewFilenameBy(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/excel/bus_copy.xls";
+		String zippath = FileUtils.getNewFilenameBy(new File(filepath), ".zip");
+		System.out.println("zippath: " + zippath);
+		Assert.assertTrue(zippath.endsWith("\\org\\onetwo\\common\\excel\\bus_copy.zip"));
+	}
+	
+	@Test
+	public void testSize(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/excel/bus_copy.xls";
+		Double size = Double.valueOf(FileUtils.size(new File(filepath)));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1216000, size.longValue());
+		
+		size = FileUtils.sizeAsKb(new File(filepath));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1187, size.longValue());
+		
+		size = FileUtils.sizeAsMb(new File(filepath));
+		System.out.println("size: " +size);
+		Assert.assertEquals(1, size.longValue());
 	}
 	
 

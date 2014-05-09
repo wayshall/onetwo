@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
@@ -95,6 +96,8 @@ public class VariablePropConifg extends Properties implements VariableConfig {
 				succeed = true;
 			} catch (Exception e1) {
 				throw new BaseException("load config error: " + filepath, e);
+			} finally{
+				IOUtils.closeQuietly(in);
 			}
 		}finally{
 			logger.info("load config finished : "+succeed);

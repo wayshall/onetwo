@@ -7,9 +7,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.codegen.model.entity.DatabaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 public class DefaultTableManagerFactory {
 	
@@ -32,14 +33,8 @@ public class DefaultTableManagerFactory {
 	private DatabaseEntity defaultDataBase;
 
 
-	@Value("${jdbc.driverClass}")
-	private String driverClass;
-	@Value("${jdbc.url}")
-	private String jdbcUrl;
-	@Value("${jdbc.username}")
-	private String userName;
-	@Value("${jdbc.password}")
-	private String password;
+	@Autowired
+	private JFishPropertyPlaceholder configHolder;
 
 
 	public DefaultTableManagerFactory() {
@@ -60,6 +55,19 @@ public class DefaultTableManagerFactory {
 
 	private DatabaseEntity createDefaultDb(){
 		DatabaseEntity db = new DatabaseEntity();
+		
+		String driverClass = this.configHolder.getPropertiesWraper().getProperty("jdbc.driverClass");
+		
+		String jdbcUrl = this.configHolder.getPropertiesWraper().getProperty("jdbc.url");
+		if(StringUtils.isBlank(jdbcUrl))
+			jdbcUrl = this.configHolder.getPropertiesWraper().getProperty("jdbc.jdbcUrl");
+		
+		String userName = this.configHolder.getPropertiesWraper().getProperty("jdbc.username");
+		if(StringUtils.isBlank(userName))
+			userName = this.configHolder.getPropertiesWraper().getProperty("jdbc.user");
+		
+		String password = this.configHolder.getPropertiesWraper().getProperty("jdbc.password");;
+		
 		db.setId(DefaultTableManagerFactory.DEFAULT_DB);
 		db.setDriverClass(driverClass);
 		db.setJdbcUrl(jdbcUrl);

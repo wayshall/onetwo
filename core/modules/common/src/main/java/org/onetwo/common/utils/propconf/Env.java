@@ -17,15 +17,23 @@ public enum Env {
 		return label;
 	}
 	public String getValue(){
-		return toString().toLowerCase();
+		return deconvert(toString()).toLowerCase();
+	}
+
+	private static String convert(String src){
+		return src.replace('-', '_');
+	}
+	private static String deconvert(String src){
+		return src.replace('_', '-');
 	}
 	
-	public static Env of(String value){
+	public static Env of(String envstr){
 		Env env = null;
 		try {
-			env = valueOf(value.toUpperCase());
+			String value = convert(envstr.toUpperCase());
+			env = valueOf(value);
 		} catch (Exception e) {
-			MyLoggerFactory.getLogger(Env.class).error("no env found: {}", value);
+			MyLoggerFactory.getLogger(Env.class).error("no env found: " + envstr, e);
 			env = DEV;
 		}
 		return env;

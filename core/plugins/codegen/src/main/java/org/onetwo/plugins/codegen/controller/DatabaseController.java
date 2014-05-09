@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.exception.BusinessException;
-import org.onetwo.common.fish.plugin.PluginBaseController;
+import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.codegen.generator.DefaultTableManager;
 import org.onetwo.plugins.codegen.generator.DefaultTableManagerFactory;
 import org.onetwo.plugins.codegen.model.entity.DatabaseEntity;
@@ -22,7 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/database")
 @Controller
-public class DatabaseController extends PluginBaseController {
+@CsrfValid(false)
+public class DatabaseController extends PluginSupportedController {
 	 
 	@Autowired
 	private DatabaseServiceImpl databaseServiceImpl;

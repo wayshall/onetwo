@@ -2,20 +2,27 @@ package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
-import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.web.servlet.tags.NestedPathTag;
 
 @SuppressWarnings("serial")
 public class DataGridTag extends BaseGridTag<GridTagBean> {
+//	private static final String AJAX_POSTFIX = "Ajax";
+//	private static final String AJAX_INST_POSTFIX = "AjaxInst";
 	
-	private String template = TagUtils.getTagPage("datagrid/grid.jsp");
+	private String template = "datagrid/grid.jsp";
 	private Object dataSource;
 	private int colspan = 0;
 
@@ -27,23 +34,71 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private PaginationType paginationType = PaginationType.link;
 	
+	private boolean searchForm;
+	
+
+	private boolean ajaxSupported = false;
+	private String ajaxZoneName;
+//	private String ajaxInstName;
+	
+	private DatagridRenderListener datagridRenderListener;
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	
+	
+	public DataGridTag(){
+		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
+	}
+	
 	@Override
 	public GridTagBean createComponent() {
-		return new GridTagBean();
+		GridTagBean gbean = new GridTagBean();
+		return gbean;
 	}
 
+	/*@Override
+	public int doStartTag() throws JspException {
+		Deque<HtmlElement> tagStack = new ArrayDeque<HtmlElement>(5);
+		setTagStack(tagStack);
+		return super.doStartTag();
+	}*/
+
+	protected String resolveModelAttribute() {
+		return component.getName();
+	}
+	
+	
+	protected void forSpringFormTag(){
+		// Expose the form object name for nested tags...
+		String modelAttribute = resolveModelAttribute();
+		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+//		this.pageContext.setAttribute(org.springframework.web.servlet.tags.form.FormTag.MODEL_ATTRIBUTE_VARIABLE_NAME, modelAttribute, PageContext.REQUEST_SCOPE);
+		this.pageContext.setAttribute(NestedPathTag.NESTED_PATH_VARIABLE_NAME, modelAttribute + PropertyAccessor.NESTED_PROPERTY_SEPARATOR, PageContext.REQUEST_SCOPE);
+	}
+
+	protected int startTag()throws JspException {
+		forSpringFormTag();
+		return EVAL_BODY_BUFFERED;
+	}
+	
 	@Override
-	public int doEndTag() throws JspException {
+	protected int endTag() throws JspException {
 		try {
 			BodyContent bc = this.getBodyContent();
 			if(bc!=null){
 				this.component.setBodyContent(bc.getString());
 			}
-			this.pageContext.include(getTemplate());
+			if(this.datagridRenderListener!=null){
+				this.datagridRenderListener.prepareRender(this, component);
+			}
+			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
+			this.pageContext.include(TagUtils.getTagPage(t));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
 			clearComponentFromRequest(getGridVarName());
+			
+//			getTagStack().pop();
+//			clearTagStackFromRequest();
 		}
 		return EVAL_PAGE;
 	}
@@ -51,7 +106,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
-		component.setPage(TagUtils.toPage(dataSource));
 		component.setColspan(colspan);
 		component.setAction(buildActionString());
 		
@@ -60,18 +114,33 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setPagination(pagination);
 		component.setPaginationType(paginationType);
 		component.setGeneratedForm(generatedForm);
+		component.setSearchForm(searchForm);
+		component.setAjaxSupported(ajaxSupported);
+		if(!Page.class.isInstance(dataSource))
+			component.setPagination(false);
+		component.setPage(TagUtils.toPage(dataSource));
+		
+		
+		ajaxZoneName = getName();// + AJAX_POSTFIX;
+//		ajaxInstName = getName() + AJAX_INST_POSTFIX;
+		component.setAjaxZoneName(ajaxZoneName);
+//		component.setAjaxInstName(ajaxInstName);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
 
 	protected String buildActionString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-		if(StringUtils.isNotBlank(action))
-			return action;
-		
-		String surl = BaseSiteConfig.getInstance().getBaseURL()+(String)request.getAttribute(BaseInitFilter.REQUEST_URI);
-		return surl;
+		if(StringUtils.isBlank(action)){
+			String surl = TagUtils.getRequestUri(request);
+			return surl;
+		}
+		if(action.startsWith(":")){
+			return TagUtils.parseAction(request, action, this.csrfPreventor);
+		}
+		return action;
 	}
+	
 
 	protected String buildQueryString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
@@ -79,7 +148,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		if(StringUtils.isBlank(str))
 			return "";
 		CasualMap params = new CasualMap(str);
-		params.filter("pageNo");
+		params.filter("pageNo"); 
+		params.filter(this.csrfPreventor.getFieldOfTokenFieldName());
+		params.filter(request.getParameter(this.csrfPreventor.getFieldOfTokenFieldName()));
 		str = params.toParamString();
 		return str;
 	}
@@ -89,7 +160,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		return template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public void setDataSource(Object dataSource) {
@@ -119,5 +190,18 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	public void setPagination(boolean pagination) {
 		this.pagination = pagination;
 	}
+
+	public void setSearchForm(boolean searchForm) {
+		this.searchForm = searchForm;
+	}
+
+	public void setAjaxZoneName(String ajaxZoneName) {
+		this.ajaxZoneName = ajaxZoneName;
+	}
+
+	public void setAjaxSupported(boolean ajaxSupported) {
+		this.ajaxSupported = ajaxSupported;
+	}
+
 
 }

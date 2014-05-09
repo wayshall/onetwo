@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.spring.dozer.DozerBean;
 import org.onetwo.common.spring.dozer.DozerFacotry;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.DateUtilTest;
@@ -18,7 +19,7 @@ import test.entity.UserEntity;
 
 public class DuplicatorTest {
 	
-	private BeanDuplicator duplicator;
+	private DozerBean duplicator;
 	
 	@Before
 	public void setup(){
@@ -93,7 +94,7 @@ public class DuplicatorTest {
 		
 		b1.setList(list1);
 		
-		Bean2 b2 = duplicator.map4Persist(b1, Bean2.class);
+		Bean2 b2 = duplicator.map(b1, Bean2.class);
 		
 		Assert.assertEquals(b1.getName1(), b2.getName1());
 		Assert.assertEquals(b1.getName2(), b2.getName2());
@@ -131,7 +132,7 @@ public class DuplicatorTest {
 		list1.add(test2);
 		
 		b2.setList2(list1);
-		duplicator.map4Persist(b1, b2);
+		duplicator.map(b1, b2);
 		
 		Assert.assertEquals(b1.getName1(), b2.getName1());
 		Assert.assertEquals(b1.getName2(), b2.getName2());

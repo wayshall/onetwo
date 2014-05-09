@@ -25,6 +25,9 @@ abstract public class HtmlElement {
 	}
 
 	public String getName() {
+		/*if(StringUtils.isBlank(name)){
+			return getClass().getSimpleName();
+		}*/
 		return name;
 	}
 
@@ -111,8 +114,12 @@ abstract public class HtmlElement {
 		buildAttributeTag(attributesBuf, "style", getCssStyle());
 		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		if(StringUtils.isNotBlank(getTitle()))
+			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
 		
 		this.buildExtTagAttributesString(attributesBuf);
+		if(StringUtils.isNotBlank(attributes))
+			attributesBuf.append(" ").append(attributes);
 		return attributesBuf.toString();
 	}
 

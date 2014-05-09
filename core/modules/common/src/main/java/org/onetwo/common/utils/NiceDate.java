@@ -130,7 +130,7 @@ public class NiceDate {
 	}
 	
 	public NiceDate today(){
-		DateUtil.start(calendar, DateType.date);
+		calendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 		return this;
 	}
 	
@@ -145,6 +145,16 @@ public class NiceDate {
 	
 	public NiceDate nextHour(int amount){
 		DateUtil.addHours(calendar, amount);
+		return this;
+	}
+	
+	public NiceDate nextMonth(int amount){
+		DateUtil.addMonth(calendar, amount);
+		return this;
+	}
+	
+	public NiceDate nextYear(int amount){
+		DateUtil.addYear(calendar, amount);
 		return this;
 	}
 	

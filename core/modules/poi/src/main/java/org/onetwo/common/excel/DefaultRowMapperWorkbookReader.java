@@ -44,12 +44,12 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		return (List<T>)map.values().iterator().next();
 	}
 	
-	@Override
+	/*@Override
 	public <T> List<T> readFirstSheet(InputStream in, boolean excel2007) {
 		Workbook workbook = createWorkbook(in, excel2007);
 		Map<String, List<?>> map = readData(workbook, 0, 1);
 		return (List<T>)map.values().iterator().next();
-	}
+	}*/
 
 	public Map<String, List<?>> readData(String path){
 		Workbook workbook = createWorkbook(path);
@@ -62,12 +62,12 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		return readData(workbook);
 	}
 	
-	@Override
+	/*@Override
 	public Map<String, List<?>> readData(InputStream in, boolean excel2007) {
 		Assert.notNull(in);
 		Workbook workbook = createWorkbook(in, excel2007);
 		return readData(workbook);
-	}
+	}*/
 
 	public Map<String, List<?>> readData(File file){
 		Assert.notNull(file);
@@ -83,7 +83,33 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 			throw new ServiceException("read excel file error.", e);
 		}
 	}
-	
+
+
+	public Map<String, List<?>> readData(String path, int startSheet, int readCount){
+		Workbook workbook = createWorkbook(path);
+		return this.readData(workbook, startSheet, readCount);
+	}
+
+	public Map<String, List<?>> readData(InputStream in, int startSheet, int readCount){
+		Assert.notNull(in);
+		Workbook workbook = createWorkbook(in);
+		return this.readData(workbook, startSheet, readCount);
+	}
+
+	public Map<String, List<?>> readData(File file, int startSheet, int readCount){
+		Assert.notNull(file);
+		try {
+			if(!file.exists()){
+				throw new FileNotFoundException("文件不存在：" + file.getPath());
+			}
+			
+			Workbook workbook = createWorkbook(file);
+			
+			return readData(workbook, startSheet, readCount);
+		} catch (Exception e) {
+			throw new ServiceException("read excel file error.", e);
+		}
+	}
 
 	public Map<String, List<?>> readData(Workbook workbook){
 		return readData(workbook, this.dataExtractor, -1, -1);
@@ -113,8 +139,8 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		}
 	}*/
 	
-	public Map<String, List<?>> readData(Workbook workbook, int startSheet, int endSheet){
-		return this.readData(workbook, this.dataExtractor, startSheet, endSheet);
+	public Map<String, List<?>> readData(Workbook workbook, int startSheet, int readCount){
+		return this.readData(workbook, this.dataExtractor, startSheet, readCount);
 	}
 	
 

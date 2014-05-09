@@ -21,4 +21,6 @@ public interface SelectExtQuery extends ExtQuery {
 
 	public void setSubQuery(boolean subQuery);
 	
+	public boolean isCacheable();
+	
 }
