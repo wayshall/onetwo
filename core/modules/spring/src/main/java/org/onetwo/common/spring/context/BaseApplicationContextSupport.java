@@ -3,11 +3,13 @@ package org.onetwo.common.spring.context;
 import javax.validation.Validator;
 
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
+import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -26,7 +28,9 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 	protected ApplicationContext applicationContex;
 
 	private AppConfig appConfig;
-	
+
+	@Value("${jfish.base.packages}")
+	protected String jfishBasePackages;
 	
 	/*public BaseApplicationContextSupport(AppConfig appConfig) {
 		super();
@@ -47,7 +51,13 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 	public AppConfig appConfig(){
 		return appConfig;
 	}
-	
+
+	@Bean
+	public DozerBeanFactoryBean dozerBeanFactoryBean(){
+		DozerBeanFactoryBean f = new DozerBeanFactoryBean();
+		f.setBasePackage(jfishBasePackages);
+		return f;
+	}
 
 	@Bean
 	public Validator beanValidator() {
