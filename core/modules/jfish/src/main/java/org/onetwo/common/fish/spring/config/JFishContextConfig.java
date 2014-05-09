@@ -8,7 +8,6 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
-import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
@@ -16,7 +15,6 @@ import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -47,8 +45,8 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	
 	public static final String MVC_CONFIG = "mvcConfig";
 
-	@Value("${jfish.base.packages}")
-	private String jfishBasePackages;
+//	@Value("${jfish.base.packages}")
+//	private String jfishBasePackages;
 
 	private ContextPluginManager contextPluginManager;
 
@@ -139,12 +137,6 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		return new WebRequestHolder();
 	}
 
-	@Bean
-	public DozerBeanFactoryBean dozerBeanFactoryBean(){
-		DozerBeanFactoryBean f = new DozerBeanFactoryBean();
-		f.setBasePackage(jfishBasePackages);
-		return f;
-	}
 
 	@Configuration
 	@Profile(Environment.TEST)

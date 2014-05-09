@@ -15,7 +15,6 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -117,9 +116,9 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
 		this.checkEntityIdValid(id);
-		T entity = (T)getSession().get(entityClass, id);
-		if(entity==null)
-			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		T entity = (T)getSession().load(entityClass, id);
+//		if(entity==null)
+//			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
 		return entity;
 	}
 
