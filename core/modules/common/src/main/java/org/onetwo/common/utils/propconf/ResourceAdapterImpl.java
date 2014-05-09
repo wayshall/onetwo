@@ -28,7 +28,7 @@ public class ResourceAdapterImpl<T> implements ResourceAdapter {
 	@Override
 	public File getFile() {
 		if(resource instanceof File)
-			return getFile();
+			return (File)resource;
 		return null;
 	}
 

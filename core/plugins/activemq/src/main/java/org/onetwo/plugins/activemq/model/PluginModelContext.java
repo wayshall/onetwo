@@ -14,7 +14,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.propconf.AppConfig;
-import org.onetwo.common.utils.propconf.PropertiesWraper;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.plugins.activemq.MessageReceiver;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -58,15 +58,15 @@ public class PluginModelContext implements InitializingBean {
 	}
 
 	@Bean
-	public PropertiesWraper activemqConfigWrapper() {
-		PropertiesWraper activemqConfigWraper = PropertiesWraper.wrap(activemqConfig);
+	public JFishProperties activemqConfigWrapper() {
+		JFishProperties activemqConfigWraper = JFishProperties.wrap(activemqConfig);
 		return activemqConfigWraper;
 	}
 	
 	@Bean
 	public ActiveMQConnectionFactory activeMQConnectionFactory(){
 		ActiveMQConnectionFactory pcf = new ActiveMQConnectionFactory();
-		PropertiesWraper activemqConfigWraper = activemqConfigWrapper();
+		JFishProperties activemqConfigWraper = activemqConfigWrapper();
 		String brokerURL = activemqConfigWraper.getAndThrowIfEmpty(ACTIVEMQ_BROKER_URL);
 //		String brokerURL = "tcp://localhost:61616";
 		logger.info("activemq server broker url: " + brokerURL);
@@ -98,7 +98,7 @@ public class PluginModelContext implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		PropertiesWraper activemqConfigWraper = activemqConfigWrapper();
+		JFishProperties activemqConfigWraper = activemqConfigWrapper();
 		
 		List<String> queueNames = activemqConfigWraper.getPropertyWithSplit("queue", ",");
 		for(String queueName :queueNames){

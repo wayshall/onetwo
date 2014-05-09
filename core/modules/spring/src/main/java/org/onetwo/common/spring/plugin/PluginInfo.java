@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.PropConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 
 public class PluginInfo {
 	
@@ -17,7 +17,7 @@ public class PluginInfo {
 		public static final String SCOPE = "scope";
 	}
 	
-	public void init(PropConfig prop){
+	public void init(JFishProperties prop){
 		PluginInfo info = this;
 		info.name = prop.getAndThrowIfEmpty(PKeys.NAME);
 		info.version = prop.getProperty(PKeys.VERSION, "1.0");
@@ -47,7 +47,7 @@ public class PluginInfo {
 	private String contextPath;
 	private String desc;
 	private List<String> scopes;
-	private PropConfig properties;
+	private JFishProperties properties;
 	
 	private List<String> dependency;
 	
@@ -74,7 +74,7 @@ public class PluginInfo {
 		return LangUtils.append("plugin{name:", name, ", version:", version, "}");
 	}
 
-	public PropConfig getProperties() {
+	public JFishProperties getProperties() {
 		return properties;
 	}
 

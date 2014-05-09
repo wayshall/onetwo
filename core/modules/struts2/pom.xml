@@ -128,16 +128,6 @@
 	  <artifactId>solr-dataimporthandler</artifactId>
 	</dependency> 
 	
-	<dependency>
-	  <groupId>org.wltea</groupId>
-	  <artifactId>IKAnalyzer</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>javaee</groupId>
-	  <artifactId>javaee-api</artifactId>
-	</dependency>
-	
 	<!-- 
     <dependency>
     	<groupId>com.sun</groupId>

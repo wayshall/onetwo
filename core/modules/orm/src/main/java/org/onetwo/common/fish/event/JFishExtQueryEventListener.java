@@ -7,6 +7,7 @@ import java.util.Map;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.SelectExtQuery;
+import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.fish.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.fish.exception.JFishOrmException;
 import org.onetwo.common.utils.LangUtils;
@@ -33,8 +34,10 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 			if(LangUtils.hasElement(list)){
 				if(list.size()>1){
 					logger.warn(list.size() + " entity["+extEvent.getEntityClass()+"] found when findUnique");
+					throw new NotUniqueResultException(list.size());
+				}else {
+					rs = list.get(0);
 				}
-				rs = list.get(0);
 			}
 			extEvent.setResultObject(rs);
 			

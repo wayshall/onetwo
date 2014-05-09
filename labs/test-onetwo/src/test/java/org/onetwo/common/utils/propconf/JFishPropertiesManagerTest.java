@@ -14,13 +14,13 @@ public class JFishPropertiesManagerTest{
 	static class SubJFishPropertiesManager extends PropertiesNamespaceInfoManagerImpl<JFishPropertyInfo> {
 
 		public SubJFishPropertiesManager() {
-			super(new JFishPropertyConf(){
+			super(new JFishPropertyConf<JFishPropertyInfo>(){
 				{
 					setDir("sql");
 					setOverrideDir("mysql");
 					setPostfix(".sql");
 				}
-			});
+			}, null);
 		}
 		
 	}
@@ -35,7 +35,7 @@ public class JFishPropertiesManagerTest{
 				setPropertyBeanClass(JFishPropertyInfo.class);
 				setPostfix(".sql");
 			}
-		});
+		}, null);
 		pm.setDebug(true);
 		pm.build();
 		
@@ -77,7 +77,7 @@ public class JFishPropertiesManagerTest{
 				setPostfix(".sql");
 				setWatchSqlFile(true);
 			}
-		});
+		}, null);
 		pm.setDebug(true);
 		pm.build();
 		
@@ -107,7 +107,7 @@ public class JFishPropertiesManagerTest{
 		System.out.println("pfile: " + pfile);
 		prop.store(new FileOutputStream(FileUtils.getResourcePath(file)), "");
 		
-		LangUtils.await(3);
+		LangUtils.await(5);
 
 		nsproperties = pm.getNamespaceProperties(ns);
 		Assert.assertNotNull(nsproperties);

@@ -104,7 +104,7 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	}
 
 	public void setParser(String parser) {
-		this.parser = FileSqlParserType.valueOf(parser.toUpperCase());
+		this.parser = FileSqlParserType.valueOf(parser.trim().toUpperCase());
 	}
 	
 	

@@ -19,12 +19,30 @@ import org.slf4j.Logger;
 abstract public class AbstractPropertiesManager<T extends NamespaceProperty> implements JFishPropertiesManager<T> {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
+
+	protected class JFishPropertiesData {
+		final private JFishProperties properties;
+		final private JFishProperties config;
+		public JFishPropertiesData(JFishProperties properties, JFishProperties config) {
+			super();
+			this.properties = properties;
+			this.config = config;
+		}
+		public JFishProperties getProperties() {
+			return properties;
+		}
+		public JFishProperties getConfig() {
+			return config;
+		}
+		
+	}
+	
 	public static final String GLOBAL_NS_KEY = "global";
 	public static class NamespaceProperty extends JFishNameValuePair {
 		public static final char DOT_KEY = '.';
 		private PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo;
 		private String namespace;
-		private PropertiesWraper config;
+		private JFishProperties config;
 		private ResourceAdapter srcfile;
 		
 		public String getNamespace() {
@@ -49,11 +67,11 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			this.srcfile = srcfile;
 		}
 
-		public PropertiesWraper getConfig() {
+		public JFishProperties getConfig() {
 			return config;
 		}
 
-		public void setConfig(PropertiesWraper config) {
+		public void setConfig(JFishProperties config) {
 			this.config = config;
 		}
 
@@ -184,14 +202,15 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 			throw new UnsupportedOperationException();
 	}
 	
-	protected JFishProperties loadSqlFile(ResourceAdapter f){
+	
+	protected JFishPropertiesData loadSqlFile(ResourceAdapter f){
 //		String fname = FileUtils.getFileNameWithoutExt(f.getName());
 		if(!f.getName().endsWith(JFISH_SQL_POSTFIX)){
 			logger.info("file["+f.getName()+" is not a jfish file, ignore it.");
 			return null;
 		}
 		
-		JFishProperties jp = new JFishProperties();
+		JFishPropertiesData jpData = null;
 		Properties pf = new Properties();
 		Properties config = new Properties();
 		try {
@@ -256,13 +275,15 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 				pf.setProperty(key, value.toString());
 			}
 
-			jp.setProperties(new PropertiesWraper(pf));
-			jp.setConfig(new PropertiesWraper(config));
-			System.out.println("loaded jfish file : " + f);
+//			jp.setProperties(new JFishProperties(pf));
+//			jp.setConfig(new JFishProperties(config));
+			
+			jpData = new JFishPropertiesData(new JFishProperties(pf), new JFishProperties(config));
+			System.out.println("loaded jfish file : " + f.getName());
 		} catch (Exception e) {
 			LangUtils.throwBaseException("load jfish file error : " + f, e);
 		}
-		return jp;
+		return jpData;
 	}
 	
 	protected void extBuildNamedInfoBean(T propBean){
@@ -278,8 +299,8 @@ abstract public class AbstractPropertiesManager<T extends NamespaceProperty> imp
 	 * @param beanClassOfProperty
 	 * @return
 	 */
-	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter resource, JFishProperties jp, Class<T> beanClassOfProperty){
-		PropertiesWraper wrapper = jp.getProperties();
+	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter resource, JFishPropertiesData jp, Class<T> beanClassOfProperty){
+		JFishProperties wrapper = jp.getProperties();
 		List<String> keyNames = wrapper.sortedKeys();
 		if(isDebug()){
 			logger.info("================>>> buildPropertiesAsNamedInfos");

@@ -311,6 +311,8 @@ var Common = function () {
 				jfish.appendHiddenByDataParams(link, form);
 				$(form).submit();
 			}
+			
+			return false;
 		}
 		
 	};
