@@ -10,7 +10,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.DefaultSSOServiceImpl;
 import org.onetwo.common.web.sso.SSOUserService;
-import org.onetwo.plugins.security.SecurityPlugin;
 import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.service.ServerSSOUserServiceImpl;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
@@ -53,7 +52,7 @@ public class SsoServerContext {
 	@Bean
 	public SSOService ssoService(){
 		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();
-		ssoservice.setSSOUserService(ssoUserService());
+//		ssoservice.setSsoUserService(ssoUserService());
 		return ssoservice;
 	}
 	
@@ -78,4 +77,5 @@ public class SsoServerContext {
 		urlMapping.setOrder(0);
 		return urlMapping;
 	}
+	
 }
