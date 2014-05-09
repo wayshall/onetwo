@@ -32,7 +32,9 @@
 				<module>modules/spring</module>
 				<module>modules/web</module>
 				<module>modules/security</module>
+				<!-- 
 				<module>modules/security-spring</module>
+				 -->
 				<module>modules/s2-json</module>
 				<module>modules/jackson</module>
 				<module>modules/poi</module>
