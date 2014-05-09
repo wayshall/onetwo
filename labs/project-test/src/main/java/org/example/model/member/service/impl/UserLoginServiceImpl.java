@@ -1,12 +1,11 @@
 package org.example.model.member.service.impl;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.example.model.member.entity.UserEntity;
 import org.example.model.member.vo.LoginUserInfo;
 import org.onetwo.common.exception.LoginException;
+import org.onetwo.common.sso.LoginParams;
 import org.onetwo.common.sso.NotSSOAdapterService;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.springframework.core.Ordered;
@@ -23,9 +22,9 @@ public class UserLoginServiceImpl extends NotSSOAdapterService implements Ordere
 	}
 	@Override
 	@Transactional
-	public LoginUserInfo login(String username, String password, Map<?, ?> params) {
-		UserEntity user = userServiceImpl.findUnique("userName", username);
-		if(user==null || !MDFactory.checkEncrypt(password, user.getPassword())){
+	public LoginUserInfo login(LoginParams loginParams) {
+		UserEntity user = userServiceImpl.findUnique("userName", loginParams.getUserName());
+		if(user==null || !MDFactory.checkEncrypt(loginParams.getUserPassword(), user.getPassword())){
 			throw new LoginException("用户和密码不匹配！");
 		}
 //		if(user.getStatus()!=UserStatus.NORMAL.getValue()){

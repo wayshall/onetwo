@@ -6,6 +6,7 @@ import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.springframework.beans.PropertyEditorRegistrar;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 
 public class JFishMvcConfigurerListenerManager {
@@ -30,6 +31,18 @@ public class JFishMvcConfigurerListenerManager {
 			@Override
 			protected void doIt(JFishMvcConfigurerListener element) {
 				element.onMvcBuildFreeMarkerConfigurer(configurer, hasBuilt);
+			}
+			
+		});
+		
+	}
+	
+	public void notifyOnRegisterArgumentResolvers(final List<HandlerMethodArgumentResolver> argumentResolvers){
+		this.listeners.each(new NoIndexIt<JFishMvcConfigurerListener>() {
+
+			@Override
+			protected void doIt(JFishMvcConfigurerListener element) {
+				element.onRegisterArgumentResolvers(argumentResolvers);
 			}
 			
 		});
