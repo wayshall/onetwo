@@ -18,6 +18,10 @@ public class ParserContextFunctionSet {
 		return StringUtils.join(strs, joiner);
 	}
 
+	public String nowAs(String pattern){
+		return dateAs(new Date(), pattern);
+	}
+
 	public String dateAs(Object date, String pattern){
 		Assert.notNull(date);
 		String val = null;

@@ -1,10 +1,12 @@
 package org.onetwo.common.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SimpleUserDetail implements UserDetail, RoleDetail {
+@SuppressWarnings("serial")
+public class SimpleUserDetail implements UserDetail, RoleDetail, Serializable {
 	
 	private long userId;
 	private String userName;

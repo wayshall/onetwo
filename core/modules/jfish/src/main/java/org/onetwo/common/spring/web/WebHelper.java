@@ -56,7 +56,7 @@ public class WebHelper {
 	private RequestContext requestContext;
 	private StandardEvaluationContext elcontext;
 	
-	private String requestURI;
+//	private String requestURI;
 	private String requestExtension;
 	private Object controllerHandler;
 	
@@ -157,12 +157,12 @@ public class WebHelper {
 
 
 	public String getRequestURI() {
-		return requestURI;
+		return request.getRequestURI();
 	}
 
-	public void setRequestURI(String requestURI) {
+/*	public void setRequestURI(String requestURI) {
 		this.requestURI = requestURI;
-	}
+	}*/
 
 
 	public String getRequestExtension() {
