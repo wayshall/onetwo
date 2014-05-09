@@ -12,6 +12,7 @@ import org.onetwo.common.utils.Freezer;
 public class AppConfig extends PropConfig {
 
 	public static final String APP_NAME = "app.name";
+	public static final String APP_CODE = "app.code";
 	public static final String APP_ENVIRONMENT = "app.environment";
 	/*public static final String APP_ENVIRONMENT_DEV = "dev";
 	public static final String APP_ENVIRONMENT_TEST = "test";
@@ -98,6 +99,10 @@ public class AppConfig extends PropConfig {
 	
 	public String getAppName(){
 		return getProperty(APP_NAME, "");
+	}
+	
+	public String getAppCode(){
+		return getAndThrowIfEmpty(APP_CODE);
 	}
 	
 	public boolean isDev(){

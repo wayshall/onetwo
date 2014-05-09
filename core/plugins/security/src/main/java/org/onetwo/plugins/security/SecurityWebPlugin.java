@@ -5,8 +5,10 @@ import java.util.List;
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.plugins.security.client.SsoClientContext;
+import org.onetwo.plugins.security.client.SsoClientWebContext;
 import org.onetwo.plugins.security.common.SecurityWebContext;
 import org.onetwo.plugins.security.server.SsoServerContext;
+import org.onetwo.plugins.security.server.SsoServerWebContext;
 import org.springframework.core.io.Resource;
 
 
@@ -29,11 +31,11 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 		annoClasses.add(SecurityWebContext.class);
 		Resource config = SpringUtils.classpath(SsoServerContext.SSO_SERVER_CONFIG_PATH);
 		if(config.exists()){
-			annoClasses.add(SsoServerContext.class);
+			annoClasses.add(SsoServerWebContext.class);
 		}
 		config = SpringUtils.classpath(SsoClientContext.SSO_CLIENT_CONFIG_PATH);
 		if(config.exists()){
-			annoClasses.add(SsoClientContext.class);
+			annoClasses.add(SsoClientWebContext.class);
 		}
 	}
 

@@ -7,10 +7,9 @@ import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.DefaultSSOServiceImpl;
 import org.onetwo.common.web.sso.SSOUserService;
-import org.onetwo.plugins.security.client.controller.SsoLoginController;
-import org.onetwo.plugins.security.client.service.ClientSSOUserServiceImpl;
 import org.onetwo.plugins.security.common.SsoConfig;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
@@ -27,6 +26,9 @@ public class SsoClientContext {
 
 	@Resource
 	private SsoClientConfig ssoClientConfig;
+
+	@Resource
+	private ApplicationContext applicationContext;
 	
 	@Bean
 	public PropertiesFactoryBean ssoClientConfig() {
@@ -38,25 +40,7 @@ public class SsoClientContext {
 	public SsoConfig getSsoConfig(){
 		return ssoClientConfig;
 	}
-	
-	@Bean
-	public SsoLoginController ssoLoginController(){
-		return new SsoLoginController();
-	}
-	
-	@Bean
-	public SSOService ssoService(){
-		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();
-		ssoservice.setSSOUserService(ssoUserClientServiceImpl());
-		return ssoservice;
-	}
 
-	@Bean
-	public SSOUserService ssoUserClientServiceImpl(){
-		return new ClientSSOUserServiceImpl();
-	}
-	
-	
 	@Bean
 	public HttpInvokerProxyFactoryBean ssoUserServiceProxy(){
 		HttpInvokerProxyFactoryBean fb = new HttpInvokerProxyFactoryBean();
@@ -64,5 +48,21 @@ public class SsoClientContext {
 		fb.setServiceUrl(ssoClientConfig.getSSOUserServiceUrl());
 		return fb;
 	}
+	
+	@Bean
+	public SSOService ssoService(){
+		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();
+		return ssoservice;
+	}
+
+	/*@Bean
+	public SSOUserService ssoUserClientServiceImpl(){
+		SSOUserService ssoUserService = SpringUtils.getBean(applicationContext, SSOUserService.class);
+		if(ssoUserService==null){
+			ssoUserService = new DefaultClientSSOUserService();
+		}
+		return ssoUserService;
+	}*/
+	
 	
 }

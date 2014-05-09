@@ -5,6 +5,7 @@ import org.onetwo.common.utils.UserDetail;
 public interface SessionStorer {
 
 	public void addUser(UserDetail userDetail);
-	
+
 	public UserDetail getUser(String token);
+	public UserDetail removeUser(String token);
 }
