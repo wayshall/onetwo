@@ -46,6 +46,10 @@ abstract public class MDFactory {
 		MDEncrypt encryptor = create("MD5", 16, base64, withLabel);
 		return encryptor;
 	}
+	public static MDEncrypt createSHA(boolean base64, final boolean withLabel){
+		MDEncrypt encryptor = create("SHA", 20, base64, withLabel);
+		return encryptor;
+	}
 
 	public static MDEncrypt create(String algorithm, int size, boolean base64, final boolean withLabel){
 		MDEncryptImpl encryptor = null;

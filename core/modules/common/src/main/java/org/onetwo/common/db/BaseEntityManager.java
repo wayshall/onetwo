@@ -41,6 +41,9 @@ public interface BaseEntityManager extends CreateQueryable {
 //	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
 	
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties);
+	
+	public <T> T findOne(Class<T> entityClass, Object... properties);
+	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties);
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
 

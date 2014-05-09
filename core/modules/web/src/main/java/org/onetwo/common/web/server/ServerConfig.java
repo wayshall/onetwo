@@ -11,6 +11,7 @@ public class ServerConfig {
 	private String webappDir;
 	private String contextPath;
 	private String serverBaseDir;
+	private int redirectPort = 8443;
 
 	public int getPort() {
 		return port;
@@ -69,4 +70,13 @@ public class ServerConfig {
 	public void setServerBaseDir(String serverBaseDir) {
 		this.serverBaseDir = serverBaseDir;
 	}
+
+	public int getRedirectPort() {
+		return redirectPort;
+	}
+
+	public void setRedirectPort(int redirectPort) {
+		this.redirectPort = redirectPort;
+	}
+	
 }
