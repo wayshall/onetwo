@@ -6,22 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.L;
+import org.slf4j.Logger;
 
 abstract public class AbstractExtQuery implements ExtQueryInner{
-	protected final Logger logger = Logger.getLogger(SelectExtQueryImpl.class);
+	protected final Logger logger = MyLoggerFactory.getLogger(SelectExtQueryImpl.class);
 
 
 	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")"};
@@ -70,7 +70,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 
 	public void initQuery(){
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
-		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, debug);
+		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, true);
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Calm);
 
 		PlaceHolder holder = symbolManager.getPlaceHolder();
@@ -133,9 +133,9 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	
 
 	String buildWhere(Map params, boolean isSubQuery) {
-		String fname = "buildWhere";
+		/*String fname = "buildWhere";
 		if(isDebug())
-			UtilTimerStack.push(fname);
+			UtilTimerStack.push(fname);*/
 		StringBuilder where = new StringBuilder("");
 		if (params == null || params.isEmpty())
 			return where.toString();
@@ -209,19 +209,19 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			where.insert(0, "( ");
 			where.insert(where.length(), ") ");
 		}
-		if(isDebug())
-			UtilTimerStack.pop(fname);
+		/*if(isDebug())
+			UtilTimerStack.pop(fname);*/
 		return where.toString();
 	}
 
 	protected String buildFieldQueryString(Object fields, Object values) {
-		List fieldList =  MyUtils.asList(fields);
-		List valueList = ExtQueryUtils.processValue(fields, values, ifNull);
+		List<?> valueList = ExtQueryUtils.processValue(fields, values, ifNull);
 		
 		//ignore null
 		if (valueList == null || valueList.isEmpty())
 			return null;
 
+		List<?> fieldList =  MyUtils.asList(fields);
 		int index = 0;
 		String h = null;
 		StringBuilder causeScript = new StringBuilder();

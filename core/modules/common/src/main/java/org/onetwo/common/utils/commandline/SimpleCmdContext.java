@@ -1,8 +1,12 @@
 package org.onetwo.common.utils.commandline;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class SimpleCmdContext implements CmdContext {
 	
@@ -27,6 +31,20 @@ public class SimpleCmdContext implements CmdContext {
 	@Override
 	public BufferedReader getCmdInput() {
 		return cmdInput;
+	}
+
+	@Override
+	public String nextInput(String tips, String def, InputValidator...validators) throws IOException {
+		System.out.print(tips);
+		String input = cmdInput.readLine();
+		if(!LangUtils.isEmpty(validators)){
+			for(InputValidator validator : validators){
+				validator.validate(input);
+			}
+		}
+		if(StringUtils.isBlank(input) && StringUtils.isNotBlank(def))
+			input = def;
+		return input;
 	}
 
 	@Override

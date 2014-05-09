@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplate;
+import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplateConfigurer;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
 import org.onetwo.common.utils.FileUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import freemarker.template.Template;
 
 @SuppressWarnings("unchecked")
-public class FreemarkerTemplate extends AbstractFreemarkerTemplate implements InitializingBean {
+public class FreemarkerTemplate extends DynamicFreemarkerTemplateConfigurer implements InitializingBean {
 	
 	public FreemarkerTemplate(){
 	}
@@ -38,6 +38,7 @@ public class FreemarkerTemplate extends AbstractFreemarkerTemplate implements In
 			FileUtils.makeDirs(new File(context.getOutfile()).getParent());
 			
 			outfile = new File(context.getOutfile());
+			FileUtils.makeDirs(outfile, true);
 			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outfile), this.getEncoding()));
 			context.getContext().put("utils", GenerateUtils.getInstance());
 			template.process(context, out);
@@ -50,6 +51,7 @@ public class FreemarkerTemplate extends AbstractFreemarkerTemplate implements In
 		}
 		return outfile;
 	}
+	
 	@Resource
 	public void setTemplateProvider(StringTemplateProvider templateProvider) {
 		super.setTemplateProvider(templateProvider);

@@ -55,6 +55,12 @@ public class Ignore {
 		return ignore(null, val);
 	}
 
+	/****
+	 * 是否忽略指定的名称和值
+	 * @param name
+	 * @param val
+	 * @return
+	 */
 	public boolean ignore(String name, Object val){
 		boolean ig;
 		if(val==null){

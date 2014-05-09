@@ -6,14 +6,14 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 
 import org.hibernate.Query;
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("unchecked")
-public class HibernateQueryImpl implements DataQuery {
+public class HibernateQueryImpl extends AbstractDataQuery {
  
-	private Query query; 
+	private Query query;
 	
 	public HibernateQueryImpl(Query query){
 		this.query = query;
@@ -24,10 +24,12 @@ public class HibernateQueryImpl implements DataQuery {
 	}
 
 	public <T> List<T> getResultList() {
+		query.setCacheable(isCacheable());
 		return query.list();
 	}
 
 	public Object getSingleResult() {
+		query.setCacheable(isCacheable());
 		return query.uniqueResult();
 	}
 
@@ -64,7 +66,7 @@ public class HibernateQueryImpl implements DataQuery {
 	public DataQuery setParameters(List<Object> params) {
 		if(params==null || params.isEmpty())
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position, value);
 			position++;
@@ -77,16 +79,11 @@ public class HibernateQueryImpl implements DataQuery {
 	public DataQuery setParameters(Object[] params) {
 		if(ArrayUtils.hasNotElement(params))
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position++, value);
 		}
 		return this;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
 	}
 	
 	public DataQuery setLimited(final Integer first, final Integer max) {
@@ -110,7 +107,8 @@ public class HibernateQueryImpl implements DataQuery {
 
 	@Override
 	public DataQuery setQueryConfig(Map<String, Object> configs) {
-		// TODO Auto-generated method stub
 		return this;
 	}
+
+	
 }

@@ -18,7 +18,7 @@
 	<snapshotRepository>
 		<id>Snapshots</id>
 		<name>Snapshots</name>
-		<url>http://192.168.1.55:8081/nexus/content/repositories/snapshots</url>
+		<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
 	</snapshotRepository>
   </distributionManagement>
   
@@ -33,7 +33,4 @@
 	</profiles>
 
 
-  <modules>
-    <module>iccard</module>
-  </modules>
 </project>

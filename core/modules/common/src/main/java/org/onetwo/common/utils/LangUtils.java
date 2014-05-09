@@ -2,6 +2,7 @@ package org.onetwo.common.utils;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -10,6 +11,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +40,7 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.annotation.BeanOrder;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.map.M;
@@ -46,6 +51,7 @@ public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
+	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
@@ -114,22 +120,20 @@ public class LangUtils {
 
 
 		@Override
-		public Object ifList(Object obj) {
-			List list = (List) obj;
+		public Object ifList(List list) {
 			if(list.isEmpty())
 				return null;
 			return list.get(0);
 		}
 		
 		@Override
-		public Object ifArray(Object obj) {
-			Object[] array = (Object[]) obj;
-			return array.length>0?array[0]:null;
+		public Object ifArray(Object[] array) {
+			int length = Array.getLength(array);
+			return length==0?null:Array.get(array, 0);
 		}
 
 		@Override
-		public Object ifCollection(Object obj) {
-			Collection col = (Collection) obj;
+		public Object ifCollection(Collection col) {
 			if(col.isEmpty())
 				return null;
 			return col.iterator().next();
@@ -140,8 +144,10 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifMap(Object obj) {
-			return obj;
+		public Object ifMap(Map<?, ?> obj) {
+			if(LangUtils.isEmpty(obj))
+				return null;
+			return obj.entrySet().iterator().next().getValue();
 		}
 
 		@Override
@@ -154,7 +160,7 @@ public class LangUtils {
 	public static TypeJudge NotNullObject = new TypeJudgeAdapter(){
 
 		@Override
-		public Object ifArray(Object array) {
+		public Object ifArray(Object[] array) {
 			return EMPTY_ARRAY;
 		}
 
@@ -168,7 +174,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifCollection(Object obj) {
+		public Object ifCollection(Collection<?> obj) {
 			return Collections.emptySet();
 		}
 
@@ -188,7 +194,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifList(Object obj) {
+		public Object ifList(List<?> obj) {
 			return Collections.EMPTY_LIST;
 		}
 
@@ -198,7 +204,7 @@ public class LangUtils {
 		}
 
 		@Override
-		public Object ifMap(Object obj) {
+		public Object ifMap(Map<?, ?> obj) {
 			return Collections.EMPTY_MAP;
 		}
 
@@ -214,7 +220,7 @@ public class LangUtils {
 
 	};
 
-	public static final TypeJudgeAdapter STRING_CAST_TYPEJUDGE = new TypeJudgeAdapter(){
+	/*public static final TypeJudgeAdapter STRING_CAST_TYPEJUDGE = new TypeJudgeAdapter(){
 
 		@Override
 		public Object ifList(Object obj) {
@@ -348,7 +354,7 @@ public class LangUtils {
 			return result;
 		}
 		
-	};
+	};*/
 	
 	public static final double MB_SIZE = 1000.0*1000.0;
 	public static final double KB_SIZE = 1000.0;
@@ -487,10 +493,11 @@ public class LangUtils {
 	}
 	
 	public static BaseException asBaseException(String msg, Exception e){
-		if(e==null)
+		if(e==null){
 			return new BaseException(msg);
-		else if(e instanceof BaseException)
+		}else if(e instanceof BaseException){
 			return (BaseException) e;
+		}
 		
 		BaseException se = null;
 		if(msg==null)
@@ -614,21 +621,30 @@ public class LangUtils {
 	public static String toString(Object obj){
 		if(obj==null)
 			return "NULL";
-		String result = "";
+		StringBuilder result = new StringBuilder("");
 		if(isBaseType(obj.getClass())){
-			result += obj;
+			result.append(obj);
 		}else if(obj instanceof Class){
-			result += ((Class)obj).getName();
+			result.append(((Class)obj).getName());
 		}else if(obj instanceof Date){
-			result += DateUtil.formatDateTime((Date)obj);
+			result.append(DateUtil.formatDateTime((Date)obj));
 		}else if(obj instanceof String){
-			result += obj.toString();
+			result.append(obj);
 		}else if(obj instanceof Number){
-			result += ((Number)obj).toString();
+			result.append(((Number)obj).toString());
 		}else if(obj instanceof Map){
-			result += ((Map)obj).toString();
+//			result += ((Map)obj).toString();
+			result.append("{");
+			int index = 0;
+			for(Entry<Object, Object> entry : ((Map<Object, Object>)obj).entrySet()){
+				if(index!=0)
+					result.append(", ");
+				result.append(toString(entry.getKey())).append(":").append(toString(entry.getValue()));
+				index++;
+			}
+			result.append("}");
 		}else if(obj instanceof Exception){
-			result = toString((Exception)obj, true);
+			result.append(toString((Exception)obj, true));
 		}else if(obj instanceof Collection){
 			Collection<?> list = CUtils.toCollection(obj);
 			if(isEmpty(list))
@@ -646,19 +662,24 @@ public class LangUtils {
 			for(Object o : list){
 				strs.add(toString(o));
 			}
-			result += "["+StringUtils.join(strs, ", ")+"]";
+			result.append("[").append(StringUtils.join(strs, ", ")).append("]");
 		}else if(obj.getClass().isArray()){
 			List<?> list = CUtils.tolist(obj, false);
-			result += "["+StringUtils.join(list, ", ")+"]";
+			result.append("[").append(StringUtils.join(list, ", ")).append("]");
 		}else if(obj.getClass()==Object.class){
 			return obj.toString();
 		}else{
 			Map props = ReflectUtils.toMap(obj);
-			result += props.toString();
+			result.append(props.toString());
 		}
-		return result;
+		return result.toString();
 	}
 	
+
+	
+	public static String newString(byte[] bytes){
+		return newString(bytes, UTF8);
+	}
 	public static String newString(byte[] bytes, String charset){
 		String result = null;
 		try {
@@ -672,11 +693,19 @@ public class LangUtils {
 		return result;
 	}
 	
+
+	public static String changeCharset(String str, String toCharset){
+		return changeCharset(str, null, toCharset);
+	}
 	public static String changeCharset(String str, String fromCharset, String toCharset){
 		String result = null;
 		Assert.notNull(str);
 		try {
-			result = new String(str.getBytes(fromCharset), toCharset);
+			if(StringUtils.isBlank(fromCharset)){
+				result = new String(str.getBytes(), toCharset);
+			}else{
+				result = new String(str.getBytes(fromCharset), toCharset);
+			}
 		} catch (UnsupportedEncodingException e) {
 			throwBaseException(e);
 		}
@@ -684,8 +713,9 @@ public class LangUtils {
 	}
 	
 
+	public static final String UTF8 = "utf-8";
 	public static byte[] getBytes(String source){
-		return getBytes(source, null);
+		return getBytes(source, UTF8);
 	}
 	
 	public static byte[] getBytes(String source, String charset){
@@ -785,8 +815,12 @@ public class LangUtils {
 			return 0;
 		if(obj instanceof Collection){
 			return ((Collection)obj).size();
+		}else if(obj instanceof CharSequence){
+			return ((CharSequence)obj).length();
 		}else if(obj instanceof Map){
 			return ((Map)obj).size();
+		}else if(obj instanceof File){
+			return (int)FileUtils.size((File)obj);
 		}else if(obj.getClass().isArray()){
 			return Array.getLength(obj);
 		}else {
@@ -795,7 +829,8 @@ public class LangUtils {
 				if(m!=null)
 					return (Integer)ReflectUtils.invokeMethod(m, obj);
 			}
-			return 1;
+//			return 1;
+			throw new UnsupportedOperationException("can not get size of object : " + obj);
 		}
 	}
 
@@ -850,14 +885,20 @@ public class LangUtils {
 		Object result = executor.all(obj);
 		if(Collection.class.isAssignableFrom(type)){
 			if(List.class.isAssignableFrom(type)){
-				result = executor.ifList(obj);
+				result = executor.ifList((List)obj);
 			}else {
-				result = executor.ifCollection(obj);
+				result = executor.ifCollection((Collection)obj);
 			}
 		}else if(Map.class.isAssignableFrom(type)){
-			result = executor.ifMap(obj);
+			result = executor.ifMap((Map)obj);
 		}else if(type.isArray()){
-			result = executor.ifArray(obj);
+			/*Class<?> ctype = type.getComponentType();
+			if(ctype.isPrimitive()){
+				result = executor.ifPrimitiveArray(obj, ctype);
+			}else{
+				result = executor.ifArray((Object[])obj);
+			}*/
+			result = executor.ifArray((Object[])obj);
 		}else{
 			result = executor.other(obj, type);
 		}
@@ -870,10 +911,25 @@ public class LangUtils {
 		return (T)judgeType(obj, FirstObject);
 	}
 	
+	public static <T> T getFirst(Object obj, Class<T> clazz){
+		if(obj==null)
+			return null;
+		return (T)judgeType(obj, FirstObject);
+	}
+	
+	public static <T> T getFirstOrCreate(Object obj, Class<T> clazz){
+		if(obj==null)
+			return ReflectUtils.newInstance(clazz);
+		Object val = (T)judgeType(obj, FirstObject);
+		return (T)(val==null?ReflectUtils.newInstance(clazz):val);
+	}
+	
 	public static List emptyIfNull(List list){
-		if(list==null)
-			return Collections.EMPTY_LIST;
-		return list;
+		return list==null?Collections.EMPTY_LIST:list;
+	}
+	
+	public static List defIfEmpty(List list, List def){
+		return emptyIfNull(list).isEmpty()?def:list;
 	}
 	
 	public static <T> T notNullValue(Object obj, Class<T> type){
@@ -915,7 +971,7 @@ public class LangUtils {
 	}
 
 	public static <T> List<T> asList(Object array, boolean trimNull) {
-		return L.trimAndexcludeTheClassElement(trimNull, array);
+		return CUtils.trimAndexcludeTheClassElement(trimNull, array);
 	}
 
 	public static String getRadomString(int length) {
@@ -977,28 +1033,47 @@ public class LangUtils {
 	public static boolean hasElement(Object obj){
 		if(obj==null)
 			return false;
-		else if(String.class.isAssignableFrom(obj.getClass())){
+		else if(CharSequence.class.isAssignableFrom(obj.getClass())){
 			return StringUtils.isNotBlank(obj.toString());
 		}else if(Collection.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Collection)obj);
 		}else if(obj.getClass().isArray()){
-			return Array.getLength(obj)!=0;
+			if(obj.getClass().getComponentType().isPrimitive()){
+				return Array.getLength(obj)!=0;
+			}else {
+				return hasElement((Object[])obj);
+			}
 		}else if(Map.class.isAssignableFrom(obj.getClass())){
 			return hasElement((Map)obj);
 		}
 		return true;
 	}
 	
+	public static boolean isEmpty(Object obj){
+		return size(obj)==0;
+	}
+	
+
+	public static boolean hasElement(Object[] obj){
+		if(isEmpty(obj))
+			return false;
+		for(Object o : (Object[])obj){
+			if(o!=null)//hasElement(e)
+				return true;
+		}
+		return false;
+	}
+	
 	public static boolean hasElement(Map map){
-		return M.hasElement(map);
+		return !isEmpty(map);
 	}
 	
 	public static boolean isEmpty(Map map){
-		return !M.hasElement(map);
+		return map==null || map.isEmpty();
 	}
 	
 	public static boolean isNotEmpty(Map map){
-		return M.hasElement(map);
+		return !isEmpty(map);
 	}
 	
 	public static boolean hasElement(Collection col){
@@ -1040,12 +1115,7 @@ public class LangUtils {
 	}
 	
 	public static boolean equals(Object obj1, Object obj2){
-		if(obj1==null && obj2==null)
-			return true;
-		else if(obj1!=null)
-			return obj1.equals(obj2);
-		else
-			return obj2.equals(obj1);
+		return obj1==obj2 || (obj1!=null && obj2!=null && obj1.equals(obj2));
 	}
 	
 	public static BufferedReader asBufferedReader(InputStream in){
@@ -1182,21 +1252,17 @@ public class LangUtils {
 	}
 	
 	public static <T> T strCastTo(String str, Class<T> toType){
-		return (T)judgeType(str, toType, STRING_CAST_TYPEJUDGE);
+		if(List.class.isAssignableFrom(toType)){
+			return (T)Types.asList(str, String.class);
+		}else if(toType.isArray()){
+			return (T)Types.asArray(str, String.class);
+		}else{
+			return Types.convertValue(str, toType);
+		}
 	}
 	
 	public static <T> T tryCastTo(Object val, Class<T> toType){
-		Assert.notNull(toType);
-		T reVal = null;
-		if(!toType.isInstance(val)){
-			if(val instanceof String){
-				reVal = strCastTo(val.toString(), toType);
-			}
-		}
-		if(reVal==null){
-			reVal = (T) val;
-		}
-		return reVal;
+		return Types.convertValue(val, toType);
 	}
 	
 	/*********
@@ -1350,8 +1416,9 @@ public class LangUtils {
 	}
 	
 	public static String generateToken(String... strs) {
-		String s = append(strs);
-		s = MDFactory.MD5.encrypt(s + new Date().getTime() + getRadomString(6));
+		Object[] objs = strs;
+		String s = appendNotBlank(objs);
+		s = MDFactory.MD5.encrypt(s + System.currentTimeMillis() + getRadomString(6));
 		return s;
 	}
 
@@ -1391,6 +1458,13 @@ public class LangUtils {
 		return actualValue;
 	}
 
+	/*****
+	 * 填充字符串，如果s的长度少于alength，则在左边填充(aleng-s.length)个append
+	 * @param s 
+	 * @param alength
+	 * @param append
+	 * @return
+	 */
 	public static String padLeft(String s, int alength, String append){
 		return pad(s, alength, append.charAt(0), true);
 	}
@@ -1415,5 +1489,81 @@ public class LangUtils {
 				str.delete(0, str.length()-length);
 		}
 		return str.toString();
+	}
+	
+	public static String fixedLengthString(String str, int length, String padString){
+		if(StringUtils.isBlank(str))
+			return padLeft("", length, padString);
+		if(str.length()>=length){
+			return str.substring(str.length()-length, str.length());
+		}else{
+			return padLeft(str, length, padString);
+		}
+	}
+	
+
+	public static Object safeGetValue(Object elemetns, int index){
+		return safeGetValue(elemetns, index, null);
+	}
+	
+	public static Object safeGetValue(Object elemetns, int index, Object def){
+		if(elemetns==null)
+			return def;
+		if(elemetns.getClass().isArray()){
+			Object[] array = (Object[]) elemetns;
+			if(index>=array.length){
+				return def;
+			}
+			return array[index];
+		}else if(List.class.isInstance(elemetns)){
+			List<?> list = (List) elemetns;
+			if(index>=list.size())
+				return def;
+			return list.get(index);
+		}else{
+			throw new UnsupportedOperationException("unsupported type: "+ elemetns.getClass());
+		}
+	}
+	
+	public static Long hexToLong(String hexStr){
+		return Long.parseLong(hexStr, 16);
+	}
+	
+	public static String decToHexString(String decStr){
+		return Long.toHexString(Types.convertValue(decStr, Long.class));
+	}
+	
+	public static String decToHexString(String decStr, int length){
+		String str = Long.toHexString(Types.convertValue(decStr, Long.class));
+		return LangUtils.padLeft(str, length, "0");
+	}
+	
+	public static String decToRadixString(String decStr, int radix, int length){
+		String str = Long.toString(Types.convertValue(decStr, Long.class), radix);
+		return LangUtils.padLeft(str, length, "0");
+	}
+	
+	public static String encodeUrl(String url){
+		try {
+			return URLEncoder.encode(url, UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new BaseException("Unsupported Encoding", e);
+		}
+	}
+	
+	public static String decodeUrl(String url){
+		try {
+			return URLDecoder.decode(url, UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new BaseException("Unsupported Encoding", e);
+		}
+	}
+	
+	public static boolean isDigitString(String str){
+		return DIGIT.matcher(str).matches();
+	}
+	
+	public static <T> T cast(Object obj, Class<T> clazz){
+		return clazz.cast(obj);
 	}
 }

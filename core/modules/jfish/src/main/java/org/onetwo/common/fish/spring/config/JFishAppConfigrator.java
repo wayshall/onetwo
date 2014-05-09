@@ -6,4 +6,5 @@ public interface JFishAppConfigrator {
 	public String[] getXmlBasePackages();
 
 	public String getJFishBasePackage();
+	
 }

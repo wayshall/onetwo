@@ -3,11 +3,12 @@ package org.onetwo.common.fish;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 
-public class JFishDataQuery implements DataQuery {
+public class JFishDataQuery extends AbstractDataQuery {
 	
 	private JFishQuery jfishQuery;
 	
@@ -73,11 +74,6 @@ public class JFishDataQuery implements DataQuery {
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public DataQuery setPageParameter(Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
-	}
 
 	@Override
 	public DataQuery setLimited(Integer first, Integer size) {

@@ -17,6 +17,9 @@ public abstract class StringUtils {
 	public static final String ENCODING = "UTF-8";
 	public static final String EMPTY = "";
 
+	public static String emptyIfNull(Object str){
+		return str==null?EMPTY:str.toString();
+	}
 
     public static String lowerCase(String str) {
         if (str == null) {
@@ -313,6 +316,20 @@ public abstract class StringUtils {
 		return str.substring(0, pos);
 	}
 
+	public static String substringBefore(String str, String separator, int fromIndex) {
+		if (isEmpty(str) || separator == null) {
+			return str;
+		}
+		if (separator.length() == 0) {
+			return EMPTY;
+		}
+		int pos = str.indexOf(separator, fromIndex);
+		if (pos == -1) {
+			return str;
+		}
+		return str.substring(0, pos);
+	}
+
 	public static String[] splitWorker(String str, String separatorChars, int max, boolean preserveAllTokens) {
 		// Performance tuned for 2.0 (JDK1.4)
 		// Direct code is quicker than StringTokenizer.
@@ -491,14 +508,14 @@ public abstract class StringUtils {
 
 	public static String join(Object[] array, String separator) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(array, separator, 0, array.length);
 	}
 
 	public static String join(Object[] array, String separator, SimpleBlock<Object, String> it) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(array, separator, 0, array.length, it);
 	}
@@ -511,7 +528,7 @@ public abstract class StringUtils {
 
 		// handle null, zero and one elements before building a buffer
 		if (iterator == null) {
-			return null;
+			return EMPTY;
 		}
 		if (!iterator.hasNext()) {
 			return EMPTY;
@@ -547,14 +564,14 @@ public abstract class StringUtils {
 
 	public static String join(Collection collection, String separator) {
 		if (collection == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(collection.iterator(), separator);
 	}
 
 	public static String join(Collection collection, String separator, SimpleBlock<Object, String> it) {
 		if (collection == null) {
-			return null;
+			return EMPTY;
 		}
 		return join(collection.iterator(), separator, it);
 	}
@@ -565,7 +582,7 @@ public abstract class StringUtils {
 
 	public static String join(Object[] array, String separator, int startIndex, int endIndex, SimpleBlock<Object, String> it) {
 		if (array == null) {
-			return null;
+			return EMPTY;
 		}
 		if (separator == null) {
 			separator = EMPTY;
@@ -678,6 +695,8 @@ public abstract class StringUtils {
 
 	public static boolean matchPrefix(String key, String... prefixs) {
 		for (String prefix : prefixs) {
+			if(StringUtils.isBlank(prefix))
+				continue;
 			VerySimpleStartMatcher match = VerySimpleStartMatcher.create(prefix);
 			if (match.match(key)) {
 				return true;

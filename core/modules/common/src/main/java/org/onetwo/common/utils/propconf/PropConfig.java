@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.Expression;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -31,7 +31,7 @@ public class PropConfig implements VariableSupporter {
 	
 	protected VariableConfig config = new VariablePropConifg(this);
 
-	protected List<String> files = new ArrayList<String>(1);
+	protected List<String> files = new ArrayList<String>(5);
 	
 	protected String configName;
 	
@@ -168,6 +168,10 @@ public class PropConfig implements VariableSupporter {
 
 	public String getProperty(String key, String defaultValue) {
 		return getProperty(key, defaultValue, true);
+	}
+
+	public List<String> getStringList(String key, String split) {
+		return getPropertyWithSplit(key, split);
 	}
 
 	public List<String> getPropertyWithSplit(String key, String split) {

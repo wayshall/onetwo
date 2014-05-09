@@ -1,30 +1,30 @@
 package org.onetwo.common.excel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.onetwo.common.excel.DefaultRowProcessor.CellContext;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.utils.StringUtils;
 
-@SuppressWarnings("unchecked")
-public class FieldModel {
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.google.common.collect.Lists;
+
+@JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
+public class FieldModel implements PoiModel {
 
 	private String label;
 	private String name;
 	private String value;
+	private String dataFormat;
+	private String condition;
 	
 	private boolean columnTotal;
 	private boolean rowTotal;
 	
-	private RowModel parentRow;
-	
-	private List<FieldExecutor> executors;
+//	private RowModel parentRow;
 	
 	private RowModel row;
 	
-	private boolean init;
 	
 	private String defaultValue;
 
@@ -38,12 +38,30 @@ public class FieldModel {
 	private String headerStyle;
 	
 	private String rootValue;
-	
-	private List<FieldListener> listeners;
 
+	private String sumValueAs;
+	private String sumValueField;
+	private String sumValueCondition;
+	
+//	private List<FieldListener> listeners;
+	private List<ExecutorModel> valueExecutors;
+	
 	public FieldModel() {
 	}
 
+	public void initModel(){
+		if(StringUtils.isNotBlank(sumValueAs)){
+			ExecutorModel model = new ExecutorModel();
+			model.setName(sumValueAs);
+			model.setExecutor(sumValueAs);
+			model.setInstance(new SumFieldValueExecutor());
+			model.addAttribute(SumFieldValueExecutor.SUM_VALUE_FIELD, sumValueField);
+			model.addAttribute(SumFieldValueExecutor.SUM_VALUE_CONDITION, sumValueCondition);
+			addExecutorModel(model);
+		}
+	}
+	
+	
 	public String getName() {
 		return name;
 	}
@@ -53,9 +71,9 @@ public class FieldModel {
 	}
 
 	public String getValue() {
-		if(StringUtils.isBlank(value)){
+		/*if(StringUtils.isBlank(value)){
 			value = getName();
-		}
+		}*/
 		return value;
 	}
 
@@ -65,8 +83,9 @@ public class FieldModel {
 	
 	public String getVar(){
 		String var = "";
-		if(StringUtils.isNotBlank(value)){
-			var = value;
+//		if(StringUtils.isNotBlank(getValue())){
+		if(getValue()!=null){
+			var = getValue();
 		}else{
 			var = name;
 		}
@@ -90,27 +109,12 @@ public class FieldModel {
 	}
 
 	public RowModel getParentRow() {
-		return parentRow;
+		return row;
 	}
 
-	public void setParentRow(RowModel parentRow) {
+	/*public void setParentRow(RowModel parentRow) {
 		this.parentRow = parentRow;
-	}
-
-	public List<FieldExecutor> getExecutors() {
-		if(!init){
-			if(executors==null)
-				executors = new ArrayList<FieldExecutor>();
-			if(this.columnTotal)
-				this.executors.add(new ColumnTotalExecutor());
-			init = true;
-		}
-		return executors;
-	}
-
-	public void setExecutors(List<FieldExecutor> executors) {
-		this.executors = executors;
-	}
+	}*/
 
 	public RowModel getRow() {
 		return row;
@@ -148,7 +152,7 @@ public class FieldModel {
 	}
 
 	
-	public int getColspanValue(CellContext context) {
+	public int getColspanValue(CellContextData context) {
 		/*if(colspanValue!=null)
 			return colspanValue;*/
 		
@@ -158,7 +162,7 @@ public class FieldModel {
 				colspanValue = Integer.parseInt(colspan);
 			else */
 			if(context!=null)
-				value = context.parser.parseIntValue(colspan, context.objectValue);
+				value = context.parseIntValue(colspan);
 			else
 				colspanValue = 1;
 		}else{
@@ -169,29 +173,13 @@ public class FieldModel {
 		}
 		return value;
 	}
-	
-	/*public static int parsegetColspanValue(CellContext context, String colspan) {
-		int value = 1;
-		if(StringUtils.isNotBlank(colspan)){
-			if(context!=null)
-				value = context.parser.parseIntValue(colspan, context.objectValue);
-			else if(IS_DIGIT.matcher(colspan).matches())
-				value = Integer.parseInt(colspan);
-			else
-				value = 1;
-		}
-		if(value < 1) {
-			value = 1;
-		}
-		return value;
-	}*/
 
 	public void setColspan(String colspan) {
 		this.colspan = colspan;
 	}
 
 
-	public int getRowpanValue(CellContext context) {
+	public int getRowpanValue(CellContextData context) {
 		/*if(rowspanValue!=null)
 			return rowspanValue;*/
 		
@@ -200,8 +188,10 @@ public class FieldModel {
 			/*if(IS_DIGIT.matcher(rowspan).matches())
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
-			if(context!=null)
-				value = context.parser.parseIntValue(rowspan, context.objectValue);
+			if(ExcelUtils.IS_DIGIT.matcher(rowspan).matches())
+				rowspanValue = Integer.parseInt(rowspan);
+			else if(context!=null)
+				value = context.parseIntValue(rowspan);
 			else
 				rowspanValue = 1;
 		}else{
@@ -229,18 +219,8 @@ public class FieldModel {
 		return this.rowspan != null || this.colspan != null;
 	}
 
-	public void setListeners(String listeners) {
-		this.listeners = ReflectUtils.toInstanceList(listeners);
-	}
-
-	public List<FieldListener> getListeners() {
-		if(listeners==null)
-			listeners = Collections.EMPTY_LIST;
-		return listeners;
-	}
-
 	public String getStyle() {
-		return StringUtils.defaultValues(style, getParentRow().getFieldStyle(), "");
+		return StringUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");
 	}
 
 	public void setStyle(String style) {
@@ -248,7 +228,7 @@ public class FieldModel {
 	}
 
 	public String getFont() {
-		return StringUtils.defaultValues(font, getParentRow().getFieldFont(), "");
+		return StringUtils.defaultValues(font, getParentRow()==null?"":getParentRow().getFieldFont(), "");
 	}
 
 	public void setFont(String font) {
@@ -256,7 +236,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderFont() {
-		return StringUtils.defaultValues(headerFont, getParentRow().getFieldHeaderFont(), "");
+		return StringUtils.defaultValues(headerFont, getParentRow()==null?"":getParentRow().getFieldHeaderFont(), "");
 	}
 
 	public void setHeaderFont(String headerFont) {
@@ -264,7 +244,7 @@ public class FieldModel {
 	}
 
 	public String getHeaderStyle() {
-		return StringUtils.defaultValues(headerStyle, getParentRow().getFieldHeaderStyle(), "");
+		return StringUtils.defaultValues(headerStyle, getParentRow()==null?"":getParentRow().getFieldHeaderStyle(), "");
 	}
 
 	public void setHeaderStyle(String headerStyle) {
@@ -278,5 +258,60 @@ public class FieldModel {
 	public void setRootValue(String rootValue) {
 		this.rootValue = rootValue;
 	}
+
+	public String getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
+	}
+
+	public List<ExecutorModel> getValueExecutors() {
+		return valueExecutors==null?Collections.EMPTY_LIST:valueExecutors;
+	}
+	
+	public void addExecutorModel(ExecutorModel model){
+		if(this.valueExecutors==null)
+			this.valueExecutors = Lists.newArrayList();
+		this.valueExecutors.add(model);
+	}
+
+	public void setValueExecutors(List<ExecutorModel> valueExecutors) {
+		this.valueExecutors = valueExecutors;
+	}
+
+	public String getSumValueAs() {
+		return sumValueAs;
+	}
+
+	public void setSumValueAs(String sumValueAs) {
+		this.sumValueAs = sumValueAs;
+	}
+
+	public String getSumValueField() {
+		return sumValueField;
+	}
+
+	public void setSumValueField(String sumValueField) {
+		this.sumValueField = sumValueField;
+	}
+
+	public String getSumValueCondition() {
+		return sumValueCondition;
+	}
+
+	public void setSumValueCondition(String sumValueCondition) {
+		this.sumValueCondition = sumValueCondition;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+
 	
 }

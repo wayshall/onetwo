@@ -9,9 +9,11 @@ import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.fish.JFishDataQuery;
 import org.onetwo.common.fish.JFishEntityManager;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -21,18 +23,18 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo>{
 
-	private JFishEntityManager baseEntityManager;
+//	private JFishEntityManager baseEntityManager;
 	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
 	private FileSqlParser<JFishNamedFileQueryInfo> parser;
 	
-	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, String dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, DataBase dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
-		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class);
-		this.baseEntityManager = jem;
+//		this.baseEntityManager = jem;
 		
-		FileSqlParser<JFishNamedFileQueryInfo> p = new FileSqlParser<JFishNamedFileQueryInfo>(sqlFileManager);
-		p.initialize();
+		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> p = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
+//		p.initialize();
 		this.parser = p;
+		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class, p);
 	}
 
 
@@ -42,6 +44,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	@Override
 	public void buildNamedQueryInfos() {
 		this.sqlFileManager.build();
+//		this.parser.initParser();
 	}
 
 	@Override
@@ -57,7 +60,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		Assert.notNull(type);
 
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		JFishFileQueryImpl jq = new JFishFileQueryImpl(baseEntityManager, nameInfo, count, parser);
+		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
 			jq.setParameters(LangUtils.asList(args));

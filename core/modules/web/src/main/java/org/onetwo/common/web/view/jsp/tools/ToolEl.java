@@ -20,6 +20,17 @@ final public class ToolEl {
 		return DateUtil.formatDateByPattern(date, pattern);
 	}
 	
+	public static String asDateTime(Date date){
+		return DateUtil.formatDateTime(date);
+	}
+	
+	public static String asDate(Date date){
+		return DateUtil.formatDate(date);
+	}
+	
+	public static String asTime(Date date){
+		return DateUtil.formatTime(date);
+	}
 
 	private ToolEl(){}
 }

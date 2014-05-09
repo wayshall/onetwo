@@ -5,8 +5,9 @@ import java.util.Iterator;
 
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.CurrentRowData;
+import org.onetwo.common.web.view.jsp.datagrid.DataRowTagBean.GridRowData;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
 import org.onetwo.common.web.view.jsp.grid.RowTagBean.RowType;
@@ -37,51 +38,63 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 		if(component.isIterator()){
 			Iterator<?> it = grid.getPage().getResult().iterator();
 			component.setIterator(it);
-			component.setDatas(new ArrayList<Object>());
+			component.setDatas(new ArrayList<GridRowData>(grid.getPage().getResult().size()));
 		}
 		
 		setComponentIntoRequest(getRowVarName(), component);
 	}
 
 	@Override
-	public int doStartTag() throws JspException {
+	public int startTag() throws JspException {
 		assertParentTag(DataGridTag.class);
-		super.doStartTag();
+		super.startTag();
 		if(component.isIterator()){
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){
 				Object data = it.next();
 				int index = 0;
-				CurrentRowData cdata = new CurrentRowData(data, index);
+				GridRowData cdata = GridRowData.create(component, data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
-				if(StringUtils.isNotBlank(getName()))
-					pageContext.getRequest().setAttribute(getName(), cdata.getOriginData());
+				if(StringUtils.isNotBlank(component.getName()))
+					pageContext.getRequest().setAttribute(component.getName(), cdata.getOriginData());
 				
 				return EVAL_BODY_BUFFERED;
 			}else{
 				if(!component.isFieldTagCompletion()){
 					return EVAL_BODY_BUFFERED;
 				}
-				clearComponentFromRequest(CURRENT_ROW_DATA);
+//				clearComponentFromRequest(CURRENT_ROW_DATA);
 				
-				if(StringUtils.isNotBlank(getName()))
-					pageContext.getRequest().removeAttribute(getName());
 				
 				return SKIP_BODY;
 			}
 		}else{
+			GridRowData cdata = GridRowData.create(component, LangUtils.newHashMap(), 0);
+			setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
+			
+			component.setCurrentRowData(cdata);
+			
 			return EVAL_BODY_BUFFERED;
 		}
+	}
+
+
+	@Override
+	public int endTag() throws Exception {
+		clearComponentFromRequest(CURRENT_ROW_DATA);
+		if(StringUtils.isNotBlank(component.getName()))
+			pageContext.getRequest().removeAttribute(component.getName());
+		return super.endTag();
 	}
 
 	@Override
 	public int doAfterBody() throws JspException {
 		if(component.isIterator()){
 			component.setFieldTagCompletion(true);
-			CurrentRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, CurrentRowData.class);
+			GridRowData preData = getComponentFromRequest(CURRENT_ROW_DATA, GridRowData.class);
 			if(preData!=null){
-				component.getDatas().add(preData);//preData.getTranslateData()
+				component.addRowData(preData);//preData.getTranslateData()
 			}
 			Iterator<?> it = component.getIterator();
 			if(it.hasNext()){
@@ -89,7 +102,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				int index = 0;
 				if(preData!=null)
 					index = preData.getIndex()+1;
-				CurrentRowData cdata = new CurrentRowData(data, index);
+				GridRowData cdata = GridRowData.create(component, data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
 				if(StringUtils.isNotBlank(getName()))
@@ -101,10 +114,6 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 		return super.doAfterBody();
 	}
 
-	@Override
-	public int doEndTag() throws JspException {
-		return EVAL_PAGE;
-	}
 
 	public void setType(String type) {
 		this.type = RowType.valueOf(type);

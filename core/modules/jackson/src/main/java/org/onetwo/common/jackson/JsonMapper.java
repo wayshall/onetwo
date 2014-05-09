@@ -1,20 +1,27 @@
 package org.onetwo.common.jackson;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.codehaus.jackson.JsonParser.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import org.codehaus.jackson.map.util.JSONPObject;
-import org.codehaus.jackson.type.TypeReference;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 public class JsonMapper {
 	
@@ -31,45 +38,67 @@ public class JsonMapper {
 	public static final JsonMapper IGNORE_EMPTY = ignoreEmpty();
 	
 	public static JsonMapper defaultMapper(){
-		JsonMapper jsonm = new JsonMapper(Inclusion.ALWAYS);
+		JsonMapper jsonm = new JsonMapper(Include.ALWAYS);
 		return jsonm;
 	}
 	
 	public static JsonMapper ignoreNull(){
-		JsonMapper jsonm = new JsonMapper(Inclusion.NON_NULL);
+		JsonMapper jsonm = new JsonMapper(Include.NON_NULL);
 		return jsonm;
 	}
 	
 	public static JsonMapper ignoreEmpty(){
-		JsonMapper jsonm = new JsonMapper(Inclusion.NON_EMPTY);
+		JsonMapper jsonm = new JsonMapper(Include.NON_EMPTY);
 		return jsonm;
 	}
 	
-	public static JsonMapper mapper(Inclusion include){
-		JsonMapper jsonm = new JsonMapper(include);
+	public static JsonMapper mapper(Include include, boolean fieldVisibility){
+		JsonMapper jsonm = new JsonMapper(include, fieldVisibility);
 		return jsonm;
 	}
 	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private SimpleFilterProvider filterProvider = new SimpleFilterProvider();
 	
-	public JsonMapper(Inclusion include){
+
+	public JsonMapper(Include include){
+		this(include, false);
+	}
+	public JsonMapper(Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 		setDateFormat(DateUtil.Date_Time);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
-		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		if(fieldVisibility)
+			objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+		this.objectMapper.setFilters(filterProvider);
 	}
 	
-	@SuppressWarnings("deprecation")
+	/*public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
+		this.objectMapper.getSerializationConfig().addMixInAnnotations(target, mixinSource);
+		this.objectMapper.getDeserializationConfig().addMixInAnnotations(target, mixinSource);
+		return this;
+	}*/
+	
+	public JsonMapper defaultFiler(BeanPropertyFilter bpf){
+		this.filterProvider.setDefaultFilter(bpf);
+		return this;
+	}
+	
+	public JsonMapper filter(String id, String...properties){
+		this.filterProvider.addFilter(id, SimpleBeanPropertyFilter.serializeAllExcept(properties));
+		return this;
+	}
+	
 	public JsonMapper setDateFormat(String format){
 		if(StringUtils.isBlank(format))
 			return this;
-		DateFormat df = new SimpleDateFormat(format);
-		objectMapper.getSerializationConfig().setDateFormat(df);
-		objectMapper.getDeserializationConfig().setDateFormat(df);
+		objectMapper.setDateFormat(new SimpleDateFormat(format));
 //		objectMapper.getSerializationConfig().withDateFormat(df);
 //		objectMapper.getDeserializationConfig().withDateFormat(df);
 		return this;
@@ -84,6 +113,7 @@ public class JsonMapper {
 		try {
 			json = this.objectMapper.writeValueAsString(object);
 		} catch (Exception e) {
+//			e.printStackTrace();
 			if(throwIfError)
 				LangUtils.throwBaseException("parse to json error : " + object, e);
 			else

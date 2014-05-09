@@ -3,24 +3,20 @@ package org.onetwo.common.spring.ftl;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import freemarker.cache.TemplateLoader;
 
-@SuppressWarnings("unchecked")
 public class StringTemplateLoader implements TemplateLoader {
 
 	private static final String DEFAULT_TEMPLATE_KEY = "_default_template_key";
 
-	private Map templates = new HashMap();
+	private Map<String, Object> templates = LangUtils.newHashMap();
 
-	public StringTemplateLoader(String defaultTemplate) {
-		if (defaultTemplate != null && !defaultTemplate.equals("")) {
-			templates.put(DEFAULT_TEMPLATE_KEY, defaultTemplate);
-		}
+	public StringTemplateLoader() {
 	}
 
 	public void addTemplate(String name, String template) {

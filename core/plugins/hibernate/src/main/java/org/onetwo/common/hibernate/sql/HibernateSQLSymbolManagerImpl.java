@@ -3,12 +3,14 @@ package org.onetwo.common.hibernate.sql;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.metadata.ClassMetadata;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.SelectExtQueryImpl;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLDialet;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.HibernateUtils;
 
 public class HibernateSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
@@ -32,7 +34,10 @@ public class HibernateSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 		}
 
 		protected String getDefaultCountField(){
-			String idName = HibernateUtils.getClassMeta(entityClass).getIdentifierPropertyName();
+			ClassMetadata meta = HibernateUtils.getClassMeta(entityClass);
+			if(meta==null)
+				throw new BaseException("can not find the entity["+entityClass+"], check it please!");
+			String idName = meta.getIdentifierPropertyName();
 			return getFieldName(idName);
 		}
 		

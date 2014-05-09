@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.onetwo.app</groupId>
+  <artifactId>task-system</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>bus-sync</name>
+  <url>http://maven.apache.org</url>
+
+ 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<onetwo.plugin.version>2.0-SNAPSHOT</onetwo.plugin.version>
+	<onetwo.version>1.5.0-SNAPSHOT</onetwo.version>
+	
+	<junit.version>4.10</junit.version>
+	<jpa.version>2.0.0</jpa.version>
+  </properties>
+
+  <dependencies>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.sun.jna</groupId>
+	  <artifactId>com.springsource.com.sun.jna</artifactId>
+	  <version>3.0.5</version> 
+	</dependency>
+
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-email</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-hibernate</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-dq</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.quartz-scheduler</groupId>
+	    <artifactId>quartz</artifactId>
+	    <version>2.1.6</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.oracle</groupId>
+	  <artifactId>ojdbc5</artifactId>
+	  <version>11.1.0.6.0</version>
+	</dependency> 
+	
+	<dependency>
+	  <groupId>net.sourceforge.jtds</groupId>
+	  <artifactId>jtds</artifactId>
+	  <version>1.2.8</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>javax.persistence</groupId>
+	  <artifactId>com.springsource.javax.persistence</artifactId>
+	  <version>${jpa.version}</version>
+	  <scope>compile</scope> 
+	</dependency>
+	
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+	
+  </dependencies>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-jar-plugin</artifactId>
+	        <configuration>
+	        	<archive>
+	        		<manifest>
+		              <addClasspath>true</addClasspath>
+		              <mainClass>com.qyscard.sync.Main</mainClass>
+		              <classpathPrefix>lib/</classpathPrefix>
+		            </manifest>
+		            <manifestEntries>
+		            	<Class-Path>. </Class-Path>
+		            </manifestEntries>
+	        	</archive>
+	        </configuration>
+	        <executions>
+	        	<execution>
+	        		<goals>
+	        			<goal>jar</goal>
+	        		</goals>
+	        		<phase>prepare-package</phase>
+	        		<configuration>
+	        			<includes>
+	        				<include>com/**</include>
+	        			</includes>
+	        		</configuration>
+	        	</execution>
+	        </executions>
+  		</plugin>
+  		
+  		<plugin>  
+		    <artifactId>maven-assembly-plugin</artifactId>  
+		    <executions>  
+		        <execution>  
+		            <id>build-jar</id>
+		        <phase>package</phase>
+		        <goals>    
+		           <goal>single</goal>
+		        </goals>    
+		            <configuration>  
+	                    <descriptors>
+                        	<descriptor>jar.xml</descriptor>  
+	                    </descriptors>  
+		            </configuration>  
+		        </execution>  
+		    </executions>  
+		 </plugin>  
+		 
+  	</plugins>
+  </build>
+  
+</project>

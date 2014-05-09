@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -35,6 +36,8 @@ public class SpringApplication {
 	
 	private ValidatorWrapper validatorWrapper;
 	
+	private ContextHolder contextHolder;
+	
 	private SpringApplication() {
 	}
 
@@ -52,6 +55,7 @@ public class SpringApplication {
 //		instance.printBeanNames();
 		try {
 			instance.baseEntityManager = instance.getBean(BaseEntityManager.class);
+			instance.contextHolder = instance.getBean(ContextHolder.class);
 		} catch (Exception e) {
 			logger.error("can not find the BaseEntityManager, ignore it: " + e.getMessage());
 		}
@@ -66,13 +70,20 @@ public class SpringApplication {
 	}
 
 	public Object getBean(String beanName, boolean throwIfError) {
+		if(!getAppContext().containsBean(beanName)){
+			if(throwIfError)
+				throw new BaseException("not bean["+beanName+"] found! ");
+			else
+				logger.error("no bean["+beanName+"] found! ");
+			return null;
+		}
 		Object bean = null;
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-			logger.error("get bean from spring error! ");
+			logger.error("get bean["+beanName+"] from spring error! ");
 			if(throwIfError)
-				throw new BaseException("get bean from spring error! ", e);
+				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
 		}
 		return bean;
 	}
@@ -182,6 +193,10 @@ public class SpringApplication {
 		 if(validatorWrapper==null)
 			 throw new BaseException("no ValidatorWrapper found!");
 		 return validatorWrapper;
+	}
+
+	public ContextHolder getContextHolder() {
+		return contextHolder;
 	}
 
 }

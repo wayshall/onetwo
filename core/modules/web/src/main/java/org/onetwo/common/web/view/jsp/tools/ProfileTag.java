@@ -14,18 +14,18 @@ public class ProfileTag extends AbstractBodyTag {
 	
 	@Override
 	public int doStartTag() throws JspException {
-		boolean oldValue = UtilTimerStack.isActive();
+		/*boolean oldValue = UtilTimerStack.isActive();
 		setComponentIntoRequest(VAR_NAME, oldValue);
-		UtilTimerStack.setActive(active);
+		UtilTimerStack.setActive(active);*/
 		UtilTimerStack.push(name);
 		return EVAL_BODY_INCLUDE;
 	}
 	@Override
 	public int doEndTag() throws JspException {
 		UtilTimerStack.pop(name);
-		boolean oldValue = getComponentFromRequest(VAR_NAME, Boolean.class);
+		/*boolean oldValue = getComponentFromRequest(VAR_NAME, Boolean.class);
 		this.clearComponentFromRequest(VAR_NAME);
-		UtilTimerStack.setActive(oldValue);
+		UtilTimerStack.setActive(oldValue);*/
 		return EVAL_PAGE;
 	}
 	public boolean isActive() {

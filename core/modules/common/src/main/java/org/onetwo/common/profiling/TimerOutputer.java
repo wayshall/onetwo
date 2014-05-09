@@ -1,10 +1,15 @@
 package org.onetwo.common.profiling;
 
+import java.util.Date;
 
-public class TimerOutputer {
+import org.onetwo.common.utils.DateUtil;
+
+
+public class TimerOutputer implements JFishLogger {
 	
-	public void println(String msg){
-		System.out.println("==================>>>"+msg);
+	@Override
+	public void log(String msg){
+		System.out.println("["+DateUtil.formatDateTime(new Date())+"]: "+msg);
 	}
 
 }

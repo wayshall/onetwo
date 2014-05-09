@@ -8,12 +8,13 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("unchecked")
-public class JpaQueryImpl implements DataQuery {
+public class JpaQueryImpl extends AbstractDataQuery {
 	
 	public static class QConfig {
 		public static String MaxFetchDepth = "MaxFetchDepth";
@@ -70,7 +71,7 @@ public class JpaQueryImpl implements DataQuery {
 	public DataQuery setParameters(List<Object> params) {
 		if(params==null || params.isEmpty())
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position++, value);
 		}
@@ -81,16 +82,11 @@ public class JpaQueryImpl implements DataQuery {
 	public DataQuery setParameters(Object[] params) {
 		if(ArrayUtils.hasNotElement(params))
 			return this;
-		int position = 1;
+		int position = PARAMETER_START_INDEX;
 		for(Object value : params){
 			query.setParameter(position++, value);
 		}
 		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
-		return setLimited(page.getFirst()-1, page.getPageSize());
 	}
 	
 	public DataQuery setLimited(final Integer first, final Integer size) {

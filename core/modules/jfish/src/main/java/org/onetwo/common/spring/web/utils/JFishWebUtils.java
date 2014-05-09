@@ -13,7 +13,7 @@ import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.utils.WebContextUtils;
+import org.onetwo.common.web.csrf.AbstractCsrfPreventor;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.web.context.request.RequestAttributes;
@@ -32,7 +32,7 @@ public final class JFishWebUtils {
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
-	public static final String DEFAULT_TOKEN_FIELD_NAME = WebContextUtils.DEFAULT_TOKEN_FIELD_NAME;
+	public static final String DEFAULT_TOKEN_FIELD_NAME = AbstractCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
@@ -159,7 +159,16 @@ public final class JFishWebUtils {
 	public static <T extends UserDetail> T removeUserDetail(){
 		UserDetail user = session(UserDetail.USER_DETAIL_KEY);
 		removeSession(UserDetail.USER_DETAIL_KEY);
+		removeAllSessionAttributes();
 		return (T)user;
+	}
+	
+	public static void removeAllSessionAttributes(){
+		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+		if(!LangUtils.isEmpty(attrNames)){
+			for(String attr : attrNames)
+				removeSession(attr);
+		}
 	}
 	
 	public static HttpServletRequest request(){
@@ -260,5 +269,22 @@ public final class JFishWebUtils {
 			mv.addAllObjects(modelMap);
 		}
 		return mv;
+	}
+	
+
+	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) throws Exception{
+		return getDownloadFileName(request(), model, defaultFileName);
+	}
+	
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName) throws Exception{
+		String downloadFileName = request.getParameter("fileName");
+		if(StringUtils.isBlank(downloadFileName)){
+			//在model里的，由用户自己转码
+			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
+		}else{
+			downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+		}
+//		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+		return downloadFileName;
 	}
 }

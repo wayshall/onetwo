@@ -1,6 +1,5 @@
 package org.onetwo.common.utils.propconf;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

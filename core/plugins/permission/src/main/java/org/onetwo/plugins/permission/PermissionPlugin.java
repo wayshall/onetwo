@@ -2,10 +2,10 @@ package org.onetwo.plugins.permission;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 
 
-public class PermissionPlugin extends AbstractJFishPlugin<PermissionPlugin> {
+public class PermissionPlugin extends AbstractContextPlugin<PermissionPlugin> {
 
 	private static PermissionPlugin instance;
 	
@@ -14,19 +14,9 @@ public class PermissionPlugin extends AbstractJFishPlugin<PermissionPlugin> {
 		return instance;
 	}
 	
-
-	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
-	}
-	
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(PermissionPluginContext.class);
-	}
-
-	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(PermissionMvcContext.class);
 	}
 
 	public void setPluginInstance(PermissionPlugin plugin){

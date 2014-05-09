@@ -1,18 +1,56 @@
 package org.onetwo.common.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.enterprise.inject.New;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.list.L;
 
 public class LangUtilsTest {
 	
+	@Test
+	public void testFormatValue(){
+		long dec = LangUtils.hexToLong("BC092A11");
+		Assert.assertEquals(3154717201L, dec);
+		Object val = LangUtils.formatValue(0.755, "#0.00#");
+		Assert.assertEquals("0.755", val);
+		val = LangUtils.formatValue(1.9, "0.00");
+		System.out.println("val: " + val);
+		Assert.assertEquals("1.90", val);
+		val = LangUtils.formatValue(0, "0.00");
+		System.out.println("val: " + val);
+		Assert.assertEquals("0.00", val);
+		val = LangUtils.formatValue(0.755, "#.##");
+		Assert.assertEquals("0.76", val);
+		val = LangUtils.formatValue(1, "0.00");
+		Assert.assertEquals("1.00", val);
+		val = LangUtils.formatValue(0.755, "0.00");
+		Assert.assertEquals("0.76", val);
+		val = LangUtils.formatValue(0.1, "0.00");
+		Assert.assertEquals("0.10", val);
+		val = LangUtils.formatValue(1253.1, "0.00");
+		Assert.assertEquals("1253.10", val);
+		val = LangUtils.formatValue(1253.1222222, "0.00");
+		Assert.assertEquals("1253.12", val);
+		val = LangUtils.formatValue(1253.1222222, "0");
+		System.out.println("val1: " + val);
+		Assert.assertEquals("1253", val);
+		
+		BigDecimal bd = new BigDecimal("1.44445");
+		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());
+	}
 	@Test
 	public void testHash(){
 		String str = "hellohello_helloh_ellohello";
@@ -25,6 +63,8 @@ public class LangUtilsTest {
 		System.out.println("voted: " + (voted &=true));
 		voted = false;
 		System.out.println("voted: " + (voted &=true));
+		str = "ntyg168@163.com";
+		System.out.println("substring: " + str.length());
 	}
 	@Test
 	public void testTimeUnit(){
@@ -165,4 +205,121 @@ public class LangUtilsTest {
 		Throwable e = LangUtils.getCauseServiceException(re);
 		Assert.assertTrue(ServiceException.class.isInstance(e));
 	}
+
+	@Test
+	public void testFixedLengthString(){
+		int length = 12;
+		String str = "12";
+		String rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000012", rs);
+		str = "10000000000000012";
+		rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000012", rs);
+		str = null;
+		rs = LangUtils.fixedLengthString(str, length, "0");
+		Assert.assertEquals("000000000000", rs);
+	}
+	
+	@Test
+	public void testDataFormat(){
+		double value = 2002.2456;
+		String rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.25), rs);
+
+		value = 2002.2;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.20), rs);
+
+		Integer intValue = 2002;
+		rs = (String)LangUtils.formatValue(intValue, "#0.0#");
+		Assert.assertEquals(String.valueOf(2002.00), rs);
+
+		value = 0.525;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.53), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.78), rs);
+		
+		value = 0.001;
+		rs = (String)LangUtils.formatValue(value, "#0.0#");
+		Assert.assertEquals(String.valueOf(0.00), rs);
+		
+		value = 0.775;
+		rs = (String)LangUtils.formatValue(value, "#0.00#");
+		Assert.assertEquals(String.valueOf(0.775), rs);
+	}
+	
+	@Test
+	public void test10to16(){
+		String cardNo10 = "6124895493223875970";
+		System.out.println("cardno: " + cardNo10.length());
+		Long max = Long.MAX_VALUE;
+//		Assert.assertEquals(expected, actual);
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo16 = LangUtils.decToHexString(cardNo10);
+		System.out.println("cardNo16: " + cardNo16);
+	}
+	
+	@Test
+	public void test16to10(){
+		String cardNo16 = "5500000000000582";
+		System.out.println("cardNo16: " + cardNo16.length());
+		Long max = Long.MAX_VALUE;
+		System.out.println("max: "+max+", length:" + max.toString().length());
+		String cardNo10 = Long.toOctalString(Types.convertValue(cardNo16, Long.class));
+		System.out.println("cardNo10: " + cardNo10);
+	}
+	
+	@Test
+	public void testEncodeUrl() throws Exception{
+		String url = "aa=#user";
+		String encodeUrl = LangUtils.encodeUrl(url);
+		Assert.assertEquals("aa%3D%23user", encodeUrl);
+	}
+	
+
+
+	@Test
+	public void testDigit(){
+		String str = "123";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "0";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "3";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "003";
+		Assert.assertTrue(LangUtils.isDigitString(str));
+		str = "a3";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+		str = "3ssd";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+		str = "34 33";
+		Assert.assertFalse(LangUtils.isDigitString(str));
+	}
+	@Test
+	public void testHasElement(){
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_MAP));
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_LIST));
+		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_SET));
+		
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_MAP));
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_LIST));
+		Assert.assertFalse(LangUtils.hasElement(Collections.EMPTY_SET));
+		
+		int[] ints = new int[]{};
+		Assert.assertTrue(LangUtils.isEmpty(ints));
+		Assert.assertFalse(LangUtils.hasElement(ints));
+		ints = new int[]{0};
+		Assert.assertTrue(LangUtils.hasElement(ints));
+		
+		Object obj = new Object[]{"aaa", Long.valueOf(1L)};
+		Assert.assertFalse(LangUtils.isEmpty(obj));
+		Assert.assertTrue(LangUtils.hasElement(obj));
+		obj = new Object[]{null, null};
+		Assert.assertFalse(LangUtils.isEmpty(obj));
+		Assert.assertTrue(LangUtils.hasNotElement(obj));
+	}
 }
+

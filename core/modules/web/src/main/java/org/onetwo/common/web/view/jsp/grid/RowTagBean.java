@@ -1,7 +1,10 @@
 package org.onetwo.common.web.view.jsp.grid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.web.view.HtmlElement;
 
@@ -20,19 +23,20 @@ public class RowTagBean extends HtmlElement{
 	}
 	
 	private GridTagBean gridTagBean;
-	protected List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
+//	protected List<FieldTagBean> fields = new ArrayList<FieldTagBean>();
+	private Map<String, FieldTagBean> fields = new LinkedHashMap<String, FieldTagBean>();
 	private RowType type;
 	private boolean renderHeader;
 
 	public void addField(FieldTagBean field){
 		field.setRowTagBean(this);
-		fields.add(field);
+		fields.put(field.getName(), field);
 	}
 	public List<FieldTagBean> getFields() {
-		return fields;
+		return new ArrayList<FieldTagBean>(fields.values());
 	}
 	public FieldTagBean getField(String name) {
-		for(FieldTagBean df : fields){
+		for(FieldTagBean df : fields.values()){
 			if(df.getName().equals(name))
 				return df;
 		}
@@ -64,5 +68,12 @@ public class RowTagBean extends HtmlElement{
 	}
 	public void setRenderHeader(boolean renderHeader) {
 		this.renderHeader = renderHeader;
+	}
+	public RowType getType() {
+		return type;
+	}
+	
+	public boolean containsField(String name){
+		return this.fields.containsKey(name);
 	}
 }

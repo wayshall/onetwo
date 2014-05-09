@@ -1,5 +1,6 @@
 package org.onetwo.common.utils.commandline;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ abstract public class AbstractCommand implements Command{
 	}
 
 	@Override
-	public void execute(CmdContext context) {
+	public void execute(CmdContext context) throws Exception {
 		System.out.println("");
 		System.out.println("===========================================");
 		doExecute(context);
@@ -37,11 +38,11 @@ abstract public class AbstractCommand implements Command{
 		System.out.println("");
 	}
 
-	abstract public void doExecute(CmdContext context) ;
+	abstract public void doExecute(CmdContext context) throws Exception ;
 
 	@Override
 	public String helpDoc() {
-		return doc;
+		return StringUtils.defaultIfBlank(doc, "no help docuement!");
 	}
 
 	@Override
@@ -51,6 +52,16 @@ abstract public class AbstractCommand implements Command{
 
 	public CommandManager getCommandManager() {
 		return commandManager;
+	}
+
+
+	public String getKey() {
+		return key;
+	}
+
+
+	public String getDoc() {
+		return doc;
 	}
 
 }
