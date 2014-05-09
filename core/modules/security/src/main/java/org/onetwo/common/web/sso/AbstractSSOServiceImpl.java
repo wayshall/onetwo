@@ -115,6 +115,7 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 	}
 
 	public UserDetail checkLogin(SecurityTarget target) {
+//		target.removeCurrentLoginUser();
 		UserDetail authoritable = target.getAuthoritable();
 		try {
 			String cookietoken = target.getCookieToken();
@@ -232,8 +233,8 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 	public UserDetail getCurrentLoginUser(SecurityTarget target){
 		UserDetail user = null;
 		try{
-//			user = this.getCurrentLoginUserByCookieToken(target.getCookieToken());
-			user = getSSOUserService().getCurrentLoginUserByToken(target.getCookieToken());
+			user = this.getCurrentLoginUserByCookieToken(target.getCookieToken());
+//			user = getSSOUserService().getCurrentLoginUserByToken(target.getCookieToken());
 		}catch(Exception e){
 			handleLoginException(e, "get current login user error by token : " + target.getCookieToken());
 		}
@@ -246,6 +247,6 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 	 * @param token
 	 * @return
 	 */
-	abstract public SSOUserService getSSOUserService();
-//	abstract protected UserDetail getCurrentLoginUserByCookieToken(String token);
+//	abstract public SSOUserService getSSOUserService();
+	abstract protected UserDetail getCurrentLoginUserByCookieToken(String token);
 }

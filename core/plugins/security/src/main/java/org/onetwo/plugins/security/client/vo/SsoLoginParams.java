@@ -7,6 +7,7 @@ public class SsoLoginParams {
 	@NotBlank
 	private String tk;
 	private String callback;
+	private String sign;
 
 	public String getTk() {
 		return tk;
@@ -22,6 +23,14 @@ public class SsoLoginParams {
 
 	public void setCallback(String callback) {
 		this.callback = callback;
+	}
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
 	}
 	
 	
