@@ -24,6 +24,13 @@ public class SsoClientConfig extends SsoConfig {
 		}
 		return url;
 	}
+	public String getLogoutUrl(){
+		String url = getProperty("logout.url");
+		if(StringUtils.isBlank(url)){
+			url = getServerUrl()+"/logout";
+		}
+		return url;
+	}
 	public String getSSOUserServiceUrl(){
 		String url = getProperty("service.url");
 		if(StringUtils.isBlank(url)){
