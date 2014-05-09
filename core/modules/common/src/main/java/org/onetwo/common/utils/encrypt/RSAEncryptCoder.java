@@ -17,7 +17,7 @@ import javax.crypto.Cipher;
 import org.apache.commons.lang.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
 
-public class RSAEncryptCoder extends AbstractEncryptCoder {
+public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {
 	
 
 	private static final String RSA_CIPHER_ALGORITHM = "RSA/ECB/PKCS1PADDING";
@@ -25,16 +25,36 @@ public class RSAEncryptCoder extends AbstractEncryptCoder {
 	private static final String RSA_KEY = "RSA";
 	private static final int RSA_DEFAULT_LENGTH = 1024;
 	
-	private final byte[] publicKey;
-	private final byte[] privateKey;
+	private byte[] publicKey;
+	private byte[] privateKey;
 	private final int encryptSize;
 	private final int dencryptSize;
+	private final int size;
+	
 	
 
 	public RSAEncryptCoder(){
-		this(RSA_DEFAULT_LENGTH);
+		this(RSA_DEFAULT_LENGTH, true);
 	}
-	public RSAEncryptCoder(int size){
+	public RSAEncryptCoder(boolean generatedKeyPair){
+		this(RSA_DEFAULT_LENGTH, generatedKeyPair);
+	}
+	public RSAEncryptCoder(int size, boolean generatedKeyPair){
+		this.size = size;
+		this.encryptSize = size/8-11;
+		this.dencryptSize = size/8;
+		
+		if(generatedKeyPair){
+			KeyPair kp = generatedKey();
+			RSAPublicKey pubkey = (RSAPublicKey)kp.getPublic();
+			publicKey = pubkey.getEncoded();
+			
+			RSAPrivateKey prikey = (RSAPrivateKey)kp.getPrivate();
+			privateKey = prikey.getEncoded();
+		}
+	}
+	
+	public KeyPair generatedKey(){
 		KeyPairGenerator kpg;
 		try {
 			kpg = KeyPairGenerator.getInstance(RSA_KEY);
@@ -43,16 +63,8 @@ public class RSAEncryptCoder extends AbstractEncryptCoder {
 			throw new BaseException("KeyGenerator error: " + e.getMessage() , e);
 		}
 
-		this.encryptSize = size/8-11;
-		this.dencryptSize = size/8;
-		
 		KeyPair kp = kpg.generateKeyPair();
-		
-		RSAPublicKey pubkey = (RSAPublicKey)kp.getPublic();
-		publicKey = pubkey.getEncoded();
-		
-		RSAPrivateKey prikey = (RSAPrivateKey)kp.getPrivate();
-		privateKey = prikey.getEncoded();
+		return kp;
 	}
 
 	

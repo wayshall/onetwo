@@ -18,7 +18,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
-import org.onetwo.common.utils.propconf.PropConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -71,7 +71,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 	
 	@Override
-	protected PluginInfo buildPluginInfo(PropConfig prop){
+	protected PluginInfo buildPluginInfo(JFishProperties prop){
 		PluginInfo info = new JFishPluginInfo();
 		info.init(prop);
 		return info;

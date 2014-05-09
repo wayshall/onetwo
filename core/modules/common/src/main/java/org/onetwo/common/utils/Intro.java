@@ -298,7 +298,7 @@ public class Intro<T> {
 	 * @param propValues
 	 * @return
 	 */
-	public T newFrom(Map<String, ?> propValues){
+	public T newFrom(Map<?, ?> propValues){
 		T bean = newInstance();
 
 		Collection<String> fieldNames = ReflectUtils.findInstanceFieldNames(clazz, Set.class);

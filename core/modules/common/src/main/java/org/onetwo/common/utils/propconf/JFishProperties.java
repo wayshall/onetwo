@@ -1,24 +1,449 @@
 package org.onetwo.common.utils.propconf;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-public class JFishProperties {
+import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.Expression;
+import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.SimpleBlock;
+import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	private PropertiesWraper config;
-	private PropertiesWraper properties;
+@SuppressWarnings({"unchecked", "rawtypes", "serial"})
+public class JFishProperties extends Properties implements VariableSupporter {
+	
+	public static final JFishProperties wrap(Properties properties){
+		return new JFishProperties(true, properties);
+	}
+	
+	private static Comparator<String> NAME_LENGTH_COMPARATOR = new Comparator<String>() {
 
-	public PropertiesWraper getProperties() {
-		return properties;
+		@Override
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
+		}
+		
+	};
+
+	private SimpleBlock<String, Map<String, String>> startWithBlock = new SimpleBlock<String, Map<String, String>>() {
+		@Override
+		public Map<String, String> execute(String keyStartWith) {
+			Map<String, String> values = LangUtils.newHashMap();
+			for(Enumeration<String> ekey = configNames(); ekey.hasMoreElements();){
+				String key = ekey.nextElement();
+				if(key.startsWith(keyStartWith)){
+					String val = getVariable(key);
+					key = key.substring(keyStartWith.length());
+					values.put(key, val);
+				}
+			}
+			return values;
+		}
+	};
+	
+	private SimpleBlock<String[], List<String>> splitBlock = new SimpleBlock<String[], List<String>>() {
+
+		@Override
+		public List<String> execute(String[] key) {
+			List<String> listValue = LangUtils.newArrayList();
+			String value = getVariable(key[0]);
+			if(StringUtils.isBlank(value)){
+				listValue = Collections.EMPTY_LIST;
+			}else{
+				listValue = new ArrayList<String>();
+				String[] strs = StringUtils.split(value, key[1]);
+				for(String str : strs){
+					if(StringUtils.isBlank(str))
+						continue;
+					listValue.add(str.trim());
+				}
+			}
+			return listValue;
+		}
+		
+	};
+	
+	private static final Logger logger = LoggerFactory.getLogger(JFishProperties.class);
+	
+//	protected Properties config = new Properties();
+
+	protected VariableExpositor expositor;
+	
+	protected Expression expression = Expression.AT;
+
+	private Map cache = new HashMap();
+	
+
+	public JFishProperties(Properties... configs) {
+		this(true, configs);
+	}
+	public JFishProperties(boolean cacheable, Properties... configs) {
+//		Assert.notEmpty(configs);
+		setConfigs(configs);
+		this.expositor = new VariableExpositor(this, cacheable);
+	}
+	
+	final public void setConfigs(Properties...configs){
+		clear();
+		for(Properties conf : configs){
+//			this.config.putAll(conf);
+			Enumeration<String> names = (Enumeration<String>)conf.propertyNames();
+			String qname = null;
+			while(names.hasMoreElements()){
+				qname = names.nextElement();
+				/*if(this.config.containsKey(qname)){
+					throw new BaseException("query name ["+qname+"] has already exist!");
+				}*/
+				setProperty(qname, conf.getProperty(qname));
+			}
+		}
 	}
 
-	public void setProperties(PropertiesWraper propertiesWraper) {
-		this.properties = propertiesWraper;
+
+	public boolean load(String srcpath){
+		File file = null;
+		boolean succeed = false;
+		String filepath = srcpath;
+		try {
+			if (filepath.indexOf(".")==-1)
+				filepath += PropUtils.CONFIG_POSTFIX;
+			file = new File(filepath);
+			if (!file.exists()) {
+				if (filepath.indexOf(':') == -1) {
+					filepath = FileUtils.getResourcePath(this.getClass().getClassLoader(), filepath);
+					file = new File(filepath);
+				}
+			}
+			if(file==null || !file.exists()){
+				logger.info("1. file not exist : " + (file==null?"null":file.getPath()));
+				InputStream fin = getInputStream(filepath);
+				if(fin==null){
+					throw new FileNotFoundException("no stream: " + filepath);
+				}
+				PropUtils.loadProperties(fin, this);
+			}else{
+				PropUtils.loadProperties(file, this);
+			}
+			succeed = true;
+		} catch (Exception e) {
+			InputStream in = null;
+			try {
+				if(logger.isInfoEnabled()){
+					logger.error("load config error: " + e.getMessage());
+					logger.info("try to load config by stream : " + filepath);
+				}
+				in = this.getClass().getClassLoader().getResourceAsStream(srcpath);
+				load(in);
+				succeed = true;
+			} catch (Exception e1) {
+				throw new BaseException("load config error: " + filepath, e);
+			} finally{
+				IOUtils.closeQuietly(in);
+			}
+		}finally{
+			logger.info("load config finished : "+succeed);
+		}
+		return succeed;
+	}
+	
+	protected InputStream getInputStream(String path) throws Exception{
+		if(FileUtils.isJarURL(path)){
+			URL url = new URL(path);
+			URLConnection con = url.openConnection();
+			try {
+				return con.getInputStream();
+			}
+			catch (IOException ex) {
+				if (con instanceof HttpURLConnection) {
+					((HttpURLConnection) con).disconnect();
+				}
+				throw ex;
+			}
+		}else{
+			return new FileInputStream(new File(path));
+		}
 	}
 
-	public PropertiesWraper getConfig() {
-		return config;
+	public List<String> sortedKeys(){
+		List<String> keys = new ArrayList<String>();
+		Enumeration<String> keyNames = (Enumeration<String>)configNames();
+		while(keyNames.hasMoreElements()){
+			keys.add(keyNames.nextElement());
+		}
+		Collections.sort(keys, NAME_LENGTH_COMPARATOR);
+		return keys;
+	}
+	
+	public Object remove(Object key){
+		this.cache.remove(key);
+		return super.remove(key);
+	}
+	
+	protected void putInCache(String key, Object value){
+		this.cache.put(key, value);
+	}
+	
+	protected Object getFromCache(String key){
+		return cache.get(key);
 	}
 
-	public void setConfig(PropertiesWraper config) {
-		this.config = config;
+	public List<String> getStringList(String key, String split) {
+		return getPropertyWithSplit(key, split);
+	}
+
+	
+	public Map<String, String> getPropertiesStartWith(String keyStartWith) {
+		return getFromCache(keyStartWith, startWithBlock, keyStartWith);
+	}
+
+	protected <K, T> T getFromCache(String key, SimpleBlock<K, T> block, K k) {
+		T cacheValue = (T)getFromCache(key);
+		
+		
+		cacheValue = block.execute(k);
+		
+		putInCache(key, cacheValue);
+		return cacheValue;
+	}
+
+	public List<String> getPropertyWithSplit(String key, String split) {
+		return getFromCache(key, splitBlock, new String[]{key, split});
+		/*List<String> listValue = (List<String>)getFromCache(key);
+		if(listValue!=null)
+			return listValue;
+		
+//		String value = getProperty(key);
+		String value = getVariable(key);
+		if(StringUtils.isBlank(value)){
+			listValue = Collections.EMPTY_LIST;
+		}else{
+			listValue = new ArrayList<String>();
+			String[] strs = StringUtils.split(value, split);
+			for(String str : strs){
+				if(StringUtils.isBlank(str))
+					continue;
+				listValue.add(str.trim());
+			}
+		}
+		putInCache(key, listValue);
+		return listValue;*/
+	}
+
+	public String getProperty(String key, String defaultValue) {
+		String value = this.getProperty(key);
+		return StringUtils.isBlank(value) ? defaultValue : value;
+	}
+
+	/*public Enumeration<String> keys() {
+		return (Enumeration<String>) config.propertyNames();
+	}*/
+
+	public String getVariable(String key) {
+		return getVariable(key, false);
+	}
+
+	public String getVariable(String key, boolean checkCache) {
+		String value = super.getProperty(key);
+		//
+		if (StringUtils.isNotBlank(value) && expositor!=null) {
+			value = this.expositor.explainVariable(value, checkCache);
+		}
+		return StringUtils.trimToEmpty(value);
+	}
+	
+	public String formatVariable(String key, Object...values){
+		String str = getVariable(key);
+		if(this.expression.isExpresstion(str))
+			str = this.expression.parse(str, values);
+		return str;
+	}
+
+	/*public String getProperty(String key) {
+		return super.getProperty(key);
+	}*/
+
+	public String getAndThrowIfEmpty(String key) {
+		String val = getProperty(key);
+		if(StringUtils.isBlank(val))
+			LangUtils.throwBaseException("can find the value for key: " + key);
+		return val;
+	}
+
+    public String getProperty(String key) {
+    	return StringUtils.trimToEmpty(super.getProperty(key));
+    }
+	/*public String getProperty(String key, boolean checkCache) {
+		return this.getVariable(key, checkCache);
+	}*/
+
+	public Integer getInteger(String key, Integer def) {
+		String value = this.getProperty(key);
+		if (StringUtils.isBlank(value)) {
+			return def;
+		}
+		Integer integer = null;
+		try {
+			integer = new Integer(value);
+		} catch (Exception e) {
+			integer = def;
+		}
+		return integer;
+	}
+	
+	public int getInt(String key){
+		return this.getInteger(key);
+	}
+	
+	public int getInt(String key, int def){
+		return this.getInteger(key, def);
+	}
+
+	public Integer getInteger(String key) {
+		return getInteger(key, Integer.valueOf(0));
+	}
+
+	public Class getClass(String key, Class cls) {
+		Collection<Class> clses =  this.getClasses(key, cls);
+		if(clses!=null){
+			Iterator<Class> it = clses.iterator();
+			if(it.hasNext())
+				return it.next();
+		}
+		return null;
+	}
+
+	public Collection<Class> getClasses(String key) {
+		return this.getClasses(key, (Class[])null);
+	}
+
+	public Collection<Class> getClasses(String key, Class... defClasses) {
+		//cache
+		List<Class> classes = (List<Class>) getFromCache(key);
+		if(classes!=null)
+			return classes;
+		classes = new ArrayList<Class>();
+		String strs = this.getVariable(key);
+		
+		try {
+			if(StringUtils.isBlank(strs))
+				classes = MyUtils.asList(defClasses);
+			else{
+				String[] classNames = StringUtils.split(strs, ",");
+				Class clazz = null;
+				for(String clsName : classNames){
+					clazz = ReflectUtils.loadClass(clsName.trim());
+					if(!classes.contains(clazz))
+						classes.add(clazz);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		this.putInCache(key, classes);
+		
+		return classes;
+	}
+
+	public List<Class> getClassList(String key) {
+		//cache
+		List<Class> classes = (List<Class>) getFromCache(key);
+		if(classes!=null)
+			return classes;
+		
+		String value = this.getVariable(key);
+		
+		if(StringUtils.isBlank(value))
+			return null;
+		String[] valueses = value.split(",");
+		if(valueses==null || valueses.length<1)
+			return null;
+		
+		classes = new ArrayList<Class>();
+		for(String v : valueses){
+			if(StringUtils.isBlank(v))
+				continue;
+			classes.add(ReflectUtils.loadClass(v.trim()));
+		}
+		
+		this.putInCache(key, classes);
+		
+		return classes; 
+	}
+
+	public Long getLong(String key, Long def) {
+		String value = this.getProperty(key);
+		if (StringUtils.isBlank(value)) {
+			return def;
+		}
+		Long longValue = null;
+		try {
+			longValue = new Long(value);
+		} catch (Exception e) {
+			longValue = def;
+		}
+		return longValue;
+	}
+	
+
+	public Boolean getBoolean(String key) {
+		return getBoolean(key, false);
+	}
+
+	public Boolean getBoolean(String key, boolean def) {
+		String value = this.getProperty(key);
+		if (StringUtils.isBlank(value))
+			return def;
+		Boolean booleanValue = false;
+		try {
+			booleanValue = Boolean.parseBoolean(value);
+		} catch (Exception e) {
+			booleanValue = def;
+		}
+		return booleanValue;
+	}
+
+	public Date getDate(String key, Date def) {
+		String value = this.getProperty(key);
+		Date date = DateUtil.parse(value);
+		if(date==null)
+			date = def;
+		return date;
+	}
+
+	public synchronized void clear() {
+		super.clear();
+		if(expositor!=null)
+			this.expositor.clear();
+		if(cache!=null)
+			this.cache.clear();
+	}
+	
+	public Enumeration configNames() {
+		return keys();
 	}
 }

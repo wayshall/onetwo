@@ -5,20 +5,21 @@ import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 
-abstract public class SpringConfigApplicationContextLoader extends AbstractContextLoader {
+public class SpringConfigApplicationContextLoader extends AbstractContextLoader {
 
-	abstract protected Class<?>[] getClassArray();
-	abstract protected String getAppEnvironment();
+	protected Class<?>[] getClassArray(){ return null; };
+	protected String getAppEnvironment(){ return ""; };
 	
 	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
-		SpringConfigApplicationContext context = createContext();
+		AbstractRefreshableConfigApplicationContext context = createContext();
 		return context;
 	}
 
-	protected SpringConfigApplicationContext createContext(){
+	protected AbstractRefreshableConfigApplicationContext createContext(){
 		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
 		context.setAppEnvironment(getAppEnvironment());
 		if(!LangUtils.isEmpty(getClassArray()))

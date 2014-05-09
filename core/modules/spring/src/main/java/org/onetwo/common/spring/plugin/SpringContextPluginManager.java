@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
-import org.onetwo.common.utils.propconf.PropConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
-import org.onetwo.common.utils.propconf.VariablePropConifg;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -67,10 +67,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 			@Override
 			public void doIt(Resource pluginFile) throws Exception {
-				VariablePropConifg vconfig = new VariablePropConifg();
+				Properties vconfig = new Properties();
 				PropUtils.loadProperties(pluginFile.getInputStream(), vconfig);
-				PropConfig prop = new PropConfig(vconfig, true);
-				vconfig.setPropConfig(prop);
+				JFishProperties prop = new JFishProperties(true, vconfig);
 				
 				PluginInfo plugin = buildPluginInfo(prop);
 				logger.info("found plugin["+plugin+"]..." );
@@ -97,7 +96,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 		logger.info("================ jfish plugins ================");
 	}
 	
-	protected PluginInfo buildPluginInfo(PropConfig prop){
+	protected PluginInfo buildPluginInfo(JFishProperties prop){
 		PluginInfo info = new PluginInfo();
 		info.init(prop);
 		return info;

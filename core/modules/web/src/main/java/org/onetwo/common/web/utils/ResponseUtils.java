@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.StringUtils;
@@ -24,6 +25,12 @@ import org.springframework.util.Assert;
 abstract public class ResponseUtils {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(ResponseUtils.class);
+
+	public static final String TEXT_TYPE = "text/plain; charset=UTF-8";
+	public static final String JSON_TYPE = "application/json; charset=UTF-8";
+	public static final String XML_TYPE = "text/xml; charset=UTF-8";
+	public static final String HTML_TYPE = "text/html; charset=UTF-8";
+	public static final String JS_TYPE = "text/javascript";
 	
 	public static final String COOKIE_PATH = "/";
 	public static final String COOKIE_DOMAIN;
@@ -211,6 +218,58 @@ abstract public class ResponseUtils {
 		out.println("</script>");
 		if (flush)
 			out.flush();
+	}
+
+
+	public static void renderJsonp(HttpServletResponse response, final String callbackName, final Object params) {
+		String jsonParam = JsonMapper.DEFAULT_MAPPER.toJson(params);
+		renderJsonp(response, callbackName, jsonParam);
+	}
+	
+	public static void renderJsonp(HttpServletResponse response, HttpServletRequest request, final String callbackParam) {
+		String callback = request.getParameter(callbackParam);
+		callback = StringUtils.isBlank(callback)?"callback":callback;
+		StringBuilder result = new StringBuilder().append(callback).append("();");
+		render(response, result.toString(), JS_TYPE, true);
+	}
+	
+	public static void renderJsonp(HttpServletResponse response, final String callbackName, final String jsonParam) {
+		StringBuilder result = new StringBuilder().append(callbackName).append("(").append(jsonParam).append(");");
+		render(response, result.toString(), JS_TYPE, true);
+	}
+	
+	public static void renderText(HttpServletResponse response, String text){
+		render(response, text, null, false);
+	}
+	
+	public static void renderJs(HttpServletResponse response, String text){
+		render(response, text, JS_TYPE, true);
+	}
+	
+	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){
+		try {
+			if(!StringUtils.isBlank(contentType))
+				response.setContentType(contentType);
+			else
+				response.setContentType(TEXT_TYPE);
+
+			if (noCache) {
+				response.setHeader("Pragma", "No-cache");
+				response.setHeader("Cache-Control", "no-cache");
+				response.setDateHeader("Expires", 0);
+			}
+			PrintWriter pr = response.getWriter();
+			pr.write(text);
+			pr.flush();
+		} catch (Exception e) {
+			logger.error("render error: " + e.getMessage(), e);
+		}
+	}
+
+	public static void addP3PHeader(HttpServletResponse response){
+		response.addHeader("P3P", "CP=\"NON DSP COR CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa CONa HISa TELa OTPa OUR UNRa IND UNI COM NAV INT DEM CNT PRE LOC\"");
+//		response.addHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
+//		response.addHeader("P3P", "CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
 	}
 
 	public static void main(String[] args) {

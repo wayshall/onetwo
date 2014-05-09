@@ -6,7 +6,7 @@ import javax.crypto.Cipher;
 
 import org.onetwo.common.exception.BaseException;
 
-abstract public class AbstractEncryptCoder implements EncryptCoder{
+abstract public class AbstractEncryptCoder<T> implements EncryptCoder<T>{
 
 	abstract protected String getAlgorithmCipher();
 	
