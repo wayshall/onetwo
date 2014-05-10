@@ -32,7 +32,7 @@ abstract public class ResponseUtils {
 	public static final String HTML_TYPE = "text/html; charset=UTF-8";
 	public static final String JS_TYPE = "text/javascript";
 	
-	public static final String COOKIE_PATH = "/";
+	public static final String COOKIE_PATH;
 	public static final String COOKIE_DOMAIN;
 	// public static final String COOKIE_DOMAIN =
 	// "";//BaseSiteConfig.getInstance().getCookieDomain();
@@ -42,14 +42,18 @@ abstract public class ResponseUtils {
 		DateFormat df = new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US);
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		COOKIE_DATA_FORMAT = df;
-		
+
 		String domain = "";
+		String path = "";
 		try {
 			domain = BaseSiteConfig.getInstance().getCookieDomain();
+			path = BaseSiteConfig.getInstance().getCookiePath();
+			path = StringUtils.appendEndWith(path, "/");
 		} catch (Exception e) {
 			logger.error("use default domain,  because read domain path error : "+e.getMessage());
 		}
 		COOKIE_DOMAIN = domain;
+		COOKIE_PATH = path;
 	}
 
 	/****
