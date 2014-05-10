@@ -16,6 +16,7 @@ import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerView;
 import org.onetwo.common.spring.web.mvc.CodeMessager;
@@ -205,6 +206,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Bean(name = "freemarkerSetting")
 	public Properties freemarkerSetting() {
 		Properties prop = SpringUtils.createProperties("/mvc/freemarker.properties", true);
+		if(!prop.containsKey(FtlUtils.CONFIG_CLASSIC_COMPATIBLE)){
+			prop.setProperty(FtlUtils.CONFIG_CLASSIC_COMPATIBLE, "true");
+		}
 		return prop;
 	}
 

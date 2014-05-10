@@ -38,6 +38,8 @@ final public class FtlUtils {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(FtlUtils.class);
 	public static final BeansWrapper BEAN_WRAPPER = new BeansWrapper();
+	
+	public static final String CONFIG_CLASSIC_COMPATIBLE = "classic_compatible";
 
 	static {
 		BEAN_WRAPPER.setSimpleMapWrapper(true);
