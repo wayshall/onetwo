@@ -1,6 +1,3 @@
-<%@page import="com.qyscard.webapp.model.admin.vo.ExtMenuModel"%>
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ include file="/common/taglibs.jsp" %>
 
 
 <!DOCTYPE html>
@@ -15,6 +12,7 @@
 	    <meta name="author" content="">
 		
 		<import:js name="ext-all" module="extjs"/>
+		<script type="text/javascript" src="${siteConfig.jsPath}/extjs/ext-all.js"></script>
 		<link rel="stylesheet" type="text/css" href="${siteConfig.jsPath}/extjs/resources/ext-theme-${theme }/ext-theme-${theme }-all.css" />
 		
 		<script type="text/javascript">
@@ -197,13 +195,8 @@
 	
     <div id="north" class="" style="margin-top: 5px;margin-bottom: 3px;margin-right: 10px">
     <div  style="float:left">
-    	【${loginUserInfo.nickName}】，你好！欢迎使用${loginUserInfo.appName==null?"B卡管理系统":loginUserInfo.appName}&nbsp;
+    	【${(loginUserInfo.name)!"游客"}】，你好！欢迎使用${title}&nbsp;
     </div>
-    <c:if test="${not empty loginUserInfo.logoUrl}">
-    <div  style="float:left">
-    	<img src="${webConfig.uploadVisitPath}${loginUserInfo.logoUrl}" height="23"/>
-    </div>
-    </c:if>
    	<div  style="float:right;">
    		<strong><a href="javascript:logout();">注销</a></strong>
    	</div>

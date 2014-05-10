@@ -7,7 +7,7 @@ import org.onetwo.plugins.admin.model.vo.ExtMenuModel;
 
 public interface MenuItemRegistry {
 	
-	Collection<ExtMenuModel> findAllMenus();
-	Collection<ExtMenuModel> findUserMenus(UserDetail loginUser);
+	public Collection<ExtMenuModel> findAllMenus();
+	public Collection<ExtMenuModel> findUserMenus(UserDetail loginUser);
 
 }
