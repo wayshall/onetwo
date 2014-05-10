@@ -38,7 +38,7 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 			if(e instanceof ClassNotFoundException){
 				msg = "client no mapped user detail class " + (BaseSiteConfig.getInstance().isProduct()?"":e.getMessage());
 			}
-			throw new ServiceException("sso client get login user error : {} ", msg);
+			throw new ServiceException("sso client get login user error : " + msg, e);
 		}
 	}
 

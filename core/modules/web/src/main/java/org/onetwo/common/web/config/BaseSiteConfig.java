@@ -36,6 +36,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final Integer DEFAULT_TOKEN_TIMEOUT = 60*4;
 
 	public static final String COOKIE_DOMAIN = "cookie.domain";
+	public static final String COOKIE_PATH = "cookie.path";
 	public static final String COOKIE_P3P = "cookie.p3p";
 	public static final String APP_URL_POSTFIX = "app.url.postfix";
 	
@@ -259,6 +260,10 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public String getCookieDomain(){
 		return getProperty(COOKIE_DOMAIN, "");
+	}
+	
+	public String getCookiePath(){
+		return getProperty(COOKIE_PATH, this.getContextPath());
 	}
 	
 	public boolean isCookieP3p(){
