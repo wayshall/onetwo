@@ -12,8 +12,8 @@
 	    <meta name="author" content="">
 		
 		<import:js name="ext-all" module="extjs"/>
-		<script type="text/javascript" src="${siteConfig.jsPath}/extjs/ext-all.js"></script>
-		<link rel="stylesheet" type="text/css" href="${siteConfig.jsPath}/extjs/resources/ext-theme-${theme }/ext-theme-${theme }-all.css" />
+		<script type="text/javascript" src="${pluginConfig.jsPath}/extjs/ext-all.js"></script>
+		<link rel="stylesheet" type="text/css" href="${pluginConfig.jsPath}/extjs/resources/ext-theme-${theme }/ext-theme-${theme }-all.css" />
 		
 		<script type="text/javascript">
 

@@ -40,6 +40,7 @@
 				<module>../batch</module>
 				<module>../jasper</module>
 				<module>../security</module>
+				<module>../admin</module>
 	  	</modules>
 	  </profile>
 	</profiles>
