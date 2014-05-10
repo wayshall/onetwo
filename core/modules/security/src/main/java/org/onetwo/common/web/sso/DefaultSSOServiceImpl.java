@@ -11,6 +11,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.remoting.RemoteConnectFailureException;
 
 public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements InitializingBean, Ordered {
 
@@ -34,11 +35,17 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 		try {
 			return ssoUserService.getCurrentLoginUserByToken(token);
 		} catch (Exception e) {
-			String msg = e.getMessage();
+			String msg = "";
 			if(e instanceof ClassNotFoundException){
 				msg = "client no mapped user detail class " + (BaseSiteConfig.getInstance().isProduct()?"":e.getMessage());
+				throw new ServiceException(msg);
+			}else if(e instanceof RemoteConnectFailureException){
+				msg = "connect to sso server error: " + e.getMessage();
+				throw new ServiceException(msg);
+			}else{
+				msg = e.getMessage();
+				throw new ServiceException("sso client get login user error : " + msg, e);
 			}
-			throw new ServiceException("sso client get login user error : " + msg, e);
 		}
 	}
 
