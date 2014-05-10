@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 //@ComponentScan(basePackageClasses=AdminPlugin.class)
-public class AdminContext {
+public class AdminWebContext {
 
 	@Bean
 	public AdminController adminController(){

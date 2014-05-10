@@ -6,9 +6,10 @@ final public class AdminPluginConfig {
 
 	public static final String ADMIN_INDEX_TITLE = "admin.index.title";
 	public static final String ADMIN_INDEX_VIEW = "admin.index.view";
-	public static final String ADMIN_ANONYMOUS_BROW = "admin.anonymous.brow";
+	public static final String ADMIN_INDEX_ENABLE = "admin.index.enable";
 	
 	private static final AdminPluginConfig instance = new AdminPluginConfig();
+	private BaseSiteConfig config = BaseSiteConfig.getInstance();
 	
 	private AdminPluginConfig(){
 	}
@@ -17,14 +18,14 @@ final public class AdminPluginConfig {
 		return instance;
 	}
 
-	public boolean isAnonymousBrow(){
-		return !BaseSiteConfig.getInstance().isProduct();// && BaseSiteConfig.getInstance().getBoolean("admin.anonymous.brow");
+	public boolean isAdminIndexEnable(){
+		return config.getBoolean(ADMIN_INDEX_ENABLE, false);
 	}
 	
 	public String getTitle(){
 		return BaseSiteConfig.getInstance().getProperty("admin.index.title", "管理后台");
 	}
 	public String getAdminView(){
-		return BaseSiteConfig.getInstance().getProperty("admin.index.view", "manage-ext");
+		return BaseSiteConfig.getInstance().getProperty("admin.index.view");
 	}
 }

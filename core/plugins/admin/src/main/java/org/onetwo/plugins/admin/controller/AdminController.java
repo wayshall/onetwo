@@ -1,13 +1,12 @@
 package org.onetwo.plugins.admin.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
-import org.onetwo.common.spring.web.utils.JFishWebUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.UserDetail;
@@ -25,26 +24,27 @@ public class AdminController extends PluginSupportedController {
 	private MenuItemRegistry menuItemRegistry;
 
 	@RequestMapping(method=RequestMethod.GET)
-	public ModelAndView ext(String theme){
+	public ModelAndView ext(String theme, UserDetail userDetail){
+		if(StringUtils.isBlank(theme))
+			theme = "neptune";
+		
 		Collection<ExtMenuModel> menus = null;
 		
-		if(AdminPluginConfig.getInstance().isAnonymousBrow()){
+		if(userDetail==null){
 			menus = menuItemRegistry.findAllMenus();
 		}else{
-			UserDetail loginUser = JFishWebUtils.getUserDetail();
-			if(loginUser.isSystemRootUser()){
-				menus = menuItemRegistry.findAllMenus();
-				
-			}else{
-				menus = menuItemRegistry.findUserMenus(loginUser);
-			}
+			menus = menuItemRegistry.findUserMenus(userDetail);
 		}
-		final List<ExtMenuModel> extMenus = LangUtils.newArrayList(menus.size());
+		
+		final List<ExtMenuModel> extMenus = new ArrayList<ExtMenuModel>(menus);
 		TreeBuilder<ExtMenuModel> builder = new TreeBuilder<ExtMenuModel>(extMenus);
 		List<ExtMenuModel> menuTree = builder.buidTree();
 
 		String title = AdminPluginConfig.getInstance().getTitle();
 		String viewName = AdminPluginConfig.getInstance().getAdminView();
+		if(StringUtils.isBlank(viewName))
+			viewName = pluginView("manage-ext");
+		
 		if(menuTree.isEmpty())
 			return mv(viewName, "treePanelDatas", "[]", "title", title);
 		
@@ -80,9 +80,6 @@ public class AdminController extends PluginSupportedController {
 		treePanelDatas.append("]");
 //		String treePanelDatas = FastUtils.jsonMapperIgnoreNull().toJson(array);
 //		System.out.println("json: " + treePanelDatas);
-
-		if(StringUtils.isBlank(theme))
-			theme = "neptune";
 		
 		return mv(viewName, "root", root, "treePanelDatas", treePanelDatas, "theme", theme, "title", title);
 	}
