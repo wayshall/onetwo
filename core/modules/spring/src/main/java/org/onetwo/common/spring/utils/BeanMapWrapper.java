@@ -2,6 +2,9 @@ package org.onetwo.common.spring.utils;
 
 import java.util.Map;
 
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessor;
@@ -10,6 +13,21 @@ import org.springframework.beans.PropertyValues;
 import org.springframework.core.convert.TypeDescriptor;
 
 public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor {
+	
+	private class MapTokens {
+		final private String key;
+		final private String propertyPath;
+		public MapTokens(String key, String propertyPath) {
+			super();
+			this.key = key;
+			this.propertyPath = propertyPath;
+		}
+		
+		public boolean hasPropertyPath(){
+			return StringUtils.isNotBlank(propertyPath);
+		}
+		
+	}
 
 //	private BeanWrapper beanWrapper;
 	private Map<Object, Object> data;
@@ -26,6 +44,14 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 		setAutoGrowNestedPaths(true);
 	}
 	
+	private MapTokens parseMapExp(String exp){
+		int dotIndex = exp.indexOf('.');
+		if(dotIndex!=-1){
+			return new MapTokens(exp.substring(0, dotIndex), exp.substring(dotIndex+1));
+		}else{
+			return new MapTokens(exp, null);
+		}
+	}
 
 	public void setPropertyValue(String propertyName, Object value) throws BeansException {
 		if(mapData){
@@ -37,7 +63,14 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 	
 	public Object getPropertyValue(String propertyName) throws BeansException {
 		if(mapData){
-			return data.get(propertyName);
+			MapTokens token = parseMapExp(propertyName);
+			if(token.hasPropertyPath()){
+				Object value = data.get(token.key);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(value);
+				return bw.getPropertyValue(token.propertyPath);
+			}else{
+				return data.get(propertyName);
+			}
 		}else{
 			return super.getPropertyValue(propertyName);
 		}
