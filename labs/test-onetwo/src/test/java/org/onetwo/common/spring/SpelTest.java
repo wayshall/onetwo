@@ -2,6 +2,8 @@ package org.onetwo.common.spring;
 
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.expression.Expression;
@@ -31,11 +33,36 @@ public class SpelTest {
 		TestBean tb = new TestBean();
 		tb.aaa = "cccc";
 		Map map = LangUtils.asMap("ccc", "dddd");
+//		map.put("tb", tb);
+		map.put("map", LangUtils.asMap("ccc", "dddd", "tb", tb));
 		elcontext.setVariables(map);
 		elcontext.setRootObject(tb);
 		Expression exp = parser.parseExpression("'bb{ccc}'");
-		String val = (String)exp.getValue(elcontext, String.class);
+		Object val = (String)exp.getValue(elcontext, String.class);
+		Assert.assertEquals("bb{ccc}", val);
+		
+		exp = parser.parseExpression("#ccc");
+		val = (String)exp.getValue(elcontext, String.class);
+		Assert.assertEquals("dddd", val);
+		
+		exp = parser.parseExpression("#map['tb'].aaa");
+		val = (String)exp.getValue(elcontext, String.class);
+		Assert.assertEquals("cccc", val);
+	}
+
+	@Test
+	public void test2(){
+		StandardEvaluationContext elcontext = new StandardEvaluationContext();
+		TestBean tb = new TestBean();
+		tb.aaa = "cccc";
+		Map map = LangUtils.asMap("ccc", "dddd");
+//		map.put("tb", tb);
+		map.put("map", LangUtils.asMap("ccc", "dddd", "tb", tb));
+		elcontext.setRootObject(map);
+		Expression exp = parser.parseExpression("['ccc']");
+		Object val = (String)exp.getValue(elcontext, String.class);
 		System.out.println("val: " + val);
+		Assert.assertEquals("dddd", val);
 	}
 
 }
