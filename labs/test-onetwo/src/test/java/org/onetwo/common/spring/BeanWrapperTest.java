@@ -1,14 +1,11 @@
 package org.onetwo.common.spring;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 import test.entity.RoleEntity;
 import test.entity.UserEntity;
@@ -79,7 +76,7 @@ public class BeanWrapperTest {
 		bw.setPropertyValue("id", "11");
 		Assert.assertTrue(user.getId()==11L);
 		
-		bw.setPropertyValue("roles[0][name][id]", "test");
+		bw.setPropertyValue("roles[0][name]", "test");
 		RoleEntity role = user.getRoles().get(0);
 		Assert.assertEquals("test", role.getName());
 	}
@@ -87,31 +84,39 @@ public class BeanWrapperTest {
 	@Test
 	public void testBwMap(){
 		Map<String, Object> map = LangUtils.newHashMap();
-		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		UserEntity user = new UserEntity();
+		user.setUserName("userName1");
+		map.put("user", user);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		
-		bw.setPropertyValue("[id]", 11L);
+		bw.setPropertyValue("id", 11L);
 		Assert.assertEquals(map.get("id"), 11L);
 		
 		bw.setPropertyValue("name", "test");
 		Assert.assertEquals("test", map.get("name"));
+		
 	}
+
 	
 	@Test
-	public void testNestedPathPattern(){
-		final Pattern NESTED_PATH_PATTERN = Pattern.compile("(\\[([a-z]+\\w)\\])");
+	public void testBwMap2(){
+		Map<String, Object> map = LangUtils.newHashMap();
+		UserEntity user = new UserEntity();
+		user.setUserName("userName1");
+		map.put("user", user);
+		map.put("userMap", map);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map);
+		bw.setAutoGrowNestedPaths(true);
 		
-		String input = "aaa[0][bbbb]";
-		Matcher matcher = NESTED_PATH_PATTERN.matcher(input);
-		boolean rs = matcher.find();
-		Assert.assertTrue(rs);
-		Assert.assertEquals("bbbb", matcher.group(2));
+		Object userName = bw.getPropertyValue("user.userName");
+		System.out.println("userName:" + userName);
+		Assert.assertEquals("userName1", userName);
 		
-		String str = input.replaceFirst("(\\[([a-z]+\\w)\\])", ".$2");
-		Assert.assertEquals("aaa[0].bbbb", str);
-		
-		JFishBeanWrapper jbw = new JFishBeanWrapper(null);
-		str = jbw.translatePropertyPath(input);
-		Assert.assertEquals("aaa[0].bbbb", str);
+		userName = bw.getPropertyValue("userMap.user.userName");
+		System.out.println("userName:" + userName);
+		Assert.assertEquals("userName1", userName);
 	}
 }
