@@ -51,20 +51,8 @@
 	
 	<dependency>
 	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-entity</artifactId>
-	  <version>${onetwo.version}</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-orm</artifactId>
 	  <version>${onetwo.jfish.version}</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-hibernate</artifactId>
-	  <version>${onetwo.version}</version>
 	</dependency>
 	
 	<!-- ejb jpa -->
