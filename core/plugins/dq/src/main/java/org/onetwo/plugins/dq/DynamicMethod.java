@@ -82,6 +82,7 @@ public class DynamicMethod {
 	}
 	
 	private boolean addAndCheckParamValue(Name name, List<Object> values, String pname, Object pvalue){
+		//TODO 参数ifParamNull已过时，将来注释下面这段代码
 		IfNull ifnull = name.ifParamNull();
 		if(pvalue==null){
 			switch (ifnull) {
@@ -93,6 +94,7 @@ public class DynamicMethod {
 					break;
 			}
 		}
+		//end
 		values.add(pname);
 		values.add(pvalue);
 		return true;
@@ -112,7 +114,21 @@ public class DynamicMethod {
 				parserContext.putAll((ParserContext) pvalue);
 			}else if(mp.hasParameterAnnotation(Name.class)){
 				Name name = mp.getParameterAnnotation(Name.class);
-				if(name.queryParam()){
+				if(name.renamedUseIndex()){
+					List<?> listValue = LangUtils.asList(pvalue);
+					int index = 0;
+					//parem0, value0, param1, value1, ...
+					for(Object obj : listValue){
+						if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
+							index++;
+						}
+					}
+					values.add(mp.getParameterName());
+					values.add(listValue);
+				}else{
+					addAndCheckParamValue(name, values, mp.getParameterName(), pvalue);
+				}
+				/*if(name.queryParam()){
 					if(name.renamedUseIndex()){
 						List<?> listValue = LangUtils.asList(pvalue);
 						int index = 0;
@@ -121,9 +137,9 @@ public class DynamicMethod {
 							if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
 								index++;
 							}
-							/*values.add(mp.getParameterName()+index);
+							values.add(mp.getParameterName()+index);
 							values.add(obj);
-							index++;*/
+							index++;
 						}
 						//parserContext
 						if(parserContext==null)
@@ -139,7 +155,7 @@ public class DynamicMethod {
 					if(parserContext==null)
 						parserContext = ParserContext.create();
 					parserContext.put(mp.getParameterName(), pvalue);
-				}
+				}*/
 					
 			}else{
 				values.add(mp.getParameterName());
