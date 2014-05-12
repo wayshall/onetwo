@@ -8,6 +8,8 @@ import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.db.sql.QueryOrderByable;
@@ -74,8 +76,38 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		return dataQuery;
 	}
 	
-//	abstract protected String parseSql(String queryName, Map<Object, Object> params);
 	protected DataQuery createDataQueryIfNecessarry(){
+		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, parserContext, resultClass, ascFields, desFields, params);
+		SqlAndValues sqlAndValues = sqlGen.generatSql();
+		if(sqlAndValues.isListValue()){
+			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
+			
+			int position = 0;
+			for(Object value : sqlAndValues.asList()){
+				dataQuery.setParameter(position++, value);
+			}
+			
+			setLimitResult();
+			return dataQuery;
+		}
+
+		String parsedSql = sqlAndValues.getParsedSql();
+		dataQuery = createDataQuery(parsedSql, resultClass);
+		
+		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
+		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
+		for(String parameterName : sqlWrapper.getParameterNames()){
+			Object value = paramBean.getPropertyValue(parameterName);
+			dataQuery.setParameter(parameterName, value);
+		}
+		
+		setLimitResult();
+		
+		return dataQuery;
+	}
+	
+//	abstract protected String parseSql(String queryName, Map<Object, Object> params);
+	protected DataQuery createDataQueryIfNecessarry2(){
 		String parsedSql = null;
 		if(info.getFileSqlParserType()==FileSqlParserType.IGNORENULL){
 			String sql = countQuery?info.getCountSql():info.getSql();
@@ -204,6 +236,10 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		return this;
 	}
 
+	/****
+	 * 根据key类型设置参数、返回结果类型、排序……等等
+	 * @param params
+	 */
 	public void setQueryAttributes(Map<Object, Object> params) {
 		Object key;
 		for(Entry<Object, Object> entry : params.entrySet()){
