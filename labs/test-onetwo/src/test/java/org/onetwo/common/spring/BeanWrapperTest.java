@@ -1,5 +1,6 @@
 package org.onetwo.common.spring;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -118,5 +119,42 @@ public class BeanWrapperTest {
 		userName = bw.getPropertyValue("userMap.user.userName");
 		System.out.println("userName:" + userName);
 		Assert.assertEquals("userName1", userName);
+	}
+
+
+	@Test
+	public void testBwList(){
+		List<RoleEntity> list = LangUtils.newArrayList();
+		UserEntity user = new UserEntity();
+		user.setUserName("userName1");
+		RoleEntity role = new RoleEntity();
+		role.setName("roleName1");
+		list.add(role);
+		user.setRoles(list);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(user);
+		bw.setAutoGrowNestedPaths(true);
+		
+		Object userName = bw.getPropertyValue("roles[0].name");
+		System.out.println("roleName1:" + userName);
+		Assert.assertEquals("roleName1", userName);
+		
+	}
+	@Test
+	public void testBwList2(){
+		List<UserEntity> userList = LangUtils.newArrayList();
+		UserEntity user = new UserEntity();
+		user.setUserName("userName1");
+		userList.add(user);
+		Map<String, Object> map = LangUtils.newHashMap();
+		map.put("users", userList);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map);
+		bw.setAutoGrowNestedPaths(true);
+		
+		Object userName = bw.getPropertyValue("users[0].userName");
+		System.out.println("userName:" + userName);
+		Assert.assertEquals("userName1", userName);
+		
 	}
 }

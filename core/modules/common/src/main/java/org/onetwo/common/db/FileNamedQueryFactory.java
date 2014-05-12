@@ -23,8 +23,12 @@ public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 	public void initQeuryFactory(CreateQueryable createQueryable);
 	
 	public NamespacePropertiesManager<PT> getNamespacePropertiesManager();
-	
+
 	public DataQuery createQuery(String queryName, Object... args);
+	
+	public FileNamedSqlGenerator<PT> createFileNamedSqlGenerator(String queryName);
+	
+//	public JFishQueryValue createQueryValue();
 	
 	public DataQuery createQuery(String queryName, PlaceHolder type, Object... args);
 

@@ -7,8 +7,10 @@ import org.onetwo.common.db.AbstractFileNamedQueryFactory;
 import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
+import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.jdbc.DataBase;
+import org.onetwo.common.spring.sql.DefaultFileNamedSqlGenerator;
 import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
@@ -88,6 +90,13 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	public DataQuery createQuery(String queryName, Object... args) {
 		return createHibernateFileQuery( queryName, args);
 	}
+	
+	@Override
+	public FileNamedSqlGenerator<HibernateNamedInfo> createFileNamedSqlGenerator(String queryName) {
+		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
+		FileNamedSqlGenerator<HibernateNamedInfo> g = new DefaultFileNamedSqlGenerator<HibernateNamedInfo>(nameInfo, false, parser);
+		return g;
+	}
 
 	@Override
 	public DataQuery createCountQuery(String queryName, Object... args) {
@@ -134,8 +143,5 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	public NamespacePropertiesManager<HibernateNamedInfo> getNamespacePropertiesManager() {
 		return sqlFileManager;
 	}
-
-
-
 	
 }
