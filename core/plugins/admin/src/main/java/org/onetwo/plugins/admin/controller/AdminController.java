@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.UserDetail;
@@ -35,7 +36,7 @@ public class AdminController extends PluginSupportedController {
 		}else{
 			menus = menuItemRegistry.findUserMenus(userDetail);
 		}
-		
+		menus = CUtils.emptyIfNull(menus);
 		final List<ExtMenuModel> extMenus = new ArrayList<ExtMenuModel>(menus);
 		TreeBuilder<ExtMenuModel> builder = new TreeBuilder<ExtMenuModel>(extMenus);
 		List<ExtMenuModel> menuTree = builder.buidTree();
