@@ -4,6 +4,6 @@ import org.onetwo.common.utils.UserDetail;
 
 public interface SSOUserService {
 
-	public UserDetail getCurrentLoginUserByToken(String token);
+	public UserDetail getCurrentLoginUserByToken(String token, String sign);
 	
 }
