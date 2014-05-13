@@ -11,6 +11,8 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.admin.model.service.MenuItemRegistry;
 import org.onetwo.plugins.admin.model.vo.ExtMenuModel;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
@@ -24,6 +26,7 @@ public class AdminController extends PluginSupportedController {
 	@Resource
 	private MenuItemRegistry menuItemRegistry;
 
+	@Authentic(checkLogin=true, ignore=true)
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView ext(String theme, UserDetail userDetail){
 		if(StringUtils.isBlank(theme))
@@ -31,7 +34,7 @@ public class AdminController extends PluginSupportedController {
 		
 		Collection<ExtMenuModel> menus = null;
 		
-		if(userDetail==null){
+		if(userDetail==null && BaseSiteConfig.getInstance().isDev()){
 			menus = menuItemRegistry.findAllMenus();
 		}else{
 			menus = menuItemRegistry.findUserMenus(userDetail);
