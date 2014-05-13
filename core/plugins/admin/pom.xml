@@ -26,6 +26,12 @@
 	  <version>${onetwo.jfish.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-security</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
