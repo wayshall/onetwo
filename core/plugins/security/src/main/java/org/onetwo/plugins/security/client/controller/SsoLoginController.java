@@ -15,12 +15,18 @@ import org.onetwo.plugins.security.client.SsoClientConfig;
 import org.onetwo.plugins.security.client.vo.SsoLoginParams;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/client")
 public class SsoLoginController extends PluginSupportedController {
 
 	@Resource
 	private SsoClientConfig ssoClientConfig;
+
+	@RequestMapping("login")
+	public ModelAndView login(){
+		return pluginMv("login");
+	}
 	
 	@RequestMapping("ssologin")
 //	@ResponseBody

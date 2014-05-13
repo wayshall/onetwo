@@ -4,10 +4,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;
-import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.s2.security.AuthenticUtils;
+import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.plugins.security.common.SsoConfig;
-import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.ui.ModelMap;
 
 public class SecurityWebExceptionResolver extends WebExceptionResolver {
@@ -21,14 +21,14 @@ public class SecurityWebExceptionResolver extends WebExceptionResolver {
 		if(StringUtils.isBlank(returnUrl)){
 			returnUrl = ssoConfig.getReturnUrl();
 		}*/
-		/*AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
-		String view = context!=null?context.getConfig().getRedirect():"";
+		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
+		String view = context!=null?context.getConfig().getRedirect():ssoConfig.getLoginUrl();
 		if(StringUtils.isBlank(view)){
 			view = ssoConfig.getLoginUrl();
-		}*/
-		String view = ssoConfig.getLoginUrl();
+		}
+//		String view = ssoConfig.getLoginUrl();
 //		view = TagUtils.appendParam(view, "returnUrl", LangUtils.encodeUrl(ssoConfig.getReturnUrl()));
-		view = TagUtils.appendParam(view, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
+//		view = TagUtils.appendParam(view, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
 		return "redirect:"+view;
 	}
 }
