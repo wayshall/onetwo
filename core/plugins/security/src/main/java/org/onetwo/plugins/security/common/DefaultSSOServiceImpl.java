@@ -1,4 +1,4 @@
-package org.onetwo.common.web.sso;
+package org.onetwo.plugins.security.common;
 
 import javax.annotation.Resource;
 
@@ -8,6 +8,9 @@ import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.sso.AbstractSSOServiceImpl;
+import org.onetwo.common.web.sso.SSOUserService;
+import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -21,6 +24,9 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 	@Resource
 	private ApplicationContext applicationContext;
 	
+	@Resource
+	private SsoConfig ssoConfig;
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(ssoUserService==null)
@@ -33,7 +39,10 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 	@Override
 	protected UserDetail getCurrentLoginUserByCookieToken(String token) {
 		try {
-			return ssoUserService.getCurrentLoginUserByToken(token);
+			if(token==null)
+				return null;
+			String sign = SecurityPluginUtils.sign(token, ssoConfig.getSignKey());
+			return ssoUserService.getCurrentLoginUserByToken(token, sign);
 		} catch (Exception e) {
 			String msg = "";
 			if(e instanceof ClassNotFoundException){
