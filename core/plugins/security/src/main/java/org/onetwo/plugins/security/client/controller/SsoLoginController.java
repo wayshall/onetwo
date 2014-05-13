@@ -13,6 +13,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.plugins.security.client.SsoClientConfig;
 import org.onetwo.plugins.security.client.vo.SsoLoginParams;
+import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/client")
@@ -38,12 +39,12 @@ public class SsoLoginController extends PluginSupportedController {
 			ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 			return ;
 		}
-		/*if(!checkSign(login)){
+		if(!checkSign(login)){
 			logger.error("check sign error");
 			dr = DataResult.createFailed("sign error");
 			ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 			return ;
-		}*/
+		}
 		ResponseUtils.addP3PHeader(response);
 		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
 		logger.info("set cookies succeed!");
@@ -51,10 +52,7 @@ public class SsoLoginController extends PluginSupportedController {
 		ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 	}
 	
-	/*private boolean checkSign(SsoLoginParams login){
-		String source = LangUtils.appendNotBlank(LangUtils.decodeUrl(login.getTk()), "|", ssoConfig.getSignKey());
-		boolean valid = MDFactory.createSHA().checkEncrypt(source, login.getSign());
-		logger.error("check sign, source[{}] : {}", source, login.getSign());
-		return valid;
-	}*/
+	private boolean checkSign(SsoLoginParams login){
+		return SecurityPluginUtils.checkSign(login.getTk(), ssoClientConfig.getSignKey(), login.getSign());
+	}
 }
