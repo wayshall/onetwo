@@ -13,6 +13,7 @@ import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.plugins.security.server.SsoServerConfig;
 import org.onetwo.plugins.security.server.vo.CdLoginParams;
+import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,8 +34,8 @@ public class CrossdomainController extends AbstractBaseController {
 			token = ResponseUtils.getUnescapeCookieValue(request, UserDetail.TOKEN_KEY);
 			url = TagUtils.appendParam(url, "tk", token);
 			url = TagUtils.appendParam(url, "callback", params.getCallback());
-//			String sign = sign(token);
-//			url = TagUtils.appendParam(url, "sign", sign);
+			String sign = sign(token);
+			url = TagUtils.appendParam(url, "sign", sign);
 			
 		}else if("logout".equals(params.getAction())){
 			url = ssoServerConfig.getClientLogoutUrl(params.getSite());
@@ -48,12 +49,9 @@ public class CrossdomainController extends AbstractBaseController {
 		return redirectTo(url);
 	}
 	
-	/*private String sign(String token){
-		String source = LangUtils.appendNotBlank(token, "|", ssoServerConfig.getSignKey());
-		String entry = MDFactory.createSHA().encryptWithSalt(source);
-		logger.error("sign token[{}] : {}", source, entry);
-		return entry;
-	}*/
+	private String sign(String token){
+		return SecurityPluginUtils.sign(token, ssoServerConfig.getSignKey());
+	}
 
 
 }

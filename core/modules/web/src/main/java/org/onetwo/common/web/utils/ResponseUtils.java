@@ -114,7 +114,7 @@ abstract public class ResponseUtils {
 	 * @param name
 	 */
 	public static void removeHttpOnlyCookie(HttpServletResponse response, String name) {
-		setHttpOnlyCookie(response, name, "", COOKIE_PATH, 0, COOKIE_DOMAIN);
+		setHttpOnlyCookie(response, name, "", COOKIE_PATH, -1, COOKIE_DOMAIN);
 	}
 
 	/**
