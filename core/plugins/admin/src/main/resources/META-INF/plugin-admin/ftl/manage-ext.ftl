@@ -11,13 +11,16 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 		
-		<import:js name="ext-all" module="extjs"/>
 		<script type="text/javascript" src="${pluginConfig.jsPath}/extjs/ext-all.js"></script>
 		<link rel="stylesheet" type="text/css" href="${pluginConfig.jsPath}/extjs/resources/ext-theme-${theme }/ext-theme-${theme }-all.css" />
 		
 		<script type="text/javascript">
 
 		mainPage = true;
+		
+		function redirect(url){
+			location.href = url;
+		}
 
 		function addTimestamp(url){
 			if(url.indexOf('?')==-1){
@@ -82,29 +85,10 @@
 		}
 		
 		function logoutHandler(win){
-			Ext.getCmp('logoutForm').submit({
-				url:'<t:url href="/ajaxLogout"/>',
-				method:'post',
-				success: function(form, action){
-					if(win) win.destroy();
-					Ext.Msg.alert("成功", action.result.message, function(){
-						location.href = action.result.data.redirectUrl;
-					});
-				},
-				failure: function(form, action){
-					if(win) win.destroy();
-					if(action.result){
-						Ext.Msg.alert("错误", action.result.message);
-					}else{
-						var msg = "";
-						for(p in action)
-							msg += action[p];
-						Ext.Msg.alert("错误", p);
-					}
-					location.href = "${siteConfig.baseURL}/login";
-				}
-			});
+			document.getElementById('userLogoutForm').submit();
+			return false;
 		}
+		
 		Ext.require(['*']);
 		var panels = ${treePanelDatas};
 		
@@ -155,23 +139,11 @@
 	                deferredRender: false,
 	                activeTab: 0,     // first tab initially active
 	                items: [{
-	                	id:'readCardTab',
-	                   	contentEl: 'readCardPage',
-	                    title: '读卡窗口',
-	                    autoScroll: true
-	                },
-	                {
 	                	id:'cententTab',
 	                   	contentEl: 'contentPage',
 	                    title: '内容窗口',
 	                    autoScroll: true
-	                },
-	                {
-	                	id:'helpTab',
-	                   	contentEl: 'helpPage',
-	                    title: '帮助',
-	                    autoScroll: true
-	                }
+	                	}
 	                ]
 	            })]
 	        });
@@ -195,7 +167,7 @@
 	
     <div id="north" class="" style="margin-top: 5px;margin-bottom: 3px;margin-right: 10px">
     <div  style="float:left">
-    	【${(loginUserInfo.name)!"游客"}】，你好！欢迎使用${title}&nbsp;
+    	【${(loginUserInfo.nickName)!"游客"}】，你好！欢迎使用${title}&nbsp; 
     </div>
    	<div  style="float:right;">
    		<strong><a href="javascript:logout();">注销</a></strong>
@@ -223,6 +195,12 @@
     </div>
     <div id="south" class="x-hide-display">
         <p>south - generally for informational stuff, also could be for status bar</p>
+    </div>
+    
+    <div style="display:hidden">
+    	<form id="userLogoutForm" action="${siteConfig.config['sso.logout.url']}" method="post">
+    		<input name="clientCode" type="hidden" value="${siteConfig.appCode}" />
+    	</form>
     </div>
 	</body>
 	
