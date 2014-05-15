@@ -127,7 +127,7 @@ public class SpringApplication {
 	
 	public <T> List<T> getBeans(Class<T> clazz) {
 //		Map map = getAppContext().getBeansOfType(clazz);
-		Map map = BeanFactoryUtils.beansOfTypeIncludingAncestors(getAppContext(), clazz);
+		Map map = SpringUtils.getBeansAsMap(getAppContext(), clazz);
 		if(map==null || map.isEmpty())
 			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>(map.values());

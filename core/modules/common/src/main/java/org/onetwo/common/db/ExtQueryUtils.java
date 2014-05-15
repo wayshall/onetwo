@@ -146,6 +146,7 @@ public abstract class ExtQueryUtils {
 		
 		int unionIndex = ArrayUtils.indexOf(tokens, "union");
 		if(unionIndex!=-1){
+			sql = StringUtils.substringBefore(sql, " order by ", unionIndex);
 			sql = "select count(*) from ( " + sql + " ) count_view";
 			return sql;
 		}

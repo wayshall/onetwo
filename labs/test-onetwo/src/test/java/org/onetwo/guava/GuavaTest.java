@@ -38,6 +38,9 @@ public class GuavaTest {
 		return users;
 	}
 	
+	/***
+	 * 差集
+	 */
 	@Test
 	public void testDiffence(){
 		HashSet<Integer> alist = Sets.newHashSet(1, 2, 3, 5);
@@ -51,6 +54,18 @@ public class GuavaTest {
 		System.out.println("dlist:" + dlist);
 		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 6));
 		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 7));
+	}
+	
+
+	@Test
+	public void testIntersection(){
+		HashSet<Integer> alist = Sets.newHashSet(1, 2, 3, 5);
+		HashSet<Integer> blist = Sets.newHashSet(1, 2, 6, 7);
+		Set<Integer> interSet = Sets.intersection(alist, blist);
+		System.out.println("interSet:" + interSet);
+		Assert.assertEquals(interSet.size(), 2);
+		Assert.assertTrue(ArrayUtils.contains(interSet.toArray(), 1));
+		Assert.assertTrue(ArrayUtils.contains(interSet.toArray(), 2));
 	}
 	
 	@Test

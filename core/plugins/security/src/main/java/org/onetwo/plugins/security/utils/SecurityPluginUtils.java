@@ -18,6 +18,10 @@ final public class SecurityPluginUtils {
 		return baseUrl + SecurityPlugin.getInstance().getPluginMeta().getPluginInfo().getContextPath() + "/" + SSO_USERSERVICE_EXPORTER_NAME;
 	}
 	
+	public static String getBasedPluginUrl(String baseUrl){
+		return baseUrl + SecurityPlugin.getInstance().getPluginMeta().getPluginInfo().getContextPath();
+	}
+	
 	public static String getClientLoginUrl(String baseUrl){
 		return baseUrl + SecurityPlugin.getInstance().getPluginMeta().getPluginInfo().getContextPath() + "/client/ssologin";
 	}

@@ -3,6 +3,7 @@ package org.onetwo.plugins.security.server.service.impl;
 import javax.annotation.Resource;
 
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.sso.CurrentLoginUserParams;
 import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.sso.SSOUserService;
@@ -22,7 +23,9 @@ public class ServerSSOUserServiceImpl implements SSOUserService {
 	private SsoServerConfig ssoServerConfig;
 
 	@Override
-	public UserDetail getCurrentLoginUserByToken(String token, String sign) {
+	public UserDetail getCurrentLoginUser(CurrentLoginUserParams params) {
+		String token = params.getToken();
+		String sign = params.getSign();
 		boolean valid = SecurityPluginUtils.checkSign(token, ssoServerConfig.getSignKey(), sign);
 		if(!valid){
 			logger.error("check sign error, token[{}], sign[{}]", token, sign);

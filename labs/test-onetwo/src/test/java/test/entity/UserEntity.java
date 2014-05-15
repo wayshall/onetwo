@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.fish.annotation.JFishEntityListeners;
 
 @SuppressWarnings("serial")
@@ -20,7 +21,7 @@ import org.onetwo.common.fish.annotation.JFishEntityListeners;
 @org.nutz.dao.entity.annotation.Table("T_USER")
 @SequenceGenerator(name="seqUser", sequenceName="SEQ_T_USER")
 @JFishEntityListeners(TestEntityListener.class)
-public class UserEntity extends BaseEntity  {
+public class UserEntity extends BaseEntity implements IBaseEntity {
 
 	@org.nutz.dao.entity.annotation.Id
 	@org.nutz.dao.entity.annotation.Column("id")

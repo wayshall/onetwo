@@ -1674,7 +1674,7 @@ public class ReflectUtils {
 			if(AnnotationUtils.containsAny(annos, classes))
 				return;
 			
-			Object val = ReflectUtils.getProperty(source, prop);
+			Object val = ReflectUtils.getProperty(source, prop.getName());
 			if(isIgnoreValue(val))
 				return ;
 			

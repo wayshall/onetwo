@@ -26,7 +26,7 @@ public class AdminController extends PluginSupportedController {
 	@Resource
 	private MenuItemRegistry menuItemRegistry;
 
-	@Authentic(checkLogin=true, ignore=true)
+	@Authentic(checkLogin=true, ignore=true, redirect="")
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView ext(String theme, UserDetail userDetail){
 		if(StringUtils.isBlank(theme))

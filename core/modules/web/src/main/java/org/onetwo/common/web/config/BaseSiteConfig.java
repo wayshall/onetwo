@@ -230,11 +230,11 @@ public class BaseSiteConfig extends AppConfig {
 		return this.getJsPath()+"/jqueryui";
 	}
 	
-	public String[] getFilterInitializers(){
+	/*public String[] getFilterInitializers(){
 		String str = getVariable(FILTER_INITIALIZERS);
 		String[] initers = StringUtils.split(str, ",");
 		return initers;
-	}
+	}*/
 
 
 	public String getContextPath() {
