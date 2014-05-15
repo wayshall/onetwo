@@ -7,6 +7,11 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+/****
+ * call onMvcContextClasses
+ * @author weishao
+ * 
+ */
 @SuppressWarnings("serial")
 public class JFishDispatcher extends DispatcherServlet {
 	

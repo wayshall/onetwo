@@ -8,6 +8,7 @@ import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
+import org.onetwo.common.log.MyLoggerFactory;
 
 public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
 	protected T info;
@@ -85,6 +86,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 			parsedSql = countQuery?info.getCountSql():info.getSql();
 			sv = new SqlAndValues(true, parsedSql, params);
 		}
+		MyLoggerFactory.getLogger(this.getClass()).info("parsed sql : {}", parsedSql);
 
 		return sv;
 	}

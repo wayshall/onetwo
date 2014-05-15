@@ -1,7 +1,9 @@
 package org.onetwo.common.utils;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +12,63 @@ import javax.persistence.Id;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.profiling.UtilTimerStack;
 
+import test.entity.BaseEntity;
 import test.entity.UserEntity;
 
 public class ReflectUtilsTest {
 	
+	@Test
+	public void testSuperClass(){
+		Class<?> sclass = UserEntity.class.getSuperclass();
+		System.out.println("super class: " +sclass);
+		Type type = UserEntity.class.getGenericSuperclass();
+		System.out.println("super type: " +type);
+
+		Class<?>[] intes = UserEntity.class.getInterfaces();
+		for(Class c :intes){
+			System.out.println("c:" + c);
+		}
+		Type[] types = UserEntity.class.getGenericInterfaces();
+		for(Type c : types){
+			System.out.println("types:" + c);
+		}
+		
+		sclass = BaseEntity.class.getSuperclass();
+		System.out.println("BaseEntity super class: " +sclass);
+		type = BaseEntity.class.getGenericSuperclass();
+		System.out.println("BaseEntity super type: " +type);
+		
+		intes = BaseEntity.class.getInterfaces();
+		for(Class c :intes){
+			System.out.println("BaseEntity getInterfaces:" + c);
+		}
+		types = BaseEntity.class.getGenericInterfaces();
+		for(Type c : types){
+			System.out.println("BaseEntity getGenericInterfaces:" + c);
+		}
+		
+
+		sclass = IBaseEntity.class.getSuperclass();
+		System.out.println("IBaseEntity super class: " +sclass);
+		type = IBaseEntity.class.getGenericSuperclass();
+		System.out.println("IBaseEntity super type: " +type);
+		
+		intes = IBaseEntity.class.getInterfaces();
+		for(Class c :intes){
+			System.out.println("IBaseEntity getInterfaces:" + c);
+		}
+		types = IBaseEntity.class.getGenericInterfaces();
+		for(Type c : types){
+			System.out.println("IBaseEntity getGenericInterfaces:" + c);
+		}
+		intes = Serializable.class.getInterfaces();
+		Assert.assertTrue(intes.length==0);
+		types = Serializable.class.getGenericInterfaces();
+		Assert.assertTrue(types.length==0);
+	}
 
 	@Test
 	public void testSimple(){
@@ -28,6 +81,7 @@ public class ReflectUtilsTest {
 				LangUtils.println("${0}--${1}", index, pnames);
 			}
 		}
+		
 	}
 	
 	@Test

@@ -20,7 +20,6 @@ import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
-import org.springframework.core.OrderComparator;
 
 
 @SuppressWarnings("unchecked")
@@ -43,8 +42,9 @@ public abstract class IgnoreFiler implements Filter{
 	 * 是否过滤后缀
 	 */
 	protected boolean filterSuffix = false;
-	
-	protected List<FilterInitializer> filterInitializers;
+
+	protected List<WebFilterInitializers> filterInitializers;
+	protected List<WebFilter> webFilters;
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
@@ -98,29 +98,17 @@ public abstract class IgnoreFiler implements Filter{
 	}
 	
 
-	public String[] getFilterInitializers(FilterConfig config){
+/*	public String[] getWebFilters(FilterConfig config){
 		return null;
-	}
+	}*/
 	
 	protected void onInit(FilterConfig config){
-		String[] strs = getFilterInitializers(config);
-		if(strs==null || strs.length==0)
-			return ;
-		if("auto".equals(strs[0].trim())){
-			filterInitializers = (List<FilterInitializer>) SpringApplication.getInstance().getBeans(FilterInitializer.class);
-		}else{
-			filterInitializers = new ArrayList<FilterInitializer>(strs.length);
-			FilterInitializer initer = null;
-			for(String bn : strs){
-				initer = (FilterInitializer)SpringApplication.getInstance().getBean(bn);
-				filterInitializers.add(initer);
-			}
-		}
+		filterInitializers = (List<WebFilterInitializers>) SpringApplication.getInstance().getBeans(WebFilterInitializers.class);
+		webFilters = (List<WebFilter>) SpringApplication.getInstance().getBeans(WebFilter.class);
 		
-		if(filterInitializers==null || filterInitializers.isEmpty())
-			return ;
+		/*if(filterInitializers==null || filterInitializers.isEmpty())
+			return ;*/
 
-		OrderComparator.sort(filterInitializers);
 		/*
 		Collections.sort(filterInitializers, new Comparator<FilterInitializer>(){
 			@Override
@@ -129,26 +117,26 @@ public abstract class IgnoreFiler implements Filter{
 			}
 		});*/
 		
-		for(FilterInitializer filterIniter : filterInitializers){
+		for(WebFilterInitializers filterIniter : filterInitializers){
 			filterIniter.onInit(config);
 		}
 	}
 	
 
 	protected void onFilter(HttpServletRequest request, HttpServletResponse response){
-		if(filterInitializers==null || filterInitializers.isEmpty())
+		if(webFilters==null || webFilters.isEmpty())
 			return ;
-		for(FilterInitializer filterIniter : filterInitializers){
-			filterIniter.onFilter(request, response);
+		for(WebFilter webfilter : webFilters){
+			webfilter.onFilter(request, response);
 		}
 	}
 	
 
 	protected void onFinally(HttpServletRequest request, HttpServletResponse response){
-		if(filterInitializers==null || filterInitializers.isEmpty())
+		if(webFilters==null || webFilters.isEmpty())
 			return ;
-		for(FilterInitializer filterIniter : filterInitializers){
-			filterIniter.onFinally(request, response);
+		for(WebFilter webfilter : webFilters){
+			webfilter.onFinally(request, response);
 		}
 	}
 

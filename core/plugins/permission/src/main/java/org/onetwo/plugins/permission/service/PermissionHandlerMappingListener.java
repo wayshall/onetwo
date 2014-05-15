@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
@@ -30,6 +31,9 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 			if(entry.getValue().getMethodAnnotation(ByMenuClass.class)!=null){
 				ByMenuClass menuClass = entry.getValue().getMethodAnnotation(ByMenuClass.class);
 				for(Class<?> codeClass : menuClass.codeClass()){
+					if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null)
+						continue;
+					
 					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
 					if(perm==null)
 						throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());

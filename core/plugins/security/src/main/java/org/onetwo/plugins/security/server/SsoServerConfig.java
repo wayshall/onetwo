@@ -22,16 +22,16 @@ public class SsoServerConfig extends SsoConfig {
 		return getProperty("services."+name);
 	}
 
-	public String getLoginUrl(){
-		String url = getProperty("login.url");
+	public String getServerLoginUrl(){
+		String url = getProperty("server.login.url");
 		if(StringUtils.isBlank(url)){
 			url = BaseSiteConfig.getInstance().getBaseURL()+"/login";
 		}
 		return url;
 	}
 
-	public String getLogoutUrl(){
-		String url = getProperty("logout.url");
+	public String getServerLogoutUrl(){
+		String url = getProperty("server.logout.url");
 		if(StringUtils.isBlank(url)){
 			url = BaseSiteConfig.getInstance().getBaseURL()+"/logout";
 		}

@@ -73,14 +73,18 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
 		if(entityClass!=null){
-			if(sessionFactory.getClassMetadata(entityClass)!=null){
-				query.addEntity(entityClass);
-			}else{
-				if(LangUtils.isSimpleType(entityClass))
-					query.setResultTransformer(new SingleColumnTransformer(entityClass));
-				else
-					query.setResultTransformer(new RowToBeanTransformer(entityClass));
-			}
+			if(LangUtils.isSimpleType(entityClass))
+				query.setResultTransformer(new SingleColumnTransformer(entityClass));
+			else
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+		}
+		DataQuery dquery = new HibernateQueryImpl(query);
+		return dquery;
+	}
+	public DataQuery createEntitySQLQuery(String sqlString, Class<?>... entityClass){
+		SQLQuery query = getSession().createSQLQuery(sqlString);
+		for(Class<?> e : entityClass){
+			query.addEntity(e);
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;

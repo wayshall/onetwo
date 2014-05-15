@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.sso.CurrentLoginUserParams;
 import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.UserDetail;
@@ -30,19 +31,22 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(ssoUserService==null)
-			ssoUserService = SpringUtils.getBean(applicationContext, SSOUserService.class);
+			ssoUserService = SpringUtils.getHighestOrder(applicationContext, SSOUserService.class);
 		Assert.notNull(ssoUserService);
 	}
 	
 	
 
 	@Override
-	protected UserDetail getCurrentLoginUserByCookieToken(String token) {
+	public UserDetail getCurrentLoginUserByCookieToken(String token) {
 		try {
 			if(token==null)
 				return null;
 			String sign = SecurityPluginUtils.sign(token, ssoConfig.getSignKey());
-			return ssoUserService.getCurrentLoginUserByToken(token, sign);
+			CurrentLoginUserParams params = new CurrentLoginUserParams(token);
+			params.setSign(sign);
+			params.setClientCode(BaseSiteConfig.getInstance().getAppCode());
+			return ssoUserService.getCurrentLoginUser(params);
 		} catch (Exception e) {
 			String msg = "";
 			if(e instanceof ClassNotFoundException){
