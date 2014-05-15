@@ -85,19 +85,21 @@ var Common = function () {
 			toolbarBatchButton : ".dg-toolbar-button-batch"
 		},
 		
-		handleFormFunc : function(form, restMethod, type){
+		handleFormFunc : function(form, restMethod){
 			return function(){
 
 				form = form || $(this).parents("form:first")[0];
 				
-				
-				var checkfields = $(jfish.cssKeys.checkAll, form);
-				if(checkfields.length>0){
-					var values = $(form).checkboxValues(true);
-//	    			var table = $(form).children("table:first");
-					if(!values || values.length==0){
-						$.showTipsWindow("请先选择数据！");
-						return false;
+				var nocheckbox = $(this).attr('data-nocheckbox') || false;
+				if(!nocheckbox){
+					var checkfields = $(jfish.cssKeys.checkAll, form);
+					if(checkfields.length>0){
+						var values = $(form).checkboxValues(true);
+//		    			var table = $(form).children("table:first");
+						if(!values || values.length==0){
+							$.showTipsWindow("请先选择数据！");
+							return false;
+						}
 					}
 				}
 				//if(confirm("确定删除选中的？")){
@@ -123,6 +125,8 @@ var Common = function () {
 //					$(form).attr("method", "post")
 					if(amethod!='get')
 						$(form).attr("method", "post")
+					else
+						$(form).attr("method", "get")
 				}
 
 				jfish.appendHiddenByDataParams(this, form);
@@ -182,6 +186,8 @@ var Common = function () {
 		
 		init : function(){
 			$(jfish.cssKeys.linkButton).live("click", function(){
+				if($(this).is(jfish.cssKeys.formButton))
+					return false;
 				var confirmMsg = $(this).attr('data-confirm')
 				if(confirmMsg && confirmMsg!="false"){
 					if(!confirm(confirmMsg))
@@ -313,7 +319,100 @@ var Common = function () {
 			}
 			
 			return false;
+		},
+		
+
+		ajaxSelecter : function(config){
+			return new jfish._ajaxSelecter(config);
+		},
+		
+		_ajaxSelecter : function(config){
+			var _this = this;
+			var aconfig = config || {};
+			this.parent = $('#'+config['el']);
+			this.actived = this.parent.length>0;
+			
+			/*if(!$.nodeName(this.parent[0], "select")){
+				throw "element must be a select!"
+			}*/
+			var data_key = aconfig['data_key'];
+			var data_value = aconfig['data_value'];
+			
+			
+			_this.activedInst = function(){return _this.actived?_this:null}
+			
+			_this.notify_to = function(childConfig){
+				var childConfig = childConfig || {};
+				$(_this.parent).change(function(evt, cb){
+					if(!_this.actived){
+						alert("ajax selecter["+config.el+"] is not actived")
+						return ;
+					}
+					
+					if(!childConfig.el){
+						throw "notify select element has not defined";
+					}
+					var select = $('#'+childConfig.el);
+					select.empty();
+					if(!$(this).val())
+						return;
+					select.attr("disabled", "true");
+					
+					var url = (childConfig.url+$(_this.parent).val()) || alert("notify url can not blank!");
+					var params = childConfig.params || {};
+					var pre_datas = childConfig.options;
+					
+					$.getJSON(url, params, function(json){
+						select.removeAttr("disabled");
+						
+						if(pre_datas && Array.isArray(pre_datas)){
+							for(var i=0; i<pre_datas.length; i++){
+								predata = pre_datas[i];
+								$(select).append("<option value='"+predata[data_value]+"'>"+predata[data_key]+"</option>");
+							}
+						}else{
+							$(select).append("<option value=''>---请选择</option>");
+						}
+
+						if(json.length<1){
+							alert("没有数据！");
+							return ;
+						}
+						
+						var data;
+						for(var i=0; i<json.length; i++){
+							data = json[i];
+							$(select).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+						}
+//						select.trigger('change');
+						if(cb)
+							cb();
+					});
+				});
+				
+				return _this;
+			};
+
+			_this.loadDatas = function(loadUrl){
+				if(!_this.actived){
+					alert("ajax selecter["+config.el+"] is not actived")
+					return ;
+				}
+				$.getJSON(loadUrl, {}, function(json){
+					if(json.length<1){
+						alert("没有数据！");
+						return ;
+					}
+					for(var i=0; i<json.length; i++){
+						var data = json[i];
+						$(_this.parent).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+					}
+					_this.parent.trigger('change');
+				});
+			} 
+			
 		}
+
 		
 	};
 
