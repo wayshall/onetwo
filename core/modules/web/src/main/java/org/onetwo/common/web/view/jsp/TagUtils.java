@@ -152,7 +152,8 @@ final public class TagUtils {
 
 
 	public static CasualMap filterPageParams(CasualMap params) {
-		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");
+//		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");
+		return params.filter("pageNo", Page.PAGINATION_KEY);
 	}
 	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
 		return csrfPreventor==null?params:params.filter(csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName()));
@@ -187,6 +188,8 @@ final public class TagUtils {
 			str = getQueryStringFilterPageNo(request);
 		} else if (symbol.equals(":post2get")) {
 			str = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor).toParamString();
+		} else if (symbol.equals(":params")) {
+			str = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, csrfPreventor).toParamString();
 		}else{
 			str = symbol;
 		}

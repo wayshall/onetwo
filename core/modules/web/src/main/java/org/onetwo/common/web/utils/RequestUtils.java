@@ -147,7 +147,6 @@ public abstract class RequestUtils {
 		uri += request.getQueryString();
 		return uri;
 	}
-	
 
 	public static CasualMap getPostParametersWithout(HttpServletRequest request, String... prefix){
 		return getParametersWithout(request, prefix).subtract(getGetParameter(request));
