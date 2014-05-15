@@ -384,8 +384,10 @@ public class Intro<T> {
 	}
 	
 	public <E> void copy(E source, E target, PropertyCopyer<PropertyDescriptor> copyer){
-		for(PropertyDescriptor prop : this.propertyDescriptors.values()){
-			copyer.copy(source, target, prop);
+		Collection<String> sourceProperties = ReflectUtils.getIntro(source.getClass()).desribPropertyNames();
+		for(PropertyDescriptor prop : this.propertyDescriptors.values()){//propertyDescriptors is target
+			if(sourceProperties.contains(prop.getName()))
+				copyer.copy(source, target, prop);
 		}
 	}
 	

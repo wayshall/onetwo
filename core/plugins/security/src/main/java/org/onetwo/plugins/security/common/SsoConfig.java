@@ -21,7 +21,7 @@ abstract public class SsoConfig extends JFishProperties {
 	 * sso服务器登录地址
 	 * @return
 	 */
-	abstract public String getLoginUrl();
+	abstract public String getServerLoginUrl();
 	
-	abstract public String getLogoutUrl();
+	abstract public String getServerLogoutUrl();
 }

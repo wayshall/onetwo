@@ -85,9 +85,9 @@ public class BaseInitFilter extends IgnoreFiler {
 		return webConfigProvider==null?null:webConfigProvider.createWebConfig(siteConfig);
 	}
 
-	public String[] getFilterInitializers(FilterConfig config){
+	/*public String[] getWebFilters(FilterConfig config){
 		return getBaseSiteConfig().getFilterInitializers();
-	}
+	}*/
 	
 	
 	protected void printRequestTime(boolean push, HttpServletRequest request){

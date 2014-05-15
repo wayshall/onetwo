@@ -66,6 +66,33 @@ public class AnnotationUtils {
 		return LangUtils.hasElement(props)?props.get(0):null;
 	}
 
+	public static <T extends Annotation> T findAnnotationWithDeclaring(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz==null?null:clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		return (clazz==null || clazz.getDeclaringClass()==null)?null:findAnnotationWithDeclaring(clazz.getDeclaringClass(), annotationClass);
+	}
+
+	public static <T extends Annotation> T findAnnotationWithSupers(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz==null?null:clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		return (clazz==null || clazz.getSuperclass()==Object.class)?null:findAnnotationWithSupers(clazz.getSuperclass(), annotationClass);
+	}
+
+	public static <T extends Annotation> T findAnnotationWithInterfaces(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		Class<?>[] interfaces = clazz.getInterfaces();
+		for(Class<?> interf : interfaces){
+			annotation = findAnnotationWithInterfaces(interf, annotationClass);
+			if(annotation!=null)
+				break;
+		}
+		return annotation;
+	}
+
 	public static <T extends Annotation> T findAnnotation(Class<?> clazz, Class<T> annotationClass) {
 		T annotation = clazz.getAnnotation(annotationClass);
 		return annotation;

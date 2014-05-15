@@ -188,9 +188,7 @@
     <div id="contentPage" class="x-hide-display" style="height:100%;overflow:scroll;overflow-y:hidden">
          <iframe id="contentIframe" name="contentIframe" src="" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
     </div>
-    <div id="helpPage" class="x-hide-display" style="height:100%;overflow:scroll;overflow-y:hidden">
-         <iframe id="contentIframe" name="contentIframe" src="${siteConfig.baseURL }/help/index" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
-    </div>
+   
     <div id="props-panel" class="x-hide-display" style="width:200px;height:200px;overflow:hidden;">
     </div>
     <div id="south" class="x-hide-display">
@@ -198,8 +196,7 @@
     </div>
     
     <div style="display:hidden">
-    	<form id="userLogoutForm" action="${siteConfig.config['sso.logout.url']}" method="post">
-    		<input name="clientCode" type="hidden" value="${siteConfig.appCode}" />
+    	<form id="userLogoutForm" action="${siteConfig.ssoLogoutUrl}" method="post">
     	</form>
     </div>
 	</body>
