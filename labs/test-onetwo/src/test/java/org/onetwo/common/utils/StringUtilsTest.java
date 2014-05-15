@@ -50,6 +50,33 @@ public class StringUtilsTest {
 		rs = StringUtils.getFirstWord(str);
 		Assert.assertEquals("", rs);
 	}
+
 	
+	@Test
+	public void testReplace(){
+		String str = "441827000";
+		String rs = StringUtils.replaceEach(str, new String[]{"0"}, new String[]{""});
+		System.out.println("str: " + rs);
+		Assert.assertEquals("441827", rs);
+		
+		rs = StringUtils.replaceEach(str, new String[]{"0", "44"}, new String[]{"", "22"});
+		System.out.println("str: " + rs);
+		Assert.assertEquals("221827", rs);
+	}
+
+	
+	@Test
+	public void testTrimRight(){
+		String str = "441827000";
+		String rs = StringUtils.trimRight(str, "0");
+		System.out.println("trimRight str: " + rs);
+		Assert.assertEquals("441827", rs);
+		
+		str = "4418247000";
+		rs = StringUtils.trimLeft(str, "4");
+		System.out.println("trimLeft str: " + rs);
+		Assert.assertEquals("18247000", rs);
+		
+	}
 	
 }

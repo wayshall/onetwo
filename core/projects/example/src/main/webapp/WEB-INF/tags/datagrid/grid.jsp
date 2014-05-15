@@ -22,7 +22,10 @@
 	</script>
 </c:if>
 
-<aa:zone name="${_gridBean.ajaxZoneName}">
+<div class="row-fluid">
+<layout:define name="grid_search"/>
+</div>
+
 <div class="row-fluid jfish-container">
 	<div class="block">
 		<div class="navbar navbar-inner block-header">
@@ -48,6 +51,8 @@
 			<layout:define name="grid_custombar"/>
 			</div>
 			
+			
+<aa:zone name="${_gridBean.ajaxZoneName}">
 			<c:if test="${_gridBean.toolbar }">
 			<div class="well">
 				<div class="btn-group pull-right">
@@ -86,7 +91,11 @@
 			<c:if test="${_gridBean.pagination}">
 			<gridRender:pagination action="${_gridBean.actionWithQueryString }" page="${_gridBean.page }" formPagination="${_gridBean.formPagination}" remote="${_gridBean.ajaxSupported}" ajaxName="${_gridBean.ajaxZoneName}"/>
 			</c:if>
-		
+	
+		<script>
+		jQuery("#${formId}").initDatagrid();
+		</script>
+</aa:zone>	
 		</div>
 		</div>
 		</div>
@@ -96,10 +105,6 @@
 		</form>
 	</c:if>
 
-		<script>
-		jQuery("#${formId}").initDatagrid();
-		</script>
 	</div>
 
 </div>
-</aa:zone>
