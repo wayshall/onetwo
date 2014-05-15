@@ -109,6 +109,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	protected <T extends IPermission> T parseMenuClass(Class<?> menuClass, String syscode){
 		IPermission perm;
 		try {
+			if(menuClass.getAnnotation(Deprecated.class)!=null)
+				return null;
 			perm = parsePermission(menuClass, syscode);
 		} catch (Exception e) {
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
@@ -121,6 +123,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
 			IPermission p = parseMenuClass(childCls, syscode);
+			if(p==null)
+				continue;
 			if(p instanceof IFunction){
 				menu.addFunction((IFunction)p);
 			}else{

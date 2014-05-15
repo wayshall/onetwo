@@ -66,10 +66,6 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 //	abstract protected DataQuery createDataQuery(DynamicQuery query);
 //	abstract protected DataQuery createDataQuery(String sql, Class<?> mappedClass);
 
-	protected DataQuery createDataQuery(DynamicQuery query){
-		DataQuery dataQuery = this.baseEntityManager.createSQLQuery(query.getTransitionSql(), query.getEntityClass());;
-		return dataQuery;
-	}
 	
 	protected DataQuery createDataQuery(String sql, Class<?> mappedClass){
 		DataQuery dataQuery = this.baseEntityManager.createSQLQuery(sql, mappedClass);
@@ -118,7 +114,8 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			query.asc(ascFields);
 			query.desc(desFields);
 			query.compile();
-			dataQuery = createDataQuery(query);
+			parsedSql = query.getTransitionSql();
+			dataQuery = createDataQuery(parsedSql, query.getEntityClass());
 			
 			int position = 0;
 			for(Object value : query.getValues()){
@@ -126,6 +123,8 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			}
 			
 			setLimitResult();
+			
+			logger.info("parsed sql : {}", parsedSql);
 			return dataQuery;
 			
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
@@ -168,6 +167,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			dataQuery = createDataQuery(parsedSql, resultClass);
 		}
 
+		logger.info("parsed sql : {}", parsedSql);
 		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
 		BeanWrapper paramBean = SpringUtils.newBeanWrapper(params);
 		for(String parameterName : sqlWrapper.getParameterNames()){
