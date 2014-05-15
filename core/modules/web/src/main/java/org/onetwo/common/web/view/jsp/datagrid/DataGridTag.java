@@ -44,6 +44,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	private DatagridRenderListener datagridRenderListener;
 	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 	
+	private boolean buildQueryString = true;
+	
 	
 	public DataGridTag(){
 		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
@@ -136,6 +138,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			return surl;
 		}
 		if(action.startsWith(":")){
+			this.buildQueryString = false;
 			return TagUtils.parseAction(request, action, this.csrfPreventor);
 		}
 		return action;
@@ -143,6 +146,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 
 	protected String buildQueryString() {
+		if(!buildQueryString)
+			return "";
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 		String str = request.getQueryString();
 		if(StringUtils.isBlank(str))

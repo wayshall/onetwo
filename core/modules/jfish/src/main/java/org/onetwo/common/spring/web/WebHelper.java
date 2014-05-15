@@ -97,6 +97,10 @@ public class WebHelper {
 		return WebContextUtils.getUserDetail(request.getSession());
 	}
 	
+	public UserDetail getCurrentLoginUser(){
+		return WebContextUtils.getUserDetail(request.getSession());
+	}
+	
 	public boolean isLogin(){
 		return getCurrentUserLogin()!=null;
 	}

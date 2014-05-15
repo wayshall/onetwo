@@ -761,6 +761,33 @@ public abstract class StringUtils {
 		return EMPTY;
 	}
 
+
+
+    public static String trimRight(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        String rs = text;
+        while(rs.endsWith(trimstr)){
+        	rs = rs.substring(0, rs.length()-trimstr.length());
+        }
+        return rs;
+    }
+    public static String trimLeft(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        String rs = text;
+        while(rs.startsWith(trimstr)){
+        	rs = rs.substring(trimstr.length());
+        }
+        return rs;
+    }
+
+
+    public static String replaceEach(String text, String search, String replacement) {
+        return replaceEach(text, new String[]{search}, new String[]{replacement}, false, 0);
+    }
+    
+
     public static String replaceEach(String text, String[] searchList, String[] replacementList) {
         return replaceEach(text, searchList, replacementList, false, 0);
     }
