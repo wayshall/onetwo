@@ -1,10 +1,9 @@
 package org.onetwo.common.db;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -18,13 +17,11 @@ import org.onetwo.common.db.ExtQueryUtils.F;
 import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.ejb.jpa.JPASQLSymbolManager;
-import org.onetwo.common.fish.JFishSQLSymbolManagerImpl;
-import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.map.M;
+
+import test.entity.UserEntity;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ExtQueryImplTest {
@@ -177,6 +174,67 @@ public class ExtQueryImplTest {
 //		System.out.println("date: " + q.getSql());
 		String sql = "select object from Object object where object.startTime >= :object_startTime0 and object.startTime <= :object_startTime1 order by object.id desc ";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
+	}
+	
+
+	@Test
+	public void testSelectMap(){
+		//or 示例用法
+		properties.put(K.SELECT, new Object[]{HashMap.class, "aa", "bb"});
+		properties.put("aa", "bb");
+		
+		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
+		q.build();
+		
+		String sql = "select new map(object.aa, object.bb) from Object object where object.aa = :object_aa0 order by object.id desc ";
+		String paramsting = "{object_aa0=bb}";
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+		
+		properties.clear();
+		properties.put(K.SELECT, new Object[]{List.class, "aa", "bb"});
+		properties.put("aa", "bb");
+		
+		q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
+		q.build();
+		
+		sql = "select new list(object.aa, object.bb) from Object object where object.aa = :object_aa0";
+		paramsting = "{object_aa0=bb}";
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+		
+
+		
+		properties.clear();
+		properties.put(K.SELECT, new Object[]{UserEntity.class, "aa", "bb"});
+		properties.put("aa", "bb");
+		
+		q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
+		q.build();
+		
+		sql = "select new UserEntity(object.aa, object.bb) from Object object where object.aa = :object_aa0";
+		paramsting = "{object_aa0=bb}";
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+		
+	}
+	
+
+
+	@Test
+	public void testSelectAlias(){
+		//or 示例用法
+		properties.put(K.SELECT, new Object[]{"aa:a1", "bb:b1"});
+		properties.put("aa", "bb");
+		
+		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
+		q.build();
+		
+		String sql = "select object.aa as a1, object.bb as b1 from Object object where object.aa = :object_aa0 order by object.id desc ";
+		String paramsting = "{object_aa0=bb}";
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+		
 	}
 
 
