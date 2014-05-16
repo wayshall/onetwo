@@ -10,6 +10,7 @@ import java.util.Set;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -116,7 +117,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		select = new StringBuilder();
 		
 		if(getParams().containsKey(K.SQL_SELECT)){
-			Object rawSqlObj = getParams().get(K.SQL_SELECT);
+			Object rawSqlObj = getParams().remove(K.SQL_SELECT);
 			if(rawSqlObj==null)
 				return this;
 			if(!(rawSqlObj instanceof RawSqlWrapper)){
@@ -126,7 +127,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			if(!wrapper.isBlank()){
 				select.append(wrapper.getRawSql());
 			}
-			params.remove(K.SQL_SELECT);
+//			params.remove(K.SQL_SELECT);
 			return this;
 		}
 
@@ -137,33 +138,58 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		}
 
 		String selectKey = K.SELECT;
-		selectValule = params.get(selectKey);
+		selectValule = params.remove(selectKey);
 		if(selectValule==null){
 			selectKey = K.DISTINCT;
-			selectValule = params.get(selectKey);
+			selectValule = params.remove(selectKey);
+		}else{
+			//依然移除distinct，防止select和district都写的情况
+			params.remove(K.DISTINCT);
 		}
-		params.remove(K.DISTINCT);
 		
 		if (selectValule != null) {
-			params.remove(selectKey);
+//			params.remove(selectKey);
 			Object[] selectList = null;
 			if(selectValule instanceof String){
 				selectList = StringUtils.split(selectValule.toString(), ",");
 			}else if(selectValule.getClass().isArray()){
-				selectList = (String[])selectValule;
+				selectList = (Object[])selectValule;
 			}else{
 				selectList = (Object[])LangUtils.asList(selectValule).toArray();
 			}
-			for (int i = 0; i < selectList.length; i++) {
-				if (i != 0)
+			
+			int fieldStartIndex = 0;
+			if(selectList[0] instanceof Class){
+				Class returnClass = (Class) selectList[0];
+				fieldStartIndex = 1;
+				if(Map.class.isAssignableFrom(returnClass)){
+					select.append("new map(");
+				}else if(List.class.isAssignableFrom(returnClass)){
+					select.append("new list(");
+				}else{
+//					throw new BaseException("unsupported class : " + selectList[0]);
+					select.append("new ").append(returnClass.getSimpleName()).append("(");
+				}
+			}
+			for (int i = fieldStartIndex; i < selectList.length; i++) {
+				if (i != fieldStartIndex)
 					select.append(", ");
 
-				select.append(getSelectFieldName(selectList[i].toString()));
+				String[] sfield = StringUtils.split(selectList[i].toString(), ":");
+				if(sfield.length==1){
+					select.append(getSelectFieldName(sfield[0]));
+				}else if(sfield.length==2){
+					select.append(getSelectFieldName(sfield[0])).append(" as ").append(sfield[1]);
+				}else{
+					throw new BaseException("error select field: " + selectList[i]);
+				}
 				/*if(this.alias.equals(selectList[i]))
 					select.append(selectList[i]);
 				else
 					select.append(getFieldName(selectList[i].toString()));*/
 			}
+			if(fieldStartIndex!=0)
+				select.append(")");
 			select.append(" ");
 		} else if(StringUtils.isNotBlank(countValue)){
 			select.append("count(").append(countValue).append(") ");
