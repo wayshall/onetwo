@@ -34,7 +34,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	
 	abstract protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response);
 	
-	protected boolean isValidCsrf(Object controller, HttpServletRequest request){
+	public boolean isValidCsrf(Object controller, HttpServletRequest request){
 		return true;
 	}
 	

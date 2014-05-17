@@ -6,13 +6,9 @@
 
 <c:if test="${row.renderHeader}">
 	<thead>
-		<tr id="${row.id}"
-			name="${row.name}" style="${row.cssStyle}" 
-			class="${row.cssClass}" onclick="${row.onclick}">
+		<tr ${row.gridAttributesHtml}>
 		<c:forEach items="${row.fields}" var="field">
-			<th id="${field.id}" colspan="${field.colspan}"
-				name="${field.name}" style="${field.cssStyle}" 
-				class="${field.cssClass}" onclick="${field.onclick}">
+			<th ${field.gridAttributesHtml}>
 			
 			<%
 				FieldTagBean fieldBean = (FieldTagBean) getJspContext().getAttribute("field");
@@ -57,9 +53,7 @@
 </c:if>
 
 <c:forEach items="${row.datas}" var="entity">
-<tr id="${row.id}"
-	name="${row.name}" style="${row.cssStyle}" 
-	class="${row.cssClass}" onclick="${row.onclick}">
+<tr ${row.gridAttributesHtml}>
 	<c:forEach items="${row.fields}" var="field">
 		<gridRender:field entity="${entity}" field="${field }"></gridRender:field>
 	</c:forEach>

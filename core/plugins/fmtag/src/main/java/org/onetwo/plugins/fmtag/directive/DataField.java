@@ -122,4 +122,14 @@ public class DataField extends AbstractJFieldView {
 	public void setSearch(boolean search) {
 		this.search = search;
 	}
+	
+	public String getGridAttributesHtml() {
+		StringBuilder attributesBuf = new StringBuilder();
+		if(getColspan()!=0)
+			buildAttributeTag(attributesBuf, "colspan", getColspan());
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		return attributesBuf.toString();
+	}
 }

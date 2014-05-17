@@ -18,6 +18,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+/****
+ * sql文件管理
+ * @author weishao
+ *
+ * @param <T>
+ */
 public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends PropertiesNamespaceInfoManagerImpl<T> {
 	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY;
 	public static final String SQL_POSTFIX = ".sql";
