@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.plugins.security.server.SsoServerConfig;
@@ -48,18 +49,22 @@ public class MemorySessionStorer implements SessionStorer {
 	}
 	
 	public void addUser(String token, UserDetail userDetail){
+		Assert.notNull(token);
 		users.put(token, userDetail);
 	}
 
 	@Override
 	public UserDetail getUser(String token) {
-		return users.getIfPresent(token);
+		return token==null?null:users.getIfPresent(token);
 	}
 
 	@Override
 	public UserDetail removeUser(String token) {
+		if(token==null)
+			return null;
 		UserDetail user = getUser(token);
-		users.invalidate(token);
+		if(user!=null)
+			users.invalidate(token);
 		return user;
 	}
 	
