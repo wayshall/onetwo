@@ -17,6 +17,15 @@ abstract public class SsoConfig extends JFishProperties {
 		return getProperty("sgin.key", SecurityPluginUtils.DEFAULT_SSO_SIGN_KEY);
 	}
 	
+	public synchronized Object get(Object key) {
+		if("serverLoginUrl".equals(key)){
+			return getServerLoginUrl();
+		}else if("serverLogoutUrl".equals(key)){
+			return getServerLogoutUrl();
+		}
+		return super.get(key);
+	}
+	
 	/****
 	 * sso服务器登录地址
 	 * @return

@@ -14,9 +14,9 @@
 		<script type="text/javascript">
 
  		if(parent && parent.window.mainPage){
- 			parent.location.href = "${siteConfig.ssoLoginUrl}&${helper.queryString}";
+ 			parent.location.href = "${ssoConfig.serverLoginUrl}&${helper.queryString}";
  		}else{
- 			location.href = "${siteConfig.ssoLoginUrl}&${helper.queryString}"; 
+ 			location.href = "${ssoConfig.serverLoginUrl}&${helper.queryString}"; 
  		} 
 		
 		</script>

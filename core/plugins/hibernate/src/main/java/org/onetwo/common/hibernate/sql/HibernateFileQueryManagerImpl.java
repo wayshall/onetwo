@@ -20,7 +20,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 
 /****
- * 文件的命名查询管理
+ * 文件的命名查询管理器
  * @author wayshall
  *
  */

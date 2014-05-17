@@ -16,6 +16,7 @@ import org.onetwo.common.web.csrf.CsrfPreventor;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.form.FormTagBean;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 final public class TagUtils {
 
@@ -150,10 +151,14 @@ final public class TagUtils {
 		return surl;
 	}
 
-
+	/****
+	 * 过滤分页等一些特定的参数
+	 * @param params
+	 * @return
+	 */
 	public static CasualMap filterPageParams(CasualMap params) {
-//		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");
-		return params.filter("pageNo", Page.PAGINATION_KEY);
+//		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");filter("aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM).
+		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
 	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
 		return csrfPreventor==null?params:params.filter(csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName()));
@@ -164,6 +169,12 @@ final public class TagUtils {
 		if(StringUtils.isBlank(action)){
 			return surl;
 		}
+		surl += parseQueryString(request, action, csrfPreventor);
+		return surl;
+	}
+	
+	public static String parseQueryString(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
+		String surl = "";
 		String[] symbols = StringUtils.split(action, "|");
 		int index = 0;
 		for (String symbol : symbols) {
@@ -183,8 +194,8 @@ final public class TagUtils {
 	}
 	
 	public static String processUrlSymbol(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
-		String str = null;
-		if (symbol.equals(":qstr")) {
+		CasualMap params = processUrlSymbolAsCasualMap(request, symbol, csrfPreventor);
+		/*if (symbol.equals(":qstr")) {
 			str = getQueryStringFilterPageNo(request);
 		} else if (symbol.equals(":post2get")) {
 			str = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor).toParamString();
@@ -192,8 +203,21 @@ final public class TagUtils {
 			str = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, csrfPreventor).toParamString();
 		}else{
 			str = symbol;
-		}
+		}*/
+		String str = params==null?symbol:params.toParamString();
 		return str;
+	}
+	
+	public static CasualMap processUrlSymbolAsCasualMap(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
+		CasualMap params = null;
+		if (symbol.equals(":qstr")) {
+			params = filterPageParams(new CasualMap(request.getQueryString()));
+		} else if (symbol.equals(":post2get")) {
+			params = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor);
+		} else if (symbol.equals(":params")) {
+			params = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, csrfPreventor);
+		}
+		return params;
 	}
 
 	

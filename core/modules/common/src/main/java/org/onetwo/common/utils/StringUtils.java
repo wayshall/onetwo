@@ -23,7 +23,7 @@ public abstract class StringUtils {
 
     public static String lowerCase(String str) {
         if (str == null) {
-            return null;
+            return EMPTY;
         }
         return str.toLowerCase();
     }

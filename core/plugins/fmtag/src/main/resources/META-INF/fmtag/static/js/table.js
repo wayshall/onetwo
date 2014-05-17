@@ -321,7 +321,6 @@ var Common = function () {
 			return false;
 		},
 		
-
 		ajaxSelecter : function(config){
 			return new jfish._ajaxSelecter(config);
 		},
@@ -335,14 +334,13 @@ var Common = function () {
 			/*if(!$.nodeName(this.parent[0], "select")){
 				throw "element must be a select!"
 			}*/
-			var data_key = aconfig['data_key'];
-			var data_value = aconfig['data_value'];
-			
-			
+			var data_key = aconfig['dataKey'];
+			var data_value = aconfig['dataValue'];
 			_this.activedInst = function(){return _this.actived?_this:null}
 			
 			_this.notify_to = function(childConfig){
 				var childConfig = childConfig || {};
+				var alterMsg = childConfig['alterIfNoDatas'];
 				$(_this.parent).change(function(evt, cb){
 					if(!_this.actived){
 						alert("ajax selecter["+config.el+"] is not actived")
@@ -365,7 +363,7 @@ var Common = function () {
 					$.getJSON(url, params, function(json){
 						select.removeAttr("disabled");
 						
-						if(pre_datas && Array.isArray(pre_datas)){
+						if(pre_datas && Array.isArray(pre_datas) && pre_datas.length>0){
 							for(var i=0; i<pre_datas.length; i++){
 								predata = pre_datas[i];
 								$(select).append("<option value='"+predata[data_value]+"'>"+predata[data_key]+"</option>");
@@ -374,8 +372,8 @@ var Common = function () {
 							$(select).append("<option value=''>---请选择</option>");
 						}
 
-						if(json.length<1){
-							alert("没有数据！");
+						if(json.length<1 && alterMsg){
+							alert(alterMsg);
 							return ;
 						}
 						

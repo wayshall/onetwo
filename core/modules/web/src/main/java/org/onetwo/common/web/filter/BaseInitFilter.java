@@ -39,7 +39,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
-	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
+	public static final String REQUEST_URI = RequestUtils.REQUEST_URI;
 	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
 	
 	private WebConfigProvider webConfigProvider;

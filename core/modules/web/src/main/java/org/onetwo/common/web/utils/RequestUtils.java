@@ -15,6 +15,7 @@ public abstract class RequestUtils {
 	
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
+	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
@@ -117,7 +118,11 @@ public abstract class RequestUtils {
 	}
 	
 	public static String getServletPath(HttpServletRequest request) {
-        String servletPath = request.getServletPath();
+        String servletPath = (String)request.getAttribute(REQUEST_URI);
+        if(StringUtils.isNotBlank(servletPath))
+        	return servletPath;
+        
+        servletPath = request.getServletPath();
         
         String requestUri = request.getRequestURI();
         // Detecting other characters that the servlet container cut off (like anything after ';')
@@ -139,7 +144,8 @@ public abstract class RequestUtils {
             endIndex = startIndex;
         }
 
-        return requestUri.substring(startIndex, endIndex);
+        servletPath = requestUri.substring(startIndex, endIndex);
+        return requestUri;
     }
 	
 	public static String getRequestFullURI(HttpServletRequest request){

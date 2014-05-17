@@ -12,6 +12,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 import freemarker.cache.TemplateLoader;
+import freemarker.core.ParseException;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
@@ -86,6 +87,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		Template template;
 		try {
 			template = getConfiguration().getTemplate(name);
+		}catch (ParseException e) {
+			throw new BaseException("sql tempalte syntax error : " + e.getMessage());
 		} catch (IOException e) {
 			throw new BaseException("get tempalte error : " + e.getMessage(), e);
 		}
