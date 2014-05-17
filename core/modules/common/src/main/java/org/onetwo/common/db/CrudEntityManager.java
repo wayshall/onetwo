@@ -45,5 +45,7 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	public T findUnique(Object... properties);
 	
 	public T findUnique(Map<Object, Object> properties);
+	
+	public T findOne(Object... properties);
 
 }
