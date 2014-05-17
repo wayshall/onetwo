@@ -11,7 +11,7 @@ abstract public class AbstractFileNamedQueryFactory<T extends NamespaceProperty>
 		super();
 		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
 	}
-	
+
 
 	public void initQeuryFactory(CreateQueryable em){
 		this.createQueryable = em;

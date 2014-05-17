@@ -363,7 +363,7 @@ var Common = function () {
 					$.getJSON(url, params, function(json){
 						select.removeAttr("disabled");
 						
-						if(pre_datas && Array.isArray(pre_datas) && pre_datas.length>0){
+						if(pre_datas && pre_datas.length && pre_datas.length>0){
 							for(var i=0; i<pre_datas.length; i++){
 								predata = pre_datas[i];
 								$(select).append("<option value='"+predata[data_value]+"'>"+predata[data_key]+"</option>");

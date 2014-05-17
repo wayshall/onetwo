@@ -311,7 +311,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		return select(entityClass, properties);
 	}
 
-	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties){
+	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties){
 		Map<Object, Object> params = LangUtils.newHashMap();
 		CUtils.arrayIntoMap(params, properties);
 		params.put(K.SELECT, selectFields);

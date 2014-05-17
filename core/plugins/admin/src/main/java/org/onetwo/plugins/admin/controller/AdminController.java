@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -34,8 +35,11 @@ public class AdminController extends PluginSupportedController {
 		
 		Collection<ExtMenuModel> menus = null;
 		
-		if(userDetail==null && BaseSiteConfig.getInstance().isDev()){
-			menus = menuItemRegistry.findAllMenus();
+		if(userDetail==null){
+			if(BaseSiteConfig.getInstance().isDev())
+				menus = menuItemRegistry.findAllMenus();
+			else
+				throw new NotLoginException();
 		}else{
 			menus = menuItemRegistry.findUserMenus(userDetail);
 		}
