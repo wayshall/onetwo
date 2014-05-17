@@ -102,7 +102,10 @@ abstract public class HtmlElement {
 	}
 	
 	protected void buildAttributeTag(StringBuilder attributesBuf, String attr, Object val){
-		String valStr = val==null?"":HtmlUtils.htmlEscape(val.toString());
+		String valStr = val==null?"":val.toString();
+		if(StringUtils.isBlank(valStr))
+			return ;
+		valStr = HtmlUtils.htmlEscape(valStr);
 		attributesBuf.append(attr).append("=\"").append(valStr).append("\"");
 	}
 
@@ -120,6 +123,14 @@ abstract public class HtmlElement {
 		this.buildExtTagAttributesString(attributesBuf);
 		if(StringUtils.isNotBlank(attributes))
 			attributesBuf.append(" ").append(attributes);
+		return attributesBuf.toString();
+	}
+
+	public String getGridAttributesHtml() {
+		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "style", getCssStyle());
+		buildAttributeTag(attributesBuf, "class", getCssClass());
+		buildAttributeTag(attributesBuf, "onclick", getOnclick());
 		return attributesBuf.toString();
 	}
 

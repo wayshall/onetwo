@@ -8,9 +8,7 @@
 <thead>
 </c:if>
 
-<tr id="${row.id}"
-	name="${row.name}" style="${row.cssStyle}" 
-	class="${row.cssClass}" onclick="${row.onclick}">
+<tr ${row.gridAttributesHtml}>
 	<c:forEach items="${row.fields}" var="field">
 		<gridRender:field entity="${row.currentRowData}" field="${field}"></gridRender:field>
 	</c:forEach>

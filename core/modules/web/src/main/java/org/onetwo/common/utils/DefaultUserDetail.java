@@ -5,13 +5,15 @@ import java.util.Date;
 import java.util.List;
 
 
-public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDetail, UserActivityCheckable {
+public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDetail {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
 //	private Long organId;
 	private String userName;
 	private String token;
+	private List<String> permissions = LangUtils.newArrayList();
+	private List<String> roles = LangUtils.newArrayList();
 
 	protected Date lastSynchronizedTime = new Date(); 
 
@@ -67,24 +69,18 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDeta
 		this.userName = userName;
 	}
 
-	/*@Override
-	public Long getDepartmentId() {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
-
 	@Override
 	public List<String> getPermissions() {
-		return null;
+		return permissions;
 	}
 
 	public void setPermissions(List<String> permissions) {
-		throw new UnsupportedOperationException();
+		this.permissions = permissions;
 	}
 	
 	@Override
 	public List<String> getRoles() {
-		return null;
+		return roles;
 	}
 
 	public String toString(){

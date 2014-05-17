@@ -26,6 +26,10 @@ public class CasualMap extends ListMap<Object, Object>{
 		if(StringUtils.isBlank(paramStr))
 			return ;
 		
+		int paramStart = paramStr.indexOf('?');
+		if(paramStart!=-1){
+			paramStr = paramStr.substring(paramStart+1);
+		}
 		String[] params = StringUtils.split(paramStr, "&");
 		if(LangUtils.isEmpty(params)) return;
 		

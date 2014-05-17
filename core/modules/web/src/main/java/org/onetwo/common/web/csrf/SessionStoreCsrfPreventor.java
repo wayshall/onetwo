@@ -18,7 +18,13 @@ public class SessionStoreCsrfPreventor extends AbstractCsrfPreventor {
 		this.csrfAnnotationManager = new CsrfAnnotationManager();
 	}
 	
-	protected boolean isValidCsrf(Object controller, HttpServletRequest request){
+	public CsrfAnnotationManager getCsrfAnnotationManager() {
+		return csrfAnnotationManager;
+	}
+
+
+
+	public boolean isValidCsrf(Object controller, HttpServletRequest request){
 		return csrfAnnotationManager.getControllerCsrfInfo(controller, request).isValid();
 	}
 	
