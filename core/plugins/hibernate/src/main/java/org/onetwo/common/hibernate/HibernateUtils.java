@@ -13,6 +13,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.proxy.pojo.BasicLazyInitializer;
 import org.hibernate.tuple.StandardProperty;
 import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.ds.SwitcherInfo;
@@ -21,8 +22,10 @@ import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.ReflectUtils.IgnoreAnnosCopyer;
+import org.onetwo.common.utils.StringUtils;
 
 public final class HibernateUtils {
 	
@@ -115,15 +118,36 @@ public final class HibernateUtils {
 		return false;
 	}
 	
-	
+
+	public static final String JAVASSIST_KEY = Intro.JAVASSIST_KEY;
 	/*****
 	 * 复制对象属性，但会忽略那些null值和配置了关系的属性
 	 * @param source
 	 * @param target
 	 */
 	public static <T> void copyWithoutRelations(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
+		Class<?> targetClass = getTargetClass(target);
+		ReflectUtils.getIntro(targetClass).copy(source, target, WITHOUT_RELATION);
 	}
+	
+	public static Class<?> getTargetClass(Object target){
+		Class<?> targetClass = target.getClass();
+		if(isJavassistClass(targetClass)){
+			BasicLazyInitializer handler = (BasicLazyInitializer)ReflectUtils.getFieldValue(target, "handler", false);
+			if(handler!=null){
+				targetClass = handler.getPersistentClass();
+			}else{
+				String className = StringUtils.substringBefore(targetClass.getName(), JAVASSIST_KEY);
+				targetClass = ReflectUtils.loadClass(className);
+			}
+		}
+		return targetClass;
+	}
+	
+	public static boolean isJavassistClass(Class<?> clazz){
+		return clazz.getName().contains(JAVASSIST_KEY);
+	}
+	
 	public static <T> void copyIgnoreRelationsAndFields(T source, T target, String... ignoreFields){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
 	}

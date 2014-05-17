@@ -1,7 +1,6 @@
 package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
@@ -20,6 +19,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String render;
 	//改字段是否可以排序
 	private boolean orderable = false;
+	private String orderBy;
 	private String dataFormat;
 
 	
@@ -81,7 +81,9 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setColspan(colspan);
 		component.setRender(render);
 		component.setOrderable(orderable);
-		component.setOrdering(getName().equals(pageContext.getRequest().getParameter("orderBy")));
+		component.setOrderBy(orderBy);
+//		component.setOrdering(this.orderBy.equals(pageContext.getRequest().getParameter("orderBy")));
+		component.setOrdering(StringUtils.equals(this.orderBy, pageContext.getRequest().getParameter("orderBy")));
 		String order = pageContext.getRequest().getParameter("order");
 		component.setOrderType(Page.DESC.equals(order)?Page.ASC:Page.DESC);
 		
@@ -117,12 +119,14 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		this.colspan = colspan;
 	}
 
-	public boolean isOrderable() {
-		return orderable;
-	}
-
-	public void setOrderable(boolean orderable) {
-		this.orderable = orderable;
+	public void setOrderable(String orderable) {
+		if(StringUtils.isNotBlank(orderable) && !ToBooleanConvertor.FALSE_VALUE.equals(orderable)){
+			this.orderable = true;
+			if("true".equals(orderable))
+				this.orderBy = null;
+			else
+				this.orderBy = orderable;
+		}
 	}
 
 	public void setRender(String render) {

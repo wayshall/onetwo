@@ -42,6 +42,7 @@ public class DynamicMethod {
 		String methodName = method.getName();
 		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
 		String[] pnames = LangUtils.EMPTY_STRING_ARRAY;
+		//是否通过byUserNameByAge的命名方式
 		if(byIndex!=-1){
 			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
 		}
@@ -56,10 +57,14 @@ public class DynamicMethod {
 		if(rClass==void.class){
 			rClass = parameters.get(0).getParameterType();
 //			rClass = parameters.remove(0).getParameterType();
+			//如果返回类型为空，看第一个参数是否是page对象
 			if(Page.class != rClass){
 				throw new BaseException("method no return type, the first arg of method must be a Page object: " + method.toGenericString());
 			}
-			Type ptype = this.parameters.remove(0).getGenericParameterType();
+			DynamicMethodParameter pageParamter = this.parameters.get(0);
+			if(pageParamter.getParameterAnnotation(Name.class)==null)//如果page对象没有name注解，移除它
+				this.parameters.remove(0);
+			Type ptype = pageParamter.getGenericParameterType();
 			if(ptype instanceof ParameterizedType){
 				compClass = ReflectUtils.getGenricType(ptype, 0);
 			}

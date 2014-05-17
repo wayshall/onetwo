@@ -29,6 +29,7 @@ public class Intro<T> {
 	}
 
 
+	public static final String JAVASSIST_KEY = "_$$_javassist_";
 	public static final String READMETHOD_KEY = "get";
 	public static final String BOOLEAN_READMETHOD_KEY = "is";
 	public static final String WRITEMETHOD_KEY = "set";

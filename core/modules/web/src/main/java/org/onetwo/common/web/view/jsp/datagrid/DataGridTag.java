@@ -137,8 +137,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			String surl = TagUtils.getRequestUri(request);
 			return surl;
 		}
+		this.buildQueryString = false;
 		if(action.startsWith(":")){
-			this.buildQueryString = false;
 			return TagUtils.parseAction(request, action, this.csrfPreventor);
 		}
 		return action;
@@ -149,6 +149,11 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		if(!buildQueryString)
 			return "";
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+//		String qstr = TagUtils.parseQueryString(request, ":params", this.csrfPreventor);
+		CasualMap map = TagUtils.processUrlSymbolAsCasualMap(request, ":params", this.csrfPreventor);
+		String qstr = map==null?"":map.toParamString();
+		return qstr;
+		/*
 		String str = request.getQueryString();
 		if(StringUtils.isBlank(str))
 			return "";
@@ -157,7 +162,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		params.filter(this.csrfPreventor.getFieldOfTokenFieldName());
 		params.filter(request.getParameter(this.csrfPreventor.getFieldOfTokenFieldName()));
 		str = params.toParamString();
-		return str;
+		return str;*/
 	}
 	
 	

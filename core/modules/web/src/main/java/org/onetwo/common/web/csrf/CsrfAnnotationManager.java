@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.web.csrf.AbstractCsrfPreventor.CsrfValidInfo;
+import org.onetwo.common.web.utils.RequestUtils;
 
 /***
  * 
@@ -24,13 +25,16 @@ public class CsrfAnnotationManager  {
 	public CsrfValidInfo getControllerCsrfInfo(Object controller, HttpServletRequest request){
 		if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
 			return CSRF_FALSE;
-		
-		Method method = (Method) controller;
-		String key = method.toGenericString();
+
+		String key = request.getMethod()+"|"+RequestUtils.getServletPath(request);
 		CsrfValidInfo csrfInfo = this.caches.get(key);
 		if(csrfInfo!=null)
 			return csrfInfo;
+
+		if(controller==null)
+			return CSRF_FALSE;
 		
+		Method method = (Method) controller;
 		CsrfValid csrf = AnnotationUtils.findMethodAnnotationWithStopClass(method, CsrfValid.class);
 		if(csrf==null){
 			//TODO: 这里应该是读取spring requestMapping的method来判断

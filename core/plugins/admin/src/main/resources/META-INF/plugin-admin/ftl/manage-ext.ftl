@@ -196,7 +196,7 @@
     </div>
     
     <div style="display:hidden">
-    	<form id="userLogoutForm" action="${siteConfig.ssoLogoutUrl}" method="post">
+    	<form id="userLogoutForm" action="${ssoConfig.serverLoginUrl}" method="post">
     	</form>
     </div>
 	</body>
