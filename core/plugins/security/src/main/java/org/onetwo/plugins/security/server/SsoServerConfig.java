@@ -38,6 +38,10 @@ public class SsoServerConfig extends SsoConfig {
 		return url;
 	}
 	
+	public long getTimeout(){
+		return getLong("session.timeout", 60L);
+	}
+	
 	/***
 	 * 获取客户端设置cookies的地址
 	 * @param site
