@@ -9,7 +9,7 @@ import org.onetwo.common.utils.MyUtils;
 public abstract class BaseEntityManagerAdapter implements BaseEntityManager {
 
 	@Override
-	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties) {
+	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties) {
 		throw new UnsupportedOperationException();
 	}
 

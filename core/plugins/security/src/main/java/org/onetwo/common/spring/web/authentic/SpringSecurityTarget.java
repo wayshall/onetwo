@@ -65,22 +65,26 @@ public class SpringSecurityTarget implements SecurityTarget {
 		return handler;
 	}
 
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
 	@Override
 	public UserDetail getAuthoritable() {
 //		return WebContextUtils.getAttr(request.getSession(), sessionKey);
-		return sessionStorer.getUser(sessionKey);
+		return sessionStorer.getUser(getSessionKey());
 	}
 
 	@Override
 	public void removeCurrentLoginUser() {
 //		WebContextUtils.remove(request.getSession(), sessionKey);
-		sessionStorer.removeUser(sessionKey);
+		sessionStorer.removeUser(getSessionKey());
 	}
 
 	@Override
 	public void setCurrentLoginUser(UserDetail userDetail) {
 //		WebContextUtils.attr(request.getSession(), sessionKey, userDetail);
-		sessionStorer.addUser(sessionKey, userDetail);
+		sessionStorer.addUser(getSessionKey(), userDetail);
 	}
 
 	/****

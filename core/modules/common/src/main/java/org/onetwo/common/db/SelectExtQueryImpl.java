@@ -168,7 +168,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 					select.append("new list(");
 				}else{
 //					throw new BaseException("unsupported class : " + selectList[0]);
-					select.append("new ").append(returnClass.getSimpleName()).append("(");
+					select.append("new ").append(returnClass.getName()).append("(");
 				}
 			}
 			for (int i = fieldStartIndex; i < selectList.length; i++) {
