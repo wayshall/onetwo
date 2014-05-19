@@ -10,10 +10,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 abstract public class SecurityInterceptor implements HandlerInterceptor, Ordered {
 
+	private int order = InterceptorOrder.SECURITY;
 	@Override
-	final public int getOrder() {
-		return InterceptorOrder.SECURITY;
+	public int getOrder() {
+		return order;
 	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
 
 
 	abstract protected void doValidate(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
