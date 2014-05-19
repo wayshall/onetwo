@@ -55,8 +55,9 @@ public class PermissionManagerImpl {
 	 */
 	@Transactional
 	public void syncMenuToDatabase(){
+		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findAll(permClass);
+		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootMenuClass.getSimpleName()+"%");
 //		Map<String, IPermission> mapByCode = index(permList, on(IPermission.class).getCode());
 		
 		Session session = baseEntityManager.getRawManagerObject(SessionFactory.class).getCurrentSession();
