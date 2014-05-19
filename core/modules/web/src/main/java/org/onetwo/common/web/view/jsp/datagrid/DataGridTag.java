@@ -146,7 +146,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 
 	protected String buildQueryString() {
-		if(!buildQueryString)
+		if(!buildQueryString || this.paginationType==PaginationType.form)
 			return "";
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 //		String qstr = TagUtils.parseQueryString(request, ":params", this.csrfPreventor);
