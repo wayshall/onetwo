@@ -52,4 +52,20 @@ public class StringTemplateFileSqlParserTest {
 		Assert.assertEquals("select * from tableName2 t where t.id in ( select id from tableName where userName like '%way' )", sql);
 	}
 	
+
+	
+	@Test
+	public void testPaser3(){
+		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testParserQuery3");
+		parserContext = ParserContext.create();
+		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
+		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
+		this.parserContext.put("userName", "way");
+		String sql = this.parser.parse(info.getFullName(), parserContext);
+		System.out.println("sql: " + sql);
+		Assert.assertEquals("update sb set aa=bb from batch_user sb where sb.way=:userName;", sql);
+	}
+	
 }
