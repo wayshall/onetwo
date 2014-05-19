@@ -455,7 +455,7 @@
     <attribute>
       <name>label</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>onclick</name>
