@@ -15,3 +15,8 @@
 @testParserQuery2.parser = template
 
 
+@testParserQuery3 = 
+	update sb set aa=bb from batch_user sb where sb.${userName}=:userName;
+@testParserQuery.parser = template
+
+
