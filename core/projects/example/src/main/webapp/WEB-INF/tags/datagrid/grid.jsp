@@ -35,6 +35,8 @@
 			<div class="pull-right"><a href="#" class="jfish-toggle-control" control="1">隐藏</a></div>
 		</div>
 
+
+<aa:zone name="${_gridBean.ajaxZoneName}">
 		<c:set var="formId" value="${_gridBean.formId}"></c:set>
 		<c:if test="${_gridBean.generatedForm }">
 		<form id="${formId }" name="${formId}" action="${_gridBean.action}" method="post" class="${_gridBean.cssClass} form-horizontal">
@@ -51,8 +53,7 @@
 			<layout:define name="grid_custombar"/>
 			</div>
 			
-			
-<aa:zone name="${_gridBean.ajaxZoneName}">
+			<!-- aa -->
 			<c:if test="${_gridBean.toolbar }">
 			<div class="well">
 				<div class="btn-group pull-right">
@@ -92,10 +93,6 @@
 			<gridRender:pagination action="${_gridBean.actionWithQueryString }" page="${_gridBean.page }" formPagination="${_gridBean.formPagination}" remote="${_gridBean.ajaxSupported}" ajaxName="${_gridBean.ajaxZoneName}"/>
 			</c:if>
 	
-		<script>
-		jQuery("#${formId}").initDatagrid();
-		</script>
-</aa:zone>	
 		</div>
 		</div>
 		</div>
@@ -103,7 +100,12 @@
 		
 		<c:if test="${_gridBean.generatedForm }">
 		</form>
-	</c:if>
+		</c:if>
+		
+		<script>
+		jQuery("#${formId}").initDatagrid();
+		</script>
+</aa:zone>	
 
 	</div>
 
