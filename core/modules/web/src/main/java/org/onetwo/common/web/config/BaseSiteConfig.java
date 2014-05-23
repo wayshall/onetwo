@@ -10,7 +10,6 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.common.web.view.jsp.TagUtils;
 import org.slf4j.Logger;
 
 public class BaseSiteConfig extends AppConfig { 
@@ -28,6 +27,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String PATH_RS = "path.rs";
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";
+	public static final String TAG_THEME = "tag.theme";
+	public static final String LAYOUT_DEFAULT_PAGE = "layout.default.page";
 	
 	public static final String FILTER_INITIALIZERS = "filter.initializers";
 	
@@ -323,17 +324,12 @@ public class BaseSiteConfig extends AppConfig {
 	public boolean isLogOperation(){
 		return getBoolean(LOG_OPERATION, false);
 	}
-
-	public String getSsoLoginUrl(){
-		String url = getProperty("sso.login.url");
-		url = TagUtils.appendParam(url, LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
-		return url;
-	}
 	
-	public String getSsoLogoutUrl(){
-		String url = getProperty("sso.logout.url");
-		url = TagUtils.appendParam(url, LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
-		return url;
+	public String getTagTheme(){
+		return getProperty(TAG_THEME, "/tags/");
 	}
-	public static final String LOGIN_PARAM_CLIENT_CODE = "clientCode";
+	public String getLayoutDefaultPage(){
+		return getProperty(LAYOUT_DEFAULT_PAGE, "application.jsp");
+	}
+
 }

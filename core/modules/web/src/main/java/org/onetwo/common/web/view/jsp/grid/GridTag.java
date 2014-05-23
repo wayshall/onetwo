@@ -33,7 +33,7 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			this.pageContext.include(getTemplate());
+			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
@@ -73,7 +73,7 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 		return template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public void setDataSource(Object dataSource) {

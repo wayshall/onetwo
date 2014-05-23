@@ -98,6 +98,7 @@ var Common = function () {
 //		    			var table = $(form).children("table:first");
 						if(!values || values.length==0){
 							$.showTipsWindow("请先选择数据！");
+//							alert("请先选择数据！");
 							return false;
 						}
 					}
