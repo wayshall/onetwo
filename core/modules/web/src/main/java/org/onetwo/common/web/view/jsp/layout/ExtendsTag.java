@@ -2,17 +2,18 @@ package org.onetwo.common.web.view.jsp.layout;
 
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
 @SuppressWarnings("serial")
 public class ExtendsTag extends BaseLayoutTag {
 
-	private String parentPage = TagUtils.getViewPage("layout/application.jsp");
+	private String parentPage = BaseSiteConfig.getInstance().getLayoutDefaultPage();
 	
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			this.pageContext.include(getParentPage());
+			this.pageContext.include(TagUtils.getLayoutPage(getParentPage()));
 		} catch (Exception e) {
 			throw new JspException("render layout page["+parentPage+"] error : " + e.getMessage());
 		} 
@@ -26,7 +27,7 @@ public class ExtendsTag extends BaseLayoutTag {
 	}
 
 	public void setParentPage(String parentPage) {
-		this.parentPage = TagUtils.getViewPage(parentPage);
+		this.parentPage = parentPage;
 	}
 
 }
