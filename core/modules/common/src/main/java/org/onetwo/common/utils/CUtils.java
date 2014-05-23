@@ -446,6 +446,14 @@ final public class CUtils {
     	}
        return Collections.unmodifiableList(diff);
     }
+    /****
+     * 
+     * list1中存在，list2中找不到的元素
+     * @param list1
+     * @param list2
+     * @param properties
+     * @return
+     */
     public static <T> List<T> difference(List<T> list1, List<T> list2, final String...properties) {
     	return difference(list1, list2, new NotInPredicate<T>() {
 			@Override
