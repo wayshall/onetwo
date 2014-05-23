@@ -4,11 +4,11 @@ package org.onetwo.common.utils;
 public class MergeHpTxtFile {
 	
 	public static void main(String[] args){
-		String mergeDir = "E:/mydev/xianda/data/productCardData/B卡返回数据/清远市民卡第三批发货22345枚返回数据/";
+		String mergeDir = "E:/mydev/xianda/data/hp/";
 //		String mergedFileName = "proc-all-"+DateUtil.format("yyyy-MM-dd-HHmmss", new Date())+".sql";
-		String mergedFileName = "a.txt";
+		String mergedFileName = "60.txt";
 		FileUtils.mergeFiles(MergeFileConfig.build("gbk", mergeDir+mergedFileName, 
-				mergeDir+"返回数据", ".txt", new DefaultMergeListener(){
+				mergeDir+"60", ".txt", new DefaultMergeListener(){
 
 					@Override
 					public void onFileStart(MergeFileContext context) throws Exception {
