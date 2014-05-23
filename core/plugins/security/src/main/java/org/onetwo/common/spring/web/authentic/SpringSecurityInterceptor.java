@@ -33,13 +33,12 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.web.method.HandlerMethod;
 
-public class SpringSecurityInterceptor extends SecurityInterceptor implements InitializingBean, ApplicationContextAware {
+public class SpringSecurityInterceptor extends SecurityInterceptor implements InitializingBean, ApplicationContextAware, Ordered {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private ApplicationContext applicationContext;
 	private AuthenticConfigService authenticConfigService;
-	private int order = Ordered.HIGHEST_PRECEDENCE;
 	
 	@Resource
 	private SessionStorer sessionStorer;
@@ -149,7 +148,4 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	}
 
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
 }
