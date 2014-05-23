@@ -92,8 +92,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			if(this.datagridRenderListener!=null){
 				this.datagridRenderListener.prepareRender(this, component);
 			}
-			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
-			this.pageContext.include(TagUtils.getTagPage(t));
+//			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
+			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{

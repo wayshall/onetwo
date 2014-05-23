@@ -73,7 +73,7 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 			if(bc!=null){
 				this.component.setBodyContent(bc.getString());
 			}
-			this.pageContext.include(getTemplate());
+			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
@@ -99,7 +99,7 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		return template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public String getAction() {
