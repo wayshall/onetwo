@@ -68,12 +68,10 @@ public class HibernatePluginContext implements InitializingBean  {
 	
 	@Bean
 	public SQLSymbolManager sqlSymbolManager(){
-		SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
-		if(symbolManager==null){
-			symbolManager = new HibernateSQLSymbolManagerImpl(new DefaultSQLDialetImpl());//SQLSymbolManagerFactory.getInstance().get(EntityManagerProvider.Hibernate);
-			List<ExtQueryListener> listeners = SpringUtils.getBeans(applicationContext, ExtQueryListener.class);
-			symbolManager.setListeners(listeners);
-		}
+//		SQLSymbolManager symbolManager = SpringUtils.getBean(applicationContext, SQLSymbolManager.class);
+		SQLSymbolManager symbolManager = new HibernateSQLSymbolManagerImpl(new DefaultSQLDialetImpl());//SQLSymbolManagerFactory.getInstance().get(EntityManagerProvider.Hibernate);
+		List<ExtQueryListener> listeners = SpringUtils.getBeans(applicationContext, ExtQueryListener.class);
+		symbolManager.setListeners(listeners);
 		return symbolManager;
 	}
 	
