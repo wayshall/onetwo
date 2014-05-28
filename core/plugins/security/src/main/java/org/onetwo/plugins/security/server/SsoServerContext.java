@@ -51,10 +51,10 @@ public class SsoServerContext {
 		return ssoServerConfig;
 	}
 
-	@Bean
+	/*@Bean
 	public SessionStorer sessionStorer(){
 		return new MemorySessionStorer();
-	}
+	}*/
 	
 	@Bean
 	public SSOService ssoService(){

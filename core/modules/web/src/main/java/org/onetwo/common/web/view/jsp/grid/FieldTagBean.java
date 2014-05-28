@@ -9,6 +9,7 @@ public class FieldTagBean extends HtmlElement {
 	public static enum RenderType {
 		auto,
 		checkbox,
+		radio,
 		html
 	}
 
@@ -40,6 +41,7 @@ public class FieldTagBean extends HtmlElement {
 	private String searchItemValue;
 	
 
+	private String reserved;//备用
 	
 
 	/*public void render(Writer out){
@@ -186,6 +188,10 @@ public class FieldTagBean extends HtmlElement {
 		return RenderType.checkbox==render;
 	}
 	
+	public boolean isRadio(){
+		return RenderType.radio==render;
+	}
+	
 	public boolean isHtmlRender(){
 		return RenderType.html==render;
 	}
@@ -252,6 +258,15 @@ public class FieldTagBean extends HtmlElement {
 
 	public void setDataFormat(String dataFormat) {
 		this.dataFormat = dataFormat;
+	}
+
+
+	public String getReserved() {
+		return reserved;
+	}
+
+	public void setReserved(String reserved) {
+		this.reserved = reserved;
 	}
 
 }

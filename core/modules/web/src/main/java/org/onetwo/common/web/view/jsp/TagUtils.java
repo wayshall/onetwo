@@ -21,7 +21,8 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
 final public class TagUtils {
 
 	public static String PARAM_FORMAT = "format";
-	public static String BASE_TAG_DIR = "/WEB-INF";
+	public static String WEB_INF_DIR = "/WEB-INF/";
+	public static String BASE_TAG_DIR = "/WEB-INF/tags/";
 	public static String BASE_VIEW_DIR = "/WEB-INF/views/";
 	public static String BASE_LAYOUT_DIR = "/WEB-INF/views/layout/";
 
@@ -36,7 +37,14 @@ final public class TagUtils {
 	}
 	public static String getTagPage(String path){
 		String t = StringUtils.appendEndWith(path, ".jsp");
-		String baseTagDir = BASE_TAG_DIR + BaseSiteConfig.getInstance().getTagTheme();
+		String baseTagDir = BaseSiteConfig.getInstance().getTagTheme();
+		if(StringUtils.isBlank(baseTagDir)){
+			baseTagDir = BASE_TAG_DIR;
+		}else if(baseTagDir.startsWith("/tags/")){
+			baseTagDir = WEB_INF_DIR + baseTagDir;
+		}else{
+			baseTagDir = BASE_TAG_DIR + baseTagDir;
+		}
 		return getDirPage(baseTagDir, t);
 	}
 	public static String getDirPage(String baseDir, String path){

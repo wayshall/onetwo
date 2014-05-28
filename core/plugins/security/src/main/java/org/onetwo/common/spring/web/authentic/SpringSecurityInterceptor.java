@@ -24,7 +24,6 @@ import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 import org.onetwo.common.web.s2.security.config.AuthenticConfigService;
 import org.onetwo.common.web.sso.SimpleNotSSOServiceImpl;
-import org.onetwo.plugins.security.common.SsoConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,14 +42,22 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	@Resource
 	private SessionStorer sessionStorer;
 	
-	@Resource
-	private SsoConfig ssoConfig;
+//	@Resource
+//	private SsoConfig ssoConfig;
 	
 	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	public SpringSecurityInterceptor(){
 	}
 	
+	
+	
+	protected SessionStorer getSessionStorer() {
+		return sessionStorer;
+	}
+
+
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.authenticConfigService = SpringUtils.getHighestOrder(applicationContext, AuthenticConfigService.class);
@@ -114,7 +121,8 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 	}
 	
 	protected SecurityTarget createSecurityTarget(HttpServletRequest request, HttpServletResponse response, Object handler){
-		SecurityTarget target = null;
+		return new SpringSecurityTarget(sessionStorer, request, response, (HandlerMethod)handler);
+		/*SecurityTarget target = null;
 		if(handler instanceof HandlerMethod){
 			if(ssoConfig.isServerSide()){
 				target = new SpringSsoSecurityTarget(sessionStorer, request, response, (HandlerMethod)handler);
@@ -123,7 +131,7 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 			}
 			AuthenticUtils.setIntoRequest(request, target);
 		}
-		return target;
+		return target;*/
 	}
 
 
