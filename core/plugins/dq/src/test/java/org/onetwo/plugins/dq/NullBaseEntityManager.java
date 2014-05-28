@@ -11,6 +11,7 @@ import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
+import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
@@ -72,6 +73,15 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public FileNamedSqlGenerator createFileNamedSqlGenerator(
+				String queryName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		
 		
 	};
 	

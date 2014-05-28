@@ -2,6 +2,7 @@ package org.onetwo.plugins.security.common;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.CurrentLoginUserParams;
@@ -47,17 +48,19 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 			params.setSign(sign);
 			params.setClientCode(BaseSiteConfig.getInstance().getAppCode());
 			return ssoUserService.getCurrentLoginUser(params);
+		} catch(LoginException e){
+			throw e;
 		} catch (Exception e) {
 			String msg = "";
 			if(e instanceof ClassNotFoundException){
 				msg = "client no mapped user detail class " + (BaseSiteConfig.getInstance().isProduct()?"":e.getMessage());
-				throw new ServiceException(msg);
+				throw new LoginException(msg);
 			}else if(e instanceof RemoteConnectFailureException){
 				msg = "connect to sso server error: " + e.getMessage();
-				throw new ServiceException(msg);
+				throw new LoginException(msg);
 			}else{
 				msg = e.getMessage();
-				throw new ServiceException("sso client get login user error : " + msg, e);
+				throw new LoginException("sso client get login user error : " + msg, e);
 			}
 		}
 	}

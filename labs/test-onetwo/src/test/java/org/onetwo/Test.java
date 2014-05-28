@@ -1,9 +1,10 @@
 package org.onetwo;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.LangUtils;
 
 
 
@@ -19,9 +20,8 @@ public class Test {
 
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
-	public static void main(String[] args){
-		System.out.println(HashMap.class);
-		System.out.println(HashMap.class instanceof Class);
+	public static void main(String[] args) throws IOException{
+		System.out.println(LangUtils.encodeUrl("%"));
 	}
 	
 	public static void test2(String[] args){

@@ -11,6 +11,7 @@ import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.exception.BusinessException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
@@ -80,10 +81,16 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 		return super.findPage(page, properties);
 	}
 
+	/****
+	 * 鉴于hibernate的load方法的延迟加载实在太不爽，在service曾重新实现load行为。
+	 */
 	@Override
 	@Transactional(readOnly=true)
 	public T load(PK id) {
-		return super.load(id);
+		T entity = (T) findById(id);
+		if(entity==null)
+			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		return entity;
 	}
 
 	@Override
