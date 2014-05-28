@@ -43,6 +43,11 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 
 	abstract public T mapDataRow(List<String> names, Row row, int rowIndex);
 	
+
+	protected int getTitleRowIndex() {
+		return getDataRowStartIndex()-1;
+	}
+	
 	@Override
 	public List<String> mapTitleRow(int sheetIndex, Sheet sheet){
 		return this.mapTitleRow(sheet);
@@ -50,7 +55,7 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 	
 	protected List<String> mapTitleRow(Sheet sheet) {
 		try {
-			Row titleRow = sheet.getRow(0);
+			Row titleRow = sheet.getRow(getTitleRowIndex());
 			return ExcelUtils.getRowValues(titleRow);
 		} catch (Exception e) {
 			throw new ServiceException("mapTitleRow error" , e);

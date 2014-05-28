@@ -92,9 +92,9 @@ var Common = function () {
 				
 				var nocheckbox = $(this).attr('data-nocheckbox') || false;
 				if(!nocheckbox){
-					var checkfields = $(jfish.cssKeys.checkAll, form);
+					var checkfields = $(jfish.cssKeys.checkField, form);
 					if(checkfields.length>0){
-						var values = $(form).checkboxValues(true);
+						var values = $(form).checkedValues();
 //		    			var table = $(form).children("table:first");
 						if(!values || values.length==0){
 							$.showTipsWindow("请先选择数据！");
@@ -329,9 +329,10 @@ var Common = function () {
 		_ajaxSelecter : function(config){
 			var _this = this;
 			var aconfig = config || {};
+			this.config = aconfig;
 			this.parent = $('#'+config['el']);
 			this.actived = this.parent.length>0;
-			
+
 			/*if(!$.nodeName(this.parent[0], "select")){
 				throw "element must be a select!"
 			}*/
@@ -360,17 +361,19 @@ var Common = function () {
 					var url = (childConfig.url+$(_this.parent).val()) || alert("notify url can not blank!");
 					var params = childConfig.params || {};
 					var pre_datas = childConfig.options;
+					var emptyOption = childConfig.emptyOption || true;
 					
 					$.getJSON(url, params, function(json){
 						select.removeAttr("disabled");
-						
+
+						if(emptyOption){
+							$(select).append("<option value=''>---请选择</option>");
+						}
 						if(pre_datas && pre_datas.length && pre_datas.length>0){
 							for(var i=0; i<pre_datas.length; i++){
 								predata = pre_datas[i];
 								$(select).append("<option value='"+predata[data_value]+"'>"+predata[data_key]+"</option>");
 							}
-						}else{
-							$(select).append("<option value=''>---请选择</option>");
 						}
 
 						if(json.length<1 && alterMsg){
@@ -397,6 +400,11 @@ var Common = function () {
 					alert("ajax selecter["+config.el+"] is not actived")
 					return ;
 				}
+				var emptyOption = aconfig['emptyOption'] || true;
+				if(emptyOption){
+					$(_this.parent).append("<option value=''>---请选择</option>");
+				}
+				
 				$.getJSON(loadUrl, {}, function(json){
 					if(json.length<1){
 						alert("没有数据！");
@@ -494,7 +502,31 @@ var Common = function () {
     		}
 		},
 		
-		checkboxValues : function(returnObject){
+		checkedValues : function(reserved){
+			var checkfields = $(jfish.cssKeys.checkField, this);
+			var values = [];
+			var getreserved = reserved || false; 
+			if(getreserved){
+				checkfields.each(function(){
+					if(!$(this).attr("checked"))
+						return ;
+					var val = $(this).val();
+					
+					if(val){
+						values.push({reserved:$(this).attr(reserved), 'value':val});
+					}
+				});
+			}else{
+				checkfields.each(function(){
+					if(!$(this).attr("checked"))
+						return ;
+					var val = $(this).val();
+					if(val) values.push(val);
+				});
+			}
+			return values;
+		},
+		/*checkboxValues : function(returnObject){
 			var checkfields = $(jfish.cssKeys.checkField, this);
 			var values = [];
 			checkfields.each(function(){
@@ -512,7 +544,7 @@ var Common = function () {
 				return rs;
 			}
 			return null;
-		},
+		},*/
 		onCenter : function(){
 			var t = ($(window).height()+$(window).scrollTop()-$(this).height())/2;
 			var l = ($(window).width()-$(this).width())/2;

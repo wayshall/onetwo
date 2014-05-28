@@ -326,7 +326,7 @@ public class BaseSiteConfig extends AppConfig {
 	}
 	
 	public String getTagTheme(){
-		return getProperty(TAG_THEME, "/tags/");
+		return getProperty(TAG_THEME, "");
 	}
 	public String getLayoutDefaultPage(){
 		return getProperty(LAYOUT_DEFAULT_PAGE, "application.jsp");

@@ -31,6 +31,9 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String searchItemLabel;
 	private String searchItemValue;
 	
+
+	private String reserved;//备用
+	
 	private DataFieldValueListener dataFieldValueListener;
 	
 	@Override
@@ -93,6 +96,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setSearchItems(searchItems);
 		component.setSearchItemLabel(searchItemLabel);
 		component.setSearchItemValue(searchItemValue);
+		
+		component.setReserved(reserved);
 		
 	}
 	
@@ -163,6 +168,10 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setSearchItemValue(String searchItemValue) {
 		this.searchItemValue = searchItemValue;
+	}
+
+	public void setReserved(String reserved) {
+		this.reserved = reserved;
 	}
 
 }

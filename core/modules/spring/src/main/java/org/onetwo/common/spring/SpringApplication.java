@@ -14,6 +14,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
 
 /****
@@ -54,6 +55,8 @@ public class SpringApplication {
 		instance.initialized = true;
 //		instance.printBeanNames();
 		try {
+			if(ConfigurableApplicationContext.class.isInstance(webappContext))
+				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
 			instance.baseEntityManager = instance.getBean(BaseEntityManager.class);
 			instance.contextHolder = instance.getBean(ContextHolder.class);
 		} catch (Exception e) {
@@ -63,6 +66,10 @@ public class SpringApplication {
 
 	public ApplicationContext getAppContext() {
 		return appContext;
+	}
+
+	public ConfigurableApplicationContext getConfigurableAppContext() {
+		return ConfigurableApplicationContext.class.isInstance(appContext)?(ConfigurableApplicationContext)appContext:null;
 	}
 	
 	public Object getBean(String beanName) {

@@ -1,5 +1,6 @@
 package org.onetwo.common.excel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		return dataRowStartIndex;
 	}
 	
-	
+	public void setDataRowStartIndex(int dataRowStartIndex) {
+		this.dataRowStartIndex = dataRowStartIndex;
+	}
+
 	public BeanRowMapper<T> autoGetCellValue(boolean autoGetCellValue) {
 		this.autoGetCellValue = autoGetCellValue;
 		return this;
@@ -80,9 +84,30 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 
 	@Override
 	public List<String> mapTitleRow(int sheetIndex, Sheet sheet){
-		List<String> titleNames = this.mapTitleRow(sheet);
+		List<String> titleNames = super.mapTitleRow(sheetIndex, sheet);
 		this.autoMapperType(titleNames);
 		return titleNames;
+	}
+	
+
+	protected List<String> mapTitleRow(Sheet sheet){
+		Row row = sheet.getRow(getTitleRowIndex());
+		int cellCount = row.getPhysicalNumberOfCells();
+		List<String> rowValues = new ArrayList<String>();
+		
+		Cell cell = null;
+		Object cellValue = null;
+		for(int i=0; i<cellCount; i++){
+			cell = row.getCell(i);
+			cellValue = ExcelUtils.getCellValue(cell);
+			String label = cellValue.toString().trim();
+			if(StringUtils.isBlank(label)){
+				//if title is empty (region column), get the previous title name
+				label = rowValues.get(i-1);
+			}
+			rowValues.add(label);
+		}
+		return rowValues;
 	}
 	
 	private MapperType autoMapperType(List<String> titleNames){
@@ -138,9 +163,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 					}
 					if(cell==null)
 						continue;
-					cellValue = getCellValue(cell, titleLable, cellIndex);
 					if(!this.propertyMapper.containsKey(titleLable))
 						continue;
+					
+					cellValue = getCellValue(cell, titleLable, cellIndex);
 					propertyName = this.propertyMapper.get(titleLable);
 					this.setBeanProperty(bw, propertyName, cell, cellValue);
 					break;
@@ -223,10 +249,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			}else{
 				value = cellValue;
 			}
-			if(value!=null)
+			if(value!=null && (!String.class.isInstance(value) || StringUtils.isNotBlank((String)value)))
 				bw.setPropertyValue(name, value);
 		} catch (Exception e) {
-			throw new BaseException("set property["+name+"] error, value: "+value, e);
+			throw new BaseException("row:"+cell.getRowIndex()+",set property["+name+"] error, value: "+value, e);
 		}
 	}
 
