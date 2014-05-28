@@ -1,10 +1,14 @@
 package org.onetwo.plugins.security.utils;
 
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.plugins.security.SecurityPlugin;
+import org.onetwo.plugins.security.client.SsoClientContext;
+import org.onetwo.plugins.security.server.SsoServerContext;
 import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
 
 final public class SecurityPluginUtils {
 	
@@ -44,6 +48,16 @@ final public class SecurityPluginUtils {
 		String entry = MDFactory.createSHA().encryptWithSalt(source);
 		logger.error("sign token[{}] : {}", source, entry);
 		return entry;
+	}
+	
+	public static boolean existServerConfig(){
+		Resource config = SpringUtils.classpath(SsoServerContext.SSO_SERVER_CONFIG_PATH);
+		return config.exists();
+	}
+	
+	public static boolean existClientConfig(){
+		Resource config = SpringUtils.classpath(SsoClientContext.SSO_CLIENT_CONFIG_PATH);
+		return config.exists();
 	}
 	
 	private SecurityPluginUtils(){

@@ -216,7 +216,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return propValues;
 	}
 
-	public void addPropertys(final String name, final Collection<Object> cols){
+	public void addPropertiesTo(final String name, final Collection<Object> cols){
 		this.each(new NoIndexIt<E>() {
 
 			@Override

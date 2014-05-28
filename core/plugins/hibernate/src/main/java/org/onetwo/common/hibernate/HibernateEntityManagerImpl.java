@@ -16,9 +16,11 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
 public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
@@ -30,14 +32,14 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
-	@Resource
+//	@Resource
 	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
 	
 //	@Resource
 //	private DataSource dataSource;
 	
-//	@Resource
-//	private ApplicationContext applicationContext;
+	@Resource
+	private ApplicationContext applicationContext;
 	
 //	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
 	
@@ -58,6 +60,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
 		fq.initQeuryFactory(this);
 		this.fileNamedQueryFactory = fq;*/
+		
+		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 	}
 
 
@@ -117,12 +121,18 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		getSession().flush();
 	}
 
+	/****
+	 * 这里直接使用hibernate的load方法
+	 * 而在service层则使用findById重新实现load方法。
+	 */
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
 		this.checkEntityIdValid(id);
 		T entity = (T)getSession().load(entityClass, id);
-//		if(entity==null)
-//			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		/*T entity = (T) findById(entityClass, id);
+		if(entity==null)
+			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		*/
 		return entity;
 	}
 

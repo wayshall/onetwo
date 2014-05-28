@@ -132,10 +132,19 @@ public class JFishMultipleDatasource implements DataSource, Ordered, Initializin
 		return getCurrentDatasource().getLoginTimeout();
 	}
 
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-		return getCurrentDatasource().isWrapperFor(arg0);
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		if (iface.isInstance(this)) {
+			return (T) this;
+		}
+		return getCurrentDatasource().unwrap(iface);
 	}
 
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return (iface.isInstance(this) || getCurrentDatasource().isWrapperFor(iface));
+	}
 	public void setLogWriter(PrintWriter arg0) throws SQLException {
 		getCurrentDatasource().setLogWriter(arg0);
 	}
@@ -144,9 +153,6 @@ public class JFishMultipleDatasource implements DataSource, Ordered, Initializin
 		getCurrentDatasource().setLoginTimeout(arg0);
 	}
 
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
-		return getCurrentDatasource().unwrap(arg0);
-	}
 
 	@Override
 	public int getOrder() {
