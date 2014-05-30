@@ -307,7 +307,7 @@ var Common = function () {
 			}
 			
 			if(ajaxInst){
-				ajaxInst.formName=form.attr('id');
+				ajaxInst.formName=form.attr('id') || form.attr('name');
 				ajaxInst.submitAJAX();
 				return false;
 			}else{
@@ -391,6 +391,8 @@ var Common = function () {
 							cb();
 					});
 				});
+				
+				_this.notifyTo = _this.notify_to;
 				
 				return _this;
 			};
