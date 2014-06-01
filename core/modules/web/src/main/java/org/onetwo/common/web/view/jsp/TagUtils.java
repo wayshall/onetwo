@@ -31,7 +31,7 @@ final public class TagUtils {
 		String t = StringUtils.appendEndWith(path, ".jsp");
 		return getDirPage(BASE_VIEW_DIR, t);
 	}
-	public static String getLayoutPage(String path){
+	/*public static String getLayoutPage(String path){
 		String t = StringUtils.appendEndWith(path, ".jsp");
 		return getDirPage(BASE_LAYOUT_DIR, t);
 	}
@@ -46,7 +46,7 @@ final public class TagUtils {
 			baseTagDir = BASE_TAG_DIR + baseTagDir;
 		}
 		return getDirPage(baseTagDir, t);
-	}
+	}*/
 	public static String getDirPage(String baseDir, String path){
 		if(StringUtils.isBlank(path))
 			return path;
@@ -177,7 +177,7 @@ final public class TagUtils {
 		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
 	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
-		return csrfPreventor==null?params:params.filter(csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName()));
+		return csrfPreventor==null?params:params.filter(csrfPreventor.getTokenFieldName());
 	}
 	
 	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){

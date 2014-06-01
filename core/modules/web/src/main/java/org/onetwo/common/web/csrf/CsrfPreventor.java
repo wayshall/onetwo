@@ -11,7 +11,8 @@ public interface CsrfPreventor {
 //	public CsrfAnnotationManager getCsrfAnnotationManager();
 //	public boolean isValidCsrf(Object controller, HttpServletRequest request);
 	
-	public String getFieldOfTokenFieldName();
+//	public String getFieldOfTokenFieldName();
+	public String getTokenFieldName();
 
 	public abstract void validateToken(Object controller,
 			HttpServletRequest request, HttpServletResponse response);
