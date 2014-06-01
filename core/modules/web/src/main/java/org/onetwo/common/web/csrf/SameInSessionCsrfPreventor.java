@@ -15,12 +15,12 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 	
 	@Override
 	public CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response){
-		CsrfToken token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+		CsrfToken token = WebContextUtils.getAttr(request.getSession(), getTokenFieldName());
 		if(token!=null)
 			return token;
 		
 		synchronized (request.getSession()) {
-			token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+			token = WebContextUtils.getAttr(request.getSession(), getTokenFieldName());
 			if(token==null)
 				token = super.generateToken(request, response);
 		}
@@ -33,17 +33,17 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 	
 	@Override
 	protected CsrfToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
-		return WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+		return WebContextUtils.getAttr(request.getSession(), tokenFieldName);
 	}
 	@Override
 	protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response){
 		if(invalid)
-			WebContextUtils.remove(request.getSession(), fieldOfTokenFieldName);
+			WebContextUtils.remove(request.getSession(), token.getFieldName());
 //		super.cleanStoredTokenValue(token, request, response);
 	}
 
 	@Override
 	protected void storeToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response){
-		WebContextUtils.attr(request.getSession(), fieldOfTokenFieldName, token);
+		WebContextUtils.attr(request.getSession(), token.getFieldName(), token);
 	}
 }

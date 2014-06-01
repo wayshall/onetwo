@@ -17,8 +17,7 @@ public class FormTokenFieldTag extends AbstractBodyTag {
 	@Override
 	public int doEndTag() throws JspException {
 		CsrfToken token = csrfPreventor.generateToken((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
-		write("<input name='"+csrfPreventor.getFieldOfTokenFieldName()+"' type='hidden' value='"+token.getFieldName()+"'/>");
-		write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getValue()+"'/>");
+		write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getGeneratedValue()+"'/>");
 		return EVAL_PAGE;
 	}
 	

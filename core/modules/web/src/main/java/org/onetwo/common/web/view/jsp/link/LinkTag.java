@@ -8,11 +8,11 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 
-	private String template = TagUtils.getTagPage("html/link.jsp");
+	private String template = "html/link.jsp";
 	
 	private String dataMethod;
 	private String dataConfirm;
@@ -30,7 +30,7 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 		component.setDataMethod(dataMethod);
 
 		boolean safeUrl = BaseSiteConfig.getInstance().isSafeRequest();
-		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl){
+		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl && !RequestMethod.GET.toString().equalsIgnoreCase(dataMethod)){
 			href = CsrfPreventorFactory.getDefault().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
     	}
 
@@ -42,7 +42,8 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 
 	protected int endTag()throws Exception {
 		try {
-			this.pageContext.include(getTemplate());
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally {
 			clearComponentFromRequest(this.getClass().getSimpleName());
 		}

@@ -32,11 +32,11 @@ abstract public class HtmlElement {
 	}
 
 	public String getCssStyle() {
-		return cssStyle;
+		return StringUtils.emptyIfNull(cssStyle);
 	}
 
 	public String getCssClass() {
-		return cssClass;
+		return StringUtils.emptyIfNull(cssClass);
 	}
 
 	public String getOnclick() {
@@ -114,8 +114,8 @@ abstract public class HtmlElement {
 		buildAttributeTag(attributesBuf, "id", getId());
 		buildAttributeTag(attributesBuf, "name", getName());
 		buildAttributeTag(attributesBuf, "title", getTitle());
-		buildAttributeTag(attributesBuf, "style", getCssStyle());
-		buildAttributeTag(attributesBuf, "class", getCssClass());
+//		buildAttributeTag(attributesBuf, "style", getCssStyle());
+//		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
 		if(StringUtils.isNotBlank(getTitle()))
 			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
