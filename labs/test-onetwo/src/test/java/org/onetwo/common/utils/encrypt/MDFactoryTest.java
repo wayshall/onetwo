@@ -43,6 +43,22 @@ salt为8个随机字节。
 	}
 	
 	@Test
+	public void testCsrf(){
+		String source = "77352BFB8E1D171486DE6E4AC7CBE53D";
+		MDEncrypt md5 = MDFactory.MD5;
+		
+		String encrypt = md5.encryptWithSalt(source);
+		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		boolean rs = md5.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+		
+		
+		encrypt = "36D69B4433C402F087A666A004B6A8ECD9BCD663C68F3700";
+		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		rs = md5.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+	}
+	@Test
 	public void testMDWithoutLabel(){
 		String source = "12356";
 		String encrypt = MDFactory.createMD5(false, false).encrypt(source);

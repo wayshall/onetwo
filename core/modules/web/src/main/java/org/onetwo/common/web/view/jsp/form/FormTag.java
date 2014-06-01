@@ -12,7 +12,7 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 @SuppressWarnings("serial")
 public class FormTag extends BaseHtmlTag<FormTagBean> {
 	
-	private String template = TagUtils.getTagPage("form/spring-form.jsp");
+	private String template = "form/spring-form.jsp";
 
 	private String action;
 	private String method;
@@ -68,14 +68,13 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 
 	@Override
 	public int doEndTag() throws JspException {
+		BodyContent bc = this.getBodyContent();
+		if(bc!=null){
+			this.component.setBodyContent(bc.getString());
+		}
 		try {
-			BodyContent bc = this.getBodyContent();
-			if(bc!=null){
-				this.component.setBodyContent(bc.getString());
-			}
-			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
-		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage(), e);
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally{
 			clearComponentFromRequest(TagUtils.getFormVarName());
 		}
@@ -96,7 +95,7 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 
 	
 	public String getTemplate() {
-		return template;
+		return this.template;
 	}
 	public void setTemplate(String template) {
 		this.template = template;

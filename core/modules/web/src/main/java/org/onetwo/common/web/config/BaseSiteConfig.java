@@ -27,6 +27,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String PATH_RS = "path.rs";
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";
+
+	public static final String TAG_SETTING = "tag.setting";
 	public static final String TAG_THEME = "tag.theme";
 	public static final String LAYOUT_DEFAULT_PAGE = "layout.default.page";
 	
@@ -324,7 +326,10 @@ public class BaseSiteConfig extends AppConfig {
 	public boolean isLogOperation(){
 		return getBoolean(LOG_OPERATION, false);
 	}
-	
+
+	public String getTagSetting(){
+		return getProperty(TAG_SETTING, "");
+	}
 	public String getTagTheme(){
 		return getProperty(TAG_THEME, "");
 	}

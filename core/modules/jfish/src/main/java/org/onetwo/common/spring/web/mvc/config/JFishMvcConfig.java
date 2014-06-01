@@ -36,9 +36,13 @@ import org.onetwo.common.spring.web.mvc.log.AccessLogger;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.spring.web.mvc.view.JsonView;
+import org.onetwo.common.spring.web.tag.SessionTagThemeSettting;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.view.DefaultTagThemeSetting;
+import org.onetwo.common.web.view.TagThemeSetting;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrar;
@@ -417,6 +421,15 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}
 		return factory;*/
 		return excelResolver().getXmlTemplateGeneratorFactory();
+	}
+
+	@Bean
+	public TagThemeSetting tagThemeSetting(){
+		String tagSetting = BaseSiteConfig.getInstance().getTagSetting();
+		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting))
+			return new SessionTagThemeSettting();
+		else
+			return new DefaultTagThemeSetting();
 	}
 	
 

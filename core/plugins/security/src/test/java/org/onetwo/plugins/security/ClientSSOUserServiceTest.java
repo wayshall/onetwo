@@ -3,6 +3,7 @@ package org.onetwo.plugins.security;
 import javax.annotation.Resource;
 
 import org.junit.Test;
+import org.onetwo.common.sso.CurrentLoginUserParams;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.ClientSSOUserServiceLoader.ClientSSOUserServiceContext;
@@ -17,7 +18,8 @@ public class ClientSSOUserServiceTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void test(){
-		UserDetail user = this.ssoUserServiceProxy.getCurrentLoginUserByToken("test");
+		CurrentLoginUserParams params = new CurrentLoginUserParams("test");
+		UserDetail user = this.ssoUserServiceProxy.getCurrentLoginUser(params);
 		System.out.println("user: " + user);
 	}
 }

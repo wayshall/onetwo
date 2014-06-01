@@ -8,21 +8,30 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.web.view.TagThemeSetting;
 import org.onetwo.common.web.view.ViewPermission;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
 
 @SuppressWarnings("serial")
-public class AbstractBodyTag extends BodyTagSupport {
+abstract public class AbstractBodyTag extends BodyTagSupport {
 	
 	public static final String VAR_PRIFEX = "__tag__";
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private ViewPermission viewPermission;
+	private TagThemeSetting themeSetting;
 	
 	public AbstractBodyTag(){
 		this.viewPermission = SpringApplication.getInstance().getBean(ViewPermission.class, false);
+		this.themeSetting = SpringApplication.getInstance().getSpringHighestOrder(TagThemeSetting.class);
+		Assert.notNull(themeSetting);
 //		logger.info(""+this+", viewPermission: {}", viewPermission);
+	}
+	
+	protected TagThemeSetting getThemeSetting() {
+		return themeSetting;
 	}
 
 	protected String getTagVarName(String name){
@@ -66,5 +75,20 @@ public class AbstractBodyTag extends BodyTagSupport {
 
 	protected ViewPermission getViewPermission() {
 		return viewPermission;
+	}
+	
+	/*abstract protected String getTemplate();
+	
+
+	protected void renderTemplate() throws JspException{
+		renderTemplate(getTemplate());
+	}*/
+	
+	protected void renderTemplate(String template) throws JspException{
+		try {
+			this.pageContext.include(template);
+		} catch (Exception e) {
+			throw new JspException("render template["+template+"] error : " + e.getMessage(), e);
+		}
 	}
 }
