@@ -84,18 +84,18 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	@Override
 	protected int endTag() throws JspException {
+		BodyContent bc = this.getBodyContent();
+		if(bc!=null){
+			this.component.setBodyContent(bc.getString());
+		}
+		if(this.datagridRenderListener!=null){
+			this.datagridRenderListener.prepareRender(this, component);
+		}
+		
 		try {
-			BodyContent bc = this.getBodyContent();
-			if(bc!=null){
-				this.component.setBodyContent(bc.getString());
-			}
-			if(this.datagridRenderListener!=null){
-				this.datagridRenderListener.prepareRender(this, component);
-			}
 //			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
-			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
-		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage(), e);
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally{
 			clearComponentFromRequest(getGridVarName());
 			
@@ -103,6 +103,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //			clearTagStackFromRequest();
 		}
 		return EVAL_PAGE;
+	}
+	public String getTemplate() {
+		return template;
 	}
 	
 	
@@ -166,9 +169,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	}
 	
 	
-	public String getTemplate() {
-		return template;
-	}
 	public void setTemplate(String template) {
 		this.template = template;
 	}

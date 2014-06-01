@@ -5,13 +5,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.encrypt.MDEncrypt;
+import org.onetwo.common.utils.encrypt.MDFactory;
+import org.onetwo.common.web.view.jsp.TagUtils;
 
 abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 
 	
 //	public static final String MEHTOD_GET = "get";
 	
-	protected String fieldOfTokenFieldName = DEFAULT_CSRF_TOKEN_FIELD;
+	protected String tokenFieldName = DEFAULT_CSRF_TOKEN_FIELD;
+	protected MDEncrypt encrypt = MDFactory.MD5;
 //	protected boolean force;
 	/***
 	 * 获取token域的名称
@@ -19,9 +23,10 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 * @param response
 	 * @return
 	 */
-	protected String getTokenFieldName(HttpServletRequest request, HttpServletResponse response){
-		String tokenName = request.getParameter(fieldOfTokenFieldName);
-		return StringUtils.isBlank(tokenName)?fieldOfTokenFieldName:tokenName;
+	public String getTokenFieldName(){
+		/*String tokenName = request.getParameter(tokenFieldName);
+		return StringUtils.isBlank(tokenName)?tokenFieldName:tokenName;*/
+		return tokenFieldName;
 	}
 	/***
 	 * 获取已保存的token值
@@ -49,7 +54,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		if(!isValidCsrf(controller, request))
 			return ;
 		
-		String tokenFieldName = getTokenFieldName(request, response);
+		String tokenFieldName = getTokenFieldName();
 		String reqTokenValue = request.getParameter(tokenFieldName);
 		CsrfToken token = getStoredTokenValue(tokenFieldName, request, response);
 //		String storedTokenValue = token.getValue();
@@ -60,7 +65,9 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 			}else if(StringUtils.isBlank(reqTokenValue)){
 				handleInvalidToken(token, request, response);
 			}else{
-				if(!reqTokenValue.equalsIgnoreCase(token.getValue()))
+				/*if(!reqTokenValue.equalsIgnoreCase(token.getValue()))
+					handleInvalidToken(token, request, response);*/
+				if(!encrypt.checkEncrypt(token.getValue(), reqTokenValue))
 					handleInvalidToken(token, request, response);
 			}
 		} finally{
@@ -74,14 +81,14 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		throw new IllegalRequestException();
 	}
 
-	public void setFieldOfTokenFieldName(String fieldOfTokenFieldName) {
+	/*public void setFieldOfTokenFieldName(String fieldOfTokenFieldName) {
 		this.fieldOfTokenFieldName = fieldOfTokenFieldName;
 	}
 
 
 	public String getFieldOfTokenFieldName() {
 		return fieldOfTokenFieldName;
-	}
+	}*/
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -94,23 +101,20 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 */
 	@Override
 	public CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response){
-		String tokenFieldName = LangUtils.generateToken();
-		String tokenValue = LangUtils.generateToken(tokenFieldName);
-		CsrfToken token = new CsrfToken(tokenFieldName, tokenValue);
+		String tokenValue = LangUtils.generateToken(getTokenFieldName());
+		CsrfToken token = new CsrfToken(encrypt, getTokenFieldName(), tokenValue);
 		storeToken(token, request, response);
 		return token;
 	}
-	
 
+	/*protected String generateToken(String tokenFieldName) {
+		String s = encrypt.encryptWithSalt(tokenFieldName + System.currentTimeMillis() + LangUtils.getRadomString(6));
+		return s;
+	}*/
 	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response){
 		String safeUrl = url;
 		CsrfToken token = generateToken(request, response);
-		String param = fieldOfTokenFieldName+"="+token.getFieldName() +"&"+ token.getFieldName()+"="+token.getValue();
-		if(safeUrl.indexOf('?')!=-1){
-			safeUrl += "&" + param;
-		}else{
-			safeUrl += "?" + param;
-		}
+		safeUrl = TagUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue());
 		return safeUrl;
 	}
 	
