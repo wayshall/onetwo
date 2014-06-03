@@ -47,6 +47,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	private boolean buildQueryString = true;
 	
 	
+	private String custombar = "grid_custombar";
+	private String customform = "grid_customform";
+	
+	
 	public DataGridTag(){
 		this.datagridRenderListener = SpringApplication.getInstance().getBean(DatagridRenderListener.class, false);
 	}
@@ -131,6 +135,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setAjaxZoneName(ajaxZoneName);
 //		component.setAjaxInstName(ajaxInstName);
 		
+		component.setCustombar(custombar);
+		component.setCustomform(customform);
+		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
 
@@ -211,6 +218,14 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	public void setAjaxSupported(boolean ajaxSupported) {
 		this.ajaxSupported = ajaxSupported;
+	}
+
+	public void setCustombar(String custombar) {
+		this.custombar = custombar;
+	}
+
+	public void setCustomform(String customform) {
+		this.customform = customform;
 	}
 
 

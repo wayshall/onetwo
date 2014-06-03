@@ -30,7 +30,7 @@
       <description><![CDATA[name]]></description>
       <name>name</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
@@ -44,7 +44,7 @@
       <description><![CDATA[name]]></description>
       <name>name</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
