@@ -36,6 +36,11 @@ public class GridTagBean extends HtmlElement {
 	private String ajaxZoneName;
 //	private String ajaxInstName;
 	
+
+	
+	private String custombar;
+	private String customform;
+	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
 		if(!rows.contains(row)){
@@ -192,5 +197,20 @@ public class GridTagBean extends HtmlElement {
 		this.ajaxZoneName = ajaxZoneName;
 	}
 
-	
+	public String getCustombar() {
+		return custombar;
+	}
+
+	public void setCustombar(String custombar) {
+		this.custombar = custombar;
+	}
+
+	public String getCustomform() {
+		return customform;
+	}
+
+	public void setCustomform(String customform) {
+		this.customform = customform;
+	}
+
 }
