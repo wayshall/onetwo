@@ -19,6 +19,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javatuples.version>1.2</javatuples.version>
   </properties>
 
   <dependencies>
@@ -40,6 +41,12 @@
 	  <artifactId>freemarker</artifactId>
 	</dependency>
 	
+	<dependency>
+        <groupId>org.javatuples</groupId>
+        <artifactId>javatuples</artifactId>
+        <version>${javatuples.version}</version>
+        <scope>compile</scope>
+    </dependency>
 	<!-- 
 	<dependency>
 	  <groupId>javax.persistence</groupId>
