@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.web.view.TagThemeSetting;
+import org.onetwo.common.web.view.ThemeSetting;
 import org.onetwo.common.web.view.ViewPermission;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
@@ -21,16 +21,16 @@ abstract public class AbstractBodyTag extends BodyTagSupport {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	private ViewPermission viewPermission;
-	private TagThemeSetting themeSetting;
+	private ThemeSetting themeSetting;
 	
 	public AbstractBodyTag(){
 		this.viewPermission = SpringApplication.getInstance().getBean(ViewPermission.class, false);
-		this.themeSetting = SpringApplication.getInstance().getSpringHighestOrder(TagThemeSetting.class);
+		this.themeSetting = SpringApplication.getInstance().getSpringHighestOrder(ThemeSetting.class);
 		Assert.notNull(themeSetting);
 //		logger.info(""+this+", viewPermission: {}", viewPermission);
 	}
 	
-	protected TagThemeSetting getThemeSetting() {
+	protected ThemeSetting getThemeSetting() {
 		return themeSetting;
 	}
 
