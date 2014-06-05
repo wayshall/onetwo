@@ -26,10 +26,4 @@ public class SecurityWebContext {
 		return new SecurityWebExceptionResolver();
 	}
 	
-	@Bean
-	public SsoConfigInitializer ssoConfigInitializer(){
-		return new SsoConfigInitializer();
-	}
-	
-	
 }
