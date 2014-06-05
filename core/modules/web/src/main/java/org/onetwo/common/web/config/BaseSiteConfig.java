@@ -28,9 +28,10 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";
 
-	public static final String TAG_SETTING = "tag.setting";
-	public static final String TAG_THEME = "tag.theme";
-	public static final String LAYOUT_DEFAULT_PAGE = "layout.default.page";
+	public static final String THEME_SETTING = "theme.setting";
+	public static final String THEME_TAG = "theme.tag";
+	public static final String THEME_VIEW = "theme.view";
+	public static final String THEME_LAYOUT_DEFAULT_PAGE = "theme.layout.default.page";
 	
 	public static final String FILTER_INITIALIZERS = "filter.initializers";
 	
@@ -327,14 +328,17 @@ public class BaseSiteConfig extends AppConfig {
 		return getBoolean(LOG_OPERATION, false);
 	}
 
-	public String getTagSetting(){
-		return getProperty(TAG_SETTING, "");
+	public String getThemeSetting(){
+		return getProperty(THEME_SETTING, "");
 	}
-	public String getTagTheme(){
-		return getProperty(TAG_THEME, "");
+	public String getThemeTag(){
+		return getProperty(THEME_TAG, "");
 	}
-	public String getLayoutDefaultPage(){
-		return getProperty(LAYOUT_DEFAULT_PAGE, "application.jsp");
+	public String getThemeView(){
+		return getProperty(THEME_VIEW, "/views/");
+	}
+	public String getThemeLayoutDefaultPage(){
+		return getProperty(THEME_LAYOUT_DEFAULT_PAGE, "application.jsp");
 	}
 
 }
