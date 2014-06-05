@@ -23,6 +23,7 @@ import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.EmptySecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
+import org.onetwo.common.spring.web.mvc.JFishInternalResourceViewResolver;
 import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
@@ -42,7 +43,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.DefaultTagThemeSetting;
-import org.onetwo.common.web.view.TagThemeSetting;
+import org.onetwo.common.web.view.ThemeSetting;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrar;
@@ -239,9 +240,11 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Bean
 	public InternalResourceViewResolver jspResolver(){
-		InternalResourceViewResolver jspResoler = new InternalResourceViewResolver();
+		JFishInternalResourceViewResolver jspResoler = new JFishInternalResourceViewResolver();
 		jspResoler.setSuffix(".jsp");
-		jspResoler.setPrefix("/WEB-INF/views/");
+//		jspResoler.setPrefix("/WEB-INF/views/");
+		jspResoler.setPrefix("/WEB-INF");
+		jspResoler.setThemeSetting(themeSetting());
 		return jspResoler;
 	}
 	
@@ -424,8 +427,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean
-	public TagThemeSetting tagThemeSetting(){
-		String tagSetting = BaseSiteConfig.getInstance().getTagSetting();
+	public ThemeSetting themeSetting(){
+		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
 		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting))
 			return new SessionTagThemeSettting();
 		else

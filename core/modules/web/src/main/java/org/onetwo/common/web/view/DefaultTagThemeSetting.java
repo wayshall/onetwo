@@ -4,14 +4,22 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
-public class DefaultTagThemeSetting implements TagThemeSetting {
+public class DefaultTagThemeSetting implements ThemeSetting {
 	
 	public static String WEB_INF_DIR = "/WEB-INF";
 	public static String BASE_TAG_DIR = "/WEB-INF/tags";
-	public static String BASE_LAYOUT_DIR = "/WEB-INF/views/layout/";
+	public static String BASE_LAYOUT_DIR = "layout/";
 
 	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
+	private String themeTag = siteConfig.getThemeTag();
+	private String themeLayoutDefaultPage = siteConfig.getThemeLayoutDefaultPage();
+	private String themeView = siteConfig.getThemeView();
 	
+	@Override
+	public String getViewPage(String path) {
+		return getThemeView() + path;
+	}
+
 	@Override
 	public String getLayoutPage(String path){
 		String layoutPage = path;
@@ -19,9 +27,10 @@ public class DefaultTagThemeSetting implements TagThemeSetting {
 			layoutPage = TagUtils.getViewPage(path);
 		}else{
 			if(StringUtils.isBlank(layoutPage))
-				layoutPage = this.getLayout();
+				layoutPage = this.getThemeLayoutDefaultPage();
+			String baseLayoutDir = WEB_INF_DIR + getThemeView() + BASE_LAYOUT_DIR;
 			layoutPage = StringUtils.appendEndWith(layoutPage, ".jsp");
-			layoutPage = getDirPage(BASE_LAYOUT_DIR, layoutPage);
+			layoutPage = getDirPage(baseLayoutDir, layoutPage);
 		}
 		return layoutPage;
 	}
@@ -29,7 +38,7 @@ public class DefaultTagThemeSetting implements TagThemeSetting {
 	@Override
 	public String getTagPage(String path){
 		String t = StringUtils.appendEndWith(path, ".jsp");
-		String baseTagDir = getTheme();
+		String baseTagDir = getThemeTag();
 		baseTagDir = StringUtils.appendEndWith(baseTagDir, "/");
 		if(StringUtils.isBlank(baseTagDir)){
 			baseTagDir = BASE_TAG_DIR;
@@ -42,12 +51,16 @@ public class DefaultTagThemeSetting implements TagThemeSetting {
 	}
 	
 	
-	public String getTheme() {
-		return siteConfig.getTagTheme();
+	public String getThemeView() {
+		return themeView;
 	}
 
-	public String getLayout() {
-		return siteConfig.getLayoutDefaultPage();
+	public String getThemeTag() {
+		return this.themeTag;
+	}
+
+	public String getThemeLayoutDefaultPage() {
+		return this.themeLayoutDefaultPage;
 	}
 
 	protected String getDirPage(String baseDir, String path){
