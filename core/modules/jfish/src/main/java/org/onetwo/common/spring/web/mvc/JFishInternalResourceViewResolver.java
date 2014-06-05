@@ -1,18 +1,14 @@
 package org.onetwo.common.spring.web.mvc;
 
+import java.util.Locale;
+
 import org.onetwo.common.web.view.ThemeSetting;
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 public class JFishInternalResourceViewResolver extends InternalResourceViewResolver {
 
 	private ThemeSetting themeSetting;
-	
-	@Override
-	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
-		viewName = themeSetting.getViewPage(viewName);
-		return super.buildView(viewName);
-	}
 
 	public ThemeSetting getThemeSetting() {
 		return themeSetting;
@@ -20,6 +16,11 @@ public class JFishInternalResourceViewResolver extends InternalResourceViewResol
 
 	public void setThemeSetting(ThemeSetting themeSetting) {
 		this.themeSetting = themeSetting;
+	}
+	
+	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		String themeViewName = themeSetting.getViewPage(viewName);
+		return super.resolveViewName(themeViewName, locale);
 	}
 
 }
