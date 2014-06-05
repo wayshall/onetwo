@@ -2,6 +2,7 @@ package org.onetwo.common.web.view;
 
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.view.jsp.TagUtils;
 
 public class DefaultTagThemeSetting implements TagThemeSetting {
 	
@@ -14,10 +15,14 @@ public class DefaultTagThemeSetting implements TagThemeSetting {
 	@Override
 	public String getLayoutPage(String path){
 		String layoutPage = path;
-		if(StringUtils.isBlank(layoutPage))
-			layoutPage = this.getLayout();
-		layoutPage = StringUtils.appendEndWith(layoutPage, ".jsp");
-		layoutPage = getDirPage(BASE_LAYOUT_DIR, layoutPage);
+		if(path!=null && path.startsWith("/")){
+			layoutPage = TagUtils.getViewPage(path);
+		}else{
+			if(StringUtils.isBlank(layoutPage))
+				layoutPage = this.getLayout();
+			layoutPage = StringUtils.appendEndWith(layoutPage, ".jsp");
+			layoutPage = getDirPage(BASE_LAYOUT_DIR, layoutPage);
+		}
 		return layoutPage;
 	}
 	
