@@ -34,6 +34,9 @@ var Common = function () {
 		},
 		
 		showBlockMsg: function(message){
+			var existBlock = $('div.modal.hide.fade.in');
+			if(existBlock.length>0)
+				return ;
 			var loadDiv = $('#loadingModal');
 			if(loadDiv.length==0){
 				loadDiv = $(loadHtml);
@@ -47,7 +50,7 @@ var Common = function () {
 		closeBlockMsg: function(){
 			var loadDiv = $('#loadingModal');
 			if(loadDiv)
-				loadDiv.modal('toggle');
+				loadDiv.modal('hide');
 		}
 		
 	});
