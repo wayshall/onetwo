@@ -6,6 +6,7 @@ import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
+@SuppressWarnings("serial")
 public class SsoClientConfig extends SsoConfig {
 
 	@Override
@@ -23,7 +24,7 @@ public class SsoClientConfig extends SsoConfig {
 		String url = getProperty("server.login.url");
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/login";
-			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
+			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());
 		}
 		return url;
 	}
@@ -31,7 +32,7 @@ public class SsoClientConfig extends SsoConfig {
 		String url = getProperty("server.logout.url");
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/logout";
-			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, BaseSiteConfig.getInstance().getAppCode());
+			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());
 		}
 		return url;
 	}
@@ -41,5 +42,13 @@ public class SsoClientConfig extends SsoConfig {
 			url = SecurityPluginUtils.getSsoUserServiceExporterDefaultUrl(getServerUrl());
 		}
 		return url;
+	}
+	
+	public String getClientCode(){
+		String clientCode = getProperty("client.code");
+		if(StringUtils.isBlank(clientCode)){
+			clientCode = BaseSiteConfig.getInstance().getAppCode();
+		}
+		return clientCode;
 	}
 }
