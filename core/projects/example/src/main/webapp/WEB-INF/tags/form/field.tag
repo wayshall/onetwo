@@ -43,7 +43,7 @@
 		break;
 	case select:
 		%>
-		<form:select path="${field.name}" disabled="${field.disabled }" data-toggle="${field.title==null?'':'tooltip'}" title="${field.title}" cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>" onclick="${field.onclick}">
+		<form:select id="${field.id}" path="${field.name}" disabled="${field.disabled }" data-toggle="${field.title==null?'':'tooltip'}" title="${field.title}" cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>" onclick="${field.onclick}">
 			<c:if test="${field.emptyOption}"><option value="">${t:escapeHtml(field.emptyOptionLabel)}</option></c:if>
 			<form:options items="${field.items}" itemLabel="${field.itemLabel}" itemValue="${field.itemValue }" />
 		</form:select>
