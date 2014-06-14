@@ -371,7 +371,7 @@ abstract public class DateUtil {
 
 	public static SimpleDateFormat getDateFormat(String p) {
 		if (StringUtils.isBlank(p))
-			p = DateOnly;
+			p = Date_Only;
 		SimpleDateFormat sdf = createDateFormat(p);
 		return sdf;
 	}

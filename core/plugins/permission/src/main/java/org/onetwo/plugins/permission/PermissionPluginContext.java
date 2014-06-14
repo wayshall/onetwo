@@ -3,6 +3,7 @@ package org.onetwo.plugins.permission;
 import org.onetwo.common.web.view.ViewPermission;
 import org.onetwo.plugins.permission.service.PermissionConfigBuilder;
 import org.onetwo.plugins.permission.service.PermissionHandlerMappingListener;
+import org.onetwo.plugins.permission.service.PermissionManager;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
 import org.onetwo.plugins.permission.service.ViewPermissionImpl;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,7 @@ public class PermissionPluginContext {
 	}
 	
 	@Bean
-	public PermissionManagerImpl permissionManagerImpl(){
+	public PermissionManager permissionManagerImpl(){
 		return new PermissionManagerImpl();
 	}
 	

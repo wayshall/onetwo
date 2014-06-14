@@ -1468,6 +1468,9 @@ public class LangUtils {
 	public static String padLeft(String s, int alength, String append){
 		return pad(s, alength, append.charAt(0), true);
 	}
+	public static String padRight(String s, int alength, String append){
+		return pad(s, alength, append.charAt(0), false);
+	}
 	
 	public static String pad(String s, int alength, char append, boolean padLeft){
 		int length = Math.abs(alength);

@@ -4,14 +4,26 @@ import java.util.Date;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class ParserContextFunctionSet {
+	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")", "'", "\"\"", "/", "+", "-"};
+	
 	public static final String CONTEXT_KEY = "_func";//helper
 	private static final ParserContextFunctionSet instance = new ParserContextFunctionSet();
 	
 	public static ParserContextFunctionSet getInstance() {
 		return instance;
+	}
+	
+	public String check(String sqlValue){
+		Assert.notNull(sqlValue);
+		for(String str : SQL_KEY_WORKDS){
+			if(sqlValue.indexOf(str)!=-1)
+				LangUtils.throwBaseException("sql value is unsafe : " + sqlValue);
+		}
+		return sqlValue;
 	}
 	
 	public String join(String[] strs, String joiner){

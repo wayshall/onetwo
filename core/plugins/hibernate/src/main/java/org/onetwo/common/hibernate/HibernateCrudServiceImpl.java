@@ -141,6 +141,12 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 	public T findUnique(Object... properties) {
 		return super.findUnique(properties);
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public T findOne(Object... properties) {
+		return super.findOne(properties);
+	}
 	
 	protected ValidationBindingResult validate(Object obj, Class<?>... groups){
 		ValidationBindingResult validations = SpringApplication.getInstance().getValidator().validate(obj);

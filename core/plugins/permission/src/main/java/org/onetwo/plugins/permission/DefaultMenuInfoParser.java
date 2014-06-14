@@ -25,8 +25,8 @@ import org.springframework.core.type.classreading.MetadataReader;
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	private static final String CODE_SEPRATOR = "_";
 
-	private final Map<String, IPermission> menuNodeMap = new LinkedHashMap<String, IPermission>(50);
-	private final Map<Class<?>, IPermission> menuNodeMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
+	private final Map<String, IPermission> permissionMap = new LinkedHashMap<String, IPermission>(50);
+	private final Map<Class<?>, IPermission> permissionMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
 	private IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> rootMenu;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
@@ -35,8 +35,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	private int sortStartIndex = 1000;
 	
 
-	public Map<String, ? extends IPermission> getMenuNodeMap() {
-		return menuNodeMap;
+	public Map<String, ? extends IPermission> getPermissionMap() {
+		return permissionMap;
 	}
 	
 	public String getRootMenuCode(){
@@ -201,8 +201,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		perm.setSort(sort.intValue());
 		perm.setHidden(hidden);
 //		perm.setSyscode(syscode);
-		this.menuNodeMap.put(perm.getCode(), perm);
-		this.menuNodeMapByClass.put(permissionClass, perm);
+		this.permissionMap.put(perm.getCode(), perm);
+		this.permissionMapByClass.put(permissionClass, perm);
 		return perm;
 	}
 	
@@ -220,7 +220,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		MenuMapping mapping = menuClass.getAnnotation(MenuMapping.class);
 		if(mapping!=null){
 			Class<?> pcls = mapping.parent();
-			IPermission perm = this.menuNodeMapByClass.get(pcls);
+			IPermission perm = this.permissionMapByClass.get(pcls);
 			if(perm==null)
 				throw new BaseException("parse menu class["+menuClass+"] error. no parent menu found: " + pcls);
 			code = perm.getCode() + CODE_SEPRATOR + code;
@@ -228,12 +228,12 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		return code;
 	}
 	
-	public IPermission getMenuNode(Class<?> clazz){
-		return this.menuNodeMapByClass.get(clazz);
+	public IPermission getPermission(Class<?> clazz){
+		return this.permissionMapByClass.get(clazz);
 	}
 	
 	public IPermission getMenuNode(String code){
-		return (IPermission)menuNodeMap.get(code);
+		return (IPermission)permissionMap.get(code);
 	}
 
 	public IMenu getRootMenu() {

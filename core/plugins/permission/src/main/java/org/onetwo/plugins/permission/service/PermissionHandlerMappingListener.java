@@ -34,7 +34,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 					if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null)
 						continue;
 					
-					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getMenuNode(codeClass);
+					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getPermission(codeClass);
 					if(perm==null)
 						throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
 					if(IMenu.class.isInstance(perm)){
