@@ -11,7 +11,7 @@ import org.onetwo.common.web.s2.security.AuthenticationInvocation;
  *
  */
 public interface MethodAuthenticator {
-
+	
 	public void authenticate(AuthenticationInvocation authentication, AuthenticationContext context) throws Exception;
 	
 }

@@ -13,8 +13,8 @@ public interface MenuInfoParser {
 	public abstract String parseCode(Class<?> permClass);
 	
 	public String getRootMenuCode();
-	public Map<String, ? extends IPermission> getMenuNodeMap();
-	public IPermission getMenuNode(Class<?> clazz);
+	public Map<String, ? extends IPermission> getPermissionMap();
+	public IPermission getPermission(Class<?> clazz);
 	public IMenu<?, ?> getRootMenu();
 
 }
