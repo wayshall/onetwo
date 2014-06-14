@@ -1,6 +1,9 @@
 package org.onetwo.plugins.admin;
 
+import java.util.List;
+
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
+import org.onetwo.plugins.admin.model.AdminModelContext;
 
 
 public class AdminPlugin extends AbstractContextPlugin<AdminPlugin> {
@@ -17,6 +20,10 @@ public class AdminPlugin extends AbstractContextPlugin<AdminPlugin> {
 		instance = plugin;
 	}
 
+	@Override
+	public void onJFishContextClasses(List<Class<?>> annoClasses) {
+		annoClasses.add(AdminModelContext.class);
+	}
 
 
 }

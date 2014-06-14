@@ -21,7 +21,10 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		System.out.println(LangUtils.encodeUrl("%"));
+		String[] str = new String[]{"aa", "bb"};
+		String[] str2 = str.clone();
+		str2[0] = "cc";
+		System.out.println("str:" + str[0]);
 	}
 	
 	public static void test2(String[] args){

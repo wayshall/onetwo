@@ -24,7 +24,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	protected final Logger logger = MyLoggerFactory.getLogger(SelectExtQueryImpl.class);
 
 
-	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")"};
+	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")", "'", "\"\"", "/", "+", "-"};
 
 	protected Class<?> entityClass;
 	protected String alias;

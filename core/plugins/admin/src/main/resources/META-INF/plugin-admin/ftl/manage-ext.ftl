@@ -182,11 +182,8 @@
          <iframe id="mainIframe" name="mainIframe" src="" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
     </div>
      -->
-    <div id="readCardPage" class="x-hide-display" style="height:100%;overflow:scroll;overflow-y:hidden">
-         <iframe id="mainIframe" name="mainIframe" src="admintools" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
-    </div>
     <div id="contentPage" class="x-hide-display" style="height:100%;overflow:scroll;overflow-y:hidden">
-         <iframe id="contentIframe" name="contentIframe" src="" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
+         <iframe id="contentIframe" name="contentIframe" src="${adminPluginConfig.mainUrl}" width="100%"  width="100%" height="100%" frameborder="0" style="height:100%;overflow:scroll;overflow-y:hidden"></iframe>
     </div>
    
     <div id="props-panel" class="x-hide-display" style="width:200px;height:200px;overflow:hidden;">

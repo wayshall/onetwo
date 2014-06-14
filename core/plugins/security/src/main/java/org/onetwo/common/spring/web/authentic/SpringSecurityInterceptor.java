@@ -101,7 +101,8 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 		
 		HandlerMethod hm = getHandlerMethod(handler);
 		if(hm!=null && MethodAuthenticator.class.isInstance(hm.getBean())){
-			((MethodAuthenticator)hm.getBean()).authenticate(authentication, context);
+			MethodAuthenticator methodAuth = (MethodAuthenticator)hm.getBean();
+			methodAuth.authenticate(authentication, context);
 		}else{
 			authentication.authenticate(context);
 		}

@@ -4,6 +4,8 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 
 final public class AdminPluginConfig {
 
+	public static final String ADMIN_TREEPANEL = "admin.treepanel";
+	public static final String ADMIN_MAIN_URL = "admin.main.url";
 	public static final String ADMIN_INDEX_TITLE = "admin.index.title";
 	public static final String ADMIN_INDEX_VIEW = "admin.index.view";
 	public static final String ADMIN_INDEX_ENABLE = "admin.index.enable";
@@ -22,10 +24,24 @@ final public class AdminPluginConfig {
 		return config.getBoolean(ADMIN_INDEX_ENABLE, false);
 	}
 	
+	public String getTreepanel(){
+		return config.getProperty(ADMIN_TREEPANEL, "multi");
+	}
+	
+	public boolean isSinglePanel(){
+		return "single".equals(getTreepanel());
+	}
+	
 	public String getTitle(){
-		return BaseSiteConfig.getInstance().getProperty("admin.index.title", "管理后台");
+		return BaseSiteConfig.getInstance().getProperty(ADMIN_INDEX_TITLE, "管理后台");
 	}
 	public String getAdminView(){
-		return BaseSiteConfig.getInstance().getProperty("admin.index.view");
+		return BaseSiteConfig.getInstance().getProperty(ADMIN_INDEX_VIEW);
+	}
+	public String getMainUrl(){
+		if(config.containsKey(ADMIN_MAIN_URL))
+			return config.getBaseURL() + config.getProperty(ADMIN_MAIN_URL);
+		else
+			return "";
 	}
 }

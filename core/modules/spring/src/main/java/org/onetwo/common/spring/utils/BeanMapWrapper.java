@@ -1,7 +1,6 @@
 package org.onetwo.common.spring.utils;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -121,13 +120,8 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				Object value = data.get(token.key);
 				if(value==null)
 					return null;
-				if(token.isList()){
-					if(value instanceof List){
-						value = LangUtils.cast(value, List.class).get(token.listIndex);
-					}else{
-						value = Array.get(value, token.listIndex);
-					}
-				}
+
+				value = getValueByToken(token, value);
 				BeanWrapper bw = SpringUtils.newBeanWrapper(value);
 				return bw.getPropertyValue(token.propertyPath);
 			}else{
@@ -138,11 +132,33 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 		}
 	}
 
+	private Object getValueByToken(MapTokens token, Object value){
+		Object rs = value;
+		if(token.isList()){
+			if(value instanceof List){
+				rs = LangUtils.cast(value, List.class).get(token.listIndex);
+			}else{
+				rs = Array.get(value, token.listIndex);
+			}
+		}
+		return rs;
+	}
 
 	@Override
 	public boolean isReadableProperty(String propertyName) {
 		if(mapData){
-			return true;
+			MapTokens token = parseMapExp(propertyName);
+			if(token.hasPropertyPath()){
+				Object value = data.get(token.key);
+				if(value==null)
+					return data.containsKey(token.key);
+				
+				value = getValueByToken(token, value);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(value);
+				return bw.isReadableProperty(token.propertyPath);
+			}else{
+				return data.containsKey(propertyName);
+			}
 		}else{
 			return super.isReadableProperty(propertyName);
 		}

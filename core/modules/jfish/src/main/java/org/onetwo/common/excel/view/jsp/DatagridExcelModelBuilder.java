@@ -41,7 +41,7 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 		JsonMapper jsonMapper = JsonMapper.ignoreEmpty()
 											.filter(ExcelUtils.JSON_FILTER_TEMPLATE, "multiSheet", "varName")
 											.filter(ExcelUtils.JSON_FILTER_ROW, "row", "title", "space", "span", "height")
-											.filter(ExcelUtils.JSON_FILTER_FIELD, "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range", "colspan", "rowspan");
+											.filter(ExcelUtils.JSON_FILTER_FIELD, "row", "parentRow", "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range", "colspan", "rowspan");
 		String json = jsonMapper.toJson(workbook);
 //		tag.write("<input name=exporter type=hidden value='"+json+"'/>");
 		tagBean.setExportJsonTemplate(json);
