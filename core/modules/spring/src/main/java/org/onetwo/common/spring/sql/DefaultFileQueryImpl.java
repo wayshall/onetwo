@@ -93,6 +93,8 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
 		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
 		for(String parameterName : sqlWrapper.getParameterNames()){
+			if(!paramBean.isReadableProperty(parameterName))
+				continue;
 			Object value = paramBean.getPropertyValue(parameterName);
 			dataQuery.setParameter(parameterName, value);
 		}

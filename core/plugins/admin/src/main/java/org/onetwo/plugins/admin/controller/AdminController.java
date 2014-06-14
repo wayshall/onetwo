@@ -57,38 +57,14 @@ public class AdminController extends PluginSupportedController {
 			return mv(viewName, "treePanelDatas", "[]", "title", title);
 		
 		ExtMenuModel root = menuTree.get(0);
-		
+		String treePanelDatas = AdminPluginConfig.getInstance().isSinglePanel()?root.getTreePanel():root.getChildrenAsTreePanel();
 //		ObjectMapper om = FastUtils.jsonMapperIgnoreNull().getObjectMapper();
 //		ArrayNode array = om.createArrayNode();
-		StringBuilder treePanelDatas = new StringBuilder();
-		treePanelDatas.append("[");
-		int index = 0;
-		List<ExtMenuModel> children = root.getChildren();
-		for(ExtMenuModel child : children){
-//			ObjectNode on = om.createObjectNode();
-			if(index!=0)
-				treePanelDatas.append(", ");
-			treePanelDatas.append("{");
-			treePanelDatas.append("title:\"").append(child.getText()).append("\",");
-			treePanelDatas.append("iconCls:\"nav\",");
-			treePanelDatas.append("xtype:\"treepanel\",");
-			treePanelDatas.append("listeners:{ itemclick: clickMenuItem },");
-			treePanelDatas.append("store: {root: ").append(child.getJsonString()).append("}");
-			treePanelDatas.append("}");
-//			on.put("iconCls", "nav");
-//			on.put("width", 200);
-//			on.put("xtype", "treepanel");
-//			on.put("containerScroll", false);
-//			on.put("autoScroll", false);
-//			on.put("listeners", );
-//			on.put("store", on.POJONode(on.put("root", on.POJONode(child))));
-//			array.add(on);
-			index++;
-		}
-		treePanelDatas.append("]");
+		
 //		String treePanelDatas = FastUtils.jsonMapperIgnoreNull().toJson(array);
 //		System.out.println("json: " + treePanelDatas);
 		
 		return mv(viewName, "root", root, "treePanelDatas", treePanelDatas, "theme", theme, "title", title);
 	}
+	
 }

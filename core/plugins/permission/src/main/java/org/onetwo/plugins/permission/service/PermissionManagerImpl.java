@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PermissionManagerImpl {
+public class PermissionManagerImpl implements PermissionManager {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, ? extends IPermission> menuNodeMap;
@@ -31,19 +31,26 @@ public class PermissionManagerImpl {
 	public PermissionManagerImpl() {
 	}
 
+	@Override
 	public void build(){
 		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		IMenu rootMenu = menuInfoParser.parseTree();
 //		logger.info("menu:\n" + rootMenu);
-		this.menuNodeMap = menuInfoParser.getMenuNodeMap();
+		this.menuNodeMap = menuInfoParser.getPermissionMap();
 	}
 	
+	@Override
+	public IPermission getPermission(Class<?> permClass){
+		return menuInfoParser.getPermission(permClass);
+	}
 
+	@Override
 	@Transactional
 	public <T extends IMenu> T getDatabaseRootMenu() {
 		return (T)baseEntityManager.findUnique(IMenu.class, "code", this.menuInfoParser.getRootMenuCode());
 	}
 	
+	@Override
 	@Transactional
 	public <T extends IMenu> T getDatabaseMenuNode(Class<?> clazz) {
 		String code = menuInfoParser.parseCode(clazz);
@@ -53,6 +60,7 @@ public class PermissionManagerImpl {
 	/****
 	 * 同步菜单
 	 */
+	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
 		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
@@ -122,6 +130,7 @@ public class PermissionManagerImpl {
 		baseEntityManager.remove(dbperm);
 	}
 	
+	@Override
 	public <T> T findById(Long id){
 		return (T)baseEntityManager.findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
 	}
