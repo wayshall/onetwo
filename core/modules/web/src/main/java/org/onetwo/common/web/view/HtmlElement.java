@@ -128,8 +128,8 @@ abstract public class HtmlElement {
 
 	public String getGridAttributesHtml() {
 		StringBuilder attributesBuf = new StringBuilder();
-		buildAttributeTag(attributesBuf, "style", getCssStyle());
-		buildAttributeTag(attributesBuf, "class", getCssClass());
+//		buildAttributeTag(attributesBuf, "style", getCssStyle());
+//		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
 		return attributesBuf.toString();
 	}
