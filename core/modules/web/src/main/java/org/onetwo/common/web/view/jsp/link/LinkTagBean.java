@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp.link;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 
 public class LinkTagBean extends HtmlElement {
@@ -33,5 +34,15 @@ public class LinkTagBean extends HtmlElement {
 	public void setSafeUrl(boolean safeUrl) {
 		this.safeUrl = safeUrl;
 	}
-	
+
+	public String getAttributesHtml() {
+		String html = super.getAttributesHtml();
+		StringBuilder attributesBuf = new StringBuilder(html);
+		buildAttributeTag(attributesBuf, "data-method", dataMethod);
+		if(StringUtils.isNotBlank(dataMethod)){
+			String msg = StringUtils.isBlank(dataConfirm)?"确定要提交此操作？":dataConfirm;
+			buildAttributeTag(attributesBuf, "data-confirm", msg);
+		}
+		return attributesBuf.toString();
+	}
 }
