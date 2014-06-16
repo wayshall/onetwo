@@ -31,6 +31,29 @@ final public class ToolEl {
 	public static String asTime(Date date){
 		return DateUtil.formatTime(date);
 	}
+	
+	public static String attr(String attr, String val){
+		if(StringUtils.isBlank(val))
+			return "";
+		StringBuilder attributesBuf = new StringBuilder();
+		attributesBuf.append(attr).append("=\"").append(HtmlUtils.htmlEscape(val)).append("\"");
+		return attributesBuf.toString();
+	}
+	
+	public static String attrs(String attr, String val1, String val2){
+		if(StringUtils.isBlank(val1) && StringUtils.isBlank(val2))
+			return "";
+		StringBuilder attributesBuf = new StringBuilder();
+		attributesBuf.append(attr).append("=\"");
+		if(StringUtils.isBlank(val1)){
+			attributesBuf.append(HtmlUtils.htmlEscape(val1)).append(" ");
+		}
+		if(StringUtils.isBlank(val2)){
+			attributesBuf.append(HtmlUtils.htmlEscape(val2));
+		}
+		attributesBuf.append("\"");
+		return attributesBuf.toString();
+	}
 
 	private ToolEl(){}
 }

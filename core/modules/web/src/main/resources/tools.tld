@@ -54,6 +54,18 @@
   </function>
   
   <function>
+  	<name>attr</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String attr(java.lang.String attr, java.lang.String val)</function-signature>
+  </function>
+  
+  <function>
+  	<name>attrs</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String attrs(java.lang.String attr, java.lang.String val1, java.lang.String val2)</function-signature>
+  </function>
+  
+  <function>
   	<name>firstNotblank</name>
   	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
   	<function-signature>java.lang.String firstNotblank(java.lang.String, java.lang.String, java.lang.String)</function-signature>
