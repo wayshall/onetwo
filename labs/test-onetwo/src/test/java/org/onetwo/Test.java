@@ -24,7 +24,7 @@ public class Test {
 		String[] str = new String[]{"aa", "bb"};
 		String[] str2 = str.clone();
 		str2[0] = "cc";
-		System.out.println("str:" + str[0]);
+		System.out.println("str:" + str[0]+null);
 	}
 	
 	public static void test2(String[] args){
