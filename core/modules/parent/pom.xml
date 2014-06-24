@@ -74,15 +74,6 @@
     <jodatime.version>2.1</jodatime.version>
     <fileupload.version>1.2.2</fileupload.version>
   </properties> 
- 
-  <distributionManagement>
-	<snapshotRepository>
-		<id>Snapshots</id>
-		<name>Snapshots</name>
-		<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
-	</snapshotRepository>
-  </distributionManagement>
-   
 	
 <dependencyManagement>
   <dependencies>
