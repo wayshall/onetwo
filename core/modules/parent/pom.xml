@@ -551,7 +551,6 @@
 	  <groupId>javax.servlet</groupId>
 	  <artifactId>servlet-api</artifactId>
 	  <version>${servlet.version}</version>
-	  <scope>test</scope>
 	</dependency>
 
 	<dependency>
