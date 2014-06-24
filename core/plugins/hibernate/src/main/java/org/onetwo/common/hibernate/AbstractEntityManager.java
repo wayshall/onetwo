@@ -345,7 +345,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
 		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
-		Number count = this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
+		Number count = (Number)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 		if(count==null)
 			count = 0;
 		return count;
