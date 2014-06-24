@@ -569,6 +569,7 @@
   </dependencies>
 </dependencyManagement>
 
+
 <!-- 插件配置 -->
 	<build>
 		<pluginManagement>
