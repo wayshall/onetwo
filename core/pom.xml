@@ -7,7 +7,7 @@
   <version>1.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Onetwo</name>
+  <name>onetwo</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -33,15 +33,6 @@
 				<module>modules/orm</module>
 				<module>modules/jfish</module>
 	  	</modules>
-	  	<!-- 
-		  <distributionManagement>
-			<snapshotRepository>
-				<id>Snapshots</id>
-				<name>Snapshots</name>
-				<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
-			</snapshotRepository>
-		  </distributionManagement>
-		   -->
 	  </profile>
 	</profiles>
 
