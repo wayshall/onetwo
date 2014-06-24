@@ -51,14 +51,14 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		Assert.notNull(menuInfoable);
 		Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
 
-		String syscode = null;
+		String appCode = null;
 		IPermission perm = null;
 		try {
-			syscode = getFieldValue(menuInfoClass, MenuMetaFields.SYSCODE, String.class, menuInfoClass.getSimpleName());
+			appCode = getFieldValue(menuInfoClass, MenuMetaFields.APP_CODE, String.class, menuInfoClass.getSimpleName());
 			/*if(StringUtils.isBlank(sysname)){
 				throw new BaseException("RootMenuClass must has a sysname field and it's value can not be blank.");
 			}*/
-			perm = parseMenuClass(menuInfoClass, syscode);
+			perm = parseMenuClass(menuInfoClass, appCode);
 			perm.setSort(1);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
@@ -94,7 +94,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			return rootMenu;
 		
 		for(Class<?> childMc : childMenuClass){
-			IPermission childPerm =  parseMenuClass(childMc, syscode);
+			IPermission childPerm =  parseMenuClass(childMc, appCode);
 			if(IMenu.class.isInstance(childPerm)){
 				rootMenu.addChild((IMenu)childPerm);
 			}else{
@@ -200,7 +200,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
 		perm.setHidden(hidden);
-//		perm.setSyscode(syscode);
+		perm.setAppCode(syscode);
 		this.permissionMap.put(perm.getCode(), perm);
 		this.permissionMapByClass.put(permissionClass, perm);
 		return perm;
