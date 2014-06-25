@@ -549,7 +549,7 @@
 	  <groupId>javax.servlet.jsp</groupId>
 	  <artifactId>jsp-api</artifactId>
 	  <version>2.2.1-b03</version>
-	  <scope>test</scope>
+	  <scope>provided</scope>
 	</dependency>
 	
 	<dependency>
