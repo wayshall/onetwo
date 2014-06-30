@@ -1,4 +1,10 @@
-package org.onetwo.common.utils;
+package org.onetwo.bcard;
+
+import org.onetwo.common.utils.DefaultMergeListener;
+import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.MergeFileConfig;
+import org.onetwo.common.utils.MergeFileContext;
+import org.onetwo.common.utils.StringUtils;
 
 
 public class CompileDbprocMergeFile {
