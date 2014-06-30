@@ -688,6 +688,24 @@ public class FileUtils {
         }
     }
     
+
+    public static void writeStringListToFile(File file, List<String> datas){
+    	writeStringListToFile(file, null, datas);
+    }
+    
+    public static void writeStringListToFile(File file, String charset, List<String> datas){
+        Writer w = writer(file, charset);
+        try {
+            for(String data : datas){
+            	w.write(data);
+            }
+        } catch(Exception e){
+        	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
+        }finally {
+            IOUtils.closeQuietly(w);
+        }
+    }
+    
     public static Writer writer(File file, String charset){
     	OutputStreamWriter w = null;
         try {
