@@ -24,6 +24,7 @@ import org.onetwo.common.utils.map.ListMap;
 
 @SuppressWarnings("unchecked")
 public class JFishList<E> implements List<E>, Serializable {
+	private static final String SELF_KEY = ":this";
 	
 	
 	public static class EachContext {
@@ -282,7 +283,7 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			public String execute(E object) {
-				Object value = ReflectUtils.getProperty(object, propName);
+				Object value = SELF_KEY.equals(propName)?StringUtils.emptyIfNull(object):ReflectUtils.getProperty(object, propName);
 				return value==null?"":value.toString();
 			}
 			

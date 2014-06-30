@@ -1,12 +1,16 @@
 package org.onetwo.common.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.utils.list.JFishList;
 import org.springframework.util.ClassUtils;
 
 public class FileUtilsTest {
@@ -110,5 +114,24 @@ public class FileUtilsTest {
 		Assert.assertEquals(1, size.longValue());
 	}
 	
+	@Test
+	public void testWriteStringList(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/fileutils/string-list.txt";
+		File file = new File(filepath);
+		List<String> datas = Arrays.asList("aaa", "bbb", "cccc");
+		FileUtils.writeListTo(file, datas);
+		
+		String actual = JFishList.wrap(FileUtils.readAsList(file)).join(",", ":this");
+		Assert.assertEquals("aaa,bbb,cccc", actual);
+		file.delete();
+		
+		file = new File(filepath);
+		datas = Arrays.asList("1111", "2222", "cccc");
+		OutputStream output = FileUtils.openOutputStream(file);
+		FileUtils.writeListToWithClose(output, null, datas);
+		actual = JFishList.wrap(FileUtils.readAsList(file)).join(",", ":this");
+		Assert.assertEquals("1111,2222,cccc", actual);
+		file.delete();
+	}
 
 }
