@@ -51,12 +51,6 @@
 	
 	<dependency>
 	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-ejb</artifactId>
-	  <version>${onetwo.version}</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-orm</artifactId>
 	  <version>${onetwo.jfish.version}</version>
 	</dependency>
