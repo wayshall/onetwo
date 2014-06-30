@@ -61,44 +61,48 @@ public class FileUtils {
 
     
 	  //-----------------------------------------------------------------------
-	    /**
-	     * Opens a {@link FileOutputStream} for the specified file, checking and
-	     * creating the parent directory if it does not exist.
-	     * <p>
-	     * At the end of the method either the stream will be successfully opened,
-	     * or an exception will have been thrown.
-	     * <p>
-	     * The parent directory will be created if it does not exist.
-	     * The file will be created if it does not exist.
-	     * An exception is thrown if the file object exists but is a directory.
-	     * An exception is thrown if the file exists but cannot be written to.
-	     * An exception is thrown if the parent directory cannot be created.
-	     * 
-	     * @param file  the file to open for output, must not be <code>null</code>
-	     * @return a new {@link FileOutputStream} for the specified file
-	     * @throws IOException if the file object is a directory
-	     * @throws IOException if the file cannot be written to
-	     * @throws IOException if a parent directory needs creating but that fails
-	     * @since Commons IO 1.3
-	     */
-	    public static FileOutputStream openOutputStream(File file) throws IOException {
-	        if (file.exists()) {
-	            if (file.isDirectory()) {
-	                throw new IOException("File '" + file + "' exists but is a directory");
-	            }
-	            if (file.canWrite() == false) {
-	                throw new IOException("File '" + file + "' cannot be written to");
-	            }
-	        } else {
-	            File parent = file.getParentFile();
-	            if (parent != null && parent.exists() == false) {
-	                if (parent.mkdirs() == false) {
-	                    throw new IOException("File '" + file + "' could not be created");
-	                }
-	            }
-	        }
-	        return new FileOutputStream(file);
-	    }
+    /**
+     * Opens a {@link FileOutputStream} for the specified file, checking and
+     * creating the parent directory if it does not exist.
+     * <p>
+     * At the end of the method either the stream will be successfully opened,
+     * or an exception will have been thrown.
+     * <p>
+     * The parent directory will be created if it does not exist.
+     * The file will be created if it does not exist.
+     * An exception is thrown if the file object exists but is a directory.
+     * An exception is thrown if the file exists but cannot be written to.
+     * An exception is thrown if the parent directory cannot be created.
+     * 
+     * @param file  the file to open for output, must not be <code>null</code>
+     * @return a new {@link FileOutputStream} for the specified file
+     * @throws IOException if the file object is a directory
+     * @throws IOException if the file cannot be written to
+     * @throws IOException if a parent directory needs creating but that fails
+     * @since Commons IO 1.3
+     */
+    public static FileOutputStream openOutputStream(File file) {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new BaseException("File '" + file + "' exists but is a directory");
+            }
+            if (file.canWrite() == false) {
+                throw new BaseException("File '" + file + "' cannot be written to");
+            }
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null && parent.exists() == false) {
+                if (parent.mkdirs() == false) {
+                    throw new BaseException("File '" + file + "' could not be created");
+                }
+            }
+        }
+        try {
+			return new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("create FileOutputStream error.", e);
+		}
+    }
 	    
 
 	    
@@ -315,7 +319,7 @@ public class FileUtils {
 	}
 	
 	public static List<String> readAsListWithMap(File file, String charset, Map<String, Object> context){
-		List<String> datas = new ArrayList<String>();
+		List<String> datas = new JFishList<String>();
 		BufferedReader br = null;
 		try{
 			br = asBufferedReader(new FileInputStream(file), charset);
@@ -689,15 +693,16 @@ public class FileUtils {
     }
     
 
-    public static void writeStringListToFile(File file, List<String> datas){
-    	writeStringListToFile(file, null, datas);
+    public static void writeListTo(File file, List<?> datas){
+    	writeListTo(file, null, datas, "\n");
     }
     
-    public static void writeStringListToFile(File file, String charset, List<String> datas){
+    public static void writeListTo(File file, String charset, List<?> datas, String separator){
         Writer w = writer(file, charset);
         try {
-            for(String data : datas){
-            	w.write(data);
+            for(Object data : datas){
+            	w.write(data.toString());
+            	w.write(separator);
             }
         } catch(Exception e){
         	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
@@ -706,13 +711,55 @@ public class FileUtils {
         }
     }
     
+
+    public static void writeListTo(OutputStream output, String charset, List<?> datas){
+    	writeListTo(newWriter(output, charset), false, datas, "\n");
+    }
+    public static void writeListToWithClose(OutputStream output, String charset, List<?> datas){
+    	writeListTo(newWriter(output, charset), true, datas, "\n");
+    }
+    
+    
+    /****
+     * 
+     * @param output 本方法不关闭stream
+     * @param charset
+     * @param datas
+     * @param separator
+     */
+    public static void writeListTo(OutputStream output, String charset, List<?> datas, String separator){
+    	writeListTo(newWriter(output, charset), false, datas, separator);
+    }
+    
+    public static void writeListTo(Writer w, boolean closeStream, List<?> datas, String separator){
+        try {
+            for(Object data : datas){
+            	w.write(data.toString());
+            	w.write(separator);
+            }
+        } catch(Exception e){
+        	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
+        }finally {
+        	if(closeStream)
+        		IOUtils.closeQuietly(w);
+        }
+    }
+    
     public static Writer writer(File file, String charset){
+        return newWriter(openOutputStream(file), charset);
+    }
+    
+    
+    public static Writer newWriter(OutputStream output){
+    	return newWriter(output, null);
+    }
+    public static Writer newWriter(OutputStream output, String charset){
     	OutputStreamWriter w = null;
         try {
         	if(StringUtils.isBlank(charset)){
-        		w = new OutputStreamWriter(openOutputStream(file));
+        		w = new OutputStreamWriter(output);
         	}else{
-        		w = new OutputStreamWriter(openOutputStream(file), charset);
+        		w = new OutputStreamWriter(output, charset);
         	}
         } catch(Exception e){
         	throw new BaseException("create writer error : " + e.getMessage(), e);
