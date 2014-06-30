@@ -231,6 +231,7 @@ var Common = function () {
 				var url = $(this).attr('data-url');
 				
 			});
+
 			
 		},
 		
