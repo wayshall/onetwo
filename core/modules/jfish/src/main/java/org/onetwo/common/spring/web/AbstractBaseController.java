@@ -3,6 +3,7 @@ package org.onetwo.common.spring.web;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -174,21 +175,22 @@ abstract public class AbstractBaseController {
 		}
 	}
 	
-	protected void download(HttpServletResponse response, List<?> datas, String filename){
-		ServletOutputStream out = null;
+	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
+		PrintWriter out = null;
 		try {
-			out = response.getOutputStream();
+			out = response.getWriter();
 			response.setContentType(DEFAULT_CONTENT_TYPE); 
 			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment;filename=" + name);
 			for(Object data : datas){
 				out.println(data.toString());
 			}
+			out.flush();
 		} catch (Exception e) {
 			String msg = "下载文件出错：";
 			logger.error(msg + e.getMessage(), e);
 		} finally{
-//			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(out);
 		}
 	}
 	
