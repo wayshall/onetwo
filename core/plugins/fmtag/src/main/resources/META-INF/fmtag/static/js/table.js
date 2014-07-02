@@ -357,9 +357,9 @@ var Common = function () {
 						throw "notify select element has not defined";
 					}
 					var select = $('#'+childConfig.el);
-					select.empty();
-					if(!$(this).val())
+					if(select.length==0 || !$(this).val())
 						return;
+					select.empty();
 					select.attr("disabled", "true");
 					
 					var url = (childConfig.url+$(_this.parent).val()) || alert("notify url can not blank!");

@@ -13,12 +13,8 @@ public class NiceDate {
 	}
 
 	public static NiceDate New(Date date){
-		NiceDate nd = null;
-		if(date==null)
-			nd = new NiceDate();
-		else
-			nd = new NiceDate(date);
-		return nd;
+		Assert.notNull(date);
+		return new NiceDate(date);
 	}
 
 	public static NiceDate New(String dateStr){
