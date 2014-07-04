@@ -130,7 +130,15 @@ public abstract class IgnoreFiler implements Filter{
 			webfilter.onFilter(request, response);
 		}
 	}
-	
+
+
+	/*protected void onThrowable(HttpServletRequest request, HttpServletResponse response, Throwable ex) throws IOException, ServletException{
+		if(webFilters==null || webFilters.isEmpty())
+			return ;
+		for(WebFilter webfilter : webFilters){
+			webfilter.onThrowable(request, response, ex);
+		}
+	}*/
 
 	protected void onFinally(HttpServletRequest request, HttpServletResponse response){
 		if(webFilters==null || webFilters.isEmpty())
@@ -153,7 +161,9 @@ public abstract class IgnoreFiler implements Filter{
 			this.onFilter(request, response);
 			try {
 				this.doFilterInternal(servletRequest, servletResponse, filterChain);
-			} finally {
+			}/* catch (Throwable e) {
+				this.onThrowable(request, response, e);
+			}*/ finally {
 				this.onFinally(request, response);
 			}
 		}else {
