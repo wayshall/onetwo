@@ -7,7 +7,7 @@ public interface WebFilter {
 
 	public void onFilter(HttpServletRequest request, HttpServletResponse response);
 	
-//	public void onException(HttpServletRequest request, HttpServletResponse response, Exception ex);
+//	public void onThrowable(HttpServletRequest request, HttpServletResponse response, Throwable ex) throws IOException, ServletException;
 	
 	public void onFinally(HttpServletRequest request, HttpServletResponse response);
 
