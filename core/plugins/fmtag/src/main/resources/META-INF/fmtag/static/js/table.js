@@ -326,6 +326,82 @@ var Common = function () {
 			return false;
 		},
 		
+
+		selecter : function(config){
+			return new jfish._selecter(config);
+		},
+		
+		_selecter : function(config){
+			var _this = this;
+			var aconfig = config || {};
+			this.config = aconfig;
+			this.selectEl = $('#'+config['el']);
+			this.actived = this.selectEl.length>0;
+//			this.type="selecter";
+
+			/*if(!$.nodeName(this.parent[0], "select")){
+				throw "element must be a select!"
+			}*/
+			var data_key = aconfig['dataKey'];
+			var data_value = aconfig['dataValue'];
+			this.activedInst = function(){return _this.actived?_this:null};
+			
+			this.loadDatas = function(ds){
+				if(!_this.actived){
+					alert("ajax selecter["+config.el+"] is not actived")
+					return ;
+				}
+				$(_this.selectEl).empty();
+				var emptyOption = aconfig['emptyOption'] || true;
+				if(emptyOption){
+					$(_this.selectEl).append("<option value=''>---请选择</option>");
+				}
+				
+				var dataUrl;
+				if(ds && ds.config){
+					dataUrl = aconfig.loadUrl + ds.selectEl.val();
+				}else if(typeof(ds)=="string"){
+					dataUrl = ds;
+				}else{
+					dataUrl = aconfig.loadUrl;
+				}
+				$.getJSON(dataUrl, {}, function(json){
+					if(json.length<1){
+						alert("没有数据！");
+						return ;
+					}
+					for(var i=0; i<json.length; i++){
+						var data = json[i];
+						$(_this.selectEl).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+					}
+					if(aconfig.checkedValue){
+						_this.selectEl.val(aconfig.checkedValue);
+						_this.selectEl.trigger('change');
+					}
+				});
+			};
+			
+			this.clearOptions = function(){
+				if(_this.actived){
+					_this.selectEl.empty();
+				}
+				if(_this.notifiedSelecter && _this.notifiedSelecter.actived){
+					_this.notifiedSelecter.clearOptions();
+				}
+			};
+			
+			this.notifyTo = function(selecter){
+				_this.notifiedSelecter = selecter;
+				$(_this.selectEl).change(function(evt){
+					selecter.clearOptions();
+					selecter.loadDatas(_this);
+				});
+				return _this;
+			};
+
+			return this;
+		},
+		
 		ajaxSelecter : function(config){
 			return new jfish._ajaxSelecter(config);
 		},
@@ -334,8 +410,8 @@ var Common = function () {
 			var _this = this;
 			var aconfig = config || {};
 			this.config = aconfig;
-			this.parent = $('#'+config['el']);
-			this.actived = this.parent.length>0;
+			this.selectEl = $('#'+config['el']);
+			this.actived = this.selectEl.length>0;
 
 			/*if(!$.nodeName(this.parent[0], "select")){
 				throw "element must be a select!"
@@ -347,7 +423,7 @@ var Common = function () {
 			_this.notify_to = function(childConfig){
 				var childConfig = childConfig || {};
 				var alterMsg = childConfig['alterIfNoDatas'];
-				$(_this.parent).change(function(evt, cb){
+				$(_this.selectEl).change(function(evt, cb){
 					if(!_this.actived){
 						alert("ajax selecter["+config.el+"] is not actived")
 						return ;
@@ -362,7 +438,7 @@ var Common = function () {
 					select.empty();
 					select.attr("disabled", "true");
 					
-					var url = (childConfig.url+$(_this.parent).val()) || alert("notify url can not blank!");
+					var url = (childConfig.url+$(_this.selectEl).val()) || alert("notify url can not blank!");
 					var params = childConfig.params || {};
 					var pre_datas = childConfig.options;
 					var emptyOption = childConfig.emptyOption || true;
@@ -391,6 +467,12 @@ var Common = function () {
 							$(select).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
 						}
 //						select.trigger('change');
+
+						if(aconfig.checkedValue){
+							_this.selectEl.val(aconfig.checkedValue);
+							_this.selectEl.trigger('change');
+						}
+						
 						if(cb)
 							cb();
 					});
@@ -408,7 +490,7 @@ var Common = function () {
 				}
 				var emptyOption = aconfig['emptyOption'] || true;
 				if(emptyOption){
-					$(_this.parent).append("<option value=''>---请选择</option>");
+					$(_this.selectEl).append("<option value=''>---请选择</option>");
 				}
 				
 				$.getJSON(loadUrl, {}, function(json){
@@ -418,9 +500,12 @@ var Common = function () {
 					}
 					for(var i=0; i<json.length; i++){
 						var data = json[i];
-						$(_this.parent).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+						$(_this.selectEl).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
 					}
-					_this.parent.trigger('change');
+					if(aconfig.checkedValue){
+						_this.selectEl.val(aconfig.checkedValue);
+						_this.selectEl.trigger('change');
+					}
 				});
 			} 
 			

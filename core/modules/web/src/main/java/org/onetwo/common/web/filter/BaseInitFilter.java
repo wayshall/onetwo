@@ -129,8 +129,8 @@ public class BaseInitFilter extends IgnoreFiler {
 			filterChain.doFilter(request, response);
 		}catch (ServletException e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
-			throw e;
 //			handleException(request, response, e);
+			throw e;
 		}catch (IOException e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
 			throw e;

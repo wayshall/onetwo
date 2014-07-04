@@ -19,6 +19,7 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.SqlUtils;
 import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -140,9 +141,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 				for(Object val : batchParameter){
 					Map<String, Object> paramValueMap = new HashMap<String, Object>();
 					BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
-					for(String parameterName : sqlWrapper.getParameterNames()){
-						Object value = paramBean.getPropertyValue(parameterName);
-						paramValueMap.put(parameterName, value);
+					for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
+						Object value = parameter.getParamterValue(paramBean);
+						paramValueMap.put(parameter.getName(), value);
 					}
 					batchValues.add(paramValueMap);
 				}
