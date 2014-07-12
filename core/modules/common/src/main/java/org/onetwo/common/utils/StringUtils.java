@@ -634,8 +634,8 @@ public abstract class StringUtils {
 		return result;
 	}
 
-	public static String trimToEmpty(String str) {
-		return str == null ? EMPTY : str.trim();
+	public static String trimToEmpty(Object str) {
+		return str == null ? EMPTY : str.toString().trim();
 	}
 
 	public static String[] trim(String[] strs) {

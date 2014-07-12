@@ -100,7 +100,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		for(int i=0; i<cellCount; i++){
 			cell = row.getCell(i);
 			cellValue = ExcelUtils.getCellValue(cell);
-			String label = cellValue.toString().trim();
+			String label = StringUtils.trimToEmpty(cellValue);
 			if(StringUtils.isBlank(label)){
 				//if title is empty (region column), get the previous title name
 				label = rowValues.get(i-1);

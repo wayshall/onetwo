@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -415,6 +416,18 @@ public class Intro<T> {
 			rsfields.add(f);
 		}
 		return rsfields;
+	}
+	
+	public <E extends Annotation> E getAnnotationWithParent(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithParent(clazz, annotationClass);
+	}
+
+	public <E extends Annotation> E getAnnotationWithSupers(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithSupers(clazz, annotationClass);
+	}
+
+	public <E extends Annotation> E getAnnotationWithInterfaces(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithInterfaces(clazz, annotationClass);
 	}
 	
 	public String toString(){
