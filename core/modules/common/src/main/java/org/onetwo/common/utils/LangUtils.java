@@ -1569,4 +1569,11 @@ public class LangUtils {
 	public static <T> T cast(Object obj, Class<T> clazz){
 		return clazz.cast(obj);
 	}
+	
+	public static Object firstNotNull(Object...objects){
+		for(Object obj : objects)
+			if(obj!=null)
+				return obj;
+		return null;
+	}
 }

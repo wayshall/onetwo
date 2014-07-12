@@ -35,7 +35,9 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	private Map<String, Object> queryConfig;
 	
 	private boolean cacheable;
-	
+
+//	protected StringBuilder couontSelect;
+	protected StringBuilder couontJoin;
 
 	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
@@ -217,6 +219,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 	protected SelectExtQueryImpl buildJoin() {
 		join = new StringBuilder();
+		//for count
+		couontJoin = new StringBuilder();
 		/*buildJoin(join, K.JOIN_FETCH, false);//inner
 		buildJoin(join, K.FETCH, false);
 		buildJoin(join, K.JOIN, false);
@@ -224,8 +228,16 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		buildJoin(join, K.JOIN_IN, true);*/
 		
 		for(String key : K.JOIN_MAP.keySet()){
+			if (!hasParams(key))
+				continue;
+
+			Object value = this.getParams().get(key);
 			if(K.JOIN_IN.equals(key)){
-				buildJoin(join, key, true);
+				buildJoin(join, key, value, true);
+				
+				//for count
+				buildJoin(couontJoin, key, value, true);
+				
 			}else if(K.SQL_JOIN.equals(key)){
 				Object rawSqlObj = this.getParams().get(key);
 				if(rawSqlObj==null)
@@ -235,20 +247,31 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 				RawSqlWrapper wrap = (RawSqlWrapper) rawSqlObj;
 				if(!wrap.isBlank()){
 					join.append(wrap.getRawSql()).append(" ");
+
+					//for count
+					couontJoin.append(wrap.getRawSql()).append(" ");
 				}
 				getParams().remove(K.SQL_JOIN);
 			}else{
-				buildJoin(join, key, false);
+				buildJoin(join, key, value, false);
+
+				//for count
+				if(K.FETCH.equals(key) || K.LEFT_JOIN_FETCH.equals(key)){
+					buildJoin(couontJoin, K.LEFT_JOIN, value, false);
+				}else if(K.JOIN_FETCH.equals(key)){
+					buildJoin(couontJoin, K.JOIN, value, false);
+				}else{
+					buildJoin(couontJoin, key, value, false);
+				}
 			}
+			
+			this.getParams().remove(key);
 		}
 		return this;
 	}
 
-	protected SelectExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, boolean hasParentheses) {
-		if (!hasParams(joinKey))
-			return this;
+	protected SelectExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, Object value, boolean hasParentheses) {
 		String joinWord = K.JOIN_MAP.get(joinKey);
-		Object value = this.getParams().get(joinKey);
 		List<String> fjoin = MyUtils.asList(value);
 		if(fjoin==null)
 			return this;
@@ -265,7 +288,6 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			else
 				joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(getFieldName(j)).append(hasParentheses?") ":" ");
 		}
-		this.getParams().remove(joinKey);
 		return this;
 	}
 	
@@ -401,6 +423,19 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 	public String getCountSql() {
 //		String countSql = MyUtils.getCountSql(sql.toString(), getFieldName("id"));
+//		String countSql = sql.toString();
+//		countSql = buildCountSql(countSql);
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append(select);
+		if (couontJoin != null)
+			sql.append(couontJoin);
+		
+		if (!params.isEmpty()) {
+			if(where!=null)
+				sql.append(where);
+		}
+		
 		String countSql = buildCountSql(sql.toString());
 		if (isDebug()) {
 			logger.info("generated count sql : " + countSql);

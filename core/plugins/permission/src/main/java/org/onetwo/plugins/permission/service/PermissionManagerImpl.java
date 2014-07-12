@@ -46,15 +46,15 @@ public class PermissionManagerImpl implements PermissionManager {
 
 	@Override
 	@Transactional
-	public <T extends IMenu> T getDatabaseRootMenu() {
-		return (T)baseEntityManager.findUnique(IMenu.class, "code", this.menuInfoParser.getRootMenuCode());
+	public IMenu getDatabaseRootMenu() {
+		return (IMenu)baseEntityManager.findUnique(IMenu.class, "code", this.menuInfoParser.getRootMenuCode());
 	}
 	
 	@Override
 	@Transactional
-	public <T extends IMenu> T getDatabaseMenuNode(Class<?> clazz) {
+	public IMenu getDatabaseMenuNode(Class<?> clazz) {
 		String code = menuInfoParser.parseCode(clazz);
-		return (T)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
+		return (IMenu)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
 	}
 	
 	/****
@@ -65,7 +65,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	public void syncMenuToDatabase(){
 		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootMenuClass.getSimpleName()+"%");
+		String rootCode = parseCode(rootMenuClass);
+		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
 //		Map<String, IPermission> mapByCode = index(permList, on(IPermission.class).getCode());
 		
 		Session session = baseEntityManager.getRawManagerObject(SessionFactory.class).getCurrentSession();
@@ -138,71 +139,32 @@ public class PermissionManagerImpl implements PermissionManager {
 	public MenuInfoParser getMenuInfoParser() {
 		return menuInfoParser;
 	}
+
+	@Override
+	public String parseCode(Class<?> permClass) {
+		return menuInfoParser.parseCode(permClass);
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<IMenu> findAppMenus(String appCode){
+		List<IMenu> menulist = (List<IMenu>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<? extends IPermission> findAppPermissions(String appCode){
+		List<IPermission> menulist = (List<IPermission>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	public List<? extends IPermission> findPermissionByCodes(String[] permissionCodes) {
+		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "code:in", permissionCodes);
+		return permlist;
+	}
 	
-/*	
-	public static class RescourceTreeModel implements TreeModel<RescourceTreeModel> {
-
-		private final JResourceInfo info;
-		private final RescourceTreeModel parent;
-		private List<RescourceTreeModel> children;
-		
-		public RescourceTreeModel(JResourceInfo info) {
-			super();
-			this.info = info;
-			RescourceTreeModel parent = null;
-			if(info.getParent()!=null)
-				parent = new RescourceTreeModel(info.getParent());
-			this.parent = parent;
-		}
-
-		@Override
-		public void addChild(RescourceTreeModel node) {
-			info.addChild(node.getInfo());
-			if(children==null)
-				children = LangUtils.newArrayList();
-			this.children.add(node);
-		}
-
-		@Override
-		public Object getParentId() {
-			if(info.getParent()==null)
-				return null;
-			return info.getParent().getId();
-		}
-
-		@Override
-		public Object getId() {
-			return info.getId();
-		}
-
-		@Override
-		public String getName() {
-			return info.getLabel();
-		}
-
-		@Override
-		public Comparable<?> getSort() {
-			return info.getId();
-		}
-
-		public List<RescourceTreeModel> getChildren() {
-			return children;
-		}
-
-		public JResourceInfo getInfo() {
-			return info;
-		}
-		
-		public RescourceTreeModel getParent(){
-			return parent;
-		}
-		
-		public String toString(){
-			StringBuilder str = new StringBuilder();
-			TreeUtils.buildString(str, this, "--");
-			return str.toString();
-		}
-	}*/
-
+	
 
 }
