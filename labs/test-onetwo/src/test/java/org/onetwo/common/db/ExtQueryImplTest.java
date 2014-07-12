@@ -16,7 +16,7 @@ import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils.F;
 import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
-import org.onetwo.common.ejb.jpa.JPASQLSymbolManager;
+import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.map.M;
@@ -38,7 +38,8 @@ public class ExtQueryImplTest {
 		this.properties = new LinkedHashMap<Object, Object>();
 		this.properties.put(K.DESC, "id");
 		sqlSymbolManagerFactory = SQLSymbolManagerFactory.getInstance();
-		sqlSymbolManagerFactory.register(EntityManagerProvider.JPA, JPASQLSymbolManager.create());
+//		sqlSymbolManagerFactory.register(EntityManagerProvider.JPA, JPASQLSymbolManager.create());
+		sqlSymbolManagerFactory.register(EntityManagerProvider.Hibernate, HibernateSQLSymbolManagerImpl.create());
 	}
 
 	@Test

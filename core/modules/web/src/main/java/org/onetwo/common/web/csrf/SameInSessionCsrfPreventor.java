@@ -37,7 +37,7 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 	}
 	@Override
 	protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response){
-		if(invalid)
+		if(invalid && token!=null)
 			WebContextUtils.remove(request.getSession(), token.getFieldName());
 //		super.cleanStoredTokenValue(token, request, response);
 	}

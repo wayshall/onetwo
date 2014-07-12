@@ -51,6 +51,7 @@ public interface ExtQuery {
 		public static final String DESC = ":desc";
 		public static final String ORDERBY = ":orderBy";
 
+		public static final String DATA_FILTER = ":dataFilter";
 //		public static final String INCLUDE = ":include";
 		
 		public static final String SQL_JOIN = ":sql-join";

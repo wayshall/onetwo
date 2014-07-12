@@ -72,6 +72,20 @@ public class AnnotationUtils {
 			return annotation;
 		return (clazz==null || clazz.getDeclaringClass()==null)?null:findAnnotationWithDeclaring(clazz.getDeclaringClass(), annotationClass);
 	}
+	
+
+	/****
+	 * 查找注解，包括类的继承类和接口
+	 * @param clazz
+	 * @param annotationClass
+	 * @return
+	 */
+	public static <T extends Annotation> T findAnnotationWithParent(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = findAnnotationWithSupers(clazz, annotationClass);
+		if(annotation!=null)
+			annotation = findAnnotationWithInterfaces(clazz, annotationClass);
+		return annotation;
+	}
 
 	public static <T extends Annotation> T findAnnotationWithSupers(Class<?> clazz, Class<T> annotationClass) {
 		T annotation = clazz==null?null:clazz.getAnnotation(annotationClass);

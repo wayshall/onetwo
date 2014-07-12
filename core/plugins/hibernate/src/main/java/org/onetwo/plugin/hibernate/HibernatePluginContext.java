@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.DataQueryFilterListener;
 import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -73,6 +74,11 @@ public class HibernatePluginContext implements InitializingBean  {
 		List<ExtQueryListener> listeners = SpringUtils.getBeans(applicationContext, ExtQueryListener.class);
 		symbolManager.setListeners(listeners);
 		return symbolManager;
+	}
+	
+	@Bean
+	public ExtQueryListener dataQueryFilterListener(){
+		return new DataQueryFilterListener();
 	}
 	
 	@Bean

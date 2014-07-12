@@ -188,6 +188,14 @@ var Common = function () {
 			}
 		},
 		
+		showAjaxMsg : function(data){
+			if(data.success && data.success==true){
+				$.showTipsWindow(data.message);
+			}else{
+				$.showTipsWindow(data.message, '错误');
+			}
+		},
+		
 		init : function(){
 			$(jfish.cssKeys.linkButton).live("click", function(){
 				if($(this).is(jfish.cssKeys.formButton))
