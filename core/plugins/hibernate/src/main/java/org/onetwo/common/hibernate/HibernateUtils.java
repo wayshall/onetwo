@@ -100,6 +100,11 @@ public final class HibernateUtils {
 		return getClassMeta(entityClass, false);
 	}
 	
+	public static String getIdName(Class<?> entityClass){
+		ClassMetadata meta = getClassMeta(entityClass, true);
+		return meta.getIdentifierPropertyName();
+	}
+	
 	public static ClassMetadata getClassMeta(Class<?> entityClass, boolean throwIfNoteFound){
 		ClassMetadata meta = getSessionFactory().getClassMetadata(entityClass);
 		if(meta==null && throwIfNoteFound)

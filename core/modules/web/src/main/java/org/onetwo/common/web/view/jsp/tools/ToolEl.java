@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.jsp.tools;
 import java.util.Date;
 
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
@@ -53,6 +54,10 @@ final public class ToolEl {
 		}
 		attributesBuf.append("\"");
 		return attributesBuf.toString();
+	}
+	
+	public static Object exec(Object target, String methodName, Object arg){
+		return ReflectUtils.invokeMethod(methodName, target, arg);
 	}
 
 	private ToolEl(){}

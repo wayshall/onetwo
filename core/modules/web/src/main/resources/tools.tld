@@ -95,4 +95,10 @@
   	<function-signature>java.lang.String asTime(java.util.Date)</function-signature>
   </function>
   
+  <function>
+  	<name>exec</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.Object exec(java.lang.Object, java.lang.String, java.lang.Object)</function-signature>
+  </function>
+  
 </taglib>

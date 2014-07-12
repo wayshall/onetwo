@@ -35,6 +35,9 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 			href = CsrfPreventorFactory.getDefault().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
     	}
 
+		if(href.startsWith("/") && !href.startsWith(BaseSiteConfig.getInstance().getBaseURL())){
+			href = BaseSiteConfig.getInstance().getBaseURL()+href;
+		}
 		component.setSafeUrl(safeUrl);
 		component.setHref(href);
 
