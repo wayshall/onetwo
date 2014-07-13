@@ -15,6 +15,7 @@ final public class SecurityPluginUtils {
 	private static Logger logger = MyLoggerFactory.getLogger(SecurityPluginUtils.class);
 
 	public static final String LOGIN_PARAM_CLIENT_CODE = "clientCode";
+	public static final String LOGIN_PARAM_ALL = "all";
 	public static final String DEFAULT_SSO_SIGN_KEY = "podsf^&pk&$@[ko@#$s0df]pips9";
 	public static final String SSO_USERSERVICE_EXPORTER_NAME = "ssoUserServiceExporter";
 	
