@@ -8,7 +8,10 @@ import javax.annotation.Resource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.ExtQuery.K;
+import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.plugins.permission.MenuInfoParser;
 import org.onetwo.plugins.permission.PermissionUtils;
 import org.onetwo.plugins.permission.entity.IMenu;
@@ -160,8 +163,13 @@ public class PermissionManagerImpl implements PermissionManager {
 	}
 
 	@Override
-	public List<? extends IPermission> findPermissionByCodes(String[] permissionCodes) {
-		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "code:in", permissionCodes);
+	public List<? extends IPermission> findPermissionByCodes(String appCode, String[] permissionCodes) {
+		Assert.notEmpty(permissionCodes);
+		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(
+																	this.menuInfoParser.getMenuInfoable().getIPermissionClass(), 
+																	"code:in", permissionCodes,
+																	"appCode", appCode,
+																	K.IF_NULL, IfNull.Ignore);
 		return permlist;
 	}
 	

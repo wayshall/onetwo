@@ -27,5 +27,5 @@ public interface PermissionManager {
 	List<? extends IMenu> findAppMenus(String appCode);
 	public List<? extends IPermission> findAppPermissions(String appCode);
 	
-	public List<? extends IPermission> findPermissionByCodes(String[] permissionCodes);
+	public List<? extends IPermission> findPermissionByCodes(String appCode, String[] permissionCodes);
 }
