@@ -57,6 +57,8 @@ final public class ToolEl {
 	}
 	
 	public static Object exec(Object target, String methodName, Object arg){
+		if(StringUtils.isBlank(methodName))
+			return null;
 		return ReflectUtils.invokeMethod(methodName, target, arg);
 	}
 

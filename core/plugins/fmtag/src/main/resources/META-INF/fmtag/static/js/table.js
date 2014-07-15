@@ -4,6 +4,10 @@ var Common = function () {
 
 (function ($) {
 	var loadHtml = '<div id="loadingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-body"><p>正在加载，请稍候……</p></div></div>';
+	//var progress = '<div class="progress progress-striped active"><div class="bar" style="width: 40%;"></div></div>';
+
+	var jfish = {};
+	jfish._blockMsgState = false;
 	
 	$.extend({
 		showMessageOn : function(ele, message, cb){
@@ -46,11 +50,13 @@ var Common = function () {
 			if(message)
 				loadDiv.find('.modal-body').html(message);
 			loadDiv.modal('show');
+			jfish._blockMsgState = true;
 		},
 		closeBlockMsg: function(){
 			var loadDiv = $('#loadingModal');
 			if(loadDiv)
 				loadDiv.modal('hide');
+			jfish._blockMsgState = false;
 		}
 		
 	});
@@ -67,7 +73,6 @@ var Common = function () {
 		};
 	}
 	
-	var jfish;
 	$.jfish = jfish = {
 		state : {
 			failed : 0,
@@ -189,6 +194,8 @@ var Common = function () {
 		},
 		
 		showAjaxMsg : function(data){
+			if(jfish._blockMsgState===true)
+				$.closeBlockMsg();
 			if(data.success && data.success==true){
 				$.showTipsWindow(data.message);
 			}else{
@@ -259,6 +266,7 @@ var Common = function () {
 		
 		handleMethod : function(link) {
 			var href = link.attr('href');
+			href = encodeURI(href);
 			var method = link.attr('data-method');
 			var target = link.attr('target');
 			
@@ -373,6 +381,7 @@ var Common = function () {
 				}else{
 					dataUrl = aconfig.loadUrl;
 				}
+				dataUrl = encodeURI(dataUrl);//encodeURIComponent(dataUrl);
 				$.getJSON(dataUrl, {}, function(json){
 					if(json.length<1){
 						alert("没有数据！");
