@@ -42,12 +42,14 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	@Override
 	public int doStartTag() throws JspException {
 		int rs = super.doStartTag();
+		Object model = this.pageContext.getRequest().getAttribute(getName());
+		component.setModel(model);
 		
 		this.forSpringFormTag();
 		
 		Object data = dataProvider;
 		if(data==null){
-			data = this.pageContext.getRequest().getAttribute(getName());
+			data = model;
 		}
 		FormDataProvider provider = createDataProvider(data);
 		
