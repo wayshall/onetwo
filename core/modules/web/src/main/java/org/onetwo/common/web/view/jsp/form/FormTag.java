@@ -1,9 +1,13 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.beans.PropertyAccessor;
@@ -13,6 +17,7 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 public class FormTag extends BaseHtmlTag<FormTagBean> {
 	
 	private String template = "form/spring-form.jsp";
+	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
 
 	private String action;
 	private String method;
@@ -87,14 +92,27 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
 		
-		component.setAction(action);
+
+		component.setAction(buildActionString());
 		component.setMethod(method);
 		component.setUploadFile(uploadFile);
 		component.setShowOnly(showOnly);
 		
 		setComponentIntoRequest(TagUtils.getFormVarName(), component);
 	}
-
+	
+	protected String buildActionString() {
+		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		if(StringUtils.isBlank(action)){
+			String surl = TagUtils.getRequestUri(request);
+			return surl;
+		}
+//		this.buildQueryString = false;
+		if(action.startsWith(":")){
+			return TagUtils.parseAction(request, action, this.csrfPreventor);
+		}
+		return action;
+	}
 	
 	public String getTemplate() {
 		return this.template;
