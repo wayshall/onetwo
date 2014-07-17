@@ -506,6 +506,13 @@ public abstract class StringUtils {
 		return (list == null || list.isEmpty()) ? null : list;
 	}
 
+	public static String join(String separator, Object... array) {
+		if (array == null) {
+			return EMPTY;
+		}
+		return join(array, separator, 0, array.length);
+	}
+
 	public static String join(Object[] array, String separator) {
 		if (array == null) {
 			return EMPTY;
