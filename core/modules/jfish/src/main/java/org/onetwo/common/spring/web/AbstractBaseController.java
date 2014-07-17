@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,6 +24,7 @@ import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -45,6 +45,13 @@ abstract public class AbstractBaseController {
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
+	private SimpleBlock<Object, String> TO_STRING = new SimpleBlock<Object, String>() {
+		@Override
+		public String execute(Object object) {
+			return object.toString();
+		}
+	};
 
 	@Resource
 	private CodeMessager codeMessager;
@@ -176,6 +183,10 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
+		exportText(response, datas, filename, TO_STRING);
+	}
+	
+	protected void exportText(HttpServletResponse response, List<?> datas, String filename, SimpleBlock<Object, String> block){
 		PrintWriter out = null;
 		try {
 			out = response.getWriter();
@@ -183,7 +194,7 @@ abstract public class AbstractBaseController {
 			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment;filename=" + name);
 			for(Object data : datas){
-				out.println(data.toString());
+				out.println(block.execute(data));
 			}
 			out.flush();
 		} catch (Exception e) {
