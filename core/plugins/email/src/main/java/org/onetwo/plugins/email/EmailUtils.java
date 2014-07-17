@@ -10,7 +10,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 
-public class ZipUtils {
+public class EmailUtils {
 //	private static final Logger logger = MyLoggerFactory.getLogger(ZipUtils.class);
 
 	public static File zipfile(String targetZipFilePath, File file){
@@ -58,7 +58,7 @@ public class ZipUtils {
 		return zipfile;
 	}
 	
-	private ZipUtils() {
+	private EmailUtils() {
 	}
 
 }
