@@ -84,7 +84,7 @@ var Common = function () {
 			buttonDelete : ".dg-button-delete",
 			
 			//
-			linkButton: "a[data-method][class!='dg-toolbar-button-delete']",
+			linkButton: "a[data-method][class!='dg-toolbar-button-delete'][class!='dg-toolbar-button-batch']",
 			formButton : ".form-button",
 			
 			checkAll : ".dg-checkbox-all",

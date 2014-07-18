@@ -157,4 +157,18 @@ public class BeanWrapperTest {
 		Assert.assertEquals("userName1", userName);
 		
 	}
+	@Test
+	public void testBwList3(){
+		List<UserEntity> userList = LangUtils.newArrayList();
+		Map<String, Object> map = LangUtils.newHashMap();
+		map.put("users", userList);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map, "users", UserEntity.class);
+		bw.setAutoGrowNestedPaths(true);
+		bw.setPropertyValue("users[0].userName", "userName1");
+		Object userName = bw.getPropertyValue("users[0].userName");
+		System.out.println("userName:" + userName);
+		Assert.assertEquals("userName1", userName);
+		
+	}
 }
