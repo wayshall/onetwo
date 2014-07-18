@@ -59,6 +59,7 @@ public class DefaultSSOServiceImpl extends AbstractSSOServiceImpl implements Ini
 				msg = "connect to sso server error: " + e.getMessage();
 				throw new LoginException(msg);
 			}else{
+				logger.error("sso client get login user error : " + msg, e);
 				msg = e.getMessage();
 				throw new LoginException("sso client get login user error : " + msg, e);
 			}
