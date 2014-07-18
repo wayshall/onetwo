@@ -276,10 +276,10 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
-	public static BeanWrapper newBeanWrapper(Object obj){
+	public static BeanWrapper newBeanWrapper(Object obj, Object...listElementTypes){
 		BeanWrapper bw = null;
 		if(Map.class.isInstance(obj)){
-			bw = new BeanMapWrapper(obj);
+			bw = new BeanMapWrapper(obj, listElementTypes);
 		}else{
 			bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		}

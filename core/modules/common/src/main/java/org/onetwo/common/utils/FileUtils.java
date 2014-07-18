@@ -956,6 +956,7 @@ public class FileUtils {
 			MergeFileListener listener = config.getListener();
 			int fileIndex = 0;
 			JFishList<File> fileList = JFishList.wrap(config.getFiles());
+			
 			fileList.sort(new Comparator<File>() {
 
 				@Override

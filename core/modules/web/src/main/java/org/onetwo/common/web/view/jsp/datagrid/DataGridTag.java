@@ -27,8 +27,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	private int colspan = 0;
 
 	private String action;
-	
+
 	private boolean toolbar;
+	private String toolbarName = "grid_toolbar";
 	private boolean generatedForm = true;
 	private boolean pagination = true;
 	
@@ -119,7 +120,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setAction(buildActionString());
 		
 		component.setQueryString(buildQueryString());
-		component.setToolbar(toolbar);
 		component.setPagination(pagination);
 		component.setPaginationType(paginationType);
 		component.setGeneratedForm(generatedForm);
@@ -137,6 +137,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		
 		component.setCustombar(custombar);
 		component.setCustomform(customform);
+		component.setToolbar(toolbar);
+		component.setToolbarName(toolbarName);
 		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
@@ -226,6 +228,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 
 	public void setCustomform(String customform) {
 		this.customform = customform;
+	}
+
+	public void setToolbarName(String toolbarName) {
+		this.toolbarName = toolbarName;
 	}
 
 

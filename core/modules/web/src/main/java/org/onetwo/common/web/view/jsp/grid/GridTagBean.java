@@ -21,6 +21,7 @@ public class GridTagBean extends HtmlElement {
 	private String queryString;
 
 	private boolean toolbar;
+	private String toolbarName;
 	private boolean generatedForm;
 	
 	private String bodyContent;
@@ -211,6 +212,14 @@ public class GridTagBean extends HtmlElement {
 
 	public void setCustomform(String customform) {
 		this.customform = customform;
+	}
+
+	public String getToolbarName() {
+		return toolbarName;
+	}
+
+	public void setToolbarName(String toolbarName) {
+		this.toolbarName = toolbarName;
 	}
 
 }
