@@ -31,6 +31,7 @@ import org.onetwo.common.spring.web.mvc.SecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.WebExceptionResolver;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
 import org.onetwo.common.spring.web.mvc.annotation.JFishMvc;
+import org.onetwo.common.spring.web.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.log.AccessLogger;
@@ -331,6 +332,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new UserDetailArgumentResolver());
 		argumentResolvers.add(new WebAttributeArgumentResolver());
+		argumentResolvers.add(new ListParameterArgumentResolver());
 		/*List<HttpMessageConverter<?>> converters = LangUtils.newArrayList();
 		converters.add(new MappingJacksonHttpMessageConverter());
 //		converters.add(new JsonStringHttpMessageConverter());

@@ -117,6 +117,11 @@ public class JFishList<E> implements List<E>, Serializable {
 			}
 		}
 	}
+	
+	public ArrayList<E> getList() {
+		return list;
+	}
+
 
 	public void addArray(E...objects) {
 		if(LangUtils.isEmpty(objects))
