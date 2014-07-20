@@ -1,7 +1,10 @@
 package org.onetwo.common.hibernate;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -12,9 +15,13 @@ import javax.persistence.Transient;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.proxy.pojo.BasicLazyInitializer;
 import org.hibernate.tuple.StandardProperty;
+import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.ds.SwitcherInfo;
 import org.onetwo.common.exception.BaseException;
@@ -26,6 +33,7 @@ import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.ReflectUtils.IgnoreAnnosCopyer;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public final class HibernateUtils {
 	
@@ -76,6 +84,15 @@ public final class HibernateUtils {
 		Hibernate.initialize(object);
 	}
 	
+	public static Serializable generateIdentifier(BaseEntityManager bm, String rootEntityName){
+		SessionFactoryImplementor sfi = bm.getRawManagerObject(SessionFactoryImplementor.class);
+		SessionImplementor s = (SessionImplementor)sfi.getCurrentSession();
+		IdentifierGenerator idg = sfi.getIdentifierGenerator(rootEntityName);
+		Assert.notNull(idg);
+		return idg.generate(s, null);
+	}
+	
+	
 	public static SessionFactory getSessionFactory() {
 		if(JFishMultipleSessionFactory.class.isInstance(sessionFactory)){
 			SwitcherInfo switcher = SpringApplication.getInstance().getContextHolder().getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
@@ -86,6 +103,17 @@ public final class HibernateUtils {
 
 	public static ClassMetadata getClassMeta(Session s, Class<?> entityClass){
 		return s.getSessionFactory().getClassMetadata(entityClass);
+	}
+	
+	public static LocalSessionFactoryBean getLocalSessionFactoryBean(){
+		Map<String, SessionFactory> sfMap = SpringApplication.getInstance().getBeansMap(SessionFactory.class);
+		Iterator<String> it = sfMap.keySet().iterator();
+		while(it.hasNext()){
+			Object fb = SpringApplication.getInstance().getBean("&"+it.next());
+			if(fb!=null && LocalSessionFactoryBean.class.isInstance(fb))
+				return (LocalSessionFactoryBean)fb;
+		}
+		return null;
 	}
 
 	public static ClassMetadata getClassMeta(Session s, String entityClass){

@@ -14,6 +14,8 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.hibernate.HibernateEntityManagerImpl;
 import org.onetwo.common.hibernate.HibernateFileQueryManagerFactoryBean;
 import org.onetwo.common.hibernate.HibernateUtils;
+import org.onetwo.common.hibernate.TableGeneratorService;
+import org.onetwo.common.hibernate.TableGeneratorServiceImpl;
 import org.onetwo.common.hibernate.listener.TimestampEventListener;
 import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
 import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
@@ -51,6 +53,10 @@ public class HibernatePluginContext implements InitializingBean  {
 		this.sessionFactory = sf;
 	}
 
+	@Bean
+	public TableGeneratorService tableGeneratorService(){
+		return new TableGeneratorServiceImpl();
+	}
 	@Bean
 	public JdbcDao jdbcDao(){
 		JdbcDao jdbcDao = new JdbcDao();
