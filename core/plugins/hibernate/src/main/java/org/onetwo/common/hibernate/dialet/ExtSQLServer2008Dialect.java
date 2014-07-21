@@ -11,6 +11,7 @@ public class ExtSQLServer2008Dialect extends SQLServer2008Dialect {
 	public ExtSQLServer2008Dialect(){
 		super();
 		registerHibernateType(Types.NVARCHAR, StandardBasicTypes.STRING.getName());
+		registerHibernateType(Types.NCHAR, StandardBasicTypes.STRING.getName());
 		registerFunction("substring", new SQLFunctionTemplate(StandardBasicTypes.STRING, "SUBSTRING(?1, ?2, ?3)"));
 	}
 }

@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.utils;
 
-import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -117,10 +116,31 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 	public void setPropertyValue(String propertyName, Object value) throws BeansException {
 		if(mapData){
 			MapTokens token = parseMapExp(propertyName);
-			if(token.hasPropertyPath()){
-				Object propValue = data.get(token.key);
-				propValue = getIndexValueIfListToken(token, propValue, true);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(propValue);
+			if(token.isList()){
+				List<Object> propValue = (List<Object>)data.get(token.key);
+				if(propValue==null && isAutoGrowNestedPaths()){
+					propValue = LangUtils.newArrayList();
+					data.put(token.key, propValue);
+				}
+
+				initList(propValue, token.listIndex);
+				
+				if(token.hasPropertyPath()){
+					Object ele = propValue.get(token.listIndex);
+					if(ele==null){
+						Class<?> eType = ReflectUtils.getGenricType(propValue, 0);
+						ele = this.createListElement(token, eType);
+						propValue.set(token.listIndex, ele);
+					}
+					
+					BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
+					bw.setPropertyValue(token.propertyPath, value);
+				}else{
+					propValue.set(token.listIndex, value);
+				}
+			}else if(token.hasPropertyPath()){
+				Object rs = data.get(token.key);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
 				bw.setPropertyValue(token.propertyPath, value);
 			}else{
 				data.put(propertyName, value);
@@ -129,18 +149,36 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 			super.setPropertyValue(propertyName, value);
 		}
 	}
+	
+	/*private void setListValue(List<Object> list, int index, Object ele){
+		initList(list, index);
+		list.set(index, ele);
+	}*/
+	private void initList(List<?> list, int untilIndex){
+		int lsize = untilIndex+1;
+		if(list.size()>=lsize)
+			return ;
+		lsize = lsize - list.size();
+		for (int i = 0; i < lsize; i++) {
+			list.add(null);
+		}
+	}
 
 	@Override
 	public Object getPropertyValue(String propertyName) throws BeansException {
 		if(mapData){
 			MapTokens token = parseMapExp(propertyName);
-			if(token.hasPropertyPath()){
-				Object value = data.get(token.key);
-				if(value==null)
-					return null;
-
-				value = getIndexValueIfListToken(token, value, false);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(value);
+			if(token.isList()){
+				List<Object> value = (List<Object>)data.get(token.key);
+				Object indexValue = value.get(token.listIndex);
+				if(token.hasPropertyPath()){
+					BeanWrapper bw = SpringUtils.newBeanWrapper(indexValue);
+					return bw.getPropertyValue(token.propertyPath);
+				}
+				return indexValue;
+			}else if(token.hasPropertyPath()){
+				Object rs = data.get(token.key);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
 				return bw.getPropertyValue(token.propertyPath);
 			}else{
 				return data.get(propertyName);
@@ -150,44 +188,44 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 		}
 	}
 
-	private Object getIndexValueIfListToken(MapTokens token, Object value, boolean forSet){
-		if(!token.isList())
-			return value;
-		
-		Object rs = value;
-		if(value instanceof List){
-			List<?> list = (List<?>) value;
-			if(forSet && isAutoGrowNestedPaths()){
-				Class<?> eType = ReflectUtils.getGenricType(value, 0);
-				if(eType==Object.class){
-					if(this.listElementTypes.containsKey(token.key)){
-						eType = this.listElementTypes.get(token.key);
-					}else{
-						throw new BaseException("the type of list element is unknow: " + eType);
-					}
-					Object e = ReflectUtils.newInstance(eType);
-					((List)value).add(token.listIndex, e);
-				}
+	private Object createListElement(MapTokens token, Class<?> eType){
+		if(!LangUtils.isSimpleType(eType) && eType==Object.class){
+			if(this.listElementTypes.containsKey(token.key)){
+				eType = this.listElementTypes.get(token.key);
+			}else{
+				throw new BaseException("the type of list element is unknow: " + eType);
 			}
-			rs = list.get(token.listIndex);
-		}else{
-			//array
-			rs = Array.get(value, token.listIndex);
+			Object e = ReflectUtils.newInstance(eType);
+			return e;
 		}
-		return rs;
+		return null;
 	}
 
 	@Override
 	public boolean isReadableProperty(String propertyName) {
 		if(mapData){
 			MapTokens token = parseMapExp(propertyName);
-			if(token.hasPropertyPath()){
-				Object value = data.get(token.key);
-				if(value==null)
+			if(token.isList()){
+				List<Object> propValue = (List<Object>)data.get(token.key);
+				if(propValue==null)
 					return data.containsKey(token.key);
 				
-				value = getIndexValueIfListToken(token, value, false);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(value);
+				if(token.hasPropertyPath()){
+					Class<?> eType = ReflectUtils.getGenricType(propValue, 0);
+					Object ele = this.createListElement(token, eType);
+					BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
+					return bw.isReadableProperty(token.propertyPath);
+				}
+				
+				return true;
+			}else if(token.hasPropertyPath()){
+				Object rs = data.get(token.key);
+				if(rs==null)
+					return data.containsKey(token.key);
+				
+				Class<?> eType = ReflectUtils.getGenricType(rs, 0);
+				Object ele = this.createListElement(token, eType);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
 				return bw.isReadableProperty(token.propertyPath);
 			}else{
 				return data.containsKey(propertyName);
