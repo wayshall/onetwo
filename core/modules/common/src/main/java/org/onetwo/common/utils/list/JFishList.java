@@ -207,7 +207,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 
 	public <T> List<T> getPropertyList(final String name){
-		final List<T> propValues = new ArrayList<T>();
+		final List<T> propValues = new JFishList<T>();
 		this.each(new NoIndexIt<E>() {
 
 			@Override

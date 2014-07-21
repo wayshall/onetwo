@@ -972,6 +972,9 @@ public class ReflectUtils {
 	}
 	
 	public static <T extends Collection> T newCollections(Class<T> clazz){
+		if(!Collection.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a Collection type: " + clazz);
+		
 		if(clazz==List.class){
 			return (T)new ArrayList();
 		}else if(clazz==Set.class){
@@ -980,6 +983,16 @@ public class ReflectUtils {
 			return (T) new TreeSet();
 		}else if(clazz==Queue.class || clazz==Deque.class){
 			return (T) new ArrayDeque();
+		}else{
+			return newInstance(clazz);
+		}
+	}
+	
+	public static <T extends Collection> T newList(Class<T> clazz){
+		if(!List.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a List type: " + clazz);
+		if(clazz==List.class){
+			return (T)new ArrayList();
 		}else{
 			return newInstance(clazz);
 		}
