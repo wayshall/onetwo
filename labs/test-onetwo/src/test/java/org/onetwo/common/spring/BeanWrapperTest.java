@@ -166,9 +166,38 @@ public class BeanWrapperTest {
 		bw = SpringUtils.newBeanWrapper(map, "users", UserEntity.class);
 		bw.setAutoGrowNestedPaths(true);
 		bw.setPropertyValue("users[0].userName", "userName1");
+		bw.setPropertyValue("users[0].age", 17);
 		Object userName = bw.getPropertyValue("users[0].userName");
 		System.out.println("userName:" + userName);
 		Assert.assertEquals("userName1", userName);
+		Assert.assertEquals(17, bw.getPropertyValue("users[0].age"));
+		Assert.assertEquals(1, userList.size());
+		
+	}
+	@Test
+	public void testBwListWithSimple(){
+		List<Long> userList = LangUtils.newArrayList();
+		Map<String, Object> map = LangUtils.newHashMap();
+		map.put("numbs", userList);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map);
+		bw.setAutoGrowNestedPaths(true);
+		bw.setPropertyValue("numbs[0]", 1L);
+		Long number = (Long)bw.getPropertyValue("numbs[0]");
+		System.out.println("number:" + number);
+		Assert.assertTrue(number.equals(1L));
+		
+		userList = null;
+		map.put("numbs", userList);
+//		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
+		bw = SpringUtils.newBeanWrapper(map);
+		bw.setAutoGrowNestedPaths(true);
+		bw.setPropertyValue("numbs[1]", 1L);
+		number = (Long)bw.getPropertyValue("numbs[1]");
+		System.out.println("number:" + number);
+		Assert.assertTrue(number.equals(1L));
+		List<?> list = (List<?>)bw.getPropertyValue("numbs");
+		Assert.assertEquals(2, list.size());
 		
 	}
 }

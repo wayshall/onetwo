@@ -172,6 +172,8 @@ public class DataRowTagBean extends RowTagBean {
 				return getTranslateData();
 			}else if("originData".equals(key)){//兼容tag里的${entity.translateData[field.value]}
 				return getOriginData();
+			}else if("index".equals(key)){
+				return index;
 			}else{
 				return translateData.get(key);
 			}
