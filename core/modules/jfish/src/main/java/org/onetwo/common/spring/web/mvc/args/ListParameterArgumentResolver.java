@@ -39,7 +39,7 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 			attrName = parameter.getParameterName();
 
 		Class<?> etype = ReflectUtils.getGenricType(parameter.getGenericParameterType(), 0);
-		Object list = ReflectUtils.newInstance(listParameterAnnotation.type());
+		Object list = ReflectUtils.newList(listParameterAnnotation.type());
 		
 		Map<String, Object> listWrapper = LangUtils.newHashMap();
 		listWrapper.put(attrName, list);
