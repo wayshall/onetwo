@@ -206,7 +206,7 @@ public class NiceDate {
 	public NiceDate start(){
 		return atTheBeginning();
 	}
-	
+
 	public NiceDate atTheBeginning(){
 		DateUtil.accurateToBeginningAt(calendar, dateType);
 		return this;
@@ -291,6 +291,24 @@ public class NiceDate {
 	
 	public int getHourOfDay(){
 		return calendar.get(Calendar.HOUR_OF_DAY);
+	}
+
+	public boolean isBeforeOrEquals(NiceDate date){
+		return isBefore(date) || isEquals(date);
+	}
+
+	public boolean isAfterOrEquals(NiceDate date){
+		return isAfter(date) || isEquals(date);
+	}
+
+	public boolean isBefore(NiceDate date){
+		return getTimeInMillis()<date.getTimeInMillis();
+	}
+	public boolean isAfter(NiceDate date){
+		return getTimeInMillis()>date.getTimeInMillis();
+	}
+	public boolean isEquals(NiceDate date){
+		return getTimeInMillis()==date.getTimeInMillis();
 	}
 	
 	public static void main(String[] args){
