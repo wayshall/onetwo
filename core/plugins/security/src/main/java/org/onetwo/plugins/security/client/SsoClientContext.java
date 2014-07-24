@@ -41,6 +41,11 @@ public class SsoClientContext {
 		return ssoClientConfig;
 	}
 
+	/****
+	 * SSOUserService
+	 * client get the login info by httpInvoker
+	 * @return
+	 */
 	@Bean
 	public HttpInvokerProxyFactoryBean ssoUserServiceProxy(){
 		HttpInvokerProxyFactoryBean fb = new HttpInvokerProxyFactoryBean();
