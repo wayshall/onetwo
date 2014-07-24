@@ -13,6 +13,9 @@ public abstract class BaseEntityManagerAdapter implements BaseEntityManager {
 		throw new UnsupportedOperationException();
 	}
 
+	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties){
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties) {
