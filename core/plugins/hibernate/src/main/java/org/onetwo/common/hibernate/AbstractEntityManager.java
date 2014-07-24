@@ -25,6 +25,7 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -316,6 +317,18 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		CUtils.arrayIntoMap(params, properties);
 		params.put(K.SELECT, selectFields);
 		return this.select(entityClass, params);
+	}
+
+	/****
+	 * 与selectFields唯一不同的地方是自动把entityClass作为返回类型
+	 * @param entityClass
+	 * @param selectFields
+	 * @param properties
+	 * @return
+	 */
+	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties){
+		Object[] selectFieldsWithType = ArrayUtils.add(selectFields, 0, entityClass);
+		return selectFields(entityClass, selectFieldsWithType, properties);
 	}
 	
 	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties) {
