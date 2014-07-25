@@ -164,7 +164,7 @@ abstract public class ExcelUtils {
 		int type = cell.getCellType();
 		Object value = null;
 		if(Cell.CELL_TYPE_STRING==type){
-			value = cell.getStringCellValue();
+			value = cell.getStringCellValue().trim();
 		}else if(Cell.CELL_TYPE_NUMERIC==type){
 			value = cell.getNumericCellValue();
 		}else if(Cell.CELL_TYPE_FORMULA==type){
