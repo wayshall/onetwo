@@ -158,51 +158,6 @@ abstract public class AbstractSSOServiceImpl implements SSOService {
 
 		return authoritable;
 	}
-	public UserDetail checkLogin2(SecurityTarget target) {
-		UserDetail authoritable = target.getAuthoritable();
-		try {
-			String cookietoken = target.getCookieToken();
-			
-			if (authoritable == null && cookietoken == null) {
-				// session和cookie都为空 ，没有登录
-			} else if (authoritable != null && cookietoken != null) {
-				// session和cookie都不为空， 分两种情况
-				if (authoritable.getToken() != null && authoritable.getToken().equals(cookietoken)) {
-					// 如果两个token相等，已经登录
-					// authoritable=getCurrentLoginUserByCookieToken(cookietoken);
-				} else {
-					// 如果不相等，以cookietoken为准
-					// 清空sesssion
-					target.removeCurrentLoginUser();
-					authoritable = getCurrentLoginUser(target);
-					// 把用户信息放入session
-					if (authoritable != null) {
-						target.setCurrentLoginUser(authoritable);
-					}
-				}
-
-			} else if (authoritable != null && cookietoken == null) {
-				// 注销退出
-				// StrutsUtils.removeCurrentLoginUser();
-				target.removeCurrentLoginUser();
-				authoritable = null;
-
-			} else if (authoritable == null && cookietoken != null) {
-				// 如果session为空，cookietoken不为空
-				authoritable = getCurrentLoginUser(target);
-				// 把用户信息放入session
-				if (authoritable != null) {
-					target.setCurrentLoginUser(authoritable);
-				} else {
-					target.removeCookieToken();
-				}
-			}
-		} catch (Exception e) {
-			handleLoginException(e, "sso login error by token: "+target.getCookieToken());
-		}
-
-		return authoritable;
-	}
 	
 	public void handleLoginException(Exception e, String msg){
 		if(BaseSiteConfig.getInstance().isDev()){

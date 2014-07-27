@@ -11,7 +11,7 @@ public class LoginParams implements Serializable {
 	private String userName;
 	@NotBlank
 	private String userPassword;
-	@NotBlank
+//	@NotBlank
 	private String clientCode;
 	private String returnUrl;
 	

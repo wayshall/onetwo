@@ -13,7 +13,13 @@ import org.springframework.core.Ordered;
  *
  */
 public class SimpleNotSSOServiceImpl extends AbstractSSOServiceImpl implements UserLoginService, Ordered  {
-
+	
+	/*public static final String LOGIN_KEYSTORE = "login.keystore";//session, cookie
+	private static enum KeyStore{
+		SESSION,
+		COOKIE
+	}
+*/
 	@Override
 	public UserDetail login(LoginParams loginParams) {
 		throw new UnsupportedOperationException();
@@ -34,8 +40,27 @@ public class SimpleNotSSOServiceImpl extends AbstractSSOServiceImpl implements U
 		return false;
 	}
 	
+	/*public KeyStore getKeyStore(){
+		String keystr = BaseSiteConfig.getInstance().getProperty(LOGIN_KEYSTORE, KeyStore.SESSION.toString());
+		KeyStore keyStore = KeyStore.valueOf(keystr.toUpperCase());
+		return keyStore;
+	}*/
+	
 	public UserDetail checkLogin(SecurityTarget target) {
 		UserDetail authoritable = target.getAuthoritable();
+		/*KeyStore ks = getKeyStore();
+		switch (ks) {
+			case SESSION :
+				authoritable = target.getAuthoritable();
+				break;
+				
+			case COOKIE :
+				authoritable = super.checkLogin(target);
+				break;
+	
+			default:
+				throw new ServiceException("not supported key store");
+		}*/
 		return authoritable;
 	}
 /*	@Override

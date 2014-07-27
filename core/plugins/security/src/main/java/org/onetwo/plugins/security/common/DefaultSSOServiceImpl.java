@@ -3,7 +3,6 @@ package org.onetwo.plugins.security.common;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.LoginException;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.CurrentLoginUserParams;
 import org.onetwo.common.sso.UserActivityTimeHandler;
