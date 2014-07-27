@@ -32,8 +32,7 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 		annoClasses.add(SecurityWebContext.class);
 		if(SecurityPluginUtils.existServerConfig()){
 			annoClasses.add(SsoServerWebContext.class);
-		}
-		if(SecurityPluginUtils.existClientConfig()){
+		}else if(SecurityPluginUtils.existClientConfig()){
 			annoClasses.add(SsoClientWebContext.class);
 		}
 	}

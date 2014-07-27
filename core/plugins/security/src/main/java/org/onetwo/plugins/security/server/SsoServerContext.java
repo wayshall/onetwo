@@ -6,12 +6,10 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.SSOService;
-import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.common.DefaultSSOServiceImpl;
-import org.onetwo.plugins.security.common.MemorySessionStorer;
 import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.service.impl.ServerSSOUserServiceImpl;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
@@ -56,6 +54,10 @@ public class SsoServerContext {
 		return new MemorySessionStorer();
 	}*/
 	
+	/****
+	 * the implementor of SSOUserService is {@linkplain ServerSSOUserServiceImpl ServerSSOUserServiceImpl}
+	 * @return
+	 */
 	@Bean
 	public SSOService ssoService(){
 		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();

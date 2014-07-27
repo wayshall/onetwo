@@ -54,6 +54,10 @@ public class SsoClientContext {
 		return fb;
 	}
 	
+	/****
+	 * the implementor of SSOUserService should be writed by project
+	 * @return
+	 */
 	@Bean
 	public SSOService ssoService(){
 		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();

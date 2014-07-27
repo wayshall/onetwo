@@ -137,5 +137,14 @@ public class SpringSecurityTarget implements SecurityTarget {
 			return null;
 		return datas.get(key);
 	}
+
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+
+	public HttpServletResponse getResponse() {
+		return response;
+	}
+	
 	
 }
