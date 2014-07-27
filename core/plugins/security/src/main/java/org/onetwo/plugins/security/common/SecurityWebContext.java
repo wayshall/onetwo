@@ -18,6 +18,7 @@ public class SecurityWebContext {
 	public SpringSecurityInterceptor springSecurityInterceptor(){
 		if(SecurityPluginUtils.existServerConfig() || SecurityPluginUtils.existClientConfig())
 			return new SsoSpringSecurityInterceptor();
+		//SimpleNotSSOServiceImpl
 		return new SpringSecurityInterceptor();
 	}
 	
@@ -25,5 +26,9 @@ public class SecurityWebContext {
 	public SecurityWebExceptionResolver securityWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
 	}
+	
+	/*@Bean
+	public SSOService simpleNotSSOServiceImpl(){
+	}*/
 	
 }

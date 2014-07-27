@@ -29,6 +29,9 @@ import org.springframework.web.servlet.ModelAndView;
 @CsrfValid(false)
 abstract public class AbstractLoginController extends AbstractBaseController {
 
+	/****
+	 * server side store is MemorySessionStorer
+	 */
 	@Autowired
 	private SessionStorer sessionStorer;
 	
