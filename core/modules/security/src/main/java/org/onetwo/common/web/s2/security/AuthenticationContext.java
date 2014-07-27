@@ -9,10 +9,10 @@ public class AuthenticationContext {
 	public static AuthenticationContext create(AuthenticConfig config, SecurityTarget target){
 		return new AuthenticationContext(config, target);
 	}
-	AuthenticConfig config;
-	SecurityTarget target;
-	UserDetail authoritable;
-	String cookieToken;
+	private final AuthenticConfig config;
+	private final SecurityTarget target;
+	private final UserDetail authoritable;
+	private final String cookieToken;
 	
 	private AuthenticationContext(AuthenticConfig config, SecurityTarget target) {
 		super();
