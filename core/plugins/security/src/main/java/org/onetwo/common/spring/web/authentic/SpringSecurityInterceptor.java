@@ -84,6 +84,7 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 //			logger.info(request.getRequestURL() + " can not create target, ignore it.");
 			return ;
 		}
+		AuthenticUtils.setIntoRequest(request, target);
 		
 		// 验证配置读取服务
 		AuthenticConfigService service = getAuthenticConfigService();

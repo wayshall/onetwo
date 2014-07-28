@@ -16,6 +16,7 @@ import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.csrf.AbstractCsrfPreventor;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
+import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -221,10 +222,17 @@ public final class JFishWebUtils {
 
 	public static String redirectUrl(String redirectUrl, String defaultUrl){
 		if(StringUtils.isBlank(redirectUrl)){
-			return "redirect:" + defaultUrl;
+			return AbstractBaseController.REDIRECT + defaultUrl;
 		}else{
-			return "redirect:" + redirectUrl;
+			return AbstractBaseController.REDIRECT + redirectUrl;
 		}
+	}
+
+	public static String redirect(String url){
+		Assert.hasText(url);
+		if(isRedirect(url))
+			return url;
+		return AbstractBaseController.REDIRECT+url;
 	}
 	
 	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args, String defaultMessage, Locale locale){

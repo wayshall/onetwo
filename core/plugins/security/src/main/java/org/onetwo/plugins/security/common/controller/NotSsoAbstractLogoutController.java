@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @CsrfValid(false)
 abstract public class NotSsoAbstractLogoutController extends AbstractBaseController {
-	
+
 	abstract protected void doLogout(LogoutParams logoutParams, SpringSecurityTarget securityTarget);
 
 	@RequestMapping(method=RequestMethod.POST)
