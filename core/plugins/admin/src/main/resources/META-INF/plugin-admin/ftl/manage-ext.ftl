@@ -193,7 +193,7 @@
     </div>
     
     <div style="display:hidden">
-    	<form id="userLogoutForm" action="${ssoConfig.serverLoginUrl}" method="post">
+    	<form id="userLogoutForm" action="${adminPluginConfig.serverLogoutUrl}" method="post">
     	</form>
     </div>
 	</body>

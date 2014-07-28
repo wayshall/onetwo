@@ -9,11 +9,11 @@ import org.onetwo.common.utils.MergeFileContext;
 public class MergeHpTxtFile {
 	
 	public static void main(String[] args){
-		String mergeDir = "D:\\mydev\\mydoc\\one\\";
+		String mergeDir = "D:\\mydev\\mydoc\\50hp\\";
 //		String mergedFileName = "proc-all-"+DateUtil.format("yyyy-MM-dd-HHmmss", new Date())+".sql";
-		String mergedFileName = "51.txt";
+		String mergedFileName = "50.txt";
 		FileUtils.mergeFiles(MergeFileConfig.build("gbk", mergeDir+mergedFileName, 
-				"D:\\mydev\\mydoc\\txt\\", ".txt", new DefaultMergeListener(){
+				mergeDir, ".txt", new DefaultMergeListener(){
 
 					@Override
 					public void onFileStart(MergeFileContext context) throws Exception {

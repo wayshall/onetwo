@@ -6,6 +6,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.web.sso.SimpleNotSSOServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 /***
  * 非sso登录抽象类
@@ -14,15 +15,16 @@ import org.onetwo.common.web.sso.SimpleNotSSOServiceImpl;
  * @param <UserData>
  * @param <User>
  */
+@Transactional
 abstract public class AbstractUserLoginServiceImpl<UserData> extends SimpleNotSSOServiceImpl {
 	
 
-	abstract protected ValidableUser<UserData> findUniqueUser(LoginParams loginParams);
-	abstract protected UserDetail createLoginUser(String token, ValidableUser<UserData> user);
+	abstract protected ValidatableUser<UserData> findUniqueUser(LoginParams loginParams);
+	abstract protected UserDetail createLoginUser(String token, ValidatableUser<UserData> user);
 	
 	@Override
 	public UserDetail login(LoginParams loginParams) {
-		ValidableUser<UserData> user = findUniqueUser(loginParams);//baseEntityManager.findUnique(UserEntity.class, "userName", loginParams.getUserName(), "status:!=", UserStatus.DELETE);
+		ValidatableUser<UserData> user = findUniqueUser(loginParams);//baseEntityManager.findUnique(UserEntity.class, "userName", loginParams.getUserName(), "status:!=", UserStatus.DELETE);
 		if(user==null || !MDFactory.checkEncrypt(loginParams.getUserPassword(), user.getPassword())){
 			throw new LoginException("用户和密码不匹配！");
 		}
@@ -34,10 +36,15 @@ abstract public class AbstractUserLoginServiceImpl<UserData> extends SimpleNotSS
 	}
 	
 
-	protected String generateToken(ValidableUser<UserData> user){
+	protected String generateToken(ValidatableUser<UserData> user){
 		String str = user.getUserName() + System.currentTimeMillis() + LangUtils.getRadomString(6);
 		String token = MDFactory.createSHA().encryptWithSalt(str);
 		return token;
+	}
+
+	@Override
+	public void logout(UserDetail userDetail, boolean normal) {
+		//do nothing
 	}
 	
 	
