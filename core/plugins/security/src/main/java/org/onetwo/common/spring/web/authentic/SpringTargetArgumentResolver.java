@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
+import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.slf4j.Logger;
 import org.springframework.core.MethodParameter;
@@ -21,12 +22,22 @@ public class SpringTargetArgumentResolver implements HandlerMethodArgumentResolv
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return SecurityTarget.class.isAssignableFrom(parameter.getParameterType());
+		return SecurityTarget.class.isAssignableFrom(parameter.getParameterType()) || AuthenticationContext.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		SecurityTarget result = AuthenticUtils.getSecurityTargetFromRequest((HttpServletRequest)webRequest.getNativeRequest());
+//		SecurityTarget result = AuthenticUtils.getSecurityTargetFromRequest((HttpServletRequest)webRequest.getNativeRequest());
+		Object result = null;
+		if(AuthenticationContext.class.isAssignableFrom(parameter.getParameterType())){
+			result = AuthenticUtils.getContextFromRequest((HttpServletRequest)webRequest.getNativeRequest());
+		}else{
+			result = AuthenticUtils.getSecurityTargetFromRequest((HttpServletRequest)webRequest.getNativeRequest());
+			if(result==null){
+				AuthenticationContext context = AuthenticUtils.getContextFromRequest((HttpServletRequest)webRequest.getNativeRequest());
+				result = context!=null?context.getTarget():null;
+			}
+		}
 		return result;
 	}
 

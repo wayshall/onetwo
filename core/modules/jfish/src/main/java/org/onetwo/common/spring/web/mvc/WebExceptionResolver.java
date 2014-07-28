@@ -57,6 +57,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	private MvcSetting mvcSetting;
 	private MessageSource exceptionMessage;
+
+	protected String defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	
 	public WebExceptionResolver(){
 		setOrder(RESOLVER_ORDER);
@@ -224,7 +226,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	protected String getAuthenticView(HttpServletRequest request, ModelMap model){
 		model.addAttribute(PRE_URL, getPreurl(request));
-		return "redirect:login";
+		if(StringUtils.isBlank(defaultRedirect))
+			return JFishWebUtils.redirect(defaultRedirect);
+		return JFishWebUtils.redirect("login");
 		/*AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
 		String view = context!=null?context.getConfig().getRedirect():"";
 		return view;*/

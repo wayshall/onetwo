@@ -5,6 +5,7 @@ import java.util.List;
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 import org.onetwo.plugins.security.client.SsoClientContext;
 import org.onetwo.plugins.security.common.SecurityContext;
+import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.SsoServerContext;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
@@ -21,6 +22,21 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 	@Override
 	public void setPluginInstance(SecurityPlugin plugin){
 		instance = plugin;
+	}
+	
+	private SsoConfig ssoConfig;
+	
+
+	public void setSsoConfig(SsoConfig ssoConfig) {
+		this.ssoConfig = ssoConfig;
+	}
+
+	public SsoConfig getSsoConfig() {
+		return ssoConfig;
+	}
+	
+	public boolean isSsoEnable(){
+		return ssoConfig!=null;
 	}
 
 	@Override

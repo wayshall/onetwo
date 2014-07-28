@@ -1,6 +1,6 @@
 package org.onetwo.common.web.login;
 
-public interface ValidableUser<T> {
+public interface ValidatableUser<T> {
 
 	T getUserData();
 	String getUserName();

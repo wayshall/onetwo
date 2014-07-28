@@ -51,6 +51,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String LOG_OPERATION = "log.operation";
 
 	public static final String SAFE_REQUEST = "safe.request";
+	public static final String LOGIN_URL = "login.url";
+	public static final String LOGOUT_URL = "logout.url";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 	
 
@@ -339,6 +341,14 @@ public class BaseSiteConfig extends AppConfig {
 	}
 	public String getThemeLayoutDefaultPage(){
 		return getProperty(THEME_LAYOUT_DEFAULT_PAGE, "application.jsp");
+	}
+	
+	public String getLoginUrl(){
+		return getProperty(LOGIN_URL);
+	}
+	
+	public String getLogoutUrl(){
+		return getProperty(LOGOUT_URL);
 	}
 
 }

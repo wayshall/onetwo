@@ -5,6 +5,11 @@ import org.onetwo.common.utils.UserDetail;
 
 public interface SSOUserService {
 
+	/*******
+	 * 
+	 * @param params
+	 * @return
+	 */
 	public UserDetail getCurrentLoginUser(CurrentLoginUserParams params);
 	
 }
