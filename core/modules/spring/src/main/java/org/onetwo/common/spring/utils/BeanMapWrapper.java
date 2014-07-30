@@ -223,9 +223,9 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				if(rs==null)
 					return data.containsKey(token.key);
 				
-				Class<?> eType = ReflectUtils.getGenricType(rs, 0);
-				Object ele = this.createListElement(token, eType);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
+//				Class<?> eType = ReflectUtils.getGenricType(rs, 0);
+//				Object ele = this.createListElement(token, eType);
+				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
 				return bw.isReadableProperty(token.propertyPath);
 			}else{
 				return data.containsKey(propertyName);
