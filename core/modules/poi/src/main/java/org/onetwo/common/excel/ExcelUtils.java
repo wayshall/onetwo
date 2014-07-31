@@ -14,6 +14,7 @@ import ognl.Ognl;
 
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -238,6 +239,10 @@ abstract public class ExcelUtils {
 		} catch (Exception e) {
 			throw new BaseException("read workbook error by resource : " + e.getMessage(), e);
 		} 
+	}
+	
+	public static CellValue getFormulaCellValue(Cell cell){
+		return cell==null?null:cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator().evaluate(cell);
 	}
 	
 }
