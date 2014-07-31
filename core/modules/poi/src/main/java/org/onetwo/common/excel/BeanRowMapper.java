@@ -208,9 +208,13 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	protected void afterMapOneDataRow(T data, Row row, int rowIndex){
 	}
 	
-	
+	/***
+	 * 默认忽略空行
+	 * @param row
+	 * @return
+	 */
 	protected boolean isIgnoreRow(Row row){
-		return false;
+		return row==null;
 	}
 
 	/***
