@@ -4,8 +4,13 @@ import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.log.MyLoggerFactory;
+import org.slf4j.Logger;
+
 public class WebFilterAdapter implements WebFilterInitializers, WebFilter {
 
+	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
 	@Override
 	public void onInit(FilterConfig config) {
 		

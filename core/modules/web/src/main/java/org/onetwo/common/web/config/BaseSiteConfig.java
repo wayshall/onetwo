@@ -32,6 +32,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String THEME_TAG = "theme.tag";
 	public static final String THEME_VIEW = "theme.view";
 	public static final String THEME_LAYOUT_DEFAULT_PAGE = "theme.layout.default.page";
+	public static final String THEME_JSUI_KEY = "theme.jsui";
 	
 	public static final String FILTER_INITIALIZERS = "filter.initializers";
 	
@@ -154,6 +155,7 @@ public class BaseSiteConfig extends AppConfig {
 			logger.info("set ContextRealPath: " + realPath);
 			logger.info("set appUrlPostfix: " + appUrlPostfix );
 		}
+		
 		return this;
 	}
 	
@@ -342,6 +344,9 @@ public class BaseSiteConfig extends AppConfig {
 	public String getThemeLayoutDefaultPage(){
 		return getProperty(THEME_LAYOUT_DEFAULT_PAGE, "application.jsp");
 	}
+	public boolean getThemeJsui(){
+		return getBoolean(THEME_JSUI_KEY, false);
+	}
 	
 	public String getLoginUrl(){
 		return getProperty(LOGIN_URL);
@@ -349,6 +354,10 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public String getLogoutUrl(){
 		return getProperty(LOGOUT_URL);
+	}
+	
+	public String getExtTheme(){
+		return getProperty("ext.theme", "gray");
 	}
 
 }
