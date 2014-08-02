@@ -32,6 +32,12 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[condition]]></description>
+      <name>condition</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   

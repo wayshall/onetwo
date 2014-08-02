@@ -42,6 +42,8 @@ public class GridTagBean extends HtmlElement {
 	private String custombar;
 	private String customform;
 	
+	private boolean jsgrid;
+	
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
 		if(!rows.contains(row)){
@@ -220,6 +222,14 @@ public class GridTagBean extends HtmlElement {
 
 	public void setToolbarName(String toolbarName) {
 		this.toolbarName = toolbarName;
+	}
+
+	public boolean isJsgrid() {
+		return jsgrid;
+	}
+
+	public void setJsgrid(boolean jsgrid) {
+		this.jsgrid = jsgrid;
 	}
 
 }
