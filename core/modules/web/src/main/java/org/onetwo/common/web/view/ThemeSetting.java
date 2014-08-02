@@ -7,5 +7,11 @@ public interface ThemeSetting {
 	public String getTagPage(String path);
 
 	public String getViewPage(String path);
+	
+	public String getExtTheme();
+	
+	public boolean isJsui();
+	
+	public void setJsui(boolean jsui);
 
 }

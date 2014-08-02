@@ -14,12 +14,10 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.csrf.AbstractCsrfPreventor;
+import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -62,11 +60,13 @@ public final class JFishWebUtils {
 	}
 	
 	public static void req(String name, Object value){
-		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_REQUEST);
+//		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_REQUEST);
+		WebHolder.getRequest().setAttribute(name, value);
 	}
 	
 	public static <T> T req(String name){
-		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
+//		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
+		return (T)WebHolder.getRequest().getAttribute(name);
 	}
 	
 	public static Object currentHandler(){
@@ -98,11 +98,13 @@ public final class JFishWebUtils {
 
 	
 	public static void session(String name, Object value){
-		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_SESSION);
+//		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_SESSION);
+		WebHolder.getSession().setAttribute(name, value);
 	}
 	
 	public static <T> T session(String name){
-		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_SESSION);
+//		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_SESSION);
+		return (T)WebHolder.getSession().getAttribute(name);
 	}
 	
 	/*public static void parameters(Map<?, ?> params){
@@ -110,7 +112,8 @@ public final class JFishWebUtils {
 	}*/
 	
 	public static void removeSession(String name){
-		RequestContextHolder.getRequestAttributes().removeAttribute(name, RequestAttributes.SCOPE_SESSION);
+//		RequestContextHolder.getRequestAttributes().removeAttribute(name, RequestAttributes.SCOPE_SESSION);
+		WebHolder.getSession().removeAttribute(name);
 	}
 	
 
@@ -169,7 +172,8 @@ public final class JFishWebUtils {
 	}
 	
 	public static void removeAllSessionAttributes(){
-		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+//		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+		String[] attrNames = org.springframework.util.StringUtils.toStringArray(WebHolder.getSession().getAttributeNames());
 		if(!LangUtils.isEmpty(attrNames)){
 			for(String attr : attrNames)
 				removeSession(attr);
@@ -177,7 +181,8 @@ public final class JFishWebUtils {
 	}
 	
 	public static HttpServletRequest request(){
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		return WebHolder.getRequest();
 	}
 	
 	public static String requestExtension(){

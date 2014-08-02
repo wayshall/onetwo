@@ -254,13 +254,13 @@ var Common = function () {
 			var form = $(formName) || $(this);
 			
 			var checkboxAll = $(jfish.cssKeys.checkAll, form);
-			var childBox = $("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"']", form);
-			checkboxAll.click(function(){
-				childBox.attr("checked", !!$(this).attr("checked"));
+			var childBox = $(jfish.cssKeys.checkField, form);//$("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"']", form);
+			checkboxAll.live('click', function(){
+				$(jfish.cssKeys.checkField, form).attr("checked", !!$(this).attr("checked"));
 			});
-			childBox.click(function(){
+			childBox.live('click', function(){
 				var checkeds = $("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"'][checked]", form);
-				checkboxAll.attr("checked", (checkeds.length==childBox.length));
+				checkboxAll.attr("checked", (checkeds.length==$(jfish.cssKeys.checkField, form).length));
 			});
 		},
 		

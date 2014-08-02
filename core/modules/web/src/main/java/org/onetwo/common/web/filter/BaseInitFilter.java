@@ -117,7 +117,6 @@ public class BaseInitFilter extends IgnoreFiler {
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 		try {
-			
 			this.reloadConfigIfNecessary(request);
 			if(BaseSiteConfig.getInstance().isCookieP3p())
 				addP3P(response);
