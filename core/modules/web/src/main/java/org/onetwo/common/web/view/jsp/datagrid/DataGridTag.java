@@ -9,6 +9,7 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.csrf.CsrfPreventor;
 import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.view.jsp.TagUtils;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private static final String AJAX_POSTFIX = "Ajax";
 //	private static final String AJAX_INST_POSTFIX = "AjaxInst";
+
+	public final static String VIEW_JSUI_KEY = "view.jsui";
 	
 	private String template = "datagrid/grid.jsp";
 	private Object dataSource;
@@ -50,6 +53,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private String custombar = "grid_custombar";
 	private String customform = "grid_customform";
+	
 	
 	
 	public DataGridTag(){
@@ -140,8 +144,13 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setToolbar(toolbar);
 		component.setToolbarName(toolbarName);
 		
+
+		component.setJsgrid(getThemeSetting().isJsui());
+		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
+
+	
 
 	protected String buildActionString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
@@ -163,7 +172,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 //		String qstr = TagUtils.parseQueryString(request, ":params", this.csrfPreventor);
 		CasualMap map = TagUtils.processUrlSymbolAsCasualMap(request, ":params", this.csrfPreventor);
-		String qstr = map==null?"":map.toParamString();
+		String qstr = map==null?"":map.filter(BaseSiteConfig.THEME_JSUI_KEY).toParamString();
 		return qstr;
 		/*
 		String str = request.getQueryString();

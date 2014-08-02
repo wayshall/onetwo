@@ -11,9 +11,14 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 	public static String BASE_LAYOUT_DIR = "layout/";
 
 	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
-	private String themeTag = siteConfig.getThemeTag();
-	private String themeLayoutDefaultPage = siteConfig.getThemeLayoutDefaultPage();
-	private String themeView = siteConfig.getThemeView();
+	private ThemeAttributes attributes = new ThemeAttributes();
+	
+	public DefaultTagThemeSetting(){
+		attributes.themeTag = siteConfig.getThemeTag();
+		attributes.layout = siteConfig.getThemeLayoutDefaultPage();
+		attributes.themeView = siteConfig.getThemeView();
+		attributes.jsui = siteConfig.getThemeJsui();
+	}
 	
 	@Override
 	public String getViewPage(String path) {
@@ -51,16 +56,22 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 	}
 	
 	
+	@Override
+	public void setJsui(boolean jsui) {
+//		attributes.setJsui(jsui);
+		//throw unsupportedexception
+	}
+
 	public String getThemeView() {
-		return themeView;
+		return attributes.themeView;
 	}
 
 	public String getThemeTag() {
-		return this.themeTag;
+		return attributes.themeTag;
 	}
 
 	public String getThemeLayoutDefaultPage() {
-		return this.themeLayoutDefaultPage;
+		return attributes.layout;
 	}
 
 	protected String getDirPage(String baseDir, String path){
@@ -76,4 +87,63 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 		
 		return baseDir + path;
 	}
+
+	@Override
+	public String getExtTheme() {
+		return attributes.extTheme;
+	}
+
+	protected BaseSiteConfig getSiteConfig() {
+		return siteConfig;
+	}
+
+	@Override
+	public boolean isJsui() {
+		return attributes.jsui;
+	}
+	
+
+	protected static class ThemeAttributes {
+		private String themeTag;
+		private String layout;
+		private String themeView;
+		private String extTheme;
+		private boolean jsui;
+		
+		public ThemeAttributes() {
+			super();
+		}
+		public String getThemeTag() {
+			return themeTag;
+		}
+		public void setThemeTag(String themeTag) {
+			this.themeTag = themeTag;
+		}
+		public String getLayout() {
+			return layout;
+		}
+		public void setLayout(String layout) {
+			this.layout = layout;
+		}
+		public String getThemeView() {
+			return themeView;
+		}
+		public void setThemeView(String themeView) {
+			this.themeView = themeView;
+		}
+		public String getExtTheme() {
+			return extTheme;
+		}
+		public void setExtTheme(String extTheme) {
+			this.extTheme = extTheme;
+		}
+		public boolean isJsui() {
+			return jsui;
+		}
+		public void setJsui(boolean jsui) {
+			this.jsui = jsui;
+		}
+		
+	}
+	
 }
