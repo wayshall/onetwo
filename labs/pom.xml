@@ -33,4 +33,7 @@
 	</profiles>
 
 
+  <modules>
+    <module>tasksys</module>
+  </modules>
 </project>
