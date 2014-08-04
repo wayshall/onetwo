@@ -5,6 +5,7 @@ import java.util.Date;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.web.util.HtmlUtils;
 
 final public class ToolEl {
@@ -60,6 +61,10 @@ final public class ToolEl {
 		if(StringUtils.isBlank(methodName))
 			return null;
 		return ReflectUtils.invokeMethod(methodName, target, arg);
+	}
+	
+	public static String addParam(String action, String name, String value){
+		return TagUtils.appendParam(action, name, value);
 	}
 
 	private ToolEl(){}
