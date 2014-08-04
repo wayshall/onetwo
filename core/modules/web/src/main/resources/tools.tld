@@ -101,4 +101,10 @@
   	<function-signature>java.lang.Object exec(java.lang.Object, java.lang.String, java.lang.Object)</function-signature>
   </function>
   
+  <function>
+  	<name>addParam</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String addParam(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+  </function>
+  
 </taglib>
