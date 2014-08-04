@@ -157,17 +157,15 @@ public abstract class IgnoreFiler implements Filter{
 			return ;
 		}*/
 		
-		if (this.requestSupportFilter(request)) {
-			try {
-				this.onFilter(request, response);
+		try {
+			this.onFilter(request, response);
+			if (this.requestSupportFilter(request)) {
 				this.doFilterInternal(servletRequest, servletResponse, filterChain);
-			}/* catch (Throwable e) {
-				this.onThrowable(request, response, e);
-			}*/ finally {
-				this.onFinally(request, response);
+			}else {
+				filterChain.doFilter(request, response);
 			}
-		}else {
-			filterChain.doFilter(request, response);
+		}finally {
+			this.onFinally(request, response);
 		}
 	}
 
