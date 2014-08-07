@@ -130,11 +130,14 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 				return page;
 		}
 		
-		jq = this.createQuery(queryName, params);
-		jq.setFirstResult(page.getFirst()-1);
-		jq.setMaxResults(page.getPageSize());
+		jq = this.createQuery(queryName, params).setPageParameter(page);
+//		jq.setFirstResult(page.getFirst()-1);
+//		jq.setMaxResults(page.getPageSize());
 		List<T> datalist = jq.getResultList();
 		page.setResult(datalist);
+		if(!page.isAutoCount()){
+			page.setTotalCount(datalist.size());
+		}
 		
 		return page;
 	}
