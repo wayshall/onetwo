@@ -1,6 +1,7 @@
 package org.onetwo.plugins.permission;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.plugins.permission.anno.MenuMapping;
 import org.onetwo.plugins.permission.entity.IFunction;
 import org.onetwo.plugins.permission.entity.IMenu;
@@ -193,7 +195,11 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		if(ptype==PermissionType.FUNCTION){
 			perm = (IPermission)ReflectUtils.newInstance(this.menuInfoable.getIFunctionClass());
 		}else{
-			perm = (IPermission)ReflectUtils.newInstance(this.menuInfoable.getIMenuClass());
+			IMenu<?, ?> menu = (IMenu<?, ?>)ReflectUtils.newInstance(this.menuInfoable.getIMenuClass());
+			Map<?, ?> param = getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
+			CasualMap casualmap = new CasualMap().addMapWithFilter(param);
+			menu.setUrl(casualmap.toParamString());
+			perm = menu;
 		}
 		perm.setName(name);
 		String code = parseCode(permissionClass);

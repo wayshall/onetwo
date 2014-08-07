@@ -1,7 +1,6 @@
 package org.onetwo.common.utils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -132,6 +131,12 @@ public class FileUtilsTest {
 		actual = JFishList.wrap(FileUtils.readAsList(file)).join(",", ":this");
 		Assert.assertEquals("1111,2222,cccc", actual);
 		file.delete();
+	}
+	
+	@Test
+	public void testReadTxtFile(){
+//		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/fileutils/user-data.txt";
+//		FileUtils.readAsList(filepath, UserEntity.class, "\t");
 	}
 
 }

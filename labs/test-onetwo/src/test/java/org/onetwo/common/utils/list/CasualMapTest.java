@@ -42,7 +42,7 @@ public class CasualMapTest {
 		
 		CasualMap map2 = new CasualMap("aa=aa-value&bb=bb-value");
 		map2.putElements("cc", new String[]{"cc-value", "cc2-value"});
-		map2.addWithout(addMap, "test-");
+		map2.addWithFilter(addMap, "test-");
 		
 		CasualMap map = map2.subtract(map1);
 		System.out.println("map:"+map.toParamString());
@@ -62,7 +62,7 @@ public class CasualMapTest {
 		addMap.putElement("test-dd", "testdd-value");
 		addMap.putElement("aa-test-dd", "testdd-value");
 		
-		map1.addHttpParameterWithout(addMap, "*test*");
+		map1.addMapWithFilter(addMap, "*test*");
 		System.out.println("map1:" + map1);
 		Assert.assertEquals("{aa=[aa-value], bb=[bb-value], dd=[dd-value]}", map1.toString());
 	}
