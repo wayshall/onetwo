@@ -9,6 +9,8 @@ import javax.annotation.Resource;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.web.mvc.HandlerMappingListener;
 import org.onetwo.common.utils.AnnotationUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
@@ -40,6 +42,9 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 					if(IMenu.class.isInstance(perm)){
 						IMenu menu = (IMenu) perm;
 						String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
+						if(StringUtils.isNotBlank(menu.getUrl())){
+							url = TagUtils.appendParamString(url, menu.getUrl());
+						}
 						menu.setUrl(url);
 						Iterator<RequestMethod> it = entry.getKey().getMethodsCondition().getMethods().iterator();
 						if(it.hasNext()){
