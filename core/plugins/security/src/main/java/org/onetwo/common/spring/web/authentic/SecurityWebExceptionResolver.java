@@ -16,7 +16,7 @@ public class SecurityWebExceptionResolver extends WebExceptionResolver {
 	/*@Resource
 	private SsoConfig ssoConfig;*/
 
-	protected String getAuthenticView(HttpServletRequest request, ModelMap model){
+	protected String getLoginView(HttpServletRequest request, ModelMap model){
 //		model.addAttribute(PRE_URL, getPreurl(request));
 		/*String returnUrl = getPreurl(request);
 		if(StringUtils.isBlank(returnUrl)){
