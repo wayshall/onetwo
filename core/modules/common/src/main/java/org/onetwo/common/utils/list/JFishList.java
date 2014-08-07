@@ -283,7 +283,8 @@ public class JFishList<E> implements List<E>, Serializable {
 		return str.toString();
 	}
 
-	public String join(final String joiner, final String propName){
+	public String join(final String joiner, String prop){
+		final String propName = StringUtils.isBlank(prop)?SELF_KEY:prop;
 		return join(joiner, new SimpleBlock<E, String>() {
 
 			@Override

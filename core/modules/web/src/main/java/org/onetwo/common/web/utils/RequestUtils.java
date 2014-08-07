@@ -159,7 +159,7 @@ public abstract class RequestUtils {
 	}
 	
 	public static CasualMap getParametersWithout(HttpServletRequest request, String... prefix){
-		return new CasualMap().addHttpParameterWithout(getParameters(request), prefix);
+		return new CasualMap().addMapWithFilter(getParameters(request), prefix);
 	}
 	
 	public static Map getParameters(HttpServletRequest request){
