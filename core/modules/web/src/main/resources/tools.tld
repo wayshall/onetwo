@@ -107,4 +107,10 @@
   	<function-signature>java.lang.String addParam(java.lang.String, java.lang.String, java.lang.String)</function-signature>
   </function>
   
+  <function>
+  	<name>web</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String web(java.lang.String)</function-signature>
+  </function>
+  
 </taglib>

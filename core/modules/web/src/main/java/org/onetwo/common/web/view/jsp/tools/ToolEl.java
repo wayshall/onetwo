@@ -5,6 +5,7 @@ import java.util.Date;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.web.util.HtmlUtils;
 
@@ -65,6 +66,10 @@ final public class ToolEl {
 	
 	public static String addParam(String action, String name, String value){
 		return TagUtils.appendParam(action, name, value);
+	}
+	
+	public static String web(String name){
+		return escapeHtml(WebHolder.getValue(name).toString());
 	}
 
 	private ToolEl(){}

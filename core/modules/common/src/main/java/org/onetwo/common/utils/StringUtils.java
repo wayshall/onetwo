@@ -46,6 +46,11 @@ public abstract class StringUtils {
 		}
 	}
 
+
+	public static boolean isObjectBlank(Object obj) {
+		return obj == null || obj.toString().trim().equals("");
+	}
+
 	public static boolean isBlank(String str) {
 		return str == null || str.trim().equals("");
 	}
@@ -690,12 +695,12 @@ public abstract class StringUtils {
 		return val;
 	}
 
-	public static String firstNotBlank(String... defs){
+	public static String firstNotBlank(Object... defs){
 		if(LangUtils.isEmpty(defs))
 			return LangUtils.EMPTY_STRING;
-		for(String def : defs){
-			if(isNotBlank(def))
-				return def;
+		for(Object def : defs){
+			if(def!=null && isNotBlank(def.toString()))
+				return def.toString();
 		}
 		return LangUtils.EMPTY_STRING;
 	}

@@ -54,6 +54,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String SAFE_REQUEST = "safe.request";
 	public static final String LOGIN_URL = "login.url";
 	public static final String LOGOUT_URL = "logout.url";
+	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 	
 
@@ -354,6 +355,9 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public String getLogoutUrl(){
 		return getProperty(LOGOUT_URL);
+	}
+	public String getSecurityNopermissionView(){
+		return getProperty(SECURITY_NOPERMISSION_VIEW);
 	}
 	
 	public String getExtTheme(){
