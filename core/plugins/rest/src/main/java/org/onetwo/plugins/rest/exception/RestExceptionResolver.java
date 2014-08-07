@@ -105,7 +105,12 @@ public class RestExceptionResolver extends WebExceptionResolver {
 			errorMsg = getMessage(errorCode, null, ex.getMessage(), request.getLocale());
 		}
 		
-		return new ErrorMessage(errorCode, errorMsg, detail);
+//		return new ErrorMessage(errorCode, errorMsg, detail);
+		ErrorMessage error = new ErrorMessage(ex);
+		error.setCode(errorCode);
+		error.setMesage(errorMsg);
+		error.setDetail(detail);
+		return error;
 	}
 	
 	protected String getUnknowError(){

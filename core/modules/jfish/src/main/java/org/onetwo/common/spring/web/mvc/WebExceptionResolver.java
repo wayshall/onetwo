@@ -12,6 +12,8 @@ import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
+import org.onetwo.common.exception.NoAuthorizationException;
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -129,21 +131,20 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		
 		String defaultViewName = ExceptionView.UNDEFINE;
 		boolean detail = true;
-		boolean authentic = false;
+//		boolean authentic = false;
+		ErrorMessage error = new ErrorMessage(ex);
 		
 		boolean findMsgByCode = true;
 		if(ex instanceof MaxUploadSizeExceededException){
 			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = MvcError.MAX_UPLOAD_SIZE_ERROR;
 			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
-		}else if(ex instanceof AuthenticationException){
-			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-			authentic = true;
 		}else if(ex instanceof LoginException){
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
-			authentic = true;
+		}else if(ex instanceof AuthenticationException){
+			defaultViewName = ExceptionView.AUTHENTIC;
+			detail = false;
 		}/*else if(ex instanceof BusinessException){
 			defaultViewName = ExceptionView.BUSINESS;
 			detail = false;
@@ -200,31 +201,38 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 		
 		String viewName = null;
-		if(authentic){
-			viewName = getAuthenticView(request, model);
+		if(error.isNotLoginException()){
+			viewName = getLoginView(request, model);
 //			model.addAttribute(PRE_URL, getPreurl(request));
 //			if(JFishWebUtils.isRedirect(viewName))
 //				viewName = appendPreurlForAuthentic(viewName);
-		}else {
-			viewName = findInSiteConfig(ex); 
-		}
-		if(StringUtils.isBlank(viewName)){
-			viewName = defaultViewName;
+		}else if(error.isNoPermissionException()){
+			viewName = getNoPermissionView(request, model, error);
 		}
 		
-		ErrorMessage error = new ErrorMessage(errorCode, errorMsg, detail);
+		if(StringUtils.isBlank(viewName)){
+			viewName = findInSiteConfig(ex); 
+			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
+		}
+		
+		error.setCode(errorCode);
+		error.setMesage(errorMsg);
+		error.setDetail(detail);
 		error.setViewName(viewName);
-		error.setAuthentic(authentic);
+//		error.setAuthentic(authentic);
 		return error;
 	}
-	
+	public String getNoPermissionView(HttpServletRequest request, ModelMap model, ErrorMessage error){
+		model.addAttribute("noPermissionPath", request.getRequestURI());
+		return BaseSiteConfig.getInstance().getSecurityNopermissionView();
+	}
 	protected String getPreurl(HttpServletRequest request){
 		String preurl = StringUtils.isBlank(request.getParameter(PRE_URL))?JFishWebUtils.requestUri():request.getParameter(PRE_URL);
 //		return encode(preurl);
 		return preurl;
 	}
 	
-	protected String getAuthenticView(HttpServletRequest request, ModelMap model){
+	protected String getLoginView(HttpServletRequest request, ModelMap model){
 		model.addAttribute(PRE_URL, getPreurl(request));
 		if(StringUtils.isBlank(defaultRedirect))
 			return JFishWebUtils.redirect(defaultRedirect);
@@ -315,20 +323,32 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		this.mvcSetting = mvcSetting;
 	}
 
-
+	/*protected static enum ErrorType {
+		LOGIN,
+		NOPERMISSION,
+		OTHER
+	}
+*/
 	protected static class ErrorMessage {
-		final private String code;
-		final private String mesage;
-		final boolean detail;
-		private boolean authentic = false;
+		private String code;
+		private String mesage;
+		boolean detail;
+//		private boolean authentic = false;
 		private String viewName;
 		
-		public ErrorMessage(String code, String mesage, boolean detail) {
+		final private Throwable throwable;
+		
+		
+		public ErrorMessage(Throwable throwable) {
+			super();
+			this.throwable = throwable;
+		}
+		/*public ErrorMessage(String code, String mesage, boolean detail) {
 			super();
 			this.code = code;
 			this.mesage = mesage;
 			this.detail = detail;
-		}
+		}*/
 		public String getCode() {
 			return code;
 		}
@@ -345,12 +365,29 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			this.viewName = viewName;
 		}
 		
-		public boolean isAuthentic() {
-			return authentic;
+		public Throwable getThrowable() {
+			return throwable;
 		}
+		
+		public void setCode(String code) {
+			this.code = code;
+		}
+		public void setMesage(String mesage) {
+			this.mesage = mesage;
+		}
+		public void setDetail(boolean detail) {
+			this.detail = detail;
+		}
+		public boolean isNotLoginException() {
+			return NotLoginException.class.isInstance(throwable);
+		}
+		public boolean isNoPermissionException() {
+			return NoAuthorizationException.class.isInstance(throwable);
+		}
+		/*
 		public void setAuthentic(boolean authentic) {
 			this.authentic = authentic;
-		}
+		}*/
 		public String toString(){
 			return LangUtils.append(code, ":", mesage);
 		}
