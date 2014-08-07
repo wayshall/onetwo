@@ -14,7 +14,7 @@ public class CasualMap extends ListMap<Object, Object>{
 	
 	public CasualMap(){super();};
 
-	public CasualMap(Map map){
+	public CasualMap(Map<Object, List<Object>> map){
 		super(map);
 	}
 	
@@ -44,11 +44,11 @@ public class CasualMap extends ListMap<Object, Object>{
 		}
 	}
 	
-	public CasualMap subtract(Map map){
+	public CasualMap subtract(Map<Object, List<Object>> map){
 		return (CasualMap) CUtils.subtract(this, map, true);
 	}
 	
-	public CasualMap addWithout(Map map, String...prefixs){
+	public CasualMap addWithFilter(Map<Object, List<Object>> map, String...prefixs){
 		if(map==null || map.isEmpty())
 			return this;
 		for(Map.Entry<Object, List<Object>> entry : (Set<Map.Entry<Object, List<Object>>>)map.entrySet()){
@@ -79,7 +79,7 @@ public class CasualMap extends ListMap<Object, Object>{
 	
 
 	
-	public CasualMap addHttpParameterWithout(Map map, String...prefixs){
+	public CasualMap addMapWithFilter(Map map, String...prefixs){
 		if(map==null || map.isEmpty())
 			return this;
 		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){

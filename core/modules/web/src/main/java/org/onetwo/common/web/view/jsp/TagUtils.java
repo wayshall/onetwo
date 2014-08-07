@@ -114,6 +114,16 @@ final public class TagUtils {
 		return result;
 	}
 	
+	public static String appendParamString(String action, String paramstr){
+		String result = action;
+		if (action.indexOf("?")!=-1){
+			result += "&"+paramstr;
+		}else{
+			result += "?"+paramstr;
+		}
+		return result;
+	}
+	
 
 	public static String getFormVarName(){
 		return FormTagBean.class.getSimpleName();
