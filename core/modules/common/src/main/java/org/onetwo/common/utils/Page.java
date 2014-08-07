@@ -59,10 +59,10 @@ public class Page<T> implements Serializable {
 		}
 	}
 	
-	public void setPageNo(String pageNoStr){
+	/*public void setPageNo(String pageNoStr){
 		int pageNo = Integer.valueOf(pageNoStr);
 		this.setPageNo(pageNo);
-	}
+	}*/
 
 	/*public Page<T> pageNo(final int thePageNo) {
 		setPageNo(thePageNo);
