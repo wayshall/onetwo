@@ -31,7 +31,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String THEME_SETTING = "theme.setting";
 	public static final String THEME_TAG = "theme.tag";
 	public static final String THEME_VIEW = "theme.view";
-	public static final String THEME_LAYOUT_DEFAULT_PAGE = "theme.layout.default.page";
+	public static final String THEME_LAYOUT_DEFAULT_PAGE = "theme.layout.defaultpage";
 	public static final String THEME_JSUI_KEY = "theme.jsui";
 	
 	public static final String FILTER_INITIALIZERS = "filter.initializers";
