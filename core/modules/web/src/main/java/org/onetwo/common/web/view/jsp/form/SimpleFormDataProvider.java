@@ -47,6 +47,8 @@ public class SimpleFormDataProvider implements FormDataProvider {
 				} catch (BeansException e) {
 					logger.error("getPropertyValue error : " + e.getMessage());
 				}
+			}else{
+//				val = fieldValue;
 			}
 		}else{
 			val = fieldValue;
