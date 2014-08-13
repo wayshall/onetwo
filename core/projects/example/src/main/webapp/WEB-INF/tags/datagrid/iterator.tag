@@ -6,14 +6,14 @@
 
 <c:if test="${row.renderHeader}">
 	<thead>
-		<tr ${row.gridAttributesHtml}>
+		<tr class="error" ${row.gridAttributesHtml}>
 		<c:forEach items="${row.fields}" var="field">
-			<th ${field.gridAttributesHtml}>
+			<th ${field.gridAttributesHtml} class="${field.cssClass}" style="${field.cssStyle}">
 			
 			<%
 				FieldTagBean fieldBean = (FieldTagBean) getJspContext().getAttribute("field");
-				String linkText = "";
-				if(fieldBean.isOrderable()){
+				String linkText = fieldBean.getGridLabelHtml();
+				/* if(fieldBean.isOrderable()){
 					linkText = "<a href='";
 					linkText += fieldBean.appendOrderBy(fieldBean.getRowTagBean().getGridTagBean().getAction()) +"' ";
 							
@@ -33,7 +33,8 @@
 					out.println(linkText);
 				}else{
 					out.println(fieldBean.getLabel());
-				}
+				} */
+				out.println(linkText);
 				
 				if(fieldBean.isCheckbox()){
 					%>
@@ -52,8 +53,8 @@
 	<tr class="page-no-datas"><td colspan="${row.gridTagBean.colspan}" style="text-align:center">没有数据</td></tr>
 </c:if>
 
-<c:forEach items="${row.datas}" var="entity">
-<tr ${row.gridAttributesHtml}>
+<c:forEach items="${row.datas}" var="entity" varStatus="itStatus">
+<tr class="${itStatus.index%2==0?'warning':'success' }">
 	<c:forEach items="${row.fields}" var="field">
 		<gridRender:field entity="${entity}" field="${field }"></gridRender:field>
 	</c:forEach>

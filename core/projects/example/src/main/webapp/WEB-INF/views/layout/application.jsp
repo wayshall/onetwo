@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/common/taglibs.jsp" %>
+<%@ page trimDirectiveWhitespaces="true"%>
 <%    
 response.setHeader("Cache-Control","no-cache"); //HTTP 1.1    
 response.setHeader("Pragma","no-cache"); //HTTP 1.0    
@@ -22,11 +23,36 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 	  
 	  <import:css path="/admin/assets/styles" min="false" dev="${siteConfig.dev}" />
 	  
+	    <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+  <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/bootstrap/css/ie.css">
+  <![endif]-->
+	  
 	<script type="text/javascript" src="${siteConfig.cssPath}/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${siteConfig.baseURL}/fmtag/static/js/aa.js?t=${now.millis}"></script>
 	<script type="text/javascript" src="${siteConfig.baseURL}/fmtag/static/js/table.js?t=${now.millis}"></script>
 	<script type="text/javascript" src="${siteConfig.jsPath}/My97DatePicker/WdatePicker.js"></script>
+	<style type="text/css">
+	.wordbreak {
+		word-wrap:break-word;
+		word-break:break-all
+	}
+	</style>
     <layout:define name="jsscript"></layout:define>
+    
+<c:if test="${themeSetting.jsui}">
+	<import:js name="ext-all" module="extjs"/>
+	<link rel="stylesheet" type="text/css" href="${siteConfig.jsPath}/extjs/resources/ext-theme-${themeSetting.extTheme }/ext-theme-${themeSetting.extTheme }-all.css" />
+	<script>
+	Ext.Loader.setConfig({
+	    enabled: true
+	});
+	Ext.Loader.setPath('Ext.ux', '${siteConfig.jsPath}/extjs/ux');
+	</script>
+</c:if>
+
 	<layout:define name="cssscript"></layout:define>
 	
 	</head>
@@ -44,7 +70,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 		  </div>
 		</div>
 		
-	    <div class="container">
+	    <div class="container-fluid">
 	    	<c:if test="${not empty message || not empty param.message}">
 			<div class="alert alert-${t:firstNotblank(messageType, param.messageType, 'block')}  alert-dismissable">
   				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -52,11 +78,10 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 				${t:escapeHtml(message)}
 			  	${t:escapeHtml(param.message)}
 			</div>
-			<script type="text/javascript">
-				$(function() {
-					$(".alert").stop().fadeTo(1,0).fadeTo(2000,0.9).delay(1000).fadeTo(1000,0);
-				})
-			</script>
+			<c:if test="${not empty t:web('noPermissionPath')}">
+				<div style="margin: 8px auto auto; text-align: center;">受限地址：${t:web("noPermissionPath")}</div>
+			</c:if>
+			
 			</c:if>
 			
 			<layout:define name="main-content">
@@ -69,3 +94,12 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
       </script>
 	</body>
 </html>
+
+  <script type="text/javascript" src="${siteConfig.cssPath}/bootstrap/js/bootstrap-ie.js?t=${now.millis}"></script>
+  <script>
+
+  if ($.eb.ie6()) {
+	$('.jfish-toggle-control').trigger('click');
+	$('.jfish-toggle-control').trigger('click');
+  }
+  </script>
