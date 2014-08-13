@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <groupId>example</groupId>
-  <artifactId>example</artifactId>
+  <groupId>onetwo-example</groupId>
+  <artifactId>onetwo-example</artifactId>
   <packaging>war</packaging>
   <version>1.1-SNAPSHOT</version>
-  <name>example</name>
+  <name>onetwo-example</name>
   <url>http://maven.apache.org</url>
   
   
@@ -19,15 +19,6 @@
 	<jpa.version>2.0.0</jpa.version>
     <junit.version>4.10</junit.version>
   </properties>
-  
-  
-  <distributionManagement>
-	<snapshotRepository>
-		<id>Snapshots</id>
-		<name>Snapshots</name>
-		<url>http://192.168.1.56:8081/nexus/content/repositories/snapshots</url>
-	</snapshotRepository>
-  </distributionManagement>
   
   <dependencies>
   	

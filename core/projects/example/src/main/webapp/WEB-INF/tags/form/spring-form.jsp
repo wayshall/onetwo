@@ -18,7 +18,7 @@
 
 <div class="block-content collapse in jfish-toggle-body">
 
-<form:form id="${_formBean.id}" modelAttribute="${_formBean.name }" action="${_formBean.action }" method="${_formBean.method }" enctype="${_formBean.encType}" cssClass="form-horizontal">
+<form:form id="${_formBean.id}" modelAttribute="${_formBean.name }" action="${_formBean.action }" method="${_formBean.method }" enctype="${_formBean.encType}" cssClass="form-horizontal" acceptCharset="utf-8">
 ${_formBean.bodyContent }
 <widget:formToken/>
 	<table class="table table-bordered table-striped">
