@@ -31,9 +31,7 @@
 	case textarea:
 		//<form:textarea path="${field.name}"/>
 		%>
-		<textarea class="<%= _cssClass %>" style="<%= _cssStyle %>" id="${field.id}" name="${field.name}">
-		<c:out value="${field.fieldValue}"/>
-		</textarea>
+		<textarea class="<%= _cssClass %>" style="<%= _cssStyle %>" id="${field.id}" name="${field.name}"><c:out value="${field.fieldValue}"/></textarea>
 		<%
 		break;
 	case hidden:
@@ -43,7 +41,7 @@
 		break;
 	case select:
 		%>
-		<form:select id="${field.id}" path="${field.name}" disabled="${field.disabled }" data-toggle="${field.title==null?'':'tooltip'}" title="${field.title}" cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>" onclick="${field.onclick}">
+		<form:select id="${field.id}" path="${field.name}" disabled="${field.disabled }" data-toggle="${field.title==null?'':'tooltip'}" title="${field.title}" cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>"  onclick="${field.onclick}">
 			<c:if test="${field.emptyOption}"><option value="">${t:escapeHtml(field.emptyOptionLabel)}</option></c:if>
 			<form:options items="${field.items}" itemLabel="${field.itemLabel}" itemValue="${field.itemValue }" />
 		</form:select>
@@ -51,7 +49,7 @@
 		break;
 	case button:
 		%>
-		<a href="${field.value }" class="btn btn-default" ${field.attributesHtml}>${field.label }</a>
+		<a href="${field.value }" class="btn btn-default <%= _cssClass %>" ${field.attributesHtml}>${field.label }</a>
 		<%
 		break;
 	case checkbox:
@@ -62,7 +60,9 @@
 		break;
 	case checkboxGroup:
 		%>
-		<form:checkboxes path="${field.name}" items="${field.items}" itemLabel="${field.itemLabel}" itemValue="${field.itemValue }" readOnly="${field.readOnly}" cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>" disabled="${field.disabled}"/>
+		<c:forEach var="it" items="${field.items}">
+			<label><input name="${field.name}" type="checkbox" value="${it[field.itemValue]}" ${t:exec(field.formBean.model, field.value, it)?'checked=true':'' } ${field.readOnly?'readOnly':''} cssClass="<%= _cssClass %>" cssStyle="<%= _cssStyle %>" ${field.disabled?'disabled=true':''}/>${it[field.itemLabel]}</label>
+		</c:forEach>
 		<%
 		break;
 	case radio:
@@ -78,7 +78,7 @@
 		break;
 	case submit:
 		%>
-		<button name="" type="submit" class="btn btn-default" <c:if test="${field.showLoadingText}">data-loading-text="正在提交……"</c:if> ${field.attributesHtml}>${field.label }</button>
+		<input name="" type="submit" class="btn btn-default <%= _cssClass %>" <c:if test="${field.showLoadingText}">data-loading-text="正在提交……"</c:if> ${field.attributesHtml} value="${field.label }"/>
 		<%
 		break;
 	default:
