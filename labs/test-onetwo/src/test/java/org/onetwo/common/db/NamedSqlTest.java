@@ -1,10 +1,12 @@
-package org.onetwo.common.spring.sql;
+package org.onetwo.common.db;
 
 import java.util.List;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.onetwo.common.spring.sql.SqlParamterFunctions;
+import org.onetwo.common.spring.sql.SqlUtils;
 import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.LangUtils;

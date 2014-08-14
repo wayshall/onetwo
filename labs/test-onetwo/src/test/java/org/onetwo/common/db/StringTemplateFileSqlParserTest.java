@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.sql;
+package org.onetwo.common.db;
 
 import junit.framework.Assert;
 
@@ -7,6 +7,14 @@ import org.junit.Test;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.hibernate.sql.HibernateNamedSqlFileManager;
 import org.onetwo.common.jdbc.DataBase;
+import org.onetwo.common.spring.sql.FileSqlParser;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
+import org.onetwo.common.spring.sql.ParserContext;
+import org.onetwo.common.spring.sql.ParserContextFunctionSet;
+import org.onetwo.common.spring.sql.SqlFunctionFactory;
+import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
+import org.onetwo.common.spring.sql.TemplateInNamedQueryParser;
+import org.onetwo.common.utils.LangUtils;
 
 public class StringTemplateFileSqlParserTest {
 
@@ -66,6 +74,36 @@ public class StringTemplateFileSqlParserTest {
 		String sql = this.parser.parse(info.getFullName(), parserContext);
 		System.out.println("sql: " + sql);
 		Assert.assertEquals("update sb set aa=bb from batch_user sb where sb.way=:userName;", sql);
+	}
+	
+
+	@Test
+	public void testForeach(){
+		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testForeach");
+		parserContext = ParserContext.create();
+		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
+		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
+		this.parserContext.put("cardNos", LangUtils.newArrayList("111", "2222"));
+		String sql = this.parser.parse(info.getFullName(), parserContext);
+		System.out.println("sql: " + sql);
+		Assert.assertEquals("select uic.ic_lno from ( SELECT ui.ic_lno, count(ui.ic_lno) as amount from issue_user_info ui where ui.ic_lno in (111, 2222) group by ui.ic_lno ) uic where uic.amount>0", sql);
+	}
+	
+
+	@Test
+	public void testInParams(){
+		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testInParams");
+		parserContext = ParserContext.create();
+		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
+		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
+		this.parserContext.put("cardNos", LangUtils.newArrayList("111", "2222"));
+		String sql = this.parser.parse(info.getFullName(), parserContext);
+		System.out.println("sql: " + sql);
+		Assert.assertEquals("select uic.ic_lno from ( SELECT ui.ic_lno, count(ui.ic_lno) as amount from issue_user_info ui where ui.ic_lno in ( :cardNo0, :cardNo1 ) group by ui.ic_lno ) uic where uic.amount>0", sql);
 	}
 	
 }
