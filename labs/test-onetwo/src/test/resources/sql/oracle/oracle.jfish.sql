@@ -19,4 +19,24 @@
 	update sb set aa=bb from batch_user sb where sb.${userName}=:userName;
 @testParserQuery.parser = template
 
+@testForeach = 
+	select uic.ic_lno from (
+		SELECT 
+			ui.ic_lno, count(ui.ic_lno) as amount 
+		from issue_user_info ui where 
+			ui.ic_lno in ([@foreach list=cardNos separator=", "; val]${val}[/@foreach])
+		group by ui.ic_lno
+	) uic where uic.amount>0
+@testForeach.parser = template
+
+@testInParams = 
+	select uic.ic_lno from (
+		SELECT 
+			ui.ic_lno, count(ui.ic_lno) as amount 
+		from issue_user_info ui where 
+			ui.ic_lno in ( ${_func.inParams('cardNo', cardNos.size())} )
+		group by ui.ic_lno
+	) uic where uic.amount>0
+@testInParams.parser = template
+
 

@@ -26,6 +26,17 @@ public class ParserContextFunctionSet {
 		return sqlValue;
 	}
 	
+	public String inParams(String name, int size){
+		StringBuilder str = new StringBuilder();
+		for(int i=0; i<size; i++){
+			if(i!=0)
+				str.append(", ");
+			str.append(":").append(name).append(i);
+		}
+//		str.append(")");
+		return str.toString();
+	}
+	
 	public String join(String[] strs, String joiner){
 		return StringUtils.join(strs, joiner);
 	}
