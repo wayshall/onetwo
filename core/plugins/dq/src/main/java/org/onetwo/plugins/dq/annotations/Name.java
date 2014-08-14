@@ -30,7 +30,8 @@ public @interface Name {
 	public IfNull ifParamNull() default IfNull.Calm;
 	
 	/***
-	 * 在queryParam=true前提下，如果参数是数组和列表，使用name+index重新生成参数名称
+	 * 如果参数是数组和列表，使用name+index重新生成参数名称
+	 * cardNo in ( ${_func.inParams('cardNo', cardNos.size())} )
 	 * @return
 	 */
 	public boolean renamedUseIndex() default false;

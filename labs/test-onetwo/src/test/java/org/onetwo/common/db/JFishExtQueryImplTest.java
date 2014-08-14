@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ExtQueryUtils.F;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
-import org.onetwo.common.ejb.jpa.JPASQLSymbolManager;
 import org.onetwo.common.fish.JFishSQLSymbolManagerImpl;
 import org.onetwo.common.utils.CUtils;
 
