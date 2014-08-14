@@ -30,13 +30,31 @@
 			}
 		}
 		
+		
 		function clickMenuItem(view, record, item, index, e, eOpts){
 			if(!record.raw.leaf)
 				return ;
 			var url = "${siteConfig.baseURL}" + record.raw.url;
 			url = addTimestamp(url);
-			Ext.getCmp('mainTabPanel').setActiveTab(1);
-			Ext.get("contentIframe").dom.src = url;
+			//Ext.getCmp('mainTabPanel').setActiveTab(1);
+			//Ext.get("contentIframe").dom.src = url;
+			var tabs = Ext.getCmp('mainTabPanel');
+			var tabId = 'tab_'+record.raw.id;
+			var tab = tabs.getComponent(tabId);
+			var ifrmId = 'frm_'+record.raw.id;
+			if(tab){
+				tabs.setActiveTab(tab);
+				var ifrm = Ext.getDom(ifrmId);
+				ifrm.src = url;
+			}else{
+				tabs.add({
+					closable: true,
+					title: record.raw.text,
+					id: tabId,
+					layout:'fit',
+					html : "<iframe id='"+ifrmId+"' src='" + url + "' width='100%' height='100%' frameborder='0' scrolling='auto'/>"
+				}).show();
+			}
 		}
 		
 		function logout(){
@@ -170,7 +188,7 @@
     	【${(loginUserInfo.nickName)!"游客"}】，你好！欢迎使用${title}&nbsp; 
     </div>
    	<div  style="float:right;">
-   		<strong><a href="javascript:logout();">注销</a></strong>
+   		<button onclick='javascript:logout();'>&nbsp;注&nbsp;&nbsp;&nbsp;销&nbsp;</button>
    	</div>
     	</div>
     </div>
