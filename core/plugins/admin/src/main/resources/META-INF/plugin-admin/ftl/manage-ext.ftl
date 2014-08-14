@@ -99,7 +99,7 @@
             });  
             win.show();//显示窗体
             
-            
+            return false;
 		}
 		
 		function logoutHandler(win){
