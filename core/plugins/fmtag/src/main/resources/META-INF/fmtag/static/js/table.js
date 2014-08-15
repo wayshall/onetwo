@@ -362,6 +362,22 @@ var Common = function () {
 			var data_value = aconfig['dataValue'];
 			this.activedInst = function(){return _this.actived?_this:null};
 			
+
+			_this.appendTs = function(config, url){
+				var appendTs = true;
+				if(config['appendTs']!=undefined){
+					appendTs = config['appendTs'];
+				}
+				if(appendTs===true){
+					if(url.indexOf('?')==-1){
+						url = url + "?ts="+new Date().getTime();
+					}else{
+						url = url + "&ts="+new Date().getTime();
+					}
+				}
+				return url;
+			};
+			
 			this.loadDatas = function(ds){
 				if(!_this.actived){
 					alert("ajax selecter["+config.el+"] is not actived")
@@ -381,7 +397,10 @@ var Common = function () {
 				}else{
 					dataUrl = aconfig.loadUrl;
 				}
+				
+				dataUrl = _this.appendTs(aconfig, dataUrl);
 				dataUrl = encodeURI(dataUrl);//encodeURIComponent(dataUrl);
+				
 				$.getJSON(dataUrl, {}, function(json){
 					if(json.length<1){
 						alert("没有数据！");
@@ -437,6 +456,21 @@ var Common = function () {
 			var data_value = aconfig['dataValue'];
 			_this.activedInst = function(){return _this.actived?_this:null}
 			
+			_this.appendTs = function(config, url){
+				var appendTs = true;
+				if(config['appendTs']!=undefined){
+					appendTs = config['appendTs'];
+				}
+				if(appendTs===true){
+					if(url.indexOf('?')==-1){
+						url = url + "?ts="+new Date().getTime();
+					}else{
+						url = url + "&ts="+new Date().getTime();
+					}
+				}
+				return url;
+			};
+			
 			_this.notify_to = function(childConfig){
 				var childConfig = childConfig || {};
 				var alterMsg = childConfig['alterIfNoDatas'];
@@ -460,6 +494,8 @@ var Common = function () {
 					var pre_datas = childConfig.options;
 					var emptyOption = childConfig.emptyOption || true;
 					
+
+					url = _this.appendTs(childConfig, url);
 					$.getJSON(url, params, function(json){
 						select.removeAttr("disabled");
 
@@ -510,6 +546,7 @@ var Common = function () {
 					$(_this.selectEl).append("<option value=''>---请选择</option>");
 				}
 				
+				loadUrl = _this.appendTs(config, loadUrl);
 				$.getJSON(loadUrl, {}, function(json){
 					if(json.length<1){
 						alert("没有数据！");
