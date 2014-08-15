@@ -3,9 +3,12 @@ package org.onetwo.plugins.dq;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
+import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParserContext;
@@ -15,6 +18,7 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.dq.annotations.ExecuteBatch;
 import org.onetwo.plugins.dq.annotations.Name;
+import org.onetwo.plugins.dq.annotations.QueryConfig;
 import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
@@ -103,7 +107,11 @@ public class DynamicMethod {
 		}
 		//end
 		values.add(pname);
-		values.add(pvalue);
+		if(String.class.isInstance(pvalue) && name.isLikeQuery()){
+			values.add(ExtQueryUtils.getLikeString(pvalue.toString()));
+		}else{
+			values.add(pvalue);
+		}
 		return true;
 	}
 
@@ -111,13 +119,10 @@ public class DynamicMethod {
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
 		
 		Object pvalue = null;
-		ParserContext parserContext = null;
+		ParserContext parserContext = ParserContext.create();
 		for(DynamicMethodParameter mp : parameters){
 			pvalue = args[mp.getParameterIndex()];
 			if(pvalue instanceof ParserContext){
-				//parserContext
-				if(parserContext==null)
-					parserContext = ParserContext.create();
 				parserContext.putAll((ParserContext) pvalue);
 			}else if(mp.hasParameterAnnotation(Name.class)){
 				Name name = mp.getParameterAnnotation(Name.class);
@@ -169,11 +174,16 @@ public class DynamicMethod {
 				values.add(pvalue);
 			}
 		}
-
-		if(parserContext!=null){
-			values.add(JNamedQueryKey.ParserContext);
-			values.add(parserContext);
+		
+		QueryConfig queryConfig = method.getAnnotation(QueryConfig.class);
+		if(queryConfig!=null){
+			QueryConfigData config = new QueryConfigData();
+			config.setLikeQueryFields(Arrays.asList(queryConfig.likeQueryFields()));
+			parserContext.setQueryConfig(config);
 		}
+
+		values.add(JNamedQueryKey.ParserContext);
+		values.add(parserContext);
 		if(componentClass!=null){
 			values.add(JNamedQueryKey.ResultClass);
 			values.add(componentClass);
