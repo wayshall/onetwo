@@ -1,7 +1,6 @@
 package org.onetwo.common.spring.sql;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,12 +18,6 @@ public class ParserContext implements Map<Object, Object> {
 
 	public static final String CONTEXT_KEY = ParserContextFunctionSet.CONTEXT_KEY;//helper
 	public static final String QUERY_CONFIG = "_queryConfig";
-	private static final QueryConfigData EMPTY_CONFIG = new QueryConfigData(){
-
-		public void setLikeQueryFields(List<String> likeQueryFields) {
-			throw new UnsupportedOperationException();
-		}
-	};
 	
 	private Map<Object, Object> context;
 	
@@ -43,7 +36,7 @@ public class ParserContext implements Map<Object, Object> {
 	}
 	
 	public QueryConfigData getQueryConfig(){
-		return context.containsKey(QUERY_CONFIG)?(QueryConfigData)context.get(QUERY_CONFIG):EMPTY_CONFIG;
+		return (QueryConfigData)context.get(QUERY_CONFIG);
 	}
 	public int size() {
 		return context.size();

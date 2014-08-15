@@ -55,7 +55,7 @@ public class SqlAndValues {
 	}
 
 	public QueryConfigData getQueryConfig() {
-		return queryConfig;
+		return queryConfig==null?QueryConfigData.EMPTY_CONFIG:queryConfig;
 	}
 	
 }
