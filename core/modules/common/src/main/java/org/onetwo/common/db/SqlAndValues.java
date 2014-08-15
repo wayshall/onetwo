@@ -5,15 +5,22 @@ import java.util.Map;
 
 public class SqlAndValues {
 	private String parsedSql;
-	private Object values;
-	private boolean namedValue;
+	final private Object values;
+	final private boolean namedValue;
+	final private QueryConfigData queryConfig;
 	
 	public SqlAndValues(boolean namedValue, String parsedSql, Object values) {
+		this(namedValue, parsedSql, values, null);
+	}
+	
+	public SqlAndValues(boolean namedValue, String parsedSql, Object values, QueryConfigData queryConfig) {
 		super();
 		this.namedValue = namedValue;
 		this.parsedSql = parsedSql;
 		this.values = values;
+		this.queryConfig = queryConfig;
 	}
+	
 
 	public Map<String, Object> asMap() {
 		return getValues();
@@ -45,6 +52,10 @@ public class SqlAndValues {
 
 	public void setParsedSql(String parsedSql) {
 		this.parsedSql = parsedSql;
+	}
+
+	public QueryConfigData getQueryConfig() {
+		return queryConfig;
 	}
 	
 }

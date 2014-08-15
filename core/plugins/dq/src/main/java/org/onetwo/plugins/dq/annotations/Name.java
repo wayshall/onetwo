@@ -36,4 +36,6 @@ public @interface Name {
 	 */
 	public boolean renamedUseIndex() default false;
 	
+	public boolean isLikeQuery() default false;
+	
 }

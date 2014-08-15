@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
@@ -97,7 +98,11 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 			if(parameter.hasFunction()){
 				value = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterFunctions.getInstance(), value);
 			}*/
-			dataQuery.setParameter(parameter.getName(), parameter.getParamterValue(paramBean));
+			Object pvalue = parameter.getParamterValue(paramBean);
+			if(pvalue!=null && sqlAndValues.getQueryConfig().isLikeQueryField(parameter.getName())){
+				pvalue = ExtQueryUtils.getLikeString(pvalue.toString());
+			}
+			dataQuery.setParameter(parameter.getName(), pvalue);
 		}
 		
 		setLimitResult();
