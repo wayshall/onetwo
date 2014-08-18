@@ -242,7 +242,13 @@ abstract public class ExcelUtils {
 	}
 	
 	public static CellValue getFormulaCellValue(Cell cell){
-		return cell==null?null:cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator().evaluate(cell);
+		try {
+			return cell==null?null:cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator().evaluate(cell);
+		} catch (Exception e) {
+//			throw new BaseException("get formual cell value["+cell.getRowIndex()+", "+ cell.getColumnIndex()+"] error : " + e.getMessage(), e);
+			logger.warn("get formual cell value["+cell.getRowIndex()+", "+ cell.getColumnIndex()+"] error : " + e.getMessage());
+			return null;
+		}
 	}
 	
 }
