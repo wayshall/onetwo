@@ -1,4 +1,4 @@
-package org.onetwo.app.tasksys.model.service;
+package org.onetwo.app.tasksys.model.service.impl;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -19,21 +19,23 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 
 @Component
-public class TaskWorkerImpl implements InitializingBean {
+public class TaskWorkerAcotr implements InitializingBean {
 
+	private String actorName = "tasksys";
 	private ActorRef tasksys;
 	private ActorSystem system;
+	private int timeoutInSeconds=10;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		system = ActorSystem.create("tasksys");
+		system = ActorSystem.create(actorName);
 		tasksys = system.actorOf(Props.create(TaskActor.class));
 	}
 	
-	public void addTask(TaskData taskData){
+	public void sendTask(TaskData taskData){
 		if(taskData instanceof ReplyTaskData){
 //			Future<Object> futrue = Patterns.ask(tasksys, taskData, new Timeout(1, TimeUnit.SECONDS));
-			Future<Object> futrue = Patterns.ask(tasksys, taskData, new Timeout(10, TimeUnit.SECONDS));
+			Future<Object> futrue = Patterns.ask(tasksys, taskData, new Timeout(timeoutInSeconds, TimeUnit.SECONDS));
 			/*Object rs = futrue.onComplete(new Mapper<Iterable<Object>, Object>() {
 
 				@Override
@@ -49,7 +51,7 @@ public class TaskWorkerImpl implements InitializingBean {
 			         return coll.iterator().next();
 			        }
 			      }, system.dispatcher());
-			System.out.println("rs: " + rs);
+//			System.out.println("rs: " + rs.isCompleted());
 		}else{
 			tasksys.tell(taskData, ActorRef.noSender());
 		}
