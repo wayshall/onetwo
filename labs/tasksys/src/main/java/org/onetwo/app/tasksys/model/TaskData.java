@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public interface TaskData extends Serializable {
 	public String getName() ;
-	public TaskType getType();
+	public TaskType getTaskType();
 	
 }
