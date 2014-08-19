@@ -14,14 +14,17 @@ import javax.persistence.TableGenerator;
 import org.onetwo.app.tasksys.utils.TaskUtils;
 
 @Entity
-@Table(name="TASK_OPERATION")
-@TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskOperationEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1000)
-public class TaskOperationEntity implements Serializable {
+@Table(name="TASK_EXEC_LOG")
+@TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskExecLogEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1000)
+public class TaskExecLog implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4528661067353586519L;
+	@Id
+	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskExecLogEntityGenerator") 
+	@Column(name="ID")
 	private Long id;
 	private Long taskId;
 	private String taskStatus;
@@ -29,9 +32,6 @@ public class TaskOperationEntity implements Serializable {
 	private Long operatorId;
 	private String operatorName;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskOperationEntityGenerator") 
-	@Column(name="ID")
 	public Long getId() {
 		return id;
 	}

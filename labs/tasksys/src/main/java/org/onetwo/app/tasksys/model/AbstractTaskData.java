@@ -18,7 +18,7 @@ abstract public class AbstractTaskData implements TaskData {
 	}
 
 	@Override
-	public TaskType getType() {
+	public TaskType getTaskType() {
 		return type;
 	}
 
