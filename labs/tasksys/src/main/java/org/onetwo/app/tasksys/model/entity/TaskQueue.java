@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.onetwo.app.tasksys.model.ReplyTaskData;
+import org.onetwo.app.tasksys.model.TaskData;
 import org.onetwo.app.tasksys.model.TaskType;
 import org.onetwo.app.tasksys.utils.TaskConstant.TaskStatus;
 import org.onetwo.app.tasksys.utils.TaskUtils;
@@ -23,7 +23,7 @@ import org.onetwo.app.tasksys.utils.TaskUtils;
 @Entity
 @Table(name="TASK_QUEUE")
 @TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskQueueEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1000)
-public class TaskQueue implements Serializable, ReplyTaskData {
+public class TaskQueue implements Serializable, TaskData {
 
 	/**
 	 * 
@@ -154,6 +154,11 @@ public class TaskQueue implements Serializable, ReplyTaskData {
 
 	public void setLastExecTime(Date lastExecTime) {
 		this.lastExecTime = lastExecTime;
+	}
+
+	@Override
+	public boolean isReply() {
+		return false;
 	}
 
 }

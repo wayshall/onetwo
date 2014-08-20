@@ -6,9 +6,14 @@ import org.onetwo.app.tasksys.model.TaskType;
 
 public interface TaskListenerManager {
 
-	public abstract TaskListenerManager add(TaskType type,
-			TaskListener taskExecutor);
+	public abstract TaskListenerManager addTaskExecuteListener(TaskType type,
+			TaskExecuteListener<?> taskExecutor);
 	
-	public List<TaskListener> getTaskListeners(TaskType type);
+	public List<TaskExecuteListener<?>> getTaskExecuteListeners(TaskType type);
+	
+
+	public TaskListenerManager addTaskCompleteListener(TaskType type, TaskCompleteListener taskCompletor);
+	
+	public List<TaskCompleteListener> getTaskCompleteListeners(TaskType type);
 
 }
