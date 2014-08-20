@@ -1,6 +1,8 @@
 package org.onetwo.app.tasksys;
 
+import org.onetwo.app.tasksys.model.service.impl.TaskProcessor;
 import org.onetwo.common.cmd.SpringCmdRunner;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 
 public class Main {
@@ -14,6 +16,11 @@ public class Main {
 			protected void initApplicationContext(SpringConfigApplicationContext context){
 				context.setAppEnvironment(TasksysConfig.getInstance().getAppEnvironment());
 				context.register(TasksysContextConfig.class);
+			}
+
+			protected void afterInitApplicationContext(SpringConfigApplicationContext context){
+				super.afterInitApplicationContext(context);
+//				SpringUtils.registerBean(context, TaskProcessor.class);
 			}
 
 			@Override

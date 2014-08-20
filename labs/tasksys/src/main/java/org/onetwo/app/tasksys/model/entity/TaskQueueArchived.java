@@ -12,13 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.onetwo.app.tasksys.model.ReplyTaskData;
 import org.onetwo.app.tasksys.model.TaskType;
 import org.onetwo.app.tasksys.utils.TaskConstant.TaskStatus;
 
 @Entity
 @Table(name="TASK_QUEUE_ARCHIVED")
-public class TaskQueueArchived implements Serializable, ReplyTaskData {
+public class TaskQueueArchived implements Serializable {
 
 	/**
 	 * 
@@ -138,7 +137,6 @@ public class TaskQueueArchived implements Serializable, ReplyTaskData {
 		this.task = task;
 	}
 
-	@Override
 	public TaskType getTaskType() {
 		return TaskType.type(type);
 	}

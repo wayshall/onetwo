@@ -27,10 +27,14 @@ public class SpringCmdRunner extends CmdRunner {
 		initApplicationContext(context);
 		context.refresh();
 		SpringApplication.initApplication(context);
-		SpringApplication.getInstance().printBeanNames();
+		this.afterInitApplicationContext(context);
 	}
 	
 	protected void initApplicationContext(SpringConfigApplicationContext context){
+	}
+	
+	protected void afterInitApplicationContext(SpringConfigApplicationContext context){
+		SpringApplication.getInstance().printBeanNames();
 	}
 
 }
