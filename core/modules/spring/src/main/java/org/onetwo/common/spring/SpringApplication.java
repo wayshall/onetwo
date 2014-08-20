@@ -13,6 +13,7 @@ import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
@@ -66,6 +67,18 @@ public class SpringApplication {
 
 	public ApplicationContext getAppContext() {
 		return appContext;
+	}
+	
+
+	public <T> void autoInject(T bean) {
+		autoInject(bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
+	}
+
+	public <T> void autoInject(T bean, int autowireMode) {
+		AutowireCapableBeanFactory acb = appContext.getAutowireCapableBeanFactory();
+		acb.autowireBeanProperties(bean, autowireMode, false);
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		acb.initializeBean(bean, beanName);
 	}
 
 	public ConfigurableApplicationContext getConfigurableAppContext() {
