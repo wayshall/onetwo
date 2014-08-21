@@ -1113,9 +1113,12 @@ public class LangUtils {
 	public static boolean isNotEmpty(Collection col){
 		return !isEmpty(col);
 	}
-	
+
 	public static boolean equals(Object obj1, Object obj2){
 		return obj1==obj2 || (obj1!=null && obj2!=null && obj1.equals(obj2));
+	}
+	public static boolean equalsIgnoreCase(String str1, String str2){
+		return str1==str2 || (str1!=null && str2!=null && str1.equalsIgnoreCase(str2));
 	}
 	
 	public static BufferedReader asBufferedReader(InputStream in){
