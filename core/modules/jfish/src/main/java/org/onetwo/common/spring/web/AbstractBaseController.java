@@ -97,6 +97,10 @@ abstract public class AbstractBaseController {
 		return mv(redirect(path), MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 	
+	protected ModelAndView redirectToWithError(String path, String error){
+		return mv(redirect(path), MESSAGE, error, MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+	}
+	
 	/**********
 	 * 根据view名称和model返回一个ModelAndView
 	 * @param viewName

@@ -1,8 +1,6 @@
 package org.onetwo.app.tasksys;
 
-import org.onetwo.app.tasksys.model.service.impl.TaskProcessor;
 import org.onetwo.common.cmd.SpringCmdRunner;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 
 public class Main {
