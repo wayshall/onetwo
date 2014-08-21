@@ -27,7 +27,9 @@ public class TaskExecActor extends UntypedActor {
 	public void onReceive(Object taskInfo) throws Exception {
 		if(taskInfo instanceof TaskData){
 			TaskData task = (TaskData) taskInfo;
-			logger.info("receive task: " + task.getName());
+			logger.info("execotr receive task: " + task.getName());
+			LangUtils.await(3);
+			logger.info("executed task : {}", task.getName());
 			List<TaskExecuteListener<?>> listeners = taskListenerManager.getTaskExecuteListeners(task.getTaskType());
 			if(LangUtils.isNotEmpty(listeners)){
 				for(TaskExecuteListener<?> l : listeners){
