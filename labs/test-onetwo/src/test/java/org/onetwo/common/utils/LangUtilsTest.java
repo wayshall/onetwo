@@ -279,6 +279,12 @@ public class LangUtilsTest {
 		Assert.assertEquals("aa%3D%23user", encodeUrl);
 	}
 	
+	@Test
+	public void testEquals() throws Exception{
+		Assert.assertTrue(LangUtils.equals(1, 1));
+		Assert.assertTrue(LangUtils.equalsIgnoreCase("aabbb", "AabBb"));
+	}
+	
 
 
 	@Test
