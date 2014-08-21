@@ -12,6 +12,7 @@ public class WebHolderManager extends WebFilterAdapter implements Ordered {
 	@Override
 	public void onFilter(HttpServletRequest request, HttpServletResponse response) {
 		WebHolder.setRequest(request);
+		System.out.println("url: " + request.getRequestURL());
 	}
 
 	@Override
