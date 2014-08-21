@@ -3,9 +3,7 @@ package org.onetwo.app.tasksys.model.service.impl;
 import javax.annotation.Resource;
 
 import org.onetwo.app.tasksys.model.TaskData;
-import org.onetwo.app.tasksys.model.TaskExecActor;
 import org.onetwo.app.tasksys.model.TaskMasterActor;
-import org.onetwo.app.tasksys.model.TaskResultActor;
 import org.onetwo.app.tasksys.model.service.TaskListenerManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -29,9 +27,7 @@ public class TaskProcessor implements InitializingBean {
 //		TaskListenerManager taskListenerManager = SpringApplication.getInstance().getBean(TaskListenerManager.class, true);
 		
 		system = ActorSystem.create(actorName);
-		ActorRef taskExecAcotr = system.actorOf(Props.create(TaskExecActor.class, taskListenerManager));
-		ActorRef taskResultAcotr = system.actorOf(Props.create(TaskResultActor.class, taskListenerManager));
-		masterAcotr = system.actorOf(Props.create(TaskMasterActor.class, taskExecAcotr, taskResultAcotr));
+		masterAcotr = system.actorOf(Props.create(TaskMasterActor.class, taskListenerManager));
 	}
 	
 	public void sendTask(TaskData taskData){
