@@ -29,6 +29,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -99,6 +100,20 @@ abstract public class AbstractBaseController {
 	
 	protected ModelAndView redirectToWithError(String path, String error){
 		return mv(redirect(path), MESSAGE, error, MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+	}
+	
+	protected ModelAndView putSuccessMessage(ModelAndView mv, String message){
+		Assert.notNull(mv);
+		mv.addObject(MESSAGE, message);
+		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+		return mv;
+	}
+	
+	protected ModelAndView putErrorMessage(ModelAndView mv, String message){
+		Assert.notNull(mv);
+		mv.addObject(MESSAGE, message);
+		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+		return mv;
 	}
 	
 	/**********
