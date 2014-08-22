@@ -16,16 +16,6 @@ public class Main {
 				context.register(TasksysContextConfig.class);
 			}
 
-			protected void afterInitApplicationContext(SpringConfigApplicationContext context){
-				super.afterInitApplicationContext(context);
-//				SpringUtils.registerBean(context, TaskProcessor.class);
-			}
-
-			@Override
-			protected void onRuning() {
-				super.onRuning();
-			}
-			
 		}.run(args);
 	}
 
