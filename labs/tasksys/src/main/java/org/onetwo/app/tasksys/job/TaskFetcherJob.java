@@ -2,11 +2,11 @@ package org.onetwo.app.tasksys.job;
 
 import javax.annotation.Resource;
 
-import org.onetwo.app.tasksys.model.TaskType;
-import org.onetwo.app.tasksys.model.entity.TaskQueue;
-import org.onetwo.app.tasksys.model.service.impl.TaskProcessor;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.timer.QuartzJobTask;
+import org.onetwo.plugins.task.entity.TaskQueue;
+import org.onetwo.plugins.task.service.impl.DefaultTaskProcessor;
+import org.onetwo.plugins.task.utils.TaskType;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class TaskFetcherJob implements QuartzJobTask {
 	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	@Resource
-	private TaskProcessor taskWorkerAcotr;
+	private DefaultTaskProcessor taskWorkerAcotr;
 	private int count;
 	
 	public void execute() {
