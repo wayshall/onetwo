@@ -69,6 +69,14 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	}
+	
+	private boolean isAjaxRequest(HttpServletRequest request){
+		String extension = JFishWebUtils.requestExtension();
+		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
+		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
+		
+		return "json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+	}
 
 	@Override
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
@@ -77,11 +85,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
-		String extension = JFishWebUtils.requestExtension();
-		
-		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
-		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
-		if("json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType)){
+		if(isAjaxRequest(request)){
 //			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
 //			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
 			DataResult result = new DataResult();

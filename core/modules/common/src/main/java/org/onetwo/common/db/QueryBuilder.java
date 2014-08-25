@@ -42,8 +42,10 @@ public interface QueryBuilder {
 	public JFishQueryValue build();
 	
 	public <T> T one();
-	
+
 	public <T> List<T> list();
+	
+	public int execute();
 	
 	public Map<Object, Object> getParams();
 	

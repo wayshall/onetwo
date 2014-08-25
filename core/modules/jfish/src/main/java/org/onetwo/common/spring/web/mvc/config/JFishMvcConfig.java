@@ -38,6 +38,7 @@ import org.onetwo.common.spring.web.mvc.log.AccessLogger;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.spring.web.mvc.view.JsonView;
+import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -151,7 +152,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 		@Bean
 		public MappedInterceptor mappedInterceptor4First() {
-			return WebInterceptorAdapter.createMappedInterceptor(new JFishFirstInterceptor());
+			List<JFishRequestValidator> validators = SpringUtils.getBeans(applicationContext, JFishRequestValidator.class);
+			return WebInterceptorAdapter.createMappedInterceptor(new JFishFirstInterceptor(validators));
 		}
 
 		@Bean

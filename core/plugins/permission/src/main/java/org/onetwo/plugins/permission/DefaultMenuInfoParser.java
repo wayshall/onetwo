@@ -26,6 +26,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
 	private static final String CODE_SEPRATOR = "_";
+	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 
 	private final Map<String, IPermission> permissionMap = new LinkedHashMap<String, IPermission>(50);
 	private final Map<Class<?>, IPermission> permissionMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
@@ -216,6 +217,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	/* (non-Javadoc)
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseCode(java.lang.Class)
 	 */
+
 	@Override
 	public String parseCode(Class<?> menuClass){
 		String code = menuClass.getSimpleName();
@@ -225,7 +227,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		}
 		MenuMapping mapping = menuClass.getAnnotation(MenuMapping.class);
 		if(mapping!=null){
-			Class<?> pcls = mapping.parent();
+			Class<?> pcls = mapping.parent()==ROOT_MENU_TAG?menuInfoable.getRootMenuClass():mapping.parent();
 			IPermission perm = this.permissionMapByClass.get(pcls);
 			if(perm==null)
 				throw new BaseException("parse menu class["+menuClass+"] error. no parent menu found: " + pcls);

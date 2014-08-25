@@ -19,6 +19,30 @@
   </properties>
 
   <dependencies>
+  	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-task-core</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-permission</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
