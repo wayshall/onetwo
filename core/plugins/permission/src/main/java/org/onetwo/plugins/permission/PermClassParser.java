@@ -6,16 +6,22 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.plugins.permission.anno.DelegateMenu;
+import org.onetwo.plugins.permission.anno.DelegatedBy;
+import org.onetwo.plugins.permission.anno.MenuMapping;
 import org.onetwo.plugins.permission.entity.PermissionType;
 import org.onetwo.plugins.permission.utils.MenuMetaFields;
 
 public class PermClassParser {
+//	private static final String CODE_SEPRATOR = "_";
+//	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 	
 	public static PermClassParser create(Class<?> permClass){
 		return new PermClassParser(permClass);
 	}
 	
 	private final Class<?> permissionClass;
+	private Class<?> parentPermissionClass;
 	
 	private PermClassParser(Class<?> permClass) {
 		super();
@@ -36,8 +42,41 @@ public class PermClassParser {
 		return getFieldValue(MenuMetaFields.APP_CODE, String.class, permissionClass.getSimpleName());
 	}
 	
-	public Class<?> getParentPermClass(){
-		return permissionClass.getDeclaringClass();
+	public String generatedSimpleCode(){
+		return permissionClass.getSimpleName();
+	}
+	
+	public MenuMapping getMenuMapping(){
+		return this.permissionClass.getAnnotation(MenuMapping.class);
+	}
+	
+	public DelegatedBy getDelegatedBy(){
+		return this.permissionClass.getAnnotation(DelegatedBy.class);
+	}
+	
+	public Class<?> getDelegatePermClass(){
+//		if(!isDelegatedMenu())
+//			throw new BaseException("it's not a delegate menu:" + permissionClass);
+		Class<?> delegatePermClass = this.getDelegatedBy().value();
+		if(delegatePermClass==null)
+			throw new BaseException("no delete menu class found:" + permissionClass);
+		return delegatePermClass;
+	}
+	
+	public boolean isDeprecated(){
+		return permissionClass.getAnnotation(Deprecated.class)!=null;
+	}
+	
+	public boolean isDelegatedMenu(){
+		return getDelegatedBy()!=null;
+	}
+	
+	public Class<?>[] getChildrenClasses(){
+		return isDelegatedMenu()?getDelegatePermClass().getDeclaredClasses():permissionClass.getDeclaredClasses();
+	}
+	
+	public Class<?> getParentPermissionClass(){
+		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
 	}
 	
 	public Number getSort(){
@@ -75,6 +114,10 @@ public class PermClassParser {
 			fieldValue = (T) pvalue;
 		}
 		return fieldValue;
+	}
+
+	public void setParentPermissionClass(Class<?> parentPermissionClass) {
+		this.parentPermissionClass = parentPermissionClass;
 	}
 	
 }
