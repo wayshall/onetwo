@@ -55,13 +55,14 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 
 		String appCode = null;
 		IPermission perm = null;
+		PermClassParser parser = getPermClassParser(menuInfoClass);
 		try {
 //			appCode = getFieldValue(menuInfoClass, MenuMetaFields.APP_CODE, String.class, menuInfoClass.getSimpleName());
-			appCode = PermClassParser.create(menuInfoClass).getAppCode();
+			appCode = parser.getAppCode();
 			/*if(StringUtils.isBlank(sysname)){
 				throw new BaseException("RootMenuClass must has a sysname field and it's value can not be blank.");
 			}*/
-			perm = parseMenuClass(menuInfoClass, appCode);
+			perm = parseMenuClass(parser, appCode);
 			perm.setSort(1);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
@@ -97,7 +98,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			return rootMenu;
 		
 		for(Class<?> childMc : childMenuClass){
-			IPermission childPerm =  parseMenuClass(childMc, appCode);
+			IPermission childPerm =  parseMenuClass(getPermClassParser(childMc), appCode);
 			if(IMenu.class.isInstance(childPerm)){
 				rootMenu.addChild((IMenu)childPerm);
 			}else{
@@ -109,12 +110,14 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	}
 	
 
-	protected <T extends IPermission> T parseMenuClass(Class<?> menuClass, String syscode){
+	protected <T extends IPermission> T parseMenuClass(PermClassParser parser, String syscode){
 		IPermission perm;
+//		Class<?> menuClass = parser.getPermissionClass();
+//		PermClassParser menuParser = getPermClassParser(menuClass);
 		try {
-			if(menuClass.getAnnotation(Deprecated.class)!=null)
+			if(parser.isDeprecated())
 				return null;
-			perm = parsePermission(getPermClassParser(menuClass), syscode);
+			perm = parsePermission(parser, syscode);
 		} catch (Exception e) {
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
 		}
@@ -122,10 +125,12 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			return (T)perm;
 		
 		IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> menu = (IMenu) perm;
-		Class<?>[] childClasses = menuClass.getDeclaredClasses();
+		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
-			IPermission p = parseMenuClass(childCls, syscode);
+			PermClassParser childParser = getPermClassParser(childCls);
+			childParser.setParentPermissionClass(parser.getPermissionClass());
+			IPermission p = parseMenuClass(childParser, syscode);
 			if(p==null)
 				continue;
 			if(p instanceof IFunction){
@@ -161,7 +166,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			perm = menu;
 		}
 		perm.setName(name);
-		String code = parseCode(permissionClass);
+		String code = parseCode(parser);
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
 		perm.setHidden(parser.isHidden());
@@ -189,20 +194,20 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	}
 	
 	public String parseCode(PermClassParser parser){
-		Class<?> menuClass = parser.getPermissionClass();
-		
-		String code = menuClass.getSimpleName();
-		while(parser.getParentPermClass()!=null){
+		String code = parser.generatedSimpleCode();
+		PermClassParser parent = parser;
+		while(parent.getParentPermissionClass()!=null){
 //			while(menuClass.getDeclaringClass()!=null){
-			menuClass = parser.getParentPermClass();//menuClass.getDeclaringClass();
-			code = menuClass.getSimpleName() + CODE_SEPRATOR + code;a
+//			menuClass = parser.getParentPermClass();//menuClass.getDeclaringClass();
+			parent = getPermClassParser(parser.getPermissionClass());
+			code = parent.generatedSimpleCode() + CODE_SEPRATOR + code;
 		}
-		MenuMapping mapping = menuClass.getAnnotation(MenuMapping.class);
+		MenuMapping mapping = parent.getMenuMapping();
 		if(mapping!=null){
 			Class<?> pcls = mapping.parent()==ROOT_MENU_TAG?menuInfoable.getRootMenuClass():mapping.parent();
 			IPermission perm = this.permissionMapByClass.get(pcls);
 			if(perm==null)
-				throw new BaseException("parse menu class["+menuClass+"] error. no parent menu found: " + pcls);
+				throw new BaseException("parse menu class["+parent.getPermissionClass()+"] error. no parent menu found: " + pcls);
 			code = perm.getCode() + CODE_SEPRATOR + code;
 		}
 		return code;
