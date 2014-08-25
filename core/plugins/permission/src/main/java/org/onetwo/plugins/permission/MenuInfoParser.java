@@ -6,7 +6,7 @@ import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
 
 public interface MenuInfoParser {
-
+	
 	public PermissionConfig getMenuInfoable();
 	
 	public abstract IMenu<?, ?> parseTree();

@@ -16,7 +16,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<junit.version>4.10</junit.version>
-	<jpa.version>2.0.0</jpa.version>
   </properties>
 
   <dependencies>
@@ -40,9 +39,14 @@
 	</dependency>
 	
 	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-hibernate</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
 	  <groupId>javax.persistence</groupId>
 	  <artifactId>com.springsource.javax.persistence</artifactId>
-	  <version>${jpa.version}</version>
 	  <scope>compile</scope> 
 	</dependency>
 	

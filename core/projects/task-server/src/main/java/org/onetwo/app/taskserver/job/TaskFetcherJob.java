@@ -1,35 +1,55 @@
 package org.onetwo.app.taskserver.job;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.onetwo.app.taskserver.TaskServerConfig;
 import org.onetwo.app.taskserver.service.impl.DefaultTaskProcessor;
+import org.onetwo.app.taskserver.service.impl.TaskQueueServiceImpl;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.timer.QuartzJobTask;
 import org.onetwo.plugins.task.entity.TaskQueue;
-import org.onetwo.plugins.task.utils.TaskType;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TaskFetcherJob implements QuartzJobTask {
+public class TaskFetcherJob implements QuartzJobTask, InitializingBean {
 
 	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 	@Resource
-	private DefaultTaskProcessor taskWorkerAcotr;
-	private int count;
+	private DefaultTaskProcessor taskProcessor;
+	@Resource
+	private TaskQueueServiceImpl taskQueueServiceImpl;
+	@Resource
+	private TaskServerConfig taskServerConfig;
 	
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		List<TaskQueue> executing = taskQueueServiceImpl.loadAllExecuting();
+		for(TaskQueue tq : executing){
+			this.taskProcessor.sendTask(tq);
+		}
+		logger.info("loaded {} queued task on startup.", executing.size());
+	}
+
 	public void execute() {
-		logger.info("execte test...");
-		TaskQueue task = new TaskQueue();
-		task.setType(TaskType.EMAIL.toString());
-		task.setName("task-"+(count++));
-		task.setCurrentTimes(count);
-		this.taskWorkerAcotr.sendTask(task);
+		if(taskProcessor.isFull()){
+			logger.info("queue of processor is full, ignore……");
+			return ;
+		}
+		List<TaskQueue> taskQueues = taskQueueServiceImpl.loadAndLockWaiting(taskServerConfig.getFetchSize());
+		for(TaskQueue tq : taskQueues){
+			this.taskProcessor.sendTask(tq);
+		}
+		logger.info("send {} waiting task to processor. ", taskQueues.size());
 	}
 
 	public String getCronExpression() {
-		return "0/1 * * * * ?";
+		return "0/10 * * * * ?";
 	}
 
 }
