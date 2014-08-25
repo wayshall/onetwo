@@ -17,7 +17,7 @@ public class DeleteExtQueryImpl extends AbstractExtQuery {
 	@Override
 	public ExtQuery build() {
 		sql = new StringBuilder();
-		sql.append("delete from ").append(this.getFromName(entityClass)).append(" ").append(this.alias).append(" ");
+		sql.append("delete ").append(this.alias).append(" from ").append(this.getFromName(entityClass)).append(" ").append(this.alias).append(" ");
 		
 		this.buildWhere();
 		if(where!=null)

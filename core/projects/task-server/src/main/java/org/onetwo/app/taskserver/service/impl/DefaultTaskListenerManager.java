@@ -15,8 +15,10 @@ import org.onetwo.plugins.task.utils.TaskType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+@Component
 public class DefaultTaskListenerManager implements TaskListenerManager, InitializingBean {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());

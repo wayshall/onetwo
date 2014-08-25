@@ -1,17 +1,23 @@
 package org.onetwo.app.taskserver.service.impl;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.annotation.Resource;
 
+import org.onetwo.app.taskserver.TaskServerConfig;
 import org.onetwo.app.taskserver.actor.TaskMasterActor;
 import org.onetwo.app.taskserver.service.TaskListenerManager;
 import org.onetwo.plugins.task.utils.TaskData;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 
-public class DefaultTaskProcessor implements InitializingBean {
+@Component
+public class DefaultTaskProcessor implements InitializingBean, DisposableBean {
 
 	private String systemName = "tasksys";
 	private ActorRef masterAcotr;
@@ -20,6 +26,10 @@ public class DefaultTaskProcessor implements InitializingBean {
 	@Resource
 	private TaskListenerManager taskListenerManager;
 	private int numberOfWorkerInst = 1;
+	private AtomicInteger queueSize = new AtomicInteger(0);
+	
+	@Resource
+	private TaskServerConfig taskServerConfig;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -31,6 +41,15 @@ public class DefaultTaskProcessor implements InitializingBean {
 	
 	public void sendTask(TaskData taskData){
 		masterAcotr.tell(taskData, ActorRef.noSender());
+		queueSize.addAndGet(1);
+	}
+	
+	public boolean isFull(){
+		return getQueueSize()==taskServerConfig.getQueueMaxSize();
+	}
+	
+	public int getQueueSize(){
+		return this.queueSize.intValue();
 	}
 
 	public void setNumberOfWorkerInst(int numberOfWorkerInst) {
@@ -39,6 +58,11 @@ public class DefaultTaskProcessor implements InitializingBean {
 
 	public void setSystemName(String systemName) {
 		this.systemName = systemName;
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		this.system.shutdown();
 	}
 
 }

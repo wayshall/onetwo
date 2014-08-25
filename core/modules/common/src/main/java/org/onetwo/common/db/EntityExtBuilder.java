@@ -11,7 +11,7 @@ import org.onetwo.common.utils.Page;
  * @author wayshall
  *
  */
-public class EntityQueryBuilder extends QueryBuilderImpl { 
+abstract public class EntityExtBuilder extends QueryBuilderImpl { 
 
 	/*public static EntityQueryBuilder where(){
 		EntityQueryBuilder q = new EntityQueryBuilder(null, null);
@@ -28,32 +28,18 @@ public class EntityQueryBuilder extends QueryBuilderImpl {
 		return q;
 	}
 	
-	private BaseEntityManager baseEntityManager;
+	protected BaseEntityManager baseEntityManager;
 	
 //	private List<SQField> fields = new ArrayList<SQField>();
 	
 
-	protected EntityQueryBuilder(BaseEntityManager baseEntityManager, Class<?> entityClass){
+	protected EntityExtBuilder(BaseEntityManager baseEntityManager, Class<?> entityClass){
 		super(entityClass);
 		this.baseEntityManager = baseEntityManager;
 	}
 	
-	public <T> T one(){
-		this.checkOperation();
-		return baseEntityManager.findUnique(this.build());
-	}
 	
-	public <T> List<T> list(){
-		this.checkOperation();
-		return baseEntityManager.findList(this.build());
-	}
-	
-	public <T> void page(Page<T> page){
-		this.checkOperation();
-		baseEntityManager.findPage(page, this.build());
-	}
-	
-	private void checkOperation(){
+	protected void checkOperation(){
 		if(this.baseEntityManager==null)
 			throw new UnsupportedOperationException("no entityManager");
 	}
@@ -64,6 +50,29 @@ public class EntityQueryBuilder extends QueryBuilderImpl {
 
 	protected SQLSymbolManager getSQLSymbolManager(){
 		return getBaseEntityManager().getSQLSymbolManager();
+	}
+	
+	public static class EntityQueryBuilder extends EntityExtBuilder {
+		
+		protected EntityQueryBuilder(BaseEntityManager baseEntityManager,
+				Class<?> entityClass) {
+			super(baseEntityManager, entityClass);
+		}
+
+		public <T> T one(){
+			checkOperation();
+			return baseEntityManager.findUnique(build());
+		}
+		
+		public <T> List<T> list(){
+			checkOperation();
+			return baseEntityManager.findList(build());
+		}
+		
+		public <T> void page(Page<T> page){
+			checkOperation();
+			baseEntityManager.findPage(page, build());
+		}
 	}
 	
 }
