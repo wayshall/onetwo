@@ -2,11 +2,11 @@ package org.onetwo.common.fish;
 
 import java.util.List;
 
-import org.onetwo.common.db.EntityQueryBuilder;
+import org.onetwo.common.db.EntityExtBuilder;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-public class JFishQueryBuilder extends EntityQueryBuilder {
+public class JFishQueryBuilder extends EntityExtBuilder {
 
 	public static JFishQueryBuilder from(JFishEntityManager baseEntityManager, Class<?> entityClass){
 		JFishQueryBuilder q = new JFishQueryBuilder(baseEntityManager, entityClass);

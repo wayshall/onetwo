@@ -191,7 +191,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 			params.put(K.SQL_JOIN, RawSqlWrapper.wrap(leftJoinSql));
 		}
 		ExtQuery extQuery = null;//new ExtQueryImpl(entityClass, null, params, getSQLSymbolManager());
-		extQuery = getSQLSymbolManager().createSelectQuery(entityClass, alias, params);
+		extQuery = createExtQuery(entityClass, alias, params);
 		extQuery.build();
 		
 		JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());
@@ -204,6 +204,10 @@ public class QueryBuilderImpl implements QueryBuilder {
 		
 		return qv;
 	}
+	
+	protected ExtQuery createExtQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
+		return getSQLSymbolManager().createSelectQuery(entityClass, alias, properties);
+	}
 
 	@Override
 	public <T> T one() {
@@ -212,6 +216,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 
 	@Override
 	public <T> List<T> list() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public int execute() {
 		throw new UnsupportedOperationException();
 	}
 

@@ -19,9 +19,6 @@
 						http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="true">
 
-	<context:component-scan base-package="org.onetwo.app.tasksys"></context:component-scan>
-	<context:annotation-config />
-
 	<!-- 检查 task -->
 	<bean id="taskFetcherJobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

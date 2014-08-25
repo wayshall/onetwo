@@ -1,6 +1,7 @@
 package org.onetwo.app.taskserver;
 
 import org.onetwo.common.cmd.SpringCmdRunner;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 
 public class Main {
@@ -12,8 +13,13 @@ public class Main {
 		new SpringCmdRunner(){
 
 			protected void initApplicationContext(SpringConfigApplicationContext context){
-				context.setAppEnvironment(TasksysConfig.getInstance().getAppEnvironment());
+				context.setAppEnvironment(TaskServerConfig.getInstance().getAppEnvironment());
 				context.register(TasksysContextConfig.class);
+			}
+
+			protected void afterInitApplicationContext(SpringConfigApplicationContext context){
+				super.afterInitApplicationContext(context);
+				
 			}
 
 		}.run(args);

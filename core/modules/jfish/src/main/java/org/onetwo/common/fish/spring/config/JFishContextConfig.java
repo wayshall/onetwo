@@ -1,5 +1,6 @@
 package org.onetwo.common.fish.spring.config;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.onetwo.common.fish.utils.ContextHolder;
@@ -11,8 +12,11 @@ import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
+import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
+import org.onetwo.common.spring.web.reqvalidator.JFishUploadFileTypesChecker;
 import org.onetwo.common.spring.web.tag.SessionTagThemeSettting;
 import org.onetwo.common.spring.web.tag.ThemeSettingWebFilter;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -148,6 +152,16 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	public WebHolderManager webHolderManager() {
 		WebHolderManager webHolderManager = new WebHolderManager();
 		return webHolderManager;
+	}
+	
+	@Bean
+	public JFishRequestValidator fileTypesRequestValidator(){
+		JFishUploadFileTypesChecker validator = new JFishUploadFileTypesChecker();
+		List<String> allowed = this.mvcSetting().getAllowedFileTypes();
+		if(LangUtils.isNotEmpty(allowed)){
+			validator.setAllowedFileTypes(allowed);
+		}
+		return validator;
 	}
 /*	@Bean
 	public ThreadLocalCleaner ThreadLocalCleaner() {
