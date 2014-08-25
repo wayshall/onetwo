@@ -1,7 +1,5 @@
 package org.onetwo.plugins.permission;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,6 @@ import org.onetwo.plugins.permission.entity.IFunction;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
 import org.onetwo.plugins.permission.entity.PermissionType;
-import org.onetwo.plugins.permission.utils.MenuMetaFields;
 import org.springframework.core.type.classreading.MetadataReader;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
@@ -30,6 +27,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 
 	private final Map<String, IPermission> permissionMap = new LinkedHashMap<String, IPermission>(50);
 	private final Map<Class<?>, IPermission> permissionMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
+	private final Map<Class<?>, PermClassParser> permClassParserMap = new LinkedHashMap<Class<?>, PermClassParser>(50);
+	
 	private IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> rootMenu;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
@@ -57,7 +56,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		String appCode = null;
 		IPermission perm = null;
 		try {
-			appCode = getFieldValue(menuInfoClass, MenuMetaFields.APP_CODE, String.class, menuInfoClass.getSimpleName());
+//			appCode = getFieldValue(menuInfoClass, MenuMetaFields.APP_CODE, String.class, menuInfoClass.getSimpleName());
+			appCode = PermClassParser.create(menuInfoClass).getAppCode();
 			/*if(StringUtils.isBlank(sysname)){
 				throw new BaseException("RootMenuClass must has a sysname field and it's value can not be blank.");
 			}*/
@@ -114,7 +114,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		try {
 			if(menuClass.getAnnotation(Deprecated.class)!=null)
 				return null;
-			perm = parsePermission(menuClass, syscode);
+			perm = parsePermission(getPermClassParser(menuClass), syscode);
 		} catch (Exception e) {
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
 		}
@@ -137,67 +137,25 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		return (T)menu;
 	}
 	
-
-	private <T> T getFieldValue(Class<?> permissionClass, String fieldName, Class<T> fieldType) throws Exception {
-		return getFieldValue(permissionClass, fieldName, fieldType, null);
-	}
-	private <T> T getFieldValue(Class<?> permissionClass, String fieldName, Class<T> fieldType, T def) throws Exception {
-		Field pageElementField = ReflectUtils.findField(permissionClass, fieldName);
-		T fieldValue = def;
-		if(pageElementField!=null){
-			Object pvalue = pageElementField.get(permissionClass);
-			if(!fieldType.isInstance(pvalue))
-				throw new BaseException("field["+fieldName+"] of " + permissionClass + " must be " + fieldType);
-			fieldValue = (T) pvalue;
-		}
-		return fieldValue;
-	}
 	
-	public IPermission parsePermission(Class<?> permissionClass, String syscode) throws Exception{
-		Number sort = getFieldValue(permissionClass, MenuMetaFields.SORT, Number.class);
+	public IPermission parsePermission(PermClassParser parser, String syscode) throws Exception{
+		/*PermClassParser parser = permClassParserMap.get(permissionClass);
+		if(parser==null){
+			parser = PermClassParser.create(permissionClass);
+		}*/
+		Class<?> permissionClass = parser.getPermissionClass();
+		
+		Number sort = parser.getSort();
 		if(sort==null){
 			sort = sortStartIndex++;
 		}
-		/*
-		Field sortField = ReflectUtils.findField(permissionClass, "sort");
-		if(sortField!=null){
-			Object pvalue = sortField.get(permissionClass);
-			if(!Number.class.isInstance(pvalue))
-				throw new BaseException("field[sort] of " + permissionClass + " must be Number.");
-			sort = (Number) pvalue;
-		}else{
-			sort = sortStartIndex++;
-		}*/
-
-		PermissionType ptype = getFieldValue(permissionClass, MenuMetaFields.PERMISSION_TYPE, PermissionType.class, PermissionType.MENU);
-		/*
-		Field pageElementField = ReflectUtils.findField(permissionClass, "permissionType");
-		PermissionType ptype = PermissionType.MENU;
-		if(pageElementField!=null){
-			Object pvalue = pageElementField.get(permissionClass);
-			if(!PermissionType.class.isInstance(pvalue))
-				throw new BaseException("field[permissionType] of " + permissionClass + " must be PermissionType.");
-			ptype = (PermissionType) pvalue;
-		}*/
-
-		Boolean hidden = getFieldValue(permissionClass, MenuMetaFields.HIDDEN, Boolean.class, false);
-		/*Boolean hidden = false;
-		Field menuHiddenField = ReflectUtils.findField(permissionClass, "hidden");
-		if(menuHiddenField!=null){
-			Object hiddenValue = menuHiddenField.get(permissionClass);
-			if(!Boolean.class.isInstance(hiddenValue))
-				throw new BaseException("field[hidden] of " + permissionClass + " must be Boolean.");
-			hidden = (Boolean) hiddenValue;
-		}*/
-
-		Object nameValue = ReflectUtils.getFieldValue(permissionClass, MenuMetaFields.NAME, true);
-		String name = nameValue==null?"":nameValue.toString();
+		String name = parser.getName();
 		IPermission perm = null;
-		if(ptype==PermissionType.FUNCTION){
+		if(parser.getPermissionType()==PermissionType.FUNCTION){
 			perm = (IPermission)ReflectUtils.newInstance(this.menuInfoable.getIFunctionClass());
 		}else{
 			IMenu<?, ?> menu = (IMenu<?, ?>)ReflectUtils.newInstance(this.menuInfoable.getIMenuClass());
-			Map<?, ?> param = getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
+			Map<?, ?> param = parser.getParams();//getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
 			CasualMap casualmap = new CasualMap().addMapWithFilter(param);
 			menu.setUrl(casualmap.toParamString());
 			perm = menu;
@@ -206,24 +164,38 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		String code = parseCode(permissionClass);
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
-		perm.setHidden(hidden);
+		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
 		this.permissionMap.put(perm.getCode(), perm);
 		this.permissionMapByClass.put(permissionClass, perm);
 		return perm;
 	}
 	
+	protected PermClassParser getPermClassParser(Class<?> permissionClass){
+		PermClassParser parser = permClassParserMap.get(permissionClass);
+		if(parser==null){
+			parser = PermClassParser.create(permissionClass);
+			this.permClassParserMap.put(permissionClass, parser);
+		}
+		return parser;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseCode(java.lang.Class)
-	 */
-
+	*/
 	@Override
 	public String parseCode(Class<?> menuClass){
+		return parseCode(getPermClassParser(menuClass));
+	}
+	
+	public String parseCode(PermClassParser parser){
+		Class<?> menuClass = parser.getPermissionClass();
+		
 		String code = menuClass.getSimpleName();
-		while(menuClass.getDeclaringClass()!=null){
-			menuClass = menuClass.getDeclaringClass();
-			code = menuClass.getSimpleName() + CODE_SEPRATOR + code;
+		while(parser.getParentPermClass()!=null){
+//			while(menuClass.getDeclaringClass()!=null){
+			menuClass = parser.getParentPermClass();//menuClass.getDeclaringClass();
+			code = menuClass.getSimpleName() + CODE_SEPRATOR + code;a
 		}
 		MenuMapping mapping = menuClass.getAnnotation(MenuMapping.class);
 		if(mapping!=null){
