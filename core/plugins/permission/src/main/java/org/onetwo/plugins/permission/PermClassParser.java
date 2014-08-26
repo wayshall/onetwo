@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.plugins.permission.anno.MenuMapping;
@@ -24,16 +23,17 @@ public class PermClassParser {
 //	private static final String CODE_SEPRATOR = "_";
 //	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 	
-	public static PermClassParser create(Class<?> permClass){
-		return new PermClassParser(permClass);
+	public static PermClassParser create(Class<?> permClass, Class<?> parentPermissionClass){
+		return new PermClassParser(permClass, parentPermissionClass);
 	}
 	
 	private final Class<?> permissionClass;
-	private Class<?> parentPermissionClass;
+	private final Class<?> parentPermissionClass;
 	
-	private PermClassParser(Class<?> permClass) {
+	private PermClassParser(Class<?> permClass, Class<?> parentPermissionClass) {
 		super();
 		this.permissionClass = permClass;
+		this.parentPermissionClass = parentPermissionClass;
 	}
 	
 	public Class<?> getPermissionClass() {
@@ -136,8 +136,8 @@ public class PermClassParser {
 		return fieldValue;
 	}
 
-	public void setParentPermissionClass(Class<?> parentPermissionClass) {
+/*	public void setParentPermissionClass(Class<?> parentPermissionClass) {
 		this.parentPermissionClass = parentPermissionClass;
-	}
+	}*/
 	
 }

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.ftl.directive.OverrideDirective.OverrideBodyWraper;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
@@ -21,7 +20,6 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.web.view.HtmlElement;
-import org.slf4j.Logger;
 import org.springframework.web.servlet.support.RequestContext;
 
 import freemarker.core.Environment;
@@ -227,11 +225,11 @@ public class DirectivesUtils {
 				html.setLabel(prop);
 		}
 
-		if(!ArrayUtils.contains(excludeFields, "attributes")){
+		/*if(!ArrayUtils.contains(excludeFields, "attributes")){
 			prop = DirectivesUtils.getParameterByString(params, "attributes", def);
 			if(StringUtils.isNotBlank(prop))
 				html.setAttributes(prop);
-		}
+		}*/
 	}
 	
 }

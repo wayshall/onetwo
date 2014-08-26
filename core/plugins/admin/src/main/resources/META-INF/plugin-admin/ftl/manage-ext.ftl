@@ -5,7 +5,7 @@
 	<head>
 	    <meta charset="utf-8">
 	    <title>
-			${title!"管理后台"}
+			${siteConfig.appName!'管理后台'}
 	    </title>
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	    <meta name="description" content="">

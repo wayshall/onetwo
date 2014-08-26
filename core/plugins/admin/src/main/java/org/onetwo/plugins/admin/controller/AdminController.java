@@ -48,13 +48,13 @@ public class AdminController extends PluginSupportedController {
 		TreeBuilder<ExtMenuModel> builder = new TreeBuilder<ExtMenuModel>(extMenus);
 		List<ExtMenuModel> menuTree = builder.buidTree();
 
-		String title = AdminPluginConfig.getInstance().getTitle();
+//		String title = AdminPluginConfig.getInstance().getTitle();
 		String viewName = AdminPluginConfig.getInstance().getAdminView();
 		if(StringUtils.isBlank(viewName))
 			viewName = pluginView("manage-ext");
 		
 		if(menuTree.isEmpty())
-			return mv(viewName, "treePanelDatas", "[]", "title", title);
+			return mv(viewName, "treePanelDatas", "[]");
 		
 		ExtMenuModel root = menuTree.get(0);
 		String treePanelDatas = AdminPluginConfig.getInstance().isSinglePanel()?root.getTreePanel():root.getChildrenAsTreePanel();
@@ -64,7 +64,7 @@ public class AdminController extends PluginSupportedController {
 //		String treePanelDatas = FastUtils.jsonMapperIgnoreNull().toJson(array);
 //		System.out.println("json: " + treePanelDatas);
 		
-		return mv(viewName, "root", root, "treePanelDatas", treePanelDatas, "theme", theme, "title", title);
+		return mv(viewName, "root", root, "treePanelDatas", treePanelDatas, "theme", theme);
 	}
 	
 }

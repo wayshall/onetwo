@@ -1,10 +1,9 @@
 package org.onetwo.common.spring.context;
 
-import java.util.List;
-
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.StringUtils;
@@ -31,6 +30,7 @@ public class SpringProfilesWebApplicationContext extends AnnotationConfigWebAppl
 	private PluginManagerInitializer pluginManagerInitializer = new ContextPluginManagerInitializer();
 	private String appEnvironment;
 	private Class<?>[] annotatedClasses;
+	private ContextPluginManager contextPluginManager;
 	
 	public SpringProfilesWebApplicationContext(){
 	}
@@ -54,9 +54,8 @@ public class SpringProfilesWebApplicationContext extends AnnotationConfigWebAppl
 
 	protected void prepareRefresh() {
 		JFishList<Class<?>> configClasseList = JFishList.create();
-		List<Class<?>> configClasses = this.getPluginManagerInitializer().initPluginContext(getAppEnvironment());
-		configClasseList.addCollection(configClasses)
-						.addArray(annotatedClasses);
+		this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
 			register(configClasseList.toArray(new Class<?>[0]));
 		super.prepareRefresh();
