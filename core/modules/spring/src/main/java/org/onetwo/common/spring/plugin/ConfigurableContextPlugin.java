@@ -52,4 +52,8 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	public String getEnvConfigPath(String env){
 		return LangUtils.appendNotBlank(configBaseDir, configName, "-", env, CONFIG_POSTFIX);
 	}
+
+	public C getConfig() {
+		return config;
+	}
 }
