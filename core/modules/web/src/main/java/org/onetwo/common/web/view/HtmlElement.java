@@ -1,5 +1,9 @@
 package org.onetwo.common.web.view;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
@@ -12,8 +16,8 @@ abstract public class HtmlElement {
 	protected String cssStyle;
 	protected String cssClass;
 	protected String onclick;
-	
-	protected String attributes;
+
+	private Map<String, Object> dynamicAttributes = LangUtils.newHashMap();
 	
 
 //	protected StringBuilder attributesBuf;
@@ -43,10 +47,6 @@ abstract public class HtmlElement {
 		return onclick;
 	}
 
-	public String getAttributes() {
-		return attributes;
-	}
-
 	public String getTitle() {
 		return title;
 	}
@@ -73,10 +73,6 @@ abstract public class HtmlElement {
 
 	public void setOnclick(String onclick) {
 		this.onclick = onclick;
-	}
-
-	public void setAttributes(String attributes) {
-		this.attributes = attributes;
 	}
 
 	public String getLabel() {
@@ -121,18 +117,32 @@ abstract public class HtmlElement {
 			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
 		
 		this.buildExtTagAttributesString(attributesBuf);
-		if(StringUtils.isNotBlank(attributes))
-			attributesBuf.append(" ").append(attributes);
 		return attributesBuf.toString();
 	}
 
 	public String getGridAttributesHtml() {
 		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "title", getTitle());
 //		buildAttributeTag(attributesBuf, "style", getCssStyle());
 //		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
 		return attributesBuf.toString();
 	}
 
+	public Map<String, Object> getDynamicAttributes() {
+		return dynamicAttributes;
+	}
+
+	public void setDynamicAttributes(Map<String, Object> dynamicAttributes) {
+		this.dynamicAttributes = dynamicAttributes;
+	}
+
+	public String getDynamicAttributesHtml() {
+		StringBuilder attributesBuf = new StringBuilder();
+		for(Entry<String, Object> entry : this.dynamicAttributes.entrySet()){
+			buildAttributeTag(attributesBuf, entry.getKey(), entry.getValue());
+		}
+		return attributesBuf.toString();
+	}
 
 }

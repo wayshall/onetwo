@@ -1,10 +1,8 @@
 package org.onetwo.plugins.task.client;
 
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.plugins.permission.anno.DelegateMenu;
 import org.onetwo.plugins.permission.entity.PermissionType;
 
-@DelegateMenu
 public interface TaskModule {
 	String name = "任务管理";
 	Class<?> parent = BaseSiteConfig.getInstance().getClass("aa", null);
