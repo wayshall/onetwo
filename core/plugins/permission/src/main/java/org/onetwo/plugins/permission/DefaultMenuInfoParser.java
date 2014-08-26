@@ -52,6 +52,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	public IMenu<?, ?> parseTree(){
 		Assert.notNull(menuInfoable);
 		Class<?> menuInfoClass = menuInfoable.getRootMenuClass();
+		
+		List<PermClassParser> childMenuParser = LangUtils.newArrayList();
 
 		String appCode = null;
 		IPermission perm = null;
@@ -75,7 +77,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		if(LangUtils.isEmpty(childMenuPackages))
 			return rootMenu;
 		
-		List<Class<?>> childMenuClass = scaner.scan(new ScanResourcesCallback<Class<?>>(){
+		List<PermClassParser> childMenuPackageMenus = scaner.scan(new ScanResourcesCallback<PermClassParser>(){
 
 			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {
@@ -85,20 +87,21 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			}*/
 
 			@Override
-			public Class<?> doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
+			public PermClassParser doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
 				if (!metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
 					return null;
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
-				return cls;
+				return getPermClassParser(cls);
 			}
 			
 		}, childMenuPackages);
 		
-		if(LangUtils.isEmpty(childMenuClass))
+		childMenuParser.addAll(childMenuPackageMenus);
+		if(LangUtils.isEmpty(childMenuParser))
 			return rootMenu;
 		
-		for(Class<?> childMc : childMenuClass){
-			IPermission childPerm =  parseMenuClass(getPermClassParser(childMc), appCode);
+		for(PermClassParser childMc : childMenuParser){
+			IPermission childPerm =  parseMenuClass(childMc, appCode);
 			if(IMenu.class.isInstance(childPerm)){
 				rootMenu.addChild((IMenu)childPerm);
 			}else{
@@ -148,7 +151,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		if(parser==null){
 			parser = PermClassParser.create(permissionClass);
 		}*/
-		Class<?> permissionClass = parser.getPermissionClass();
+		Class<?> permissionClass = parser.getActualPermissionClass();//parser.getPermissionClass();
 		
 		Number sort = parser.getSort();
 		if(sort==null){
@@ -199,15 +202,15 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		while(parent.getParentPermissionClass()!=null){
 //			while(menuClass.getDeclaringClass()!=null){
 //			menuClass = parser.getParentPermClass();//menuClass.getDeclaringClass();
-			parent = getPermClassParser(parser.getPermissionClass());
+			parent = getPermClassParser(parent.getParentPermissionClass());
 			code = parent.generatedSimpleCode() + CODE_SEPRATOR + code;
 		}
-		MenuMapping mapping = parent.getMenuMapping();
-		if(mapping!=null){
-			Class<?> pcls = mapping.parent()==ROOT_MENU_TAG?menuInfoable.getRootMenuClass():mapping.parent();
+		Class<?> pcls = parent.getMappingParentClass();
+		if(pcls!=null){
+			pcls = (pcls==ROOT_MENU_TAG?menuInfoable.getRootMenuClass():pcls);
 			IPermission perm = this.permissionMapByClass.get(pcls);
 			if(perm==null)
-				throw new BaseException("parse menu class["+parent.getPermissionClass()+"] error. no parent menu found: " + pcls);
+				throw new BaseException("parse menu class["+parent.getActualPermissionClass()+"] error. no parent menu found: " + pcls);
 			code = perm.getCode() + CODE_SEPRATOR + code;
 		}
 		return code;
