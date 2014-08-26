@@ -104,5 +104,10 @@ public class PluginInfo {
 		}
 		return scopes.contains(scope);
 	}
+	
+	public String wrapAsContextPath(String pluginContextUrl){
+		String path = StringUtils.appendStartWith(pluginContextUrl, "/");
+		return contextPath + path;
+	}
 
 }

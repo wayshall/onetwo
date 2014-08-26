@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.task.client.TaskClientConfig;
@@ -21,6 +22,20 @@ public class TaskClientServiceImpl {
 	
 	@Resource
 	private TaskClientConfig taskClientConfig;
+	
+	public TaskQueue load(Long id){
+		return baseEntityManager.load(TaskQueue.class, id);
+	}
+	
+	public TaskQueue save(TaskQueue taskQueue){
+		if(taskQueue.getId()==null){
+			return baseEntityManager.save(taskQueue);
+		}else{
+			TaskQueue dbTaskQueue = load(taskQueue.getId());
+			HibernateUtils.copyWithoutRelations(taskQueue, dbTaskQueue);
+			return dbTaskQueue;
+		}
+	}
 	
 	public void addTaskToQueue(TaskBase task, Date planTime){
 		TaskQueue queue = new TaskQueue();
