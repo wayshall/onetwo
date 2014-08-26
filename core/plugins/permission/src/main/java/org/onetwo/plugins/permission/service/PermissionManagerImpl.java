@@ -37,7 +37,7 @@ public class PermissionManagerImpl implements PermissionManager {
 	@Override
 	public void build(){
 		PermissionUtils.setMenuInfoParser(menuInfoParser);
-//		IMenu rootMenu = menuInfoParser.parseTree();
+		IMenu rootMenu = menuInfoParser.parseTree();
 //		logger.info("menu:\n" + rootMenu);
 		this.menuNodeMap = menuInfoParser.getPermissionMap();
 	}
