@@ -2,14 +2,20 @@ package org.onetwo.common.web.view.jsp;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.view.HtmlElement;
+import org.springframework.beans.BeanWrapper;
 
 @SuppressWarnings("serial")
-abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag {
+abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag implements DynamicAttributes {
 	
 	private static final String TAG_STACK_NAME = "tagStack";
 	
@@ -20,7 +26,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	protected String cssStyle;
 	protected String cssClass;
 	protected String onclick;
-	protected String attributes;
+	private Map<String, Object> dynamicAttributes = LangUtils.newHashMap();
 	
 	protected T component;
 
@@ -76,6 +82,16 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		component = createComponent();
 		this.populateComponent();
 		
+		//set dynamic attributes
+		BeanWrapper bw = SpringUtils.newBeanWrapper(component);
+		for(Entry<String, Object> entry : this.dynamicAttributes.entrySet()){
+			if(bw.isWritableProperty(entry.getKey())){
+				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			}else{
+				component.getDynamicAttributes().put(entry.getKey(), entry.getValue());
+			}
+		}
+		
 		Deque<HtmlElement> tagStack = getTagStack();
 		if(tagStack==null){
 			tagStack = new ArrayDeque<HtmlElement>();
@@ -104,7 +120,6 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		component.setCssClass(cssClass);
 		component.setCssStyle(cssStyle);
 		component.setOnclick(onclick);
-		component.setAttributes(attributes);
 	}
 
 	@Override
@@ -179,11 +194,13 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	public void setOnclick(String onclick) {
 		this.onclick = onclick;
 	}
-	public void setAttributes(String attributes) {
-		this.attributes = attributes;
-	}
 	public T getComponent() {
 		return component;
+	}
+	@Override
+	public void setDynamicAttribute(String uri, String localName, Object value)
+			throws JspException {
+		this.dynamicAttributes.put(localName, value);
 	}
 	
 }
