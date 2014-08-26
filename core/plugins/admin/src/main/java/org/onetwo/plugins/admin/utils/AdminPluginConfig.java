@@ -34,9 +34,9 @@ final public class AdminPluginConfig {
 		return "single".equals(getTreepanel());
 	}
 	
-	public String getTitle(){
+	/*public String getTitle(){
 		return BaseSiteConfig.getInstance().getProperty(ADMIN_INDEX_TITLE, "管理后台");
-	}
+	}*/
 	public String getAdminView(){
 		return BaseSiteConfig.getInstance().getProperty(ADMIN_INDEX_VIEW);
 	}

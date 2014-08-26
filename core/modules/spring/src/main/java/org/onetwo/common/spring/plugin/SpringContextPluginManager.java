@@ -143,7 +143,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 		pluginMetas.add(meta);
 		logger.info("init plugin["+plugin+"]..." );
 		
-		meta.getContextPlugin().init(meta);
+		meta.getContextPlugin().init(meta, appEnvironment);
 	}
 	
 
@@ -170,6 +170,18 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 	//	@Override
 	public JFishList<T> getPluginMetas() {
 		return pluginMetas;
+	}
+
+	@Override
+	public void registerEntityPackage(final List<String> packages) {
+		getPluginMetas().each(new NoIndexIt<T>() {
+
+			@Override
+			protected void doIt(T element) {
+				element.getContextPlugin().registerEntityPackage(packages);
+			}
+			
+		});
 	}
 	
 	
