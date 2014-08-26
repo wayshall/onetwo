@@ -20,6 +20,9 @@ import org.onetwo.common.ds.JFishMultipleDatasource;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
+import org.onetwo.common.spring.plugin.ContextPluginManagerFactory;
+import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,10 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 //	private String masterName;
 	private DataSource dataSourceHolder;
 	
+//	@Resource
+	private ContextPluginManager contextPluginManager = ContextPluginManagerFactory.getContextPluginManager();
+	private JFishList<String> packageListToScan = JFishList.create();
+	
 	public ExtLocalSessionFactoryBean(){
 	}
 	
@@ -67,7 +74,15 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 									"masterDatasource", dataSourceHolder);
 			this.setDataSource(mds);
 		}
+		
+		this.contextPluginManager.registerEntityPackage(packageListToScan);
+		super.setPackagesToScan(packageListToScan.toArray(new String[0]));
+		
 		super.afterPropertiesSet();
+	}
+
+	public void setPackagesToScan(String... packagesToScan) {
+		packageListToScan.addArray(packagesToScan);
 	}
 	
 	

@@ -84,7 +84,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 		pluginMetas.add(meta);
 		logger.info("init plugin["+plugin+"]..." );
 
-		meta.getContextPlugin().init(meta);
+		meta.getContextPlugin().init(meta, getAppEnvironment());
 		if(meta.getJFishPlugin()!=null)
 			meta.getJFishPlugin().init(meta);
 	}

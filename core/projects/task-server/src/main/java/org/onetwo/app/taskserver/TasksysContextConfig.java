@@ -2,6 +2,7 @@ package org.onetwo.app.taskserver;
 
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
+import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,5 +24,10 @@ public class TasksysContextConfig {
 	public CacheManager cacheManager() {
 		JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
 		return cache;
+	}
+	
+	@Bean
+	public TaskQueueServiceImpl taskQueueService(){
+		return new TaskQueueServiceImpl();
 	}
 }

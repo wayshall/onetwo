@@ -6,10 +6,10 @@ import javax.annotation.Resource;
 
 import org.onetwo.app.taskserver.TaskServerConfig;
 import org.onetwo.app.taskserver.service.impl.DefaultTaskProcessor;
-import org.onetwo.app.taskserver.service.impl.TaskQueueServiceImpl;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.timer.QuartzJobTask;
 import org.onetwo.plugins.task.entity.TaskQueue;
+import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -22,14 +22,14 @@ public class TaskFetcherJob implements QuartzJobTask, InitializingBean {
 	@Resource
 	private DefaultTaskProcessor taskProcessor;
 	@Resource
-	private TaskQueueServiceImpl taskQueueServiceImpl;
+	private TaskQueueServiceImpl taskQueueService;
 	@Resource
 	private TaskServerConfig taskServerConfig;
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		List<TaskQueue> executing = taskQueueServiceImpl.loadAllExecuting();
+		List<TaskQueue> executing = taskQueueService.loadAllExecuting();
 		for(TaskQueue tq : executing){
 			this.taskProcessor.sendTask(tq);
 		}
@@ -41,7 +41,7 @@ public class TaskFetcherJob implements QuartzJobTask, InitializingBean {
 			logger.info("queue of processor is full, ignore……");
 			return ;
 		}
-		List<TaskQueue> taskQueues = taskQueueServiceImpl.loadAndLockWaiting(taskServerConfig.getFetchSize());
+		List<TaskQueue> taskQueues = taskQueueService.loadAndLockWaiting(taskServerConfig.getFetchSize());
 		for(TaskQueue tq : taskQueues){
 			this.taskProcessor.sendTask(tq);
 		}

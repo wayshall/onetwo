@@ -91,7 +91,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 				if (!metadataReader.getAnnotationMetadata().hasAnnotation(MenuMapping.class.getName()))
 					return null;
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
-				return getPermClassParser(cls);
+				return getPermClassParser(cls, null, true);
 			}
 			
 		}, childMenuPackages);
@@ -131,8 +131,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
-			PermClassParser childParser = getPermClassParser(childCls);
-			childParser.setParentPermissionClass(parser.getPermissionClass());
+			PermClassParser childParser = getPermClassParser(childCls, parser.getPermissionClass(), true);
+//			childParser.setParentPermissionClass(parser.getPermissionClass());
 			IPermission p = parseMenuClass(childParser, syscode);
 			if(p==null)
 				continue;
@@ -179,11 +179,20 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		return perm;
 	}
 	
+
 	protected PermClassParser getPermClassParser(Class<?> permissionClass){
+		return getPermClassParser(permissionClass, permissionClass.getDeclaringClass(), false);
+	}
+
+	protected PermClassParser getPermClassParser(Class<?> permissionClass, Class<?> parentPermissionClass, boolean mustCreate){
 		PermClassParser parser = permClassParserMap.get(permissionClass);
 		if(parser==null){
-			parser = PermClassParser.create(permissionClass);
+			parser = PermClassParser.create(permissionClass, parentPermissionClass);
 			this.permClassParserMap.put(permissionClass, parser);
+		}else{
+			if(mustCreate){
+				throw new BaseException("the same PermissionClass["+permissionClass+"] has assigned to "+parser.getParentPermissionClass()+", can not assign to the other : " + parentPermissionClass);
+			}
 		}
 		return parser;
 	}
