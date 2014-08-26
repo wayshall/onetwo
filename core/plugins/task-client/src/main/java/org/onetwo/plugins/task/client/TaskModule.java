@@ -6,7 +6,7 @@ public interface TaskModule {
 	String name = "任务管理";
 	
 	public static interface QueueList {
-		String name = "队列";
+		String name = "任务队列";
 	}
 
 	public static interface New {
