@@ -5,14 +5,22 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.permission.anno.DelegateMenu;
-import org.onetwo.plugins.permission.anno.DelegatedBy;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.plugins.permission.anno.MenuMapping;
+import org.onetwo.plugins.permission.anno.ProxyMenu;
 import org.onetwo.plugins.permission.entity.PermissionType;
-import org.onetwo.plugins.permission.utils.MenuMetaFields;
 
 public class PermClassParser {
+	public static final String APP_CODE = "appCode";
+	public static final String SORT = "sort";
+	public static final String PERMISSION_TYPE = "permissionType";
+	public static final String HIDDEN = "hidden";
+	public static final String PARAMS = "params";
+	public static final String NAME = "name";
+	public static final String CHILDREN = "children";
+	
 //	private static final String CODE_SEPRATOR = "_";
 //	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 	
@@ -31,33 +39,38 @@ public class PermClassParser {
 	public Class<?> getPermissionClass() {
 		return permissionClass;
 	}
+	
+	public Class<?> getActualPermissionClass() {
+		return isProxyMenu()?getProxyPermClass():permissionClass;
+	}
 
 	public String getName(){
-		Object nameValue = ReflectUtils.getFieldValue(permissionClass, MenuMetaFields.NAME, true);
+		Object nameValue = ReflectUtils.getFieldValue(getActualPermissionClass(), NAME, true);
 		String name = nameValue==null?"":nameValue.toString();
 		return name;
 	}
 	
 	public String getAppCode(){
-		return getFieldValue(MenuMetaFields.APP_CODE, String.class, permissionClass.getSimpleName());
+		return getFieldValue(APP_CODE, String.class, permissionClass.getSimpleName());
 	}
 	
 	public String generatedSimpleCode(){
 		return permissionClass.getSimpleName();
 	}
 	
-	public MenuMapping getMenuMapping(){
-		return this.permissionClass.getAnnotation(MenuMapping.class);
+	public Class<?> getMappingParentClass(){
+		MenuMapping map = this.permissionClass.getAnnotation(MenuMapping.class);
+		return map==null?null:map.parent();
 	}
 	
-	public DelegatedBy getDelegatedBy(){
-		return this.permissionClass.getAnnotation(DelegatedBy.class);
+	public ProxyMenu getProxyMenu(){
+		return this.permissionClass.getAnnotation(ProxyMenu.class);
 	}
 	
-	public Class<?> getDelegatePermClass(){
+	public Class<?> getProxyPermClass(){
 //		if(!isDelegatedMenu())
 //			throw new BaseException("it's not a delegate menu:" + permissionClass);
-		Class<?> delegatePermClass = this.getDelegatedBy().value();
+		Class<?> delegatePermClass = this.getProxyMenu().value();
 		if(delegatePermClass==null)
 			throw new BaseException("no delete menu class found:" + permissionClass);
 		return delegatePermClass;
@@ -67,32 +80,39 @@ public class PermClassParser {
 		return permissionClass.getAnnotation(Deprecated.class)!=null;
 	}
 	
-	public boolean isDelegatedMenu(){
-		return getDelegatedBy()!=null;
+	public boolean isProxyMenu(){
+		return getProxyMenu()!=null;
 	}
 	
 	public Class<?>[] getChildrenClasses(){
-		return isDelegatedMenu()?getDelegatePermClass().getDeclaredClasses():permissionClass.getDeclaredClasses();
+		JFishList<Class<?>> list = JFishList.create();
+		Class<?>[] children =  isProxyMenu()?getProxyPermClass().getDeclaredClasses():permissionClass.getDeclaredClasses();
+		list.addArray(children).addArray(getChildren());
+		return list.toArray(new Class<?>[0]);
 	}
 	
 	public Class<?> getParentPermissionClass(){
 		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
 	}
 	
+	protected Class<?>[] getChildren(){
+		return getFieldValue(CHILDREN, Class[].class);
+	}
+	
 	public Number getSort(){
-		return getFieldValue(MenuMetaFields.SORT, Number.class);
+		return getFieldValue(SORT, Number.class);
 	}
 	
 	public PermissionType getPermissionType(){
-		return getFieldValue(MenuMetaFields.PERMISSION_TYPE, PermissionType.class, PermissionType.MENU);
+		return getFieldValue(PERMISSION_TYPE, PermissionType.class, PermissionType.MENU);
 	}
 	
 	public Boolean isHidden(){
-		return getFieldValue(MenuMetaFields.HIDDEN, Boolean.class, false);
+		return getFieldValue(HIDDEN, Boolean.class, false);
 	}
 	
 	public Map<?, ?> getParams(){
-		return getFieldValue(MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
+		return getFieldValue(PARAMS, Map.class, Collections.EMPTY_MAP);
 	}
 	
 	private <T> T getFieldValue(String fieldName, Class<T> fieldType) {

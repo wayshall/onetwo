@@ -123,19 +123,21 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 
 
-	public void addArray(E...objects) {
+	public JFishList<E> addArray(E...objects) {
 		if(LangUtils.isEmpty(objects))
-			return ;
+			return this;
 		for(E e : objects)
 			add(e);
+		return this;
 	}
 
-	public void addArrayIgnoreNull(E...objects) {
+	public JFishList<E> addArrayIgnoreNull(E...objects) {
 		if(LangUtils.isEmpty(objects))
-			return ;
+			return this;
 		for(E e : objects)
 			if(e!=null)
 				add(e);
+		return this;
 	}
 	
 	public JFishList<E> addCollection(Collection<E> objects) {
@@ -322,7 +324,6 @@ public class JFishList<E> implements List<E>, Serializable {
 			
 		});
 	}
-	
 
 	public <K, V> Map<K, V> toMap(final String keyProperty){
 		return toMap(keyProperty, null, false);
