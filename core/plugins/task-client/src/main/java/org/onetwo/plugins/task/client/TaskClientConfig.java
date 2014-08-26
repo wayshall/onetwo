@@ -1,17 +1,20 @@
 package org.onetwo.plugins.task.client;
 
-import java.util.Properties;
-
+import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.propconf.JFishProperties;
 
-public class TaskClientConfig {
+public class TaskClientConfig implements LoadableConfig {
 
-	private final JFishProperties config;
+	private JFishProperties config;
 
-	public TaskClientConfig(Properties clientConfig) {
-		super();
-		this.config = JFishProperties.wrap(clientConfig);
+	public TaskClientConfig() {
 	}
+	
+	@Override
+	public void load(JFishProperties properties) {
+		this.config = properties;
+	}
+
 
 	public int getTryTimes(){
 		return config.getInt("try.times", 3);

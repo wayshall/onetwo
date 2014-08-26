@@ -23,4 +23,6 @@ public interface ContextPluginManager {
 	 */
 	public void registerPluginJFishContextClasses(List<Class<?>> contextClasses);
 	
+
+	public void registerEntityPackage(List<String> packages);
 }

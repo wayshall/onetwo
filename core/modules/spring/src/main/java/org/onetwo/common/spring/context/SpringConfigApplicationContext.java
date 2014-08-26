@@ -1,7 +1,5 @@
 package org.onetwo.common.spring.context;
 
-import java.util.List;
-
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.list.JFishList;
@@ -31,15 +29,15 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	private String[] basePackages;
 	private BeanNameGenerator beanNameGenerator;
 	private ScopeMetadataResolver scopeMetadataResolver;
+//	private ContextPluginManager contextPluginManager;
 	
 	
 	@Override
 	protected void prepareRefresh() {
 		Assert.hasText(appEnvironment);
 		JFishList<Class<?>> configClasseList = JFishList.create();
-		List<Class<?>> annoClasses = this.getPluginManagerInitializer().initPluginContext(getAppEnvironment());
-		configClasseList.addCollection(annoClasses)
-						.addArray(annotatedClasses);
+		this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
 			register(configClasseList.toArray(new Class<?>[0]));
 		super.prepareRefresh();

@@ -1,4 +1,4 @@
-package org.onetwo.plugins.task.client;
+package org.onetwo.plugins.task.client.service.impl;
 
 import java.util.Date;
 
@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.task.client.TaskClientConfig;
 import org.onetwo.plugins.task.entity.TaskBase;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;

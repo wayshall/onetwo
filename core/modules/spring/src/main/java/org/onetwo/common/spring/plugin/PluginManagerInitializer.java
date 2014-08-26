@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface PluginManagerInitializer {
 
-	public List<Class<?>> initPluginContext(String appEnvironment);
+	public void initPluginContext(String appEnvironment, List<Class<?>> contextClasses);
 
 }
