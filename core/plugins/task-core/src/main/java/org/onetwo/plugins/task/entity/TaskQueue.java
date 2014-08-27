@@ -25,7 +25,8 @@ import org.onetwo.plugins.task.utils.TaskUtils;
 
 @Entity
 @Table(name="TASK_QUEUE")
-@TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskQueueEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1000)
+//@Inheritance(strategy=InheritanceType.JOINED)
+@TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskQueueEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_TASK_QUEUE", allocationSize=50, initialValue=1000)
 public class TaskQueue implements Serializable, TaskData {
 
 	/**
@@ -37,7 +38,6 @@ public class TaskQueue implements Serializable, TaskData {
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskQueueEntityGenerator") 
 	@Column(name="ID")
 	private Long id;
-	private String name;
 	
 //	private String type;
 	
@@ -56,10 +56,11 @@ public class TaskQueue implements Serializable, TaskData {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdateTime;
 	
+	
 	@ManyToOne
-	@JoinColumn(name="task_id")
+	@JoinColumn(name="TASK_ID")
 	private TaskBase task;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -68,13 +69,9 @@ public class TaskQueue implements Serializable, TaskData {
 		this.id = id;
 	}
 	
-
+	@Override
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return task.getName();
 	}
 
 	public TaskStatus getStatus() {
@@ -109,17 +106,9 @@ public class TaskQueue implements Serializable, TaskData {
 		this.planTime = planTime;
 	}
 
-	public TaskBase getTask() {
-		return task;
-	}
-
-	public void setTask(TaskBase task) {
-		this.task = task;
-	}
-
 	@Override
 	public TaskType getTaskType() {
-		return TaskType.type(task.getType());
+		return TaskType.type(getTask().getType());
 	}
 
 	public Date getLastExecTime() {
@@ -134,7 +123,6 @@ public class TaskQueue implements Serializable, TaskData {
 	public boolean isReply() {
 		return false;
 	}
-
 	
 	public Date getCreateTime() {
 		return createTime;
@@ -148,4 +136,14 @@ public class TaskQueue implements Serializable, TaskData {
 	public void setLastUpdateTime(Date lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
+
+	public TaskBase getTask() {
+		return task;
+	}
+
+	public void setTask(TaskBase task) {
+		this.task = task;
+	}
+
+	
 }

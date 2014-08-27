@@ -1,13 +1,13 @@
-package org.onetwo.plugins.task.client;
+package org.onetwo.plugins.task;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.propconf.JFishProperties;
 
-public class TaskClientConfig implements LoadableConfig {
+public class TaskPluginConfig implements LoadableConfig {
 
 	private JFishProperties config;
 
-	public TaskClientConfig() {
+	public TaskPluginConfig() {
 	}
 	
 	@Override
@@ -20,9 +20,9 @@ public class TaskClientConfig implements LoadableConfig {
 		return config.getInt("try.times", 3);
 	}
 	
-	public String getQueueNamePrefix(){
+	/*public String getQueueNamePrefix(){
 		return config.getProperty("queue.name.prefix", "queue-");
-	}
+	}*/
 	
 
 }

@@ -113,4 +113,10 @@
   	<function-signature>java.lang.String web(java.lang.String)</function-signature>
   </function>
   
+  <function>
+  	<name>checkedHtml</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.Object checkedHtml(java.lang.Object, java.lang.String, java.lang.Object)</function-signature>
+  </function>
+  
 </taglib>

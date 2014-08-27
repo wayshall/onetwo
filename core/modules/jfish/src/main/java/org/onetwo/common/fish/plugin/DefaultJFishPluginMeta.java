@@ -19,6 +19,8 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements 
 			PluginConfig pc = this.getJFishPlugin().getPluginConfig();
 			pc.init(this);
 			this.pluginConfig = pc;
+		}else{
+			System.out.println("no plugin");
 		}
 		this.webResourceMeta = new PluginWebResourceMeta(pluginInfo);
 	}

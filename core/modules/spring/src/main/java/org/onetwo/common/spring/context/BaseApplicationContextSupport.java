@@ -73,8 +73,8 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 			throw new BeanInitializationException("Could not find default validator", e);
 		}
 		validator = (Validator) BeanUtils.instantiate(clazz);
-		LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
-		vfb.setValidationMessageSource(validateMessageSource());
+//		LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
+//		vfb.setValidationMessageSource(messageSource());
 //			vfb.setTraversableResolver(new EmptyTraversableResolver());
 		return validator;
 	}
@@ -84,14 +84,19 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 		return ValidatorWrapper.wrap(beanValidator());
 	}
 
+	/****
+	 * AbstractApplicationContext#initMessageSource will find this bean by name, fuck...
+	 * @return
+	 */
 	@Bean
-	public ReloadableResourceBundleMessageSource validateMessageSource() {
+	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource ms = null;
 		if(this.applicationContex.containsBean("validationMessages")){
 			ms = this.applicationContex.getBean("validationMessages", ReloadableResourceBundleMessageSource.class);
 		}else{
 			ms = new ReloadableResourceBundleMessageSource();
-			ms.setBasename("classpath*:messages/ValidationMessages");
+			ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:org/hibernate/validator/ValidationMessages");
+//			ms.setCacheSeconds(60*60);
 		}
 //		ms.setCacheSeconds(60);
 		return ms;

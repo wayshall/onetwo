@@ -38,7 +38,7 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			config = buildConfigByAuthenticAnnotation(method, ByMenuClass.class);
 
 			for(Class<?> codeCls : menu.codeClass()){
-				perms.add(menuInfoParser.parseCode(codeCls));
+				perms.add(menuInfoParser.getCode(codeCls));
 			}
 			buildExtAnnotationConfig(config, clazz, method);
 			
@@ -49,7 +49,7 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			config = buildConfigByAuthenticAnnotation(method, ByFunctionClass.class);
 
 			for(Class<?> codeCls : permClass.codeClass()){
-				perms.add(menuInfoParser.parseCode(codeCls));
+				perms.add(menuInfoParser.getCode(codeCls));
 			}
 			buildExtAnnotationConfig(config, clazz, method);
 			

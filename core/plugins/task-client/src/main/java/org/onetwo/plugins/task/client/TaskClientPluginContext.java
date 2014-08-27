@@ -15,11 +15,6 @@ public class TaskClientPluginContext extends AbstractPluginContext {
 	}
 	
 	@Bean
-	public TaskClientConfig taskClientConfig(){
-		return TaskClientPlugin.getInstance().getConfig();
-	}
-	
-	@Bean
 	public TaskQueueServiceImpl taskQueueService(){
 		return new TaskQueueServiceImpl();
 	}

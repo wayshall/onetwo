@@ -1,7 +1,10 @@
 package org.onetwo.plugins.task.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.onetwo.plugins.task.utils.TaskType;
 
 @Entity
 @Table(name="TASK_EMAIL")
@@ -11,29 +14,39 @@ public class TaskEmail extends TaskBase {
 	 * 
 	 */
 	private static final long serialVersionUID = -6892549859686221264L;
-	private String title;
+	private String subject;
 	private String content;
-	private String attachPaths;
+	private String attachmentPath;
+	@Column(name="IS_HTML")
 	private boolean html;
+	
+	public TaskEmail(){
+		setType(TaskType.EMAIL.toString());
+	}
+	
+	public String getSubject() {
+		return subject;
+	}
 
-	public String getTitle() {
-		return title;
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
+
 	public String getContent() {
 		return content;
 	}
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getAttachPaths() {
-		return attachPaths;
+	
+	public String getAttachmentPath() {
+		return attachmentPath;
 	}
-	public void setAttachPaths(String attachPaths) {
-		this.attachPaths = attachPaths;
+
+	public void setAttachmentPath(String attachmentPath) {
+		this.attachmentPath = attachmentPath;
 	}
+
 	public boolean isHtml() {
 		return html;
 	}
