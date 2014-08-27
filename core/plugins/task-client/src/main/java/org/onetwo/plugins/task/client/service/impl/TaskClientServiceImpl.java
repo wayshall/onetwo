@@ -6,12 +6,12 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.hibernate.HibernateUtils;
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.plugins.task.client.TaskClientConfig;
 import org.onetwo.plugins.task.entity.TaskBase;
+import org.onetwo.plugins.task.entity.TaskBizTag;
+import org.onetwo.plugins.task.entity.TaskEmail;
 import org.onetwo.plugins.task.entity.TaskQueue;
-import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
+import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
+import org.onetwo.plugins.task.vo.TaskEmailVo;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -21,41 +21,57 @@ public class TaskClientServiceImpl {
 	private BaseEntityManager baseEntityManager;
 	
 	@Resource
-	private TaskClientConfig taskClientConfig;
+	private TaskQueueServiceImpl taskQueueService;
 	
 	public TaskQueue load(Long id){
-		return baseEntityManager.load(TaskQueue.class, id);
+		return taskQueueService.load(id);
 	}
 	
-	public TaskQueue save(TaskQueue taskQueue){
-		if(taskQueue.getId()==null){
-			return baseEntityManager.save(taskQueue);
+	public TaskBizTag loadOrSave(String bizTag){
+		TaskBizTag tag = baseEntityManager.findOne(TaskBizTag.class, "name", bizTag);
+		if(tag==null){
+			tag = new TaskBizTag();
+			tag.setName(bizTag);
+			baseEntityManager.save(tag);
+		}
+		return tag;
+	}
+	
+	public TaskQueue save(TaskEmailVo taskVo){
+		TaskQueue taskQueue = null;
+		if(taskVo.getId()!=null)
+			taskQueue = taskQueueService.load(taskVo.getId());
+		TaskBizTag tag = loadOrSave(taskVo.getBizTag());
+		if(taskQueue==null){
+			taskQueue = new TaskQueue();
+			taskQueue.setPlanTime(taskVo.getPlanTime());
+			
+			TaskEmail email = new TaskEmail();
+			HibernateUtils.copyIgnoreRelationsAndFields(taskVo, email, "id");
+			email.setTag(tag);
+			
+			taskQueue.setTask(email);
+			baseEntityManager.save(taskQueue.getTask());
+			return taskQueueService.save(taskQueue);
 		}else{
 			TaskQueue dbTaskQueue = load(taskQueue.getId());
-			HibernateUtils.copyWithoutRelations(taskQueue, dbTaskQueue);
+			taskQueue.setPlanTime(taskVo.getPlanTime());
+
+			HibernateUtils.copyIgnoreRelationsAndFields(taskVo, taskQueue.getTask(), "id");
+			taskQueue.getTask().setTag(tag);
+			
 			return dbTaskQueue;
 		}
 	}
 	
-	public void addTaskToQueue(TaskBase task, Date planTime){
+	public TaskQueue addTaskToQueue(TaskBase task, Date planTime){
 		TaskQueue queue = new TaskQueue();
-		queue.setName(taskClientConfig.getQueueNamePrefix()+StringUtils.emptyIfNull(task.getName()));
+//		queue.setName(taskClientConfig.getQueueNamePrefix()+StringUtils.emptyIfNull(task.getName()));
 		queue.setTask(task);
 		queue.setPlanTime(planTime);
-		addQueue(queue);
+		taskQueueService.save(queue);
+		return queue;
 	}
 	
-	/***
-	 * 添加到数据库队列
-	 * @param queue
-	 */
-	public void addQueue(TaskQueue queue){
-		queue.setCreateTime(DateUtil.now());
-		queue.setCurrentTimes(0);
-		queue.setStatus(TaskStatus.WAITING);
-		if(queue.getTryTimes()==null)
-			queue.setTryTimes(taskClientConfig.getTryTimes());
-		this.baseEntityManager.save(queue);
-	}
 
 }

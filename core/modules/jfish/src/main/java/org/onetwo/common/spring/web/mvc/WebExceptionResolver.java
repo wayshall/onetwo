@@ -219,6 +219,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
 		}
 		
+		detail = BaseSiteConfig.getInstance().isProduct()?detail:true;
 		error.setCode(errorCode);
 		error.setMesage(errorMsg);
 		error.setDetail(detail);

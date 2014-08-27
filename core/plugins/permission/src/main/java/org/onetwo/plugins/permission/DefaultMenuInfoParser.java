@@ -13,6 +13,7 @@ import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.plugins.permission.anno.MenuMapping;
 import org.onetwo.plugins.permission.entity.IFunction;
@@ -25,9 +26,10 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	private static final String CODE_SEPRATOR = "_";
 	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 
-	private final Map<String, IPermission> permissionMap = new LinkedHashMap<String, IPermission>(50);
-	private final Map<Class<?>, IPermission> permissionMapByClass = new LinkedHashMap<Class<?>, IPermission>(50);
-	private final Map<Class<?>, PermClassParser> permClassParserMap = new LinkedHashMap<Class<?>, PermClassParser>(50);
+	private final int INIT_SIZE = 100;
+	private final Map<String, IPermission> permissionMap = new LinkedHashMap<String, IPermission>(INIT_SIZE);
+	private final Map<Class<?>, IPermission> permissionMapByClass = new LinkedHashMap<Class<?>, IPermission>(INIT_SIZE);
+	private final Map<Class<?>, PermClassParser> permClassParserMap = new LinkedHashMap<Class<?>, PermClassParser>(INIT_SIZE);
 	
 	private IMenu<? extends IMenu<?, ?> , ? extends IFunction<?>> rootMenu;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
@@ -42,7 +44,7 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	}
 	
 	public String getRootMenuCode(){
-		return parseCode(menuInfoable.getRootMenuClass());
+		return getCode(menuInfoable.getRootMenuClass());
 	}
 
 	/* (non-Javadoc)
@@ -201,9 +203,17 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseCode(java.lang.Class)
 	*/
 	@Override
+	public String getCode(Class<?> menuClass){
+		String code = permissionMapByClass.get(menuClass).getCode();
+		if(StringUtils.isBlank(code))
+			throw new BaseException("no permission found : " + menuClass.getName());
+		return code;
+	}
+	
+/*
 	public String parseCode(Class<?> menuClass){
 		return parseCode(getPermClassParser(menuClass));
-	}
+	}*/
 	
 	public String parseCode(PermClassParser parser){
 		String code = parser.generatedSimpleCode();
