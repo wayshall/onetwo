@@ -10,7 +10,7 @@ public interface MenuInfoParser {
 	public PermissionConfig getMenuInfoable();
 	
 	public abstract IMenu<?, ?> parseTree();
-	public abstract String parseCode(Class<?> permClass);
+	public abstract String getCode(Class<?> permClass);
 	
 	public String getRootMenuCode();
 	public Map<String, ? extends IPermission> getPermissionMap();

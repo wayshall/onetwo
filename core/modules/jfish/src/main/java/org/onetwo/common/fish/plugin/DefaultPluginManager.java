@@ -1,5 +1,6 @@
 package org.onetwo.common.fish.plugin;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -149,11 +150,27 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	public JFishPluginMeta getJFishPluginMetaOf(Class<?> objClass){
 		if(LangUtils.isEmpty(pluginMetas))
 			return null;
+		JFishList<JFishPluginMeta> list = JFishList.newList(5);
 		for(JFishPluginMeta plugin : pluginMetas){
 			if(plugin.isClassOfThisPlugin(objClass))
-				return plugin;
+				list.add(plugin);
 		}
-		return null;
+		if(list.size()==0){
+			return null;
+		}else if(list.size()==1){
+			return list.get(0);
+		}
+		else{
+			list.sort(new Comparator<JFishPluginMeta>() {
+	
+				@Override
+				public int compare(JFishPluginMeta o1, JFishPluginMeta o2) {
+					return o2.getContextPlugin().getClass().getPackage().getName().length()-o1.getContextPlugin().getClass().getPackage().getName().length();
+				}
+				
+			});
+			return list.get(0);
+		}
 	}
 	
 

@@ -56,7 +56,7 @@ public class PermissionManagerImpl implements PermissionManager {
 	@Override
 	@Transactional
 	public IMenu getDatabaseMenuNode(Class<?> clazz) {
-		String code = menuInfoParser.parseCode(clazz);
+		String code = menuInfoParser.getCode(clazz);
 		return (IMenu)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
 	}
 	
@@ -145,7 +145,7 @@ public class PermissionManagerImpl implements PermissionManager {
 
 	@Override
 	public String parseCode(Class<?> permClass) {
-		return menuInfoParser.parseCode(permClass);
+		return menuInfoParser.getCode(permClass);
 	}
 
 	@Override

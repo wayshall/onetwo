@@ -23,8 +23,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	
 	//select, checkobx, radio
 	private Object items;
-	private String itemLabel;
-	private String itemValue;
+	private String itemLabel = "name";
+	private String itemValue = "value";
 	private String emptyOptionLabel;
 
 	private boolean readOnly;
