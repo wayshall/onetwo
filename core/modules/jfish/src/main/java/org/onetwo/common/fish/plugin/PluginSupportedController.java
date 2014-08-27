@@ -3,6 +3,7 @@ package org.onetwo.common.fish.plugin;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,9 +14,35 @@ abstract public class PluginSupportedController extends AbstractBaseController {
 	
 	private JFishPluginMeta pluginMeta;
 	
+	private JFishPlugin jfishPlugin;
+	
+	public PluginSupportedController() {
+		super();
+		this.jfishPlugin = null;
+	}
+	
+	public PluginSupportedController(JFishPlugin jfishPlugin) {
+		super();
+		this.jfishPlugin = jfishPlugin;
+	}
+	
+
+	public JFishPlugin getJfishPlugin() {
+		if(jfishPlugin==null){
+			JFishPlugin jp = jfishPluginManager.getJFishPluginMetaOf(getClass()).getJFishPlugin();
+			if(jp==null){
+				throw new BaseException("can not find the plugin object : " + getClass());
+			}
+			jfishPlugin = jp;
+			return jp;
+		}
+		return jfishPlugin;
+	}
+
 	@PostConstruct
-	public void init(){
-		this.pluginMeta = jfishPluginManager.getJFishPluginMetaOf(getClass());
+	final public void initController(){
+//		this.pluginMeta = jfishPlugin.getPluginMeta();//jfishPluginManager.getJFishPluginMetaOf(getClass());
+		this.pluginMeta = getJfishPlugin().getPluginMeta();
 	}
 	
 	protected JFishPluginMeta getPluginMeta(){

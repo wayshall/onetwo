@@ -17,6 +17,7 @@ public class TaskClientWebPlugin extends AbstractJFishPlugin<TaskClientWebPlugin
 
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+		annoClasses.add(TaskClientWebPluginContext.class);
 	}
 	
 	public void setPluginInstance(TaskClientWebPlugin plugin){

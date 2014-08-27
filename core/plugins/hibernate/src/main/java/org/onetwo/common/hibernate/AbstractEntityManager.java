@@ -137,7 +137,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	
 	protected void checkEntityIdValid(Serializable id){
 		if(!MyUtils.checkIdValid(id))
-			throw new ServiceException("invalid id : " + id);
+			throw new ServiceException("invalid id on load: " + id);
 	}
 
 	public void delete(ILogicDeleteEntity entity){

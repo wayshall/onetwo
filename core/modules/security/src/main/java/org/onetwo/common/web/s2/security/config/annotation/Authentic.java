@@ -12,7 +12,7 @@ import org.onetwo.common.web.s2.security.Authenticator;
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authentic {
-	public static final String DEFAULT_REDIRECT = "redirect:/login";
+	public static final String DEFAULT_REDIRECT = "";//"redirect:/login";
 	/*@Deprecated
 	String resourceEntity() default "";
 	@Deprecated

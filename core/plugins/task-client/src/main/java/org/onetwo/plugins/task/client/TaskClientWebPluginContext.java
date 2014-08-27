@@ -1,14 +1,16 @@
 package org.onetwo.plugins.task.client;
 
-import javax.annotation.Resource;
-
+import org.onetwo.plugins.task.client.web.TaskQueueController;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
 public class TaskClientWebPluginContext {
 
-	@Resource
-	private TaskClientConfig taskClientConfig;
+	@Bean
+	public TaskQueueController taskQueueController(){
+		return new TaskQueueController();
+	}
 	
 }
