@@ -101,7 +101,7 @@ public class SpringApplication {
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-			logger.error("get bean["+beanName+"] from spring error! ");
+//			logger.error("get bean["+beanName+"] from spring error! ");
 			if(throwIfError)
 				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
 		}
