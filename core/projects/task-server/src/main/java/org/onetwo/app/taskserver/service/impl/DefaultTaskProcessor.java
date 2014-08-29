@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import org.onetwo.app.taskserver.TaskServerConfig;
 import org.onetwo.app.taskserver.actor.TaskMasterActor;
 import org.onetwo.app.taskserver.service.TaskListenerManager;
-import org.onetwo.plugins.task.utils.TaskData;
+import org.onetwo.plugins.task.entity.TaskQueue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class DefaultTaskProcessor implements InitializingBean, DisposableBean {
 		masterAcotr = system.actorOf(Props.create(TaskMasterActor.class, taskListenerManager, numberOfWorkerInst));
 	}
 	
-	public void sendTask(TaskData taskData){
+	public void sendTask(TaskQueue taskData){
 		masterAcotr.tell(taskData, ActorRef.noSender());
 		queueSize.addAndGet(1);
 	}

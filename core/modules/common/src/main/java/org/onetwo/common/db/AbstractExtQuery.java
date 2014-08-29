@@ -86,7 +86,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	
 
 	protected String getFromName(Class<?> entityClass){
-		return entityClass.getSimpleName();
+		return entityClass.getName();
 	}
 	
 	protected void fireInitListeners(){

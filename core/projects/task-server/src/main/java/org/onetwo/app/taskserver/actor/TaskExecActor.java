@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.app.taskserver.service.TaskExecuteListener;
 import org.onetwo.app.taskserver.service.TaskListenerManager;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.plugins.task.utils.TaskData;
+import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskResult;
 
 import akka.actor.UntypedActor;
@@ -28,8 +28,8 @@ public class TaskExecActor extends UntypedActor {
 	public void onReceive(Object taskInfo) throws Exception {
 		StringBuilder logMsg = new StringBuilder();
 		logMsg.append("TaskExecActor receive :\n");
-		if(taskInfo instanceof TaskData){
-			TaskData task = (TaskData) taskInfo;
+		if(taskInfo instanceof TaskQueue){
+			TaskQueue task = (TaskQueue) taskInfo;
 			logMsg.append("task : ").append(task.getName()).append("\n");
 			List<TaskExecuteListener> listeners = taskListenerManager.getTaskExecuteListeners(task.getTaskType());
 			if(LangUtils.isNotEmpty(listeners)){

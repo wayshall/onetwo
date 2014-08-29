@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -68,6 +69,11 @@ public class ReflectUtilsTest {
 		Assert.assertTrue(intes.length==0);
 		types = Serializable.class.getGenericInterfaces();
 		Assert.assertTrue(types.length==0);
+		
+		PropertyDescriptor prop = ReflectUtils.getIntro(UserEntity.class).getProperty("id");
+		Class<?> targetClass = prop.getWriteMethod().getDeclaringClass();
+		System.out.println("target: " + targetClass);
+		Assert.assertEquals(UserEntity.class, targetClass);
 	}
 
 	@Test

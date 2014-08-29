@@ -25,6 +25,10 @@ public class AnnotationUtils {
 		}
 		return false;
 	}
+	
+	public static boolean isFieldContains(Class<?> target, String fieldName, Class<? extends Annotation>... annoClasses){
+		return containsAny(ReflectUtils.getIntro(target).getField(fieldName).getAnnotations(), annoClasses);
+	}
 
 	public static Field findFirstField(Class<?> clazz, Class annotationClass) {
 		List<Field> fields = findAnnotationField(clazz, annotationClass);
@@ -171,10 +175,7 @@ public class AnnotationUtils {
 	}
 
 	public static <T extends Annotation> T findFieldAnnotation(Class<?> clazz, Field field, Class<T> annotationClass) {
-		T annotation = null;
-		if (field != null)
-			annotation = field.getAnnotation(annotationClass);
-		return annotation;
+		return field != null?field.getAnnotation(annotationClass):null;
 	}
 
 	public static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
