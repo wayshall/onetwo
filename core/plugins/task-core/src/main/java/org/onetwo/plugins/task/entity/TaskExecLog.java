@@ -5,13 +5,18 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
 import org.onetwo.plugins.task.utils.TaskUtils;
+import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 
 @Entity
 @Table(name="TASK_EXEC_LOG")
@@ -26,11 +31,16 @@ public class TaskExecLog implements Serializable {
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskExecLogEntityGenerator") 
 	@Column(name="ID")
 	private Long id;
-	private Long taskId;
-	private String taskStatus;
+	@Enumerated(EnumType.STRING)
+	private TaskExecResult result;
+	
 	private Date operatorTime;
 	private Long operatorId;
 	private String operatorName;
+	
+	@ManyToOne
+	@JoinColumn(name="TASK_QUEUE_ID")
+	private TaskQueue taskQueue;
 
 	public Long getId() {
 		return id;
@@ -38,22 +48,6 @@ public class TaskExecLog implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(Long taskId) {
-		this.taskId = taskId;
-	}
-
-	public String getTaskStatus() {
-		return taskStatus;
-	}
-
-	public void setTaskStatus(String taskStatus) {
-		this.taskStatus = taskStatus;
 	}
 
 	public Date getOperatorTime() {
@@ -78,6 +72,22 @@ public class TaskExecLog implements Serializable {
 
 	public void setOperatorName(String operatorName) {
 		this.operatorName = operatorName;
+	}
+
+	public TaskExecResult getResult() {
+		return result;
+	}
+
+	public void setResult(TaskExecResult result) {
+		this.result = result;
+	}
+
+	public TaskQueue getTaskQueue() {
+		return taskQueue;
+	}
+
+	public void setTaskQueue(TaskQueue taskQueue) {
+		this.taskQueue = taskQueue;
 	}
 
 }

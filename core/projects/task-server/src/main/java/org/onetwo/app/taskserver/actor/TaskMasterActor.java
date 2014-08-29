@@ -1,7 +1,7 @@
 package org.onetwo.app.taskserver.actor;
 
 import org.onetwo.app.taskserver.service.TaskListenerManager;
-import org.onetwo.plugins.task.utils.TaskData;
+import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskResult;
 
 import akka.actor.ActorRef;
@@ -30,8 +30,8 @@ public class TaskMasterActor extends UntypedActor {
 	public void onReceive(Object message) throws Exception {
 		StringBuilder logMsg = new StringBuilder();
 		logMsg.append("TaskMasterActor receive message:\n");
-		if(message instanceof TaskData){
-			TaskData task = (TaskData) message;
+		if(message instanceof TaskQueue){
+			TaskQueue task = (TaskQueue) message;
 			logMsg.append("task : ").append(task.getName()).append("\n");
 			this.taskWorkActor.tell(task, getSelf());
 		} else if(message instanceof TaskResult){

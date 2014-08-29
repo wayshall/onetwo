@@ -3,6 +3,7 @@ package org.onetwo.common.hibernate;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.onetwo.common.ds.SwitcherInfo;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.Intro;
@@ -49,6 +51,12 @@ public final class HibernateUtils {
 		public HiberanteCopyer(Class<? extends Annotation>[] classes, String... ignoreFields) {
 			super(classes);
 			this.ignoreFields = ignoreFields;
+		}
+		
+		protected boolean hasIgnoredAnnotation(PropertyDescriptor prop){
+			Method m = prop.getReadMethod();
+			boolean ignoreProp = AnnotationUtils.containsAny(m.getAnnotations(), classes);
+			return ignoreProp?true:AnnotationUtils.isFieldContains(m.getDeclaringClass(), prop.getName(), classes);
 		}
 
 		@Override
