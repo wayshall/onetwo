@@ -16,6 +16,7 @@
 			
 	<@widget.dataGrid name="taskququeGrid" dataSource=page title="任务队列" toolbar=true>
 	    <@widget.dataRow name="entity" type="iterator" renderHeader=true>
+			<@widget.dataField  name="id" label="序号" />
 			<@widget.dataField  name="name" label="名称" />
 			<@widget.dataField  name="status.name" label="状态" />
 			<@widget.dataField  name="taskType" label="任务类型" />

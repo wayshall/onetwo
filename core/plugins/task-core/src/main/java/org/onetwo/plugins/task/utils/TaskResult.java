@@ -2,6 +2,8 @@ package org.onetwo.plugins.task.utils;
 
 import java.io.Serializable;
 
+import org.onetwo.plugins.task.entity.TaskQueue;
+
 public class TaskResult implements Serializable {
 	
 	/**
@@ -9,15 +11,15 @@ public class TaskResult implements Serializable {
 	 */
 	private static final long serialVersionUID = -3523016911350518264L;
 	private final Object result;
-	private final TaskData task;
+	private final TaskQueue task;
 
-	public TaskResult(Object data, TaskData task) {
+	public TaskResult(Object data, TaskQueue task) {
 		super();
 		this.result = data;
 		this.task = task;
 	}
 
-	public TaskData getTask() {
+	public TaskQueue getTask() {
 		return task;
 	}
 

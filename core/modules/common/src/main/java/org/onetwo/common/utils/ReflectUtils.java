@@ -1670,12 +1670,16 @@ public class ReflectUtils {
 	
 	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
 		
-		private final Class<? extends Annotation>[] classes;
+		protected final Class<? extends Annotation>[] classes;
 		
 
 		public IgnoreAnnosCopyer(Class<? extends Annotation>[] classes) {
 			super();
 			this.classes = classes;
+		}
+		
+		protected boolean hasIgnoredAnnotation(PropertyDescriptor prop){
+			return AnnotationUtils.containsAny(prop.getReadMethod().getAnnotations(), classes);
 		}
 
 		@Override
@@ -1683,8 +1687,7 @@ public class ReflectUtils {
 			if(prop.getReadMethod()==null || prop.getWriteMethod()==null)
 				return;
 			
-			Annotation[] annos = prop.getReadMethod().getAnnotations();
-			if(AnnotationUtils.containsAny(annos, classes))
+			if(hasIgnoredAnnotation(prop))
 				return;
 			
 			Object val = ReflectUtils.getProperty(source, prop.getName());
