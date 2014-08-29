@@ -19,7 +19,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
-import org.onetwo.plugins.task.utils.TaskData;
 import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
 
@@ -27,7 +26,7 @@ import org.onetwo.plugins.task.utils.TaskUtils;
 @Table(name="TASK_QUEUE")
 //@Inheritance(strategy=InheritanceType.JOINED)
 @TableGenerator(table=TaskUtils.SEQ_TABLE_NAME, name="TaskQueueEntityGenerator", pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_TASK_QUEUE", allocationSize=50, initialValue=1000)
-public class TaskQueue implements Serializable, TaskData {
+public class TaskQueue implements Serializable {
 
 	/**
 	 * 
@@ -50,7 +49,7 @@ public class TaskQueue implements Serializable, TaskData {
 	private Date lastExecTime;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date createTime;
+	private Date taskCreateTime;
 	
 	@Version
 	@Temporal(TemporalType.TIMESTAMP)
@@ -69,7 +68,6 @@ public class TaskQueue implements Serializable, TaskData {
 		this.id = id;
 	}
 	
-	@Override
 	public String getName() {
 		return task.getName();
 	}
@@ -106,7 +104,6 @@ public class TaskQueue implements Serializable, TaskData {
 		this.planTime = planTime;
 	}
 
-	@Override
 	public TaskType getTaskType() {
 		return TaskType.type(getTask().getType());
 	}
@@ -119,17 +116,10 @@ public class TaskQueue implements Serializable, TaskData {
 		this.lastExecTime = lastExecTime;
 	}
 
-	@Override
 	public boolean isReply() {
 		return false;
 	}
 	
-	public Date getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
 	public Date getLastUpdateTime() {
 		return lastUpdateTime;
 	}
@@ -143,6 +133,14 @@ public class TaskQueue implements Serializable, TaskData {
 
 	public void setTask(TaskBase task) {
 		this.task = task;
+	}
+
+	public Date getTaskCreateTime() {
+		return taskCreateTime;
+	}
+
+	public void setTaskCreateTime(Date taskCreateTime) {
+		this.taskCreateTime = taskCreateTime;
 	}
 
 	

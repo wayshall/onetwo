@@ -14,13 +14,14 @@ create table TASK_QUEUE (
    CURRENT_TIMES        INT                  null,
    TRY_TIMES            INT                  null,
    PLAN_TIME            DATETIME             null,
-   CREATE_TIME          DATETIME             null,
+   TASK_CREATE_TIME     DATETIME             null,
    TASK_ID              BIGINT               null,
    LAST_EXEC_TIME       DATETIME             null,
    LAST_UPDATE_TIME     DATETIME             null,
    constraint PK_TASK_QUEUE primary key (ID)
 )
 go
+
 
 if exists (select 1
             from  sysobjects
@@ -94,5 +95,55 @@ create table TASK_BIZ_TAG (
    ID                   bigint               not null,
    NAME                 varchar(50)          null,
    constraint PK_TASK_BIZ_TAG primary key (ID)
+)
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TASK_QUEUE_ARCHIVED')
+            and   type = 'U')
+   drop table TASK_QUEUE_ARCHIVED
+go
+
+/*==============================================================*/
+/* Table: TASK_QUEUE_ARCHIVED                                   */
+/*==============================================================*/
+create table TASK_QUEUE_ARCHIVED (
+   ID                   BIGINT               not null,
+   RESULT               VARCHAR(20)          null,
+   CURRENT_TIMES        INT                  null,
+   TRY_TIMES            INT                  null,
+   PLAN_TIME            DATETIME             null,
+   TASK_CREATE_TIME     DATETIME             null,
+   TASK_ID              BIGINT               null,
+   EXECUTOR             VARCHAR(20)          null,
+   ARCHIVED_TIME        DATETIME             null,
+   LAST_EXEC_TIME       DATETIME             null,
+   constraint PK_TASK_QUEUE_ARCHIVED primary key (ID)
+)
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TASK_EXEC_LOG')
+            and   type = 'U')
+   drop table TASK_EXEC_LOG
+go
+
+/*==============================================================*/
+/* Table: TASK_EXEC_LOG                                         */
+/*==============================================================*/
+create table TASK_EXEC_LOG (
+   ID                   BIGINT               not null,
+   TASK_QUEUE_ID        BIGINT               null,
+   RESULT               VARCHAR(20)          null,
+   EXECUTE_TIME         DATETIME             null,
+   EXECUTOR             VARCHAR(20)          null,
+   COST_TIME            INT                  null,
+   TASK_INPUT           VARCHAR(2000)        null,
+   TASK_OUPUT           VARCHAR(2000)        null,
+   constraint PK_TASK_EXEC_LOG primary key (ID)
 )
 go

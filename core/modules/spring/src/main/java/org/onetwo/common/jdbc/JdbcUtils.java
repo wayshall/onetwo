@@ -10,6 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.util.Assert;
 
 final public class JdbcUtils {
 	
@@ -33,6 +34,7 @@ final public class JdbcUtils {
 	}
 	
 	public static DataBase getDataBase(DataSource dataSource) {
+		Assert.notNull(dataSource, "datasource can not be null");
 		//从DataSource中取出jdbcUrl.
 		String jdbcUrl = null;
 		Connection connection = null;
