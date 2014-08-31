@@ -6,6 +6,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.core.io.Resource;
@@ -14,6 +15,7 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	
 	public static interface LoadableConfig {
 		void load(JFishProperties properties);
+		JFishProperties getSourceConfig();
 	}
 
 	public static final String CONFIG_POSTFIX = ".properties";
@@ -21,6 +23,12 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	private final String configBaseDir;
 	private final String configName;
 	private C config;
+	
+
+	public ConfigurableContextPlugin(String configBaseDir, String configName) {
+		this(configBaseDir, configName, null);
+		this.config = (C)ReflectUtils.newInstance(ReflectUtils.getSuperClassGenricType(getClass(), 1, ConfigurableContextPlugin.class));
+	}
 	
 	public ConfigurableContextPlugin(String configBaseDir, String configName, C config) {
 		super();
