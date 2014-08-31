@@ -2,9 +2,9 @@ package org.onetwo.plugins.email;
 
 import org.onetwo.common.utils.propconf.AppConfig;
 
-public class EmailConfig extends AppConfig{
+public class EmailConfigTest extends AppConfig{
 
-	protected EmailConfig() {
+	protected EmailConfigTest() {
 		super("siteConfig");
 	}
 
