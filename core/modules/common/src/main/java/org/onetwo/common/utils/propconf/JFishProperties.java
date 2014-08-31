@@ -9,16 +9,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
@@ -26,12 +28,15 @@ import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public class JFishProperties extends Properties implements VariableSupporter {
@@ -87,6 +92,22 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		
 	};
 	
+	private SimpleBlock<String, List<Class>> classBlock = new SimpleBlock<String, List<Class>>() {
+
+		@Override
+		public List<Class> execute(String object) {
+			List<Class> classes = new ArrayList<Class>();
+			String strs = getVariable(object);
+			for(String clsName : Splitter.on(',').omitEmptyStrings().trimResults().split(strs)){
+				Class clazz = ReflectUtils.loadClass(clsName);
+				if(!classes.contains(clazz))
+					classes.add(clazz);
+			}
+			return classes;
+		}
+		
+	};
+	
 	private static final Logger logger = LoggerFactory.getLogger(JFishProperties.class);
 	
 //	protected Properties config = new Properties();
@@ -95,7 +116,8 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	
 	protected Expression expression = Expression.AT;
 
-	private Map cache = new HashMap();
+//	private Map cache = new HashMap();
+	private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
 	
 
 	public JFishProperties(Properties... configs) {
@@ -199,7 +221,8 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 	
 	public Object remove(Object key){
-		this.cache.remove(key);
+//		this.cache.remove(key);
+		this.cache.invalidate(key);
 		return super.remove(key);
 	}
 	
@@ -208,7 +231,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 	
 	protected Object getFromCache(String key){
-		return cache.get(key);
+		return cache.getIfPresent(key);
 	}
 
 	public List<String> getStringList(String key, String split) {
@@ -220,14 +243,27 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		return getFromCache(keyStartWith, startWithBlock, keyStartWith);
 	}
 
-	protected <K, T> T getFromCache(String key, SimpleBlock<K, T> block, K k) {
-		T cacheValue = (T)getFromCache(key);
+	protected <K, T> T getFromCache(String key, final SimpleBlock<K, T> block, final K k) {
+		try {
+			return (T)this.cache.get(key, new Callable<T>() {
+
+				@Override
+				public T call() throws Exception {
+					return block.execute(k);
+				}
+				
+			});
+		} catch (ExecutionException e) {
+			throw new BaseException("get cache error.", e);
+		}
 		
+		/*T cacheValue = (T)getFromCache(key);
 		
 		cacheValue = block.execute(k);
 		
 		putInCache(key, cacheValue);
-		return cacheValue;
+		return cacheValue;*/
+		
 	}
 
 	public List<String> getPropertyWithSplit(String key, String split) {
@@ -336,63 +372,47 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		return null;
 	}
 
-	public Collection<Class> getClasses(String key) {
-		return this.getClasses(key, (Class[])null);
-	}
-
-	public Collection<Class> getClasses(String key, Class... defClasses) {
-		//cache
+	public Collection<Class> getClasses(final String key, Class... defClasses) {
+		if(!this.containsKey(key))
+			return Arrays.asList(defClasses);
+		
+		return this.getFromCache(key, classBlock, key);
+		/*//cache
 		List<Class> classes = (List<Class>) getFromCache(key);
 		if(classes!=null)
 			return classes;
-		classes = new ArrayList<Class>();
-		String strs = this.getVariable(key);
 		
-		try {
-			if(StringUtils.isBlank(strs))
-				classes = MyUtils.asList(defClasses);
-			else{
-				String[] classNames = StringUtils.split(strs, ",");
-				Class clazz = null;
-				for(String clsName : classNames){
-					clazz = ReflectUtils.loadClass(clsName.trim());
-					if(!classes.contains(clazz))
-						classes.add(clazz);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		classes = new ArrayList<Class>();
+		this.putInCache(key, classes);
+
+		String strs = this.getVariable(key);
+		if(StringUtils.isBlank(strs)){
+			return MyUtils.asList(defClasses);
 		}
 		
-		this.putInCache(key, classes);
+		String[] classNames = StringUtils.split(strs, ",");
+		Class clazz = null;
+		for(String clsName : classNames){
+			clazz = ReflectUtils.loadClass(clsName.trim());
+			if(!classes.contains(clazz))
+				classes.add(clazz);
+		}
+		for(String clsName : Splitter.on(',').omitEmptyStrings().trimResults().split(strs)){
+			Class clazz = ReflectUtils.loadClass(clsName);
+			if(!classes.contains(clazz))
+				classes.add(clazz);
+		}
 		
-		return classes;
+//		this.putInCache(key, classes);
+		
+		return classes;*/
 	}
 
 	public List<Class> getClassList(String key) {
-		//cache
-		List<Class> classes = (List<Class>) getFromCache(key);
-		if(classes!=null)
-			return classes;
+		if(!this.containsKey(key))
+			return Collections.EMPTY_LIST;
 		
-		String value = this.getVariable(key);
-		
-		if(StringUtils.isBlank(value))
-			return null;
-		String[] valueses = value.split(",");
-		if(valueses==null || valueses.length<1)
-			return null;
-		
-		classes = new ArrayList<Class>();
-		for(String v : valueses){
-			if(StringUtils.isBlank(v))
-				continue;
-			classes.add(ReflectUtils.loadClass(v.trim()));
-		}
-		
-		this.putInCache(key, classes);
-		
-		return classes; 
+		return this.getFromCache(key, classBlock, key);
 	}
 
 	public Long getLong(String key, Long def) {
@@ -440,7 +460,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		if(expositor!=null)
 			this.expositor.clear();
 		if(cache!=null)
-			this.cache.clear();
+			this.cache.cleanUp();
 	}
 	
 	public Enumeration configNames() {

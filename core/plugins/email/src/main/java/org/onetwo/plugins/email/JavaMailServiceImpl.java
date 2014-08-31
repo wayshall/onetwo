@@ -1,13 +1,13 @@
 package org.onetwo.plugins.email;
 
 import java.io.File;
-import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.ftl.StringFtlTemplateLoader;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 import org.slf4j.Logger;
@@ -29,6 +29,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 	private Configuration configuration;
 	private String encoding = DEFAULT_ENCODING;
 	
+	private StringFtlTemplateLoader stringFtlTemplateLoader;
 
 
 	@Override
@@ -86,19 +87,36 @@ public class JavaMailServiceImpl implements JavaMailService {
 	
 	private String getContent(MailInfo mailInfo) throws Exception{
 		String content = "";
-		if(mailInfo.isTemplate()){
+		/*if(mailInfo.isTemplate()){
 			content = generateContent(mailInfo.getContent(), mailInfo.getTemplateContext());
 		}else{
 			content = mailInfo.getContent();
+		}*/
+		Assert.notNull(mailInfo.getContentType());
+		Template template = null;
+		switch (mailInfo.getContentType()) {
+			case StaticText:
+				content = mailInfo.getContent();
+				break;
+				
+			case TemplatePath:
+				template = this.configuration.getTemplate(mailInfo.getContent(), encoding);
+				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailInfo.getTemplateContext());
+				break;
+				
+			case Template:
+				String name = "st-" + String.valueOf(mailInfo.getContent().hashCode());
+				this.stringFtlTemplateLoader.putTemplate(name, mailInfo.getContent());
+				template = this.configuration.getTemplate(mailInfo.getContent(), encoding);
+				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailInfo.getTemplateContext());
+				break;
+	
+			default:
+				break;
 		}
 		return content;
 	}
 
-	private String generateContent(String templatePath, Map<String, Object> context) throws Exception {
-		Assert.notNull(configuration);
-		Template template = this.configuration.getTemplate(templatePath, encoding);
-		return FreeMarkerTemplateUtils.processTemplateIntoString(template, context);
-	}
 	
 	public JavaMailSender getJavaMailSender() {
 		return javaMailSender;
@@ -118,7 +136,9 @@ public class JavaMailServiceImpl implements JavaMailService {
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
-	
-	
+
+	public void setStringFtlTemplateLoader(StringFtlTemplateLoader stringFtlTemplateLoader) {
+		this.stringFtlTemplateLoader = stringFtlTemplateLoader;
+	}
 
 }

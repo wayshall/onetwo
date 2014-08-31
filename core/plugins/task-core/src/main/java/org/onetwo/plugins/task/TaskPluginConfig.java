@@ -19,6 +19,11 @@ public class TaskPluginConfig implements LoadableConfig {
 	public int getTryTimes(){
 		return config.getInt("try.times", 3);
 	}
+
+	@Override
+	public JFishProperties getSourceConfig() {
+		return config;
+	}
 	
 	/*public String getQueueNamePrefix(){
 		return config.getProperty("queue.name.prefix", "queue-");
