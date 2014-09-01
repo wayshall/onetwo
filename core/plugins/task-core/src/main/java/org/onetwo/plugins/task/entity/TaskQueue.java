@@ -18,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.onetwo.common.utils.DateUtil;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
 import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
@@ -59,6 +60,17 @@ public class TaskQueue implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="TASK_ID")
 	private TaskBase task;
+	
+	public void markExecuted(){
+		Date now = DateUtil.now();
+		this.currentTimes += 1;
+		this.lastExecTime = now;
+		this.lastUpdateTime = now;
+	}
+	
+	public boolean isNeedArchived(){
+		return currentTimes>=tryTimes;
+	}
 	
 	public Long getId() {
 		return id;

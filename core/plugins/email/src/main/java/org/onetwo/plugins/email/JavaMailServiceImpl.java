@@ -95,16 +95,16 @@ public class JavaMailServiceImpl implements JavaMailService {
 		Assert.notNull(mailInfo.getContentType());
 		Template template = null;
 		switch (mailInfo.getContentType()) {
-			case StaticText:
+			case STATIC_TEXT:
 				content = mailInfo.getContent();
 				break;
 				
-			case TemplatePath:
+			case TEMPLATE_PATH:
 				template = this.configuration.getTemplate(mailInfo.getContent(), encoding);
 				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailInfo.getTemplateContext());
 				break;
 				
-			case Template:
+			case TEMPLATE:
 				String name = "st-" + String.valueOf(mailInfo.getContent().hashCode());
 				this.stringFtlTemplateLoader.putTemplate(name, mailInfo.getContent());
 				template = this.configuration.getTemplate(mailInfo.getContent(), encoding);

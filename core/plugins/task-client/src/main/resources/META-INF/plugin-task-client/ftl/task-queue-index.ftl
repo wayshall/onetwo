@@ -18,6 +18,8 @@
 	    <@widget.dataRow name="entity" type="iterator" renderHeader=true>
 			<@widget.dataField  name="id" label="序号" />
 			<@widget.dataField  name="name" label="名称" />
+			<@widget.dataField  name="currentTimes" label="已执行次数" />
+			<@widget.dataField  name="tryTimes" label="最大尝试执行次数" />
 			<@widget.dataField  name="status.name" label="状态" />
 			<@widget.dataField  name="taskType" label="任务类型" />
 		</@widget.dataRow>	
