@@ -42,6 +42,7 @@ create table TASK_BASE (
 )
 go
 
+
 if exists (select 1
             from  sysobjects
            where  id = object_id('TASK_EMAIL')
@@ -55,12 +56,16 @@ go
 create table TASK_EMAIL (
    ID                   BIGINT               not null,
    SUBJECT              VARCHAR(100)         null,
-   CONTENT              TEXT                 null,
+   CONTENT              VARCHAR(4000)        null,
    ATTACHMENT_PATH      VARCHAR(2000)        null,
    IS_HTML              INT                  null,
+   TO_ADDRESS           VARCHAR(500)         null,
+   CC_ADDRESS           VARCHAR(500)         null,
+   CONTENT_TYPE         VARCHAR(20)          null,
    constraint PK_TASK_EMAIL primary key (ID)
 )
 go
+
 
 
 
@@ -125,6 +130,7 @@ create table TASK_QUEUE_ARCHIVED (
 go
 
 
+
 if exists (select 1
             from  sysobjects
            where  id = object_id('TASK_EXEC_LOG')
@@ -139,11 +145,11 @@ create table TASK_EXEC_LOG (
    ID                   BIGINT               not null,
    TASK_QUEUE_ID        BIGINT               null,
    RESULT               VARCHAR(20)          null,
-   EXECUTE_TIME         DATETIME             null,
    EXECUTOR             VARCHAR(20)          null,
-   COST_TIME            INT                  null,
-   TASK_INPUT           VARCHAR(2000)        null,
-   TASK_OUPUT           VARCHAR(2000)        null,
+   TASK_INPUT           VARCHAR(4000)        null,
+   TASK_OUTPUT          VARCHAR(4000)        null,
+   START_TIME           DATETIME             null,
+   END_TIME             DATETIME             null,
    constraint PK_TASK_EXEC_LOG primary key (ID)
 )
 go

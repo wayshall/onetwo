@@ -7,6 +7,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.core.io.Resource;
@@ -32,7 +33,7 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	
 	public ConfigurableContextPlugin(String configBaseDir, String configName, C config) {
 		super();
-		this.configBaseDir = configBaseDir;
+		this.configBaseDir = StringUtils.surroundWith(configBaseDir, "/");
 		this.configName = configName;
 		this.config = config;
 	}

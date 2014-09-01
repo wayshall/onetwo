@@ -1,14 +1,19 @@
 package org.onetwo.plugins.email;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 public class EmailConfig implements LoadableConfig {
 
-	public static final String MAIL_SERVICE_CLASS_KEY = "mail.service";
+	public static final String MAIL_SERVICE_CLASS_KEY = "mail.service.class";
 	public static final String MAIL_SENDER_CLASS_KEY = "mail.sender";
 	public static final String JAVA_MAIL_PROPERTIES_KEY = "javaMailProperties.";
+	
+
+	public static final String MAIL_USERNAME_KEY = "username";
+	public static final String ATTACHMENT_DIR_KEY = "attachment.dir";
 	
 	private JFishProperties config;
 
@@ -26,6 +31,18 @@ public class EmailConfig implements LoadableConfig {
 
 	public Class<?> getMailSender(){
 		return config.getClass(MAIL_SENDER_CLASS_KEY, JavaMailSenderImpl.class);
+	}
+
+	public String getUsername(){
+		return config.getProperty(MAIL_USERNAME_KEY);
+	}
+
+	public String getAttachmentDir(){
+		return config.getProperty(ATTACHMENT_DIR_KEY);
+	}
+	public String getAttachmentPath(String path){
+		String realpath = getAttachmentDir() + StringUtils.appendStartWith(path, "/");
+		return realpath;
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.hibernate.HibernateUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.email.ContentType;
 import org.onetwo.plugins.task.entity.TaskBase;
 import org.onetwo.plugins.task.entity.TaskBizTag;
 import org.onetwo.plugins.task.entity.TaskEmail;
@@ -28,6 +30,9 @@ public class TaskClientServiceImpl {
 	}
 	
 	public TaskBizTag loadOrSave(String bizTag){
+		if(StringUtils.isBlank(bizTag))
+			return null;
+		
 		TaskBizTag tag = baseEntityManager.findOne(TaskBizTag.class, "name", bizTag);
 		if(tag==null){
 			tag = new TaskBizTag();
@@ -47,6 +52,7 @@ public class TaskClientServiceImpl {
 			taskQueue.setPlanTime(taskVo.getPlanTime());
 			
 			TaskEmail email = new TaskEmail();
+			email.setContentType(ContentType.STATIC_TEXT);
 			HibernateUtils.copyIgnoreRelationsAndFields(taskVo, email, "id");
 			email.setTag(tag);
 			

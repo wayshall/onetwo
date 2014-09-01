@@ -11,12 +11,6 @@ import org.onetwo.common.utils.list.JFishList;
 
 public class MailInfo implements Serializable{
 	
-	public static enum ContentType {
-		StaticText,
-		TemplatePath,
-		Template
-	}
-	
 	public static MailInfo create(String from, String...to){
 		MailInfo m = new MailInfo();
 		m.from(from);
@@ -40,7 +34,7 @@ public class MailInfo implements Serializable{
 
 	private String content;
 
-	private ContentType contentType = ContentType.StaticText;
+	private ContentType contentType = ContentType.STATIC_TEXT;
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
