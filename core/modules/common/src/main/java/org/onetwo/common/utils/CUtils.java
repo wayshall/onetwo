@@ -25,6 +25,8 @@ import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.ListMap;
 
+import com.google.common.collect.Lists;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
 
@@ -389,6 +391,12 @@ final public class CUtils {
 				strs[i++] = o.toString();
 			}
 			return strs;
+		}else if(Iterable.class.isAssignableFrom(obj.getClass())){
+			List<String> list = LangUtils.newArrayList();
+			for (Object o : (Iterable) obj) {
+				list.add(o.toString());
+			}
+			return list.toArray(new String[0]);
 		}else{
 			return new String[]{obj.toString()};
 		}

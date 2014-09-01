@@ -11,7 +11,7 @@ EXECUTING - 排队执行中
 	 */
 	public static enum TaskStatus {
 		WAITING("等待中"),
-		EXECUTING("排队执行中"),
+		EXECUTING("排队执行中");
 		
 		final private String name;
 

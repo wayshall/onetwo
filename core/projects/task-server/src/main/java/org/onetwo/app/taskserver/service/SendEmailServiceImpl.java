@@ -2,13 +2,25 @@ package org.onetwo.app.taskserver.service;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.GuavaUtils;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.plugins.email.EmailConfig;
+import org.onetwo.plugins.email.EmailPlugin;
 import org.onetwo.plugins.email.JavaMailService;
+import org.onetwo.plugins.email.MailInfo;
+import org.onetwo.plugins.task.entity.TaskEmail;
+import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
+import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskType;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Service
 public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper {
@@ -20,6 +32,8 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 	@Resource
 	private JavaMailService javaMailService;
 	
+	private EmailConfig emailConfig = EmailPlugin.getInstance().getConfig();
+	
 	@Override
 	public TaskType[] getListenerMappedTaskTypes() {
 		return new TaskType[]{TaskType.EMAIL};
@@ -27,15 +41,45 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 
 	@Override
 	public Object execute(TaskQueue taskQueue) {
-		logger.info("execute email task : {}", taskQueue.getName());
-		boolean succeed = true;
+		StringBuilder msg = new StringBuilder("executting email task: ").append(taskQueue.getName()).append("\n");
+		
+		TaskExecLog log = new TaskExecLog();
+		log.setStartTime(DateUtil.now());
+		
+		Assert.isInstanceOf(TaskEmail.class, taskQueue.getTask());
+		TaskEmail email = (TaskEmail) taskQueue.getTask();
+		TaskExecResult rs = null;
 		try {
-			this.javaMailService.send(null);
+			log.setExecutor(BaseSiteConfig.getInstance().getAppCode());
+			log.setTaskInput(JsonMapper.IGNORE_EMPTY.toJson(email));
+			
+			taskQueue.markExecuted();
+			MailInfo mailInfo = MailInfo.create(emailConfig.getUsername(), email.getToAsArray())
+										.cc(email.getCcAsArray())
+										.subject(email.getSubject()).content(email.getContent())
+										.contentType(email.getContentType())
+										.mimeMail(email.isHtml());
+			for(String path : GuavaUtils.iterable(email.getAttachmentPath(), ';')){
+				String fpath = emailConfig.getAttachmentPath(path);
+				mailInfo.addAttachment(FileUtils.newFile(fpath, true));
+			}
+			this.javaMailService.send(mailInfo);
+			
+			rs = TaskExecResult.SUCCEED;
+			this.taskQueueService.archivedIfNecessary(taskQueue, log, rs);
+
+			msg.append("result: ").append(rs);
+			logger.info(msg.toString());
 		} catch (Exception e) {
-			succeed = false;
+			msg.append("result: ").append(rs);
+			logger.error(msg.toString(), e);
+			
+			rs = TaskExecResult.FAILED;
+			log.setTaskOutput(e.getMessage());
+			this.taskQueueService.archivedIfNecessary(taskQueue, log, rs);
+		} finally{
 		}
-		this.taskQueueService.archived(taskQueue, succeed);
-		return null;
+		return taskQueue;
 	}
 	
 

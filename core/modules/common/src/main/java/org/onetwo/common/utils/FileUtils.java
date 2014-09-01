@@ -59,6 +59,15 @@ public class FileUtils {
 	}
 	
 
+	public static File newFile(String path){
+		return newFile(path, false);
+	}
+	public static File newFile(String path, boolean checkExists){
+		File f = new File(path);
+		if(checkExists && !f.exists())
+			throw new BaseException("file not found at path: " + path);
+		return f;
+	}
     
 	  //-----------------------------------------------------------------------
     /**

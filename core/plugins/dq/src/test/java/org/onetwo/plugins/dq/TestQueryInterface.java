@@ -11,5 +11,5 @@ public interface TestQueryInterface {
 	public List<TestBean> findList(String name);
 
 	public TestBean findOne(String name);
-	public Integer countUser(String name);
+	public Integer countUser(String name); 
 }

@@ -15,8 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.onetwo.plugins.task.utils.TaskUtils;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
+import org.onetwo.plugins.task.utils.TaskUtils;
 
 @Entity
 @Table(name="TASK_EXEC_LOG")
@@ -33,14 +33,15 @@ public class TaskExecLog implements Serializable {
 	private Long id;
 	@Enumerated(EnumType.STRING)
 	private TaskExecResult result;
+	private String executor;
 	
-	private Date operatorTime;
-	private Long operatorId;
-	private String operatorName;
+	private Date startTime;
+	private Date endTime;
+
+	private String taskInput;
+	private String taskOutput;
 	
-	@ManyToOne
-	@JoinColumn(name="TASK_QUEUE_ID")
-	private TaskQueue taskQueue;
+	private Long taskQueueId;
 
 	public Long getId() {
 		return id;
@@ -48,30 +49,6 @@ public class TaskExecLog implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Date getOperatorTime() {
-		return operatorTime;
-	}
-
-	public void setOperatorTime(Date operatorTime) {
-		this.operatorTime = operatorTime;
-	}
-
-	public Long getOperatorId() {
-		return operatorId;
-	}
-
-	public void setOperatorId(Long operatorId) {
-		this.operatorId = operatorId;
-	}
-
-	public String getOperatorName() {
-		return operatorName;
-	}
-
-	public void setOperatorName(String operatorName) {
-		this.operatorName = operatorName;
 	}
 
 	public TaskExecResult getResult() {
@@ -82,12 +59,52 @@ public class TaskExecLog implements Serializable {
 		this.result = result;
 	}
 
-	public TaskQueue getTaskQueue() {
-		return taskQueue;
+	public String getExecutor() {
+		return executor;
 	}
 
-	public void setTaskQueue(TaskQueue taskQueue) {
-		this.taskQueue = taskQueue;
+	public void setExecutor(String executor) {
+		this.executor = executor;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getTaskInput() {
+		return taskInput;
+	}
+
+	public void setTaskInput(String taskInput) {
+		this.taskInput = taskInput;
+	}
+
+	public String getTaskOutput() {
+		return taskOutput;
+	}
+
+	public void setTaskOutput(String taskOutput) {
+		this.taskOutput = taskOutput;
+	}
+
+	public Long getTaskQueueId() {
+		return taskQueueId;
+	}
+
+	public void setTaskQueueId(Long taskQueueId) {
+		this.taskQueueId = taskQueueId;
 	}
 
 }

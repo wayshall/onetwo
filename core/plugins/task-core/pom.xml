@@ -40,6 +40,12 @@
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-email</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency> 
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-hibernate</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency> 
