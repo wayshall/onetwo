@@ -2,8 +2,13 @@ package org.onetwo.plugins.task.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.onetwo.common.utils.GuavaUtils;
+import org.onetwo.common.utils.annotation.IgnoreJson;
+import org.onetwo.plugins.email.ContentType;
 import org.onetwo.plugins.task.utils.TaskType;
 
 @Entity
@@ -19,6 +24,12 @@ public class TaskEmail extends TaskBase {
 	private String attachmentPath;
 	@Column(name="IS_HTML")
 	private boolean html;
+	
+	private String ccAddress;
+	private String toAddress;
+	
+	@Enumerated(EnumType.STRING)
+	private ContentType contentType;
 	
 	public TaskEmail(){
 		setType(TaskType.EMAIL.toString());
@@ -52,6 +63,41 @@ public class TaskEmail extends TaskBase {
 	}
 	public void setHtml(boolean html) {
 		this.html = html;
+	}
+
+	@IgnoreJson
+	public String[] getCcAsArray() {
+		return GuavaUtils.split(ccAddress, ';');
+	}
+
+	@IgnoreJson
+	public String[] getToAsArray() {
+		return GuavaUtils.split(toAddress, ';');
+	}
+
+
+	public ContentType getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(ContentType contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getCcAddress() {
+		return ccAddress;
+	}
+
+	public void setCcAddress(String ccAddress) {
+		this.ccAddress = ccAddress;
+	}
+
+	public String getToAddress() {
+		return toAddress;
+	}
+
+	public void setToAddress(String toAddress) {
+		this.toAddress = toAddress;
 	}
 	
 }

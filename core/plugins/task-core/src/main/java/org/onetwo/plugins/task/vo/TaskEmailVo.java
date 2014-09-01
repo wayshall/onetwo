@@ -3,6 +3,7 @@ package org.onetwo.plugins.task.vo;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.plugins.task.utils.TaskConstant.YesNo;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -13,8 +14,14 @@ public class TaskEmailVo implements Serializable {
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date planTime;
 	private boolean html;
+	@NotBlank
 	private String subject;
+	@NotBlank
 	private String content;
+
+	private String ccAddress;
+	@NotBlank
+	private String toAddress;
 	
 	public boolean htmlChecked(YesNo yesNo){
 		return html==yesNo.getBoolean();
@@ -63,6 +70,22 @@ public class TaskEmailVo implements Serializable {
 
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	public String getCcAddress() {
+		return ccAddress;
+	}
+
+	public void setCcAddress(String ccAddress) {
+		this.ccAddress = ccAddress;
+	}
+
+	public String getToAddress() {
+		return toAddress;
+	}
+
+	public void setToAddress(String toAddress) {
+		this.toAddress = toAddress;
 	}
 	
 }

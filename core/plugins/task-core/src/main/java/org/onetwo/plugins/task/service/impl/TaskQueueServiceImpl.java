@@ -14,6 +14,7 @@ import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.entity.TaskQueueArchived;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -47,8 +48,29 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 			queue.setTryTimes(taskPluginConfig.getTryTimes());
 		return super.save(queue);
 	}
+
+
+	/*public TaskQueueArchived archivedFailed(TaskQueue taskQueue){
+		return archived(taskQueue, TaskExecResult.FAILED);
+	}
+
+	public TaskQueueArchived archivedSucceed(TaskQueue taskQueue){
+		return archived(taskQueue, TaskExecResult.SUCCEED);
+	}*/
 	
-	public TaskQueueArchived archived(TaskQueue taskQueue, TaskExecResult result){
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public TaskQueueArchived archivedIfNecessary(TaskQueue taskQueue, TaskExecLog log, TaskExecResult result){
+		log.setEndTime(DateUtil.now());
+		log.setResult(result);
+		log.setTaskQueueId(taskQueue.getId());
+		getBaseEntityManager().save(log);
+		
+		if(!taskQueue.isNeedArchived()){
+			taskQueue.setStatus(TaskStatus.WAITING);
+			getBaseEntityManager().save(taskQueue);
+			return null;
+		}
+		
 		TaskQueueArchived archived = new TaskQueueArchived();
 		HibernateUtils.copyIgnoreRelationsAndFields(taskQueue, archived, "status");
 		archived.setArchivedTime(DateUtil.now());

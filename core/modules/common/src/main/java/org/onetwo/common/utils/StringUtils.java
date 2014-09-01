@@ -726,6 +726,12 @@ public abstract class StringUtils {
 		return path;
 	}
 
+	public static String surroundWith(String path, String prefix) {
+		if (path == null)
+			path = EMPTY;
+		return appendEndWith(appendStartWith(path, prefix), prefix);
+	}
+
 	public static String appendStartWith(String path, String prefix) {
 		if (path == null)
 			path = EMPTY;
