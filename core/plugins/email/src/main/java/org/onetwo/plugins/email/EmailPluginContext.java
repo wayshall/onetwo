@@ -38,8 +38,8 @@ public class EmailPluginContext implements InitializingBean {
 //	private Properties mailConfig;
 	private EmailConfig mailConfig = EmailPlugin.getInstance().getConfig();
 	
-	@Resource
-	private freemarker.template.Configuration mailFreemarkerConfiguration;
+//	@Resource
+//	private freemarker.template.Configuration mailFreemarkerConfiguration;
 	
 	private StringFtlTemplateLoader stringFtlTemplateLoader = new StringFtlTemplateLoader();
 
@@ -48,19 +48,6 @@ public class EmailPluginContext implements InitializingBean {
 		Assert.notNull(appConfig, "appConfig must not be null!");
 	}
 
-	@Bean
-	public JavaMailService JavaMailService() throws Exception{
-		Class<?> implClass = mailConfig.getMailServiceClass();
-		if(!JavaMailServiceImpl.class.isAssignableFrom(implClass))
-			throw new ServiceException("java mail sender must a instance of " + JavaMailSenderImpl.class.getName());
-		
-		JavaMailServiceImpl jm = (JavaMailServiceImpl)ReflectUtils.newInstance(implClass);
-		jm.setJavaMailSender(javaMailSender());
-		jm.setConfiguration(mailFreemarkerConfiguration);
-		jm.setStringFtlTemplateLoader(stringFtlTemplateLoader);
-		return jm;
-	}
-	
 	@Bean
 	public JavaMailSender javaMailSender() throws IOException {
 		Set<String> excludeKeys = Sets.newHashSet();
@@ -106,6 +93,11 @@ public class EmailPluginContext implements InitializingBean {
 		fcfb.setTemplateLoaderPath("classpath:/email/ftl/");
 		fcfb.setPreTemplateLoaders(stringFtlTemplateLoader);
 		return fcfb;
+	}
+	
+	@Bean
+	public StringFtlTemplateLoader stringFtlTemplateLoader(){
+		return this.stringFtlTemplateLoader;
 	}
 
 }

@@ -3,6 +3,7 @@ package org.onetwo.common.web.asyn2;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,34 +13,62 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-public class AsynWebProcessor<T extends AsynMessageHolder<?>> {
+/****
+ * web异步处理，如果容器不支持异步，web页面提交时可以提交到一个iframe上
+ * @author way
+ *
+ */
+public class AsynWebProcessor {
+
+	public static AsynWebProcessor create(HttpServletResponse response) {
+		return create(response, null);
+	}
+	public static AsynWebProcessor create(HttpServletResponse response, String asynCallback) {
+		try {
+			return new AsynWebProcessor(response.getWriter(), asynCallback);
+		} catch (IOException e) {
+			throw new BaseException("create AsynWebProcessor error: " + e.getMessage(), e);
+		}
+	}
+	
 	private static final Logger logger = MyLoggerFactory.getLogger(AsynWebProcessor.class);
 	private static final String DEFAULT_ASYNCALLBACK = "parent.jfishAsynCallback";
 	
 	private PrintWriter out;
 //	private DeamonTask<?> task;
-	private T asynMessageHolder;
-	private int taskInterval = Integer.MIN_VALUE;
+	private AsynMessageHolder<?> asynMessageHolder;
+	private int dataCountPerTask = Integer.MIN_VALUE;
 	private String asynCallback = DEFAULT_ASYNCALLBACK;
 	
-	private int sleepTime = 3;//seconds
-	private int mainThreadSleepCount;
+	private int sleepTime = 1;//seconds
+//	private int mainThreadSleepCount;
+	
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 	
 
-	public AsynWebProcessor(PrintWriter out, T holder) {
+	public AsynWebProcessor(PrintWriter out, String asynCallback) {
+		super();
+		this.out = out;
+		if(StringUtils.isNotBlank(asynCallback))
+			this.asynCallback = asynCallback;
+		this.asynMessageHolder = new StringMessageHolder();
+	}
+
+	public AsynWebProcessor(PrintWriter out, AsynMessageHolder<?> holder) {
 		super();
 		this.out = out;
 		this.asynMessageHolder = holder;
 	}
-	public AsynWebProcessor(PrintWriter out, int taskInterval, T holder) {
+	public AsynWebProcessor(PrintWriter out, int taskInterval, AsynMessageHolder<?> holder) {
 		super();
 		this.out = out;
-		this.taskInterval = taskInterval;
+		this.dataCountPerTask = taskInterval;
 		this.asynMessageHolder = holder;
 	}
 	
-	public T getAsynMessageHolder() {
+	public AsynMessageHolder<?> getAsynMessageHolder() {
 		return asynMessageHolder;
 	}
 	public AsynWebProcessor(HttpServletResponse response){
@@ -66,17 +95,80 @@ public class AsynWebProcessor<T extends AsynMessageHolder<?>> {
 	}
 	
 	public void sleep(){
-		this.mainThreadSleepCount++;
+//		this.mainThreadSleepCount++;
 		LangUtils.await(sleepTime);
 	}
 
 	public void setAsynCallback(String asynCallback) {
 		this.asynCallback = asynCallback;
 	}
-	public void doAsynWithSingle(boolean notifyFinish, int taskIndex, Object taskDatas, DeamonTaskCreator creator){
+	/*public void doAsynWithSingle(boolean notifyFinish, int taskIndex, Object taskDatas, DeamonTaskCreator creator){
 		doAsynTask(notifyFinish, creator.create(taskIndex, taskDatas, asynMessageHolder));
+	}*/
+	
+
+	public void handleTask(AsyncTask task){
+		handleTask(true, task);
 	}
 	
+	private void handleTask(boolean notifyFinish, AsyncTask task){
+		String taskMsg = "";
+		
+		Future<?> future = this.threadPoolTaskExecutor.submit(task);
+		
+		float hasProcceed = 0;
+		int percent = 0;
+		String msglist = "";
+		int taskInterval = getDataCountPerTask(100);
+		while(!future.isDone()){
+			sleep();
+			
+			SimpleMessage<?>[] meesages = asynMessageHolder.getAndClearMessages(); 
+			hasProcceed += meesages.length;
+			percent = (int)(hasProcceed*100/taskInterval);
+			msglist = formatMessages(meesages);
+			
+			renderScript(out, appendCallbackFunctionIfNecessarry(msglist));
+			taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.EXECUTING, percent, task));
+			renderScript(out, taskMsg);
+		}
+		
+		msglist = formatMessages(asynMessageHolder.getAndClearMessages());
+		renderScript(out, appendCallbackFunctionIfNecessarry(msglist));
+		
+		if(task.isError()){
+			logger.error("导入出错,任务终止", task.getException());
+			taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.FAILED, -1, task));
+			renderScript(out, taskMsg);
+			if(notifyFinish){
+				IOUtils.closeQuietly(out);
+			}
+			return ;
+		}else{
+			taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.SUCCEED, -1, task));
+			renderScript(out, taskMsg);
+		}
+		asynMessageHolder.clearMessages();
+		task = null;
+
+		if(notifyFinish){
+			taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.FINISHED, -1, null));
+			renderScript(out, taskMsg);
+			IOUtils.closeQuietly(out);
+		}
+	}
+	
+
+	protected String formatMessages(SimpleMessage<?>[] simpleMessages) {
+		if(LangUtils.isEmpty(simpleMessages))
+			return "";
+		StringBuilder sb = new StringBuilder();
+		for(SimpleMessage<?> msg : simpleMessages){
+			sb.append(msg.toString()).append("<br/>");
+		}
+		return sb.toString();
+	}
+	/*
 	public void doAsynTask(boolean notifyFinish, DeamonTask task){
 		String taskMsg = "";
 //		DeamonTask<?> task = creator.create(taskIndex, taskDatas, asynMessageHolder);
@@ -84,7 +176,7 @@ public class AsynWebProcessor<T extends AsynMessageHolder<?>> {
 		float hasProcceed = 0;
 		int percent = 0;
 		String msglist = "";
-		int taskInterval = getTaskInterval(100);
+		int taskInterval = getDataCountPerTask(100);
 		while(!task.isFinished()){
 			this.sleep();
 			hasProcceed += asynMessageHolder.getMessages().size();
@@ -119,26 +211,23 @@ public class AsynWebProcessor<T extends AsynMessageHolder<?>> {
 			renderScript(out, taskMsg);
 			IOUtils.closeQuietly(out);
 		}
-	}
+	}*/
 	
-	protected int getTaskInterval(int def){
-		int taskInterval = this.taskInterval;
+	protected int getDataCountPerTask(int def){
+		int taskInterval = this.dataCountPerTask;
 		if(taskInterval==Integer.MIN_VALUE){//if no set
 			taskInterval = def;
 		}
 		return taskInterval;
 	}
 	
-	public void doAsyn(List<?> datas, DeamonTaskCreator creator){
+	public void handleList(List<?> datas, DeamonTaskCreator<List<?>> creator){
 		int total = datas.size();
-		int taskInterval = getTaskInterval(total);
-		int taskCount = total/taskInterval;
-		if(total%taskInterval!=0){
-			taskCount += 1;
-		}
+		int taskInterval = getDataCountPerTask(total);
+		int taskCount = total%taskInterval==0?(total/taskInterval):(total/taskInterval+1);
 
 		String taskMsg = "";
-		taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.afterSplitTask, taskCount, null));
+		taskMsg = appendCallbackFunctionIfNecessarry(asynMessageHolder.createTaskMessage(ProccessorState.SPLITED, taskCount, null));
 		renderScript(out, taskMsg);
 		for(int i=0; i<taskCount; i++){
 //			int taskSleepCount = 0;
@@ -149,12 +238,13 @@ public class AsynWebProcessor<T extends AsynMessageHolder<?>> {
 			}
 			final List<?> taskDatas = datas.subList(startIndex, endIndex);
 			
-			this.doAsynWithSingle((i+1)==taskCount, i, taskDatas, creator);
+//			this.doAsynWithSingle((i+1)==taskCount, i, taskDatas, creator);
+			handleTask((i+1)==taskCount, creator.create(i, taskDatas, asynMessageHolder));
 		}
 
 	}
 
-	public void renderMessage(String msg) {
+	protected void renderMessage(String msg) {
 		renderScript(out, appendCallbackFunctionIfNecessarry(msg));
 	}
 

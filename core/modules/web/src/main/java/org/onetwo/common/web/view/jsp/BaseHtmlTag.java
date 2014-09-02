@@ -11,6 +11,7 @@ import javax.servlet.jsp.tagext.DynamicAttributes;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
 import org.springframework.beans.BeanWrapper;
 
@@ -85,8 +86,9 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		//set dynamic attributes
 		BeanWrapper bw = SpringUtils.newBeanWrapper(component);
 		for(Entry<String, Object> entry : this.dynamicAttributes.entrySet()){
-			if(bw.isWritableProperty(entry.getKey())){
-				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			String prop = StringUtils.toJavaName(entry.getKey(), '-', false);
+			if(bw.isWritableProperty(prop)){
+				bw.setPropertyValue(prop, entry.getValue());
 			}else{
 				component.getDynamicAttributes().put(entry.getKey(), entry.getValue());
 			}

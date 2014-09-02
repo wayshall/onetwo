@@ -2,6 +2,7 @@ package org.onetwo.plugins.email;
 
 import java.io.File;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -25,10 +26,12 @@ public class JavaMailServiceImpl implements JavaMailService {
 	
 	private static final String DEFAULT_ENCODING = "utf-8";
 	
+	@Resource
 	private JavaMailSender javaMailSender;
+	@Resource
 	private Configuration configuration;
 	private String encoding = DEFAULT_ENCODING;
-	
+	@Resource
 	private StringFtlTemplateLoader stringFtlTemplateLoader;
 
 
