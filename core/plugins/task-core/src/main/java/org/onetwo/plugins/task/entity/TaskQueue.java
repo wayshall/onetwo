@@ -65,7 +65,7 @@ public class TaskQueue implements Serializable {
 		Date now = DateUtil.now();
 		this.currentTimes += 1;
 		this.lastExecTime = now;
-		this.lastUpdateTime = now;
+//		this.lastUpdateTime = now;
 	}
 	
 	public boolean isNeedArchived(){
@@ -117,7 +117,7 @@ public class TaskQueue implements Serializable {
 	}
 
 	public TaskType getTaskType() {
-		return TaskType.type(getTask().getType());
+		return getTask().getTaskType();
 	}
 
 	public Date getLastExecTime() {

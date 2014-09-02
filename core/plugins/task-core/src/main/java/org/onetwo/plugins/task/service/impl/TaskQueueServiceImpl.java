@@ -8,6 +8,7 @@ import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.hibernate.HibernateCrudServiceImpl;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.task.TaskPluginConfig;
 import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
@@ -65,10 +66,12 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		log.setTaskQueueId(taskQueue.getId());
 		getBaseEntityManager().save(log);
 		
-		if(!taskQueue.isNeedArchived()){
+		if(result==TaskExecResult.FAILED){
 			taskQueue.setStatus(TaskStatus.WAITING);
-			getBaseEntityManager().save(taskQueue);
-			return null;
+			if(!taskQueue.isNeedArchived()){
+				getBaseEntityManager().save(taskQueue);
+				return null;
+			}
 		}
 		
 		TaskQueueArchived archived = new TaskQueueArchived();
@@ -77,6 +80,7 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		archived.setResult(result);
 		archived.setTask(taskQueue.getTask());
 		getBaseEntityManager().save(archived);
+		getBaseEntityManager().flush();
 		getBaseEntityManager().remove(taskQueue);
 		return archived;
 	}
@@ -84,5 +88,13 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 	public TaskExecLog logExec(TaskExecLog log){
 		getBaseEntityManager().save(log);
 		return log;
+	}
+	
+	public void findArchivedPage(Page<TaskQueueArchived> page, Object... properties){
+		this.getBaseEntityManager().findPage(TaskQueueArchived.class, page, properties);
+	}
+	
+	public void requeueFromArchived(Long archivedId){
+		
 	}
 }

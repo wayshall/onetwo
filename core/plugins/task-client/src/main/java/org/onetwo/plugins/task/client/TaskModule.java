@@ -23,4 +23,17 @@ public interface TaskModule {
 		}
 	}
 
+	public static interface Archived {
+		String name = "归档";
+
+		public static interface List {
+			String name = "列表";
+		}
+
+		public static interface ReQueue {
+			String name = "重新放入队列";
+		}
+
+	}
+
 }

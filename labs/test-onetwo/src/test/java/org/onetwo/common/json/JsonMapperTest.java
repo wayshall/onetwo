@@ -14,6 +14,7 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.map.CasualMap;
 
 import test.entity.UserEntity;
 
@@ -234,4 +235,20 @@ public class JsonMapperTest {
 		Assert.assertEquals("{\"email\":\"test@email.com\",\"birthday\":\"2012-11-23\"}", json);
 	}
 	
+	@Test
+	public void testCauseMap(){
+		CasualMap map = new CasualMap();
+		map.putElement("aa", "aavalue");
+		map.putElement("bb", "bbvalue");
+		String json = JsonMapper.IGNORE_EMPTY.toJson(map);
+		System.out.println("json: " +json);
+		Assert.assertEquals("{\"aa\":[\"aavalue\"],\"bb\":[\"bbvalue\"]}", json);
+		
+
+		Map<String, String> map2 = new HashMap<String, String>();
+		map2.put("aa", "aavalue");
+		map2.put("bb", "bbvalue");
+		json = JsonMapper.IGNORE_EMPTY.toJson(map2);
+		System.out.println("json: " +json);
+	}
 }

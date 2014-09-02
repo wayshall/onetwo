@@ -1,8 +1,8 @@
 package org.onetwo.common.web.utils.asyn;
 
 /********
- * 使用新的 {@link org.onetwo.common.web.asyn2.DeamonTask DeamonTask} 代替
- * @see org.onetwo.common.web.asyn2.DeamonTask
+ * 使用新的 {@link org.onetwo.common.web.asyn2.AsyncTask DeamonTask} 代替
+ * @see org.onetwo.common.web.asyn2.AsyncTask
  * @author wayshall
  *
  * @param <T>

@@ -5,6 +5,8 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class WebHolder {
 
@@ -26,8 +28,14 @@ public class WebHolder {
 	}
 	
 	public static HttpServletRequest getRequest(){
-		return REQUEST_HOLDER.get();
+		HttpServletRequest req = getSpringContextHolderRequest();
+		return req==null?REQUEST_HOLDER.get():req;
 	}
+	private static HttpServletRequest getSpringContextHolderRequest(){
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+	}
+	
+	
 	
 	public static HttpSession getSession(){
 		return getRequest().getSession();

@@ -97,12 +97,13 @@ abstract public class HtmlElement {
 	public void buildExtTagAttributesString(StringBuilder attributesBuf){
 	}
 	
-	protected void buildAttributeTag(StringBuilder attributesBuf, String attr, Object val){
+	protected StringBuilder buildAttributeTag(StringBuilder attributesBuf, String attr, Object val){
 		String valStr = val==null?"":val.toString();
 		if(StringUtils.isBlank(valStr))
-			return ;
+			return attributesBuf;
 		valStr = HtmlUtils.htmlEscape(valStr);
 		attributesBuf.append(attr).append("=\"").append(valStr).append("\"");
+		return attributesBuf;
 	}
 
 	public String getAttributesHtml() {
