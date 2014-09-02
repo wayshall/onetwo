@@ -1,28 +1,36 @@
 package org.onetwo.common.web.asyn2;
 
 
-abstract public class DeamonTask {
+
+
+abstract public class AsyncTask implements Runnable {
 	
-	private String name;
+	private String name = "AsyncTask";
 //	private Tasker<T> tasker;
-	private int threadPriority = Thread.NORM_PRIORITY;
+//	private int threadPriority = Thread.NORM_PRIORITY;
 	
-	private boolean finished;
+//	private boolean finished;
 	private Exception exception;
 	
 	private int taskIndex;
 	
+
+	public AsyncTask() {
+	}
 	
-	public DeamonTask(String name, int taskIndex) {
+	public AsyncTask(String name, int taskIndex) {
 		super();
 		this.name = name;
 		this.taskIndex = taskIndex;
 //		this.tasker = tasker;
 	}
+	
+	
 
-
+/*
 	public void start(){
 		try {
+
 			final Thread t = new Thread(new Runnable() {
 				
 				@Override
@@ -42,17 +50,29 @@ abstract public class DeamonTask {
 		} catch (Exception e) {
 			this.exception = e;
 		}
-	}
+	}*/
 	
+	@Override
+	final public void run() {
+		try {
+			execute();
+		} catch (Exception e) {
+			exception = e;
+		}
+//		finished = true;
+	}
+
+
+
 	abstract public void execute() throws Exception; 
 
 	public String getName() {
 		return name;
 	}
 
-	public boolean isFinished() {
+	/*public boolean isFinished() {
 		return finished;
-	}
+	}*/
 
 	public Exception getException() {
 		return exception;

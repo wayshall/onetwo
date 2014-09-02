@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
+import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
 
 @Entity
@@ -63,4 +64,7 @@ public class TaskBase implements Serializable {
 		this.tag = tag;
 	}
 	
+	public TaskType getTaskType() {
+		return TaskType.type(getType());
+	}
 }

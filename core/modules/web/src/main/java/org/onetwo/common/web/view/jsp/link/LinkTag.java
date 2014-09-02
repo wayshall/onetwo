@@ -18,6 +18,8 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 	private String dataMethod;
 	private String dataConfirm;
 	private String href;
+	//
+//	private String dataParams;
 	
 	@Override
 	public LinkTagBean createComponent() {
@@ -33,6 +35,10 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 		boolean safeUrl = BaseSiteConfig.getInstance().isSafeRequest() && StringUtils.isNotBlank(dataMethod);
 		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl && !RequestMethod.GET.toString().equalsIgnoreCase(dataMethod)){
 			href = CsrfPreventorFactory.getDefault().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+			/*CsrfToken ct = CsrfPreventorFactory.getDefault().generateToken((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+			Map<String, String> map = LangUtils.newHashMap();
+			map.put(ct.getFieldName(), ct.getGeneratedValue());
+			this.dataParams = map.toParamString();*/
     	}
 
 		if(href.startsWith("/") && !href.startsWith(BaseSiteConfig.getInstance().getBaseURL())){
