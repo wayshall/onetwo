@@ -320,7 +320,7 @@ var Common = function () {
 			}
 
 			jfish.appendHiddenMethodParamIfNecessary(form, method);
-//			jfish.appendHiddenByDataParams(this, form);
+			jfish.appendHiddenByDataParams(link, form);
 
 			if (target) {
 				form.attr('target', target);
@@ -335,7 +335,7 @@ var Common = function () {
 				if(params){
 					form.append(params);
 				}
-				jfish.appendHiddenByDataParams(link, form);
+//				jfish.appendHiddenByDataParams(link, form);
 				$(form).submit();
 			}
 			

@@ -1,7 +1,7 @@
 package org.onetwo.common.web.asyn2;
 
 
-public interface DeamonTaskCreator {
+public interface DeamonTaskCreator<T> {
 
-	public DeamonTask create(int taskIndex, Object taskDatas, AsynMessageHolder<?> asynMessageHolder); 
+	public AsyncTask create(int taskIndex, T taskDatas, AsynMessageHolder<?> asynMessageHolder); 
 }

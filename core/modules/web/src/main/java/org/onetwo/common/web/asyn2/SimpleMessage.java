@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.asyn2.AsynMessageHolder.AsynState;
+import org.onetwo.common.web.asyn2.ListMessageHolder.AsynState;
 
 
 public class SimpleMessage<T> implements Serializable {

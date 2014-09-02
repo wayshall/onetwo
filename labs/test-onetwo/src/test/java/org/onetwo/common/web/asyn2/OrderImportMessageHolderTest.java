@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 
 @SuppressWarnings("serial")
-public class OrderImportMessageHolderTest extends AsynMessageHolder<String>{
+public class OrderImportMessageHolderTest extends ListMessageHolder<String>{
 
 	public final AsynState orderSucceed = createState(5, "下单成功");
 	public final AsynState orderFailed = createState(-5, "下单失败");
@@ -23,18 +23,18 @@ public class OrderImportMessageHolderTest extends AsynMessageHolder<String>{
 	}
 	
 
-	public String createTaskMessage(ProccessorState state, int taskCount, DeamonTask task){
+	public String createTaskMessage(ProccessorState state, int taskCount, AsyncTask task){
 		String msg = "";
-		if(state==ProccessorState.afterSplitTask){
+		if(state==ProccessorState.SPLITED){
 			msg = "进度 ：共分成"+taskCount+"个导入任务……";
-		}else if(state==ProccessorState.executingTask){
+		}else if(state==ProccessorState.EXECUTING){
 			int done = taskCount/10;
 			msg = "进度 ：正在执行["+task.getName()+"]"+taskCount+"% "+LangUtils.repeatString(done, "- ")+LangUtils.repeatString(10-done, "| ");
-		}else if(state==ProccessorState.errorTask){
+		}else if(state==ProccessorState.FAILED){
 			msg = "进度 ：导入出错,任务终止"+task.getException().getMessage();
-		}else if(state==ProccessorState.finishedTask){
+		}else if(state==ProccessorState.SUCCEED){
 			msg = "进度 ：["+task.getName()+"]完成！";
-		}else if(state==ProccessorState.finished){
+		}else if(state==ProccessorState.FINISHED){
 			msg = "结果 ：一共导入"+getTotalCount()+". "+getStatesAsString();
 		}else{
 			throw new UnsupportedOperationException();

@@ -33,5 +33,9 @@ public class MvcSetting {
 	public Properties getMvcSetting() {
 		return mvcSetting;
 	}
+	
+	public String getAsyncTaskExecutor(){
+		return wraper.getProperty("async.task-executor");
+	}
 
 }

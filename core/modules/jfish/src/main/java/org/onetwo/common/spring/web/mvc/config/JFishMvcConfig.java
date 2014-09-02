@@ -3,6 +3,7 @@ package org.onetwo.common.spring.web.mvc.config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -41,6 +42,7 @@ import org.onetwo.common.spring.web.mvc.view.JsonView;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -55,8 +57,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
@@ -183,9 +187,35 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	public JFishPluginManager jfishPluginManager(){
 		return this.jfishPluginManager;
 	}
+	
+	
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
 		configurer.registerCallableInterceptors(new TimeoutCallableProcessingInterceptor());
-		configurer.setDefaultTimeout(10000);
+		configurer.setDefaultTimeout(TimeUnit.SECONDS.toMillis(10*60));
+		
+		String taskExecutorName = this.mvcSetting.getAsyncTaskExecutor();
+		if(StringUtils.isNotBlank(taskExecutorName)){
+			AsyncTaskExecutor taskExecutor = SpringUtils.getBean(applicationContext, taskExecutorName);
+			if(taskExecutor!=null){
+				configurer.setTaskExecutor(taskExecutor);
+			}else{
+				/****
+				 * <property name="corePoolSize" value="5" /><!--最小线程数 -->  
+			        <property name="maxPoolSize" value="10" /><!--最大线程数 -->  
+			        <property name="queueCapacity" value="50" /><!--缓冲队列大小 -->  
+			        <property name="threadNamePrefix" value="abc-" /><!--线程池中产生的线程名字前缀 -->  
+			        <property name="keepAliveSeconds" value="30" /><!--线程池中空闲线程的存活时间单位秒 -->  
+				 */
+				ThreadPoolTaskExecutor execotor = new ThreadPoolTaskExecutor();
+				execotor.setCorePoolSize(5);
+				execotor.setMaxPoolSize(20);
+//				execotor.setQueueCapacity(queueCapacity);
+//				execotor.setKeepAliveSeconds(60);
+				execotor.setThreadNamePrefix("jfish-");
+				taskExecutor = execotor;
+				configurer.setTaskExecutor(taskExecutor);
+			}
+		}
 	}
 	
 	@Override
