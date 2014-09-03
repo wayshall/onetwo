@@ -4,29 +4,26 @@ import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-abstract public class BlockQueueMessageHolder<T> extends AsynMessageHolder<T> {
+abstract public class BlockQueueMessageHolder extends AsynMessageHolder {
 	
-	private BlockingQueue<SimpleMessage<T>> messages = new ArrayBlockingQueue<SimpleMessage<T>>(100);
+	private BlockingQueue<SimpleMessage> messages = new ArrayBlockingQueue<SimpleMessage>(100);
 
 
-	public void addMessage(SimpleMessage<T> msg){
+	/*public void addMessage(SimpleMessage msg){
 		if(msg==null)
 			return;
 		try {
 			this.messages.add(msg);
+			this.triggerCounters(msg);
 		} catch (Exception e) {
 			logger.error("can not add msg to queue, ignore["+msg.getDetail()+"] : " + e.getMessage());
+//			e.printStackTrace();
 		}
-	}
+	}*/
 
-	public SimpleMessage<T>[] getAndClearMessages() {
-		SimpleMessage<T>[] simpleMessages = messages.toArray(new SimpleMessage[messages.size()]);
-		this.clearMessages();
-		return simpleMessages;
-	}
 
 	@Override
-	protected Collection<SimpleMessage<T>> getMessages() {
+	protected Collection<SimpleMessage> getMessages() {
 		return messages;
 	}
 

@@ -3,20 +3,21 @@ package org.onetwo.common.web.asyn2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-abstract public class ListMessageHolder<T> extends AsynMessageHolder<T> {
+abstract public class ListMessageHolder extends AsynMessageHolder {
 	
-	private List<SimpleMessage<T>> messages = new ArrayList<SimpleMessage<T>>();
+	private List<SimpleMessage> messages = new ArrayList<SimpleMessage>();
     private final ReentrantLock lock = new ReentrantLock(false);
 
 
-	public void addMessage(SimpleMessage<T> msg){
+	public void addMessage(SimpleMessage msg){
 		if(msg==null)
 			return;
 		lock.lock();
 		try {
 			this.messages.add(msg);
-			this.totalCount++;
-			this.triggerCounters(msg);
+			countMessage(msg);
+//			this.totalCount++;
+//			this.triggerCounters(msg);
 		}finally{
 			lock.unlock();
 		}
@@ -24,8 +25,8 @@ abstract public class ListMessageHolder<T> extends AsynMessageHolder<T> {
 	
 
 	@Override
-	public SimpleMessage<T>[] getAndClearMessages() {
-		SimpleMessage<T>[] simpleMessages = null;
+	public SimpleMessage[] getAndClearMessages() {
+		SimpleMessage[] simpleMessages = null;
 		lock.lock();
 		try {
 			simpleMessages = messages.toArray(new SimpleMessage[messages.size()]);
@@ -36,7 +37,7 @@ abstract public class ListMessageHolder<T> extends AsynMessageHolder<T> {
 		return simpleMessages;
 	}
 
-	public List<SimpleMessage<T>> getMessages() {
+	public List<SimpleMessage> getMessages() {
 		return messages;
 	}
 

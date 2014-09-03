@@ -9,7 +9,7 @@ public class LinkTagBean extends HtmlElement {
 	private String dataConfirm;
 	private String href;
 	private boolean safeUrl;
-	private String dataParams;
+//	private String dataParams;
 	
 	public String getDataMethod() {
 		return dataMethod;
@@ -46,7 +46,7 @@ public class LinkTagBean extends HtmlElement {
 		}
 		return attributesBuf.toString();
 	}
-	public String getDataParamsAttr() {
+	/*public String getDataParamsAttr() {
 		return buildAttributeTag(new StringBuilder(), "data-params", dataParams).toString();
 	}
 	public String getDataParams() {
@@ -54,6 +54,6 @@ public class LinkTagBean extends HtmlElement {
 	}
 	public void setDataParams(String dataParams) {
 		this.dataParams = dataParams;
-	}
+	}*/
 	
 }
