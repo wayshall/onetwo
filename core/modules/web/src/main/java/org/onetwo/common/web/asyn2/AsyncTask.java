@@ -4,6 +4,7 @@ package org.onetwo.common.web.asyn2;
 
 
 abstract public class AsyncTask implements Runnable {
+
 	
 	private String name = "AsyncTask";
 //	private Tasker<T> tasker;
@@ -24,7 +25,6 @@ abstract public class AsyncTask implements Runnable {
 		this.taskIndex = taskIndex;
 //		this.tasker = tasker;
 	}
-	
 	
 
 /*

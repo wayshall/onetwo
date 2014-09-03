@@ -28,7 +28,7 @@ public class EmailConfig implements LoadableConfig {
 	public void load(JFishProperties properties) {
 		this.config = properties;
 		if(!FileUtils.exists(getAttachmentDir())){
-			throw new BaseException("attachement dir is not exists: [" + getAttachmentDir() + "]");
+//			throw new BaseException("attachement dir is not exists: [" + getAttachmentDir() + "]");
 		}
 	}
 	

@@ -37,5 +37,9 @@ public class MvcSetting {
 	public String getAsyncTaskExecutor(){
 		return wraper.getProperty("async.task-executor");
 	}
+	
+	public boolean isAsyncSupported(){
+		return wraper.getBoolean("async.supported");
+	}
 
 }

@@ -1,8 +1,9 @@
 package org.onetwo.common.web.asyn2;
 
-public enum ProccessorState {
+public enum ProcessMessageType {
 	SPLITED,
-	EXECUTING,
+	INFO,
+	PROGRESSING,
 	FAILED,
 	SUCCEED,
 	FINISHED

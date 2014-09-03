@@ -188,33 +188,42 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return this.jfishPluginManager;
 	}
 	
+//	@Bean 
+	protected AsyncTaskExecutor mvcAsyncTaskExecutor(){
+		String taskExecutorName = this.mvcSetting.getAsyncTaskExecutor();
+		AsyncTaskExecutor taskExecutor = null;
+		if(StringUtils.isNotBlank(taskExecutorName)){
+			taskExecutor = SpringUtils.getBean(applicationContext, taskExecutorName);
+			if(taskExecutor!=null){
+				return taskExecutor;
+			}
+		}
+		/****
+		 * <property name="corePoolSize" value="5" /><!--最小线程数 -->  
+	        <property name="maxPoolSize" value="10" /><!--最大线程数 -->  
+	        <property name="queueCapacity" value="50" /><!--缓冲队列大小 -->  
+	        <property name="threadNamePrefix" value="abc-" /><!--线程池中产生的线程名字前缀 -->  
+	        <property name="keepAliveSeconds" value="30" /><!--线程池中空闲线程的存活时间单位秒 -->  
+		 */
+		ThreadPoolTaskExecutor execotor = new ThreadPoolTaskExecutor();
+		execotor.setCorePoolSize(5);
+		execotor.setMaxPoolSize(20);
+//			execotor.setQueueCapacity(queueCapacity);
+//			execotor.setKeepAliveSeconds(60);
+		execotor.setThreadNamePrefix("jfish-");
+		taskExecutor = execotor;
+		
+		SpringUtils.injectAndInitialize(applicationContext, taskExecutor);
+		SpringUtils.registerSingleton(applicationContext, "mvcAsyncTaskExecutor", taskExecutor);
+		return taskExecutor;
+	}
 	
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-		configurer.registerCallableInterceptors(new TimeoutCallableProcessingInterceptor());
-		configurer.setDefaultTimeout(TimeUnit.SECONDS.toMillis(10*60));
-		
-		String taskExecutorName = this.mvcSetting.getAsyncTaskExecutor();
-		if(StringUtils.isNotBlank(taskExecutorName)){
-			AsyncTaskExecutor taskExecutor = SpringUtils.getBean(applicationContext, taskExecutorName);
-			if(taskExecutor!=null){
-				configurer.setTaskExecutor(taskExecutor);
-			}else{
-				/****
-				 * <property name="corePoolSize" value="5" /><!--最小线程数 -->  
-			        <property name="maxPoolSize" value="10" /><!--最大线程数 -->  
-			        <property name="queueCapacity" value="50" /><!--缓冲队列大小 -->  
-			        <property name="threadNamePrefix" value="abc-" /><!--线程池中产生的线程名字前缀 -->  
-			        <property name="keepAliveSeconds" value="30" /><!--线程池中空闲线程的存活时间单位秒 -->  
-				 */
-				ThreadPoolTaskExecutor execotor = new ThreadPoolTaskExecutor();
-				execotor.setCorePoolSize(5);
-				execotor.setMaxPoolSize(20);
-//				execotor.setQueueCapacity(queueCapacity);
-//				execotor.setKeepAliveSeconds(60);
-				execotor.setThreadNamePrefix("jfish-");
-				taskExecutor = execotor;
-				configurer.setTaskExecutor(taskExecutor);
-			}
+		if(this.mvcSetting.isAsyncSupported()){
+			configurer.registerCallableInterceptors(new TimeoutCallableProcessingInterceptor());
+			configurer.setDefaultTimeout(TimeUnit.SECONDS.toMillis(10*60));
+			AsyncTaskExecutor taskExecutor = mvcAsyncTaskExecutor();
+			configurer.setTaskExecutor(taskExecutor);
 		}
 	}
 	
