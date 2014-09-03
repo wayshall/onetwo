@@ -7,12 +7,16 @@ import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.csrf.CsrfPreventor;
+import org.onetwo.common.web.csrf.CsrfPreventorFactory;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.web.util.HtmlUtils;
 
 final public class ToolEl {
+	private static CsrfPreventor CSRF_PREVENTOR = CsrfPreventorFactory.getDefault();
 
 	public static String escapeHtml(String content){
 		return HtmlUtils.htmlEscape(content);
@@ -88,6 +92,16 @@ final public class ToolEl {
 	
 	public static String web(String name){
 		return escapeHtml(WebHolder.getValue(name).toString());
+	}
+	
+	public static String safeUrl(String href){
+		String url = BaseSiteConfig.getInstance().getBaseURL();
+    	if(BaseSiteConfig.getInstance().isSafeRequest()){
+    		url += CSRF_PREVENTOR.processSafeUrl(href, WebHolder.getRequest(), WebHolder.getResponse());
+    	}else{
+    		url += href;
+    	}
+    	return url;
 	}
 
 	private ToolEl(){}

@@ -377,7 +377,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	
 	public boolean isPropertyEqualsAllOfElement(String propertyOfElement){
 		ListMap<String, E> map = this.groupBy(propertyOfElement);
-		return map.size()==1;
+		return map.size()<=1;
 	}
 	
 	/*public void doInResult(It<E> it, final List<?> result){

@@ -36,7 +36,7 @@
       <description><![CDATA[href]]></description>
       <name>href</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
@@ -117,6 +117,12 @@
   	<name>checkedHtml</name>
   	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
   	<function-signature>java.lang.Object checkedHtml(java.lang.Object, java.lang.String, java.lang.Object)</function-signature>
+  </function>
+  
+  <function>
+  	<name>safeUrl</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String safeUrl(java.lang.String)</function-signature>
   </function>
   
 </taglib>
