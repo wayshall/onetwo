@@ -75,10 +75,7 @@ public class SpringApplication {
 	}
 
 	public <T> void autoInject(T bean, int autowireMode) {
-		AutowireCapableBeanFactory acb = appContext.getAutowireCapableBeanFactory();
-		acb.autowireBeanProperties(bean, autowireMode, false);
-		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
-		acb.initializeBean(bean, beanName);
+		SpringUtils.injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, autowireMode);
 	}
 
 	public ConfigurableApplicationContext getConfigurableAppContext() {

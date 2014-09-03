@@ -7,6 +7,7 @@ var Common = function () {
 	//var progress = '<div class="progress progress-striped active"><div class="bar" style="width: 40%;"></div></div>';
 
 	var jfish = {};
+	jfish.asyncCallbackManager = {};
 	jfish._blockMsgState = false;
 	
 	$.extend({
@@ -293,22 +294,23 @@ var Common = function () {
 				//form = $('#'+formId);
 			}
 			
-			
+			/***
 			if(!form){
 				form = $(link).parents("form:first");
 			}
+			*/
 			
 			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
 				form.attr("action", href);
 				form.attr("method", method);
-			}
+			}/***
 			else if(form.length>0){
 				form = $(form.get(0));
 				form.attr("action", href);
 				form.attr("method", method);
-			}
+			}*/
 			else{
 				var formId = '_linkForm';
 				form = $('#'+formId);
@@ -589,6 +591,30 @@ var Common = function () {
 		hideIn : function(s, t){
 			var $this = $(this);
 			setTimeout(function(){$this.hide(s, function(){$(this).remove()});}, t);
+		},
+		
+		asynSubmit : function(cb){
+			if(!$.nodeName(this[0], "form")){
+				alert('it must be a form');
+				return false;
+			}
+			var ifrmId = $(this).attr('target') || '_ifmProcess';
+			var ifrm = $('iframe[name'+ifrmId+']');
+			var cbName = ifrmId+'Callback';
+			if(ifrm.length==0){
+				ifrm = $('<iframe id="'+ifrmId+'" name="'+ifrmId+'" style="display:none;"></iframe>');
+				ifrm.appendTo('body');
+			}
+			var cbField = $('#asynCallback');
+			if(cbField.length==0){
+				cbField = $('<input name="asynCallback" type="hidden" value="'+cbName+'"/>');
+				$(this).append(cbField);
+			}
+			jfish.asyncCallbackManager = jfish.asyncCallbackManager || {};
+			jfish.asyncCallbackManager[cbName] = cb;
+			$(this).attr('target', ifrmId);
+			$(this).submit();
+			return false;
 		},
 		
 		dataAction : function(actionUrl){

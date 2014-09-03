@@ -4,8 +4,8 @@ import java.sql.Clob;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -24,6 +24,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	private String[] propNames;
 	private boolean checkAlias;
 
+	private boolean tupleResult;
 
 
 	public RowToBeanTransformer(Class<?> resultClass) {
@@ -46,22 +47,32 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	}	
 
 	public Object transformTuple(Object[] tuple, String[] aliases) {
+		if(tupleResult)
+			return tuple;
+		
 		Object result;
 
+		String propName = "";
 		try {
 			if ( ! isInitialized ) {
 				initialize( aliases );
 			}
 			else {
-				if(checkAlias)//如果是游标的方式，第一次之后不能获取列名，没必要重复检查
+				if(checkAlias)//如果是sqlserver游标的方式，第一次之后不能获取列名，没必要重复检查
 					check( aliases );
 			}
 			
-			result = resultClass.newInstance();
+			try {
+				result = resultClass.newInstance();
+			} catch (Exception e) {
+				//direct return tuple result if error.
+				tupleResult = true;
+				return tuple;
+			}
+			
 			BeanWrapper bw = SpringUtils.newBeanWrapper(result);
 
 			Object val;
-			String propName = "";
 			for ( int i = 0; i < aliases.length; i++ ) {
 				propName = propNames[i];
 				/*if(!bw.isWritableProperty(propName))
@@ -82,11 +93,8 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 				bw.setPropertyValue(propName, val);
 			}
 		}
-		catch ( InstantiationException e ) {
-			throw new HibernateException( "Could not instantiate resultclass: " + resultClass.getName() );
-		}
-		catch ( IllegalAccessException e ) {
-			throw new HibernateException( "Could not instantiate resultclass: " + resultClass.getName() );
+		catch ( Exception e ) {
+			throw new BaseException( "set bean["+resultClass.getName()+"] property["+propName+"] value error: " + e.getMessage() );
 		}
 
 		return result;

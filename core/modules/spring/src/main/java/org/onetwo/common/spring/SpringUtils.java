@@ -200,6 +200,21 @@ final public class SpringUtils {
 	}
 	
 
+	public static <T> void injectAndInitialize(ApplicationContext appContext, T bean) {
+		injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
+	}
+
+	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+		acb.autowireBeanProperties(bean, autowireMode, false);
+		initializeBean(acb, bean, autowireMode);
+	}
+
+	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		acb.initializeBean(bean, beanName);
+	}
+	
+
 	public static <T> T registerBean(ApplicationContext context, Class<?> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
