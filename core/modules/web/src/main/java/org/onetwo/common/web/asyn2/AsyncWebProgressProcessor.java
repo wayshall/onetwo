@@ -19,14 +19,14 @@ import org.springframework.util.Assert;
  * @author way
  *
  */
-public class AsynWebProcessor {
+public class AsyncWebProgressProcessor {
 	
-	private static final Logger logger = MyLoggerFactory.getLogger(AsynWebProcessor.class);
+	private static final Logger logger = MyLoggerFactory.getLogger(AsyncWebProgressProcessor.class);
 	private static final String DEFAULT_ASYNCALLBACK = "parent.jfishAsynCallback";
 	
 	private PrintWriter out;
 //	private DeamonTask<?> task;
-	private AsynMessageHolder asynMessageHolder;
+	private AsyncMessageHolder asynMessageHolder;
 //	private int dataCountPerTask = Integer.MIN_VALUE;
 	private String asynCallback = DEFAULT_ASYNCALLBACK;
 	
@@ -39,16 +39,16 @@ public class AsynWebProcessor {
 //	private int taskCount = 1;
 	
 
-	AsynWebProcessor(PrintWriter out, String asynCallback) {
+	AsyncWebProgressProcessor(PrintWriter out, String asynCallback) {
 		this(out, new StringMessageHolder());
 		if(StringUtils.isNotBlank(asynCallback))
 			this.asynCallback = asynCallback;
 	}
 
-	AsynWebProcessor(PrintWriter out, AsynMessageHolder holder) {
+	AsyncWebProgressProcessor(PrintWriter out, AsyncMessageHolder holder) {
 		this(out, holder, SpringApplication.getInstance().getBean(AsyncTaskExecutor.class));
 	}
-	AsynWebProcessor(PrintWriter out, AsynMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor) {
+	AsyncWebProgressProcessor(PrintWriter out, AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor) {
 		super();
 		this.out = out;
 //		this.dataCountPerTask = taskInterval;
@@ -57,7 +57,7 @@ public class AsynWebProcessor {
 		this.asyncTaskExecutor = asyncTaskExecutor;
 	}
 	
-	public AsynMessageHolder getAsynMessageHolder() {
+	public AsyncMessageHolder getAsynMessageHolder() {
 		return asynMessageHolder;
 	}
 	
@@ -68,11 +68,11 @@ public class AsynWebProcessor {
 		return (msg.indexOf('(')!=-1 && msg.indexOf(')')!=-1);
 	}
 	
-	protected void renderMessage(ProcessMessageType state, int percent, String msg){
+	public void renderMessage(ProcessMessageType state, int percent, String msg){
 		if(StringUtils.isBlank(msg))
 			return ;
 		if(isIncludeJsFunction(msg)){
-			renderScript(out, msg);
+			renderScript(msg);
 			return;
 		}
 //		String jsmsg = asynCallback + "('"+msg+"');";
@@ -81,7 +81,7 @@ public class AsynWebProcessor {
 												.append(", ").append(percent)
 												.append(", '").append(state.toString()).append("'")
 												.append(");");
-		renderScript(out, jsmsg.toString());
+		renderScript(jsmsg.toString());
 	}
 	
 	public void sleep(){
@@ -220,7 +220,7 @@ public class AsynWebProcessor {
 
 	}
 
-	protected void renderScript(PrintWriter out, String content) {
+	protected void renderScript(String content) {
 		if (StringUtils.isBlank(content))
 			return;
 		out.println("<script>");

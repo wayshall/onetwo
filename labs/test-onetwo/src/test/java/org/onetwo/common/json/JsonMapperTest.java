@@ -15,6 +15,7 @@ import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.asyn2.ProcessMessageType;
 
 import test.entity.UserEntity;
 
@@ -250,5 +251,41 @@ public class JsonMapperTest {
 		map2.put("bb", "bbvalue");
 		json = JsonMapper.IGNORE_EMPTY.toJson(map2);
 		System.out.println("json: " +json);
+	}
+	
+	public static class EnumVo {
+		private String field;
+		private int intField;
+		private ProcessMessageType type;
+		public String getField() {
+			return field;
+		}
+		public void setField(String field) {
+			this.field = field;
+		}
+		public int getIntField() {
+			return intField;
+		}
+		public void setIntField(int intField) {
+			this.intField = intField;
+		}
+		public ProcessMessageType getType() {
+			return type;
+		}
+		public void setType(ProcessMessageType type) {
+			this.type = type;
+		}
+		
+	}
+	@Test
+	public void testEnum(){
+		EnumVo v = new EnumVo();
+		v.setField("fieldValue");
+		v.setIntField(11);
+		v.setType(ProcessMessageType.FINISHED);
+		
+		String json = JsonMapper.IGNORE_EMPTY.toJson(v);
+		System.out.println("json: " + json);
+		Assert.assertEquals("{\"field\":\"fieldValue\",\"intField\":11,\"type\":\"FINISHED\"}", json);;
 	}
 }

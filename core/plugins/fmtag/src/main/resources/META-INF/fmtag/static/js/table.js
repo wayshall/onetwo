@@ -96,8 +96,7 @@ var Common = function () {
 		
 		handleFormFunc : function(form, restMethod){
 			return function(){
-
-				form = form || $(this).parents("form:first")[0];
+				form = form || $(this).parents("form:first");
 				
 				var nocheckbox = $(this).attr('data-nocheckbox') || false;
 				if(!nocheckbox){
@@ -151,7 +150,7 @@ var Common = function () {
 					ajaxAnywhere.getZonesToReload = function() {
 						return ajaxName;
 					}
-					ajaxAnywhere.formName=$(form).attr('id');
+					ajaxAnywhere.formName=$(form).attr('name') || $(form).attr('id');
 					ajaxAnywhere.submitAJAX();
 					return false;
 				}else{
@@ -299,7 +298,7 @@ var Common = function () {
 				form = $(link).parents("form:first");
 			}
 			*/
-			
+
 			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
@@ -593,10 +592,54 @@ var Common = function () {
 			setTimeout(function(){$this.hide(s, function(){$(this).remove()});}, t);
 		},
 		
+		asynSubmitForm : function(frm, tips){
+			var btn = $(this);
+			var aform = $(frm);
+			$(this).live('click', function(){
+				var msg = tips || '确定要提交此操作？';
+				if(!confirm(msg)){
+					return false;
+				}
+				
+				btn.attr('disabled', true);
+				var txt = btn.text();
+				btn.text('正在处理……');
+				
+				var processBar = aform.find('.asyn-process-bar');
+				if(processBar.length==0){
+					processBar = $('<div class="asyn-process-bar alert" style="display: none" ><button type="button" class="close" data-dismiss="alert">&times;</button><div class="process-msg alert alert-success">正在处理…… </div> <div class="progress progress-striped active"> <div class="bar"></div> </div> <div class="info-msg " style="height: 300px;width: 100%; overflow: auto" > </div> </div>');
+					aform.append(processBar);
+				}
+				var infoMsg = processBar.find('.info-msg');
+				infoMsg.html('');
+				var processMsg = processBar.find('.process-msg');
+				
+				processBar.fadeIn('slow');
+				
+				aform.asynSubmit(function(msg, percent, type){
+					if(type=='INFO'){
+						infoMsg.html(infoMsg.html()+'<br/>'+msg);
+						infoMsg.get(0).scrollTop = infoMsg.get(0).scrollHeight;
+					}else{
+						processMsg.html(msg);
+						$('.bar').css({width: percent+'%'});
+						if(type=='FINISHED'){
+							btn.removeAttr('disabled');
+							btn.text(txt);
+						}
+					}
+				});
+				return false;
+			});
+		},
+		
 		asynSubmit : function(cb){
 			if(!$.nodeName(this[0], "form")){
 				alert('it must be a form');
 				return false;
+			}
+			if(!cb){
+				alert('callback can not null');
 			}
 			var ifrmId = $(this).attr('target') || '_ifmProcess';
 			var ifrm = $('iframe[name'+ifrmId+']');
@@ -605,7 +648,7 @@ var Common = function () {
 				ifrm = $('<iframe id="'+ifrmId+'" name="'+ifrmId+'" style="display:none;"></iframe>');
 				ifrm.appendTo('body');
 			}
-			var cbField = $('#asynCallback');
+			var cbField = $(this).find('input[name="asynCallback"]');
 			if(cbField.length==0){
 				cbField = $('<input name="asynCallback" type="hidden" value="'+cbName+'"/>');
 				$(this).append(cbField);
@@ -613,6 +656,8 @@ var Common = function () {
 			jfish.asyncCallbackManager = jfish.asyncCallbackManager || {};
 			jfish.asyncCallbackManager[cbName] = cb;
 			$(this).attr('target', ifrmId);
+			
+			
 			$(this).submit();
 			return false;
 		},

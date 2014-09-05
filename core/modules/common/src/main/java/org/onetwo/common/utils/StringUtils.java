@@ -794,12 +794,20 @@ public abstract class StringUtils {
         if(isBlank(text) || isBlank(trimstr))
         	return text;
         String rs = text;
-        while(rs.startsWith(trimstr)){
-        	rs = rs.substring(trimstr.length());
+        int index = 0;
+        while(rs.startsWith(trimstr, index)){
+//        	rs = rs.substring(trimstr.length());
+        	index += trimstr.length();
         }
+        rs = index>0?rs.substring(index, rs.length()):rs;
         return rs;
     }
 
+    public static String trim(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        return trimRight(trimLeft(text, trimstr), trimstr);
+    }
 
     public static String replaceEach(String text, String search, String replacement) {
         return replaceEach(text, new String[]{search}, new String[]{replacement}, false, 0);

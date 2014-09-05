@@ -10,7 +10,7 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
-abstract public class AsynMessageHolder implements Serializable {
+abstract public class AsyncMessageHolder implements Serializable {
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
