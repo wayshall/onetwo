@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-abstract public class BlockQueueMessageHolder extends AsynMessageHolder {
+abstract public class BlockQueueMessageHolder extends AsyncMessageHolder {
 	
 	private BlockingQueue<SimpleMessage> messages = new ArrayBlockingQueue<SimpleMessage>(100);
 
