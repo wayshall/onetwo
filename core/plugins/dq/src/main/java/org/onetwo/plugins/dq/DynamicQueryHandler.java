@@ -96,7 +96,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		String queryName = dmethod.getQueryName();
 
 		if(debug)
-			logger.info("{}: {}", method.getName(), LangUtils.toString(args));
+			logger.info("{}: {}", method.getDeclaringClass().getSimpleName()+"."+method.getName(), LangUtils.toString(args));
 		
 		Object result = null;
 		Object[] methodArgs = null;
