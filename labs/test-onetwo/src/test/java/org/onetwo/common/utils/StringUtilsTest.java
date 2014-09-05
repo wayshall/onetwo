@@ -77,6 +77,17 @@ public class StringUtilsTest {
 		System.out.println("trimLeft str: " + rs);
 		Assert.assertEquals("18247000", rs);
 		
+		str = "0004418247000";
+		rs = StringUtils.trim(str, "4");
+		Assert.assertEquals("0004418247000", rs);
+
+		rs = StringUtils.trim(str, "00");
+		Assert.assertEquals("044182470", rs);
+		
+		rs = StringUtils.trim(str, "0");
+		System.out.println("trim str: " + rs);
+		Assert.assertEquals("4418247", rs);
+		
 	}
 	
 }

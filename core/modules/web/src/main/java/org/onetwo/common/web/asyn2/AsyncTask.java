@@ -13,10 +13,11 @@ abstract public class AsyncTask implements Runnable {
 //	private boolean finished;
 	private Exception exception;
 	
-	private int taskIndex;
+	private int taskIndex = 0;
 	
 
-	public AsyncTask() {
+	public AsyncTask(String name) {
+		this.name = name;
 	}
 	
 	public AsyncTask(String name, int taskIndex) {
