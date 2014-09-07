@@ -1,6 +1,5 @@
 package org.onetwo.common.web.asyn2;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,9 +7,10 @@ import java.util.Map;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.asyn.AsyncMessageTunnel;
 import org.slf4j.Logger;
 
-abstract public class AsyncMessageHolder implements Serializable {
+abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessage> {
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
@@ -57,18 +57,6 @@ abstract public class AsyncMessageHolder implements Serializable {
 		}
 		return str.toString();*/
 		return stateCounter.isEmpty()?"":stateCounter.toString();
-	}
-
-	/***
-	 * un-thread-safe
-	 * @return
-	 */
-	public SimpleMessage[] getAndClearMessages() {
-		List<SimpleMessage> list = new ArrayList<SimpleMessage>(getMessages());
-//		Collections.reverse(list);
-		SimpleMessage[] simpleMessages = list.toArray(new SimpleMessage[list.size()]);
-		this.clearMessages();
-		return simpleMessages;
 	}
 
 	/***
@@ -124,41 +112,9 @@ abstract public class AsyncMessageHolder implements Serializable {
 		}
 	}
 
-//	abstract protected void addMessage(SimpleMessage msg);
-
-	/*protected void triggerCounters(SimpleMessage msg){
-		this.triggerStates(msg.getState());
-	}*/
-	
-	/*protected void triggerStates(TaskState...states){
-		for(TaskState state : states){
-			if(state!=null)
-				this.asynStates.get(state.getValue()).increaseCount(1);
-		}
-	}*/
-
 
 	public void clearMessages() {
 		getMessages().clear();
 	}
-
-	/*public String getHtmlMessagesAndClear(String sep) {
-		SimpleMessage<T>[] simpleMessages = getAndClearMessages();
-		if(LangUtils.isEmpty(simpleMessages))
-			return "";
-		StringBuilder sb = new StringBuilder();
-		for(SimpleMessage<T> msg : simpleMessages){
-			sb.append(msg.toString()).append(sep);
-		}
-		return sb.toString();
-	}*/
-	
-	/*public int getTotalCount() {
-		return totalCount;
-	}*/
-
-	/*public Collection<TaskState> getTaskStates() {
-		return asynStates.values();
-	}*/
 	
 }
