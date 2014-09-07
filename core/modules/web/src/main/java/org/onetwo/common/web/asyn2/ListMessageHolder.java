@@ -25,11 +25,11 @@ abstract public class ListMessageHolder extends AsyncMessageHolder {
 	
 
 	@Override
-	public SimpleMessage[] getAndClearMessages() {
-		SimpleMessage[] simpleMessages = null;
+	public List<SimpleMessage> getAndClearMessages() {
+		List<SimpleMessage> simpleMessages = null;
 		lock.lock();
 		try {
-			simpleMessages = messages.toArray(new SimpleMessage[messages.size()]);
+			simpleMessages = new ArrayList<SimpleMessage>(messages);
 			this.clearMessages();
 		} finally{
 			lock.unlock();

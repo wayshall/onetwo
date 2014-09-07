@@ -15,17 +15,25 @@ abstract public class AsyncMessageTunnel<T> implements Serializable {
 
 	abstract protected Collection<T> getMessages();
 	
+	/***
+	 * un-thread-safe
+	 * @param message
+	 */
 	public void addMessage(T message){
 		getMessages().add(message);
 	}
 	
+	/***
+	 * un-thread-safe
+	 * @return
+	 */
 	public List<T> getAndClearMessages(){
 		List<T> messages = new ArrayList<T>(getMessages());
 		this.clearMessages();
 		return messages;
 	}
 	
-	public void clearMessages() {
+	protected void clearMessages() {
 		getMessages().clear();
 	}
 }

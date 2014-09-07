@@ -13,17 +13,12 @@ abstract public class AsyncTask implements Runnable {
 //	private boolean finished;
 	private Exception exception;
 	
-	private int taskIndex = 0;
+	private int dataCount = 0;
 	
-
-	public AsyncTask(String name) {
-		this.name = name;
-	}
-	
-	public AsyncTask(String name, int taskIndex) {
+	public AsyncTask(String name, int dataCount) {
 		super();
 		this.name = name;
-		this.taskIndex = taskIndex;
+		this.dataCount = dataCount;
 //		this.tasker = tasker;
 	}
 	
@@ -83,8 +78,8 @@ abstract public class AsyncTask implements Runnable {
 		return getException()!=null;
 	}
 
-	public int getTaskIndex() {
-		return taskIndex;
+	public int getDataCount() {
+		return dataCount;
 	}
 
 }
