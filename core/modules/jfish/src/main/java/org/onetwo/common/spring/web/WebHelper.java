@@ -15,6 +15,7 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -70,6 +71,10 @@ public class WebHelper {
 		if(params!=null){
 			this.pathParameters = (Map<String, String>)params;
 		}
+	}
+	
+	public boolean isAaXmlRequest(){
+		return RequestUtils.isAaXmlRequest(request);
 	}
 	
 	public String getRequestUrl(){

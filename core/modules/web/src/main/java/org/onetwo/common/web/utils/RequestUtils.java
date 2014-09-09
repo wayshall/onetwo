@@ -16,6 +16,8 @@ public abstract class RequestUtils {
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
+	public static final String AAXMLREQUEST_KEY = "aaxmlrequest";
+	public static final String AAXMLREQUEST_KEY = "aaxmlrequest";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
@@ -70,6 +72,10 @@ public abstract class RequestUtils {
 	}
 	public static String getBrowerByAgent(HttpServletRequest request){
 		return getBrowerByAgent(request.getHeader("User-Agent"));
+	}
+	
+	public static boolean isAaXmlRequest(HttpServletRequest request){
+		return "true".equalsIgnoreCase(request.getParameter(AAXMLREQUEST_KEY));
 	}
 	
 	public static String getOSByAgent(String userAgent){
