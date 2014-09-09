@@ -11,6 +11,7 @@ public class WebHolderManager extends WebFilterAdapter implements Ordered {
 
 	@Override
 	public void onFilter(HttpServletRequest request, HttpServletResponse response) {
+//		System.out.println("url: " + request.getRequestURL()+" " + RequestUtils.getBrowerByAgent(request));
 		WebHolder.initHolder(request, response);
 //		System.out.println("url: " + request.getRequestURL());
 	}

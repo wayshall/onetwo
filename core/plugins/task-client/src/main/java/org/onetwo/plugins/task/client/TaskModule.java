@@ -21,6 +21,11 @@ public interface TaskModule {
 			String name = "编辑";
 			PermissionType permissionType = PermissionType.FUNCTION;
 		}
+
+		public static interface ExeLog {
+			String name = "执行明细";
+			PermissionType permissionType = PermissionType.FUNCTION;
+		}
 	}
 
 	public static interface Archived {
@@ -32,6 +37,7 @@ public interface TaskModule {
 
 		public static interface ReQueue {
 			String name = "重新放入队列";
+			PermissionType permissionType = PermissionType.FUNCTION;
 		}
 
 	}

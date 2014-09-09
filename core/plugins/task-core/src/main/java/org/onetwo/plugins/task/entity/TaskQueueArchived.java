@@ -49,6 +49,10 @@ public class TaskQueueArchived implements Serializable {
 		this.id = id;
 	}
 
+	public String getName() {
+		return task.getName();
+	}
+	
 	public TaskExecResult getResult() {
 		return result;
 	}

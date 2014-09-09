@@ -8,9 +8,11 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.task.client.TaskModule.Queue.Edit;
+import org.onetwo.plugins.task.client.TaskModule.Queue.ExeLog;
 import org.onetwo.plugins.task.client.TaskModule.Queue.List;
 import org.onetwo.plugins.task.client.TaskModule.Queue.New;
 import org.onetwo.plugins.task.client.service.impl.TaskClientServiceImpl;
+import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.utils.TaskConstant.YesNo;
@@ -30,12 +32,19 @@ public class TaskQueueController extends PluginSupportedController {
 	
 	@Resource
 	private TaskClientServiceImpl taskClientService;
-	
+
 	@ByMenuClass(codeClass=List.class)
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<TaskQueue> page){
 		taskQueueService.findPage(page);
 		return pluginMv("task-queue-index", "page", page);
+	}
+	
+	@ByFunctionClass(codeClass=ExeLog.class)
+	@RequestMapping(value="/{taskQueueId}/log", method=RequestMethod.GET)
+	public ModelAndView log(Page<TaskExecLog> page, @PathVariable("taskQueueId") Long taskQueueId){
+		taskQueueService.findExeLogPage(page, taskQueueId);
+		return pluginMv("task-queue-log-list", "page", page);
 	}
 	
 
