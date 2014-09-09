@@ -68,6 +68,9 @@ public abstract class RequestUtils {
 		}
 		return "Other";
 	}
+	public static String getBrowerByAgent(HttpServletRequest request){
+		return getBrowerByAgent(request.getHeader("User-Agent"));
+	}
 	
 	public static String getOSByAgent(String userAgent){
 		userAgent = userAgent.toLowerCase();

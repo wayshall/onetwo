@@ -101,14 +101,12 @@ var Common = function () {
 				var nocheckbox = $(this).attr('data-nocheckbox') || false;
 				if(!nocheckbox){
 					var checkfields = $(jfish.cssKeys.checkField, form);
-					if(checkfields.length>0){
-						var values = $(form).checkedValues();
-//		    			var table = $(form).children("table:first");
-						if(!values || values.length==0){
-							$.showTipsWindow("请先选择数据！");
-//							alert("请先选择数据！");
-							return false;
-						}
+					var values = $(form).checkedValues();
+//	    			var table = $(form).children("table:first");
+					if(!values || values.length==0){
+						$.showTipsWindow("请先选择数据！");
+//						alert("请先选择数据！");
+						return false;
 					}
 				}
 				//if(confirm("确定删除选中的？")){
@@ -618,7 +616,7 @@ var Common = function () {
 				
 				aform.asynSubmit(function(msg, percent, type){
 					if(type=='INFO'){
-						infoMsg.html(infoMsg.html()+'<br/>'+msg);
+						infoMsg.append('<br/>'+msg);
 						infoMsg.get(0).scrollTop = infoMsg.get(0).scrollHeight;
 					}else{
 						processMsg.html(msg);

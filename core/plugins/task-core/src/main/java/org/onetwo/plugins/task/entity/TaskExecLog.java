@@ -10,8 +10,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
@@ -42,6 +40,8 @@ public class TaskExecLog implements Serializable {
 	private String taskOutput;
 	
 	private Long taskQueueId;
+	
+	private Integer execIndex;
 
 	public Long getId() {
 		return id;
@@ -105,6 +105,14 @@ public class TaskExecLog implements Serializable {
 
 	public void setTaskQueueId(Long taskQueueId) {
 		this.taskQueueId = taskQueueId;
+	}
+
+	public Integer getExecIndex() {
+		return execIndex;
+	}
+
+	public void setExecIndex(Integer execIndex) {
+		this.execIndex = execIndex;
 	}
 
 }
