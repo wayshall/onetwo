@@ -150,6 +150,8 @@ create table TASK_EXEC_LOG (
    TASK_OUTPUT          VARCHAR(4000)        null,
    START_TIME           DATETIME             null,
    END_TIME             DATETIME             null,
+   EXEC_INDEX           INT                  null,
    constraint PK_TASK_EXEC_LOG primary key (ID)
 )
 go
+

@@ -88,6 +88,7 @@
                 		text:"确定",
                 		handler: function(){
                 			logoutHandler(win);
+                			return false;
                 		}
                 	},{
                 		text:"取消",

@@ -64,6 +64,7 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		log.setEndTime(DateUtil.now());
 		log.setResult(result);
 		log.setTaskQueueId(taskQueue.getId());
+		log.setExecIndex(taskQueue.getCurrentTimes());
 		getBaseEntityManager().save(log);
 		
 		if(result==TaskExecResult.FAILED){
@@ -83,6 +84,10 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		getBaseEntityManager().flush();
 		getBaseEntityManager().remove(taskQueue);
 		return archived;
+	}
+	
+	public void findExeLogPage(Page<TaskExecLog> page, Long taskQueueId){
+		getBaseEntityManager().findPage(TaskExecLog.class, page, "taskQueueId", taskQueueId);
 	}
 	
 	public TaskExecLog logExec(TaskExecLog log){

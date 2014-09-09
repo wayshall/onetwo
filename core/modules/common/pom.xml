@@ -72,6 +72,12 @@
 		<version>1.9.3</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.samba.jcifs</groupId>
+	  <artifactId>jcifs</artifactId>
+	  <version>1.2.19</version>
+	</dependency>
+	
 		
   </dependencies>
   

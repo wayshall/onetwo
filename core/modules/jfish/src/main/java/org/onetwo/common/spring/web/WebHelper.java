@@ -118,6 +118,7 @@ public class WebHelper {
 		return pathParameters;
 	}
 
+	@Deprecated
 	public Map<String, Object> getWebRequestContext() {
 		if(webRequestContext==null){
 			webRequestContext = LangUtils.newHashMap();
@@ -135,6 +136,12 @@ public class WebHelper {
 		if(!webRequestContext.containsKey("backUrl"))
 			webRequestContext.put("backUrl", getRefererUrl(""));
 		return webRequestContext;
+	}
+	
+	public String getRefererUrl(){
+		String url = this.request.getHeader("Referer");
+		url = StringUtils.emptyIfNull(url);
+		return url;
 	}
 	
 	public String getRefererUrl(String def){
