@@ -6,21 +6,15 @@ import java.util.concurrent.BlockingQueue;
 
 abstract public class BlockQueueMessageHolder extends AsyncMessageHolder {
 	
-	private BlockingQueue<SimpleMessage> messages = new ArrayBlockingQueue<SimpleMessage>(100);
+	private BlockingQueue<SimpleMessage> messages;
 
-
-	/*public void addMessage(SimpleMessage msg){
-		if(msg==null)
-			return;
-		try {
-			this.messages.add(msg);
-			this.triggerCounters(msg);
-		} catch (Exception e) {
-			logger.error("can not add msg to queue, ignore["+msg.getDetail()+"] : " + e.getMessage());
-//			e.printStackTrace();
-		}
-	}*/
-
+	public BlockQueueMessageHolder(){
+		this(1000);
+	}
+			
+	public BlockQueueMessageHolder(int size){
+		messages = new ArrayBlockingQueue<SimpleMessage>(size);
+	}
 
 	@Override
 	protected Collection<SimpleMessage> getMessages() {

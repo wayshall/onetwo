@@ -30,6 +30,9 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileInputStream;
+
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -51,6 +54,7 @@ public class FileUtils {
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
 	public static final String NEW_LINE = "\n";
+	public static final String SMB_PREFIX = "smb://";
 
 	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
@@ -67,6 +71,29 @@ public class FileUtils {
 		if(checkExists && !f.exists())
 			throw new BaseException("file not found at path: " + path);
 		return f;
+	}
+
+
+	public static InputStream newInputStream(String baseDir, String subPath){
+		String path = StringUtils.trimRight(baseDir, SLASH);
+		path += StringUtils.appendStartWith(subPath, SLASH);
+		return newInputStream(path);
+	}
+
+	public static InputStream newInputStream(String path){
+		InputStream in = null;
+		try {
+			if(path.toLowerCase().startsWith(SMB_PREFIX)){
+				SmbFile smbf = new SmbFile(path);
+				in = new SmbFileInputStream(smbf);
+			}else{
+				File f = newFile(path);
+				in = new FileInputStream(f);
+			}
+		} catch (Exception e) {
+			throw LangUtils.asBaseException("create inputstream error : " + e.getMessage(), e);
+		}
+		return in;
 	}
     
 	  //-----------------------------------------------------------------------
