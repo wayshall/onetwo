@@ -49,7 +49,11 @@ public class TaskClientServiceImpl {
 		TaskBizTag tag = loadOrSave(taskVo.getBizTag());
 		if(taskQueue==null){
 			taskQueue = new TaskQueue();
-			taskQueue.setPlanTime(taskVo.getPlanTime());
+			if(taskVo.getPlanTime()!=null){
+				taskQueue.setPlanTime(taskVo.getPlanTime());
+			}else{
+				taskQueue.setPlanTime(new Date());
+			}
 			
 			TaskEmail email = new TaskEmail();
 			email.setContentType(ContentType.STATIC_TEXT);

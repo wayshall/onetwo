@@ -50,7 +50,8 @@ public class WebHolder {
 		return response;
 	}
 	private static HttpServletRequest getSpringContextHolderRequest(){
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		return attrs==null?null:attrs.getRequest();
 	}
 	
 	public static HttpSession getSession(){
