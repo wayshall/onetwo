@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -75,8 +76,14 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 		List<?> meesages = asynMessageTunnel.getAndClearMessages(); 
 		flushMessage(meesages);
 	}
+	
 	@Override
 	public void handleTask(AsyncTask task){
+		handleTask(true, task);
+	}
+	
+	protected void handleTask(boolean closeWriter, AsyncTask task){
+		Assert.notNull(task);
 		Future<?> future = this.asyncTaskExecutor.submit(task);
 		
 		while(!future.isDone()){
@@ -85,16 +92,26 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 			flushAndClearTunnelMessage();
 		}
 		
-		Object sync = ReflectUtils.getFieldValue(future, "sync");
+		logIfThrowable(future);
+		doAfterTaskCompleted(true, task);
+	}
+	
+	protected void doAfterTaskCompleted(boolean closeWriter, AsyncTask task){
+		flushAndClearTunnelMessage();
+		asynMessageTunnel.clearMessages();
+		if(closeWriter){
+			IOUtils.closeQuietly(out);
+		}
+		task = null;
+	}
+	
+	protected void logIfThrowable(Future<?> future){
+		Object sync = ReflectUtils.getFieldValue(future, "sync", false);
 		if(sync!=null){
 			Throwable exp = (Throwable)ReflectUtils.getFieldValue(sync, "exception");
 			if(exp!=null)
-				logger.error("error: " + exp.getMessage(), exp);
+				logger.error("async processor error: " + exp.getMessage(), exp);
 		}
-		
-		flushAndClearTunnelMessage();
-		asynMessageTunnel.clearMessages();
-		task = null;
 	}
 
 	public void flushMessage(String content) {

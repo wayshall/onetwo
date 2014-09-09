@@ -9,7 +9,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.asyn2.AsyncMessageHolder;
-import org.onetwo.common.web.asyn2.ProgressAsyncWebProcessor;
+import org.onetwo.common.web.asyn2.DefaultProgressAsyncWebProcessor;
 import org.onetwo.common.web.asyn2.StringMessageHolder;
 import org.springframework.core.task.AsyncTaskExecutor;
 
@@ -99,7 +99,7 @@ public class AsyncWebProcessorBuilder {
 				if(messageTunnel==null){
 					messageTunnel = new StringMessageHolder();
 				}
-				processor = new ProgressAsyncWebProcessor(response.getWriter(), (AsyncMessageHolder)messageTunnel, asyncTaskExecutor);
+				processor = new DefaultProgressAsyncWebProcessor(response.getWriter(), (AsyncMessageHolder)messageTunnel, asyncTaskExecutor);
 			}else{
 				if(messageTunnel==null){
 					messageTunnel = new StringMessageTunnel();

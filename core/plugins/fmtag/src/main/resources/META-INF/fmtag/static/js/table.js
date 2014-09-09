@@ -94,11 +94,11 @@ var Common = function () {
 			toolbarBatchButton : ".dg-toolbar-button-batch"
 		},
 		
-		handleFormFunc : function(form, restMethod){
+		handleFormFunc : function(form, restMethod, unValidateCheckbox){
 			return function(){
 				form = form || $(this).parents("form:first");
 				
-				var nocheckbox = $(this).attr('data-nocheckbox') || false;
+				var nocheckbox = $(this).attr('data-nocheckbox') || unValidateCheckbox || false;
 				if(!nocheckbox){
 					var checkfields = $(jfish.cssKeys.checkField, form);
 					var values = $(form).checkedValues();
@@ -214,7 +214,7 @@ var Common = function () {
 				return false;
 			});
 			
-			$(jfish.cssKeys.formButton).live("click", jfish.handleFormFunc());
+			$(jfish.cssKeys.formButton).live("click", jfish.handleFormFunc(null, null, true));
 			
 			$('.jfish-toggle-control').live("click", function(){
 				var $this = $(this);
@@ -265,7 +265,7 @@ var Common = function () {
 		handleMethod : function(link) {
 			var href = link.attr('href');
 			href = encodeURI(href);
-			var method = link.attr('data-method');
+			var method = link.attr('data-method') || 'get';
 			var target = link.attr('target');
 			
 			var remote = eval($(link).attr('remote'));
@@ -291,23 +291,21 @@ var Common = function () {
 				//form = $('#'+formId);
 			}
 			
-			/***
 			if(!form){
 				form = $(link).parents("form:first");
 			}
-			*/
 
 			var metadata_input = "";
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
 				form.attr("action", href);
 				form.attr("method", method);
-			}/***
+			}
 			else if(form.length>0){
 				form = $(form.get(0));
 				form.attr("action", href);
 				form.attr("method", method);
-			}*/
+			}
 			else{
 				var formId = '_linkForm';
 				form = $('#'+formId);
@@ -616,7 +614,7 @@ var Common = function () {
 				
 				aform.asynSubmit(function(msg, percent, type){
 					if(type=='INFO'){
-						infoMsg.append('<br/>'+msg);
+						infoMsg.append('<p>'+msg+"</p>");
 						infoMsg.get(0).scrollTop = infoMsg.get(0).scrollHeight;
 					}else{
 						processMsg.html(msg);
