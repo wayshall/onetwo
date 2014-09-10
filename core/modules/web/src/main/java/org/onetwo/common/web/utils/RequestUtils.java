@@ -17,7 +17,6 @@ public abstract class RequestUtils {
 	public static final String HTTPS_KEY = "https://";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
 	public static final String AAXMLREQUEST_KEY = "aaxmlrequest";
-	public static final String AAXMLREQUEST_KEY = "aaxmlrequest";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
