@@ -12,10 +12,10 @@
 			<@widget.dataField  name="startTime" label="开始执行时间" />
 			<@widget.dataField  name="endTime" label="执行结束时间" />
 			<@widget.dataField  name="taskInput" label="输入" cssStyle="width:300px;" render="html">
-				<p style="word-break: break-all;overflow:auto;">${entity.taskInput}</p>
+				<div style="heigh:10px;word-break: break-all;overflow:auto;">${(entity.taskInput?html)!''}</div>
 			</@widget.dataField>	
 			<@widget.dataField  name="taskOutput" label="输出" cssStyle="width:300px;" render="html">
-				<p style="word-break: break-all;overflow:auto;">${entity.taskOutput}</p>
+				<div style="word-break: break-all;overflow:auto;">${(entity.taskOutput?html)!''}</div>
 			</@widget.dataField>	
 		</@widget.dataRow>	
 	</@widget.dataGrid >

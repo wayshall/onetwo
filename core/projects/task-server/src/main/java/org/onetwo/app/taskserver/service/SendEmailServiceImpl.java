@@ -41,7 +41,8 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 
 	@Override
 	public Object execute(TaskQueue taskQueue) {
-		StringBuilder msg = new StringBuilder("executting email task: ").append(taskQueue.getName()).append("\n");
+
+		StringBuilder msg = new StringBuilder("开始执行发送邮件任务: ").append(taskQueue.getName()).append("\n");
 		
 		TaskExecLog log = new TaskExecLog();
 		log.setStartTime(DateUtil.now());
@@ -50,10 +51,11 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 		TaskEmail email = (TaskEmail) taskQueue.getTask();
 		TaskExecResult rs = null;
 		try {
+			taskQueue.markExecuted();
+			msg.append("该任务是第[").append(taskQueue.getCurrentTimes()).append("]次执行……").append("\n");
 			log.setExecutor(BaseSiteConfig.getInstance().getAppCode());
 			log.setTaskInput(JsonMapper.IGNORE_EMPTY.toJson(email));
 			
-			taskQueue.markExecuted();
 			MailInfo mailInfo = MailInfo.create(emailConfig.getUsername(), email.getToAsArray())
 										.cc(email.getCcAsArray())
 										.subject(email.getSubject()).content(email.getContent())
@@ -68,13 +70,13 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 			rs = TaskExecResult.SUCCEED;
 			this.taskQueueService.archivedIfNecessary(taskQueue, log, rs);
 
-			msg.append("result: ").append(rs);
+			msg.append("执行结果: ").append(rs);
 			logger.info(msg.toString());
 		} catch (Exception e) {
-			msg.append("result: ").append(rs);
+			rs = TaskExecResult.FAILED;
+			msg.append("执行结果: ").append(rs);
 			logger.error(msg.toString(), e);
 			
-			rs = TaskExecResult.FAILED;
 			log.setTaskOutput(e.getMessage());
 			this.taskQueueService.archivedIfNecessary(taskQueue, log, rs);
 		} finally{
