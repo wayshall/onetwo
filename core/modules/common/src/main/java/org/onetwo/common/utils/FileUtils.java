@@ -33,6 +33,7 @@ import javax.imageio.ImageIO;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -53,6 +54,7 @@ public class FileUtils {
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
+	public static final char DOT_CHAR = '.';
 	public static final String NEW_LINE = "\n";
 	public static final String SMB_PREFIX = "smb://";
 
@@ -409,23 +411,23 @@ public class FileUtils {
 
 	public static String getFileNameWithoutExt(String fileName) {
 		if(fileName.indexOf('\\')!=-1)
-			fileName = fileName.replace('\\', '/');
-		int start = fileName.lastIndexOf('/');
-		int index = fileName.lastIndexOf('.');
+			fileName = fileName.replace('\\', SLASH_CHAR);
+		int start = fileName.lastIndexOf(SLASH_CHAR);
+		int index = fileName.lastIndexOf(DOT_CHAR);
 		if(index==-1)
 			index = fileName.length();
 		return fileName.substring(start+1, index);
 	}
 
 	public static String getFileName(String fileName) {
-//		if(fileName.indexOf(File.separatorChar)!=-1)
-//			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(File.separatorChar);
+		if(fileName.indexOf('\\')!=-1)
+			fileName = fileName.replace('\\', SLASH_CHAR);
+		int start = fileName.lastIndexOf(SLASH_CHAR);
 		return fileName.substring(start+1);
 	}
 
 	public static String getExtendName(String fileName, boolean hasDot) {
-		int index = fileName.lastIndexOf('.');
+		int index = fileName.lastIndexOf(DOT_CHAR);
 		if (index == -1)
 			return "";
 		if(hasDot)
@@ -1107,6 +1109,19 @@ public class FileUtils {
 			close(zipout);
 		}
 		return zipfile;
+	}
+
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
+		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DateTime, 6);
+	}
+	
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){
+		String newFileName = getFileNameWithoutExt(fileNameNoDirPath)+ seprator + NiceDate.New().format(dateformat);
+		if(count>0){
+			newFileName += seprator + RandomStringUtils.randomNumeric(count);
+		}
+		newFileName += getExtendName(fileNameNoDirPath, true);
+		return newFileName;
 	}
 	
 	public static void main(String[] args) {

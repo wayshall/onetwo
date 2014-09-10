@@ -81,6 +81,10 @@ public class WebHelper {
 		return this.request.getRequestURL().toString();
 	}
 	
+	public String getRequestMethod(){
+		return request==null?"":request.getMethod().toLowerCase();
+	}
+	
 	public String getQueryString(){
 		String qs = this.request.getQueryString();
 		return qs;

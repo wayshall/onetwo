@@ -11,16 +11,10 @@ import javax.persistence.Table;
 public class TaskConfig implements Serializable {
 
 	@Id
-	private String code;
 	private String name;
 	private String value;
+	private String remark;
 
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
 	public String getName() {
 		return name;
 	}
@@ -33,6 +27,11 @@ public class TaskConfig implements Serializable {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 	
 }

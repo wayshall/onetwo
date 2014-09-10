@@ -2,6 +2,7 @@ package org.onetwo.plugins.task;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.propconf.JFishProperties;
+import org.springframework.util.Assert;
 
 public class TaskPluginConfig implements LoadableConfig {
 
@@ -18,6 +19,12 @@ public class TaskPluginConfig implements LoadableConfig {
 
 	public int getTryTimes(){
 		return config.getInt("try.times", 3);
+	}
+	
+	public String getAttachmentDir(){
+		String dir = config.getProperty("attachment.dir");
+		Assert.hasText(dir);
+		return dir;
 	}
 
 	@Override
