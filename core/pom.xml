@@ -22,6 +22,7 @@
 				<module>modules/parent</module>
 				<module>modules/common</module>
 				<module>modules/spring</module>
+				<module>modules/ajaxanywhere</module>
 				<module>modules/web</module>
 				<module>modules/security</module>
 				<!-- 

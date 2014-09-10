@@ -23,7 +23,7 @@
 			<@widget.dataField  name="status.name" label="状态" />
 			<@widget.dataField  name="taskType" label="任务类型" />
 			<@widget.dataField  name="operation" render="html" label="操作" permission="class:org.onetwo.plugins.task.client.TaskModule$Queue$ExeLog">
-				<a href="${pluginConfig.baseURL}/taskqueue/${(entity.id)!''}/log" data-toggle="showTipsModal" data-modal="#showTipsModal">执行明细</a>
+				<a href="${pluginConfig.baseURL}/taskqueue/${(entity.id)!''}/log" >执行明细</a>
 			</@widget.dataField>
 		</@widget.dataRow>	
 	</@widget.dataGrid >

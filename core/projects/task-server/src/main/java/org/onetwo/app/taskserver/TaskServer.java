@@ -3,7 +3,7 @@ package org.onetwo.app.taskserver;
 import org.onetwo.common.cmd.SpringCmdRunner;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 
-public class Main {
+public class TaskServer {
 
 	/**
 	 * @param args

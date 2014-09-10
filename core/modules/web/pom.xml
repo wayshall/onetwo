@@ -36,6 +36,12 @@
 	  <version>${onetwo.version}</version>
 	</dependency>
 	
+    <dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-ajaxanywhere</artifactId>
+	  <version>${onetwo.version}</version>
+	</dependency> 
+	
 	<!-- spring begin -->
 	<dependency>
 	  <groupId>org.springframework</groupId>
@@ -139,11 +145,6 @@
 	  <version>${urlrewrite.version}</version>
     </dependency>
     
-    <dependency>
-	  <groupId>net.sourceforge.ajaxanywhere</groupId>
-	  <artifactId>ajaxanywhere</artifactId>
-	  <version>1.2.1</version>
-	</dependency>
 	
 	<!-- embed tomcat -->
 	<dependency>
