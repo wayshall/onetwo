@@ -155,3 +155,24 @@ create table TASK_EXEC_LOG (
 )
 go
 
+
+
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TASK_CONFIG')
+            and   type = 'U')
+   drop table TASK_CONFIG
+go
+
+/*==============================================================*/
+/* Table: TASK_CONFIG                                           */
+/*==============================================================*/
+create table TASK_CONFIG (
+   NAME                 varchar(50)          not null,
+   VALUE                varchar(200)         null,
+   REMARK               varchar(1000)        null,
+   constraint PK_TASK_CONFIG primary key (NAME)
+)
+go

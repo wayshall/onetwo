@@ -12,7 +12,8 @@
 	 		<@widget.formField name="subject" label="邮件标题"/>
 	 		<@widget.formField name="html" label="是否html邮件" value="htmlChecked" type="radioGroup" items=htmlSelector/>
 	 		<@widget.formField name="toAddress" label="收件人"/>
-	 		<@widget.formField name="content" label="邮件内容" type="textarea"/>
+	 		<@widget.formField name="attachment" label="附件" type="file"/>
+	 		<@widget.formField name="content" label="邮件内容" type="textarea" cssStyle="width:400px;height:400px;"/>
 			<@widget.formField name="" type="submit" label="提交"/>
 			<@widget.formField name="" type="button" value="${pluginConfig.baseURL}/taskqueue" label="返回"/>
 	 	</@widget.form>

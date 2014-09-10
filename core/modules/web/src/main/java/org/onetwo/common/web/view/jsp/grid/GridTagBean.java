@@ -196,6 +196,10 @@ public class GridTagBean extends HtmlElement {
 		return ajaxZoneName;
 	}
 
+	public String getAjaxZoneNameFull() {
+		return getAjaxZoneName()+"Full";
+	}
+
 	public void setAjaxZoneName(String ajaxZoneName) {
 		this.ajaxZoneName = ajaxZoneName;
 	}

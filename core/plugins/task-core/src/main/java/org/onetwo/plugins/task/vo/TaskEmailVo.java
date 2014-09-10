@@ -2,9 +2,13 @@ package org.onetwo.plugins.task.vo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.onetwo.common.utils.GuavaUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.plugins.task.utils.TaskConstant.YesNo;
+import org.onetwo.plugins.task.utils.TaskUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class TaskEmailVo implements Serializable {
@@ -22,11 +26,26 @@ public class TaskEmailVo implements Serializable {
 	private String ccAddress;
 	@NotBlank
 	private String toAddress;
+	private List<String> attachmentPath;
 	
 	public boolean htmlChecked(YesNo yesNo){
 		return html==yesNo.getBoolean();
 	}
 	
+	public void addAttachment(String path){
+		if(attachmentPath==null){
+			attachmentPath = LangUtils.newArrayList();
+		}
+		attachmentPath.add(path);
+	}
+	
+	
+	public String getAttachmentPath() {
+		if(LangUtils.isEmpty(attachmentPath))
+			return "";
+		return GuavaUtils.join(attachmentPath, TaskUtils.ATTACHMENT_PATH_SPLITTER);
+	}
+
 	public String getName() {
 		return name;
 	}
