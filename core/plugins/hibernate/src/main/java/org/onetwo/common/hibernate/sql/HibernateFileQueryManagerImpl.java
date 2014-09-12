@@ -29,7 +29,8 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	private JFishNamedSqlFileManager<HibernateNamedInfo> sqlFileManager;
 	private FileSqlParser<HibernateNamedInfo> parser;
 	
-	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+//	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, CreateQueryable baseEntityManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public HibernateFileQueryManagerImpl(DataBase databaseType, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super(fileNamedQueryFactoryListener);
 		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
 		StringTemplateLoaderFileSqlParser<HibernateNamedInfo> p = new StringTemplateLoaderFileSqlParser<HibernateNamedInfo>();

@@ -24,6 +24,7 @@ import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
@@ -41,8 +42,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private boolean debug = true;
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
+	private JdbcDao jdao;
 	
+
 	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
+		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
+	}
+	
+	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
@@ -52,7 +59,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			Method method = methods[j];
 			excludeMethods.add(method);
 		}
-		
+		this.jdao = jdao;
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
 	}
@@ -126,14 +133,18 @@ public class DynamicQueryHandler implements InvocationHandler {
 				result = dq.executeUpdate();
 				
 			}else if(dmethod.isBatch()){
+				//TODO 先特殊处理，待修改
 				if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
 					throw new BaseException("batch execute only has a List Type paramter : " + args);
 				}
 				FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(queryName);
 				SqlAndValues sv = sqlGen.generatSql();
-				JdbcDao jdao = SpringApplication.getInstance().getBean(JdbcDao.class);
-				if(jdao==null)
-					throw new BaseException("no supported jdbc batch execute!");
+				JdbcDao jdao = this.jdao;
+				if(jdao==null){
+					jdao = SpringApplication.getInstance().getBean(JdbcDao.class, false);
+					if(jdao==null)
+						throw new BaseException("no supported jdbc batch execute!");
+				}
 				
 				List<?> batchParameter = (List<?>)args[0];
 				List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
@@ -143,13 +154,19 @@ public class DynamicQueryHandler implements InvocationHandler {
 					BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
 					for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 						if(!paramBean.isReadableProperty(parameter.getProperty()))
-							throw new BaseException("batch execute parameter must be a bean property");
+							throw new BaseException("batch execute parameter["+parameter.getProperty()+"] is not a bean["+val+"] property");
 						Object value = parameter.getParamterValue(paramBean);
 						paramValueMap.put(parameter.getName(), value);
 					}
 					batchValues.add(paramValueMap);
 				}
-				return jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+				int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+				if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
+					return counts;
+				}else{
+					int count = LangUtils.sum(counts);
+					return Types.convertValue(count, dmethod.getResultClass());
+				}
 				
 			}else{
 				methodArgs = dmethod.toArrayByArgs(args, componentClass);

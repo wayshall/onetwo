@@ -38,7 +38,7 @@ public class HibernateFileQueryManagerFactoryBean implements FactoryBean<FileNam
 		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		DataBase db = JdbcUtils.getDataBase(dataSource);
 		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, baseEntityManager, listener);
+		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, listener);
 		fq.initQeuryFactory(baseEntityManager);
 		this.fileNamedQueryFactory = fq;
 	}
