@@ -18,6 +18,7 @@ import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskType;
+import org.onetwo.plugins.task.utils.TaskUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -61,7 +62,7 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.subject(email.getSubject()).content(email.getContent())
 										.contentType(email.getContentType())
 										.mimeMail(email.isHtml());
-			for(String path : GuavaUtils.iterable(email.getAttachmentPath(), ';')){
+			for(String path : email.getAttachmentPathAsArray()){
 				String fpath = emailConfig.getAttachmentPath(path);
 				mailInfo.addAttachment(FileUtils.newFile(fpath, true));
 			}

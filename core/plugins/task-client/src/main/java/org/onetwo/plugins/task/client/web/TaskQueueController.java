@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
+import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
@@ -69,7 +70,11 @@ public class TaskQueueController extends PluginSupportedController {
 		if(bind.hasErrors()){
 			return pluginMv("task-queue-email-new");
 		}
-		String fn = FileUtils.newFileNameByDateAndRand(attachment.getOriginalFilename());a 
+		if(attachment!=null){
+			String fn = FileUtils.newFileNameByDateAndRand(attachment.getOriginalFilename());
+			JFishWebUtils.writeInputStreamTo(attachment, taskPluginConfig.getAttachmentDir(), fn);
+			taskQueue.addAttachment(fn);
+		}
 		taskClientService.save(taskQueue);
 		return pluginRedirectTo("/taskqueue", "保存成功！");
 	}
