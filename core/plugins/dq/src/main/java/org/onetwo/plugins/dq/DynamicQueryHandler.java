@@ -136,18 +136,20 @@ public class DynamicQueryHandler implements InvocationHandler {
 					throw new BaseException("no supported jdbc batch execute!");
 				
 				List<?> batchParameter = (List<?>)args[0];
-				List<Map<String, ?>> batchValues = LangUtils.newArrayList(batchParameter.size());
+				List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
 				ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
 				for(Object val : batchParameter){
 					Map<String, Object> paramValueMap = new HashMap<String, Object>();
 					BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
 					for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
+						if(!paramBean.isReadableProperty(parameter.getProperty()))
+							throw new BaseException("batch execute parameter must be a bean property");
 						Object value = parameter.getParamterValue(paramBean);
 						paramValueMap.put(parameter.getName(), value);
 					}
 					batchValues.add(paramValueMap);
 				}
-				return jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), (Map<String, ?>[])batchValues.toArray());
+				return jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 				
 			}else{
 				methodArgs = dmethod.toArrayByArgs(args, componentClass);

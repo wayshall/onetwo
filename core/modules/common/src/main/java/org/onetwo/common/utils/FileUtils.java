@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
+import jcifs.smb.SmbFileOutputStream;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
@@ -54,6 +55,7 @@ public class FileUtils {
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
+	public static final char BACK_SLASH_CHAR = '\\';
 	public static final char DOT_CHAR = '.';
 	public static final String NEW_LINE = "\n";
 	public static final String SMB_PREFIX = "smb://";
@@ -75,6 +77,20 @@ public class FileUtils {
 		return f;
 	}
 
+	public static String newSmbPath(String user, String password, String path){
+		return LangUtils.append(SMB_PREFIX, user, ":", password, "@", path);
+	}
+
+	public static InputStream newSmbInputStream(String user, String password, String path){
+		String smbpath = newSmbPath(user, password, path);
+		return newInputStream(smbpath);
+	}
+
+	public static OutputStream newSmbOutputStream(String user, String password, String path){
+		String smbpath = newSmbPath(user, password, path);
+		return newOutputStream(smbpath);
+	}
+	
 
 	public static InputStream newInputStream(String baseDir, String subPath){
 		String path = StringUtils.trimRight(baseDir, SLASH);
@@ -82,9 +98,10 @@ public class FileUtils {
 		return newInputStream(path);
 	}
 
-	public static InputStream newInputStream(String path){
+	public static InputStream newInputStream(String fpath){
 		InputStream in = null;
 		try {
+			String path = replaceBackSlashToSlash(fpath);
 			if(path.toLowerCase().startsWith(SMB_PREFIX)){
 				SmbFile smbf = new SmbFile(path);
 				in = new SmbFileInputStream(smbf);
@@ -93,9 +110,32 @@ public class FileUtils {
 				in = new FileInputStream(f);
 			}
 		} catch (Exception e) {
-			throw LangUtils.asBaseException("create inputstream error : " + e.getMessage(), e);
+			throw LangUtils.asBaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
 		}
 		return in;
+	}
+
+	public static OutputStream newOutputStream(String baseDir, String subPath){
+		String path = StringUtils.trimRight(baseDir, SLASH);
+		path += StringUtils.appendStartWith(subPath, SLASH);
+		return newOutputStream(path);
+	}
+	
+	public static OutputStream newOutputStream(String fpath){
+		OutputStream out = null;
+		try {
+			String path = replaceBackSlashToSlash(fpath);
+			if(path.toLowerCase().startsWith(SMB_PREFIX)){
+				SmbFile smbf = new SmbFile(path);
+				out = new SmbFileOutputStream(smbf);
+			}else{
+				File f = newFile(path);
+				out = new FileOutputStream(f);
+			}
+		} catch (Exception e) {
+			throw LangUtils.asBaseException("create OutputStream error : " + e.getMessage(), e);
+		}
+		return out;
 	}
     
 	  //-----------------------------------------------------------------------
@@ -420,10 +460,13 @@ public class FileUtils {
 	}
 
 	public static String getFileName(String fileName) {
-		if(fileName.indexOf('\\')!=-1)
-			fileName = fileName.replace('\\', SLASH_CHAR);
+		fileName = replaceBackSlashToSlash(fileName);
 		int start = fileName.lastIndexOf(SLASH_CHAR);
 		return fileName.substring(start+1);
+	}
+	
+	public static String replaceBackSlashToSlash(String path){
+		return path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
 	}
 
 	public static String getExtendName(String fileName, boolean hasDot) {
@@ -439,28 +482,62 @@ public class FileUtils {
 	public static String getExtendName(String fileName) {
 		return getExtendName(fileName, false);
 	}
+	
 
-	public static File writeToDisk(File file, String filePath, String fileName) throws Exception {
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
+		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DateTime, 6);
+	}
+	
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){
+		String newFileName = getFileNameWithoutExt(fileNameNoDirPath)+ seprator + NiceDate.New().format(dateformat);
+		if(count>0){
+			newFileName += seprator + RandomStringUtils.randomNumeric(count);
+		}
+		newFileName += getExtendName(fileNameNoDirPath, true);
+		return newFileName;
+	}
+
+
+	public static String newFileNameAppendRepeatCount(File file){
+		return newFileNameAppendRepeatCount(file.getParent(), file.getName());
+	}
+	public static String newFileNameAppendRepeatCount(String baseDir, String fileName){
+		File wfile = new File(baseDir, fileName);
+		if(!wfile.exists()){
+			return fileName;
+		}
+		int count = 1;
+		String ext = FileUtils.getExtendName(fileName, true);
+		String srcfileName = FileUtils.getFileNameWithoutExt(fileName);
+		String newFileName = srcfileName + "(" + count + ")" + ext;
+		wfile = new File(baseDir, newFileName);
+		while (wfile.exists()) {
+			newFileName = fileName + "(" + count + ")";
+			wfile = new File(baseDir, newFileName);
+			count++;
+		}
+		return newFileName;
+	}
+	
+	public static int writeInputStreamTo(InputStream in, String targetDir, String targetFileName){
+		OutputStream out = null;
+		try{
+			out = newOutputStream(targetDir, targetFileName);
+			return IOUtils.copy(in, out);
+		}catch(Exception e){
+			throw new BaseException("write inputstream error: " + e.getMessage(), e);
+		}finally{
+			close(out);
+		}
+	}
+
+	public static File writeToDisk(File srcfile, String filePath, String fileName) {
 		InputStream in = null;
 		OutputStream out = null;
 		File wfile = null;
 		try {
-			wfile = new File(filePath, fileName);
-			int count = 1;
-			if (!wfile.getParentFile().exists())
-				wfile.getParentFile().mkdirs();
-			String newFileName = fileName;
-			while (wfile.exists()) {
-				if (fileName.lastIndexOf(".") != -1) {
-					String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
-					newFileName = fileName.substring(0, fileName.lastIndexOf(".")) + "(" + count + ")." + ext;
-				} else {
-					newFileName = fileName + "(" + count + ")";
-				}
-				wfile = new File(filePath, newFileName);
-				count++;
-			}
-			in = new FileInputStream(file);
+			wfile = new File(filePath, FileUtils.newFileNameAppendRepeatCount(filePath, fileName));
+			in = new FileInputStream(srcfile);
 			out = new FileOutputStream(wfile);
 			byte[] buf = new byte[4096];
 			int length = 0;
@@ -468,12 +545,10 @@ public class FileUtils {
 				out.write(buf, 0, length);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("occur error when write file : " + file.getPath(), e);
+			throw new RuntimeException("occur error when write file : " + srcfile.getPath(), e);
 		} finally {
-			if (in != null)
-				in.close();
-			if (out != null)
-				out.close();
+			FileUtils.close(in);
+			FileUtils.close(out);
 		}
 		return wfile;
 	}
@@ -681,21 +756,21 @@ public class FileUtils {
 		return file;
 	}
 	
-	public static void writeTo(File file, InputStream in){
+	public static void writeTo(File tofile, InputStream srcInput){
 		OutputStream out = null;
 		try {
-			File parent = file.getParentFile();
+			File parent = tofile.getParentFile();
 			if(!parent.exists()){
 				parent.mkdirs();
 			}
-			out = new FileOutputStream(file);
+			out = new FileOutputStream(tofile);
 			byte[] buf = new byte[1024];
 			int len = -1;
-			while((len=in.read(buf))!=-1){
+			while((len=srcInput.read(buf))!=-1){
 				out.write(buf, 0, len);
 			}
 		} catch (Exception e) {
-			logger.error("write file error : " + file.getPath(), e);
+			logger.error("write file error : " + tofile.getPath(), e);
 		} finally{
 			close(out);
 		}
@@ -1109,19 +1184,6 @@ public class FileUtils {
 			close(zipout);
 		}
 		return zipfile;
-	}
-
-	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
-		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DateTime, 6);
-	}
-	
-	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){
-		String newFileName = getFileNameWithoutExt(fileNameNoDirPath)+ seprator + NiceDate.New().format(dateformat);
-		if(count>0){
-			newFileName += seprator + RandomStringUtils.randomNumeric(count);
-		}
-		newFileName += getExtendName(fileNameNoDirPath, true);
-		return newFileName;
 	}
 	
 	public static void main(String[] args) {

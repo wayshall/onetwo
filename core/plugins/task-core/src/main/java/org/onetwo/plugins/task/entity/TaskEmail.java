@@ -10,6 +10,7 @@ import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.annotation.IgnoreJson;
 import org.onetwo.plugins.email.ContentType;
 import org.onetwo.plugins.task.utils.TaskType;
+import org.onetwo.plugins.task.utils.TaskUtils;
 
 @Entity
 @Table(name="TASK_EMAIL")
@@ -67,12 +68,17 @@ public class TaskEmail extends TaskBase {
 
 	@IgnoreJson
 	public String[] getCcAsArray() {
-		return GuavaUtils.split(ccAddress, ';');
+		return GuavaUtils.split(ccAddress, TaskUtils.ATTACHMENT_PATH_SPLITTER_CHAR);
 	}
 
 	@IgnoreJson
 	public String[] getToAsArray() {
-		return GuavaUtils.split(toAddress, ';');
+		return GuavaUtils.split(toAddress, TaskUtils.ATTACHMENT_PATH_SPLITTER_CHAR);
+	}
+
+	@IgnoreJson
+	public String[] getAttachmentPathAsArray() {
+		return GuavaUtils.split(getAttachmentPath(), TaskUtils.ATTACHMENT_PATH_SPLITTER);
 	}
 
 
