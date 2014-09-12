@@ -66,6 +66,7 @@ public class TypeConvertorsTest {
 		Assert.assertTrue(1==Types.convertValue(true, Long.class));
 		Assert.assertTrue(0==Types.convertValue(false, Long.class));
 		Assert.assertTrue(111==Types.convertValue(111.11, Long.class));
+		Assert.assertTrue(111==Types.convertValue(111, long.class));
 	}
 	
 	@Test
