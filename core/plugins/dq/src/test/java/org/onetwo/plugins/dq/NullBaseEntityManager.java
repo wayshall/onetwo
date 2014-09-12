@@ -23,7 +23,7 @@ import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 @SuppressWarnings("unchecked")
 public class NullBaseEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager {
 
-	private FileNamedQueryFactory<NamespaceProperty> fileNamedQueryFactory = new FileNamedQueryFactory(){
+	private FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory = new FileNamedQueryFactory(){
 
 		@Override
 		public NamespacePropertiesManager getNamespacePropertiesManager() {
@@ -224,7 +224,105 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	@Override
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
 		// TODO Auto-generated method stub
-		return null;
+		return new DataQuery(){
+
+			@Override
+			public int executeUpdate() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public <T> List<T> getResultList() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public <T> T getSingleResult() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setFirstResult(int startPosition) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setMaxResults(int maxResult) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setParameter(int position, Object value) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setParameter(String name, Object value) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setParameters(Map<String, Object> params) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setParameters(List<Object> params) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setParameters(Object[] params) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setPageParameter(Page page) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setLimited(Integer first, Integer size) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public <T> T getRawQuery(Class<T> clazz) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public DataQuery setQueryConfig(Map<String, Object> configs) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public boolean isCacheable() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void setCacheable(boolean cacheable) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
 	}
 
 	@Override
@@ -309,6 +407,11 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	@Override
 	public FileNamedQueryFactory getFileNamedQueryFactory() {
 		return this.fileNamedQueryFactory;
+	}
+
+	public void setFileNamedQueryFactory(
+			FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory) {
+		this.fileNamedQueryFactory = fileNamedQueryFactory;
 	}
 
 }
