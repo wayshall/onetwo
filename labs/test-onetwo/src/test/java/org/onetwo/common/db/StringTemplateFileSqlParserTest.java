@@ -30,8 +30,8 @@ public class StringTemplateFileSqlParserTest {
 		fileManager.build();
 //		this.parser.initParser();
 	}
-	
 	@Test
+	
 	public void testPaser(){
 		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testParserQuery");
 		parserContext = ParserContext.create();

@@ -12,7 +12,7 @@ import org.springframework.test.context.support.AbstractContextLoader;
 public class SpringConfigApplicationContextLoader extends AbstractContextLoader {
 
 	protected Class<?>[] getClassArray(){ return null; };
-	protected String getAppEnvironment(){ return ""; };
+	protected String getAppEnvironment(){ return "test"; };
 	
 	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
 		AbstractRefreshableConfigApplicationContext context = createContext();

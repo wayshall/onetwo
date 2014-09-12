@@ -1426,6 +1426,8 @@ public class LangUtils {
 	}
 
 	public static int sum(int... counts){
+		if(counts==null)
+			return 0;
 		int total = 0;
 		for(int c : counts){
 			total += c;
