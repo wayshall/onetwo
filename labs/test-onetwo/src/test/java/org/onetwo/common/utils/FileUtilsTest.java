@@ -138,5 +138,21 @@ public class FileUtilsTest {
 //		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/fileutils/user-data.txt";
 //		FileUtils.readAsList(filepath, UserEntity.class, "\t");
 	}
+	
+	@Test
+	public void testNewFileNameByDateAndRand(){
+		String fn = "testfile.java";
+		String newfn = FileUtils.newFileNameByDateAndRand(fn);
+		System.out.println("newfn: " + newfn);
+		Assert.assertTrue(newfn.startsWith("testfile"));
+		Assert.assertTrue(StringUtils.split(newfn, "-").length==3);
+		
+		String path = this.getClass().getResource("FileUtilsTest.class").getFile();
+		System.out.println("path: " + path);
+		File file = new File(path);
+		newfn = FileUtils.newFileNameAppendRepeatCount(file);
+		System.out.println("newfn: " + newfn);
+		Assert.assertEquals("FileUtilsTest(1).class", newfn);
+	}
 
 }

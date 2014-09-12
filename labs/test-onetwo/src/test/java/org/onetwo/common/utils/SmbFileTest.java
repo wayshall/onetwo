@@ -6,6 +6,8 @@ import java.util.List;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 
+import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.profiling.TimeCounter;
 
@@ -33,6 +35,20 @@ public class SmbFileTest {
 			System.out.println(str);
 		}
 		t.stop();
+	}
+	
+	@Test
+	public void testWriteFile(){
+		String path = "smb://administrator:Admin123456@192.168.104.217\\install\\ftp\\email-attachements";
+		String fn = "test.txt";
+		String content = "test中文";
+		InputStream in = new StringInputStream(content);
+		FileUtils.writeInputStreamTo(in, path, fn);
+		
+		in = FileUtils.newSmbInputStream("administrator", "Admin123456", "192.168.104.217\\install\\ftp\\email-attachements\\"+fn);
+		List<String> list = FileUtils.readAsList(in);
+		System.out.println("list0: " + list.get(0));
+		Assert.assertEquals(content, list.get(0));
 	}
 
 }
