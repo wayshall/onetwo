@@ -19,7 +19,15 @@ public final class GuavaUtils {
 		return StringUtils.isBlank(str)?LangUtils.EMPTY_STRING_ARRAY:CUtils.asStringArray(Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str));
 	}
 	
-	public static Iterable<String> iterable(String str, char splitChar) {
+	public static String[] split(String str, String splitChar) {
+		return StringUtils.isBlank(str)?LangUtils.EMPTY_STRING_ARRAY:CUtils.asStringArray(Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str));
+	}
+	
+	public static Iterable<String> splitAsIterable(String str, char splitChar) {
+		return StringUtils.isBlank(str)?EMPTY_ITERABLE:Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str);
+	}
+	
+	public static Iterable<String> splitAsIterable(String str, String splitChar) {
 		return StringUtils.isBlank(str)?EMPTY_ITERABLE:Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str);
 	}
 	

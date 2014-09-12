@@ -1579,4 +1579,8 @@ public class LangUtils {
 				return obj;
 		return null;
 	}
+	
+	public static <T> T[] makeGenericArray(Class<T> cls, int length){
+		return (T[])Array.newInstance(cls, length);
+	}
 }

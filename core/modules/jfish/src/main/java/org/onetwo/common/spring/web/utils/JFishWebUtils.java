@@ -1,15 +1,18 @@
 package org.onetwo.common.spring.web.utils;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
@@ -19,6 +22,7 @@ import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -304,4 +308,13 @@ public final class JFishWebUtils {
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;
 	}
+	
+	public static void writeInputStreamTo(MultipartFile attachment, String dir, String fileName){
+		try {
+			FileUtils.writeInputStreamTo(attachment.getInputStream(), dir, fileName);
+		} catch (IOException e) {
+			throw new ServiceException("write upload file error: " +e.getMessage(), e);
+		}
+	}
+	
 }
