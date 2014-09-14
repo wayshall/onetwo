@@ -1,12 +1,15 @@
 package org.onetwo.app.taskserver.service;
 
+import java.io.InputStream;
+
 import javax.annotation.Resource;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.io.SmbInputStreamSource;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.email.EmailConfig;
 import org.onetwo.plugins.email.EmailPlugin;
@@ -18,8 +21,9 @@ import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskType;
-import org.onetwo.plugins.task.utils.TaskUtils;
 import org.slf4j.Logger;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -64,7 +68,9 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
 				String fpath = emailConfig.getAttachmentPath(path);
-				mailInfo.addAttachment(FileUtils.newFile(fpath, true));
+				String attachName = FileUtils.getFileName(path);
+				InputStreamSource attachment = createAttachmentInputStreamSource(fpath);
+				mailInfo.addAttachmentInputStreamSource(attachName, attachment);
 			}
 			this.javaMailService.send(mailInfo);
 			
@@ -83,6 +89,20 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 		} finally{
 		}
 		return taskQueue;
+	}
+	
+	protected InputStreamSource createAttachmentInputStreamSource(String path){
+		InputStream in = FileUtils.newInputStream(path);
+		if(in==null){
+			throw new BaseException("create attachement inputstream error, path: " + path);
+		}
+		InputStreamSource iss = null;
+		if(FileUtils.isSmbPath(path)){
+			iss = new SmbInputStreamSource(path);
+		}else{
+			iss = new FileSystemResource(path);
+		}
+		return iss;
 	}
 	
 

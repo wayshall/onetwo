@@ -97,12 +97,16 @@ public class FileUtils {
 		path += StringUtils.appendStartWith(subPath, SLASH);
 		return newInputStream(path);
 	}
+	
+	public static boolean isSmbPath(String path){
+		return path.toLowerCase().startsWith(SMB_PREFIX);
+	}
 
 	public static InputStream newInputStream(String fpath){
 		InputStream in = null;
 		try {
 			String path = replaceBackSlashToSlash(fpath);
-			if(path.toLowerCase().startsWith(SMB_PREFIX)){
+			if(isSmbPath(path)){
 				SmbFile smbf = new SmbFile(path);
 				in = new SmbFileInputStream(smbf);
 			}else{
@@ -125,7 +129,7 @@ public class FileUtils {
 		OutputStream out = null;
 		try {
 			String path = replaceBackSlashToSlash(fpath);
-			if(path.toLowerCase().startsWith(SMB_PREFIX)){
+			if(isSmbPath(path)){
 				SmbFile smbf = new SmbFile(path);
 				out = new SmbFileOutputStream(smbf);
 			}else{
