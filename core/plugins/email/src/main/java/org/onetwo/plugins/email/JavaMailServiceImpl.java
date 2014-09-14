@@ -1,6 +1,7 @@
 package org.onetwo.plugins.email;
 
 import java.io.File;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -12,6 +13,7 @@ import org.onetwo.common.spring.ftl.StringFtlTemplateLoader;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 import org.slf4j.Logger;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -66,6 +68,9 @@ public class JavaMailServiceImpl implements JavaMailService {
 				String fileName = FileUtils.getFileName(attachment.getName());
 				helper.addAttachment(fileName, attachment);
 			}
+		}
+		for(Entry<String, InputStreamSource> in : mailInfo.getAttachmentInputStreamSources().entrySet()){
+			helper.addAttachment(in.getKey(), in.getValue());
 		}
 
 		javaMailSender.send(msg);

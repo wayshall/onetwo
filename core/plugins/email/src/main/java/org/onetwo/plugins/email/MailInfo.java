@@ -2,12 +2,15 @@ package org.onetwo.plugins.email;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.springframework.core.io.InputStreamSource;
 
 public class MailInfo implements Serializable{
 	
@@ -38,6 +41,7 @@ public class MailInfo implements Serializable{
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
+	private Map<String, InputStreamSource> attachmentInputStreamSources;
 	
 	private Map<String, Object> templateContext;
 
@@ -133,6 +137,17 @@ public class MailInfo implements Serializable{
 		return this;
 	}
 
+	public MailInfo addAttachmentInputStreamSource(String attachName, InputStreamSource attachment) {
+		Assert.hasText(attachName);
+		Assert.notNull(attachment);
+		if(attachmentInputStreamSources==null){
+			attachmentInputStreamSources = LangUtils.newHashMap();
+		}
+		this.attachmentInputStreamSources.put(attachName, attachment);
+		this.mimeMail = true;
+		return this;
+	}
+
 	public MailInfo attachmentList(List<File> attachments) {
 		if(LangUtils.isEmpty(attachments))
 			return this;
@@ -167,5 +182,9 @@ public class MailInfo implements Serializable{
 		this.mimeMail = mimeMail;
 		return this;
 	}
-	
+
+	public Map<String, InputStreamSource> getAttachmentInputStreamSources() {
+		return attachmentInputStreamSources==null?Collections.EMPTY_MAP:attachmentInputStreamSources;
+	}
+
 }
