@@ -45,9 +45,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private JdbcDao jdao;
 	
 
-	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
+	/*public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
 		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
-	}
+	}*/
 	
 	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
