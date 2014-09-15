@@ -18,7 +18,6 @@ import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
-import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -35,8 +34,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
@@ -88,13 +85,13 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
-		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
+//		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(isAjaxRequest(request)){
 //			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
 //			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
 			DataResult result = new DataResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
-			result.setMessage("操作失败："+ ex.getMessage());
+			result.setMessage("操作失败："+ errorMessage.getMesage());
 			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
 			return createModelAndView(null, model, request);
 		}
@@ -167,6 +164,15 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}*/else if(ex instanceof BaseException){
 			defaultViewName = ExceptionView.SYS_BASE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+			
+//			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
+		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
+			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
+			errorCode = codeMark.getCode();
+			errorArgs = codeMark.getArgs();
+			
+			findMsgByCode = StringUtils.isNotBlank(errorCode);
+			detail = !findMsgByCode;
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";
@@ -185,17 +191,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}
 		
-		
-
-		if(ExceptionCodeMark.class.isInstance(ex)){
-			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
-			errorCode = codeMark.getCode();
-			errorArgs = codeMark.getArgs();
-			
-			findMsgByCode = StringUtils.isNotBlank(errorCode);
-			detail = !findMsgByCode;
-			
-		}else if(StringUtils.isBlank(errorCode)){
+		if(StringUtils.isBlank(errorCode)){
 			errorCode = ex.getClass().getName();
 		}
 

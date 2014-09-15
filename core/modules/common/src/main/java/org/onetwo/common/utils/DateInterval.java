@@ -1,11 +1,13 @@
 package org.onetwo.common.utils;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import org.onetwo.common.utils.DateUtil.DateType;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.list.NoIndexIt;
 
 /**********
  * 表示时间段
@@ -85,20 +87,28 @@ public class DateInterval {
 		return index;
 	}
 
-	public JFishList<Date> getIntervalByDate(int intevalNumb, boolean includeEnd){
+	public DateIntervalList getIntervalByDate(int intevalNumb, boolean includeEnd){
 		return getInterval(DateType.date, intevalNumb, includeEnd);
 	}
 
 
 
-	public JFishList<Date> getInterval(DateType dt){
+	public DateIntervalList getInterval(DateType dt){
 		return getInterval(dt, 1, false);
 	}
-	public JFishList<Date> getInterval(DateType dt, int intevalNumb, boolean includeEnd){
+	
+	/***
+	 * 按照DateType的精度，返回时间段内的每个date对象
+	 * @param dt 间隔单位
+	 * @param intevalNumb 间隔数量
+	 * @param includeEnd 
+	 * @return
+	 */
+	public DateIntervalList getInterval(DateType dt, int intevalNumb, boolean includeEnd){
 		Calendar start = getStartCalendar();
 		Calendar end = getEndCalendar();
 
-		JFishList<Date> dates = JFishList.create();
+		DateIntervalList dates = new DateIntervalList();
 		while((!includeEnd && DateUtil.compareAccurateAt(end, start, dt)>0) ||
 				(includeEnd && DateUtil.compareAccurateAt(end, start, dt)>=0)
 				){
@@ -154,5 +164,30 @@ public class DateInterval {
     
     public long getStandardSeconds() {
         return getMillis() / DateUtil.MILLIS_PER_SECOND;
+    }
+    
+    public class DateIntervalList extends JFishList<Date> {
+    	
+    	private DateIntervalList(){
+    	}
+    	
+    	private DateIntervalList(Collection<Date> dates){
+    		super(dates);
+    	}
+    	
+    	public JFishList<String> format(final String pattern){
+    		final JFishList<String> list = JFishList.create();
+    		each(new NoIndexIt<Date>() {
+
+				@Override
+				protected void doIt(Date date) throws Exception {
+					String rs = DateUtil.formatDateByPattern(date, pattern);
+					list.add(rs);
+				}
+    			
+			});
+    		return list;
+    	}
+    	
     }
 }
