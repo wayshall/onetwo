@@ -449,6 +449,25 @@ public class LangUtils {
 		return se;
 	}
 	
+	/***
+	 * 获取第一个不是jfish框架自定义异常的cause异常
+	 * @param e
+	 * @return
+	 */
+	public static Throwable getFirstNotJFishThrowable(Throwable e){
+		Assert.notNull(e);
+		Throwable se = e;
+		while((se = se.getCause())!=null){
+			if(!isJFishThrowable(se))
+				return se;
+		}
+		return se;
+	}
+	
+	public static boolean isJFishThrowable(Throwable t){
+		return BaseException.class.isInstance(t) || ExceptionCodeMark.class.isInstance(t);
+	}
+	
 	public static ServiceException asServiceException(Exception e){
 		return asServiceException(null, e);
 	}

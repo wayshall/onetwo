@@ -6,8 +6,10 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.web.mvc.DataResult;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
+import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.Predicate;
@@ -21,10 +23,17 @@ public class JsonView extends MappingJackson2JsonView {
 	public static final String FILTER_KEYS = ":filterKeys";
 	public static final String JSON_DATAS = ":jsonDatas";
 	
+	private boolean wrapModelAsDataResult = true;
+	
 	public JsonView(){
 		this.configJson();
 	}
 	
+	
+	public void setWrapModelAsDataResult(boolean wrapModelAsDataResult) {
+		this.wrapModelAsDataResult = wrapModelAsDataResult;
+	}
+
 	protected void configJson(){
 		this.setContentType("application/json;charset=utf-8");
 		setExtractValueFromSingleKeyModel(true);
@@ -72,7 +81,34 @@ public class JsonView extends MappingJackson2JsonView {
 	//			model.remove(UrlHelper.MODEL_KEY);
 			}
 		}
-		return super.filterModel(model);
+		
+		filterModelByCallback(model);
+		Object result = super.filterModel(model);
+		
+		return wrapAsDataResultIfNeed(result);
+	}
+	
+	protected void filterModelByCallback(Map<String, Object> model){
+		Object controller = JFishWebUtils.currentController();
+		if(ControllerJsonFilter.class.isInstance(controller)){
+			((ControllerJsonFilter)controller).filterModel(model);
+		}
+	}
+	
+	protected Object wrapAsDataResultIfNeed(Object result){
+		if(!wrapModelAsDataResult)
+			return result;
+		
+		if(Map.class.isInstance(result)){
+			Map<String, Object> map = (Map<String, Object>) result;
+			DataResult dataResult = DataResult.createSucceed("");
+			for(Entry<String, Object> entry : map.entrySet()){
+				dataResult.putData(entry.getKey(), entry.getValue());
+			}
+			return dataResult;
+		}else{
+			return result;
+		}
 	}
 	
 	protected Object delegateSpringFilterModel(Map<String, Object> model) {

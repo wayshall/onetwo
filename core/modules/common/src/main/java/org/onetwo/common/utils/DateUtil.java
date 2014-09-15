@@ -688,6 +688,13 @@ abstract public class DateUtil {
 		}
 		return rs;
 	}
+	/***
+	 * 根据DateType的精度，比较两个世界是否相等
+	 * @param c1
+	 * @param c2
+	 * @param dt
+	 * @return
+	 */
 	public static int compareAccurateAt(Calendar c1, Calendar c2, DateType dt) {
 		Assert.notNull(c1, "c1 can not be null");
 		Assert.notNull(c2, "c2 can not be null");
