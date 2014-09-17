@@ -1,6 +1,7 @@
 package org.onetwo.plugins.task;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.util.Assert;
 
@@ -25,6 +26,11 @@ public class TaskPluginConfig implements LoadableConfig {
 		String dir = config.getProperty("attachment.dir");
 		Assert.hasText(dir);
 		return dir;
+	}
+
+	public String getAttachmentPath(String path){
+		String realpath = getAttachmentDir() + StringUtils.appendStartWith(path, "/");
+		return realpath;
 	}
 
 	@Override

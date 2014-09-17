@@ -91,7 +91,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 //			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
 			DataResult result = new DataResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
-			result.setMessage("操作失败："+ errorMessage.getMesage());
+			result.setMessage("操作失败，"+ errorMessage.getMesage());
 			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
 			return createModelAndView(null, model, request);
 		}
@@ -161,18 +161,19 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			detail = false;
 		}else if(ex instanceof ServiceException){
 			defaultViewName = ExceptionView.SERVICE;
-		}*/else if(ex instanceof BaseException){
+		}*/else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
+			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
+			errorCode = codeMark.getCode();
+			errorArgs = codeMark.getArgs();
+			errorMsg = ex.getMessage();
+			
+			findMsgByCode = StringUtils.isNotBlank(errorCode) && !codeMark.isDefaultErrorCode();
+			detail = !BaseSiteConfig.getInstance().isProduct();
+		}else if(ex instanceof BaseException){
 			defaultViewName = ExceptionView.SYS_BASE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
-		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
-			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
-			errorCode = codeMark.getCode();
-			errorArgs = codeMark.getArgs();
-			
-			findMsgByCode = StringUtils.isNotBlank(errorCode);
-			detail = !findMsgByCode;
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";
