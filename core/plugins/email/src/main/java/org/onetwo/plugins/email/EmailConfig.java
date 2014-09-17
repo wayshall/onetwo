@@ -1,9 +1,7 @@
 package org.onetwo.plugins.email;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -27,9 +25,9 @@ public class EmailConfig implements LoadableConfig {
 	@Override
 	public void load(JFishProperties properties) {
 		this.config = properties;
-		if(!FileUtils.exists(getAttachmentDir())){
+		/*if(!FileUtils.exists(getAttachmentDir())){
 //			throw new BaseException("attachement dir is not exists: [" + getAttachmentDir() + "]");
-		}
+		}*/
 	}
 	
 	public boolean isMailSendActive(){
@@ -46,14 +44,6 @@ public class EmailConfig implements LoadableConfig {
 
 	public String getUsername(){
 		return config.getProperty(MAIL_USERNAME_KEY);
-	}
-
-	public String getAttachmentDir(){
-		return config.getProperty(ATTACHMENT_DIR_KEY);
-	}
-	public String getAttachmentPath(String path){
-		String realpath = getAttachmentDir() + StringUtils.appendStartWith(path, "/");
-		return realpath;
 	}
 
 	@Override

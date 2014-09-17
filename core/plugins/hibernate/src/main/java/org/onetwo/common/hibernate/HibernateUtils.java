@@ -210,7 +210,7 @@ public final class HibernateUtils {
 	 * @param targetClass
 	 * @return
 	 */
-	public static <T> T copyWithoutRelations(T source, Class<T> targetClass){
+	public static <T> T copyToTargetWithoutRelations(Object source, Class<T> targetClass){
 		return ReflectUtils.copy(source, targetClass, WITHOUT_RELATION);
 	}
 	/***

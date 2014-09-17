@@ -15,6 +15,7 @@
 			<@widget.dataField  name="result.name" label="结果" />
 			<@widget.dataField  name="task.taskType" label="任务类型" />
 			<@widget.dataField  name="operation" render="html" label="操作" permission="class:org.onetwo.plugins.task.client.TaskModule$Queue$ExeLog">
+				<a href="${pluginConfig.baseURL}/taskarchived/requeue/${entity.id}" class="btn" >重新放入邮件队列</a>
 				<a href="${pluginConfig.baseURL}/taskqueue/${entity.id}/log" class="btn" >执行明细</a>
 			</@widget.dataField>
 		</@widget.dataRow>	

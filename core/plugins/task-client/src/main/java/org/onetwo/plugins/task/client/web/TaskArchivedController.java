@@ -32,7 +32,7 @@ public class TaskArchivedController extends PluginSupportedController {
 	@ByFunctionClass(codeClass=Archived.ReQueue.class)
 	@RequestMapping(value="/requeue/{id}", method=RequestMethod.PUT)
 	public ModelAndView requeue(@PathVariable("id") Long id){
-		taskQueueService.requeueFromArchived(id);
+		taskQueueService.requeueArchived(id);
 		return pluginRedirectTo("/taskqueue/archived", "");
 	}
 	
