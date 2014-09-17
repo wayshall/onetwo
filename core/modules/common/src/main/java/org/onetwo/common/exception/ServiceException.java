@@ -63,6 +63,9 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		return ServiceErrorCode.BASE_CODE;
 	}
 
+	public boolean isDefaultErrorCode(){
+		return ServiceErrorCode.BASE_CODE.equals(getCode());
+	}
 	public Object[] getArgs() {
 		return args;
 	}

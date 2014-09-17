@@ -1660,7 +1660,7 @@ public class ReflectUtils {
 		getIntro(target.getClass()).copy(source, target, new IgnoreAnnosCopyer(classes));
 	}
 	
-	public static <T> T copy(T source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
+	public static <T> T copy(Object source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
 		T target = newInstance(targetClass);
 		getIntro(targetClass).copy(source, target, copyer);
 		return target;
@@ -1682,19 +1682,19 @@ public class ReflectUtils {
 		}
 
 		@Override
-		public void copy(Object source, Object target, PropertyDescriptor prop) {
-			if(prop.getReadMethod()==null || prop.getWriteMethod()==null)
+		public void copy(Object source, Object target, PropertyDescriptor targetProperty) {
+			if(targetProperty.getReadMethod()==null || targetProperty.getWriteMethod()==null)
 				return;
 			
-			if(hasIgnoredAnnotation(prop))
+			if(hasIgnoredAnnotation(targetProperty))
 				return;
 			
-			Object val = ReflectUtils.getProperty(source, prop.getName());
+			Object val = ReflectUtils.getProperty(source, targetProperty.getName());
 			if(isIgnoreValue(val))
 				return ;
 			
 			
-			ReflectUtils.setProperty(target, prop, val);
+			ReflectUtils.setProperty(target, targetProperty, val);
 			
 		}
 		

@@ -15,6 +15,7 @@ import org.onetwo.plugins.email.EmailConfig;
 import org.onetwo.plugins.email.EmailPlugin;
 import org.onetwo.plugins.email.JavaMailService;
 import org.onetwo.plugins.email.MailInfo;
+import org.onetwo.plugins.task.TaskPluginConfig;
 import org.onetwo.plugins.task.entity.TaskEmail;
 import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
@@ -38,6 +39,9 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 	private JavaMailService javaMailService;
 	
 	private EmailConfig emailConfig = EmailPlugin.getInstance().getConfig();
+	
+	@Resource
+	private TaskPluginConfig taskPluginConfig;
 	
 	@Override
 	public TaskType[] getListenerMappedTaskTypes() {
@@ -67,7 +71,7 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.contentType(email.getContentType())
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
-				String fpath = emailConfig.getAttachmentPath(path);
+				String fpath = taskPluginConfig.getAttachmentPath(path);
 				String attachName = FileUtils.getFileName(path);
 				InputStreamSource attachment = createAttachmentInputStreamSource(fpath);
 				mailInfo.addAttachmentInputStreamSource(attachName, attachment);
