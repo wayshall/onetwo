@@ -99,7 +99,8 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		this.getBaseEntityManager().findPage(TaskQueueArchived.class, page, properties);
 	}
 	
-	public void requeueFromArchived(Long archivedId){
-		
+	public void requeueArchived(Long archivedId){
+		TaskQueueArchived archived = getBaseEntityManager().load(entityClass, archivedId);
+		TaskQueue queue = HibernateUtils.copyToTargetWithoutRelations(archived, TaskQueue.class);
 	}
 }
