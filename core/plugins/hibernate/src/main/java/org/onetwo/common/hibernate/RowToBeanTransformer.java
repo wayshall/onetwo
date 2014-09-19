@@ -3,6 +3,7 @@ package org.onetwo.common.hibernate;
 import java.sql.Clob;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.onetwo.common.exception.BaseException;
@@ -74,6 +75,10 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 
 			Object val;
 			for ( int i = 0; i < aliases.length; i++ ) {
+				/*if(Map.class.isInstance(result)){
+					bw.setpr
+					continue;
+				}*/
 				propName = propNames[i];
 				/*if(!bw.isWritableProperty(propName))
 					continue;*/
@@ -102,9 +107,15 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 
 	private void initialize(String[] aliases) {
 		Assert.notEmpty(aliases, "aliases is emtpy!");
+
+		if(Map.class.isAssignableFrom(resultClass)){
+			this.propNames = aliases.clone();
+			this.aliases = aliases.clone();
+			return ;
+		}
+		
 		this.aliases = new String[ aliases.length ];
 		this.propNames = new String[ aliases.length ];
-
 		List<String> resultPropNames = ReflectUtils.desribPropertiesName(resultClass);
 		
 		for ( int i = 0; i < aliases.length; i++ ) {
