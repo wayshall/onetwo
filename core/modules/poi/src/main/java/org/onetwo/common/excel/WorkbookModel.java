@@ -11,6 +11,8 @@ public class WorkbookModel implements PoiModel {
 	
 	private List<VarModel> vars;
 	
+	private String format;
+	
 	@Override
 	public void initModel(){
 		for(TemplateModel template : sheets){
@@ -48,6 +50,14 @@ public class WorkbookModel implements PoiModel {
 
 	public void setVars(List<VarModel> vars) {
 		this.vars = vars;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 	
 }

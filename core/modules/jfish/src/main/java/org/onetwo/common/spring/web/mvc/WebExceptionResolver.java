@@ -92,7 +92,8 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			DataResult result = new DataResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
 			result.setMessage("操作失败，"+ errorMessage.getMesage());
-			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
+//			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
+			model.put(AJAX_RESULT_KEY, result);
 			return createModelAndView(null, model, request);
 		}
 		

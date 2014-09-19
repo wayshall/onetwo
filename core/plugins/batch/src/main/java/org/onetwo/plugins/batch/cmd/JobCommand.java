@@ -19,23 +19,37 @@ public class JobCommand extends AbstractCommand {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(JobCommand.class);
 	
+	private String jobName;
+
 	public JobCommand(String key) {
+		this(key, key);
+	}
+	public JobCommand(String key, String jobName) {
 		super(key);
+		this.jobName = jobName;
 	}
 	
 	@Override
 	public void doExecute(CmdContext context) throws Exception {
 		JobLauncher jobLauncher = SpringApplication.getInstance().getBean(JobLauncher.class);
-		Job job = SpringApplication.getInstance().getBean(Job.class, getKey());
-		jobLauncher.run(job, buildJobParameter(context));
-		
+		Job job = SpringApplication.getInstance().getBean(Job.class, getJobName());
+		JobParameters jobParam = buildJobParameter(context);
+		jobLauncher.run(job, jobParam);
+		afterRunJob(jobParam);
+	}
+	
+	
+	public String getJobName() {
+		return jobName;
+	}
+	protected void afterRunJob(JobParameters jobParam){
 	}
 	
 	protected void handleException(Exception e){
 		logger.error("{} error: " + e.getMessage(), getKey(), e);
 	}
 	
-	private JobParameters buildJobParameter(CmdContext context) throws Exception {
+	protected JobParameters buildJobParameter(CmdContext context) throws Exception {
 		String runTimeString = inputRunTime(context);
 		JobParametersBuilder jpb =  new JobParametersBuilder()
 				.addString("runTime", runTimeString);

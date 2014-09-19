@@ -36,7 +36,7 @@ public class JsonView extends MappingJackson2JsonView {
 
 	protected void configJson(){
 		this.setContentType("application/json;charset=utf-8");
-		setExtractValueFromSingleKeyModel(true);
+//		setExtractValueFromSingleKeyModel(true);
 		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
 		Module module = SpringApplication.getInstance().getBean(Module.class);
 //		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
@@ -65,23 +65,29 @@ public class JsonView extends MappingJackson2JsonView {
 				
 			});
 		}else{
-			SingleReturnWrapper singleModelWrapper = null;
-			String key = null;
+//			SingleReturnWrapper singleModelWrapper = null;
+//			String key = null;
 			for(Map.Entry<String, Object> entry : model.entrySet()){
-				if(SingleReturnWrapper.class.isInstance(entry.getValue())){
-					singleModelWrapper = (SingleReturnWrapper) entry.getValue();
-					key = entry.getKey();
-					break;
+				if(DataResult.class.isInstance(entry.getValue())){
+					return entry.getValue();
+				}else if(SingleReturnWrapper.class.isInstance(entry.getValue())){
+					/*singleModelWrapper = (SingleReturnWrapper) entry.getValue();
+//					key = entry.getKey();
+					return singleModelWrapper;*/
+					return ((SingleReturnWrapper)entry.getValue()).getValue();
+//					break;
 				}
 			}
-			if(singleModelWrapper!=null){
-				model.clear();
-				model.put(key, singleModelWrapper.getValue());
+			/*if(singleModelWrapper!=null){
+//				model.clear();
+//				model.put(key, singleModelWrapper.getValue());
+				return singleModelWrapper.getValue();
 			}else{
 	//			model.remove(UrlHelper.MODEL_KEY);
-			}
+			}*/
 		}
-		
+
+//		setExtractValueFromSingleKeyModel(false);
 		filterModelByCallback(model);
 		Object result = super.filterModel(model);
 		
