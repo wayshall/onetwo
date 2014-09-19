@@ -10,7 +10,6 @@ import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
-import org.springframework.util.Assert;
 
 public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
 	
@@ -68,7 +67,10 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 			sv = new SqlAndValues(false, sql, query.getValues());
 			
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
-			Assert.notNull(parserContext);
+//			Assert.notNull(parserContext);
+			if(parserContext==null){
+				parserContext = ParserContext.create();
+			}
 			
 			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
 			this.parserContext.putAll(params);

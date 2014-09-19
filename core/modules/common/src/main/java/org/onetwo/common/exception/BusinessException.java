@@ -71,6 +71,10 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 		return BusinessErrorCode.BASE_CODE;
 	}
 
+	public boolean isDefaultErrorCode(){
+		return BusinessErrorCode.BASE_CODE.equals(getCode());
+	}
+
 	public String appendBaseCode(String code){
 		String baseCode = getBaseCode();
 		Assert.hasText(baseCode, "base code can not be empty");

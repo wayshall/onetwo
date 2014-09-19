@@ -65,7 +65,16 @@ public class FileUtils {
 
 	private FileUtils() {
 	}
-	
+
+
+	public static boolean delete(File file){
+		return file.delete();
+	}
+
+	public static boolean delete(String path){
+		File file = newFile(path, false);
+		return file.delete();
+	}
 
 	public static File newFile(String path){
 		return newFile(path, false);
