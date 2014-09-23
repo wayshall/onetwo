@@ -2,13 +2,10 @@ package org.onetwo.common.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.enterprise.inject.New;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,7 +47,9 @@ public class LangUtilsTest {
 		
 		BigDecimal bd = new BigDecimal("1.44445");
 		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());
+		
 	}
+	
 	@Test
 	public void testHash(){
 		String str = "hellohello_helloh_ellohello";
