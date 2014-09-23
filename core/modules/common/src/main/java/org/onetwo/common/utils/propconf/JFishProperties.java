@@ -337,13 +337,12 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}*/
 
 	public Integer getInteger(String key, Integer def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value)) {
+		if (!containsKey(key)) {
 			return def;
 		}
 		Integer integer = null;
 		try {
-			integer = new Integer(value);
+			integer = new Integer(getVariable(key));
 		} catch (Exception e) {
 			integer = def;
 		}
@@ -416,17 +415,27 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 
 	public Long getLong(String key, Long def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value)) {
+		if (!containsKey(key)) {
 			return def;
 		}
 		Long longValue = null;
 		try {
-			longValue = new Long(value);
+			longValue = new Long(getVariable(key));
 		} catch (Exception e) {
 			longValue = def;
 		}
 		return longValue;
+	}
+
+	public Double getDouble(String key, Double def) {
+		if (!containsKey(key)) {
+			return def;
+		}
+		try {
+			return new Double(getVariable(key));
+		} catch (Exception e) {
+			return def;
+		}
 	}
 	
 
@@ -435,12 +444,12 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 
 	public Boolean getBoolean(String key, boolean def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value))
+		if (!containsKey(key)) {
 			return def;
+		}
 		Boolean booleanValue = false;
 		try {
-			booleanValue = Boolean.parseBoolean(value);
+			booleanValue = Boolean.parseBoolean(getVariable(key));
 		} catch (Exception e) {
 			booleanValue = def;
 		}
@@ -448,8 +457,10 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 
 	public Date getDate(String key, Date def) {
-		String value = this.getProperty(key);
-		Date date = DateUtil.parse(value);
+		if (!containsKey(key)) {
+			return def;
+		}
+		Date date = DateUtil.parse(getVariable(key));
 		if(date==null)
 			date = def;
 		return date;

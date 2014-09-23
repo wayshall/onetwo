@@ -246,6 +246,12 @@ public class PropConfig implements VariableSupporter {
 		return config;
 	}
 	
+	
+	
+	public Double getDouble(String key, Double def) {
+		return config.getDouble(key, def);
+	}
+
 	public void setProperty(String key, String value){
 		config.setProperty(key, value);
 	}

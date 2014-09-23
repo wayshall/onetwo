@@ -64,7 +64,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 			query.desc(desFields);
 			query.compile();
 			parsedSql = query.getTransitionSql();
-			sv = new SqlAndValues(false, sql, query.getValues());
+			sv = new SqlAndValues(false, parsedSql, query.getValues());
 			
 		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
 //			Assert.notNull(parserContext);
