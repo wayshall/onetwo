@@ -86,6 +86,9 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 					continue;
 				val = tuple[i];
 				
+				if(!Map.class.isInstance(result) && !bw.isWritableProperty(propName))
+					continue;
+				
 				Class<?> propertyType = bw.getPropertyType(propName);
 //					if(propertyType!=null && !propertyType.isInstance(val))
 				if(propertyType!=null && !Clob.class.isInstance(val))
