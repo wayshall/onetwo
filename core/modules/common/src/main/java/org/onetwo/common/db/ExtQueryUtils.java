@@ -170,10 +170,9 @@ public abstract class ExtQueryUtils {
 
 	public static String getLikeString(String like) {
 //		String like = str.replaceAll(REGX_NOT_WORD, "%");
-		if(like.indexOf('%')!=-1)
+		if(StringUtils.isBlank(like))
 			return like;
-		
-		return "%"+like+"%";
+		return like.indexOf('%')!=-1?like:"%"+like+"%";
 	}
 	
 }

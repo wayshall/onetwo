@@ -55,6 +55,12 @@
 	  <version>${onetwo.jfish.version}</version>
 	</dependency>
 	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-quartz</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
 	<!-- ejb jpa -->
 	<dependency>
 	  <groupId>org.hibernate</groupId>
