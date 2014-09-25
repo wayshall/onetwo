@@ -1,13 +1,15 @@
 package org.onetwo.plugins.task;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
+import org.onetwo.plugins.task.entity.TaskConfig;
 import org.springframework.util.Assert;
 
 public class TaskPluginConfig implements LoadableConfig {
 
 	private JFishProperties config;
+	
+	private TaskConfig taskConfig;
 
 	public TaskPluginConfig() {
 	}
@@ -15,22 +17,18 @@ public class TaskPluginConfig implements LoadableConfig {
 	@Override
 	public void load(JFishProperties properties) {
 		this.config = properties;
-	}
+		
+		taskConfig = new TaskConfig();
+		taskConfig.setTryTimes(config.getInt("try.times", 3));
+		
 
-
-	public int getTryTimes(){
-		return config.getInt("try.times", 3);
-	}
-	
-	public String getAttachmentDir(){
 		String dir = config.getProperty("attachment.dir");
 		Assert.hasText(dir);
-		return dir;
+		taskConfig.setAttachmentDir(dir);
 	}
 
-	public String getAttachmentPath(String path){
-		String realpath = getAttachmentDir() + StringUtils.appendStartWith(path, "/");
-		return realpath;
+	public TaskConfig getTaskConfig() {
+		return taskConfig;
 	}
 
 	@Override
