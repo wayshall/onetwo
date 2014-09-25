@@ -49,7 +49,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		for (Object ele = null; it.hasNext(); index++) {
 //			UtilTimerStack.push(iterator.getName());
 			if(index%1000==0)
-				JFishLogger.INSTANCE.log("create row " + index);
+				JFishLogger.INSTANCE.log(this, "create row " + index);
 			
 			ele = it.next();
 			rowContext.setCurrentRowObject(ele);

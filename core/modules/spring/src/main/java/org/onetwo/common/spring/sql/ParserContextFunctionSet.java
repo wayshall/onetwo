@@ -16,6 +16,15 @@ public class ParserContextFunctionSet {
 	public static ParserContextFunctionSet getInstance() {
 		return instance;
 	}
+
+	public boolean isEmpty(Object obj){
+		return LangUtils.size(obj)==0;
+	}
+	public boolean isBlank(Object obj){
+		if(String.class.isInstance(obj))
+			return StringUtils.isBlank(obj.toString());
+		return LangUtils.size(obj)==0;
+	}
 	
 	public String check(String sqlValue){
 		Assert.notNull(sqlValue);
