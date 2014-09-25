@@ -71,7 +71,7 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.contentType(email.getContentType())
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
-				String fpath = taskPluginConfig.getAttachmentPath(path);
+				String fpath = taskPluginConfig.getTaskConfig().getAttachmentPath(path);
 				String attachName = FileUtils.getFileName(path);
 				InputStreamSource attachment = createAttachmentInputStreamSource(fpath);
 				mailInfo.addAttachmentInputStreamSource(attachName, attachment);

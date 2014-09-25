@@ -72,7 +72,7 @@ public class TaskQueueController extends PluginSupportedController {
 		}
 		if(attachment!=null){
 			String fn = FileUtils.newFileNameByDateAndRand(attachment.getOriginalFilename());
-			JFishWebUtils.writeInputStreamTo(attachment, taskPluginConfig.getAttachmentDir(), fn);
+			JFishWebUtils.writeInputStreamTo(attachment, taskPluginConfig.getTaskConfig().getAttachmentDir(), fn);
 			taskQueue.addAttachment(fn);
 		}
 		taskClientService.save(taskQueue);

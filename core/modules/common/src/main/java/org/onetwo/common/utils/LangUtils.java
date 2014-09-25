@@ -848,9 +848,37 @@ public class LangUtils {
 				if(m!=null)
 					return (Integer)ReflectUtils.invokeMethod(m, obj);
 			}
-//			return 1;
-			throw new UnsupportedOperationException("can not get size of object : " + obj);
+			return 1;
+//			throw new UnsupportedOperationException("can not get size of object : " + obj);
 		}
+	}
+	
+
+	public static boolean isBlank(Object obj){
+		if(obj==null)
+			return true;
+		if(obj instanceof Iterable){
+			for(Object o : (Iterable)obj){
+				if(o!=null)
+					return false;
+			}
+		}else if(obj instanceof CharSequence){
+			return StringUtils.isBlank(obj.toString());
+		}else if(obj instanceof Map){
+			for(Object o : ((Map)obj).values()){
+				if(o!=null)
+					return false;
+			}
+		}else if(obj.getClass().isArray()){
+			int size = Array.getLength(obj);
+			for(int i=0; i<size; i++){
+				if(Array.get(obj, i)!=null)
+					return false;
+			}
+		}else {
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean isMultiple(Object obj){

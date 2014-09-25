@@ -46,7 +46,7 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		queue.setCurrentTimes(0);
 		queue.setStatus(TaskStatus.WAITING);
 		if(queue.getTryTimes()==null)
-			queue.setTryTimes(taskPluginConfig.getTryTimes());
+			queue.setTryTimes(taskPluginConfig.getTaskConfig().getTryTimes());
 		return super.save(queue);
 	}
 
