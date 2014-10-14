@@ -1,5 +1,7 @@
 package org.onetwo.common.web.view;
 
+import java.util.Map;
+
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.jsp.TagUtils;
@@ -102,6 +104,15 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 		return attributes.jsui;
 	}
 	
+	@Override
+	public void config(String theme, String layout, String view) {
+//		throw new UnsupportedOperationException();
+	}
+
+	public void config(Map<String, Object> config) {
+//		throw new UnsupportedOperationException();
+	}
+
 
 	protected static class ThemeAttributes {
 		private String themeTag;

@@ -1,5 +1,7 @@
 package org.onetwo.common.web.view;
 
+import java.util.Map;
+
 public interface ThemeSetting {
 
 	public String getLayoutPage(String path);
@@ -13,5 +15,9 @@ public interface ThemeSetting {
 	public boolean isJsui();
 	
 	public void setJsui(boolean jsui);
+	
+//	public boolean supportedDynamicConfig();
+	public void config(String theme, String layout, String view);
+	public void config(Map<String, Object> config);
 
 }
