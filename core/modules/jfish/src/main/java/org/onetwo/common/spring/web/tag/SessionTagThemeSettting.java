@@ -1,6 +1,9 @@
 package org.onetwo.common.spring.web.tag;
 
+import java.util.Map;
+
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.DefaultTagThemeSetting;
 import org.onetwo.common.web.view.ThemeSetting;
@@ -62,10 +65,24 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 		initIfNecessity().setJsui(viewJsui);
 	}
 
-	public void config(String theme, String layout, String view) {
-		this.setThemeTag(theme);
-		this.setThemeLayoutDefaultPage(layout);
-		this.setThemeView(view);
+	public void config(String theme, String layout, String view, String extTheme) {
+		if(StringUtils.isNotBlank(theme))
+			this.setThemeTag(theme);
+		
+		if(StringUtils.isNotBlank(layout))
+			this.setThemeLayoutDefaultPage(layout);
+
+		if(StringUtils.isNotBlank(view))
+			this.setThemeView(view);
+		
+		if(StringUtils.isNotBlank(extTheme))
+			this.setExtTheme(extTheme);
+	}
+	
+
+	@Override
+	public void config(Map<String, Object> config) {
+		ReflectUtils.copyIgnoreBlank(config, this);
 	}
 
 	public void setThemeTag(String theme) {
