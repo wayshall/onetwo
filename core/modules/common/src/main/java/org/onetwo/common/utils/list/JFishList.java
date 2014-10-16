@@ -131,6 +131,37 @@ public class JFishList<E> implements List<E>, Serializable {
 		return this;
 	}
 
+	public JFishList<E> addObject(Object obj) {
+		if(obj==null)
+			return this;
+		addAll((Collection<E>)LangUtils.asList(obj));
+		return this;
+	}
+
+
+	public JFishList<E> flatAddObject(Object obj) {
+		flatAddObject(obj, true);
+		return this;
+	}
+	public JFishList<E> flatAddObject(Object obj, boolean ignoreNull) {
+		if(obj==null && ignoreNull)
+			return this;
+		if(Iterable.class.isInstance(obj)){
+			for(Object e : (Iterable<?>)obj){
+				flatAddObject(e, ignoreNull);
+			}
+		}else if(obj!=null && obj.getClass().isArray()){
+			int length = Array.getLength(obj);
+			for (int i = 0; i < length; i++) {
+				Object e = Array.get(obj, i);
+				flatAddObject(e, ignoreNull);
+			}
+		}else{
+			add((E)obj);
+		}
+		return this;
+	}
+
 	public JFishList<E> addArrayIgnoreNull(E...objects) {
 		if(LangUtils.isEmpty(objects))
 			return this;
