@@ -3,12 +3,22 @@ package org.onetwo.common.db;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class QueryFieldImpl implements QueryField {
 	
-	public static QueryFieldImpl create(String exp){
-		return new QueryFieldImpl(exp);
+	
+	public static QueryField create(Object p){
+		QueryField qf = null;
+		if(p instanceof String){
+			qf = new QueryFieldImpl(p.toString());
+		}else if(p instanceof QueryField){
+			qf = (QueryField) p;
+		}else{
+			LangUtils.throwBaseException("error field expression : " + p);
+		}
+		return qf;
 	}
 	
 	private ExtQueryInner extQuery;
@@ -22,18 +32,19 @@ public class QueryFieldImpl implements QueryField {
 	QueryFieldImpl(String fieldExpr) {
 		super();
 		this.fieldExpr = fieldExpr;
-	}
-	
-	public void init(ExtQueryInner extQuery, Object value){
-		this.extQuery = extQuery;
-		this.value = value;
-		
+
 		String[] sp = StringUtils.split(fieldExpr, SQLSymbolManager.SPLIT_SYMBOL);
 		this.fieldName = sp[0];
 		if(sp.length==2)
 			this.operator = sp[1];
 		else
 			this.operator = "=";
+	}
+	
+	public void init(ExtQueryInner extQuery, Object value){
+		this.extQuery = extQuery;
+		this.value = value;
+		
 	}
 
 	public String getActualFieldName() {
