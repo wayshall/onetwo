@@ -260,14 +260,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			}*/
 
 //			String[] sp = StringUtils.split(p.toString(), SQLSymbolManager.SPLIT_SYMBOL);
-			QueryField qf = null;
-			if(p instanceof String){
-				qf = new QueryFieldImpl(p.toString());
-			}else if(p instanceof QueryField){
-				qf = (QueryField) p;
-			}else{
-				LangUtils.throwBaseException("error field expression : " + p);
-			}
+			QueryField qf = QueryFieldImpl.create(p);
 			qf.init(this, v);
 			
 //			SQLSymbolParserContext context = SQLSymbolParserContext.create(qf.getFieldName(), v, paramsValue, ifNull);
@@ -379,6 +372,17 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	}
 	protected void setSqlQuery(boolean sqlQuery) {
 		this.sqlQuery = sqlQuery;
+	}
+	@Override
+	public boolean hasParameterField(String fieldName) {
+		return getAllParameterFieldNames().contains(fieldName);
+	}
+	
+
+	@Override
+	public Set<String> getAllParameterFieldNames() {
+		Set<String> fields = ExtQueryUtils.getAllParameterFieldNames(getParams());
+		return fields;
 	}
 	
 }

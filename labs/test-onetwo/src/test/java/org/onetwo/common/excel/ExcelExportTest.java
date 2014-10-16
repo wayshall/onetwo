@@ -47,6 +47,7 @@ public class ExcelExportTest {
 			card.setCardNo("test_card_no_"+i);
 			card.setCardPwd("testPwd");
 			card.setStartTime(DateUtil.now());
+			card.setProperties(Arrays.asList("card--aa", "card--bb"));
 			
 			for(int j=0; j<5; j++){
 				CardBean cb = new CardBean();
@@ -56,7 +57,7 @@ public class ExcelExportTest {
 				
 				cb.setBeans(JFishList.wrap(cb));
 				card.addCardBean(cb);
-				card.setProperties(Arrays.asList("aa", "bb"));
+//				card.setProperties(Arrays.asList("aa", "bb"));
 			}
 			
 			cards.add(card);
