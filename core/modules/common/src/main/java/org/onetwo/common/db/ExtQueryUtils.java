@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -16,6 +17,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.list.JFishList;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ExtQueryUtils {
@@ -173,6 +175,16 @@ public abstract class ExtQueryUtils {
 		if(StringUtils.isBlank(like))
 			return like;
 		return like.indexOf('%')!=-1?like:"%"+like+"%";
+	}
+	
+	public static Set<String> getAllParameterFieldNames(Map<?, ?> params) {
+		List<?> keylist = JFishList.newList().flatAddObject(params.keySet());
+		Set<String> fields = LangUtils.newHashSet();
+		for(Object key : keylist){
+			QueryField qf = QueryFieldImpl.create(key);
+			fields.add(qf.getFieldName());
+		}
+		return fields;
 	}
 	
 }

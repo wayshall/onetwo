@@ -105,6 +105,7 @@ public interface ExtQuery {
 //	public void setParams(Map params);
 	
 	public Map getParams();
+	
 
 	public ParamValues getParamsValue();
 	
