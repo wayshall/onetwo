@@ -14,6 +14,16 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
+/*****
+ * 
+ * [@foreach list=deptCode joiner=' or '; dpcode, index]
+    		-- rtcs.linedept= :deptCode${index}
+    		bbl.dptcode = :deptCode${index}
+    	[/@foreach]
+    	
+ * @author way
+ *
+ */
 @SuppressWarnings("rawtypes")
 public class ForeachDirective implements NamedDirective {
 	

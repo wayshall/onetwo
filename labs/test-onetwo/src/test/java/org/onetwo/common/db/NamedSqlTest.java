@@ -5,7 +5,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.onetwo.common.spring.sql.SqlParamterFunctions;
+import org.onetwo.common.spring.sql.SqlParamterPostfixFunctions;
 import org.onetwo.common.spring.sql.SqlUtils;
 import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
@@ -57,17 +57,17 @@ public class NamedSqlTest {
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			System.out.println("name: " + parameter);
 			if("like".equals(parameter.getFunction())){
-				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterFunctions.getInstance(), "way");
+				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterPostfixFunctions.getInstance(), "way");
 				System.out.println("val:"+ val);
 				Assert.assertEquals("%way%", val);
 			}
 			if("prelike".equals(parameter.getFunction())){
-				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterFunctions.getInstance(), "way");
+				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterPostfixFunctions.getInstance(), "way");
 				System.out.println("val:"+ val);
 				Assert.assertEquals("%way", val);
 			}
 			if("postlike".equals(parameter.getFunction())){
-				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterFunctions.getInstance(), "way");
+				Object val = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterPostfixFunctions.getInstance(), "way");
 				System.out.println("val:"+ val);
 				Assert.assertEquals("way%", val);
 			}
