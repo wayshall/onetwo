@@ -1,14 +1,23 @@
 package test.entity;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 
 
 
-public class Test {
+public class SimpleTest {
 
-	public static void main(String[] args){
+	@Test
+	public void test(){
+	}
+
+//	@Test
+	public void testSplitList(){
 		List<String> idcardList = LangUtils.newArrayList("aa", "bb", "cc", "dd", "ee", "ff", "GG");
 		int processSize = 8;
 		int count = idcardList.size()%processSize==0?(idcardList.size()/processSize):(idcardList.size()/processSize+1);
