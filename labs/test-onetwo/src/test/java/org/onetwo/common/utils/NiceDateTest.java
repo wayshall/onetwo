@@ -16,6 +16,9 @@ public class NiceDateTest {
 		System.out.println("date: " + now);
 		now.yesterday();
 		System.out.println("date: " + now);
+		
+		System.out.println("date:"+NiceDate.New().preciseDate().getTime());
+		
 	}
 
 	@Test
