@@ -3,6 +3,7 @@ package org.onetwo.common.spring.ftl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +24,13 @@ import freemarker.core.Environment;
 import freemarker.ext.beans.ArrayModel;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.BooleanModel;
 import freemarker.ext.beans.CollectionModel;
+import freemarker.ext.beans.DateModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
+import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -100,6 +102,8 @@ final public class FtlUtils {
 			model = new StringModel(val, BEAN_WRAPPER);
 		}else if(Number.class.isInstance(val)){
 			model = new SimpleNumber((Number)val);
+		}else if(Date.class.isInstance(val)){
+			model = new DateModel((Date)val, BEAN_WRAPPER);
 		}else{
 			model = wrapAsBeanModel(val);
 		}
@@ -163,8 +167,8 @@ final public class FtlUtils {
 		TemplateModel attr = getParameter(params, name, false);
 		if(attr!=null){
 			try {
-				if(BooleanModel.class.isInstance(attr)){
-					return ((BooleanModel)attr).getAsBoolean();
+				if(TemplateBooleanModel.class.isInstance(attr)){
+					return ((TemplateBooleanModel)attr).getAsBoolean();
 				}else{
 					return Boolean.valueOf(attr.toString());
 				}
