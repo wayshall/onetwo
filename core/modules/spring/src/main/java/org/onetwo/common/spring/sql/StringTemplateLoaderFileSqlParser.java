@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplateConfigurer;
+import org.onetwo.common.spring.ftl.DateRangeDirective;
 import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfo;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoListener;
@@ -24,8 +25,9 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 	public StringTemplateLoaderFileSqlParser() {
 		super();
 //		this.sqlManager = sqlm;
-		
+
 		addDirective(new ForeachDirective());
+		addDirective(new DateRangeDirective());
 		this.templateLoader = new StringTemplateLoader();
 	}
 	
