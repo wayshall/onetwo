@@ -198,7 +198,8 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copy(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, COMMON);
+		Class<?> targetClass = getTargetClass(target);
+		ReflectUtils.getIntro(targetClass).copy(source, target, COMMON);
 	}
 	public static <T> void copyIgnore(T source, T target, String... ignoreFields){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(new Class[]{Transient.class}, ignoreFields));
