@@ -11,14 +11,14 @@ public class AuthenticationContext {
 	}
 	private final AuthenticConfig config;
 	private final SecurityTarget target;
-	private final UserDetail authoritable;
+//	private final UserDetail authoritable;
 	private final String cookieToken;
 	
 	private AuthenticationContext(AuthenticConfig config, SecurityTarget target) {
 		super();
 		this.config = config;
 		this.target = target;
-		this.authoritable = target.getAuthoritable();
+//		this.authoritable = target.getAuthoritable();
 		this.cookieToken = target.getCookieToken();
 	}
 	public AuthenticConfig getConfig() {
@@ -28,7 +28,7 @@ public class AuthenticationContext {
 		return target;
 	}
 	public UserDetail getAuthoritable() {
-		return authoritable;
+		return getTarget().getAuthoritable();
 	}
 	public String getCookieToken() {
 		return cookieToken;
