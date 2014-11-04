@@ -136,6 +136,16 @@ public class SpringApplication {
 		
 		return bean;
 	}
+	
+	public synchronized <T> T getOrRegisteredBean(Class<T> beanClass){
+		T bean = getBean(beanClass);
+		if(bean!=null)
+			return bean;
+		
+		bean = SpringUtils.registerBean(getAppContext(), beanClass);
+		//inject?
+		return bean;
+	}
 
 	public <T> Map<String, T> getBeansMap(Class<T> clazz) {
 		Map<String, T> map = BeanFactoryUtils.beansOfTypeIncludingAncestors(getAppContext(), clazz);
