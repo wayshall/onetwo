@@ -19,10 +19,11 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		String[] str = new String[]{"aa", "bb"};
-		String[] str2 = str.clone();
-		str2[0] = "cc";
-		System.out.println("str:" + str[0]+null);
+		String str = "广州市海珠区海联路东翠东街15号1002 室 ";
+		System.out.println(str.trim()+"|");
+		for(char c :str.toCharArray()){
+			System.out.println((int)c+":"+c);
+		}
 	}
 	
 	public static void test2(String[] args){
