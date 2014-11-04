@@ -17,7 +17,11 @@ public class SpringConfigBuilder extends AbstractConfigBuilder {
 
 	@Override
 	protected <T extends Authenticator> T getAuthenticator(Class<T> cls) {
-		return SpringApplication.getInstance().getBean(cls);
+		T bean = SpringApplication.getInstance().getBean(cls);
+		if(bean==null){
+			bean = SpringApplication.getInstance().getOrRegisteredBean(cls);
+		}
+		return bean;
 	}
 
 }
