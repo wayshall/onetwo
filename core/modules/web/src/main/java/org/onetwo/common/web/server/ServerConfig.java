@@ -63,7 +63,7 @@ public class ServerConfig {
 
 	public String getServerBaseDir() {
 		if(StringUtils.isBlank(serverBaseDir))
-			return getWebappDir();
+			return getProjectDir().getPath() + "/target";
 		return serverBaseDir;
 	}
 
