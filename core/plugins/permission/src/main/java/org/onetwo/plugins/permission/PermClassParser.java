@@ -20,6 +20,10 @@ public class PermClassParser {
 	public static final String NAME = "name";
 	public static final String CHILDREN = "children";
 	
+	//menu option
+	public static final String MENU_CSS_CLASS = "cssClass";
+	public static final String MENU_SHOW_PROPS = "showProps";
+	
 //	private static final String CODE_SEPRATOR = "_";
 //	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 	
@@ -99,6 +103,27 @@ public class PermClassParser {
 		return getFieldValue(CHILDREN, Class[].class);
 	}
 	
+	/***
+	 * 设置可选字段，成功返回true，忽略返回false
+	 * @param permObj
+	 * @param fieldName
+	 * @param type
+	 * @param def
+	 * @return
+	 */
+	public <T> boolean setOptionFieldValue(Object permObj, String fieldName, Class<T> type, T def){
+		if(containsField(fieldName)){
+			T value = getFieldValue(fieldName, type, def);
+			ReflectUtils.setProperty(permObj, fieldName, value);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean containsField(String fieldName){
+		return ReflectUtils.getIntro(permissionClass).containsField(fieldName, false);
+	}
+	
 	public Number getSort(){
 		return getFieldValue(SORT, Number.class);
 	}
@@ -111,15 +136,23 @@ public class PermClassParser {
 		return getFieldValue(HIDDEN, Boolean.class, false);
 	}
 	
+	public String getMenuCssClass(){
+		return getFieldValue(MENU_CSS_CLASS, String.class, "");
+	}
+	
+	public String getMenuShowProps(){
+		return getFieldValue(MENU_SHOW_PROPS, String.class, "");
+	}
+	
 	public Map<?, ?> getParams(){
 		return getFieldValue(PARAMS, Map.class, Collections.EMPTY_MAP);
 	}
 	
-	private <T> T getFieldValue(String fieldName, Class<T> fieldType) {
+	public <T> T getFieldValue(String fieldName, Class<T> fieldType) {
 		return getFieldValue(fieldName, fieldType, null);
 	}
 	
-	private <T> T getFieldValue(String fieldName, Class<T> fieldType, T def) {
+	public <T> T getFieldValue(String fieldName, Class<T> fieldType, T def) {
 		Field pageElementField = ReflectUtils.findField(permissionClass, fieldName);
 		T fieldValue = def;
 		if(pageElementField!=null){
