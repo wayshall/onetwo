@@ -168,6 +168,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			Map<?, ?> param = parser.getParams();//getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
 			CasualMap casualmap = new CasualMap().addMapWithFilter(param);
 			menu.setUrl(casualmap.toParamString());
+			parser.setOptionFieldValue(menu, PermClassParser.MENU_CSS_CLASS, String.class, "");
+			parser.setOptionFieldValue(menu, PermClassParser.MENU_SHOW_PROPS, String.class, "");
 			perm = menu;
 		}
 		perm.setName(name);
