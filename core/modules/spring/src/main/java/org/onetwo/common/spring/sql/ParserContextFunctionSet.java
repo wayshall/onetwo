@@ -37,6 +37,7 @@ public class ParserContextFunctionSet {
 		return sqlValue;
 	}
 	
+	@Deprecated
 	public String inParams(String name, int size){
 		StringBuilder str = new StringBuilder();
 //		str.append("(");
@@ -48,8 +49,8 @@ public class ParserContextFunctionSet {
 //		str.append(")");
 		return str.toString();
 	}
-	
-	public String inValue(String name, Object inValue){
+
+	public String paramIn(String name, Object inValue){
 		int size = 0;
 		if(Collection.class.isInstance(inValue)){
 			size = ((Collection<?>)inValue).size(); 
@@ -67,6 +68,11 @@ public class ParserContextFunctionSet {
 		}
 		str.append(")");
 		return str.toString();
+	}
+
+	@Deprecated
+	public String inValue(String name, Object inValue){
+		return paramIn(name, inValue);
 	}
 	
 	public String join(String[] strs, String joiner){

@@ -76,7 +76,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -137,7 +137,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -209,7 +209,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   
@@ -342,7 +342,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -403,7 +403,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -537,7 +537,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -627,7 +627,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   
@@ -767,7 +767,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -856,7 +856,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     
-    <dynamic-attributes>false</dynamic-attributes>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
 </taglib>
