@@ -118,6 +118,7 @@ abstract public class HtmlElement {
 			buildAttributeTag(attributesBuf, "data-toggle", "tooltip");
 		
 		this.buildExtTagAttributesString(attributesBuf);
+		attributesBuf.append(" ").append(getDynamicAttributesHtml());
 		return attributesBuf.toString();
 	}
 
@@ -127,6 +128,7 @@ abstract public class HtmlElement {
 //		buildAttributeTag(attributesBuf, "style", getCssStyle());
 //		buildAttributeTag(attributesBuf, "class", getCssClass());
 		buildAttributeTag(attributesBuf, "onclick", getOnclick());
+		attributesBuf.append(" ").append(getDynamicAttributesHtml());
 		return attributesBuf.toString();
 	}
 
