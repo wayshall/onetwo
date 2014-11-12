@@ -372,12 +372,18 @@ public class ReflectUtils {
 //			logger.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: " + params.length);
 			return Object.class;
 		}
-		if (!(params[index] instanceof Class)) {
+		/*if (!(params[index] instanceof Class)) {
 //			logger.warn(clazz.getSimpleName() + " not set the actual class on class generic parameter");
 			return Object.class;
+		}*/
+		if(Class.class.isInstance(params[index])){
+			return (Class) params[index];
+		}else if(ParameterizedType.class.isInstance(params[index])){
+			ParameterizedType ptype = (ParameterizedType) params[index];
+			return (Class)ptype.getRawType();
+		}else{
+			return Object.class;
 		}
-
-		return (Class) params[index];
 	}
 
 	public static Class getListGenricType(final Class clazz) {
