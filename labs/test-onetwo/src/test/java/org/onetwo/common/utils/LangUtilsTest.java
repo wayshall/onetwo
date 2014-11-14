@@ -54,6 +54,13 @@ public class LangUtilsTest {
 		BigDecimal bd = new BigDecimal("1.44445");
 		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());
 		
+
+		val = LangUtils.formatValue(-800.755, "0.00");
+		Assert.assertEquals("-800.76", val);
+
+		val = LangUtils.formatValue(-800.755, "#0.00元");
+		Assert.assertEquals("-800.76元", val);
+		
 		
 	}
 	

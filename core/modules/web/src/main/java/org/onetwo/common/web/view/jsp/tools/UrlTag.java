@@ -5,12 +5,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.view.jsp.AbstractTagSupport;
 
 public class UrlTag extends AbstractTagSupport {
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
 
 	private String href;
 	

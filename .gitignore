@@ -4,6 +4,7 @@ build.xml
 .settings
 .svn
 pom.properties
+.gitignore.sublime-workspace
 
 .class
 .jar
