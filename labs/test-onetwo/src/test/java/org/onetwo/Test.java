@@ -19,7 +19,7 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		String str = "广州市海珠区海联路东翠东街15号1002 室 ";
+		String str = "黄三多  ";
 		System.out.println(str.trim()+"|");
 		for(char c :str.toCharArray()){
 			System.out.println((int)c+":"+c);

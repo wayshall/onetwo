@@ -61,13 +61,13 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 	}
 
 	public void config(String theme, String layout, String view) {
-		if(StringUtils.isNotBlank(theme))
+		if(theme!=null)
 			this.setThemeTag(theme);
 		
-		if(StringUtils.isNotBlank(layout))
+		if(layout!=null)
 			this.setThemeLayoutDefaultPage(layout);
 
-		if(StringUtils.isNotBlank(view))
+		if(view!=null)
 			this.setThemeView(view);
 	}
 	
