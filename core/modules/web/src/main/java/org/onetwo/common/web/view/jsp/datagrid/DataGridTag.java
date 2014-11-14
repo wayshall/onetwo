@@ -10,8 +10,8 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
@@ -46,7 +46,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private String ajaxInstName;
 	
 	private DatagridRenderListener datagridRenderListener;
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
 	
 	private boolean buildQueryString = true;
 	

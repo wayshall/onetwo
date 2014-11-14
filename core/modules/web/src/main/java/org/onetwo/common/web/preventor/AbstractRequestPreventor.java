@@ -1,4 +1,4 @@
-package org.onetwo.common.web.csrf;
+package org.onetwo.common.web.preventor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,15 +7,22 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.encrypt.MDEncrypt;
 import org.onetwo.common.utils.encrypt.MDFactory;
+import org.onetwo.common.web.csrf.IllegalRequestException;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
-abstract public class AbstractCsrfPreventor implements CsrfPreventor {
+abstract public class AbstractRequestPreventor implements RequestPreventor {
 
 	
 //	public static final String MEHTOD_GET = "get";
 	
-	protected String tokenFieldName = DEFAULT_CSRF_TOKEN_FIELD;
+	protected final String tokenFieldName;// = DEFAULT_CSRF_TOKEN_FIELD;
 	protected MDEncrypt encrypt = MDFactory.MD5;
+	
+	
+	public AbstractRequestPreventor(String tokenFieldName) {
+		super();
+		this.tokenFieldName = tokenFieldName;
+	}
 //	protected boolean force;
 	/***
 	 * 获取token域的名称
@@ -35,11 +42,11 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 * @param response
 	 * @return
 	 */
-	abstract protected CsrfToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response);
+	abstract protected RequestToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response);
 	
-	abstract protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response);
+	abstract protected void cleanStoredTokenValue(boolean invalid, RequestToken token, HttpServletRequest request, HttpServletResponse response);
 	
-	public boolean isValidCsrf(Object controller, HttpServletRequest request){
+	public boolean isValidToken(Object controller, HttpServletRequest request){
 		return true;
 	}
 	
@@ -51,12 +58,12 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		/*if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
 			return ;*/
 		
-		if(!isValidCsrf(controller, request))
+		if(!isValidToken(controller, request))
 			return ;
 		
 		String tokenFieldName = getTokenFieldName();
 		String reqTokenValue = request.getParameter(tokenFieldName);
-		CsrfToken token = getStoredTokenValue(tokenFieldName, request, response);
+		RequestToken token = getStoredTokenValue(tokenFieldName, request, response);
 //		String storedTokenValue = token.getValue();
 		
 		try {
@@ -76,7 +83,7 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 		}
 	}
 	
-	protected void handleInvalidToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response){
+	protected void handleInvalidToken(RequestToken token, HttpServletRequest request, HttpServletResponse response){
 		cleanStoredTokenValue(true, token, request, response);
 		throw new IllegalRequestException();
 	}
@@ -100,9 +107,9 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response){
+	public RequestToken generateToken(HttpServletRequest request, HttpServletResponse response){
 		String tokenValue = LangUtils.generateToken(getTokenFieldName());
-		CsrfToken token = new CsrfToken(encrypt, getTokenFieldName(), tokenValue);
+		RequestToken token = new RequestToken(encrypt, getTokenFieldName(), tokenValue);
 		storeToken(token, request, response);
 		return token;
 	}
@@ -113,19 +120,19 @@ abstract public class AbstractCsrfPreventor implements CsrfPreventor {
 	}*/
 	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response){
 		String safeUrl = url;
-		CsrfToken token = generateToken(request, response);
+		RequestToken token = generateToken(request, response);
 		safeUrl = TagUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue());
 		return safeUrl;
 	}
 	
-	abstract protected void storeToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response);
+	abstract protected void storeToken(RequestToken token, HttpServletRequest request, HttpServletResponse response);
 	
 	
 	
-	protected static class CsrfValidInfo {
+	public static class SubmitValidInfo {
 		private boolean valid;
 
-		protected CsrfValidInfo(boolean valid) {
+		public SubmitValidInfo(boolean valid) {
 			super();
 			this.valid = valid;
 		}

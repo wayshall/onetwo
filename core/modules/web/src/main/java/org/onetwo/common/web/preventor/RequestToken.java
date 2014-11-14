@@ -1,14 +1,14 @@
-package org.onetwo.common.web.csrf;
+package org.onetwo.common.web.preventor;
 
 import org.onetwo.common.utils.encrypt.MDEncrypt;
 
-public class CsrfToken {
+public class RequestToken {
 	// private final String fieldOfFieldName;
 	private final MDEncrypt encrypt;
 	private final String fieldName;
 	private final String value;
 
-	protected CsrfToken(MDEncrypt encrypt, String fieldName, String value) {
+	public RequestToken(MDEncrypt encrypt, String fieldName, String value) {
 		super();
 		// this.fieldOfFieldName = fieldOfFieldName;
 		this.encrypt = encrypt;
