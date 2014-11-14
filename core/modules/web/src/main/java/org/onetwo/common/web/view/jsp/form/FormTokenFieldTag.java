@@ -4,21 +4,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
-import org.onetwo.common.web.csrf.CsrfToken;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
+import org.onetwo.common.web.preventor.RequestToken;
 import org.onetwo.common.web.view.jsp.AbstractBodyTag;
 
 @SuppressWarnings("serial")
 public class FormTokenFieldTag extends AbstractBodyTag {
 //	private String name;
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
+	
+	private boolean preventSubmit;
 	
 	@Override
 	public int doEndTag() throws JspException {
-		CsrfToken token = csrfPreventor.generateToken((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+		RequestToken token = csrfPreventor.generateToken((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
 		write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getGeneratedValue()+"'/>");
 		return EVAL_PAGE;
+	}
+
+	public void setPreventSubmit(boolean preventSubmit) {
+		this.preventSubmit = preventSubmit;
 	}
 	
 	/*public String getName() {

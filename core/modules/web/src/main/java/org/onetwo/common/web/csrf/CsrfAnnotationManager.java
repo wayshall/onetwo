@@ -6,7 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.utils.AnnotationUtils;
-import org.onetwo.common.web.csrf.AbstractCsrfPreventor.CsrfValidInfo;
+import org.onetwo.common.web.preventor.RequestPreventor;
+import org.onetwo.common.web.preventor.AbstractRequestPreventor.SubmitValidInfo;
 import org.onetwo.common.web.utils.RequestUtils;
 
 /***
@@ -16,18 +17,18 @@ import org.onetwo.common.web.utils.RequestUtils;
  */
 public class CsrfAnnotationManager  {
 
-	public static final CsrfValidInfo CSRF_TRUE = new CsrfValidInfo(true);
-	public static final CsrfValidInfo CSRF_FALSE = new CsrfValidInfo(false);
-	public static final String MEHTOD_GET = CsrfPreventor.MEHTOD_GET;
+	public static final SubmitValidInfo CSRF_TRUE = new SubmitValidInfo(true);
+	public static final SubmitValidInfo CSRF_FALSE = new SubmitValidInfo(false);
+	public static final String MEHTOD_GET = RequestPreventor.MEHTOD_GET;
 	
-	private ConcurrentHashMap<String, CsrfValidInfo> caches = new ConcurrentHashMap<String, CsrfValidInfo>();
+	private ConcurrentHashMap<String, SubmitValidInfo> caches = new ConcurrentHashMap<String, SubmitValidInfo>();
 	
-	public CsrfValidInfo getControllerCsrfInfo(Object controller, HttpServletRequest request){
+	public SubmitValidInfo getControllerCsrfInfo(Object controller, HttpServletRequest request){
 		if(MEHTOD_GET.equalsIgnoreCase(request.getMethod()))
 			return CSRF_FALSE;
 
 		String key = request.getMethod()+"|"+RequestUtils.getServletPath(request);
-		CsrfValidInfo csrfInfo = this.caches.get(key);
+		SubmitValidInfo csrfInfo = this.caches.get(key);
 		if(csrfInfo!=null)
 			return csrfInfo;
 
