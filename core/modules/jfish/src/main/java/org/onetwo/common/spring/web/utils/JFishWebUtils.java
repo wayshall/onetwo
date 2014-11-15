@@ -16,7 +16,7 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.csrf.AbstractCsrfPreventor;
+import org.onetwo.common.web.preventor.AbstractRequestPreventor;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
@@ -35,7 +35,7 @@ public final class JFishWebUtils {
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
-	public static final String DEFAULT_TOKEN_FIELD_NAME = AbstractCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
+	public static final String DEFAULT_TOKEN_FIELD_NAME = AbstractRequestPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	

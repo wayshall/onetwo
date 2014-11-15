@@ -75,6 +75,21 @@ public class StringTemplateFileSqlParserTest {
 		System.out.println("sql: " + sql);
 		Assert.assertEquals("update sb set aa=bb from batch_user sb where sb.way=:userName;", sql);
 	}
+
+	
+	@Test
+	public void testNumberParams(){
+		HibernateNamedInfo info = this.fileManager.getNamedQueryInfo("testNumberParams");
+		parserContext = ParserContext.create();
+		this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+		TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
+		this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
+		this.parserContext.put(ParserContextFunctionSet.CONTEXT_KEY, ParserContextFunctionSet.getInstance());
+		this.parserContext.put("id", 100405611);
+		String sql = this.parser.parse(info.getFullName(), parserContext);
+		System.out.println("sql: " + sql);
+		Assert.assertEquals("select *  from tableName2 t where  t.id = '100405611'", sql);
+	}
 	
 
 	@Test

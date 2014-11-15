@@ -71,6 +71,10 @@ public class NiceDate {
 	}
 
 	protected void setDateType(DateType dateType) {
+		precise(dateType);
+	}
+
+	protected void precise(DateType dateType) {
 		this.dateType = dateType;
 		start();
 	}
@@ -178,8 +182,22 @@ public class NiceDate {
 		return this;
 	}
 	
+	/***
+	 * 精确到日，不要时分秒
+	 * @see #preciseDate
+	 * @return
+	 */
 	public NiceDate thisDate(){
 		setDateType(DateType.date);
+		return this;
+	}
+	
+	/****
+	 * 精确到日，不要时分秒
+	 * @return
+	 */
+	public NiceDate preciseDate(){
+		precise(DateType.date);
 		return this;
 	}
 	

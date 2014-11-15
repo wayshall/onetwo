@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.TestUtils;
 import org.onetwo.common.jdbc.DataBase;
+import org.onetwo.common.spring.ftl.DateRangeDirective;
 import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.sql.ParserContext;
@@ -30,6 +31,7 @@ public class FreemarkerStringTemplateLoaderTest {
 		this.cfg.setObjectWrapper(FtlUtils.BEAN_WRAPPER);
 		Map<String, Object> freemarkerVariables = LangUtils.newHashMap();
 		freemarkerVariables.put(ForeachDirective.DIRECTIVE_NAME, new ForeachDirective());
+		freemarkerVariables.put(DateRangeDirective.DIRECTIVE_NAME, new DateRangeDirective());
 		cfg.setAllSharedVariables(new SimpleHash(freemarkerVariables, cfg.getObjectWrapper()));
 	}
 	
@@ -94,6 +96,54 @@ public class FreemarkerStringTemplateLoaderTest {
 		Assert.assertEquals("hello：select from aa union select from bb ", writer.toString());
 	}
 	
+
+	@Test
+	public void testDateRange() throws Exception{
+		StringTemplateLoader st = new StringTemplateLoader();
+		String tname = "hello";
+		String content = 
+		"[@dateRange from='2014-10-01' to='2014-10-03' joiner='union ' ; val, index]" +
+		"select from ${val?string('yyyyMMdd')} " +
+		"[/@dateRange]";
+		st.putTemplate(tname, content);
+		cfg.setTemplateLoader(st); 
+		cfg.setDefaultEncoding("UTF-8"); 
+
+		Template template = cfg.getTemplate(tname); 
+
+		Map root = new HashMap(); 
+		root.put("user", "lunzi"); 
+		root.put("datas", LangUtils.newArrayList("aa", "bb")); 
+
+		StringWriter writer = new StringWriter(); 
+		template.process(root, writer); 
+		System.out.println(writer.toString()); 
+		Assert.assertEquals("select from 20141001 union select from 20141002 ", writer.toString());
+		
+	}
+
+
+	@Test
+	public void testDateRange2() throws Exception{
+		StringTemplateLoader st = new StringTemplateLoader();
+		String tname = "hello";
+		String content = 
+		"[@dateRange from='2014-08-29' to='2014-10-03' includeEnd=true type='month' joiner='union ' format='yyyyMM'; val, index]" +
+		"select from ${val?string('yyyyMM')} " +
+		"[/@dateRange]";
+		st.putTemplate(tname, content);
+		cfg.setTemplateLoader(st); 
+		cfg.setDefaultEncoding("UTF-8"); 
+
+		Template template = cfg.getTemplate(tname); 
+
+		Map root = new HashMap(); 
+		StringWriter writer = new StringWriter(); 
+		template.process(root, writer); 
+		System.out.println(writer.toString()); 
+		Assert.assertEquals("select from 201408 union select from 201409 union select from 201410 ", writer.toString());
+		
+	}
 
 	@Test
 	public void testComsterModel() throws Exception{
