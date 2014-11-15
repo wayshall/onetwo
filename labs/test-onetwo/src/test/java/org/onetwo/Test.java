@@ -1,6 +1,7 @@
 package org.onetwo;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
 import org.onetwo.common.exception.BaseException;
@@ -18,11 +19,14 @@ public class Test {
 
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
-	public static void main(String[] args) throws IOException{
-		String[] str = new String[]{"aa", "bb"};
-		String[] str2 = str.clone();
-		str2[0] = "cc";
-		System.out.println("str:" + str[0]+null);
+	public static void main(String[] args) throws IOException, Exception{
+		Class cache = Integer.class.getDeclaredClasses()[0];
+	    Field c = cache.getDeclaredField("cache");
+	    c.setAccessible(true);
+	    Integer[] array = (Integer[]) c.get(cache);
+	    array[128] = array[129];
+
+	    System.out.printf("%d",0);
 	}
 	
 	public static void test2(String[] args){
