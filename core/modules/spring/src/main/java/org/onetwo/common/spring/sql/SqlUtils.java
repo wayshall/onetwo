@@ -55,7 +55,8 @@ final public class SqlUtils {
 			public Object getParamterValue(BeanWrapper paramBean){
 				Object value = paramBean.getPropertyValue(property);
 				if(hasFunction()){
-					value = ReflectUtils.invokeMethod(function, SqlParamterFunctions.getInstance(), value);
+//					value = ReflectUtils.invokeMethod(function, SqlParamterPostfixFunctions.getInstance(), value);
+					value = SqlParamterPostfixFunctions.getInstance().getFunc(function).toSqlString(property, value);
 				}
 				return value;
 			}

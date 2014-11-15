@@ -31,6 +31,32 @@ public class CronTest {
 		date = DateUtil.parse("2014-11-11 12:00:00");
 		invid = cronExp.isSatisfiedBy(date);
 		Assert.assertTrue(invid);
+		
+
+//		cronExp = new CronExpression("0/1 * 9:20-8:30 * * ?");
+		cronExp = new CronExpression("0 0/20 9-7 * * ?");
+		date = DateUtil.parse("2014-11-14 09:00:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertTrue(invid);
+		date = DateUtil.parse("2014-11-14 16:00:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertTrue(invid);
+		date = DateUtil.parse("2014-11-14 02:00:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertTrue(invid);
+		
+		date = DateUtil.parse("2014-11-14 08:00:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertFalse(invid);
+		date = DateUtil.parse("2014-11-14 08:40:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertFalse(invid);
+		date = DateUtil.parse("2014-11-14 08:20:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertFalse(invid);
+		date = DateUtil.parse("2014-11-14 09:15:00");
+		invid = cronExp.isSatisfiedBy(date);
+		Assert.assertFalse(invid);
 	}
 
 }

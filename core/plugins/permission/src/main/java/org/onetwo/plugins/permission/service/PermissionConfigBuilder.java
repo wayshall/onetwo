@@ -11,11 +11,12 @@ import org.onetwo.common.spring.web.authentic.SpringConfigBuilder;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.permission.MenuInfoParser;
-import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
+import org.onetwo.plugins.permission.anno.ByMenuClass;
 
 public class PermissionConfigBuilder extends SpringConfigBuilder {
 
@@ -36,6 +37,10 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 				config = this.buildAuthenticConfig(getAuthenticName(method), ByMenuClass.class.getAnnotation(Authentic.class));
 			}*/
 			config = buildConfigByAuthenticAnnotation(method, ByMenuClass.class);
+			if(StringUtils.isNotBlank(menu.redirect())){
+				config.setRedirect(menu.redirect());
+			}
+			this.buildAuthenticatorClasses(config, menu.authenticatorClass());
 
 			for(Class<?> codeCls : menu.codeClass()){
 				perms.add(menuInfoParser.getCode(codeCls));
@@ -47,6 +52,10 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			
 //			config = this.buildAuthenticConfig(getAuthenticName(method), ByFunctionClass.class.getAnnotation(Authentic.class));
 			config = buildConfigByAuthenticAnnotation(method, ByFunctionClass.class);
+			if(StringUtils.isNotBlank(permClass.redirect())){
+				config.setRedirect(permClass.redirect());
+			}
+			this.buildAuthenticatorClasses(config, permClass.authenticatorClass());
 
 			for(Class<?> codeCls : permClass.codeClass()){
 				perms.add(menuInfoParser.getCode(codeCls));

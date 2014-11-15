@@ -90,6 +90,8 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	protected void postProcessConfiguration(Configuration config) throws IOException, TemplateException {
 		config.setObjectWrapper(INSTANCE);
 		config.setSetting("classic_compatible", "true");
+		//默认不格式化数字
+		config.setNumberFormat("#");
 	}
 
 	protected Map<String, Object> getFreemarkerVariables() {

@@ -317,11 +317,11 @@ abstract public class DateUtil {
 		return StringUtils.isBlank(dateStr)?null:parseByPatterns(dateStr, matchPattern(dateStr));
 	}
 
-	private static Date parse2(String dateStr) {
+	/*private static Date parse2(String dateStr) {
 		return parse(dateStr, "-", ":");
-	}
+	}*/
 	
-	private static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
+	/*private static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		
@@ -366,7 +366,7 @@ abstract public class DateUtil {
 		date = parseByPatterns(dateStr, format);
 		return date;
 //		return parse(dateStr, YYYY_MM_DD_HH_MM_SS, YYYY_MM_DD_HH_MM, YYYY_MM_DD);
-	}
+	}*/
 
 
 	public static SimpleDateFormat getDateFormat(String p) {

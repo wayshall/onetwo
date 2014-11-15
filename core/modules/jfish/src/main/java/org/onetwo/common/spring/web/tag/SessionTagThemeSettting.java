@@ -28,11 +28,6 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 	}
 
 	@Override
-	public String getViewPage(String path) {
-		return getThemeView() + path;
-	}
-
-	@Override
 	public String getThemeView() {
 		String view = initIfNecessity().getThemeView();
 		return StringUtils.isBlank(view)?super.getThemeView():view;
@@ -65,18 +60,15 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 		initIfNecessity().setJsui(viewJsui);
 	}
 
-	public void config(String theme, String layout, String view, String extTheme) {
-		if(StringUtils.isNotBlank(theme))
+	public void config(String theme, String layout, String view) {
+		if(theme!=null)
 			this.setThemeTag(theme);
 		
-		if(StringUtils.isNotBlank(layout))
+		if(layout!=null)
 			this.setThemeLayoutDefaultPage(layout);
 
-		if(StringUtils.isNotBlank(view))
+		if(view!=null)
 			this.setThemeView(view);
-		
-		if(StringUtils.isNotBlank(extTheme))
-			this.setExtTheme(extTheme);
 	}
 	
 

@@ -1,5 +1,7 @@
 package org.onetwo.common.spring.sql;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Date;
 
 import org.onetwo.common.utils.Assert;
@@ -35,8 +37,10 @@ public class ParserContextFunctionSet {
 		return sqlValue;
 	}
 	
+	@Deprecated
 	public String inParams(String name, int size){
 		StringBuilder str = new StringBuilder();
+//		str.append("(");
 		for(int i=0; i<size; i++){
 			if(i!=0)
 				str.append(", ");
@@ -44,6 +48,31 @@ public class ParserContextFunctionSet {
 		}
 //		str.append(")");
 		return str.toString();
+	}
+
+	public String paramIn(String name, Object inValue){
+		int size = 0;
+		if(Collection.class.isInstance(inValue)){
+			size = ((Collection<?>)inValue).size(); 
+		}else if(inValue.getClass().isArray()){
+			size = Array.getLength(inValue);
+		}else{
+			throw new IllegalArgumentException("only supported array or collection: " + inValue.getClass());
+		}
+		StringBuilder str = new StringBuilder();
+		str.append("(");
+		for(int i=0; i<size; i++){
+			if(i!=0)
+				str.append(", ");
+			str.append(":").append(name).append(i);
+		}
+		str.append(")");
+		return str.toString();
+	}
+
+	@Deprecated
+	public String inValue(String name, Object inValue){
+		return paramIn(name, inValue);
 	}
 	
 	public String join(String[] strs, String joiner){
