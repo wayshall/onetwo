@@ -40,3 +40,9 @@
 @testInParams.parser = template
 
 
+
+@testNumberParams = 
+	select *  from tableName2 t where  t.id = '${id}'
+@testParserQuery2.template.subsql = select * from tableName
+@testParserQuery2.parser = template
+

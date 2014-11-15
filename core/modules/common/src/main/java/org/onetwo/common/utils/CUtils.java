@@ -25,8 +25,6 @@ import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.ListMap;
 
-import com.google.common.collect.Lists;
-
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
 
@@ -283,8 +281,8 @@ final public class CUtils {
 		if (object == null)
 			return def;
 		List list = null;
-		if (Collection.class.isAssignableFrom(object.getClass())) {
-			if (List.class.isAssignableFrom(object.getClass()))
+		if (Collection.class.isInstance(object)) {
+			if (List.class.isInstance(object))
 				list = (List) object;
 			else {
 				Collection col = (Collection) object;
@@ -295,7 +293,12 @@ final public class CUtils {
 					list.addAll(col);
 				}
 			}
-		} else if (object.getClass().isArray()) {
+		} else if(Iterable.class.isInstance(object)){
+			list = new ArrayList();
+			for(Object obj : (Iterable<?>)object){
+				list.add(obj);
+			}
+		}else if (object.getClass().isArray()) {
 			int length = Array.getLength(object);
 			list = new ArrayList(length);
 //			appendToList(object, list);

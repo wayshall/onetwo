@@ -1,49 +1,34 @@
 package org.onetwo.common.hibernate;
 
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.onetwo.common.db.IBaseEntity;
-import org.onetwo.common.utils.xml.jaxb.DateAdapter;
 
 @XmlRootElement
 @MappedSuperclass
-abstract public class BaseEntity implements IBaseEntity{
+abstract public class BaseEntity extends TimestampBaseEntity implements IBaseEntity{
  
-	private static final long serialVersionUID = 122579169646461421L;
-
-	protected Date createTime;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4031516874721942989L;
+	private Long creatorId;
+	private Long updatorId;
 	
-	protected Date lastUpdateTime;
-
-	@Column(name="CREATE_TIME")
-	@Temporal(TemporalType.TIMESTAMP)
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date getCreateTime() {
-		return createTime;
+	public Long getCreatorId() {
+		return creatorId;
 	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
+	public void setCreatorId(Long creatorId) {
+		this.creatorId = creatorId;
 	}
-
-	@Column(name="LAST_UPDATE_TIME")
-	@Temporal(TemporalType.TIMESTAMP)
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date getLastUpdateTime() {
-		return lastUpdateTime;
+	public Long getUpdatorId() {
+		return updatorId;
 	}
-
-	public void setLastUpdateTime(Date lastUpdateTime) {
-		this.lastUpdateTime = lastUpdateTime;
+	public void setUpdatorId(Long updatorId) {
+		this.updatorId = updatorId;
 	}
-
+	
 }
 	
 	

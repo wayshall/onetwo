@@ -15,8 +15,8 @@ import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
 import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.s2.security.AuthenticationInvocation;
@@ -45,7 +45,7 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 //	@Resource
 //	private SsoConfig ssoConfig;
 	
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
 
 	public SpringSecurityInterceptor(){
 	}

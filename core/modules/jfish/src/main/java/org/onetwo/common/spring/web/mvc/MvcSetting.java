@@ -19,10 +19,11 @@ public class MvcSetting {
 	
 	/***
 	 * byte
+	 * default is 50m
 	 * @return
 	 */
 	public int getMaxUploadSize(){
-		int maxUpload = this.wraper.getInt(MAX_UPLOAD_SIZE, 1024*1024*10);
+		int maxUpload = this.wraper.getInt(MAX_UPLOAD_SIZE, 1024*1024*50);
 		return maxUpload;
 	}
 	

@@ -6,8 +6,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.beans.PropertyAccessor;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 public class FormTag extends BaseHtmlTag<FormTagBean> {
 	
 	private String template = "form/spring-form.jsp";
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
 
 	private String action;
 	private String method;

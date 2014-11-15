@@ -58,6 +58,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 			this.configuration = new Configuration();
 			this.configuration.setObjectWrapper(getBeansWrapper());
 			this.configuration.setOutputEncoding(this.encoding);
+			//设置默认不自动格式化数字……以防sb……
+			this.configuration.setNumberFormat("#");
 //			this.cfg.setDirectoryForTemplateLoading(new File(templateDir));
 			
 			/*if(templateProvider!=null){

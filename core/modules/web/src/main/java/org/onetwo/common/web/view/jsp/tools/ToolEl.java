@@ -8,15 +8,15 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.web.util.HtmlUtils;
 
 final public class ToolEl {
-	private static CsrfPreventor CSRF_PREVENTOR = CsrfPreventorFactory.getDefault();
+	private static RequestPreventor CSRF_PREVENTOR = PreventorFactory.getCsrfPreventor();
 
 	public static String escapeHtml(String content){
 		return HtmlUtils.htmlEscape(content);

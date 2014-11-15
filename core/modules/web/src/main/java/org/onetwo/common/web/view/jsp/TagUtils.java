@@ -12,8 +12,8 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.form.FormTagBean;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -186,11 +186,11 @@ final public class TagUtils {
 //		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");filter("aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM).
 		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
-	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
+	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, RequestPreventor csrfPreventor) {
 		return csrfPreventor==null?params:params.filter(csrfPreventor.getTokenFieldName());
 	}
 	
-	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
+	public static String parseAction(HttpServletRequest request, String action, RequestPreventor csrfPreventor){
 		String surl = getRequestUri(request);
 		if(StringUtils.isBlank(action)){
 			return surl;
@@ -199,7 +199,7 @@ final public class TagUtils {
 		return surl;
 	}
 	
-	public static String parseQueryString(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
+	public static String parseQueryString(HttpServletRequest request, String action, RequestPreventor csrfPreventor){
 		String surl = "";
 		String[] symbols = StringUtils.split(action, "|");
 		int index = 0;
@@ -219,7 +219,7 @@ final public class TagUtils {
 		return surl;
 	}
 	
-	public static String processUrlSymbol(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
+	public static String processUrlSymbol(HttpServletRequest request, String symbol, RequestPreventor csrfPreventor) {
 		CasualMap params = processUrlSymbolAsCasualMap(request, symbol, csrfPreventor);
 		/*if (symbol.equals(":qstr")) {
 			str = getQueryStringFilterPageNo(request);
@@ -234,7 +234,7 @@ final public class TagUtils {
 		return str;
 	}
 	
-	public static CasualMap processUrlSymbolAsCasualMap(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
+	public static CasualMap processUrlSymbolAsCasualMap(HttpServletRequest request, String symbol, RequestPreventor csrfPreventor) {
 		CasualMap params = null;
 		if (symbol.equals(":qstr")) {
 			params = filterPageParams(new CasualMap(request.getQueryString()));
