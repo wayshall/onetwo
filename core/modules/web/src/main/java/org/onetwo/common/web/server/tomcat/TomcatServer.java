@@ -38,8 +38,9 @@ public class TomcatServer {
 			this.tomcat = new Tomcat();
 			int port = webConfig.getPort();
 			tomcat.setPort(port);
+//			tomcat.setBaseDir(webConfig.getServerBaseDir());
 			tomcat.setBaseDir(webConfig.getServerBaseDir());
-			tomcat.getHost().setAppBase(webConfig.getServerBaseDir());
+			tomcat.getHost().setAppBase(webConfig.getWebappDir());
 			Connector connector = tomcat.getConnector();
 			connector.setURIEncoding("UTF-8");
 			connector.setRedirectPort(webConfig.getRedirectPort());

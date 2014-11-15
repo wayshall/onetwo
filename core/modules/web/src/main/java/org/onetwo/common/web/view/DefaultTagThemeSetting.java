@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.WebUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
 public class DefaultTagThemeSetting implements ThemeSetting {
@@ -22,8 +23,14 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 		attributes.jsui = siteConfig.getThemeJsui();
 	}
 	
+	
 	@Override
-	public String getViewPage(String path) {
+	public String getViewPage(final String path) {
+		if(path.startsWith(WebUtils.FORWARD_KEY)){
+			String newpath = path.substring(WebUtils.FORWARD_KEY.length());
+			newpath = getThemeView() + newpath;
+			return WebUtils.forwardPrefix(newpath);
+		}
 		return getThemeView() + path;
 	}
 
