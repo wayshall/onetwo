@@ -775,6 +775,13 @@
     <name>formToken</name>
     <tag-class>org.onetwo.common.web.view.jsp.form.FormTokenFieldTag</tag-class>
     <body-content>JSP</body-content>
+    
+    <attribute>
+      <description><![CDATA[preventSubmit]]></description>
+      <name>preventSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   

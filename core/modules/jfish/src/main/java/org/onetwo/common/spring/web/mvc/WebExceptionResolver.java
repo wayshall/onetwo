@@ -80,7 +80,6 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 
 	@Override
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
-
 		ModelMap model = new ModelMap();
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());

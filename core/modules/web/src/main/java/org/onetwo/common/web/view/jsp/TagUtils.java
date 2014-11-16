@@ -13,6 +13,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.preventor.PreventorFactory;
 import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.form.FormTagBean;
@@ -187,7 +188,10 @@ final public class TagUtils {
 		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
 	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, RequestPreventor csrfPreventor) {
-		return csrfPreventor==null?params:params.filter(csrfPreventor.getTokenFieldName());
+		if(csrfPreventor!=null)
+			params.filter(csrfPreventor.getTokenFieldName());
+		params.filter(PreventorFactory.getRepeateSubmitPreventor().getTokenFieldName());
+		return params;
 	}
 	
 	public static String parseAction(HttpServletRequest request, String action, RequestPreventor csrfPreventor){
