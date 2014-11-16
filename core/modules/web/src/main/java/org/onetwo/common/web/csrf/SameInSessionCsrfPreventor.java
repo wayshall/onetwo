@@ -1,8 +1,11 @@
 package org.onetwo.common.web.csrf;
 
+import java.lang.reflect.Method;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.web.preventor.PreventRequestInfoManager;
 import org.onetwo.common.web.preventor.RequestToken;
 import org.onetwo.common.web.preventor.SessionStoreRequestPreventor;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -16,19 +19,19 @@ public class SameInSessionCsrfPreventor extends SessionStoreRequestPreventor {
 
 	public static final String DEFAULT_CSRF_TOKEN_FIELD = "_jfish_token";
 
-	private CsrfAnnotationManager csrfAnnotationManager;
+	private PreventRequestInfoManager csrfAnnotationManager;
 	
-	public SameInSessionCsrfPreventor() {
+	public SameInSessionCsrfPreventor(PreventRequestInfoManager csrfAnnotationManager) {
 		super(DEFAULT_CSRF_TOKEN_FIELD);
-		this.csrfAnnotationManager = new CsrfAnnotationManager();
+		this.csrfAnnotationManager = csrfAnnotationManager;
 	}
 	
-	public CsrfAnnotationManager getCsrfAnnotationManager() {
+	public PreventRequestInfoManager getCsrfAnnotationManager() {
 		return csrfAnnotationManager;
 	}
 
-	public boolean isValidToken(Object controller, HttpServletRequest request){
-		return csrfAnnotationManager.getControllerCsrfInfo(controller, request).isValid();
+	public boolean isValidateToken(Method controller, HttpServletRequest request){
+		return csrfAnnotationManager.getRequestPreventInfo(controller, request).isCsrfValidate();
 	}
 	
 	@Override

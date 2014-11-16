@@ -11,8 +11,10 @@ import org.onetwo.common.web.view.jsp.AbstractTagSupport;
 
 public class UrlTag extends AbstractTagSupport {
 	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
+	private RequestPreventor repeateSubmitPreventor = PreventorFactory.getRepeateSubmitPreventor();
 
 	private String href;
+	private boolean preventSubmit;
 	
     public int doEndTag() throws JspException {
     	String url = BaseSiteConfig.getInstance().getBaseURL();
@@ -21,6 +23,9 @@ public class UrlTag extends AbstractTagSupport {
     	}else{
     		url += href;
     	}
+		if(preventSubmit){
+			url += repeateSubmitPreventor.processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+		}
     	write(url);
     	return EVAL_PAGE;
     }
@@ -28,5 +33,9 @@ public class UrlTag extends AbstractTagSupport {
 	public void setHref(String href) {
 		this.href = href;
 	}
-    
+
+	public void setPreventSubmit(boolean preventSubmit) {
+		this.preventSubmit = preventSubmit;
+	}
 }
+ 	

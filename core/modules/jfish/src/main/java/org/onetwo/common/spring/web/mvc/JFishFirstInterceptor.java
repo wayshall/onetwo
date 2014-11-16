@@ -12,6 +12,9 @@ import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.NiceDate;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UrlPathHelper;
@@ -25,6 +28,7 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 	public static final String NOW_KEY = "now";
 	
 	private final List<JFishRequestValidator> requestValidators;
+	private RequestPreventor submitPreventor = PreventorFactory.getRepeateSubmitPreventor();
 	
 	
 
@@ -47,6 +51,11 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 		
 
 		HandlerMethod hm = getHandlerMethod(handler);
+		
+		if(BaseSiteConfig.getInstance().isPreventRepeateSubmit()){
+			this.submitPreventor.validateToken(hm.getMethod(), request, response);
+		}
+		
 		this.validateRequest(request, response, hm);
 		
 		/*if(!csrfPreventor.validateToken(request, response)){

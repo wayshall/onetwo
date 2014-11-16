@@ -95,6 +95,9 @@ abstract public class ResponseUtils {
 		response.addCookie(cookie);
 	}
 
+	public static void setCookie(HttpServletResponse response, String name, String value) {
+		setCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN, false);
+	}
 	/**********
 	 * path = / domain siteconfig['cookie.domain']
 	 * 

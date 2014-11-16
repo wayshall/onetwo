@@ -4,9 +4,10 @@ import org.onetwo.common.web.csrf.SameInSessionCsrfPreventor;
 
 final public class PreventorFactory {
 	
-
-	private static final RequestPreventor CSRF_PREVENTOR = new SameInSessionCsrfPreventor();//new SessionStoreCsrfPreventor();
-	private static final RequestPreventor REPEATE_SUBMIT_PREVENTOR = new SessionRepeateSubmitPreventor();//new SessionStoreCsrfPreventor();
+	
+	private static final PreventRequestInfoManager preventRequestInfoManager = new DefaultPreventRequestInfoManager();
+	private static final RequestPreventor CSRF_PREVENTOR = new SameInSessionCsrfPreventor(preventRequestInfoManager);//new SessionStoreCsrfPreventor();
+	private static final RequestPreventor REPEATE_SUBMIT_PREVENTOR = new SessionRepeateSubmitPreventor(preventRequestInfoManager);//new SessionStoreCsrfPreventor();
 
 	
 	public static RequestPreventor getCsrfPreventor() {
@@ -16,8 +17,6 @@ final public class PreventorFactory {
 	public static RequestPreventor getRepeateSubmitPreventor() {
 		return REPEATE_SUBMIT_PREVENTOR;
 	}
-
-
 
 	private PreventorFactory(){}
 

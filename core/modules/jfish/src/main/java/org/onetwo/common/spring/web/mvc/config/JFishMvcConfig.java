@@ -67,6 +67,7 @@ import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -395,13 +396,23 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		WebAttributeArgumentResolver webattr = new WebAttributeArgumentResolver();
 		return webattr;
 	}*/
+	
 
-	@Bean
+	/****
+	 * configureHandlerExceptionResolvers 和 webExceptionResolver定义，二选一即可
+	 */
+	/*public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
+		exceptionResolvers.add(webExceptionResolver());
+	}*/
+
+	@Bean(name=DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
 	public HandlerExceptionResolver webExceptionResolver() {
-		WebExceptionResolver webexception = SpringUtils.getHighestOrder(this.applicationContext, WebExceptionResolver.class);
+		//如果已有相同名字的bean，会自动忽略，下面的代码多余。
+		/*WebExceptionResolver webexception = SpringUtils.getHighestOrder(this.applicationContext, WebExceptionResolver.class);
 		if(webexception==null){
 			webexception = new WebExceptionResolver();
-		}
+		}*/
+		WebExceptionResolver webexception = new WebExceptionResolver();
 		webexception.setExceptionMessage(exceptionMessageSource());
 		webexception.setMvcSetting(mvcSetting);
 		return webexception;
@@ -421,10 +432,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 			messager = new DefaultCodeMessager();
 		}
 		return messager;
-	}
-	
-	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
-		exceptionResolvers.add(webExceptionResolver());
 	}
 
 	public void afterPropertiesSet() throws Exception{

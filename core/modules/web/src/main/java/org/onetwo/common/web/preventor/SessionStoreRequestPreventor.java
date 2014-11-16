@@ -30,7 +30,8 @@ public class SessionStoreRequestPreventor extends AbstractRequestPreventor {
 	}
 	@Override
 	protected void cleanStoredTokenValue(boolean invalid, RequestToken token, HttpServletRequest request, HttpServletResponse response){
-		WebContextUtils.remove(request.getSession(), token.getFieldName());
+		if(token!=null)
+			WebContextUtils.remove(request.getSession(), token.getFieldName());
 	}
 
 	@Override
