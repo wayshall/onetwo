@@ -10,6 +10,9 @@ import org.onetwo.common.web.view.jsp.TagUtils;
 public class DefaultTagThemeSetting implements ThemeSetting {
 	
 	public static String WEB_INF_DIR = "/WEB-INF";
+	/****
+	 * tomcat要求标签模板必须要放在/WEB-INF/tags下
+	 */
 	public static String BASE_TAG_DIR = "/WEB-INF/tags";
 	public static String BASE_LAYOUT_DIR = "layout/";
 
@@ -30,6 +33,8 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 			String newpath = path.substring(WebUtils.FORWARD_KEY.length());
 			newpath = getThemeView() + newpath;
 			return WebUtils.forwardPrefix(newpath);
+		}else if(path.startsWith(WebUtils.REDIRECT_KEY)){
+			return path;
 		}
 		return getThemeView() + path;
 	}

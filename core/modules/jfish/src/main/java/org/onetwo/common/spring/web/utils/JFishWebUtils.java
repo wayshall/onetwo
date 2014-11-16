@@ -16,7 +16,7 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.preventor.AbstractRequestPreventor;
+import org.onetwo.common.web.csrf.SameInSessionCsrfPreventor;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
@@ -34,8 +34,10 @@ public final class JFishWebUtils {
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
+	@Deprecated
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
-	public static final String DEFAULT_TOKEN_FIELD_NAME = AbstractRequestPreventor.DEFAULT_CSRF_TOKEN_FIELD;
+	@Deprecated
+	public static final String DEFAULT_TOKEN_FIELD_NAME = SameInSessionCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
@@ -126,11 +128,13 @@ public final class JFishWebUtils {
 		return StringUtils.isBlank(tokenName)?DEFAULT_TOKEN_NAME:tokenName;
 	}
 
+	@Deprecated
 	public static boolean validateToken(HttpServletRequest request){
 		String tokenName = getTokenName(request);
 		return validateToken(request, tokenName);
 	}
-	
+
+	@Deprecated
 	public static boolean validateToken(HttpServletRequest request, String tokenName){
 		String reqToken = request.getParameter(tokenName);
 		String sessionToken = session(tokenName);

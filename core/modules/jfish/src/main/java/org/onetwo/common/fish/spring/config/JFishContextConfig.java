@@ -14,6 +14,7 @@ import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.spring.web.reqvalidator.JFishUploadFileTypesChecker;
+import org.onetwo.common.spring.web.tag.CookiesTagThemeSettting;
 import org.onetwo.common.spring.web.tag.SessionTagThemeSettting;
 import org.onetwo.common.spring.web.tag.ThemeSettingWebFilter;
 import org.onetwo.common.utils.LangUtils;
@@ -72,10 +73,13 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	@Bean
 	public ThemeSetting themeSetting(){
 		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
-		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting))
+		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
 			return new SessionTagThemeSettting();
-		else
+		}else if(CookiesTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new CookiesTagThemeSettting();
+		}else{
 			return new DefaultTagThemeSetting();
+		}
 	}
 	
 	@Bean

@@ -1,5 +1,7 @@
 package org.onetwo.common.web.preventor;
 
+import java.lang.reflect.Method;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +16,7 @@ public interface RequestPreventor {
 //	public String getFieldOfTokenFieldName();
 	public String getTokenFieldName();
 
-	public abstract void validateToken(Object controller,
+	public abstract void validateToken(Method controller,
 			HttpServletRequest request, HttpServletResponse response);
 
 //	public abstract Token generateToken(HttpServletRequest request, HttpServletResponse response);

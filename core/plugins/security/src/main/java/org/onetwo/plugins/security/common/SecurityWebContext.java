@@ -8,6 +8,7 @@ import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 
 @Configuration
@@ -21,8 +22,8 @@ public class SecurityWebContext {
 		//SimpleNotSSOServiceImpl
 		return new SpringSecurityInterceptor();
 	}
-	
-	@Bean
+
+	@Bean(name=DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
 	public SecurityWebExceptionResolver securityWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
 	}
