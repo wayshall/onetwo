@@ -15,7 +15,7 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 	private static final String THEME_VIEW_KEY = ThemeSetting.class.getSimpleName()+"_view_key";
 	private static final String EXT_THEME_KEY = ThemeSetting.class.getSimpleName()+"_ext_theme_key";*/
 	
-	private static final String THEME_ATTRIBUTES_KEY = ThemeSetting.class.getSimpleName()+"_THEME_ATTRIBUTES_KEY";
+	public static final String THEME_ATTRIBUTES_KEY = ThemeSetting.class.getSimpleName()+"_THEME_ATTRIBUTES_KEY";
 	
 	
 	protected ThemeAttributes initIfNecessity(){
@@ -65,7 +65,7 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 			this.setThemeTag(theme);
 		
 		if(layout!=null)
-			this.setThemeLayoutDefaultPage(layout);
+			this.setLayout(layout);
 
 		if(view!=null)
 			this.setThemeView(view);
@@ -81,7 +81,7 @@ public class SessionTagThemeSettting extends DefaultTagThemeSetting {
 		initIfNecessity().setThemeTag(theme);
 	}
 
-	public void setThemeLayoutDefaultPage(String layout) {
+	public void setLayout(String layout) {
 		initIfNecessity().setLayout(layout);
 	}
 

@@ -52,6 +52,12 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String LOG_OPERATION = "log.operation";
 
 	public static final String SAFE_REQUEST = "safe.request";
+	public static final String PREVENT_REPEATE_SUBMIT = "prevent.repeate.sbumit";
+	/***
+	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
+	 * 默认为false，没有注解的不检查
+	 */
+	public static final String PREVENT_REPEATE_SUBMIT_DEFAULT = "prevent.repeate.sbumit.default";
 	public static final String LOGIN_URL = "login.url";
 	public static final String LOGOUT_URL = "logout.url";
 	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
@@ -321,10 +327,23 @@ public class BaseSiteConfig extends AppConfig {
 		this.webAppConfigurator = webAppConfigurator;
 	}
 	
+	/*****
+	 * 当启用后，默认检查
+	 * @return
+	 */
 	public boolean isSafeRequest(){
 		return getBoolean(SAFE_REQUEST, true);
 	}
-	
+	public boolean isPreventRepeateSubmit(){
+		return getBoolean(PREVENT_REPEATE_SUBMIT, false);
+	}
+	/***
+	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
+	 * 默认为false，没有注解的不检查
+	 */
+	public boolean isPreventRepeateSubmitDefault(){
+		return getBoolean(PREVENT_REPEATE_SUBMIT_DEFAULT, false);
+	}
 	public boolean isTimeProfiler(){
 		return getBoolean(TIME_PROFILER, isDev());
 	}
@@ -337,7 +356,7 @@ public class BaseSiteConfig extends AppConfig {
 		return getProperty(THEME_SETTING, "");
 	}
 	public String getThemeTag(){
-		return getProperty(THEME_TAG, "");
+		return getProperty(THEME_TAG, "/tags/");
 	}
 	public String getThemeView(){
 		return getProperty(THEME_VIEW, "/views/");

@@ -38,6 +38,12 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description><![CDATA[preventSubmit]]></description>
+      <name>preventSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
   
