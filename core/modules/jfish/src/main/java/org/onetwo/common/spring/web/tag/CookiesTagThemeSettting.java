@@ -37,19 +37,22 @@ public class CookiesTagThemeSettting extends DefaultTagThemeSetting {
 	@Override
 	public String getThemeView() {
 		String view = initIfNecessity().getThemeView();
-		return StringUtils.isBlank(view)?ResponseUtils.getCookieValue(WebHolder.getRequest(), THEME_VIEW):view;
+		view = StringUtils.isBlank(view)?ResponseUtils.getCookieValue(WebHolder.getRequest(), THEME_VIEW):view;
+		return StringUtils.isBlank(view)?super.getThemeView():view;
 	}
 	
 	@Override
 	public String getThemeTag() {
 		String theme = initIfNecessity().getThemeTag();
-		return StringUtils.isBlank(theme)?ResponseUtils.getCookieValue(WebHolder.getRequest(), THEME_TAG):theme;
+		theme = StringUtils.isBlank(theme)?ResponseUtils.getCookieValue(WebHolder.getRequest(), THEME_TAG):theme;
+		return StringUtils.isBlank(theme)?super.getThemeTag():theme;
 	}
 
 	@Override
 	public String getThemeLayoutDefaultPage() {
 		String layout = initIfNecessity().getLayout();
-		return StringUtils.isBlank(layout)?ResponseUtils.getCookieValue(WebHolder.getRequest(), LAYOUT):layout;
+		layout = StringUtils.isBlank(layout)?ResponseUtils.getCookieValue(WebHolder.getRequest(), LAYOUT):layout;
+		return StringUtils.isBlank(layout)?super.getThemeLayoutDefaultPage():layout;
 	}
 	
 	@Override
