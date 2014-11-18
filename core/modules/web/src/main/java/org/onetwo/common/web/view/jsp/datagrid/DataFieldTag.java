@@ -28,8 +28,8 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String searchFieldName;
 	private String searchFieldType;
 	private Object searchItems;
-	private String searchItemLabel;
-	private String searchItemValue;
+	private String searchItemLabel = "name";
+	private String searchItemValue = "value";
 	
 
 	private String reserved;//备用
