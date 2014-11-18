@@ -1,6 +1,7 @@
 package org.onetwo.common.excel;
 
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -31,6 +32,11 @@ public class TemplateModel implements PoiModel{
 	private Integer sizePerSheet;
 	
 	private String columnWidth;
+	
+
+	private boolean autoSizeColumn;
+	private boolean useMergedCells;
+	private Map<Short, Boolean> autoSizeColumnMap;
 	
 //	private Map<Integer, Short> columnWidthMap = LangUtils.newHashMap();
 	
@@ -132,6 +138,32 @@ public class TemplateModel implements PoiModel{
 		this.condition = condition;
 	}
 	
+	public void setAutoSizeColumn(short col, boolean useMerged){
+		if(autoSizeColumnMap==null){
+			autoSizeColumnMap = LangUtils.newHashMap();
+		}
+		this.autoSizeColumnMap.put(col, useMerged);
+	}
+
+	public Map<Short, Boolean> getAutoSizeColumnMap() {
+		return autoSizeColumnMap;
+	}
+
+	public boolean isAutoSizeColumn() {
+		return autoSizeColumn;
+	}
+
+	public void setAutoSizeColumn(boolean autoSizeColumn) {
+		this.autoSizeColumn = autoSizeColumn;
+	}
+
+	public boolean isUseMergedCells() {
+		return useMergedCells;
+	}
+
+	public void setUseMergedCells(boolean useMergedCells) {
+		this.useMergedCells = useMergedCells;
+	}
 	
 	/*public boolean isMultiSheet(){
 		return this.sizePerSheet!=null && this.sizePerSheet>0 && StringUtils.isNotBlank(datasource);

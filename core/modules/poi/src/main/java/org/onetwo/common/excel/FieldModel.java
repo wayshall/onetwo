@@ -46,6 +46,10 @@ public class FieldModel implements PoiModel {
 //	private List<FieldListener> listeners;
 	private List<ExecutorModel> valueExecutors;
 	
+	private short columnIndex;
+	private boolean autoSizeColumn;
+	private boolean useMergedCells;
+	
 	public FieldModel() {
 	}
 
@@ -311,6 +315,30 @@ public class FieldModel implements PoiModel {
 
 	public void setCondition(String condition) {
 		this.condition = condition;
+	}
+
+	public short getColumnIndex() {
+		return columnIndex;
+	}
+
+	public void setColumnIndex(short columnIndex) {
+		this.columnIndex = columnIndex;
+	}
+
+	public boolean isAutoSizeColumn() {
+		return autoSizeColumn;
+	}
+
+	public void setAutoSizeColumn(boolean autoSizeColumn) {
+		this.autoSizeColumn = autoSizeColumn;
+	}
+
+	public boolean isUseMergedCells() {
+		return useMergedCells;
+	}
+
+	public void setUseMergedCells(boolean useMergedCells) {
+		this.useMergedCells = useMergedCells;
 	}
 
 	
