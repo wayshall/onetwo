@@ -1,7 +1,6 @@
 package org.onetwo.common.excel;
 
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.interfaces.TemplateGenerator;
 

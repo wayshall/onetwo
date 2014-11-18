@@ -46,9 +46,16 @@ public class RowModel implements PoiModel {
 	}
 
 	public void initModel(){
+		short columnIndex = 0;
 		for(FieldModel field : fields){
 			field.initModel();
 			field.setRow(this);
+			field.setColumnIndex(columnIndex);
+			
+			if(field.isAutoSizeColumn()){
+				template.setAutoSizeColumn(columnIndex, field.isUseMergedCells());
+			}
+			columnIndex++;
 		}
 	}
 	
