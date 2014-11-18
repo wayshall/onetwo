@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template name="报名客户资料" autoSizeColumn="true" useMergedCells="true" >
+<template name="报名客户资料" autoSizeColumn="true" >
 	<rows>
 		<row span="2">
 			<fields>
