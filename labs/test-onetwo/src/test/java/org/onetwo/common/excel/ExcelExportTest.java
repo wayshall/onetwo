@@ -45,7 +45,7 @@ public class ExcelExportTest {
 			CardEntity card = new CardEntity();
 			card.setId(Long.valueOf(i+1));
 			card.setCardNo("test_card_no_"+i);
-			card.setCardPwd("testPwd");
+			card.setCardPwd("test password in row "+i);
 			card.setStartTime(DateUtil.now());
 			card.setProperties(Arrays.asList("card--aa", "card--bb"));
 			
