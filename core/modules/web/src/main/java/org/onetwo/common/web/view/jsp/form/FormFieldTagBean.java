@@ -68,7 +68,8 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public String getValue() {
-		if(StringUtils.isBlank(value))
+		//如果value属性没有设置过，使用name的名称作为属性
+		if(value==null)
 			return getName();
 		return value;
 	}
