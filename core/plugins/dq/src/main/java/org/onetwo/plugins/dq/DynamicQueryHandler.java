@@ -148,7 +148,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 				}
 				
 				logger.info("batch insert start ...");
-				TimeCounter t = new TimeCounter("batch insert...");
+				TimeCounter t = new TimeCounter("prepare insert");
 				t.start();
 				
 				List<?> batchParameter = (List<?>)args[0];
@@ -165,9 +165,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 					}
 					batchValues.add(paramValueMap);
 				}
+
+				logger.info("prepare insert finish!");
+				t.stop();
+				t.restart("insert to db");
+				
 				int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 				
-
 				logger.info("batch insert stop ...");
 				t.stop();
 				
