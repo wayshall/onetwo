@@ -22,6 +22,17 @@
 	<onetwo.plugin.version>2.0-SNAPSHOT</onetwo.plugin.version>
     <hibernate.version>4.3.5.Final</hibernate.version>
   </properties>
+  
+  <repositories>
+    <repository>
+      <!-- Please consider setting up your own on-site repository proxy such as with Nexus and pointing the url element below at that instead -->
+      <id>oss-sonatype-snapshots</id>
+      <name>OSS Sonatype Snapshots Repository</name>
+	  <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
   	<dependency>
@@ -30,6 +41,20 @@
 		<version>1.12.6</version>
 		<scope>provided</scope>
 	</dependency>
+	
+	<dependency>
+    <groupId>org.directwebremoting</groupId>
+    <artifactId>dwr</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </dependency>
+
+  <dependency>
+    <!-- Optional non-CLA components see DWR documentation for details -->
+    <groupId>org.directwebremoting</groupId>
+    <artifactId>dwr</artifactId>
+    <classifier>noncla</classifier>
+    <version>3.0.0-SNAPSHOT</version>
+  </dependency>
 	
   	<dependency>
 		<groupId>org.apache.ant</groupId>
