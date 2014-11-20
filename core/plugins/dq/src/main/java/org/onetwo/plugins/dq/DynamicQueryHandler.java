@@ -15,6 +15,7 @@ import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.SqlUtils;
@@ -146,6 +147,10 @@ public class DynamicQueryHandler implements InvocationHandler {
 						throw new BaseException("no supported jdbc batch execute!");
 				}
 				
+				logger.info("batch insert start ...");
+				TimeCounter t = new TimeCounter("batch insert...");
+				t.start();
+				
 				List<?> batchParameter = (List<?>)args[0];
 				List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
 				ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
@@ -161,6 +166,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 					batchValues.add(paramValueMap);
 				}
 				int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+				
+
+				logger.info("batch insert stop ...");
+				t.stop();
+				
 				if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
 					return counts;
 				}else{
