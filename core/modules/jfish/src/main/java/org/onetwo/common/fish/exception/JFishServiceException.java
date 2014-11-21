@@ -24,6 +24,7 @@ public class JFishServiceException extends ServiceException implements SystemErr
 
 	public static JFishServiceException create(String code, Object...args){
 		Assert.hasText(code);
+//		String msg = LangUtils.getFirst(args);
 		JFishServiceException e = new JFishServiceException(code);
 		e.setArgs(args);
 		return e;

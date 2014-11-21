@@ -28,4 +28,6 @@ public interface PermissionManager {
 	public List<? extends IPermission> findAppPermissions(String appCode);
 	
 	public List<? extends IPermission> findPermissionByCodes(String appCode, String[] permissionCodes);
+	
+	
 }

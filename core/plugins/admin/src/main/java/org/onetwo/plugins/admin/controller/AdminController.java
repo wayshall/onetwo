@@ -14,6 +14,7 @@ import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
+import org.onetwo.plugins.admin.AdminPlugin;
 import org.onetwo.plugins.admin.model.service.MenuItemRegistry;
 import org.onetwo.plugins.admin.model.vo.ExtMenuModel;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
@@ -26,6 +27,8 @@ public class AdminController extends PluginSupportedController {
 
 	@Resource
 	private MenuItemRegistry menuItemRegistry;
+	
+	private AdminPluginConfig config = AdminPlugin.getInstance().getConfig();
 
 	@Authentic(checkLogin=true, ignore=true, redirect="")
 	@RequestMapping(method=RequestMethod.GET)
@@ -49,7 +52,7 @@ public class AdminController extends PluginSupportedController {
 		List<ExtMenuModel> menuTree = builder.buidTree();
 
 //		String title = AdminPluginConfig.getInstance().getTitle();
-		String viewName = AdminPluginConfig.getInstance().getAdminView();
+		String viewName = config.getAdminView();
 		if(StringUtils.isBlank(viewName))
 			viewName = pluginView("manage-ext");
 		
@@ -57,7 +60,7 @@ public class AdminController extends PluginSupportedController {
 			return mv(viewName, "treePanelDatas", "[]");
 		
 		ExtMenuModel root = menuTree.get(0);
-		String treePanelDatas = AdminPluginConfig.getInstance().isSinglePanel()?root.getTreePanel():root.getChildrenAsTreePanel();
+		String treePanelDatas = config.isSinglePanel()?root.getTreePanel():root.getChildrenAsTreePanel();
 //		ObjectMapper om = FastUtils.jsonMapperIgnoreNull().getObjectMapper();
 //		ArrayNode array = om.createArrayNode();
 		

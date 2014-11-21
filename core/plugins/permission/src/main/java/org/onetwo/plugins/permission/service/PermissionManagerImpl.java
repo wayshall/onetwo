@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PermissionManagerImpl implements PermissionManager {
+public class PermissionManagerImpl implements PluginPermissionManager {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, ? extends IPermission> menuNodeMap;
@@ -136,7 +136,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	
 	@Override
 	public <T> T findById(Long id){
-		return (T)baseEntityManager.findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
+//		return (T)baseEntityManager.findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
+		return (T)findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
 	}
 
 	public MenuInfoParser getMenuInfoParser() {
@@ -164,9 +165,41 @@ public class PermissionManagerImpl implements PermissionManager {
 
 	@Override
 	public List<? extends IPermission> findPermissionByCodes(String appCode, String[] permissionCodes) {
-		Assert.notEmpty(permissionCodes);
+		/*Assert.notEmpty(permissionCodes);
 		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(
 																	this.menuInfoParser.getMenuInfoable().getIPermissionClass(), 
+																	"code:in", permissionCodes,
+																	"appCode", appCode,
+																	K.IF_NULL, IfNull.Ignore);
+		return permlist;*/
+		return findPermissionByCodes(menuInfoParser.getMenuInfoable().getIPermissionClass(), appCode, permissionCodes);
+	}
+	
+
+	@Override
+	public <T> T findById(Class<?> clazz, Long id) {
+		return (T)baseEntityManager.findById(clazz, id);
+	}
+
+	@Override
+	public List<? extends IMenu> findAppMenus(Class<?> clazz, String appCode) {
+		List<IMenu> menulist = (List<IMenu>)baseEntityManager.findByProperties(clazz, "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	public List<? extends IPermission> findAppPermissions(Class<?> clazz,
+			String appCode) {
+		List<IPermission> menulist = (List<IPermission>)baseEntityManager.findByProperties(clazz, "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	public List<? extends IPermission> findPermissionByCodes(Class<?> clazz,
+			String appCode, String[] permissionCodes) {
+		Assert.notEmpty(permissionCodes);
+		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(
+																	clazz, 
 																	"code:in", permissionCodes,
 																	"appCode", appCode,
 																	K.IF_NULL, IfNull.Ignore);
