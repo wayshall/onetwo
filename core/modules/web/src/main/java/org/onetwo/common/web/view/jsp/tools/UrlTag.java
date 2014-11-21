@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.preventor.PreventorFactory;
 import org.onetwo.common.web.preventor.RequestPreventor;
@@ -17,7 +18,7 @@ public class UrlTag extends AbstractTagSupport {
 	private boolean preventSubmit;
 	
     public int doEndTag() throws JspException {
-    	String url = BaseSiteConfig.getInstance().getBaseURL();
+    	String url = "";
     	if(BaseSiteConfig.getInstance().isSafeRequest()){
     		url += csrfPreventor.processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
     	}else{
@@ -25,6 +26,10 @@ public class UrlTag extends AbstractTagSupport {
     	}
 		if(preventSubmit){
 			url += repeateSubmitPreventor.processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+		}
+		String baseUrl = BaseSiteConfig.getInstance().getBaseURL();
+		if(StringUtils.isNotBlank(baseUrl) && !url.startsWith(baseUrl)){
+			url = baseUrl + url;
 		}
     	write(url);
     	return EVAL_PAGE;

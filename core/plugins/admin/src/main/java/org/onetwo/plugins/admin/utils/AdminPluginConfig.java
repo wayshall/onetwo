@@ -1,9 +1,11 @@
 package org.onetwo.plugins.admin.utils;
 
+import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.security.SecurityPlugin;
 
-final public class AdminPluginConfig {
+final public class AdminPluginConfig implements LoadableConfig {
 
 	public static final String ADMIN_TREEPANEL = "admin.treepanel";
 	public static final String ADMIN_MAIN_URL = "admin.main.url";
@@ -12,15 +14,28 @@ final public class AdminPluginConfig {
 	public static final String ADMIN_INDEX_ENABLE = "admin.index.enable";
 	
 
-	private static final AdminPluginConfig instance = new AdminPluginConfig();
-	private BaseSiteConfig config = BaseSiteConfig.getInstance();
+//	private static final AdminPluginConfig instance = new AdminPluginConfig();
+//	private BaseSiteConfig config = BaseSiteConfig.getInstance();
+
+	private JFishProperties config;
 	
-	private AdminPluginConfig(){
+	
+	@Override
+	public void load(JFishProperties properties) {
+		this.config = properties;
 	}
 
-	public static AdminPluginConfig getInstance() {
-		return instance;
+	@Override
+	public JFishProperties getSourceConfig() {
+		return config;
 	}
+
+	public AdminPluginConfig(){
+	}
+
+	/*public static AdminPluginConfig getInstance() {
+		return instance;
+	}*/
 
 	public boolean isAdminIndexEnable(){
 		return config.getBoolean(ADMIN_INDEX_ENABLE, false);
@@ -42,7 +57,7 @@ final public class AdminPluginConfig {
 	}
 	public String getMainUrl(){
 		if(config.containsKey(ADMIN_MAIN_URL))
-			return config.getBaseURL() + config.getProperty(ADMIN_MAIN_URL);
+			return BaseSiteConfig.getInstance().getBaseURL() + config.getProperty(ADMIN_MAIN_URL);
 		else
 			return "";
 	}
