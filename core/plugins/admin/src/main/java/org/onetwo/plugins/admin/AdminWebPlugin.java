@@ -19,6 +19,9 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+		if(!AdminPlugin.getInstance().isConfigExists()){
+			return ;
+		}
 		boolean enable = AdminPlugin.getInstance().getConfig().isAdminIndexEnable();
 		logger.info("admin index enable: {}", enable);
 		if(enable)
