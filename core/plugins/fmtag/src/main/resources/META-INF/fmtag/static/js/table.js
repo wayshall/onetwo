@@ -39,8 +39,7 @@ var Common = function () {
 		},
 		
 		showBlockMsg: function(message){
-			var existBlock = $('div.modal.hide.fade.in');
-			if(existBlock.length>0)
+			if(jfish._blockMsgState==true)
 				return ;
 			var loadDiv = $('#loadingModal');
 			if(loadDiv.length==0){

@@ -21,6 +21,11 @@ public interface BaseEntityManager extends CreateQueryable {
 	
 	public void update(Object entity);
 
+	/****
+	 * 如果实现了ILogicDeleteEntity接口，着逻辑删除
+	 * 否则，物理删除
+	 * @param entity
+	 */
 	public void remove(Object entity);
 	
 	public void removeList(Collection<?> entities);
