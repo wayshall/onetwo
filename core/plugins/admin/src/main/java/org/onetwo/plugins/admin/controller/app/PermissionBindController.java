@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/app/permissionBind")
-@Controller
+@Controller("adminPermissionBindController")
 public class PermissionBindController extends AdminBaseController {
 	@Resource
 	private AdminRoleServiceImpl adminRoleServiceImpl;

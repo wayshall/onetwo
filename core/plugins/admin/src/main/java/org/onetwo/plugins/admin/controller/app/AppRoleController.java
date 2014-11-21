@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/app/role")
-@Controller
+@Controller("adminAppRoleController")
 public class AppRoleController extends PluginSupportedController {
 	 
 	@Autowired

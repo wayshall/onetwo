@@ -34,7 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/app/user")
-@Controller
+@Controller("adminAppUserController")
 public class AppUserController extends AdminBaseController {
 	 
 	@Resource
