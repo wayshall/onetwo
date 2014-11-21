@@ -61,6 +61,8 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				Object data = it.next();
 				int index = 0;
 				GridRowData cdata = GridRowData.create(component, data, index);
+				//setdata
+				component.setCurrentRowData(cdata);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
 				this.setDataIntoRequest(cdata);
@@ -77,8 +79,8 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 			}
 		}else{
 			GridRowData cdata = GridRowData.create(component, LangUtils.newHashMap(), 0);
+			//setdata
 			setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
-			
 			component.setCurrentRowData(cdata);
 			
 			return EVAL_BODY_BUFFERED;
