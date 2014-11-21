@@ -24,6 +24,8 @@ public class Test {
 		for(char c :str.toCharArray()){
 			System.out.println((int)c+":"+c);
 		}
+		int rs = Integer.parseInt("2*3");
+		System.out.println("rs: " + rs);
 	}
 	
 	public static void test2(String[] args){

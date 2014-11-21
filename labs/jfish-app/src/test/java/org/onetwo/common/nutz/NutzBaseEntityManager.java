@@ -1,6 +1,7 @@
 package org.onetwo.common.nutz;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +12,11 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
+import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.QueryBuilder;
+import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 import org.springframework.stereotype.Repository;
 
@@ -58,7 +62,31 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataQuery createQuery(String ejbqlString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public void persist(Object entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Object entity) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -70,7 +98,7 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public void removeList(List entities) {
+	public void removeList(Collection<?> entities) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -100,19 +128,7 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T> T findUnique(String sql, Object... values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -124,13 +140,48 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass, Object... properties) {
+	public <T> T findOne(Class<T> entityClass, Object... properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> List<T> findByProperties(Class entityClass, Map<Object, Object> properties) {
+	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> findByProperties(Class<T> entityClass,
+			Object... properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> selectFields(Class<?> entityClass,
+			Object[] selectFields, Object... properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> selectFieldsToEntity(Class<?> entityClass,
+			Object[] selectFields, Object... properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> select(Class<?> entityClass,
+			Map<Object, Object> properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> List<T> findByProperties(Class<T> entityClass,
+			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -142,7 +193,8 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public void findPage(Class entityClass, Page page, Map<Object, Object> properties) {
+	public void findPage(Class entityClass, Page page,
+			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -154,7 +206,8 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T extends ILogicDeleteEntity> T deleteById(Class<? extends ILogicDeleteEntity> entityClass, Serializable id) {
+	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass,
+			Serializable id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -178,19 +231,8 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public DataQuery createSQLQuery(String sqlString, Class entityClass) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DataQuery createQuery(String ejbqlString) {
+	public DataQuery createMappingSQLQuery(String sqlString,
+			String resultSetMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -226,19 +268,37 @@ public class NutzBaseEntityManager implements BaseEntityManager {
 	}
 
 	@Override
-	public <T> List<T> findList(QueryBuilder squery) {
+	public SQLSymbolManager getSQLSymbolManager() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void findPage(Page page, QueryBuilder squery) {
+	public <T> List<T> findList(JFishQueryValue queryValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T findUnique(JFishQueryValue queryValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> void findPage(Page<T> page, JFishQueryValue squery) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public <T> T findUnique(QueryBuilder squery) {
+	public <T> T getRawManagerObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T getRawManagerObject(Class<T> rawClass) {
 		// TODO Auto-generated method stub
 		return null;
 	}
