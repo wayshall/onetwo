@@ -1,11 +1,12 @@
 package org.onetwo.common.utils;
 
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 
-public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDetail {
+public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, PermissionDetail {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
@@ -94,6 +95,11 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, PermissionDeta
 	@Override
 	public boolean isSystemRootUser() {
 		return false;
+	}
+
+	@Override
+	public List<Long> getRoleIds() {
+		return Collections.EMPTY_LIST;
 	}
 	
 	
