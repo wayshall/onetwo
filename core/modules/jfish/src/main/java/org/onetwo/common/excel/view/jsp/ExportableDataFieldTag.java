@@ -24,9 +24,9 @@ public class ExportableDataFieldTag extends DataFieldTag{
 		comp.setExportable(exportable);
 		comp.setExportValue(exportValue);
 	}
-	public void setExportable(boolean exportable) {
+	/*public void setExportable(boolean exportable) {
 		this.exportable = exportable;
-	}
+	}*/
 
 	public void setExportable(String exportable) {
 		if(StringUtils.isNotBlank(exportable) && !ToBooleanConvertor.FALSE_VALUE.equals(exportable)){

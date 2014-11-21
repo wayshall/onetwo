@@ -5,6 +5,7 @@ import org.onetwo.common.spring.plugin.ContextPluginMeta;
 
 public interface JFishPluginMeta extends ContextPluginMeta {
 
+	public Class<?> getRootClass();
 	public boolean isClassOfThisPlugin(Class<?> clazz);
 	
 //	public PluginInfo getPluginInfo();

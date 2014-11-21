@@ -104,7 +104,17 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	
 	@Override
 	public int startTag() throws JspException {
+		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
+		if(row==null)
+			throw new JspException("field tag must nested in a row tag.");
+		
+		if(DataRowTagBean.class.isInstance(row)){
+			DataRowTagBean drow = (DataRowTagBean) row;
+			if(drow.getCurrentRowData()==null)
+				return SKIP_BODY;
+		}
 		super.startTag();
+//		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 	}
 

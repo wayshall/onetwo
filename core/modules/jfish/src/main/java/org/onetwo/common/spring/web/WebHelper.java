@@ -17,11 +17,14 @@ import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.view.jsp.tools.ToolEl;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.util.HtmlUtils;
 
 @SuppressWarnings("unchecked")
 public class WebHelper {
@@ -207,4 +210,15 @@ public class WebHelper {
 		this.controllerHandler = controllerHandler;
 	}
 
+	
+	public String web(String name){
+		return ToolEl.escapeHtml(WebHolder.getValue(name).toString());
+	}
+	public String escapeHtml(String content){
+		return HtmlUtils.htmlEscape(content);
+	}
+	
+	public String firstNotblank(String val, String def1, String def2){
+		return ToolEl.firstNotblank(val, def1, def2);
+	}
 }
