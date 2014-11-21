@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/app/user-role")
-@Controller
+@Controller("adminAppUserRoleController")
 public class AppUserRoleController extends AdminBaseController {
 	@Autowired
 	private AdminUserServiceImpl adminUserServiceImpl;
