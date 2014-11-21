@@ -3,12 +3,9 @@ package org.onetwo.plugins.admin;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.plugins.admin.utils.AdminPluginConfig;
-
 public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 
 	private static AdminWebPlugin instance;
-	private boolean enable = AdminPluginConfig.getInstance().isAdminIndexEnable();
 	
 	
 	public static AdminWebPlugin getInstance() {
@@ -22,9 +19,15 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
+		if(!AdminPlugin.getInstance().isConfigExists()){
+			return ;
+		}
+		boolean enable = AdminPlugin.getInstance().getConfig().isAdminIndexEnable();
 		logger.info("admin index enable: {}", enable);
 		if(enable)
 			annoClasses.add(AdminWebContext.class);
+		
+		annoClasses.add(AdminAppWebContext.class);
 	}
 
 	@Override
@@ -34,7 +37,7 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 
 	@Override
 	public boolean registerMvcResources() {
-		return enable;
+		return true;
 	}
 
 }

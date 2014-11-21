@@ -39,13 +39,15 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	}
 
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {
-		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(getConfigPath(), getEnvConfigPath(appEnv));
-		try {
-			pfb.afterPropertiesSet();
-			JFishProperties properties = (JFishProperties)pfb.getObject();
-			config.load(properties);
-		} catch (IOException e) {
-			throw new BaseException("load config error: " + e.getMessage(), e);
+		if(isConfigExists()){
+			PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(getConfigPath(), getEnvConfigPath(appEnv));
+			try {
+				pfb.afterPropertiesSet();
+				JFishProperties properties = (JFishProperties)pfb.getObject();
+				config.load(properties);
+			} catch (IOException e) {
+				throw new BaseException("load config error: " + e.getMessage(), e);
+			}
 		}
 	}
 
