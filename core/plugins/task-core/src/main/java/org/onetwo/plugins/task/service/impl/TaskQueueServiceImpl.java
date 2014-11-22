@@ -1,5 +1,6 @@
 package org.onetwo.plugins.task.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import org.onetwo.plugins.task.TaskPluginConfig;
 import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.entity.TaskQueueArchived;
+import org.onetwo.plugins.task.utils.TaskConstant.QueueSourceTag;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -100,7 +102,15 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 	}
 	
 	public void requeueArchived(Long archivedId){
-		TaskQueueArchived archived = getBaseEntityManager().load(entityClass, archivedId);
-		TaskQueue queue = HibernateUtils.copyToTargetWithoutRelations(archived, TaskQueue.class);
+		TaskQueueArchived archived = getBaseEntityManager().load(TaskQueueArchived.class, archivedId);
+		TaskQueue queue = HibernateUtils.copyToTargetWithoutRelations(archived, TaskQueue.class, "id");
+//		TaskQueue queue = new TaskQueue();
+		queue.setSourceTag(QueueSourceTag.REQUEUE.toString());
+		queue.setStatus(TaskStatus.WAITING);
+		queue.setTask(archived.getTask());
+		queue.setCurrentTimes(0);
+		queue.setTaskCreateTime(new Date());
+		queue.setLastExecTime(null);
+		getBaseEntityManager().save(queue);
 	}
 }

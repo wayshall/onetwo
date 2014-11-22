@@ -60,15 +60,15 @@ public final class HibernateUtils {
 		}
 
 		@Override
-		public void copy(Object source, Object target, PropertyDescriptor prop) {
+		public void copy(Object source, Object target, PropertyDescriptor targetProperty) {
 			if(target instanceof IBaseEntity){
-				if(ArrayUtils.contains(TIMESTAMP_FIELDS, prop.getName()))
+				if(ArrayUtils.contains(TIMESTAMP_FIELDS, targetProperty.getName()))
 					return ;
 			}
-			if(ArrayUtils.contains(ignoreFields, prop.getName())){
+			if(ArrayUtils.contains(ignoreFields, targetProperty.getName())){
 				return ;
 			}
-			super.copy(source, target, prop);
+			super.copy(source, target, targetProperty);
 		}
 		
 		protected boolean isIgnoreValue(Object val){
@@ -189,7 +189,7 @@ public final class HibernateUtils {
 		return clazz.getName().contains(JAVASSIST_KEY);
 	}
 	
-	public static <T> void copyIgnoreRelationsAndFields(T source, T target, String... ignoreFields){
+	public static void copyIgnoreRelationsAndFields(Object source, Object target, String... ignoreFields){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
 	}
 	/****
@@ -211,8 +211,8 @@ public final class HibernateUtils {
 	 * @param targetClass
 	 * @return
 	 */
-	public static <T> T copyToTargetWithoutRelations(Object source, Class<T> targetClass){
-		return ReflectUtils.copy(source, targetClass, WITHOUT_RELATION);
+	public static <T> T copyToTargetWithoutRelations(Object source, Class<T> targetClass, String... ignoreFields){
+		return ReflectUtils.copy(source, targetClass, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
 	}
 	/***
 	 * 复制对象属性，但会忽略那些null值、空白字符

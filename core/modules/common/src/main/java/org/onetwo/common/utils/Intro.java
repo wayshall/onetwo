@@ -385,7 +385,7 @@ public class Intro<T> {
 		return Map.class.isAssignableFrom(clazz);
 	}
 	
-	public <E> void copy(E source, E target, PropertyCopyer<PropertyDescriptor> copyer){
+	public void copy(Object source, Object target, PropertyCopyer<PropertyDescriptor> copyer){
 		Collection<String> sourceProperties = ReflectUtils.getIntro(source.getClass()).desribPropertyNames();
 		for(PropertyDescriptor targetProperty : this.propertyDescriptors.values()){//propertyDescriptors is target
 			if(sourceProperties.contains(targetProperty.getName()))

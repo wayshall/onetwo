@@ -8,7 +8,7 @@ import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 public class TaskCorePlugin extends ConfigurableContextPlugin<TaskCorePlugin, TaskPluginConfig> {
 
 	public TaskCorePlugin() {
-		super("/task/", "task-config", new TaskPluginConfig());
+		super("/plugins/task/", "task-config", new TaskPluginConfig());
 	}
 	private static TaskCorePlugin instance;
 	
