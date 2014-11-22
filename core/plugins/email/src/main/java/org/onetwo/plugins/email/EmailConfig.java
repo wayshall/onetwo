@@ -1,7 +1,6 @@
 package org.onetwo.plugins.email;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 

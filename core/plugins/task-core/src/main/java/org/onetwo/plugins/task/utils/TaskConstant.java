@@ -2,6 +2,11 @@ package org.onetwo.plugins.task.utils;
 
 final public class TaskConstant {
 	
+	public static enum QueueSourceTag {
+		WEB,
+		REQUEUE
+	}
+	
 	/****
 	 * 最近一次状态：
 WAITING - 等待中

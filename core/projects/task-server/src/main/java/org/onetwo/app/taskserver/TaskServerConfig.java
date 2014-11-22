@@ -25,4 +25,8 @@ public class TaskServerConfig extends AppConfig {
 	public int getFetchSize(){
 		return getInt("fetch.size", 1000);
 	}
+	
+	public String getLocalAttachementDir(){
+		return getProperty("local.attachement.dir", System.getProperty("java.io.tmpdir")+"/task-local-attachement");
+	}
 }
