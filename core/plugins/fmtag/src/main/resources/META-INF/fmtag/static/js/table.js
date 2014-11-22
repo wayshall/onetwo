@@ -298,12 +298,12 @@ var Common = function () {
 			if(link.attr('data-form')){
 				form = $(link.attr('#'+data-form));
 				form.attr("action", href);
-				form.attr("method", method);
+//				form.attr("method", method);
 			}
 			else if(form.length>0){
 				form = $(form.get(0));
 				form.attr("action", href);
-				form.attr("method", method);
+//				form.attr("method", method);
 			}
 			else{
 				var formId = '_linkForm';
@@ -317,6 +317,12 @@ var Common = function () {
 
 			jfish.appendHiddenMethodParamIfNecessary(form, method);
 			jfish.appendHiddenByDataParams(link, form);
+			
+			if(method && method.toLowerCase()=='get'){
+				form.attr("method", "get");
+			}else{
+				form.attr("method", "post");
+			}
 
 			if (target) {
 				form.attr('target', target);

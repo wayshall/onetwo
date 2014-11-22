@@ -17,6 +17,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
 
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
@@ -42,6 +43,7 @@ public class TaskQueue implements Serializable {
 //	private String type;
 	
 	@Enumerated(EnumType.STRING)
+	@NotNull
 	private TaskStatus status;
 	private Integer currentTimes;
 	private Integer tryTimes;
@@ -56,9 +58,12 @@ public class TaskQueue implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdateTime;
 	
+	private String sourceTag;
+	
 	
 	@ManyToOne
 	@JoinColumn(name="TASK_ID")
+	@NotNull
 	private TaskBase task;
 	
 	public void markExecuted(){
@@ -153,6 +158,14 @@ public class TaskQueue implements Serializable {
 
 	public void setTaskCreateTime(Date taskCreateTime) {
 		this.taskCreateTime = taskCreateTime;
+	}
+
+	public String getSourceTag() {
+		return sourceTag;
+	}
+
+	public void setSourceTag(String sourceTag) {
+		this.sourceTag = sourceTag;
 	}
 
 	

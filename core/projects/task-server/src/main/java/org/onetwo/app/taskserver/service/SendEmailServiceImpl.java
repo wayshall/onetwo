@@ -1,9 +1,11 @@
 package org.onetwo.app.taskserver.service;
 
+import java.io.File;
 import java.io.InputStream;
 
 import javax.annotation.Resource;
 
+import org.onetwo.app.taskserver.TaskServerConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -42,6 +44,9 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 	
 	@Resource
 	private TaskPluginConfig taskPluginConfig;
+
+	@Resource
+	private TaskServerConfig taskServerConfig;
 	
 	@Override
 	public TaskType[] getListenerMappedTaskTypes() {
@@ -72,9 +77,12 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
 				String fpath = taskPluginConfig.getTaskConfig().getAttachmentPath(path);
-				String attachName = FileUtils.getFileName(path);
+				logger.info("add attachement: {}", fpath);
+				/*String attachName = FileUtils.getFileName(path);
 				InputStreamSource attachment = createAttachmentInputStreamSource(fpath);
-				mailInfo.addAttachmentInputStreamSource(attachName, attachment);
+				mailInfo.addAttachmentInputStreamSource(attachName, attachment);*/
+				File file = copyToLocalIfSmbFile(fpath);
+				mailInfo.addAttachment(file);
 			}
 			this.javaMailService.send(mailInfo);
 			
@@ -107,6 +115,16 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 			iss = new FileSystemResource(path);
 		}
 		return iss;
+	}
+	
+	protected File copyToLocalIfSmbFile(String path){
+		if(FileUtils.isSmbPath(path)){
+			File file = FileUtils.copyFileToDir(FileUtils.newSmbFile(path), taskServerConfig.getLocalAttachementDir());
+			file.deleteOnExit();
+			return file;
+		}else{
+			return new File(path);
+		}
 	}
 	
 

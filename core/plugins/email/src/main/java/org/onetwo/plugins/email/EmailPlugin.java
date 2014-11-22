@@ -8,7 +8,7 @@ import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 public class EmailPlugin extends ConfigurableContextPlugin<EmailPlugin, EmailConfig> {
 
 	public EmailPlugin() {
-		super("email", "mailconfig");
+		super("/plugins/email", "email-config");
 	}
 
 

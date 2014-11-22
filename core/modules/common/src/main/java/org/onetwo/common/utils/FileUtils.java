@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,19 +112,42 @@ public class FileUtils {
 		return path.toLowerCase().startsWith(SMB_PREFIX);
 	}
 
+
+	public static SmbFile newSmbFile(String fpath){
+		SmbFile smbf;
+		try {
+			smbf = new SmbFile(fpath);
+		} catch (MalformedURLException e) {
+			throw new BaseException("create smbfile error: " + e.getMessage(), e);
+		}
+		return smbf;
+	}
+
+
+	public static SmbFileInputStream newSmbInputStream(String fpath){
+		return newSmbInputStream(newSmbFile(fpath));
+	}
+	public static SmbFileInputStream newSmbInputStream(SmbFile smbf){
+		try {
+			SmbFileInputStream in = new SmbFileInputStream(smbf);
+			return in;
+		} catch (Exception e) {
+			throw new BaseException("create SmbFileInputStream error: " + e.getMessage(), e);
+		}
+	}
+
 	public static InputStream newInputStream(String fpath){
 		InputStream in = null;
-		try {
-			String path = replaceBackSlashToSlash(fpath);
-			if(isSmbPath(path)){
-				SmbFile smbf = new SmbFile(path);
-				in = new SmbFileInputStream(smbf);
-			}else{
-				File f = newFile(path);
+		String path = replaceBackSlashToSlash(fpath);
+		if(isSmbPath(path)){
+			in = newSmbInputStream(fpath);
+		}else{
+			File f = newFile(path);
+			try {
 				in = new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				throw new BaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
 			}
-		} catch (Exception e) {
-			throw LangUtils.asBaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
 		}
 		return in;
 	}
@@ -143,6 +167,7 @@ public class FileUtils {
 				out = new SmbFileOutputStream(smbf);
 			}else{
 				File f = newFile(path);
+				makeDirs(f, true);
 				out = new FileOutputStream(f);
 			}
 		} catch (Exception e) {
@@ -348,6 +373,10 @@ public class FileUtils {
 	}
 	
 	public static BufferedReader asBufferedReader(String path, String charset){
+		if(isSmbPath(path)){
+			return asBufferedReader(newSmbInputStream(path), charset);
+		}
+		
 		String classpath = null;
 		BufferedReader br = null;
 		try {
@@ -525,7 +554,7 @@ public class FileUtils {
 		String newFileName = srcfileName + "(" + count + ")" + ext;
 		wfile = new File(baseDir, newFileName);
 		while (wfile.exists()) {
-			newFileName = fileName + "(" + count + ")";
+			newFileName = srcfileName + "(" + count + ")"+ext;
 			wfile = new File(baseDir, newFileName);
 			count++;
 		}
@@ -565,21 +594,52 @@ public class FileUtils {
 		}
 		return wfile;
 	}
+	
+
+	public static File copyFileToDir(File srcFile, String targetDir) {
+		String fname = getFileName(srcFile.getName());
+		File destFile = new File(targetDir + File.separator + fname);
+		String newFileName = newFileNameAppendRepeatCount(destFile);
+		destFile = new File(destFile.getParentFile(), newFileName);
+		
+		copyFile(srcFile, destFile);
+		return destFile;
+	}
+
+	public static File copyFileToDir(SmbFile srcFile, String targetDir) {
+		SmbFileInputStream in = newSmbInputStream(srcFile);
+		
+		String fname = getFileName(srcFile.getName());
+		File destFile = new File(targetDir + File.separator + fname);
+		String newFileName = newFileNameAppendRepeatCount(destFile);
+		destFile = new File(destFile.getParentFile(), newFileName);
+		
+		writeInputStreamTo(in, targetDir, newFileName);
+		return destFile;
+	}
+	
 
 	public static void copyFile(File srcFile, File destFile) {
 		Assert.notNull(srcFile);
 		Assert.notNull(destFile);
 
-		if (destFile.isDirectory())
+		if (destFile.isDirectory()){
 			throw new BaseException("the file is directory: " + destFile.getPath());
-		if (destFile.isHidden() || !destFile.canWrite())
-			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
+		}
 
-//		BufferedInputStream fin = null;
+		makeDirs(destFile, true);
+		if(!destFile.exists()){
+			try {
+				destFile.createNewFile();
+			} catch (IOException e) {
+				throw new BaseException("create new file error: " + destFile.getPath(), e);
+			}
+		}else if (destFile.isHidden() || !destFile.canWrite()){
+			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
+		}
+
 		BufferedOutputStream fout = null;
 		try {
-//			System.out.println("creating the file : " + destFile.getPath());
-//			fin = new BufferedInputStream(new FileInputStream(srcFile));
 			fout = new BufferedOutputStream(new FileOutputStream(destFile));
 			copyFileToOutputStream(fout, srcFile);
 		} catch (Exception e) {

@@ -154,5 +154,21 @@ public class FileUtilsTest {
 		System.out.println("newfn: " + newfn);
 		Assert.assertEquals("FileUtilsTest(1).class", newfn);
 	}
+	
+	@Test
+	public void testCopyFile(){
+		String content = "test";
+		String fileName = "copy-test.txt";
+		String srcDir = "D:/fileutil-test";
+		File srcFile = new File(srcDir + File.separator+fileName);
+		FileUtils.writeStringToFile(srcFile, content);
+		String data = FileUtils.readAsString(srcFile);
+		Assert.assertEquals(content, data);
+		
+		String targetDir = srcDir+File.separator+"/target";
+		File targetFile = FileUtils.copyFileToDir(srcFile, targetDir);
+		data = FileUtils.readAsString(targetFile);
+		Assert.assertEquals(content, data);
+	}
 
 }
