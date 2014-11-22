@@ -18,9 +18,11 @@ create table TASK_QUEUE (
    TASK_ID              BIGINT               null,
    LAST_EXEC_TIME       DATETIME             null,
    LAST_UPDATE_TIME     DATETIME             null,
+   SOURCE_TAG           VARCHAR(50)          null,
    constraint PK_TASK_QUEUE primary key (ID)
 )
 go
+
 
 
 if exists (select 1
