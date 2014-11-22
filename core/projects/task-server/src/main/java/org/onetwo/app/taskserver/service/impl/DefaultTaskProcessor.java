@@ -45,7 +45,7 @@ public class DefaultTaskProcessor implements InitializingBean, DisposableBean {
 	}
 	
 	public boolean isFull(){
-		return getQueueSize()==taskServerConfig.getQueueMaxSize();
+		return taskServerConfig.isLimitedQueue()?(getQueueSize()==taskServerConfig.getQueueMaxSize()):false;
 	}
 	
 	public int getQueueSize(){
