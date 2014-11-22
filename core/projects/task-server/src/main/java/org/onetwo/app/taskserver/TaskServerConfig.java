@@ -18,8 +18,16 @@ public class TaskServerConfig extends AppConfig {
 		super("siteConfig.properties");
 	}
 	
+	/***
+	 * -1 is unlimited
+	 * @return
+	 */
+	public boolean isLimitedQueue(){
+		return getQueueMaxSize()>0;
+	}
+	
 	public int getQueueMaxSize(){
-		return getInt("queue.max.size", 10000);
+		return getInt("queue.max.size", -1);
 	}
 	
 	public int getFetchSize(){
