@@ -19,7 +19,7 @@ public class JavaMailServiceContext implements InitializingBean {
 	private AppConfig appConfig;
 	
 	@Resource
-	private EmailConfig mailConfig;
+	private EmailConfig emailConfig;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -28,7 +28,7 @@ public class JavaMailServiceContext implements InitializingBean {
 
 	@Bean
 	public JavaMailService JavaMailService() throws Exception{
-		Class<?> implClass = mailConfig.getMailServiceClass();
+		Class<?> implClass = emailConfig.getMailServiceClass();
 		if(!JavaMailService.class.isAssignableFrom(implClass))
 			throw new ServiceException("java mail sender must a instance of " + JavaMailService.class.getName());
 		

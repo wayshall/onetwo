@@ -9,6 +9,8 @@ import java.util.List;
  *
  */
 public interface ContextPlugin {
+	
+	ContextPlugin EMTPY_CONTEXT_PLUGIN = new EmptyContextPlugin();
 
 	void init(ContextPluginMeta pluginMeta, String appEnv);
 	

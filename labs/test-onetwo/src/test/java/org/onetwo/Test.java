@@ -19,12 +19,12 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		String str = "黄三多  ";
-		System.out.println(str.trim()+"|");
-		for(char c :str.toCharArray()){
-			System.out.println((int)c+":"+c);
-		}
-		System.out.println("rs: " + System.getProperty("java.io.tmpdir"));
+		Integer i = new Integer(1);
+		if (i.equals(1))
+		    i = null;
+		Double d = new Double(2.0);
+		Object o = true ? i : d; // NullPointerException!
+		System.out.println(o);
 	}
 	
 	public static void test2(String[] args){

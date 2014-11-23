@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.annotation.IgnoreJson;
-import org.onetwo.plugins.email.ContentType;
+import org.onetwo.plugins.email.EmailTextType;
 import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
 
@@ -30,7 +30,7 @@ public class TaskEmail extends TaskBase {
 	private String toAddress;
 	
 	@Enumerated(EnumType.STRING)
-	private ContentType contentType;
+	private EmailTextType contentType;
 	
 	public TaskEmail(){
 		setType(TaskType.EMAIL.toString());
@@ -82,11 +82,11 @@ public class TaskEmail extends TaskBase {
 	}
 
 
-	public ContentType getContentType() {
+	public EmailTextType getContentType() {
 		return contentType;
 	}
 
-	public void setContentType(ContentType contentType) {
+	public void setContentType(EmailTextType contentType) {
 		this.contentType = contentType;
 	}
 

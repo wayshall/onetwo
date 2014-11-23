@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.onetwo.common.utils.propconf.JFishProperties;
@@ -149,6 +150,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 //	abstract protected T createPluginMeta(PluginInfo plugin);
 	protected T createPluginMeta(PluginInfo pluginInfo){
+		if(StringUtils.isBlank(pluginInfo.getPluginClass()))
+			throw new BaseException("no plugin class found in plugin: " + pluginInfo.getName());
+		
 		ContextPlugin contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
 		return (T)new DefaultContextPluginMeta(contextPlugin, pluginInfo);
 	}
