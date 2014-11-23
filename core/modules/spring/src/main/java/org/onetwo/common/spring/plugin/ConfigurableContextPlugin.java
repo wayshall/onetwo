@@ -24,18 +24,24 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 	private final String configBaseDir;
 	private final String configName;
 	private C config;
+	private boolean failedIfConfigNotExist;
 	
 
+
 	public ConfigurableContextPlugin(String configBaseDir, String configName) {
-		this(configBaseDir, configName, null);
+		this(configBaseDir, configName, false);
+	}
+	public ConfigurableContextPlugin(String configBaseDir, String configName, boolean failedIfConfigNotExist) {
+		this(configBaseDir, configName, null, failedIfConfigNotExist);
 		this.config = (C)ReflectUtils.newInstance(ReflectUtils.getSuperClassGenricType(getClass(), 1, ConfigurableContextPlugin.class));
 	}
 	
-	public ConfigurableContextPlugin(String configBaseDir, String configName, C config) {
+	public ConfigurableContextPlugin(String configBaseDir, String configName, C config, boolean failedIfConfigNotExist) {
 		super();
 		this.configBaseDir = StringUtils.surroundWith(configBaseDir, "/");
 		this.configName = configName;
 		this.config = config;
+		this.failedIfConfigNotExist = failedIfConfigNotExist;
 	}
 
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {
@@ -48,6 +54,11 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 			} catch (IOException e) {
 				throw new BaseException("load config error: " + e.getMessage(), e);
 			}
+		}else{
+			if(failedIfConfigNotExist)
+				throw new BaseException("the plugin must be config at: " + configBaseDir);
+			//load with null while config is not exist
+			config.load(null);
 		}
 	}
 

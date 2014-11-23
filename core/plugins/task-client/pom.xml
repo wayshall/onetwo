@@ -33,15 +33,15 @@
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
-	  <artifactId>onetwo-plugin-task-core</artifactId>
+	  <artifactId>onetwo-plugin-email</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency> 
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
-	  <artifactId>onetwo-plugin-permission</artifactId>
+	  <artifactId>onetwo-plugin-task-core</artifactId>
 	  <version>${onetwo.plugin.version}</version>
-	</dependency>
+	</dependency> 
 	
     <dependency>
       <groupId>junit</groupId>

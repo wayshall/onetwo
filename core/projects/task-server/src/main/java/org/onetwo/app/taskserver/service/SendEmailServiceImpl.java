@@ -12,7 +12,6 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.io.SmbInputStreamSource;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.email.EmailConfig;
 import org.onetwo.plugins.email.EmailPlugin;
 import org.onetwo.plugins.email.JavaMailService;
@@ -67,13 +66,13 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 		try {
 			taskQueue.markExecuted();
 			msg.append("该任务是第[").append(taskQueue.getCurrentTimes()).append("]次执行……").append("\n");
-			log.setExecutor(BaseSiteConfig.getInstance().getAppCode());
+			log.setExecutor(taskServerConfig.getAppCode());
 			log.setTaskInput(JsonMapper.IGNORE_EMPTY.toJson(email));
 			
 			MailInfo mailInfo = MailInfo.create(emailConfig.getUsername(), email.getToAsArray())
 										.cc(email.getCcAsArray())
 										.subject(email.getSubject()).content(email.getContent())
-										.contentType(email.getContentType())
+										.emailTextType(email.getContentType())
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
 				String fpath = taskPluginConfig.getTaskConfig().getAttachmentPath(path);
@@ -119,7 +118,7 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 	
 	protected File copyToLocalIfSmbFile(String path){
 		if(FileUtils.isSmbPath(path)){
-			File file = FileUtils.copyFileToDir(FileUtils.newSmbFile(path), taskServerConfig.getLocalAttachementDir());
+			File file = FileUtils.copyFileToDir(FileUtils.newSmbFile(path), taskServerConfig.getLocalAttachmentDir());
 			file.deleteOnExit();
 			return file;
 		}else{

@@ -14,6 +14,11 @@ public class DefaultContextPluginMeta implements ContextPluginMeta {
 		this.contextPlugin = contextPlugin;
 	}
 
+	@Override
+	public Class<?> getRootClass() {
+		return getContextPlugin().getClass();
+	}
+
 	public PluginInfo getPluginInfo() {
 		return pluginInfo;
 	}

@@ -44,6 +44,10 @@ public class EmailConfig implements LoadableConfig {
 	public String getUsername(){
 		return config.getProperty(MAIL_USERNAME_KEY);
 	}
+	
+	public String getAttachmentDir(){
+		return config.getProperty(ATTACHMENT_DIR_KEY, System.getProperty("java.io.tmpdir")+"/email-attachment");
+	}
 
 	@Override
 	public JFishProperties getSourceConfig() {

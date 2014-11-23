@@ -21,12 +21,15 @@ public class EmailPlugin extends ConfigurableContextPlugin<EmailPlugin, EmailCon
 	
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		if(getConfig().isMailSendActive()){
+		/*if(getConfig().isMailSendActive()){
 			annoClasses.add(EmailPluginContext.class);
 			annoClasses.add(JavaMailServiceContext.class);
 		}else{
 			annoClasses.add(JavaMailServiceContext.class);
-		}
+		}*/
+
+		annoClasses.add(EmailPluginContext.class);
+		annoClasses.add(JavaMailServiceContext.class);
 	}
 
 

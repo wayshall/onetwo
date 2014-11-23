@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 @Configuration
 public class EmailPluginContext implements InitializingBean {
 
+	public static final String FTL_DIR = "classpath:/plugins/email/ftl/";
 	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
@@ -36,7 +37,7 @@ public class EmailPluginContext implements InitializingBean {
 	
 //	@Resource
 //	private Properties mailConfig;
-	private EmailConfig mailConfig = EmailPlugin.getInstance().getConfig();
+	private EmailConfig emailConfig = EmailPlugin.getInstance().getConfig();
 	
 //	@Resource
 //	private freemarker.template.Configuration mailFreemarkerConfiguration;
@@ -54,17 +55,17 @@ public class EmailPluginContext implements InitializingBean {
 		excludeKeys.add(EmailConfig.MAIL_SERVICE_CLASS_KEY);
 		excludeKeys.add(EmailConfig.JAVA_MAIL_PROPERTIES_KEY);
 
-		Class<?> implClass = mailConfig.getMailSender();
+		Class<?> implClass = emailConfig.getMailSender();
 		if(!JavaMailSenderImpl.class.isAssignableFrom(implClass))
 			throw new ServiceException("java mail sender must a instance of " + JavaMailSenderImpl.class.getName());
 		
 		JavaMailSenderImpl sender = (JavaMailSenderImpl)ReflectUtils.newInstance(implClass);
 		Properties javaMailProperties = new Properties();
-		Enumeration<String> names = (Enumeration<String>) mailConfig.getSourceConfig().propertyNames();
+		Enumeration<String> names = (Enumeration<String>) emailConfig.getSourceConfig().propertyNames();
 		BeanWrapper bw = SpringUtils.newBeanWrapper(sender);
 		while (names.hasMoreElements()) {
 			String propertyName = names.nextElement();
-			String value = mailConfig.getSourceConfig().getProperty(propertyName);
+			String value = emailConfig.getSourceConfig().getProperty(propertyName);
 			if (propertyName.startsWith(EmailConfig.JAVA_MAIL_PROPERTIES_KEY)) {
 				propertyName = propertyName.substring(EmailConfig.JAVA_MAIL_PROPERTIES_KEY.length());
 //				LangUtils.println("mail config : ${0}, ${1}", propertyName, value);
@@ -81,16 +82,16 @@ public class EmailPluginContext implements InitializingBean {
 	}
 
 	@Bean
-	public EmailConfig mailConfig() {
+	public EmailConfig emailConfig() {
 		/*String envLocation = "/email/mailconfig-" + appConfig.getAppEnvironment() + ".properties";
 		return SpringUtils.createPropertiesBySptring("/email/mailconfig.properties", envLocation);*/
-		return mailConfig;
+		return emailConfig;
 	}
 	
 	@Bean
 	public FreeMarkerConfigurationFactoryBean mailFreemarkerConfiguration(){
 		FreeMarkerConfigurationFactoryBean fcfb = new FreeMarkerConfigurationFactoryBean();
-		fcfb.setTemplateLoaderPath("classpath:/email/ftl/");
+		fcfb.setTemplateLoaderPath(FTL_DIR);
 		fcfb.setPreTemplateLoaders(stringFtlTemplateLoader);
 		return fcfb;
 	}
@@ -98,6 +99,12 @@ public class EmailPluginContext implements InitializingBean {
 	@Bean
 	public StringFtlTemplateLoader stringFtlTemplateLoader(){
 		return this.stringFtlTemplateLoader;
+	}
+	
+	@Bean
+	public MailTextContextParser mailTextContextParser(){
+		MailTextContextParser parser = new MailTextContextParser();
+		return parser;
 	}
 
 }

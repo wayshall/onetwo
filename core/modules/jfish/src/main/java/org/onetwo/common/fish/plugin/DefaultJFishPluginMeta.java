@@ -15,8 +15,8 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements 
 		super(contextPlugin, pluginInfo);
 		this.jfishPlugin = jfishPlugin;
 		this.pluginNameParser = parser;
-		if(jfishPlugin!=null){
-			PluginConfig pc = this.getJFishPlugin().getPluginConfig();
+		if(jfishPlugin!=null && jfishPlugin!=JFishPlugin.EMPTY_JFISH_PLUGIN){
+			PluginConfig pc = jfishPlugin.getPluginConfig();
 			pc.init(this);
 			this.pluginConfig = pc;
 		}else{

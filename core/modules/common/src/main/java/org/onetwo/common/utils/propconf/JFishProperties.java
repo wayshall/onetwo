@@ -294,6 +294,17 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		return StringUtils.isBlank(value) ? defaultValue : value;
 	}
 
+	public String getPath(String key, String def){
+		String path = getProperty(key, def);
+		path = FileUtils.replaceBackSlashToSlash(path);
+		return path;
+	}
+
+	public String getDir(String key, String def){
+		String path = getPath(key, def);
+		path = StringUtils.appendEndWith(path, "/");
+		return path;
+	}
 	/*public Enumeration<String> keys() {
 		return (Enumeration<String>) config.propertyNames();
 	}*/
