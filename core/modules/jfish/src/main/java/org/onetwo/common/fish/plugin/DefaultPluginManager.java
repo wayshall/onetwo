@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
@@ -93,9 +94,24 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	@Override
 	protected JFishPluginMeta createPluginMeta(PluginInfo pluginInfo) {
 		JFishPluginInfo jfishPluginInfo = (JFishPluginInfo) pluginInfo;
-		ContextPlugin contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
+		
+		if(StringUtils.isBlank(jfishPluginInfo.getPluginClass()) && StringUtils.isBlank(jfishPluginInfo.getWebPluginClass())){
+			throw new BaseException("both pluginClass and webPluginClass ie empty in plugin : " + pluginInfo.getName());
+		}
+		
+		ContextPlugin contextPlugin = null;
+		if(StringUtils.isBlank(jfishPluginInfo.getPluginClass())){
+			contextPlugin = ContextPlugin.EMTPY_CONTEXT_PLUGIN;
+		}else{
+			contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
+		}
+		
 		JFishPlugin jfishPlugin = null;
-		if(StringUtils.isNotBlank(jfishPluginInfo.getWebPluginClass())){
+		//web插件可不要
+		if(StringUtils.isBlank(jfishPluginInfo.getWebPluginClass())){
+//			jfishPlugin = JFishPlugin.EMPTY_JFISH_PLUGIN;
+			jfishPlugin = null;
+		}else{
 			jfishPlugin = ReflectUtils.newInstance(jfishPluginInfo.getWebPluginClass());
 		}
 		return new DefaultJFishPluginMeta(jfishPlugin, contextPlugin, jfishPluginInfo, pluginNameParser);
@@ -119,7 +135,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
-				logger.info("stop plugin["+meta.getContextPlugin()+"]..." );
+				logger.info("stop plugin["+meta.getPluginInfo().getName()+"]..." );
 				JFishPluginUtils.getJFishPlugin(meta).onStopWebAppConext();
 			}
 			
@@ -165,7 +181,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	
 				@Override
 				public int compare(JFishPluginMeta o1, JFishPluginMeta o2) {
-					return o2.getContextPlugin().getClass().getPackage().getName().length()-o1.getContextPlugin().getClass().getPackage().getName().length();
+					return o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length();
 				}
 				
 			});

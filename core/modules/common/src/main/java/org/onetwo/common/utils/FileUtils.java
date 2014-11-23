@@ -561,6 +561,17 @@ public class FileUtils {
 		return newFileName;
 	}
 	
+
+	public static void copyFileTo(File file, String targetDir, String targetFileName){
+		InputStream in;
+		try {
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("file not found: " + file.getPath(), e);
+		}
+		writeInputStreamTo(in, targetDir, targetFileName);
+	}
+	
 	public static int writeInputStreamTo(InputStream in, String targetDir, String targetFileName){
 		OutputStream out = null;
 		try{

@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class TaskEmailVo implements Serializable {
 	private Long id;
-	private String name;
+//	private String name;
 	private String bizTag;
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date planTime;
@@ -46,12 +46,12 @@ public class TaskEmailVo implements Serializable {
 		return GuavaUtils.join(attachmentPath, TaskUtils.ATTACHMENT_PATH_SPLITTER);
 	}
 
-	public String getName() {
+	/*public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
+	}*/
 	public String getBizTag() {
 		return bizTag;
 	}
