@@ -37,13 +37,15 @@ public class MailInfo implements Serializable{
 
 	private String content;
 
-	private ContentType contentType = ContentType.STATIC_TEXT;
+	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
 	private Map<String, InputStreamSource> attachmentInputStreamSources;
 	
 	private Map<String, Object> templateContext;
+	
+	private String bizTag;
 
 	public String getFrom() {
 		return from;
@@ -108,12 +110,12 @@ public class MailInfo implements Serializable{
 		return this;
 	}
 
-	public ContentType getContentType() {
-		return contentType;
+	public EmailTextType getEmailTextType() {
+		return emailTextType;
 	}
 
-	public MailInfo contentType(ContentType contentType) {
-		this.contentType = contentType;
+	public MailInfo emailTextType(EmailTextType contentType) {
+		this.emailTextType = contentType;
 		return this;
 	}
 
@@ -185,6 +187,14 @@ public class MailInfo implements Serializable{
 
 	public Map<String, InputStreamSource> getAttachmentInputStreamSources() {
 		return attachmentInputStreamSources==null?Collections.EMPTY_MAP:attachmentInputStreamSources;
+	}
+
+	public String getBizTag() {
+		return bizTag;
+	}
+
+	public void setBizTag(String bizTag) {
+		this.bizTag = bizTag;
 	}
 
 }

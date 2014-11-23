@@ -241,12 +241,20 @@ public class PropConfig implements VariableSupporter {
 	public Date getDate(String key, Date def) {
 		return config.getDate(key, def);
 	}
+	
 
 	public JFishProperties getConfig() {
 		return config;
 	}
 	
-	
+
+	public String getPath(String key, String def){
+		return config.getPath(key, def);
+	}
+
+	public String getDir(String key, String def){
+		return config.getDir(key, def);
+	}
 	
 	public Double getDouble(String key, Double def) {
 		return config.getDouble(key, def);

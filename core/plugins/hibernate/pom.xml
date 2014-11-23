@@ -20,6 +20,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hibernate.version>4.2.3.Final</hibernate.version>
+    <hibernate.validator.version>4.3.0.Final</hibernate.validator.version>
   </properties>
 
  
@@ -34,6 +35,13 @@
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-spring</artifactId>
 	  <version>${onetwo.version}</version>
+	</dependency>
+	
+	
+	<dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-validator</artifactId>
+	  <version>${hibernate.validator.version}</version>
 	</dependency>
 	 
       <!-- hibernate -->

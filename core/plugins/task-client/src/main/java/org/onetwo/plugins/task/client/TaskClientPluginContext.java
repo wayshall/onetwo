@@ -1,6 +1,6 @@
 package org.onetwo.plugins.task.client;
 
-import org.onetwo.common.fish.plugin.AbstractPluginContext;
+import org.onetwo.common.spring.plugin.AbstractPluginContext;
 import org.onetwo.plugins.task.client.service.impl.TaskClientServiceImpl;
 import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.springframework.context.annotation.Bean;
