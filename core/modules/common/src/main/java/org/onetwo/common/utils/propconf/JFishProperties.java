@@ -302,7 +302,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 
 	public String getDir(String key, String def){
 		String path = getPath(key, def);
-		path = StringUtils.appendEndWith(path, "/");
+		path = FileUtils.convertDir(path);
 		return path;
 	}
 	/*public Enumeration<String> keys() {

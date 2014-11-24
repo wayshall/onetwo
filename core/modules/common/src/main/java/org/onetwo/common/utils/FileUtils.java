@@ -60,6 +60,8 @@ public class FileUtils {
 	public static final char DOT_CHAR = '.';
 	public static final String NEW_LINE = "\n";
 	public static final String SMB_PREFIX = "smb://";
+	public static final String COLON_DB_SLASH_HEAD = "://";
+	public static final String DB_SLASH_HEAD = "//";
 
 	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
@@ -158,12 +160,23 @@ public class FileUtils {
 		return newOutputStream(path);
 	}
 	
+	public static void mkdirs(SmbFile smbf){
+		try {
+			SmbFile parent = new SmbFile(smbf.getParent());
+			if(!parent.exists())
+				parent.mkdirs();
+		} catch (Exception e) {
+			throw new BaseException("make smb direcotry error: " + smbf.getParent());
+		}
+	}
+	
 	public static OutputStream newOutputStream(String fpath){
 		OutputStream out = null;
 		try {
 			String path = replaceBackSlashToSlash(fpath);
 			if(isSmbPath(path)){
 				SmbFile smbf = new SmbFile(path);
+				mkdirs(smbf);
 				out = new SmbFileOutputStream(smbf);
 			}else{
 				File f = newFile(path);
@@ -505,6 +518,24 @@ public class FileUtils {
 		fileName = replaceBackSlashToSlash(fileName);
 		int start = fileName.lastIndexOf(SLASH_CHAR);
 		return fileName.substring(start+1);
+	}
+	
+	public static String convertDir(String path){
+		String dir = replaceBackSlashToSlash(path);
+		int index = dir.indexOf(COLON_DB_SLASH_HEAD);
+		if(index==-1){
+			if(dir.contains(DB_SLASH_HEAD)){
+				dir = dir.replace(DB_SLASH_HEAD, SLASH);
+			}
+		}else{
+			String head = dir.substring(0, index+COLON_DB_SLASH_HEAD.length());
+			String spath = dir.substring(head.length());
+			if(spath.contains(DB_SLASH_HEAD)){
+				spath = spath.replace(DB_SLASH_HEAD, SLASH);
+			}
+			dir = head + spath;
+		}
+		return StringUtils.appendEndWith(dir, SLASH);
 	}
 	
 	public static String replaceBackSlashToSlash(String path){

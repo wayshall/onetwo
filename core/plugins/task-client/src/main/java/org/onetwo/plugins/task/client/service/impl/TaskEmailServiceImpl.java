@@ -5,6 +5,8 @@ import java.io.File;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.RandUtils;
@@ -13,6 +15,7 @@ import org.onetwo.plugins.email.JavaMailService;
 import org.onetwo.plugins.email.MailInfo;
 import org.onetwo.plugins.email.MailTextContextParser;
 import org.onetwo.plugins.task.TaskCorePlugin;
+import org.onetwo.plugins.task.entity.TaskConfig;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskUtils;
 import org.onetwo.plugins.task.vo.TaskEmailVo;
@@ -32,6 +35,8 @@ public class TaskEmailServiceImpl implements JavaMailService {
 	
 
 	public TaskQueue save(MailInfo mailInfo){
+		TaskConfig taskConfig = TaskCorePlugin.getInstance().getConfig().getTaskConfig();
+		
 		TaskEmailVo email = new TaskEmailVo();
 		email.setSubject(mailInfo.getSubject());
 		email.setBizTag(mailInfo.getBizTag());
@@ -44,19 +49,31 @@ public class TaskEmailServiceImpl implements JavaMailService {
 		String content = this.mailTextContextParser.parseContent(mailInfo);
 		email.setContent(content);
 		
-		String baseDir = TaskCorePlugin.getInstance().getConfig().getTaskConfig().getAttachmentDir();
 //		String baseDir = EmailPlugin.getInstance().getConfig().getAttachmentDir();
 		for(File file : mailInfo.getAttachments()){
-			String path = file.getPath();
-			if(path.startsWith(baseDir)){
+			if(!file.exists()){
+				throw new BaseException("file not found: " +file.getPath());
+			}
+			String path = FileUtils.replaceBackSlashToSlash(file.getPath());
+			
+			if(taskConfig.isRestoreEmailAttachment()){
+				String baseDir = taskConfig.getEmailAttachmentDir();
+				Assert.hasText(baseDir, "email attachment dir must be config!");
+				NiceDate date = NiceDate.New();
+				String fileName = FileUtils.getFileNameWithoutExt(path);
+				String ext = FileUtils.getExtendName(path, true);
+				fileName = fileName + NiceDate.New().format("HHmmssSSS")+"-"+RandUtils.randomString(6)+ext;
+				
+				String subPath = date.format("yyyy-MM-dd");
+				subPath += "/" + fileName;
+				FileUtils.copyFileTo(file, baseDir, subPath);
+				email.addAttachment(subPath);
+				
+			}else{
+				//只保存部分路径
+				String baseDir = taskConfig.getEmailAttachmentDir();
 				path = path.substring(baseDir.length());
 				email.addAttachment(path);
-			}else{
-				String fileName = FileUtils.getExtendName(path);
-				String ext = FileUtils.getExtendName(path, true);
-				fileName = fileName + NiceDate.New().format("yyyyMMddHHmmssSSS")+"-"+RandUtils.randomString(6)+ext;
-				FileUtils.copyFileTo(file, baseDir, fileName);
-				email.addAttachment(fileName);
 			}
 		}
 		return taskClientServiceImpl.save(email);

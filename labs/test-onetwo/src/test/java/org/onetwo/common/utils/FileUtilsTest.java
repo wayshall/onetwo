@@ -170,5 +170,28 @@ public class FileUtilsTest {
 		data = FileUtils.readAsString(targetFile);
 		Assert.assertEquals(content, data);
 	}
+	
+	@Test
+	public void testConvertPath(){
+		String dir = "D:\\attachmentdir\\web";
+		String rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/", rdir);
+
+		dir = "D:\\attachmentdir\\web/2014-11-24";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/2014-11-24/", rdir);
+
+		dir = "D:\\attachmentdir\\web//test//";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/test/", rdir);
+
+		dir = "smb://attachmentdir\\web//test//";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("smb://attachmentdir/web/test/", rdir);
+
+		dir = "smb://attachmentdir\\web//test";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("smb://attachmentdir/web/test/", rdir);
+	}
 
 }

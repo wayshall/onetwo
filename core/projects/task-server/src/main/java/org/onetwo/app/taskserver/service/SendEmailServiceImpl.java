@@ -75,12 +75,15 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 										.emailTextType(email.getContentType())
 										.mimeMail(email.isHtml());
 			for(String path : email.getAttachmentPathAsArray()){
-				String fpath = taskPluginConfig.getTaskConfig().getAttachmentPath(path);
+				String fpath = taskPluginConfig.getTaskConfig().getEmailAttachmentPath(path);
 				logger.info("add attachement: {}", fpath);
 				/*String attachName = FileUtils.getFileName(path);
 				InputStreamSource attachment = createAttachmentInputStreamSource(fpath);
 				mailInfo.addAttachmentInputStreamSource(attachName, attachment);*/
 				File file = copyToLocalIfSmbFile(fpath);
+				if(!file.exists()){
+					throw new BaseException("file not found: " +file.getPath());
+				}
 				mailInfo.addAttachment(file);
 			}
 			this.javaMailService.send(mailInfo);
@@ -118,8 +121,10 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 	
 	protected File copyToLocalIfSmbFile(String path){
 		if(FileUtils.isSmbPath(path)){
-			File file = FileUtils.copyFileToDir(FileUtils.newSmbFile(path), taskServerConfig.getLocalAttachmentDir());
-			file.deleteOnExit();
+			String dir = taskServerConfig.getLocalAttachmentDir();
+//			String dir = taskServerConfig.getEmailAttachmentDir();
+			File file = FileUtils.copyFileToDir(FileUtils.newSmbFile(path), dir);
+//			file.deleteOnExit();
 			return file;
 		}else{
 			return new File(path);
