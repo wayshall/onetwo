@@ -46,7 +46,7 @@ public class EmailConfig implements LoadableConfig {
 	}
 	
 	public String getAttachmentDir(){
-		return config.getProperty(ATTACHMENT_DIR_KEY, System.getProperty("java.io.tmpdir")+"/email-attachment");
+		return config.getDir(ATTACHMENT_DIR_KEY, System.getProperty("java.io.tmpdir")+"/email-attachment/");
 	}
 
 	@Override

@@ -125,6 +125,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 				PluginInfo parentDependencyPlugin = pluginConfs.get(dependency);
 				if(parentDependencyPlugin==null)
 					throw new ContextPluginException("start plugin["+plugin.getName()+"] error: can not find the dependency plugin[" + dependency+"], please install it!");
+				logger.info("find plugin[{}]  dependency plugin: " + dependency, plugin.getName());
 				initPlugin(pluginConfs, parentDependencyPlugin, plugin);
 			}
 		}

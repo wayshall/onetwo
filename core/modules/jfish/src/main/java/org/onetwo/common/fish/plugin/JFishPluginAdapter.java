@@ -10,6 +10,8 @@ public class JFishPluginAdapter implements JFishPlugin {
 	
 //	private static JFishPluginAdapter instance = new JFishPluginAdapter();
 	
+	private EmptyJFishMvcConfigurerListener emptyJFishMvcConfigurerListener = new EmptyJFishMvcConfigurerListener();
+	
 	
 	JFishPluginAdapter() {
 		super();
@@ -41,7 +43,7 @@ public class JFishPluginAdapter implements JFishPlugin {
 
 	@Override
 	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
-		throw new UnsupportedOperationException();
+		return emptyJFishMvcConfigurerListener;
 	}
 
 	@Override
