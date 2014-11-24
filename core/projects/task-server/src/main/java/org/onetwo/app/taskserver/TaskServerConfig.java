@@ -34,6 +34,10 @@ public class TaskServerConfig extends AppConfig {
 		return getInt("fetch.size", 1000);
 	}
 	
+	/*public String getEmailAttachmentDir(){
+		return TaskCorePlugin.getInstance().getConfig().getTaskConfig().getEmailAttachmentDir();
+	}*/
+	
 	public String getLocalAttachmentDir(){
 		return getProperty("local.attachement.dir", System.getProperty("java.io.tmpdir")+"/task-local-attachment");
 	}

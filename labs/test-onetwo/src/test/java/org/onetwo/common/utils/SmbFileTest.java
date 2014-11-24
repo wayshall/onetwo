@@ -75,7 +75,7 @@ public class SmbFileTest {
 	@Test
 	public void testWriteFile(){
 		String path = "smb://administrator:Admin123456@192.168.104.217/install/ftp/email-attachements";
-		String fn = "test.txt";
+		String fn = NiceDate.New().formatAsDate()+"test.txt";
 		String content = "test中文";
 		InputStream in = new StringInputStream(content);
 		FileUtils.writeInputStreamTo(in, path, fn);

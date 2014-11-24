@@ -1,16 +1,18 @@
 package org.onetwo.plugins.task.entity;
 
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.email.EmailPlugin;
 
 public class TaskConfig {
 	
 	private int tryTimes = 3;
 	private int tryIntervalInSeconds = 60;
-	private String attachmentDir;
+	private String emailAttachmentDir;
+//	private boolean restoreEmailAttachment;
 	
 
-	public String getAttachmentPath(String path){
-		String realpath = getAttachmentDir() + StringUtils.appendStartWith(path, "/");
+	public String getEmailAttachmentPath(String path){
+		String realpath = getEmailAttachmentDir() + StringUtils.appendStartWith(path, "/");
 		return realpath;
 	}
 	
@@ -26,11 +28,20 @@ public class TaskConfig {
 	public void setTryIntervalInSeconds(int tryIntervalInSeconds) {
 		this.tryIntervalInSeconds = tryIntervalInSeconds;
 	}
-	public String getAttachmentDir() {
-		return attachmentDir;
+	public String getEmailAttachmentDir() {
+		return emailAttachmentDir;
 	}
-	public void setAttachmentDir(String attachmentDir) {
-		this.attachmentDir = attachmentDir;
+	public void setEmailAttachmentDir(String attachmentDir) {
+		this.emailAttachmentDir = attachmentDir;
+	}
+
+	/****
+	 * 如果任务配置的邮件附件目录和邮件插件配置的目录不一致，则需要重新保存附件到任务的附件目录
+	 * @return
+	 */
+	public boolean isRestoreEmailAttachment() {
+		String emailDir = EmailPlugin.getInstance().getConfig().getAttachmentDir();
+		return !getEmailAttachmentDir().equalsIgnoreCase(emailDir);
 	}
 	
 }
