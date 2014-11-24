@@ -21,7 +21,7 @@ public class PluginInfo {
 		PluginInfo info = this;
 		info.name = prop.getAndThrowIfEmpty(PKeys.NAME);
 		info.version = prop.getProperty(PKeys.VERSION, "1.0");
-		info.pluginClass = prop.getAndThrowIfEmpty(PKeys.PLUGIN_CLASS);
+		info.pluginClass = prop.getProperty(PKeys.PLUGIN_CLASS);
 //		info.pluginInstance = ReflectUtils.newInstance(cls);
 //		info.contextPath = prop.getAndThrowIfEmpty("contextPath");
 		info.contextPath = info.name;

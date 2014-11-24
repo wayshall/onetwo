@@ -72,8 +72,9 @@ public class TaskQueueController extends PluginSupportedController {
 		}
 		if(attachment!=null){
 			String fn = FileUtils.newFileNameByDateAndRand(attachment.getOriginalFilename());
-			JFishWebUtils.writeInputStreamTo(attachment, taskPluginConfig.getTaskConfig().getAttachmentDir(), fn);
-			taskQueue.addAttachment(fn);
+			String subPath = taskPluginConfig.getTaskConfig().getEmailAttachmentDir() + "web/" + fn;
+			JFishWebUtils.writeInputStreamTo(attachment, taskPluginConfig.getTaskConfig().getEmailAttachmentDir(), subPath);
+			taskQueue.addAttachment(subPath);
 		}
 		taskClientService.save(taskQueue);
 		return pluginRedirectTo("/taskqueue", "保存成功！");
