@@ -1,3 +1,5 @@
+use iccard;
+
 if exists (select 1
             from  sysobjects
            where  id = object_id('TASK_QUEUE')
@@ -60,7 +62,7 @@ create table TASK_EMAIL (
    SUBJECT              VARCHAR(100)         null,
    CONTENT              VARCHAR(4000)        null,
    ATTACHMENT_PATH      VARCHAR(2000)        null,
-   IS_HTML              INT                  null,
+   IS_HTML              BIT                  null,
    TO_ADDRESS           VARCHAR(500)         null,
    CC_ADDRESS           VARCHAR(500)         null,
    CONTENT_TYPE         VARCHAR(20)          null,

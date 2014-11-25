@@ -23,4 +23,9 @@ public class TaskClientPluginContext extends AbstractPluginContext {
 	public TaskClientServiceImpl taskClientService(){
 		return new TaskClientServiceImpl();
 	}
+	
+	@Bean
+	public TaskClientConfig taskClientConfig(){
+		return TaskClientPlugin.getInstance().getConfig();
+	}
 }

@@ -29,7 +29,9 @@ public class EmailPlugin extends ConfigurableContextPlugin<EmailPlugin, EmailCon
 		}*/
 
 		annoClasses.add(EmailPluginContext.class);
-		annoClasses.add(JavaMailServiceContext.class);
+		if(getConfig().isDefaultJavamailService()){
+			annoClasses.add(JavaMailServiceContext.class);
+		}
 	}
 
 

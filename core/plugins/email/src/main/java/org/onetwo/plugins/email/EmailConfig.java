@@ -2,14 +2,16 @@ package org.onetwo.plugins.email;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin.LoadableConfig;
 import org.onetwo.common.utils.propconf.JFishProperties;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 public class EmailConfig implements LoadableConfig {
 
-	public static final String MAIL_SENDER_ACTIVE = "mail.sender.active";
+//	public static final String MAIL_SENDER_ACTIVE = "mail.sender.active";
 	
 	public static final String MAIL_SERVICE_CLASS_KEY = "mail.service.class";
-	public static final String MAIL_SENDER_CLASS_KEY = "mail.sender";
+	//javamail, queue
+	public static final String MAIL_SERVICE = "mail.service";
+	public static final String MAIL_SERVICE_JAVAMAIL = "javamail";
+//	public static final String MAIL_SENDER_QUEUE = "queue";
 	public static final String JAVA_MAIL_PROPERTIES_KEY = "javaMailProperties.";
 	
 
@@ -29,16 +31,24 @@ public class EmailConfig implements LoadableConfig {
 		}*/
 	}
 	
-	public boolean isMailSendActive(){
+	/*public boolean isMailSendActive(){
 		return config.getBoolean(MAIL_SENDER_ACTIVE, true);
 	}
-
+*/
 	public Class<?> getMailServiceClass(){
 		return config.getClass(MAIL_SERVICE_CLASS_KEY, JavaMailServiceImpl.class);
 	}
+	
+	/***
+	 * 
+	 * @return
+	 */
+	public boolean isDefaultJavamailService(){
+		return MAIL_SERVICE_JAVAMAIL.equals(getMailService());
+	}
 
-	public Class<?> getMailSender(){
-		return config.getClass(MAIL_SENDER_CLASS_KEY, JavaMailSenderImpl.class);
+	public String getMailService(){
+		return config.getProperty(MAIL_SERVICE, MAIL_SERVICE_JAVAMAIL);
 	}
 
 	public String getUsername(){
@@ -47,6 +57,11 @@ public class EmailConfig implements LoadableConfig {
 	
 	public String getAttachmentDir(){
 		return config.getDir(ATTACHMENT_DIR_KEY, System.getProperty("java.io.tmpdir")+"/email-attachment/");
+	}
+
+	public String getEmailAttachmentPath(String path){
+		String realpath = getAttachmentDir() + path;
+		return realpath;
 	}
 
 	@Override

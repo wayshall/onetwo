@@ -10,8 +10,10 @@ import java.util.List;
  */
 public interface ContextPlugin {
 	
-	ContextPlugin EMTPY_CONTEXT_PLUGIN = new EmptyContextPlugin();
+//	ContextPlugin EMTPY_CONTEXT_PLUGIN = new EmptyContextPlugin();
 
+	public boolean isEmptyPlugin();
+	
 	void init(ContextPluginMeta pluginMeta, String appEnv);
 	
 	void onJFishContextClasses(List<Class<?>> annoClasses);

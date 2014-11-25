@@ -10,7 +10,7 @@ import org.onetwo.common.hibernate.HibernateCrudServiceImpl;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.task.TaskPluginConfig;
+import org.onetwo.plugins.task.TaskCoreConfig;
 import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.entity.TaskQueueArchived;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Long>{
 	
 	@Resource
-	private TaskPluginConfig taskPluginConfig;
+	private TaskCoreConfig taskPluginConfig;
 	
 	public List<TaskQueue> loadAllExecuting(){
 		List<TaskQueue> queues = findByProperties("status", TaskStatus.EXECUTING);
