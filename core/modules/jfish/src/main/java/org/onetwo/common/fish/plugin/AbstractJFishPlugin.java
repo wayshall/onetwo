@@ -67,4 +67,10 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 	}
 
 
+	@Override
+	public boolean isEmptyPlugin() {
+		return false;
+	}
+
+
 }

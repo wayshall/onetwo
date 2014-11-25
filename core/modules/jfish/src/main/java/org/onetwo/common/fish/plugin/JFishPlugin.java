@@ -11,7 +11,7 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
  *
  */
 public interface JFishPlugin extends JFishPluginLifeCycleListener{
-	JFishPlugin EMPTY_JFISH_PLUGIN = new JFishPluginAdapter();
+//	JFishPlugin EMPTY_JFISH_PLUGIN = new JFishPluginAdapter();
 	
 	void init(JFishPluginMeta pluginMeta);
 
@@ -26,4 +26,7 @@ public interface JFishPlugin extends JFishPluginLifeCycleListener{
 	public boolean registerMvcResources();
 	
 	public PluginConfig getPluginConfig();
+	
+
+	public boolean isEmptyPlugin();
 }

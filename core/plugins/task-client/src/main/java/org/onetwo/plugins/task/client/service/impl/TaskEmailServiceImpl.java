@@ -15,8 +15,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.email.JavaMailService;
 import org.onetwo.plugins.email.MailInfo;
 import org.onetwo.plugins.email.MailTextContextParser;
-import org.onetwo.plugins.task.TaskCorePlugin;
-import org.onetwo.plugins.task.entity.TaskConfig;
+import org.onetwo.plugins.task.client.TaskClientConfig;
+import org.onetwo.plugins.task.client.TaskClientPlugin;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskUtils;
 import org.onetwo.plugins.task.vo.TaskEmailVo;
@@ -36,7 +36,7 @@ public class TaskEmailServiceImpl implements JavaMailService {
 	
 
 	public TaskQueue save(MailInfo mailInfo){
-		TaskConfig taskConfig = TaskCorePlugin.getInstance().getConfig().getTaskConfig();
+		TaskClientConfig taskConfig = TaskClientPlugin.getInstance().getConfig();
 		
 		TaskEmailVo email = new TaskEmailVo();
 		email.setSubject(mailInfo.getSubject());

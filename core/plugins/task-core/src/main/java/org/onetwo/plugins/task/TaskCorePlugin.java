@@ -5,10 +5,10 @@ import java.util.List;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 
 
-public class TaskCorePlugin extends ConfigurableContextPlugin<TaskCorePlugin, TaskPluginConfig> {
+public class TaskCorePlugin extends ConfigurableContextPlugin<TaskCorePlugin, TaskCoreConfig> {
 
 	public TaskCorePlugin() {
-		super("/plugins/task/", "task-config", new TaskPluginConfig(), true);
+		super("/plugins/task/", "task-config", new TaskCoreConfig(), false);
 	}
 	private static TaskCorePlugin instance;
 	
