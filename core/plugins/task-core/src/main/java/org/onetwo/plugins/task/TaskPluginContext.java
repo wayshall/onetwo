@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class TaskPluginContext {
 
 	@Bean
-	public TaskPluginConfig taskPluginConfig(){
+	public TaskCoreConfig taskPluginConfig(){
 		return TaskCorePlugin.getInstance().getConfig();
 	}
 }

@@ -2,13 +2,20 @@ package org.onetwo.plugins.task.client;
 
 import java.util.List;
 
-import org.onetwo.common.spring.plugin.AbstractContextPlugin;
+import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.plugins.email.JavaMailService;
+import org.onetwo.plugins.task.client.service.impl.TaskEmailServiceImpl;
 import org.onetwo.plugins.task.entity.TaskBase;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 
-public class TaskClientPlugin extends AbstractContextPlugin<TaskClientPlugin> {
+public class TaskClientPlugin extends ConfigurableContextPlugin<TaskClientPlugin, TaskClientConfig> {
 
 
+	public TaskClientPlugin() {
+		super("/plugins/task/", "task-client-config", true);
+	}
 
 	private static TaskClientPlugin instance;
 	
@@ -26,6 +33,9 @@ public class TaskClientPlugin extends AbstractContextPlugin<TaskClientPlugin> {
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		annoClasses.add(TaskClientPluginContext.class);
+		if(getConfig().isTaskClientMailService()){
+			annoClasses.add(TaskClientMailServiceContext.class);
+		}
 	}
 
 	@Override
@@ -33,6 +43,13 @@ public class TaskClientPlugin extends AbstractContextPlugin<TaskClientPlugin> {
 		packages.add(TaskBase.class.getPackage().getName());
 	}
 	
+	@Configuration
+	public static class TaskClientMailServiceContext {
+		
+		@Bean
+		public JavaMailService javaMailService(){
+			return new TaskEmailServiceImpl();
+		}
+	}
 	
-
 }
