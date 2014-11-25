@@ -9,6 +9,7 @@ import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.plugin.ContextPlugin;
+import org.onetwo.common.spring.plugin.EmptyContextPlugin;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.spring.plugin.SpringContextPluginManager;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
@@ -101,16 +102,16 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 		
 		ContextPlugin contextPlugin = null;
 		if(StringUtils.isBlank(jfishPluginInfo.getPluginClass())){
-			contextPlugin = ContextPlugin.EMTPY_CONTEXT_PLUGIN;
+			contextPlugin = new EmptyContextPlugin();
 		}else{
 			contextPlugin = ReflectUtils.newInstance(pluginInfo.getPluginClass());
 		}
 		
 		JFishPlugin jfishPlugin = null;
-		//web插件可不要
+		//
 		if(StringUtils.isBlank(jfishPluginInfo.getWebPluginClass())){
 //			jfishPlugin = JFishPlugin.EMPTY_JFISH_PLUGIN;
-			jfishPlugin = null;
+			jfishPlugin = new EmptyJFishPluginAdapter();
 		}else{
 			jfishPlugin = ReflectUtils.newInstance(jfishPluginInfo.getWebPluginClass());
 		}

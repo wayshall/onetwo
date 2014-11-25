@@ -41,6 +41,9 @@
 				<module>../jasper</module>
 				<module>../security</module>
 				<module>../admin</module>
+				<module>../task-core</module>
+				<module>../task-client</module>
+				<module>../task-webclient</module>
 	  	</modules>
 	  </profile>
 	</profiles>

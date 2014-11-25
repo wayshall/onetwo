@@ -1,28 +1,19 @@
 package org.onetwo.common.spring.plugin;
 
-import java.util.List;
 
-public class EmptyContextPlugin implements ContextPlugin{
+public class EmptyContextPlugin extends AbstractContextPlugin<Object> {
 	
-	EmptyContextPlugin(){
+	public EmptyContextPlugin(){
 	}
 
 	@Override
-	public void init(ContextPluginMeta pluginMeta, String appEnv) {
-		// TODO Auto-generated method stub
+	public void setPluginInstance(Object plugin) {
 		
 	}
 
 	@Override
-	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registerEntityPackage(List<String> packages) {
-		// TODO Auto-generated method stub
-		
+	public boolean isEmptyPlugin() {
+		return true;
 	}
 
 }
