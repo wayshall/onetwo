@@ -60,6 +60,7 @@ public class TaskClientServiceImpl {
 			email.setContentType(EmailTextType.STATIC_TEXT);
 			HibernateUtils.copyIgnoreRelationsAndFields(taskVo, email, "id");
 			email.setTag(tag);
+			email.setName(taskVo.getSubject());
 			
 			taskQueue.setTask(email);
 			baseEntityManager.save(taskQueue.getTask());

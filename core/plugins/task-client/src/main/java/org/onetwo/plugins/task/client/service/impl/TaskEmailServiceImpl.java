@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.RandUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -43,6 +44,9 @@ public class TaskEmailServiceImpl implements JavaMailService {
 		email.setCcAddress(StringUtils.join(mailInfo.getCc(), TaskUtils.EMAIL_SPLITTER));
 //		email.setContent(mailInfo.getContent());
 //		email.setPlanTime(DateUtil.now());
+		if(LangUtils.isEmpty(mailInfo.getTo())){
+			throw new BaseException("to address of email can not be empty. email: " + mailInfo.getSubject());
+		}
 		email.setToAddress(StringUtils.join(mailInfo.getTo(), TaskUtils.EMAIL_SPLITTER));
 		email.setHtml(mailInfo.isMimeMail());
 		
