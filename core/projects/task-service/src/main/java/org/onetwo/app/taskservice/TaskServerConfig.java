@@ -41,5 +41,9 @@ public class TaskServerConfig extends AppConfig {
 	public String getLocalAttachmentDir(){
 		return getProperty("local.attachement.dir", System.getProperty("java.io.tmpdir")+"/task-local-attachment");
 	}
+	
+	public String getTaskFetcherCron(){
+		return getProperty("task.fetcher.cron", "0/10 * * * * ?");
+	}
 
 }
