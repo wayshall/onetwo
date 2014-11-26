@@ -27,7 +27,9 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 		if(enable)
 			annoClasses.add(AdminWebContext.class);
 		
-		annoClasses.add(AdminAppWebContext.class);
+		if(AdminPlugin.getInstance().getConfig().isAdminModuleEnable()){
+			annoClasses.add(AdminAppWebContext.class);
+		}
 	}
 
 	@Override

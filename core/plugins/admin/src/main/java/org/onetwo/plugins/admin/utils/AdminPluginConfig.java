@@ -12,6 +12,7 @@ final public class AdminPluginConfig implements LoadableConfig {
 	public static final String ADMIN_INDEX_TITLE = "admin.index.title";
 	public static final String ADMIN_INDEX_VIEW = "admin.index.view";
 	public static final String ADMIN_INDEX_ENABLE = "admin.index.enable";
+	public static final String ADMIN_MODULE_ENABLE = "admin.module.enable";
 	
 
 //	private static final AdminPluginConfig instance = new AdminPluginConfig();
@@ -39,6 +40,10 @@ final public class AdminPluginConfig implements LoadableConfig {
 
 	public boolean isAdminIndexEnable(){
 		return config.getBoolean(ADMIN_INDEX_ENABLE, false);
+	}
+
+	public boolean isAdminModuleEnable(){
+		return config.getBoolean(ADMIN_MODULE_ENABLE, false);
 	}
 	
 	public String getTreepanel(){
