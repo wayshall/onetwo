@@ -5,7 +5,8 @@ public enum DataBase {
 	MySQL("mysql"),
 	Oracle("oracle"),
 	Sqlserver("sqlserver"),
-	H2("h2");
+	H2("h2"),
+	Access("access");
 //	Unknow("unknow");
 	
 	private String name;

@@ -63,6 +63,7 @@ final public class JdbcUtils {
 		if(StringUtils.isBlank(jdbcUrl))
 			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
 		
+		jdbcUrl = jdbcUrl.toLowerCase();
 		if (jdbcUrl.contains(":h2:")) {
 			return DataBase.H2;
 		} else if (jdbcUrl.contains(":mysql:")) {
@@ -72,6 +73,10 @@ final public class JdbcUtils {
 		} else if (jdbcUrl.contains(":oracle:")) {
 			return DataBase.Oracle;
 		} else {
+			for(DataBase db : DataBase.values()){
+				if(jdbcUrl.contains(":"+db.toString().toLowerCase()+":"))
+					return db;
+			}
 			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
 		}
 	}
