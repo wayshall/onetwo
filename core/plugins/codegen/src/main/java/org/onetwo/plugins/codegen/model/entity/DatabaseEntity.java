@@ -98,7 +98,12 @@ public class DatabaseEntity extends BaseEntity {
 		} else if (jdbcUrl.contains(":oracle:")) {
 			return DataBase.Oracle;
 		} else {
-			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+			for(DataBase db : DataBase.values()){
+				if(jdbcUrl.contains(":"+db.toString().toLowerCase()+":"))
+					return db;
+			}
+//			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+			return DataBase.Unknow;
 		}
 	}
 
