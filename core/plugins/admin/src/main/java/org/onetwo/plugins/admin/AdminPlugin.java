@@ -35,7 +35,9 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 
 	@Override
 	public void registerEntityPackage(List<String> packages) {
-		packages.add(AdminAppEntity.class.getPackage().getName());
+		if(getConfig().isAdminModuleEnable()){
+			packages.add(AdminAppEntity.class.getPackage().getName());
+		}
 	}
 
 
