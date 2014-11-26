@@ -49,7 +49,7 @@ public class TaskFetcherJob implements QuartzJobTask, InitializingBean {
 	}
 
 	public String getCronExpression() {
-		return "0/10 * * * * ?";
+		return taskServerConfig.getTaskFetcherCron();
 	}
 
 }
