@@ -77,7 +77,7 @@ final public class JdbcUtils {
 				if(jdbcUrl.contains(":"+db.toString().toLowerCase()+":"))
 					return db;
 			}
-			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+			throw new IllegalArgumentException("Unknown Database config : " + jdbcUrl);
 		}
 	}
 

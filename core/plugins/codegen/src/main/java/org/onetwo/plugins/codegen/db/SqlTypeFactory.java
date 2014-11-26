@@ -14,6 +14,8 @@ public final class SqlTypeFactory {
 		MySQL("mysql"),
 		Oracle("oracle"),
 		Sqlserver("sqlserver"),
+		Access("access"),
+		H2("h2"),
 		Unknow("unknow");
 		
 		private String name;
