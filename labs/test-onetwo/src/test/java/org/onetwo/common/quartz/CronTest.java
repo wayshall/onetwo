@@ -57,6 +57,111 @@ public class CronTest {
 		date = DateUtil.parse("2014-11-14 09:15:00");
 		invid = cronExp.isSatisfiedBy(date);
 		Assert.assertFalse(invid);
+		
+
+		cronExp = new CronExpression("0 0/20 6-8,11-1 * * ?");
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:20:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:40:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:20:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:40:00"));
+		Assert.assertTrue(invid);
+
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 0:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 0:40:00"));
+		Assert.assertTrue(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 1:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 1:40:00"));
+		Assert.assertTrue(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 6:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 6:40:00"));
+		Assert.assertTrue(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 09:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 09:10:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 10:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 10:20:00"));
+		Assert.assertFalse(invid);
+
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 2:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 2:40:00"));
+		Assert.assertFalse(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 4:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 4:40:00"));
+		Assert.assertFalse(invid);
+		
+
+
+		cronExp = new CronExpression("0 0/20 11-1 * * ?");
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:20:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 07:40:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 10:40:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:20:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 11:40:00"));
+		Assert.assertTrue(invid);
+
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 0:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 0:40:00"));
+		Assert.assertTrue(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 1:00:00"));
+		Assert.assertTrue(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 1:40:00"));
+		Assert.assertTrue(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 6:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 6:40:00"));
+		Assert.assertFalse(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 09:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 09:10:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 10:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 10:20:00"));
+		Assert.assertFalse(invid);
+
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 2:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 2:40:00"));
+		Assert.assertFalse(invid);
+
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 4:00:00"));
+		Assert.assertFalse(invid);
+		invid = cronExp.isSatisfiedBy(DateUtil.parse("2014-11-14 4:40:00"));
+		Assert.assertFalse(invid);
 	}
 
 }
