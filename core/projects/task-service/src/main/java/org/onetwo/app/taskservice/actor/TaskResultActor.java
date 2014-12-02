@@ -35,16 +35,24 @@ public class TaskResultActor extends UntypedActor {
 			List<TaskCompleteListener> listeners = taskListenerManager.getTaskCompleteListeners(result.getTask().getTaskType());
 			if(LangUtils.isNotEmpty(listeners)){
 				for(TaskCompleteListener l : listeners){
-					l.onComplete(result);
+					try {
+						l.onComplete(result);
+						logMsg.append("listener[").append(l.getClass().getName()).append("] onComplete succeed.");
+						logger.info(logMsg.toString());
+					} catch (Exception e) {
+						logMsg.append("listener[").append(l.getClass().getName()).append("] onComplete error: ").append(e.getMessage());
+						logger.info(logMsg.toString(), e);
+					}
 				}
 			}else{
 				logMsg.append("no TaskCompleteListener found for task type: " + result.getTask().getTaskType());
+				logger.info(logMsg.toString());
 			}
 			
 		}else{
 			logMsg.append("unknown message : ").append(message);
+			logger.info(logMsg.toString());
 		}
-		logger.info(logMsg.toString());
 	}
 
 }
