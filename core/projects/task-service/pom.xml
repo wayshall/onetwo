@@ -5,7 +5,7 @@
   
   <groupId>org.onetwo.app</groupId>
   <artifactId>task-service</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.5-SNAPSHOT</version>
   <name>task-service</name>
   <url>http://maven.apache.org</url>
   

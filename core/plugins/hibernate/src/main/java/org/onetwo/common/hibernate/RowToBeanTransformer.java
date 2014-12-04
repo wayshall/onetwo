@@ -102,7 +102,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 			}
 		}
 		catch ( Exception e ) {
-			throw new BaseException( "set bean["+resultClass.getName()+"] property["+propName+"] value error: " + e.getMessage() );
+			throw new BaseException( "set bean["+resultClass.getName()+"] property["+propName+"] value error: " + e.getMessage(), e );
 		}
 
 		return result;

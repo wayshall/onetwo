@@ -19,12 +19,8 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		Integer i = new Integer(1);
-		if (i.equals(1))
-		    i = null;
-		Double d = new Double(2.0);
-		Object o = true ? i : d; // NullPointerException!
-		System.out.println(o);
+		System.out.println(Long.parseLong("-100"));
+		System.out.println(Long.parseLong("+100"));
 	}
 	
 	public static void test2(String[] args){

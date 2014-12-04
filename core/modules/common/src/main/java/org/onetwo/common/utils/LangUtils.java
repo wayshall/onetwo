@@ -1489,6 +1489,14 @@ public class LangUtils {
 		}
 		return total;
 	}
+
+	public static long sumNumbers(Collection<? extends Number> counts){
+		long total = 0;
+		for(Number c : counts){
+			total += c.longValue();
+		}
+		return total;
+	}
 	
 	public static boolean isWord(String str){
 		return AWORD.matcher(str).matches();
