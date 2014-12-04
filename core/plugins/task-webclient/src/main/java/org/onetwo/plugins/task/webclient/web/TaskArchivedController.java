@@ -25,7 +25,7 @@ public class TaskArchivedController extends PluginSupportedController {
 	@ByMenuClass(codeClass=Archived.List.class)
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<TaskQueueArchived> page, TaskQueueArchived archived){
-		taskQueueService.findArchivedPage(page, "result", archived.getResult(), K.IF_NULL, IfNull.Ignore);
+		taskQueueService.findArchivedPage(page, "result", archived.getResult(), K.DESC, "id", K.IF_NULL, IfNull.Ignore);
 		return pluginMv("task-archived-index", "page", page);
 	}
 	

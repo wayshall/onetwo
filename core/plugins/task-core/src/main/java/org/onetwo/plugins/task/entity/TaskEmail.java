@@ -7,10 +7,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.onetwo.common.utils.GuavaUtils;
-import org.onetwo.common.utils.annotation.IgnoreJson;
 import org.onetwo.plugins.email.EmailTextType;
 import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="TASK_EMAIL")
@@ -44,6 +45,7 @@ public class TaskEmail extends TaskBase {
 		this.subject = subject;
 	}
 
+	@JsonIgnore
 	public String getContent() {
 		return content;
 	}
@@ -66,17 +68,17 @@ public class TaskEmail extends TaskBase {
 		this.html = html;
 	}
 
-	@IgnoreJson
+	@JsonIgnore
 	public String[] getCcAsArray() {
 		return GuavaUtils.split(ccAddress, TaskUtils.ATTACHMENT_PATH_SPLITTER_CHAR);
 	}
 
-	@IgnoreJson
+	@JsonIgnore
 	public String[] getToAsArray() {
 		return GuavaUtils.split(toAddress, TaskUtils.ATTACHMENT_PATH_SPLITTER_CHAR);
 	}
 
-	@IgnoreJson
+	@JsonIgnore
 	public String[] getAttachmentPathAsArray() {
 		return GuavaUtils.split(getAttachmentPath(), TaskUtils.ATTACHMENT_PATH_SPLITTER);
 	}
