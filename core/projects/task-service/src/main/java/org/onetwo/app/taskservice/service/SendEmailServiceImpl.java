@@ -68,7 +68,11 @@ public class SendEmailServiceImpl implements TaskExecuteListener, TaskTypeMapper
 			taskQueue.markExecuted();
 			msg.append("该任务是第[").append(taskQueue.getCurrentTimes()).append("]次执行……").append("\n");
 			log.setExecutor(taskServerConfig.getAppCode());
-			log.setTaskInput(JsonMapper.IGNORE_EMPTY.toJson(email));
+			String json = JsonMapper.IGNORE_EMPTY.toJson(email);
+			if(json.length()>4000){
+				json = json.substring(0, 4000);
+			}
+			log.setTaskInput(json);
 			
 			MailInfo mailInfo = MailInfo.create(emailConfig.getUsername(), email.getToAsArray())
 										.cc(email.getCcAsArray())
