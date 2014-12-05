@@ -279,7 +279,7 @@ public class NiceDate {
 	}
 	
 	public String toString(){
-		return DateUtil.formatDateTime(calendar.getTime());
+		return formatDateTimeMillis();
 	}
 
 	public String format(String format){
@@ -293,6 +293,9 @@ public class NiceDate {
 	}
 	public String formatAsDateTime(){
 		return DateUtil.formatDateTime(calendar.getTime());
+	}
+	public String formatDateTimeMillis(){
+		return DateUtil.formatDateTimeMillis(calendar.getTime());
 	}
 	
 	public int getYear(){

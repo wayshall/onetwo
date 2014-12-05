@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.HibernateException;
 import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
@@ -75,7 +76,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		try {
 			return this.doInvoke(proxy, method, args);
-		} catch (Throwable e) {
+		} catch (HibernateException e) {
+			throw (HibernateException) e;
+		}catch (Throwable e) {
 			throw new BaseException("invoke query["+method.getDeclaringClass().getSimpleName()+"."+method.getName()+"] error : " + e.getMessage(), e);
 		}
 		
@@ -126,67 +129,65 @@ public class DynamicQueryHandler implements InvocationHandler {
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			return dq;
 			
-		}else{
-//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
-			if(dmethod.isExecuteUpdate()){
-				methodArgs = dmethod.toArrayByArgs(args, componentClass);
-				DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
-				result = dq.executeUpdate();
-				
-			}else if(dmethod.isBatch()){
-				//TODO 先特殊处理，待修改
-				if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
-					throw new BaseException("batch execute only has a List Type paramter : " + args);
-				}
-				FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(queryName);
-				SqlAndValues sv = sqlGen.generatSql();
-				JdbcDao jdao = this.jdao;
-				if(jdao==null){
-					jdao = SpringApplication.getInstance().getBean(JdbcDao.class, false);
-					if(jdao==null)
-						throw new BaseException("no supported jdbc batch execute!");
-				}
-				
-				logger.info("batch insert start ...");
-				TimeCounter t = new TimeCounter("prepare insert");
-				t.start();
-				
-				List<?> batchParameter = (List<?>)args[0];
-				List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
-				ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
-				for(Object val : batchParameter){
-					Map<String, Object> paramValueMap = new HashMap<String, Object>();
-					BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
-					for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
-						if(!paramBean.isReadableProperty(parameter.getProperty()))
-							throw new BaseException("batch execute parameter["+parameter.getProperty()+"] is not a bean["+val+"] property");
-						Object value = parameter.getParamterValue(paramBean);
-						paramValueMap.put(parameter.getName(), value);
-					}
-					batchValues.add(paramValueMap);
-				}
-
-				logger.info("prepare insert finish!");
-				t.stop();
-				t.restart("insert to db");
-				
-				int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
-				
-				logger.info("batch insert stop ...");
-				t.stop();
-				
-				if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
-					return counts;
-				}else{
-					int count = LangUtils.sum(counts);
-					return Types.convertValue(count, dmethod.getResultClass());
-				}
-				
-			}else{
-				methodArgs = dmethod.toArrayByArgs(args, componentClass);
-				result = em.getFileNamedQueryFactory().findUnique(queryName, methodArgs);
+		}else if(dmethod.isExecuteUpdate()){
+			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
+			result = dq.executeUpdate();
+			
+		}else if(dmethod.isBatch()){
+			//TODO 先特殊处理，待修改
+			if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
+				throw new BaseException("batch execute only has a List Type paramter : " + args);
 			}
+			FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(queryName);
+			SqlAndValues sv = sqlGen.generatSql();
+			JdbcDao jdao = this.jdao;
+			if(jdao==null){
+				jdao = SpringApplication.getInstance().getBean(JdbcDao.class, false);
+				if(jdao==null)
+					throw new BaseException("no supported jdbc batch execute!");
+			}
+			
+			logger.info("batch insert start ...");
+			TimeCounter t = new TimeCounter("prepare insert");
+			t.start();
+			
+			List<?> batchParameter = (List<?>)args[0];
+			List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
+			ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
+			for(Object val : batchParameter){
+				Map<String, Object> paramValueMap = new HashMap<String, Object>();
+				BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
+				for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
+					if(!paramBean.isReadableProperty(parameter.getProperty()))
+						throw new BaseException("batch execute parameter["+parameter.getProperty()+"] is not a bean["+val+"] property");
+					Object value = parameter.getParamterValue(paramBean);
+					paramValueMap.put(parameter.getName(), value);
+				}
+				batchValues.add(paramValueMap);
+			}
+
+			logger.info("prepare insert finish!");
+			t.stop();
+			t.restart("insert to db");
+			
+			int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+			
+			logger.info("batch insert stop ...");
+			t.stop();
+			
+			if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
+				return counts;
+			}else{
+				int count = LangUtils.sum(counts);
+				return Types.convertValue(count, dmethod.getResultClass());
+			}
+			
+		}else{
+			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			result = em.getFileNamedQueryFactory().findUnique(queryName, methodArgs);
 		}
+		
 		return result;
 	}
 

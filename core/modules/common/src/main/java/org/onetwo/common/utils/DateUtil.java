@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
 
@@ -62,7 +63,8 @@ abstract public class DateUtil {
 	public static final String Year_Month = "yyyy-MM";
 	public static final String Date_Only = "yyyy-MM-dd";
 	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
-	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss SSS";
+	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss.SSS";
+	public static final String DATE_TIME_MILLS2 = "yyyy-MM-dd HH:mm:ss SSS";
 	public static final String DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
 	public static final String Time_Only = "HH:mm:ss";
 	public static final String SHORT_TIME_ONLY = "HH:mm";
@@ -231,6 +233,11 @@ abstract public class DateUtil {
 			return "";
 		return formatDateByPattern(date, DATE_TIME_MILLS);
 	}
+	public static String formatDateTimeMillis2(Date date) {
+		if(date==null)
+			return "";
+		return formatDateByPattern(date, DATE_TIME_MILLS2);
+	}
 
 	public static String format(String pattern, Date date) {
 		if(date==null)
@@ -259,7 +266,8 @@ abstract public class DateUtil {
 		try {
 			date = format.parse(dateStr);
 		} catch (Exception e) {
-			logger.error("parse date["+dateStr+"] error with format["+format+"]:"+e.getMessage()+", ignore.");
+//			logger.error("parse date["+dateStr+"] error with format["+format+"]:"+e.getMessage()+", ignore.");
+			throw new BaseException("parse date["+dateStr+"] error with format : " + format, e);
 		}
 		return date;
 	}
@@ -307,6 +315,13 @@ abstract public class DateUtil {
 
 	public static Date parseDateTime(String dateStr) {
 		return parseByPatterns(dateStr, Date_Time);
+	}
+
+	public static Date parseDateTimeMills(String dateStr) {
+		return parseByPatterns(dateStr, DATE_TIME_MILLS);
+	}
+	public static Date parseDateTimeMills2(String dateStr) {
+		return parseByPatterns(dateStr, DATE_TIME_MILLS2);
 	}
 
 	public static Date parseDateShortTime(String dateStr) {
