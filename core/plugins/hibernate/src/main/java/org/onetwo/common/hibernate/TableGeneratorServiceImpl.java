@@ -8,6 +8,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+/****
+ * id.enchan.TableGenerator
+ * @author Administrator
+ *
+ */
 public class TableGeneratorServiceImpl implements InitializingBean, TableGeneratorService {
 	/*private final static String SEQ_SELECT_SQL = "select tbl.GEN_VALUE from SEQ_TABLES tbl with (updlock, rowlock ) where tbl.GEN_NAME= :seqName";
 	private final static String SEQ_UPDATE_SQL = " update SEQ_TABLES set GEN_VALUE=:newSeqValue where GEN_VALUE=:seqValue and GEN_NAME=:seqName";
@@ -41,13 +46,16 @@ public class TableGeneratorServiceImpl implements InitializingBean, TableGenerat
 	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public long generatedValue(String seqName){
+		return generatedValue(seqName, 1);
+	}
+	public long generatedValue(String seqName, int cacheSize){
 		Number id = selectGeneratedValue(seqName);
 		if(id==null){
 			insertGeneratedValue(seqName, 1);
 			id = selectGeneratedValue(seqName);
 		}
 		long idresut = id.longValue();
-		updateGeneratedValue(seqName, idresut, idresut+1);
+		updateGeneratedValue(seqName, idresut, idresut+cacheSize);
 		return idresut;
 	}
 	

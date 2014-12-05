@@ -7,5 +7,6 @@ public interface TableGeneratorService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public long generatedValue(String seqName);
+	public long generatedValue(String seqName, int cacheSize);
 
 }
