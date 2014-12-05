@@ -1533,6 +1533,9 @@ public class LangUtils {
 	}
 	
 	public static String pad(String s, int alength, char append, boolean padLeft){
+		if(s==null){
+			return s;
+		}
 		int length = Math.abs(alength);
 		if(s.length()==length)
 			return s;

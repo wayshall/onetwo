@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.NiceDate;
 
 @SuppressWarnings("unchecked")
 public class DefaultTypeConvertors implements Convertor {
@@ -40,6 +41,7 @@ public class DefaultTypeConvertors implements Convertor {
 		register(new ToEnumConvertor(), Enum.class);
 		register(new ToArrayConvertor(this), Object[].class);
 		register(new ToListConvertor(this), List.class);
+		register(new ToNiceDateConvertor(), NiceDate.class);
 	}
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.utils.convert.TypeConvertor#register(org.onetwo.common.utils.convert.TypeConvert, java.lang.Class)

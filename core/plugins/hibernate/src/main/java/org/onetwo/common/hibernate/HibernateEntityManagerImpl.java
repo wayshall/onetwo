@@ -19,6 +19,7 @@ import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.NiceDate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
@@ -77,13 +78,22 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
 		if(entityClass!=null){
-			if(LangUtils.isSimpleType(entityClass))
+			if(isResultMappedToSingleColumnTransformer(entityClass))
 				query.setResultTransformer(new SingleColumnTransformer(entityClass));
 			else
 				query.setResultTransformer(new RowToBeanTransformer(entityClass));
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;
+	}
+	
+	/***
+	 * 根据返回对象的class判断是否映射到单列
+	 * @param resultClass
+	 * @return
+	 */
+	protected boolean isResultMappedToSingleColumnTransformer(Class<?> resultClass){
+		return LangUtils.isSimpleType(resultClass) || NiceDate.class.isAssignableFrom(resultClass);
 	}
 	public DataQuery createEntitySQLQuery(String sqlString, Class<?>... entityClass){
 		SQLQuery query = getSession().createSQLQuery(sqlString);
