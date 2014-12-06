@@ -180,6 +180,11 @@ public class PropConfig implements VariableSupporter {
 	public List<String> getPropertyWithSplit(String key, String split) {
 		return config.getPropertyWithSplit(key, split);
 	}
+	
+
+	public List<? extends Enum<?>> getEnums(String key, Class<? extends Enum<?>> clazz){
+		return config.getEnums(key, clazz);
+	}
 
 	public String getProperty(String key) {
 		return config.getProperty(key);
