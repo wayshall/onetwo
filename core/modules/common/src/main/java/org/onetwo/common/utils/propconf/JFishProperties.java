@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.EnumUtils;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -287,6 +288,13 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		}
 		putInCache(key, listValue);
 		return listValue;*/
+	}
+	
+
+	public List<? extends Enum<?>> getEnums(String key, Class<? extends Enum<?>> clazz){
+		List<String> strs = getPropertyWithSplit(key, ",");
+		List<? extends Enum<?>> enumObj = (List<? extends Enum<?>>)EnumUtils.asEnumList(clazz, strs.toArray(new String[0]));
+		return enumObj;
 	}
 
 	public String getProperty(String key, String defaultValue) {
