@@ -16,7 +16,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.plugins.dq.annotations.ExecuteBatch;
+import org.onetwo.plugins.dq.annotations.ExecuteUpdate;
 import org.onetwo.plugins.dq.annotations.Name;
 import org.onetwo.plugins.dq.annotations.QueryConfig;
 import org.springframework.core.MethodParameter;
@@ -32,12 +32,12 @@ public class DynamicMethod {
 	private final Class<?> resultClass;
 	private final Class<?> componentClass;
 	private final String queryName;
-	private final ExecuteBatch executeBatch;
+	private final ExecuteUpdate executeUpdate;
 //	private List<String> parameterNames;
 	
 	public DynamicMethod(Method method){
 		this.method = method;
-		this.executeBatch = method.getAnnotation(ExecuteBatch.class);
+		this.executeUpdate = method.getAnnotation(ExecuteUpdate.class);
 		int psize = method.getParameterTypes().length;
 		parameters = LangUtils.newArrayList(psize+2);
 //		this.parameterNames = LangUtils.newArrayList(psize);
@@ -212,12 +212,14 @@ public class DynamicMethod {
 	}
 	
 	public boolean isExecuteUpdate(){
-		String name = StringUtils.getFirstWord(this.method.getName());
-		return EXECUTE_UPDATE_PREFIX.contains(name);
+		/*String name = StringUtils.getFirstWord(this.method.getName());
+		return EXECUTE_UPDATE_PREFIX.contains(name);*/
+
+		return (executeUpdate!=null && !executeUpdate.isBatch()) || EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
 	}
 	
 	public boolean isBatch(){
-		return executeBatch!=null || BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+		return (executeUpdate!=null && executeUpdate.isBatch()) || BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
 	}
 	
 	private static class DynamicMethodParameter extends MethodParameter {

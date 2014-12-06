@@ -139,6 +139,15 @@ public class DynamicQueryHandler implements InvocationHandler {
 			if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
 				throw new BaseException("batch execute only has a List Type paramter : " + args);
 			}
+			List<?> batchParameter = (List<?>)args[0];
+			
+			/*if(LangUtils.size(args)==1){
+				//兼容
+				batchParameter = (List<?>)args[0];
+			}else{
+				methodArgs = dmethod.toArrayByArgs(args, componentClass);
+				batchParameter = 
+			}*/
 			FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(queryName);
 			SqlAndValues sv = sqlGen.generatSql();
 			JdbcDao jdao = this.jdao;
@@ -148,11 +157,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 					throw new BaseException("no supported jdbc batch execute!");
 			}
 			
+			
 			logger.info("batch insert start ...");
 			TimeCounter t = new TimeCounter("prepare insert");
 			t.start();
 			
-			List<?> batchParameter = (List<?>)args[0];
 			List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
 			ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
 			for(Object val : batchParameter){
