@@ -219,8 +219,8 @@ public final class HibernateUtils {
 	 * @param source
 	 * @param targetClass
 	 */
-	public static <T> void copy(T source, Class<T> targetClass){
-		ReflectUtils.copy(source, targetClass, COMMON);
+	public static <T> T copy(T source, Class<T> targetClass){
+		return ReflectUtils.copy(source, targetClass, COMMON);
 	}
 	
 }
