@@ -207,7 +207,7 @@ abstract public class DateUtil {
 
 		return new Date(datetime + difftime);
 	}
-
+	
 	public static String formatDateByPattern(Date date, String p) {
 		if(date==null)
 			return "";
@@ -703,6 +703,33 @@ abstract public class DateUtil {
 		}
 		return rs;
 	}
+	
+
+	public static boolean isSameAt(Date date1, Date date2, DateType dt) {
+		Assert.notNull(date1, "date1 can not be null");
+		Assert.notNull(date2, "date2 can not be null");
+		Assert.notNull(dt, "dt can not be null");
+		return isSameAt(asCalendar(date1), asCalendar(date2), dt);
+	}
+	/***
+	 * 递归版
+	 * @param c1
+	 * @param c2
+	 * @param dt
+	 * @return
+	 */
+	public static boolean isSameAt(Calendar c1, Calendar c2, DateType dt) {
+		Assert.notNull(c1, "c1 can not be null");
+		Assert.notNull(c2, "c2 can not be null");
+		Assert.notNull(dt, "dt can not be null");
+		
+//		return dt.ordinal()>0?(isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false):c1.get(dt.getField())==c2.get(dt.getField());
+		if(dt.ordinal()>0){
+			return isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
+		}else{
+			return c1.get(dt.getField())==c2.get(dt.getField());
+		}
+	}
 	/***
 	 * 根据DateType的精度，比较两个世界是否相等
 	 * @param c1
@@ -722,7 +749,7 @@ abstract public class DateUtil {
 		}
 		return rs;
 	}
-
+	
 	public static Calendar asCalendar(Date date){
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
