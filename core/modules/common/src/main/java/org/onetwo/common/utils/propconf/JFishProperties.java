@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
 
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public class JFishProperties extends Properties implements VariableSupporter {
@@ -88,7 +89,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 					listValue.add(str.trim());
 				}
 			}
-			return listValue;
+			return ImmutableList.copyOf(listValue);
 		}
 		
 	};
