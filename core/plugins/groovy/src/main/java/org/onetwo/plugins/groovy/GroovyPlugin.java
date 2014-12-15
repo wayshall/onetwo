@@ -2,14 +2,16 @@ package org.onetwo.plugins.groovy;
 
 import java.util.List;
 
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.plugin.AbstractContextPlugin;
-import org.onetwo.plugins.groovy.model.PluginModelContext;
-import org.springframework.core.io.Resource;
+import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.plugins.groovy.model.GroovyPluginModelContext;
 
 
 
-public class GroovyPlugin extends AbstractContextPlugin<GroovyPlugin> {
+public class GroovyPlugin extends ConfigurableContextPlugin<GroovyPlugin, GroovyPluginConfig> {
+
+	public GroovyPlugin() {
+		super("/plugins/groovy/", "groovy-config", true);
+	}
 
 	private static GroovyPlugin instance;
 	
@@ -20,12 +22,7 @@ public class GroovyPlugin extends AbstractContextPlugin<GroovyPlugin> {
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		Resource res = SpringUtils.classpath(PluginModelContext.GROOVY_CONFIG_PATH);
-		if(res.exists()){
-			annoClasses.add(PluginModelContext.class);
-		}else{
-			logger.info("no groovy config found, ignore...");
-		}
+		annoClasses.add(GroovyPluginModelContext.class);
 	}
 
 	public void setPluginInstance(GroovyPlugin plugin){

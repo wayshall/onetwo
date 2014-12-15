@@ -44,6 +44,7 @@
 				<module>../task-core</module>
 				<module>../task-client</module>
 				<module>../task-webclient</module>
+				<module>../groovy</module>
 	  	</modules>
 	  </profile>
 	</profiles>
