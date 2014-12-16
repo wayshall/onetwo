@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp.grid;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
@@ -269,4 +270,12 @@ public class FieldTagBean extends HtmlElement {
 		this.reserved = reserved;
 	}
 
+
+	public String getGridTdAttribute() {
+		if(colspan<=1)
+			return LangUtils.EMPTY_STRING;
+		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "colspan", getColspan());
+		return attributesBuf.toString();
+	}
 }
