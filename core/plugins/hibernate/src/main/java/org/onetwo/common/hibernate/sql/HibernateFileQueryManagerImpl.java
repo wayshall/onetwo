@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.AbstractFileNamedQueryFactory;
-import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.FileNamedSqlGenerator;

@@ -8,6 +8,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.view.ThemeSetting;
 import org.onetwo.common.web.view.ViewPermission;
 import org.slf4j.Logger;
@@ -88,7 +89,12 @@ abstract public class AbstractBodyTag extends BodyTagSupport {
 		try {
 			this.pageContext.include(template);
 		} catch (Exception e) {
-			throw new JspException("render template["+template+"] error : " + e.getMessage(), e);
+			JspException jspe = LangUtils.getCauseException(e, JspException.class);
+			String msg = e.getMessage();
+			if(jspe!=null && jspe.getRootCause()!=null){
+				msg = jspe.getRootCause().getCause()==null?msg:jspe.getRootCause().getCause().getMessage();
+			}
+			throw new JspException("render template["+template+"] error : " + msg, e);
 		}
 	}
 }
