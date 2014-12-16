@@ -9,6 +9,30 @@ import org.onetwo.common.utils.DateUtil.DateType;
 import org.onetwo.common.utils.list.It;
 
 public class DateIntervalTest {
+	
+	@Test
+	public void testSplit(){
+		DateInterval interval = DateInterval.in("2014-09-01", "2014-09-11");
+		List<Date> dates = interval.splitDate();
+		Assert.assertEquals(11, dates.size());
+		Assert.assertEquals("2014-09-01", NiceDate.New(dates.get(0)).formatAsDate());
+		Assert.assertEquals("2014-09-11", NiceDate.New(dates.get(dates.size()-1)).formatAsDate());
+		
+		interval = DateInterval.in("2014-09-15", "2014-10-11");//16+11
+		dates = interval.splitDate();
+		int index = 0;
+		for(Date date : dates){
+			System.out.println("testSplit date["+(index++)+"]: " + DateUtil.formatDate(date));
+		}
+		Assert.assertEquals(27, dates.size());
+		Assert.assertEquals("2014-09-15", NiceDate.New(dates.get(0)).formatAsDate());
+		Assert.assertEquals("2014-10-11", NiceDate.New(dates.get(dates.size()-1)).formatAsDate());
+		
+		interval = DateInterval.in("2014-09-15", "2014-10-11");
+		List<Date> months = interval.splitMonth();
+		Assert.assertEquals(2, months.size());
+		Assert.assertEquals("2014-09", NiceDate.New(months.get(0)).format("yyyy-MM"));
+	}
 
 	@Test
 	public void testDateInterval(){

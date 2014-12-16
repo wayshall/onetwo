@@ -270,6 +270,7 @@ var Common = function () {
 			var remote = eval($(link).attr('remote'));
 			var ajaxInst = null;
 			var form = null;
+			
 			if(remote && remote==true){
 				var ajaxName = $(link).attr('ajaxName');
 				//ajaxInst = AjaxAnywhere.findInstance(ajaxName);
@@ -333,6 +334,14 @@ var Common = function () {
 				ajaxInst.submitAJAX();
 				return false;
 			}else{
+				var submitting = link.attr('data-submitting');
+				if(submitting){
+					if(submitting=='true'){
+						$.showBlockMsg();
+					}else{
+						$.showBlockMsg(submitting);
+					}
+				}
 				var params = $(link).children(".link_params").html();
 				if(params){
 					form.append(params);
