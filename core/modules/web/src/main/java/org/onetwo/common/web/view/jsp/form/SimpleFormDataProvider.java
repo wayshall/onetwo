@@ -26,6 +26,11 @@ public class SimpleFormDataProvider implements FormDataProvider {
 	}
 
 	@Override
+	public boolean isReadableProperty(String propertyName) {
+		return this.accessor.isReadableProperty(propertyName);
+	}
+
+	@Override
 	public boolean isFieldShow(String fieldName) {
 		return true;
 	}

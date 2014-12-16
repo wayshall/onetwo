@@ -449,6 +449,17 @@ public class LangUtils {
 		return se;
 	}
 	
+	public static <T extends Throwable> T getCauseException(Throwable e, Class<T> root){
+		Throwable se = e;
+		while(se.getCause()!=null){
+			se = se.getCause();
+			if(root.isInstance(se)){
+				return (T)se;
+			}
+		}
+		return null;
+	}
+	
 	/***
 	 * 获取第一个不是jfish框架自定义异常的cause异常
 	 * @param e

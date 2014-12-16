@@ -1189,10 +1189,18 @@ public class ReflectUtils {
 		return classes;*/
 	}
 
-	public static Object invokeMethod(String methodName, Object target,
-			Object... args) {
-		return invokeMethod(findMethod(getObjectClass(target), methodName,
-				findTypes(args)), target, args);
+	public static Object invokeMethod(String methodName, Object target, Object... args) {
+		Method m = findMethod(getObjectClass(target), methodName, findTypes(args));
+		return invokeMethod(m, target, args);
+	}
+
+	public static Object checkAndInvokeMethod(String methodName, Object target, Object... args) {
+		Method m = findMethod(true, getObjectClass(target), methodName, findTypes(args));
+		if(m==null){
+			logger.info("method not found and ignore: " + methodName);
+			return null;
+		}
+		return invokeMethod(m, target, args);
 	}
 
 	public static Class getObjectClass(Object target) {

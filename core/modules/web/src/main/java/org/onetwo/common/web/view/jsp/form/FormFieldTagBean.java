@@ -51,7 +51,7 @@ public class FormFieldTagBean extends HtmlElement {
 	public boolean isErrorTag() {
 //		if("consumeRate".equals(name))
 //			System.out.println("errortag: " + errorPath);
-		return errorTag;
+		return errorTag && getErrorPath()!=null && this.formBean.getProvider().isReadableProperty(getErrorPath());
 	}
 	public void setErrorTag(boolean errorTag) {
 //		if("consumeRate".equals(name))

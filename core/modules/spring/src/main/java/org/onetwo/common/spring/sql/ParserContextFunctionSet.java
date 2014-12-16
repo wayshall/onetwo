@@ -50,14 +50,20 @@ public class ParserContextFunctionSet {
 		return str.toString();
 	}
 
+	/****
+	 * ${_func.paramIn('dptcode', dptcodeList)}
+	 * @param name
+	 * @param inValue
+	 * @return
+	 */
 	public String paramIn(String name, Object inValue){
 		int size = 0;
 		if(Collection.class.isInstance(inValue)){
 			size = ((Collection<?>)inValue).size(); 
-		}else if(inValue.getClass().isArray()){
+		}else if(inValue!=null && inValue.getClass().isArray()){
 			size = Array.getLength(inValue);
 		}else{
-			throw new IllegalArgumentException("only supported array or collection: " + inValue.getClass());
+			throw new IllegalArgumentException("only supported array or collection: " + inValue);
 		}
 		StringBuilder str = new StringBuilder();
 		str.append("(");

@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.tools;
 
 import java.util.Date;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
@@ -72,14 +73,18 @@ final public class ToolEl {
 	}
 	
 	public static boolean checked(Object target, String methodName, Object arg){
-		if(StringUtils.isBlank(methodName))
+		if(target==null || StringUtils.isBlank(methodName))
 			return false;
 		BeanWrapper bw = SpringUtils.newBeanWrapper(target);
 		if(bw.isReadableProperty(methodName)){
 			Object selectValue = bw.getPropertyValue(methodName);
+			BeanWrapper argBw = SpringUtils.newBeanWrapper(arg);
+			if(!argBw.isReadableProperty(methodName)){
+				throw new BaseException("not property["+methodName+"] found in object: " + arg);
+			}
 			return LangUtils.equals(selectValue, SpringUtils.newBeanWrapper(arg).getPropertyValue(methodName));
 		}
-		return (Boolean)ReflectUtils.invokeMethod(methodName, target, arg);
+		return (Boolean)ReflectUtils.checkAndInvokeMethod(methodName, target, arg);
 	}
 	
 	public static String checkedHtml(Object target, String methodName, Object arg){

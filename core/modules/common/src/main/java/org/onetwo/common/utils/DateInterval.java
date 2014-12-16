@@ -17,10 +17,14 @@ import org.onetwo.common.utils.list.NoIndexIt;
 public class DateInterval {
 	
 	public static DateInterval in(String date1, String date2){
+		Assert.hasText(date1);
+		Assert.hasText(date2);
 		return new DateInterval(DateUtil.parse(date1), DateUtil.parse(date2));
 	}
 	
 	public static DateInterval in(Date date1, Date date2){
+		Assert.notNull(date1);
+		Assert.notNull(date2);
 		return new DateInterval(date1, date2);
 	}
 
@@ -92,6 +96,15 @@ public class DateInterval {
 	}
 
 
+	public DateIntervalList splitMonth(){
+		return getInterval(DateType.month, 1, true);
+	}
+	public DateIntervalList splitDate(){
+		return getInterval(DateType.date, 1, true);
+	}
+	public DateIntervalList split(DateType dt, boolean includeEnd){
+		return getInterval(dt, 1, includeEnd);
+	}
 
 	public DateIntervalList getInterval(DateType dt){
 		return getInterval(dt, 1, false);
