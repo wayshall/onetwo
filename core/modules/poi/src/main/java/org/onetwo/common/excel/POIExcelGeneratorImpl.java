@@ -181,6 +181,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 	
 	private void generateSheet(String sheetname, SheetData sdata){
+		//the maximum sheet name is 30 character in xssfworkbook 
+		if(sheetname.length()>30)
+			sheetname = sheetname.substring(0, 30);
 		Sheet sheet = getWorkbook().createSheet(sheetname);
 		int sheetIndex = getWorkbook().getSheetIndex(sheet);
 		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);

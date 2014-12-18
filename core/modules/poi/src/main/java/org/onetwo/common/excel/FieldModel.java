@@ -160,22 +160,20 @@ public class FieldModel implements PoiModel {
 		/*if(colspanValue!=null)
 			return colspanValue;*/
 		
-		int value = 1;
+//		int value = 1;
 		if(StringUtils.isNotBlank(colspan)){
-			/*if(IS_DIGIT.matcher(colspan).matches())
-				colspanValue = Integer.parseInt(colspan);
-			else */
-			if(context!=null)
-				value = context.parseIntValue(colspan);
-			else
+			if(ExcelUtils.IS_DIGIT.matcher(colspan).matches()){
+				colspanValue = colspanValue!=null?colspanValue:Integer.parseInt(colspan);
+			}else if(context!=null){
+				int value = context.parseIntValue(colspan);
+				return value<1?1:value;
+			}else{
 				colspanValue = 1;
+			}
 		}else{
 			colspanValue = 1;
 		}
-		if(value < 1) {
-			value = 1;
-		}
-		return value;
+		return colspanValue;
 	}
 
 	public void setColspan(String colspan) {
@@ -187,24 +185,23 @@ public class FieldModel implements PoiModel {
 		/*if(rowspanValue!=null)
 			return rowspanValue;*/
 		
-		int value = 1;
+//		int value = 1;
 		if(StringUtils.isNotBlank(rowspan)){
 			/*if(IS_DIGIT.matcher(rowspan).matches())
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
-			if(ExcelUtils.IS_DIGIT.matcher(rowspan).matches())
-				rowspanValue = Integer.parseInt(rowspan);
-			else if(context!=null)
-				value = context.parseIntValue(rowspan);
-			else
+			if(ExcelUtils.IS_DIGIT.matcher(rowspan).matches()){
+				rowspanValue = rowspanValue!=null?rowspanValue:Integer.parseInt(rowspan);
+			}else if(context!=null){
+				int value = context.parseIntValue(rowspan);
+				return value<1?1:value;
+			}else{
 				rowspanValue = 1;
+			}
 		}else{
 			rowspanValue = 1;
 		}
-		if(value < 1) {
-			value = 1;
-		}
-		return value;
+		return rowspanValue;
 	}
 	
 	public String getRowspan() {
@@ -221,7 +218,7 @@ public class FieldModel implements PoiModel {
 
 	public boolean isRange(){
 		//性能关键点。。。。。。。
-//		return this.rowspan != null   || this.colspan != null;
+//		boolean rs = this.rowspan != null   || this.colspan != null;
 		return (rowspanValue!=null && rowspanValue>1) || (colspanValue!=null && colspanValue>1);
 	}
 
