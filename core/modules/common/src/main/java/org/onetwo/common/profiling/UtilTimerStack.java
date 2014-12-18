@@ -102,6 +102,7 @@ public class UtilTimerStack
             }
             else
             {
+//                printTimes(currentTimer);
                 current.set(parent);
             }
         }

@@ -121,7 +121,7 @@ public class BaseInitFilter extends IgnoreFiler {
 			if(BaseSiteConfig.getInstance().isCookieP3p())
 				addP3P(response);
 			processLocale(request, response);
-
+			
 //			ResponseUtils.setHttpOnlyCookie(response, "aa2", "bb2", "/", 5, ".a.com");
 //			ResponseUtils.setHttpOnlyCookie(response, "aa1", "bb1", "/", 5, ".b.com");
 

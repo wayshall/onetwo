@@ -84,6 +84,7 @@ var Common = function () {
 			buttonDelete : ".dg-button-delete",
 			
 			//
+			showTipsElement: "a[show-tips]",
 			linkButton: "a[data-method][class!='dg-toolbar-button-delete'][class!='dg-toolbar-button-batch']",
 			formButton : ".form-button",
 			
@@ -201,6 +202,10 @@ var Common = function () {
 		},
 		
 		init : function(){
+			$(jfish.cssKeys.showTipsElement).live("click", function(){
+				$.showTipsWindow($(this).attr('show-tips'));
+			});
+			
 			$(jfish.cssKeys.linkButton).live("click", function(){
 				if($(this).is(jfish.cssKeys.formButton))
 					return false;
@@ -296,17 +301,22 @@ var Common = function () {
 			}
 
 			var metadata_input = "";
-			if(link.attr('data-form')){
-				form = $(link.attr('#'+data-form));
-				form.attr("action", href);
-//				form.attr("method", method);
-			}
-			else if(form.length>0){
+			var dformName = link.attr('data-form');
+			var newForm = false;
+			if(dformName){
+				if(dformName!='newForm'){
+					form = $(link.attr('#'+link.attr('data-form')));
+					form.attr("action", href);
+				}else{
+					newForm = true;
+				}
+			}else if(form.length>0){
 				form = $(form.get(0));
 				form.attr("action", href);
-//				form.attr("method", method);
+			}else{
+				newForm = true;
 			}
-			else{
+			if(newForm){
 				var formId = '_linkForm';
 				form = $('#'+formId);
 				if(form.length==0){
@@ -320,6 +330,7 @@ var Common = function () {
 			jfish.appendHiddenByDataParams(link, form);
 			
 			if(method && method.toLowerCase()=='get'){
+				//如果以get方式提交，querystring将会被丢弃
 				form.attr("method", "get");
 			}else{
 				form.attr("method", "post");
