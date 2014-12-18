@@ -120,6 +120,18 @@
   </function>
   
   <function>
+  	<name>join</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String join(java.lang.String[], java.lang.String)</function-signature>
+  </function>
+  
+  <function>
+  	<name>joinC</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String joinC(java.util.Collection, java.lang.String)</function-signature>
+  </function>
+  
+  <function>
   	<name>checkedHtml</name>
   	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
   	<function-signature>java.lang.Object checkedHtml(java.lang.Object, java.lang.String, java.lang.Object)</function-signature>

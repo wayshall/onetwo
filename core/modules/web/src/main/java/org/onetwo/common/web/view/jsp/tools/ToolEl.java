@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view.jsp.tools;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.onetwo.common.exception.BaseException;
@@ -93,6 +94,14 @@ final public class ToolEl {
 	
 	public static String addParam(String action, String name, String value){
 		return TagUtils.appendParam(action, name, value);
+	}
+	
+	public static String join(String[] strs, String joiner){
+		return StringUtils.join(strs, joiner);
+	}
+	
+	public static String joinC(Collection<String> strs, String joiner){
+		return StringUtils.join(strs, joiner);
 	}
 	
 	public static String web(String name){
