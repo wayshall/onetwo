@@ -44,5 +44,9 @@ public class WorkbookExcelGeneratorImpl extends AbstractWorkbookExcelGenerator {
 	public Workbook getWorkbook() {
 		return workbookData.getWorkbook();
 	}
+	@Override
+	public WorkbookData getWorkbookData() {
+		return workbookData;
+	}
 
 }
