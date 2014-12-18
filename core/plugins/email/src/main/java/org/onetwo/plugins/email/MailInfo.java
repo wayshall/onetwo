@@ -20,6 +20,13 @@ public class MailInfo implements Serializable{
 		m.to(to);
 		return m;
 	}
+	
+	public static MailInfo createEmail(String subject, String...to){
+		MailInfo m = new MailInfo();
+		m.to(to);
+		m.subject(subject);
+		return m;
+	}
 
 	private String from;
 

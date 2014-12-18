@@ -2,10 +2,12 @@ package org.onetwo.common.excel.view.jsp;
 
 import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.FieldModel;
+import org.onetwo.common.excel.PoiModel;
 import org.onetwo.common.excel.RowModel;
 import org.onetwo.common.excel.TemplateModel;
 import org.onetwo.common.excel.WorkbookModel;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.datagrid.AbstractDatagridRenderListener;
 import org.onetwo.common.web.view.jsp.datagrid.DataGridTag;
 import org.onetwo.common.web.view.jsp.grid.FieldTagBean;
@@ -37,11 +39,12 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 			return;
 		
 		WorkbookModel workbook = new WorkbookModel();
+		workbook.setFormat(PoiModel.FORMAT_XLSX);
 		workbook.addSheet(template);
 		JsonMapper jsonMapper = JsonMapper.ignoreEmpty()
 											.filter(ExcelUtils.JSON_FILTER_TEMPLATE, "multiSheet", "varName")
 											.filter(ExcelUtils.JSON_FILTER_ROW, "row", "title", "space", "span", "height")
-											.filter(ExcelUtils.JSON_FILTER_FIELD, "row", "parentRow", "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range", "colspan", "rowspan");
+											.filter(ExcelUtils.JSON_FILTER_FIELD, "row", "parentRow", "space", "height", "columnTotal", "rowTotal", "var", "rowField", "range", "rowspan");
 		String json = jsonMapper.toJson(workbook);
 //		tag.write("<input name=exporter type=hidden value='"+json+"'/>");
 		tagBean.setExportJsonTemplate(json);
@@ -63,9 +66,19 @@ public class DatagridExcelModelBuilder extends AbstractDatagridRenderListener {
 	private FieldModel buildField(FieldTagBean ft){
 		ExportableFieldTagBean fieldTag = (ExportableFieldTagBean)ft;
 		FieldModel field = new FieldModel();
-		field.setName(fieldTag.getName());
-		field.setValue(fieldTag.getExportValue());
+		if(!fieldTag.getExportValue().startsWith("#")){
+			field.setName(":"+fieldTag.getName());
+			
+		}else{
+			field.setName(fieldTag.getName());
+			field.setValue(fieldTag.getExportValue());
+			
+		}
 		field.setLabel(fieldTag.getLabel());
+		if(ft.getColspan()>1){
+			field.setColspan(String.valueOf(ft.getColspan()));
+		}
+		field.setDataFormat(ft.getDataFormat());
 		return field;
 	}
 	
