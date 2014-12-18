@@ -14,6 +14,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -91,6 +92,12 @@ public class WebHelper {
 	public String getQueryString(){
 		String qs = this.request.getQueryString();
 		return qs;
+	}
+	
+	public String getPureQueryString(){
+//		String qs = this.request.getQueryString();
+		CasualMap qsparam = TagUtils.processUrlSymbolAsCasualMap(request, ":qstr", null);
+		return qsparam.toParamString();
 	}
 	
 	public String getRequsetUriWithQueryString(){

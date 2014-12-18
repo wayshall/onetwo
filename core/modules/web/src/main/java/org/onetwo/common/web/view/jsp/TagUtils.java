@@ -187,9 +187,17 @@ final public class TagUtils {
 //		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");filter("aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM).
 		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
+	
+
+	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request) {
+		return filterCsrfParams(params, request, PreventorFactory.getCsrfPreventor());
+	}
 	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, RequestPreventor csrfPreventor) {
-		if(csrfPreventor!=null)
+		if(csrfPreventor!=null){
 			params.filter(csrfPreventor.getTokenFieldName());
+		}else{
+			params.filter(PreventorFactory.getCsrfPreventor().getTokenFieldName());
+		}
 		params.filter(PreventorFactory.getRepeateSubmitPreventor().getTokenFieldName());
 		return params;
 	}
@@ -241,7 +249,8 @@ final public class TagUtils {
 	public static CasualMap processUrlSymbolAsCasualMap(HttpServletRequest request, String symbol, RequestPreventor csrfPreventor) {
 		CasualMap params = null;
 		if (symbol.equals(":qstr")) {
-			params = filterPageParams(new CasualMap(request.getQueryString()));
+//			params = filterPageParams(new CasualMap(request.getQueryString()));
+			params = filterCsrfParams(filterPageParams(new CasualMap(request.getQueryString())), request);
 		} else if (symbol.equals(":post2get")) {
 			params = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor);
 		} else if (symbol.equals(":params")) {
