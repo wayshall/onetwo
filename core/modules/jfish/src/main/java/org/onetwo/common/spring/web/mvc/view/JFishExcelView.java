@@ -70,8 +70,9 @@ public class JFishExcelView extends AbstractUrlBasedView {
 //				String requestUri = JFishWebUtils.requestUri();
 				//WebUtils.extractFullFilenameFromUrlPath(requestUri)
 				
+				String format = "."+generator.getFormat();//.xlsx
 				response.setContentType(RESPONSE_CONTENT_TYPE); 
-				downloadFileName = (downloadFileName.endsWith("xls") || downloadFileName.endsWith("xlsx"))?downloadFileName:(downloadFileName+".xls");
+				downloadFileName = (downloadFileName.endsWith(".xls") || downloadFileName.endsWith(".xlsx"))?downloadFileName:(downloadFileName+format);
 				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
 
 				out = response.getOutputStream();
