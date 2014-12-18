@@ -111,6 +111,7 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		queue.setCurrentTimes(0);
 		queue.setTaskCreateTime(new Date());
 		queue.setLastExecTime(null);
+		queue.setId(null);
 		getBaseEntityManager().save(queue);
 	}
 }

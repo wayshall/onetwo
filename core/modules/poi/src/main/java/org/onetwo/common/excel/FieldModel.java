@@ -220,7 +220,9 @@ public class FieldModel implements PoiModel {
 	}
 
 	public boolean isRange(){
-		return this.rowspan != null || this.colspan != null;
+		//性能关键点。。。。。。。
+//		return this.rowspan != null   || this.colspan != null;
+		return (rowspanValue!=null && rowspanValue>1) || (colspanValue!=null && colspanValue>1);
 	}
 
 	public String getStyle() {
