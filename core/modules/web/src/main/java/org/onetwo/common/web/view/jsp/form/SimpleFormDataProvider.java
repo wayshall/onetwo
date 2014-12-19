@@ -27,7 +27,13 @@ public class SimpleFormDataProvider implements FormDataProvider {
 
 	@Override
 	public boolean isReadableProperty(String propertyName) {
-		return this.accessor.isReadableProperty(propertyName);
+		try {
+			return this.accessor!=null && this.accessor.isReadableProperty(propertyName);
+		} catch (Exception e) {
+//			e.printStackTrace();
+			logger.info("check ReadableProperty[{}] error : {}", propertyName, e.getMessage());
+		}
+		return false;
 	}
 
 	@Override
