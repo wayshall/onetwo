@@ -1,4 +1,4 @@
-package org.onetwo.groovy
+package org.onetwo.groovy.test
 
 import org.junit.Test
 
