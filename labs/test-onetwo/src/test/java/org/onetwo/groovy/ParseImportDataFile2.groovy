@@ -3,7 +3,8 @@ package org.onetwo.groovy
 import org.onetwo.common.utils.FileUtils;
 
 
-String basePath = "D:/mydev/workspace/onetwo/labs/test-onetwo/src/test/java/org/onetwo/groovy"
+//String basePath = "D:/mydev/workspace/onetwo/labs/test-onetwo/src/test/java/org/onetwo/groovy"
+String basePath = "D:/mydev/java/workspace/bitbucket/onetwo/labs/test-onetwo/src/test/java/org/onetwo/groovy"
 //this.getClass().getResource("").getPath()
 println "path:$basePath"
 File errorFile2 = new File("${basePath}/467-result-error-2.txt")
