@@ -73,6 +73,7 @@ public final class SqlTypeFactory {
 		types.put(Types.DATE, Date.class); 
 		types.put(Types.TIME, Date.class);
 		types.put(Types.TIMESTAMP, Date.class);
+		types.put(Types.BIT, boolean.class);
 		SQL_TYPE_TO_JAVA_TYPE = Collections.unmodifiableMap(types);
 		
 		
