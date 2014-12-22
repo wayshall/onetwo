@@ -12,6 +12,29 @@ public class WebConstant {
 		public static interface Password {}
 	}
 	
+	public static enum YesNo {
+		NO("否"),
+		YES("是");
+		
+		private final String name;
+
+		private YesNo(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+		
+		public int getValue(){
+			return ordinal();
+		}
+		
+		public boolean getBoolean(){
+			return ordinal()==1;
+		}
+		
+	}
 	
 	private WebConstant(){
 	}

@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.model.user.service.impl;
+package org.onetwo.plugins.admin.model.app.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,8 +7,8 @@ import javax.annotation.Resource;
 
 import org.hibernate.Hibernate;
 import org.onetwo.common.hibernate.HibernateCrudServiceImpl;
-import org.onetwo.plugins.admin.model.user.entity.AdminRoleEntity;
-import org.onetwo.plugins.admin.model.user.entity.AdminUserEntity;
+import org.onetwo.plugins.admin.model.app.entity.AdminRoleEntity;
+import org.onetwo.plugins.admin.model.app.entity.AdminUserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

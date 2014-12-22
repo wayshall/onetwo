@@ -3,6 +3,10 @@ package org.onetwo.plugins.admin;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.plugins.admin.controller.app.AppUserController;
+import org.onetwo.plugins.admin.controller.data.DictionaryController;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 
 	private static AdminWebPlugin instance;
@@ -25,10 +29,13 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 		boolean enable = AdminPlugin.getInstance().getConfig().isAdminIndexEnable();
 		logger.info("admin index enable: {}", enable);
 		if(enable)
-			annoClasses.add(AdminWebContext.class);
+			annoClasses.add(AdminIndexWebContext.class);
 		
 		if(AdminPlugin.getInstance().getConfig().isAdminModuleEnable()){
 			annoClasses.add(AdminAppWebContext.class);
+		}
+		if(AdminPlugin.getInstance().getConfig().isDataModuleEnable()){
+			annoClasses.add(DataWebContext.class);
 		}
 	}
 
@@ -40,6 +47,16 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 	@Override
 	public boolean registerMvcResources() {
 		return true;
+	}
+
+	@Configuration
+	@ComponentScan(basePackageClasses={AppUserController.class})
+	public static class AdminAppWebContext {
+	}
+
+	@Configuration
+	@ComponentScan(basePackageClasses={DictionaryController.class})
+	public static class DataWebContext {
 	}
 
 }

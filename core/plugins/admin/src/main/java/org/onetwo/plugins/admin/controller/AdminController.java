@@ -15,7 +15,7 @@ import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.admin.AdminPlugin;
-import org.onetwo.plugins.admin.model.user.service.MenuItemRegistry;
+import org.onetwo.plugins.admin.model.app.service.MenuItemRegistry;
 import org.onetwo.plugins.admin.model.vo.ExtMenuModel;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
 import org.springframework.web.bind.annotation.RequestMapping;
