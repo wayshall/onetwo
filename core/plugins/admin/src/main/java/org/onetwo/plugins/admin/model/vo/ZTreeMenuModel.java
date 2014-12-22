@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.plugins.admin.model.entity.AdminFunctionEntity;
-import org.onetwo.plugins.admin.model.entity.AdminMenuEntity;
-import org.onetwo.plugins.admin.model.entity.AdminPermissionEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminFunctionEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminMenuEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminPermissionEntity;
 import org.onetwo.plugins.permission.entity.IMenu;
 
 public class ZTreeMenuModel {
