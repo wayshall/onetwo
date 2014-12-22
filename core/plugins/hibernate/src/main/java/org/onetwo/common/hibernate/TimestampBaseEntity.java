@@ -14,8 +14,13 @@ import org.onetwo.common.utils.xml.jaxb.DateAdapter;
 @SuppressWarnings("serial")
 @MappedSuperclass
 abstract public class TimestampBaseEntity implements IBaseEntity {
-	
+
+	@Column(name="CREATE_TIME", updatable=false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createTime;
+	
+	@Column(name="LAST_UPDATE_TIME", insertable=false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdateTime;
 	
 	@Column(name="CREATE_TIME", updatable=false)
