@@ -6,12 +6,12 @@ import javax.annotation.Resource;
 
 import org.onetwo.plugins.admin.AdminModule.AppUser;
 import org.onetwo.plugins.admin.controller.AdminBaseController;
-import org.onetwo.plugins.admin.model.entity.AdminRoleEntity;
-import org.onetwo.plugins.admin.model.entity.AdminUserEntity;
-import org.onetwo.plugins.admin.model.entity.AdminUserEntity.UserStatus;
-import org.onetwo.plugins.admin.model.service.impl.AdminAppServiceImpl;
-import org.onetwo.plugins.admin.model.service.impl.AdminRoleServiceImpl;
-import org.onetwo.plugins.admin.model.service.impl.AdminUserServiceImpl;
+import org.onetwo.plugins.admin.model.user.entity.AdminRoleEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminUserEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminUserEntity.UserStatus;
+import org.onetwo.plugins.admin.model.user.service.impl.AdminAppServiceImpl;
+import org.onetwo.plugins.admin.model.user.service.impl.AdminRoleServiceImpl;
+import org.onetwo.plugins.admin.model.user.service.impl.AdminUserServiceImpl;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

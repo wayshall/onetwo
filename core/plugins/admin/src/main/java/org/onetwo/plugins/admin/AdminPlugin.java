@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.plugins.admin.model.AdminModelContext;
-import org.onetwo.plugins.admin.model.entity.AdminAppEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
 
 
