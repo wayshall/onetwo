@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.model.entity;
+package org.onetwo.plugins.admin.model.user.entity;
 
 import java.io.Serializable;
 
