@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.model.service.impl;
+package org.onetwo.plugins.admin.model.user.service.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.onetwo.common.fish.exception.JFishServiceException;
 import org.onetwo.common.hibernate.HibernateCrudServiceImpl;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.plugins.admin.model.entity.AdminPermissionEntity;
-import org.onetwo.plugins.admin.model.entity.AdminRoleEntity;
-import org.onetwo.plugins.admin.model.entity.AdminRoleEntity.RoleStatus;
+import org.onetwo.plugins.admin.model.user.entity.AdminPermissionEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminRoleEntity;
+import org.onetwo.plugins.admin.model.user.entity.AdminRoleEntity.RoleStatus;
 import org.onetwo.plugins.admin.utils.AdminErrorCodes;
 import org.onetwo.plugins.permission.entity.IPermission;
 import org.springframework.stereotype.Service;
