@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.controller;
+package org.onetwo.plugins.admin.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;

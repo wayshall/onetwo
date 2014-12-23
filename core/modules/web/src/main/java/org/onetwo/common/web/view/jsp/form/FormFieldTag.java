@@ -1,12 +1,19 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
@@ -15,6 +22,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	 */
 	private static final long serialVersionUID = -5324408407472195764L;
 	private FormFieldType type = FormFieldType.input;
+	private String typeString;
 	private boolean showErrorTag = true;
 	private String errorPath;
 //	private String render;
@@ -38,10 +46,26 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private boolean showLoadingText = true;
 
 //	private boolean ignoreField;
+	private final Map<String, FormFieldTypePopulater<? extends FormFieldTagBean>> pupulaterMap;
+	
+	public FormFieldTag(){
+		Map<String, FormFieldTypePopulater<? extends FormFieldTagBean>> temp = LangUtils.newHashMap();
+		List<FormFieldTypePopulater> populaters = SpringApplication.getInstance().getBeans(FormFieldTypePopulater.class);
+		for(FormFieldTypePopulater<? extends FormFieldTagBean> fp : populaters){
+			temp.put(fp.getFieldType(), fp);
+		}
+		pupulaterMap = ImmutableMap.copyOf(temp);
+	}
 	
 	
 	@Override
 	public FormFieldTagBean createComponent() {
+		if(type==FormFieldType.unknow){
+			FormFieldTypePopulater<? extends FormFieldTagBean> populater = this.pupulaterMap.get(typeString);
+			if(populater!=null){
+				return populater.createTagBean(this);
+			}
+		}
 		return FormUIFactory.createUIBean(type);
 	}
 	
@@ -86,6 +110,10 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 	
 			default:
+				FormFieldTypePopulater populater = this.pupulaterMap.get(typeString);
+				if(populater!=null){
+					populater.populateFieldComponent(this, component);
+				}
 				break;
 		}
 		
@@ -134,10 +162,14 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 
 	public void setType(String type) {
-		if(StringUtils.isBlank(type))
+		if(StringUtils.isBlank(type)){
 			this.type = FormFieldType.input;
-		else
-			this.type = FormFieldType.valueOf(type);
+		}else{
+			this.type = FormFieldType.of(type);
+			if(this.type==FormFieldType.unknow){
+				this.typeString = type;
+			}
+		}
 	}
 
 	/****
@@ -205,6 +237,45 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setShowLoadingText(boolean showLoadingText) {
 		this.showLoadingText = showLoadingText;
+	}
+
+
+	public String getItemLabel() {
+		return itemLabel;
+	}
+
+
+	public String getItemValue() {
+		return itemValue;
+	}
+
+
+	public String getEmptyOptionLabel() {
+		return emptyOptionLabel;
+	}
+
+
+	public String getErrorPath() {
+		return errorPath;
+	}
+
+
+	public Object getItems() {
+		return items;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+
+	public boolean isModelAttribute() {
+		return modelAttribute;
+	}
+
+
+	public String getTypeString() {
+		return typeString;
 	}
 
 }

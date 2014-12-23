@@ -915,8 +915,9 @@ public class ReflectUtils {
 	
 
 	public static void copyByPropNames(Object source, Object target, PropertyCopyer<String> copyer) {
-		if (source == null)
-			return;
+		/*if (source == null)
+			return;*/
+		Assert.notNull(source);
 		List<String> propNames = null;
 		if (target instanceof Map) {
 			propNames = getPropertiesName(source);
