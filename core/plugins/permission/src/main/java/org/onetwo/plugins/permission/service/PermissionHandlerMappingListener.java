@@ -37,8 +37,10 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 						continue;
 					
 					IPermission perm = this.permissionManagerImpl.getMenuInfoParser().getPermission(codeClass);
-					if(perm==null)
+					if(perm==null){
+//						System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
 						throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
+					}
 					if(IMenu.class.isInstance(perm)){
 						IMenu menu = (IMenu) perm;
 						String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();

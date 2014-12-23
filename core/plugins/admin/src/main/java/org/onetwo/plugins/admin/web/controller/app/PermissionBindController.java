@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.controller.app;
+package org.onetwo.plugins.admin.web.controller.app;
 
 
 import java.util.List;
@@ -11,12 +11,12 @@ import org.onetwo.common.utils.RoleIdDetail;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.plugins.admin.AdminModule.AppRole.AssignPermission;
-import org.onetwo.plugins.admin.controller.AdminBaseController;
 import org.onetwo.plugins.admin.model.app.entity.AdminPermissionEntity;
 import org.onetwo.plugins.admin.model.app.entity.AdminRoleEntity;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminAppServiceImpl;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminRoleServiceImpl;
 import org.onetwo.plugins.admin.model.vo.ZTreeMenuModel;
+import org.onetwo.plugins.admin.web.controller.AdminBaseController;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;

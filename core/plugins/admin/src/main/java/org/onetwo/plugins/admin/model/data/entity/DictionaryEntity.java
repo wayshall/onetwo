@@ -9,7 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.hibernate.TimestampBaseEntity;
 import org.onetwo.plugins.admin.utils.WebConstant;
 
@@ -28,17 +31,19 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 * 
 	 */
 	@Id
-	@GeneratedValue(strategy=GenerationType.TABLE)
+	@GeneratedValue(strategy=GenerationType.TABLE, generator="DictionaryEntityGenerator")
 	protected Long id;
   
 	/*****
 	 * 
 	 */
+	@NotBlank
 	protected String code;
   
 	/*****
 	 * 
 	 */
+	@NotBlank
 	protected String name;
   
 	/*****
@@ -61,16 +66,18 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 * 
 	 */
 	@Column(name="IS_VALID")
-	protected boolean valid;
+	protected Boolean valid = true;
   
 	/*****
 	 * 
 	 */
-	protected Integer sort;
+	@Digits(integer=5, fraction=0)
+	protected int sort;
   
 	/*****
 	 * 
 	 */
+	@Size(max=1000)
 	protected String remark;
   
   
@@ -153,11 +160,11 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 * 
 	 * @return
 	 */
-	public Integer getSort() {
+	public int getSort() {
 		return this.sort;
 	}
 	
-	public void setSort(Integer sort) {
+	public void setSort(int sort) {
 		this.sort = sort;
 	}
 	
@@ -173,15 +180,15 @@ public class DictionaryEntity extends TimestampBaseEntity {
 		this.remark = remark;
 	}
 	
-	
-	public boolean isValid() {
+	public void setValid(Boolean valid) {
+		this.valid = valid;
+	}
+
+	public Boolean getValid() {
 		return valid;
 	}
 
 
-	public void setValid(boolean valid) {
-		this.valid = valid;
-	}
 
 
 	public static enum DicType {
