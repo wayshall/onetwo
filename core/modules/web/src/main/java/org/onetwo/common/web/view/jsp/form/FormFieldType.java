@@ -22,6 +22,15 @@ public enum FormFieldType {
 	hidden,
 	button,
 	submit,
-	html;
+	html,
+	unknow;
 	
+	public static FormFieldType of(String type){
+		for(FormFieldType ftype: values()){
+			if(ftype.name().equalsIgnoreCase(type)){
+				return ftype;
+			}
+		}
+		return unknow;
+	}
 }

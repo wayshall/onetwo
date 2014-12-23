@@ -32,6 +32,12 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		/*try {
+			Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
+			RequestMapping ann = method.getAnnotation(RequestMapping.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
 		RequestMappingInfo info = super.getMappingForMethod(method, handlerType);
 		JFishPluginMeta plugin = pluginManager.getJFishPluginMetaOf(handlerType);
 		if(info!=null && plugin!=null){

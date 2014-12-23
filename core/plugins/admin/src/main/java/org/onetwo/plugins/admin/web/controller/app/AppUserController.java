@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.controller.app;
+package org.onetwo.plugins.admin.web.controller.app;
 
 
 import java.util.List;
@@ -11,7 +11,6 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.AdminModule.AppUser;
-import org.onetwo.plugins.admin.controller.AdminBaseController;
 import org.onetwo.plugins.admin.model.app.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.model.app.entity.AdminUserEntity;
 import org.onetwo.plugins.admin.model.app.entity.AdminUserEntity.UserGender;
@@ -21,6 +20,7 @@ import org.onetwo.plugins.admin.model.app.service.impl.AdminUserServiceImpl;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.Password;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
+import org.onetwo.plugins.admin.web.controller.AdminBaseController;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.springframework.stereotype.Controller;

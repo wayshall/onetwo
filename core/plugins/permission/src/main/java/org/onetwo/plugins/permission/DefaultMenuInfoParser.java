@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
@@ -20,9 +21,12 @@ import org.onetwo.plugins.permission.entity.IFunction;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.entity.IPermission;
 import org.onetwo.plugins.permission.entity.PermissionType;
+import org.slf4j.Logger;
 import org.springframework.core.type.classreading.MetadataReader;
 
 public class DefaultMenuInfoParser implements MenuInfoParser {
+	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
+	
 	private static final String CODE_SEPRATOR = "_";
 	public static final Class<?> ROOT_MENU_TAG = MenuInfoParser.class;
 
@@ -126,6 +130,8 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		} catch (Exception e) {
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
 		}
+		
+		//如果是function类型，忽略解释children
 		if(perm instanceof IFunction)
 			return (T)perm;
 		
@@ -133,6 +139,9 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
+			if(childCls.getName().startsWith("org.onetwo.plugins.admin.DataModule")){
+				System.out.println("DataModule: " + childCls);
+			}
 			PermClassParser childParser = getPermClassParser(childCls, parser.getPermissionClass(), true);
 //			childParser.setParentPermissionClass(parser.getPermissionClass());
 			IPermission p = parseMenuClass(childParser, syscode);
@@ -154,6 +163,9 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 			parser = PermClassParser.create(permissionClass);
 		}*/
 		Class<?> permissionClass = parser.getActualPermissionClass();//parser.getPermissionClass();
+		/*if(permissionClass.getName().contains("org.onetwo.plugins.admin.DataModule$DictModule$List")){
+			System.out.println("test");
+		}*/
 		
 		Number sort = parser.getSort();
 		if(sort==null){
@@ -206,7 +218,12 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 	*/
 	@Override
 	public String getCode(Class<?> menuClass){
-		String code = permissionMapByClass.get(menuClass).getCode();
+		IPermission p = permissionMapByClass.get(menuClass);
+		if(p==null){
+			logger.info("root: " + rootMenu);
+			throw new BaseException("no permission found : " + menuClass.getName());
+		}
+		String code = p.getCode();
 		if(StringUtils.isBlank(code))
 			throw new BaseException("no permission found : " + menuClass.getName());
 		return code;

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.plugins.permission.anno.MenuMapping;
@@ -91,7 +92,11 @@ public class PermClassParser {
 	public Class<?>[] getChildrenClasses(){
 		JFishList<Class<?>> list = JFishList.create();
 		Class<?>[] children =  isProxyMenu()?getProxyPermClass().getDeclaredClasses():permissionClass.getDeclaredClasses();
-		list.addArray(children).addArray(getChildren());
+		list.addArray(children);
+		Class<?>[] c = getChildren();
+		if(!LangUtils.isEmpty(c)){
+			list.addArray(c);
+		}
 		return list.toArray(new Class<?>[0]);
 	}
 	
