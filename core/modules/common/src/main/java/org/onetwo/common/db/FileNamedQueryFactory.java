@@ -20,7 +20,7 @@ public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 	 * 初始化
 	 * @param createQueryable
 	 */
-	public void initQeuryFactory(CreateQueryable createQueryable);
+	public void initQeuryFactory(QueryProvider createQueryable);
 	
 	public NamespacePropertiesManager<PT> getNamespacePropertiesManager();
 

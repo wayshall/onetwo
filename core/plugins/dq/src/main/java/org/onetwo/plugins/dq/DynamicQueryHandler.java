@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.onetwo.common.db.CreateQueryable;
+import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.SqlAndValues;
@@ -38,7 +38,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Cache methodCache;
-	private CreateQueryable em;
+	private QueryProvider em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
 	private boolean debug = true;
@@ -51,7 +51,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
 	}*/
 	
-	public DynamicQueryHandler(CreateQueryable em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvider em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;

@@ -177,9 +177,11 @@ public class DynamicMethod {
 		
 		QueryConfig queryConfig = method.getAnnotation(QueryConfig.class);
 		if(queryConfig!=null){
-			QueryConfigData config = new QueryConfigData();
+			QueryConfigData config = new QueryConfigData(queryConfig.statfull());
 			config.setLikeQueryFields(Arrays.asList(queryConfig.likeQueryFields()));
 			parserContext.setQueryConfig(config);
+		}else{
+			parserContext.setQueryConfig(QueryConfigData.EMPTY_CONFIG);
 		}
 
 		values.add(JNamedQueryKey.ParserContext);
