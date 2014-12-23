@@ -229,6 +229,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setModelAttribute(boolean modelAttribute) {
 		this.modelAttribute = modelAttribute;
+		if(this.modelAttribute==false)
+			this.setErrorTag("false");
 	}
 
 	public void setEmptyOptionLabel(String emptyOptionLabel) {

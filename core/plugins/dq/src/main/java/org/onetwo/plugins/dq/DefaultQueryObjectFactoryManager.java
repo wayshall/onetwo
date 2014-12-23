@@ -2,7 +2,7 @@ package org.onetwo.plugins.dq;
 
 import java.util.Collection;
 
-import org.onetwo.common.db.CreateQueryable;
+import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.exception.BaseException;
@@ -34,7 +34,7 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 	
 
 	@Override
-	public void onInitialized(CreateQueryable baseEntityManager, FileNamedQueryFactory<? extends NamespaceProperty> fq) {
+	public void onInitialized(QueryProvider baseEntityManager, FileNamedQueryFactory<? extends NamespaceProperty> fq) {
 		Assert.notNull(queryObjectFactory);
 		this.namespacePropertiesManager = fq.getNamespacePropertiesManager();
 		
@@ -53,7 +53,7 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 		
 		Class<?> dqInterface = null;
 		String beanName = null;
-		CreateQueryable cq = null;
+		QueryProvider cq = null;
 		for(PropertiesNamespaceInfo<NamespaceProperty> nsp : (Collection<PropertiesNamespaceInfo<NamespaceProperty>>)namespacelist){
 			if(nsp.isGlobal())
 				continue;
@@ -62,10 +62,10 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 			QueryCreator creator = dqInterface.getAnnotation(QueryCreator.class);
 			if(creator!=null){
 				Object cqbean = SpringUtils.getBean(applicationContext, creator.value());
-				if(!CreateQueryable.class.isInstance(cqbean)){
+				if(!QueryProvider.class.isInstance(cqbean)){
 					throw new BaseException("QueryCreator must be a instance of CreateQueryable : " + creator.value());
 				}
-				cq = (CreateQueryable) cqbean;
+				cq = (QueryProvider) cqbean;
 			}else{
 				cq = baseEntityManager;
 			}

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
-import org.onetwo.common.db.CreateQueryable;
+import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -32,7 +32,7 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 		}
 
 		@Override
-		public void initQeuryFactory(CreateQueryable em) {
+		public void initQeuryFactory(QueryProvider em) {
 			// TODO Auto-generated method stub
 			
 		}
