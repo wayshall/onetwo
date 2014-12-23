@@ -17,16 +17,18 @@
 		</li>
 	</@layout.override>
 	
-	<@widget.dataGrid name="diactionaryGrid" dataSource=page title="Dictionary列表" toolbar=true>
+	<@widget.dataGrid name="diactionaryGrid" dataSource=page title="字典类型列表" toolbar=true>
 		<@widget.dataRow name="entity" type="iterator" renderHeader=true>
 			<@widget.dataField name="ids" label="全选" render="checkbox" value="id"/>
 			<@widget.dataField name="code" label="代码"/>
 			<@widget.dataField name="name" label="名称"/>
-			<@widget.dataField name="isValid" label="是否有效"/>
+			<@widget.dataField name="value" label="值"/>
+			<@widget.dataField name="valid" label="是否有效"/>
 			<@widget.dataField name="sort" label="排序"/>
 			<@widget.dataField name="remark" label="备注"/>
 			<@widget.dataField name="operation" label="操作" render="html">
 				<a href="${pluginConfig.baseURL}/data/dictionary-type/${entity.id}/edit">编辑</a>
+				<a href="${pluginConfig.baseURL}/data/dictionary?typeId=${entity.id}">查看字典数据</a>
 			</@widget.dataField>
 		</@widget.dataRow>
 	</@widget.dataGrid>
