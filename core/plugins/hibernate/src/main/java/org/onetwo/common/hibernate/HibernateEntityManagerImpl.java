@@ -9,6 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.SharedSessionContract;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -24,7 +25,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
-public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
+public class HibernateEntityManagerImpl extends AbstractEntityManager implements HibernateQueryProvider, InitializingBean {
 
 	
 	protected final Logger logger = Logger.getLogger(this.getClass());
@@ -73,10 +74,23 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
-		SQLQuery query = getSession().createSQLQuery(sqlString);
+		/*SQLQuery query = getSession().createSQLQuery(sqlString);
+		if(entityClass!=null){
+			if(isResultMappedToSingleColumnTransformer(entityClass))
+				query.setResultTransformer(new SingleColumnTransformer(entityClass));
+			else
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+		}*/
+		DataQuery dquery = createSQLQuery(sqlString, entityClass, true);
+		return dquery;
+	}
+
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass, boolean stateless){
+		SharedSessionContract session = getSession(stateless);
+		SQLQuery query = session.createSQLQuery(sqlString);
 		if(entityClass!=null){
 			if(isResultMappedToSingleColumnTransformer(entityClass))
 				query.setResultTransformer(new SingleColumnTransformer(entityClass));
@@ -112,6 +126,11 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	public DataQuery createQuery(String ejbqlString){
 		DataQuery dquery = new HibernateQueryImpl(getSession().createQuery(ejbqlString));
+		return dquery;
+	}
+	
+	public DataQuery createQuery(String ejbqlString, boolean statful){
+		DataQuery dquery = new HibernateQueryImpl(getSession(statful).createQuery(ejbqlString));
 		return dquery;
 	}
 
@@ -194,6 +213,14 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	public Session getSession(){
 		return this.sessionFactory.getCurrentSession();
+	}
+	
+	public <T extends SharedSessionContract> T getSession(boolean statefull){
+		if(statefull){
+			return (T)this.sessionFactory.getCurrentSession();
+		}else{
+			return (T)this.sessionFactory.openStatelessSession();
+		}
 	}
 	
 	public EntityManagerProvider getEntityManagerProvider(){

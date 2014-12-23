@@ -15,11 +15,9 @@ import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity;
 import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity.DicType;
 import org.onetwo.plugins.admin.model.data.service.DictionaryService;
 import org.onetwo.plugins.admin.model.vo.DictTypeVo;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@Service
 public class DictionaryServiceImpl implements DictionaryService  {
 	
 	@Resource
@@ -80,7 +78,7 @@ public class DictionaryServiceImpl implements DictionaryService  {
 	}
 	
 	public List<DictionaryEntity> findByPrefixCode(String code){
-		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "code:like", code+"_");
+		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "code:like", code+"_", K.ASC, "sort");
 	}
 
 	/* (non-Javadoc)
