@@ -14,7 +14,7 @@ public @interface QueryConfig {
 	 * @return
 	 */
 	public String[] likeQueryFields() default {};
-	public boolean statfull() default true;
+	public boolean stateful() default true;
 	
 	
 }
