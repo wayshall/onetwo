@@ -138,6 +138,7 @@ public class FileUtils {
 		}
 	}
 
+	
 	public static InputStream newInputStream(String fpath){
 		InputStream in = null;
 		String path = replaceBackSlashToSlash(fpath);
@@ -660,6 +661,12 @@ public class FileUtils {
 		return destFile;
 	}
 	
+
+	public static File copyFile(String srcFile, String destFile) {
+		File dest = new File(destFile);
+		copyFile(new File(srcFile), dest);
+		return dest;
+	}
 
 	public static void copyFile(File srcFile, File destFile) {
 		Assert.notNull(srcFile);
@@ -1301,10 +1308,21 @@ public class FileUtils {
 		return zipfile;
 	}
 	
+	public static String getJavaIoTmpdir(){
+		return getJavaIoTmpdir(false);
+	}
+	
+	public static String getJavaIoTmpdir(boolean convert){
+		String dir = System.getProperty("java.io.tmpdir");
+		return convert?convertDir(dir):dir;
+	}
+	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";
 		System.out.println(getFileNameWithoutExt(file));
 		String file1 = "#path:/home/user/ccsfd.txt";
 		System.out.println(getResourcePath(file1));
+		System.out.println(System.getProperty("java.io.tmpdir"));
+		System.out.println(getJavaIoTmpdir());
 	}
 }
