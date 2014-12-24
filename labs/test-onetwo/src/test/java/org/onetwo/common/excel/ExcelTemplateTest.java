@@ -3,7 +3,6 @@ package org.onetwo.common.excel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.excel.etemplate.ETemplateContext;
@@ -65,7 +64,7 @@ public class ExcelTemplateTest {
 		
 		ExcelTemplateGenerator g = new ExcelTemplateGenerator(templatePath);
 		ETemplateContext context = new ETemplateContext();
-		context.put("year", NiceDate.New().getTime().getYear());
+		context.put("year", NiceDate.New().format("yyyy"));
 		context.put("now", NiceDate.New());
 		context.put("datalist", list);
 		g.generate(context, generatedPath);

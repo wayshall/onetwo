@@ -13,15 +13,45 @@ import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.ValueProvider;
 
 public class ExcelTemplateGenerator {
 	
 	final private String templatePath;
+//	private ExcelVisitor visitor;
+//	private List<ExcelObject> nodes;
+	private final Expression expression = Expression.DOLOR;
 
 	public ExcelTemplateGenerator(String templatePath) {
 		super();
 		this.templatePath = templatePath;
+	}
+	
+
+	public void parse(Cell cell, final ExcelTemplateValueProvider provider, String generatedPath){
+		Object cellValue = ExcelUtils.getCellValue(cell);
+		if(cellValue==null)
+			return ;
+		System.out.println("cellvalue:" + cellValue);
+		if(expression.isExpresstion(cellValue.toString())){
+			final String text = expression.parseByProvider(cellValue.toString(), provider);
+			System.out.println("parse:" + text);
+		}
+	}
+
+	public void parse(Row row, final ExcelTemplateValueProvider provider, String generatedPath){
+		int cellNumbs = row.getPhysicalNumberOfCells();
+		for (int cellIndex = 0; cellIndex < cellNumbs; cellIndex++) {
+			Cell cell = row.getCell(cellIndex);
+			parse(cell, provider, generatedPath);
+		}
+	}
+
+	public void parse(Sheet sheet, final ExcelTemplateValueProvider provider, String generatedPath){
+		int rowNumbs = sheet.getPhysicalNumberOfRows();
+		for (int rowIndex = 0; rowIndex < rowNumbs; rowIndex++) {
+			Row row = sheet.getRow(rowIndex);
+			parse(row, provider, generatedPath);
+		}
 	}
 	
 	public void generate(final ETemplateContext context, String generatedPath){
@@ -30,29 +60,11 @@ public class ExcelTemplateGenerator {
 		
 		Workbook wb = readExcelTemplate(destFile);
 		int sheetNumbs = wb.getNumberOfSheets();
+		
+		ExcelTemplateValueProvider provider = new ExcelTemplateValueProvider(context);
 		for (int index = 0; index < sheetNumbs; index++) {
 			Sheet sheet = wb.getSheetAt(index);
-			int rowNumbs = sheet.getPhysicalNumberOfRows();
-			for (int rowIndex = 0; rowIndex < rowNumbs; rowIndex++) {
-				Row row = sheet.getRow(rowIndex);
-				int cellNumbs = row.getPhysicalNumberOfCells();
-				for (int cellIndex = 0; cellIndex < cellNumbs; cellIndex++) {
-					Cell cell = row.getCell(cellIndex);
-					Object cellValue = ExcelUtils.getCellValue(cell);
-					if(Expression.DOLOR.isExpresstion(cellValue.toString())){
-						Expression.DOLOR.parseByProvider(cellValue.toString(), new ValueProvider() {
-							
-							@Override
-							public String findString(String var) {
-								Object val = context.get(var);
-								return val==null?"":val.toString();
-							}
-						});
-					}
-						
-					System.out.println("cellvalue:" + cellValue);
-				}
-			}
+			parse(sheet, provider, generatedPath);
 		}
 	}
 	
