@@ -12,12 +12,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class DefaultPOIExcelReader implements ExcelReader {
@@ -127,7 +125,7 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	}*/
 	
 	protected Workbook createWorkbook(InputStream in){
-		Workbook workbook = null;
+		/*Workbook workbook = null;
 		try {
 //			br.mark(1024*10);
 			workbook = WorkbookFactory.create(in);
@@ -138,7 +136,8 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		}finally{
 			IOUtils.closeQuietly(in);
 		}
-		return workbook;
+		return workbook;*/
+		return ExcelUtils.createWorkbook(in);
 	}
 	
 	protected List<?> mapRow(Sheet sheet, int sheetIndex, SSFRowMapper<?> mapper){
