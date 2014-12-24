@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import ognl.Ognl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -249,6 +250,21 @@ abstract public class ExcelUtils {
 			logger.warn("get formual cell value["+cell.getRowIndex()+", "+ cell.getColumnIndex()+"] error : " + e.getMessage());
 			return null;
 		}
+	}
+	
+	public static Workbook createWorkbook(InputStream in){
+		Workbook workbook = null;
+		try {
+//			br.mark(1024*10);
+			workbook = WorkbookFactory.create(in);
+		} catch (ServiceException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new BaseException("read excel inputstream error : " + in, e);
+		}finally{
+			IOUtils.closeQuietly(in);
+		}
+		return workbook;
 	}
 	
 }
