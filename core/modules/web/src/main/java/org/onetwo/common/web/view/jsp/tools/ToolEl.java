@@ -31,6 +31,15 @@ final public class ToolEl {
 	public static String format(Date date, String pattern){
 		return DateUtil.formatDateByPattern(date, pattern);
 	}
+
+	
+	public String year(Date date){
+		return DateUtil.format("yyyy", date);
+	}
+	
+	public String month(Date date){
+		return DateUtil.format("MM", date);
+	}
 	
 	public static String asDateTime(Date date){
 		return DateUtil.formatDateTime(date);

@@ -76,7 +76,8 @@ public class DefaultXmlTemplateExcelFacotory extends AbstractWorkbookTemplateFac
 
 	@Override
 	public boolean checkTemplate(String template) {
-		return getResource(template)!=null;
+		Resource res = getResource(template);
+		return res!=null && res.exists();
 	}
 
 	public Resource getResource(String template) {
