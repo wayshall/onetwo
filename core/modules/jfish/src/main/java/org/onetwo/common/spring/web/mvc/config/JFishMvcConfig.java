@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.excel.ExcelTemplateExcelViewResolver;
 import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
 import org.onetwo.common.excel.view.jsp.DatagridExcelModelBuilder;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
@@ -38,6 +39,7 @@ import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.log.AccessLogger;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
+import org.onetwo.common.spring.web.mvc.view.JFishExcelTemplateView;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.spring.web.mvc.view.JsonView;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
@@ -294,6 +296,13 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		resolver.setViewClass(JsonExcelView.class);
 		return resolver;
 	}
+	
+	@Bean
+	public ExcelTemplateExcelViewResolver excelTemplateResolver(){
+		ExcelTemplateExcelViewResolver resolver = new ExcelTemplateExcelViewResolver();
+		resolver.setViewClass(JFishExcelTemplateView.class);
+		return resolver;
+	}
 
 	@Bean
 	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
@@ -344,7 +353,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean
-	public ViewResolver contentNegotiatingViewResolver() {
+	//dispecher
+//	public ViewResolver contentNegotiatingViewResolver() {
+	public ViewResolver viewResolver() {
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
 		viewResolver.setUseNotAcceptableStatusCode(true);
 		viewResolver.setOrder(0);
