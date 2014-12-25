@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -301,13 +302,17 @@ public final class JFishWebUtils {
 		return getDownloadFileName(request(), model, defaultFileName);
 	}
 	
-	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName) throws Exception{
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName){
 		String downloadFileName = request.getParameter("fileName");
 		if(StringUtils.isBlank(downloadFileName)){
 			//在model里的，由用户自己转码
 			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
 		}else{
-			downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+			try {
+				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+			} catch (Exception e) {
+				throw new BaseException("get down file name error: " +e.getMessage());
+			}
 		}
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;

@@ -1,12 +1,10 @@
-package org.onetwo.common.excel;
+package org.onetwo.common.excel.etemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.excel.etemplate.ETemplateContext;
-import org.onetwo.common.excel.etemplate.ExcelTemplateGenerator;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.NiceDate;
 
@@ -67,6 +65,7 @@ public class ExcelTemplateTest {
 		context.put("year", NiceDate.New().format("yyyy"));
 		context.put("now", NiceDate.New());
 		context.put("datalist", list);
+		context.put("totalLabel", "合计");
 		g.generate(context, generatedPath);
 	}
 	

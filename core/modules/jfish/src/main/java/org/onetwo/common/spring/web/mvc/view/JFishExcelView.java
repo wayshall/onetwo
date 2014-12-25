@@ -13,12 +13,9 @@ import org.onetwo.common.exception.SystemErrorCode.ServiceErrorCode;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.slf4j.Logger;
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 /***
  * 为了避免与jasper冲突，foarmt为jfxls
@@ -26,25 +23,16 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
  * @author weishao
  *
  */
-public class JFishExcelView extends AbstractUrlBasedView {
-	private static final Logger logger = MyLoggerFactory.getLogger(JFishExcelView.class);
+public class JFishExcelView extends AbstractJFishExcelView {
 	
-	public static final String FILENAME_KEY = "fileName";
 	public static final String TEMPLATE_SUFFIX = ".xml";
-	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=GBK";
-	public static final String DEFAULT_CONTENT_TYPE = "application/jfxls";//
 	
 	private XmlTemplateGeneratorFactory xmlTemplateExcelFactory;
 
-	private String fileName;
-	private String suffix = TEMPLATE_SUFFIX;
-	
 	public JFishExcelView(){
+		this.setSuffix(TEMPLATE_SUFFIX);
 	}
 	
-	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model) throws Exception{
-		return JFishWebUtils.getDownloadFileName(request, model, fileName);
-	}
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -71,9 +59,10 @@ public class JFishExcelView extends AbstractUrlBasedView {
 				//WebUtils.extractFullFilenameFromUrlPath(requestUri)
 				
 				String format = "."+generator.getFormat();//.xlsx
-				response.setContentType(RESPONSE_CONTENT_TYPE); 
 				downloadFileName = (downloadFileName.endsWith(".xls") || downloadFileName.endsWith(".xlsx"))?downloadFileName:(downloadFileName+format);
-				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
+//				response.setContentType(RESPONSE_CONTENT_TYPE); 
+//				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
+				this.setReponseHeader(downloadFileName, request, response);
 
 				out = response.getOutputStream();
 				generator.generateIt();
@@ -104,36 +93,7 @@ public class JFishExcelView extends AbstractUrlBasedView {
 		String template = getTemplatePath();
 		return this.xmlTemplateExcelFactory.create(template.toString(), model);
 	}
-	
-	protected String getTemplatePath(){
-		String template = getUrl();
-		if(template==null)
-			throw new JFishException("you must set a template in the model.");
-		if(!template.endsWith(getSuffix())){
-			template += getSuffix();
-		}
-		return template;
-	}
 
-	public String getContentType() {
-		return DEFAULT_CONTENT_TYPE;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public String getSuffix() {
-		return suffix;
-	}
-
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
 
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
