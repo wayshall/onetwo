@@ -16,6 +16,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class JFishDispatcher extends DispatcherServlet {
 	
 	private JFishPluginManager jfishPluginManager;
+	
+	public JFishDispatcher(){
+		setDetectAllViewResolvers(false);
+	}
 
 	protected WebApplicationContext initWebApplicationContext() {
 
