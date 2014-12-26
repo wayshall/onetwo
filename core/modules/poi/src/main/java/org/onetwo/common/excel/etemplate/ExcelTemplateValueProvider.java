@@ -19,7 +19,7 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 	
 	final private ETemplateContext templateContext;
 	private List<CellRangeAddress> cellRangeList;
-	private boolean debug = true;
+	private boolean debug = false;
 	private final Expression expression = Expression.DOLOR;
 	
 	public ExcelTemplateValueProvider(ETemplateContext context) {
