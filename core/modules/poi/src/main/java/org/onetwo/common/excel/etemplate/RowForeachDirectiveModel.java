@@ -10,6 +10,7 @@ public class RowForeachDirectiveModel {
 	final private String directiveStart;
 	final private String dataSource;
 	final private String itemVar;
+	private String indexVar;
 	private Row startRow;
 	private List<ForeachRowInfo> matchRows = LangUtils.newArrayList();
 	private Row endRow;
@@ -62,6 +63,16 @@ public class RowForeachDirectiveModel {
 		this.directiveEnd = directiveEnd;
 	}
 	
+	public String getIndexVar() {
+		return indexVar;
+	}
+
+	public void setIndexVar(String indexVar) {
+		this.indexVar = indexVar;
+	}
+
+
+
 	public static class ForeachRowInfo {
 		final private int originRownum;
 		final private Row row;

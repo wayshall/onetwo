@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 
 public class RowForeachDirective {
 		
-	public final static Pattern PATTERN_START = Pattern.compile("^(?i)\\[row:list\\s+([#]?[\\w]+)\\s+as\\s+(\\w+)\\s*\\]$");
+	public final static Pattern PATTERN_START = Pattern.compile("^(?i)\\[row:list\\s+([#]?[\\w]+)\\s+as\\s+(\\w+)\\s*(,\\s*([\\w]+)\\s*)?\\]$");
 	public final static Pattern PATTERN_END = Pattern.compile("^(?i)\\[/row:list\\s*\\]$");
 	
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
@@ -58,6 +58,9 @@ public class RowForeachDirective {
 			return null;
 		}
 		RowForeachDirectiveModel model = new RowForeachDirectiveModel(text, matcher.group(1), matcher.group(2));
+		if(matcher.groupCount()>=4){
+			model.setIndexVar(matcher.group(4));
+		}
 		return model;
 	}
 	
@@ -127,9 +130,13 @@ public class RowForeachDirective {
 		int rownumb = forModel.getStartRow().getRowNum();
 		//add row space
 		ExcelUtils.addRow(sheet, rownumb, datalist.size());
+		int dataIndex = 0;
+
+		ETemplateContext templateContext = provider.getTemplateContext();
+		//TODO 覆盖了外部变量，以后修改
 		for(Object data : datalist){
-			ETemplateContext templateContext = provider.getTemplateContext();
 			templateContext.put(forModel.getItemVar(), data);
+			templateContext.put(forModel.getIndexVar(), dataIndex);
 			try {
 				for(ForeachRowInfo repeateRow : foreachRows){
 					if(provider.isDebug()){
@@ -142,7 +149,9 @@ public class RowForeachDirective {
 			} finally{
 				//clear
 				templateContext.remove(forModel.getItemVar());
+				templateContext.remove(forModel.getIndexVar());
 			}
+			dataIndex++;
 		}
 
 		//插入的数据行数大于指令的行数时，才移除指令行和cellrange
