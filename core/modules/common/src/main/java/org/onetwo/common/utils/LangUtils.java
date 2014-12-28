@@ -57,7 +57,9 @@ public class LangUtils {
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
-	public static final Class[] Empty_CLASSES = new Class[0];;
+	public static final Class[] Empty_CLASSES = new Class[0];
+	
+	public static DecimalFormat DF_TWO_SCALE = new DecimalFormat("0.00");
 	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 
@@ -1527,6 +1529,15 @@ public class LangUtils {
 			actualValue = value;
 		}
 		return actualValue;
+	}
+
+	public static String format(Number num, String pattern) {
+		NumberFormat format = new DecimalFormat(pattern);
+		return format.format(num);
+	}
+	
+	public static String format(Number num) {
+		return DF_TWO_SCALE.format(num);
 	}
 
 	/*****
