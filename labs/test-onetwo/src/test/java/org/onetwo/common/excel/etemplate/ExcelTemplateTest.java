@@ -2,6 +2,7 @@ package org.onetwo.common.excel.etemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ public class ExcelTemplateTest {
 		private Long id;
 		private String line;
 		private String linename;
+		private double money;
 		public Long getId() {
 			return id;
 		}
@@ -32,7 +34,12 @@ public class ExcelTemplateTest {
 		public void setLinename(String linename) {
 			this.linename = linename;
 		}
-		
+		public double getMoney() {
+			return money;
+		}
+		public void setMoney(double money) {
+			this.money = money;
+		}
 		
 	}
 
@@ -49,6 +56,7 @@ public class ExcelTemplateTest {
 			city.setId(Long.valueOf(i));
 			city.setLine("line-"+i);
 			city.setLinename("linename"+i);
+			city.setMoney(new Random().nextDouble()*10000);
 			
 			list.add(city);
 		}
