@@ -1,6 +1,5 @@
 package org.onetwo.common.utils;
 
-import org.onetwo.common.utils.UserDetail;
 
 public interface SessionStorer {
 
@@ -8,4 +7,7 @@ public interface SessionStorer {
 
 	public UserDetail getUser(String sessionKey);
 	public UserDetail removeUser(String sessionKey);
+	
+	public void put(String key, Object value);
+	public <T> T get(String key);
 }
