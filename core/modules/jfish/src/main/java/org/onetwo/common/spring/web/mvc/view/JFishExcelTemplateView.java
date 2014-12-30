@@ -67,7 +67,7 @@ public class JFishExcelTemplateView extends AbstractJFishExcelView {
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
 		Resource template = getTemplateResource();
-		return template!=null;
+		return template!=null && template.exists();
 	}
 	
 	public Resource getTemplateResource(){
