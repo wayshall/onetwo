@@ -34,7 +34,7 @@ public class AdminController extends PluginSupportedController {
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView ext(String theme, UserDetail userDetail){
 		if(StringUtils.isBlank(theme))
-			theme = "neptune";
+			theme = config.getTheme();
 		
 		Collection<ExtMenuModel> menus = null;
 		
