@@ -22,7 +22,7 @@ public class MemorySessionStorer implements SessionStorer {
 	private static final Logger logger = MyLoggerFactory.getLogger(MemorySessionStorer.class);
 	
 //	private Map<String, UserDetail> users = LangUtils.newHashMap();
-	private Cache<String, UserDetail> users;
+	private Cache<String, Object> datas;
 
 	@Resource
 	private SsoServerConfig ssoServerConfig;
@@ -33,15 +33,15 @@ public class MemorySessionStorer implements SessionStorer {
 	@PostConstruct
 	public void init(){
 		long timeout = ssoServerConfig.getTimeout();
-		users = CacheBuilder.newBuilder()
+		datas = CacheBuilder.newBuilder()
 		.expireAfterAccess(timeout, TimeUnit.MINUTES)
 //		.expireAfterWrite(timeout, TimeUnit.SECONDS)
 		//TODO don't work
-		.removalListener(new RemovalListener<String, UserDetail>(){
+		.removalListener(new RemovalListener<String, Object>(){
 
 			@Override
-			public void onRemoval(RemovalNotification<String, UserDetail> notification) {
-				logger.info("====>>user[{}] has remove..", notification.getValue().getUserId());
+			public void onRemoval(RemovalNotification<String, Object> notification) {
+				logger.info("====>>user[{}] has remove..", notification.getValue());
 			}
 			
 		})
@@ -50,12 +50,12 @@ public class MemorySessionStorer implements SessionStorer {
 	
 	public void addUser(String token, UserDetail userDetail){
 		Assert.notNull(token);
-		users.put(token, userDetail);
+		datas.put(token, userDetail);
 	}
 
 	@Override
 	public UserDetail getUser(String token) {
-		return token==null?null:users.getIfPresent(token);
+		return (UserDetail) (token==null?null:datas.getIfPresent(token));
 	}
 
 	@Override
@@ -64,8 +64,18 @@ public class MemorySessionStorer implements SessionStorer {
 			return null;
 		UserDetail user = getUser(token);
 		if(user!=null)
-			users.invalidate(token);
+			datas.invalidate(token);
 		return user;
+	}
+
+	@Override
+	public void put(String key, Object value) {
+		datas.put(key, value);
+	}
+
+	@Override
+	public <T> T get(String key) {
+		return (T) datas.getIfPresent(key);
 	}
 	
 }
