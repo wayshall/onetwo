@@ -45,7 +45,7 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedI
 	
 	protected DataQuery createDataQuery(String sql, Class<?> mappedClass){
 		DataQuery dataQuery = null;
-		boolean statfull = this.parserContext.getQueryConfig().isStatful();
+		boolean statfull = this.getParserContext().getQueryConfig().isStatful();
 		if(info.isHql()){
 			dataQuery = getHibernateQueryProvider().createQuery(sql, statfull);
 		}else{
