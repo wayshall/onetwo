@@ -36,7 +36,8 @@ public class ParserContext implements Map<Object, Object> {
 	}
 	
 	public QueryConfigData getQueryConfig(){
-		return (QueryConfigData)context.get(QUERY_CONFIG);
+		QueryConfigData  config = (QueryConfigData)context.get(QUERY_CONFIG);
+		return config==null?QueryConfigData.EMPTY_CONFIG:config;
 	}
 	public int size() {
 		return context.size();
