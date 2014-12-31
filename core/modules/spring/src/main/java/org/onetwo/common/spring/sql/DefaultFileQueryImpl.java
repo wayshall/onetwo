@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.AbstractDataQuery;
-import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.spring.SpringUtils;
@@ -37,7 +37,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	
 	protected T info;
 	private FileSqlParser<T> parser;
-	protected ParserContext parserContext;
+	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
@@ -72,7 +72,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	}
 	
 	protected DataQuery createDataQueryIfNecessarry(){
-		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, parserContext, resultClass, ascFields, desFields, params);
+		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
 		SqlAndValues sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
 			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
@@ -262,6 +262,13 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 
 	public void setParserContext(ParserContext parserContext) {
 		this.parserContext = parserContext;
+	}
+
+	public ParserContext getParserContext() {
+		if(parserContext==null){
+			parserContext = ParserContext.create();
+		}
+		return parserContext;
 	}
 
 }
