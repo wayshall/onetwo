@@ -102,4 +102,5 @@ public class DateIntervalTest {
 		System.out.println("intervalDates: " +LangUtils.toString(intervalDates));
 		Assert.assertEquals(2, intervalDates.size());
 	}
+	
 }
