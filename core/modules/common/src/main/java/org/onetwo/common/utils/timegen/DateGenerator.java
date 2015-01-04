@@ -1,8 +1,9 @@
-package org.onetwo.common.timegen;
+package org.onetwo.common.utils.timegen;
 
 import java.util.Collection;
 
-import org.onetwo.common.timegen.TimeRule.RuleType;
+import org.onetwo.common.utils.DateRange;
+import org.onetwo.common.utils.timegen.TimeRule.RuleType;
 
 public interface DateGenerator {
 	public RuleType getRuleType();
