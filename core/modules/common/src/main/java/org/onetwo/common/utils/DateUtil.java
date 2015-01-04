@@ -4,10 +4,15 @@ import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
@@ -24,8 +29,10 @@ abstract public class DateUtil {
 	private static final Logger logger = MyLoggerFactory.getLogger(DateUtil.class);
 	public static enum DateType {
 
-		year(Calendar.YEAR), month(Calendar.MONTH), date(Calendar.DATE), hour(
-				Calendar.HOUR_OF_DAY), min(Calendar.MINUTE), sec(
+		year(Calendar.YEAR), month(Calendar.MONTH), 
+			//dateOfWeek(Calendar.DAY_OF_WEEK), 
+			date(Calendar.DATE), 
+		hour(Calendar.HOUR_OF_DAY), min(Calendar.MINUTE), sec(
 				Calendar.SECOND), misec(Calendar.MILLISECOND);
 
 		private int field;
@@ -808,6 +815,29 @@ abstract public class DateUtil {
 		}else{
 			return null;
 		}
+	}
+	
+
+	public static Collection<DateRange> splitAsWeekInterval(Date startDate, Date endDate){
+		LocalDate start = new LocalDate(startDate);
+		LocalDate end = new LocalDate(endDate);
+		return splitAsWeekInterval(start, end);
+	}
+	public static Collection<DateRange> splitAsWeekInterval(LocalDate start, LocalDate end){
+		
+		Set<DateRange> dates = new LinkedHashSet<DateRange>();
+		dates.add(new DateRange(start, start.withDayOfWeek(DateTimeConstants.SUNDAY)));
+		
+		LocalDate startDateOfWeek = start.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1);
+		while(!startDateOfWeek.isAfter(end)){
+			LocalDate endDateOfWeek = startDateOfWeek.withDayOfWeek(DateTimeConstants.SUNDAY);
+			if(endDateOfWeek.isAfter(end)){
+				endDateOfWeek = end;
+			}
+			dates.add(new DateRange(startDateOfWeek, endDateOfWeek));
+			startDateOfWeek = startDateOfWeek.plusWeeks(1);
+		}
+		return dates;
 	}
 
 	public static void main(String[] args) {

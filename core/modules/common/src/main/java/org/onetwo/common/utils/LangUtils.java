@@ -811,7 +811,7 @@ public class LangUtils {
 	public static String repeatString(int count, String op) {
 		if(count<1)
 			return "";
-		StringBuilder str = new StringBuilder();
+		StringBuilder str = new StringBuilder(count*op.length());
 		for(int i=0; i<count; i++){
 			str.append(op);
 		}
@@ -831,6 +831,24 @@ public class LangUtils {
 				if(str==null || StringUtils.isBlank(str.toString()))
 					continue;
 			}
+			sb.append(str);
+		}
+		return sb.toString();
+	}
+	
+	public static String strings(String... strings) {
+		if (strings == null || strings.length == 0)
+			return "";
+		int size = 0;
+		for(String str : strings){
+			if(str==null)
+				continue;
+			size += str.length();
+		}
+		StringBuilder sb = new StringBuilder(size);
+		for (String str : strings){
+			if(str==null)
+				continue;
 			sb.append(str);
 		}
 		return sb.toString();
