@@ -32,6 +32,11 @@ public class DateIntervalTest {
 		List<Date> months = interval.splitMonth();
 		Assert.assertEquals(2, months.size());
 		Assert.assertEquals("2014-09", NiceDate.New(months.get(0)).format("yyyy-MM"));
+		
+		/*interval = DateInterval.in("2015-01-0", "2015-01-31");
+		List<Date> months = interval.splitMonth();
+		Assert.assertEquals(2, months.size());
+		Assert.assertEquals("2014-09", NiceDate.New(months.get(0)).format("yyyy-MM"));*/
 	}
 
 	@Test
