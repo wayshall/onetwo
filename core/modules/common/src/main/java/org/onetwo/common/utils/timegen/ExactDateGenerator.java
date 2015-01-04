@@ -1,9 +1,10 @@
-package org.onetwo.common.timegen;
+package org.onetwo.common.utils.timegen;
 
 import java.util.List;
 
-import org.onetwo.common.timegen.TimeRule.RuleType;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.DateRange;
+import org.onetwo.common.utils.timegen.TimeRule.RuleType;
 
 import com.google.common.collect.ImmutableList;
 
