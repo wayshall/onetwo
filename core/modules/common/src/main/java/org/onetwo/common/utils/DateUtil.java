@@ -818,12 +818,12 @@ abstract public class DateUtil {
 	}
 	
 
-	public static Collection<DateRange> splitAsWeekInterval(Date startDate, Date endDate){
+	public static Collection<DateRange> splitAsDateRangeByWeek(Date startDate, Date endDate){
 		LocalDate start = new LocalDate(startDate);
 		LocalDate end = new LocalDate(endDate);
-		return splitAsWeekInterval(start, end);
+		return splitAsDateRangeByWeek(start, end);
 	}
-	public static Collection<DateRange> splitAsWeekInterval(LocalDate start, LocalDate end){
+	public static Collection<DateRange> splitAsDateRangeByWeek(LocalDate start, LocalDate end){
 		
 		Set<DateRange> dates = new LinkedHashSet<DateRange>();
 		dates.add(new DateRange(start, start.withDayOfWeek(DateTimeConstants.SUNDAY)));
@@ -836,6 +836,30 @@ abstract public class DateUtil {
 			}
 			dates.add(new DateRange(startDateOfWeek, endDateOfWeek));
 			startDateOfWeek = startDateOfWeek.plusWeeks(1);
+		}
+		return dates;
+	}
+
+
+	public static Collection<DateRange> splitAsDateRangeByMonth(Date startDate, Date endDate){
+		LocalDate start = new LocalDate(startDate);
+		LocalDate end = new LocalDate(endDate);
+		return splitAsDateRangeByMonth(start, end);
+	}
+	public static Collection<DateRange> splitAsDateRangeByMonth(LocalDate start, LocalDate end){
+		
+		Set<DateRange> dates = new LinkedHashSet<DateRange>();
+		dates.add(new DateRange(start, start.withDayOfMonth(start.dayOfMonth().getMaximumValue())));
+		
+		LocalDate startDateOfMonth = start.withDayOfMonth(start.dayOfMonth().getMinimumValue()).plusMonths(1);
+		while(!startDateOfMonth.isAfter(end)){
+			LocalDate endDateOfWeek = startDateOfMonth.withDayOfMonth(startDateOfMonth.dayOfMonth().getMaximumValue());
+			if(endDateOfWeek.isAfter(end)){
+				endDateOfWeek = end;
+			}
+			DateRange dr = new DateRange(startDateOfMonth, endDateOfWeek);
+			dates.add(dr);
+			startDateOfMonth = startDateOfMonth.plusMonths(1);
 		}
 		return dates;
 	}
