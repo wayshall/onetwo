@@ -51,7 +51,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String TIME_PROFILER = "time.profiler";
 	public static final String LOG_OPERATION = "log.operation";
 
-	public static final String SAFE_REQUEST = "safe.request";
+	public static final String SAFE_REQUEST = "safe.request";//csrf
+	public static final String PREVENT_XSS_REQUEST = "prevent.xss.request";//xss
 	public static final String PREVENT_REPEATE_SUBMIT = "prevent.repeate.sbumit";
 	/***
 	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
@@ -336,6 +337,14 @@ public class BaseSiteConfig extends AppConfig {
 	}
 	public boolean isPreventRepeateSubmit(){
 		return getBoolean(PREVENT_REPEATE_SUBMIT, false);
+	}
+	/***
+	 * default is false
+	 * no wrap request
+	 * @return
+	 */
+	public boolean isPreventXssRequest(){
+		return getBoolean(PREVENT_XSS_REQUEST, false);
 	}
 	/***
 	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
