@@ -19,7 +19,11 @@ public interface DictionaryService {
 	 * @return
 	 */
 	public DictionaryEntity findByCode(String code);
+	public DictionaryEntity getData(String value, String typeCode);
 	public List<DictionaryEntity> findDataByTypeCode(String code);
+	
+	
+	
 	public int importDatas(List<DictTypeVo> datas);
 	public DictionaryEntity findById(Long id);
 
