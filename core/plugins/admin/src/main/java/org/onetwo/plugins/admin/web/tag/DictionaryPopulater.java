@@ -36,7 +36,7 @@ public class DictionaryPopulater implements FormFieldTypePopulater<FormItemsTagB
 		itemsBean.setEmptyOptionLabel(tag.getEmptyOptionLabel());
 		
 		String typeCode = tag.getItems().toString();
-		List<DictionaryEntity> dicts = dictionaryService.findByPrefixCode(typeCode);
+		List<DictionaryEntity> dicts = dictionaryService.findDataByPrefixCode(typeCode);
 		itemsBean.setItemDatas(dicts);
 	}
 	

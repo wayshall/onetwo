@@ -275,6 +275,7 @@ var Common = function () {
 			var remote = eval($(link).attr('remote'));
 			var ajaxInst = null;
 			var form = null;
+			var dformName = link.attr('data-form');
 			
 			if(remote && remote==true){
 				var ajaxName = $(link).attr('ajaxName');
@@ -288,7 +289,7 @@ var Common = function () {
 				ajaxAnywhere.getZonesToReload = function() {
 					return ajaxName;
 				}
-				if(method && method.toLowerCase()=='get'){
+				if(!dformName && method && method.toLowerCase()=='get'){
 					ajaxInst.getAJAX(href);
 					return false;
 				}
@@ -301,11 +302,10 @@ var Common = function () {
 			}
 
 			var metadata_input = "";
-			var dformName = link.attr('data-form');
 			var newForm = false;
 			if(dformName){
 				if(dformName!='newForm'){
-					form = $(link.attr('#'+link.attr('data-form')));
+					form = $('#'+link.attr('data-form'));
 					form.attr("action", href);
 				}else{
 					newForm = true;

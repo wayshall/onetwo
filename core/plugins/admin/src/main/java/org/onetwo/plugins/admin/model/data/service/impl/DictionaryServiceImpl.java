@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ExtQuery.K;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -77,8 +78,15 @@ public class DictionaryServiceImpl implements DictionaryService  {
 		return getBaseEntityManager().findOne(DictionaryEntity.class, "code", code);
 	}
 	
-	public List<DictionaryEntity> findByPrefixCode(String code){
-		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "code:like", code+"_", K.ASC, "sort");
+	public List<DictionaryEntity> findDataByPrefixCode(String code){
+		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "code:like", code+"_", "dictType", DicType.DATA, K.ASC, "sort");
+	}
+	
+	public List<DictionaryEntity> findDataByTypeCode(String code){
+		DictionaryEntity type = getBaseEntityManager().findOne(DictionaryEntity.class, "code", code, "dictType", DicType.DATA);
+		if(type==null)
+			throw new BaseException("找不到字典类型：" + code);
+		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "typeId", type.getId(), "dictType", DicType.DATA, K.ASC, "sort");
 	}
 
 	/* (non-Javadoc)
@@ -151,10 +159,6 @@ public class DictionaryServiceImpl implements DictionaryService  {
 		return type;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.onetwo.plugins.admin.model.data.service.DictionaryService#getBaseEntityManager()
-	 */
-	@Override
 	public BaseEntityManager getBaseEntityManager() {
 		return baseEntityManager;
 	}
