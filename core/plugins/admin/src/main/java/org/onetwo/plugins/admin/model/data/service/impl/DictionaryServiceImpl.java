@@ -163,4 +163,17 @@ public class DictionaryServiceImpl implements DictionaryService  {
 		return baseEntityManager;
 	}
 
+	@Override
+	public DictionaryEntity getData(String value, String typeCode) {
+		if(StringUtils.isBlank(typeCode)){
+			return baseEntityManager.findUnique(DictionaryEntity.class, "dictType", DicType.DATA, "value", value);
+		}else{
+
+			DictionaryEntity type = findByCode(typeCode);
+			if(type==null)
+				throw new BaseException("找不到字典类型：" + typeCode);
+			return baseEntityManager.findUnique(DictionaryEntity.class, "typeId", type.getId(), "dictType", DicType.DATA, "value", value);
+		}
+	}
+
 }

@@ -160,7 +160,7 @@ public abstract class IgnoreFiler implements Filter{
 		try {
 			this.onFilter(request, response);
 			if (this.requestSupportFilter(request)) {
-				this.doFilterInternal(servletRequest, servletResponse, filterChain);
+				this.doFilterInternal(request, servletResponse, filterChain);
 			}else {
 				filterChain.doFilter(request, response);
 			}

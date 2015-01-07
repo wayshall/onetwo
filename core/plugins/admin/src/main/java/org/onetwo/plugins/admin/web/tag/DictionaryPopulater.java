@@ -4,14 +4,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.form.FormFieldTag;
 import org.onetwo.common.web.view.jsp.form.FormFieldType;
 import org.onetwo.common.web.view.jsp.form.FormFieldTypePopulater;
 import org.onetwo.common.web.view.jsp.form.FormItemsTagBean;
+import org.onetwo.common.web.view.jsp.tools.ValueTag;
+import org.onetwo.common.web.view.jsp.tools.ValueTagProvider;
 import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity;
 import org.onetwo.plugins.admin.model.data.service.DictionaryService;
 
-public class DictionaryPopulater implements FormFieldTypePopulater<FormItemsTagBean> {
+public class DictionaryPopulater implements FormFieldTypePopulater<FormItemsTagBean>, ValueTagProvider {
 	
 	@Resource
 	private DictionaryService dictionaryService;
@@ -39,6 +42,19 @@ public class DictionaryPopulater implements FormFieldTypePopulater<FormItemsTagB
 		List<DictionaryEntity> dicts = dictionaryService.findDataByPrefixCode(typeCode);
 		itemsBean.setItemDatas(dicts);
 	}
+
+	@Override
+	public String getValueType() {
+		return getFieldType();
+	}
+
+	@Override
+	public Object getValue(ValueTag tag) {
+		Object type = tag.getDynamicAttribute("type");
+		Object result = dictionaryService.getData(tag.getValue(), StringUtils.emptyIfNull(type));
+		return result;
+	}
+	
 	
 	
 

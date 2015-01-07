@@ -3,7 +3,9 @@ package org.onetwo.common.web.view.jsp.tools;
 import java.util.Collection;
 import java.util.Date;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
@@ -19,9 +21,32 @@ import org.springframework.web.util.HtmlUtils;
 
 final public class ToolEl {
 	private static RequestPreventor CSRF_PREVENTOR = PreventorFactory.getCsrfPreventor();
+	private static boolean escapeWebConent = !BaseSiteConfig.getInstance().isPreventXssRequest();
 
+	public static String escape(String content){
+		return escapeHtml(escapeJs(content));
+	}
+
+	public static String unescape(String content){
+		return unescapeJs(unescapeHtml(content));
+	}
+	
 	public static String escapeHtml(String content){
-		return HtmlUtils.htmlEscape(content);
+//		return HtmlUtils.htmlEscape(content);
+		return StringEscapeUtils.escapeHtml(content);
+	}
+
+	public static String escapeJs(String content){
+//		return JavaScriptUtils.javaScriptEscape(content);
+		return StringEscapeUtils.escapeJavaScript(content);
+	}
+
+	public static String unescapeHtml(String content){
+		return StringEscapeUtils.unescapeHtml(content);
+	}
+
+	public static String unescapeJs(String content){
+		return StringEscapeUtils.unescapeJavaScript(content);
 	}
 	
 	public static String firstNotblank(String val, String def1, String def2){
@@ -114,7 +139,15 @@ final public class ToolEl {
 	}
 	
 	public static String web(String name){
-		return escapeHtml(WebHolder.getValue(name).toString());
+		String value = WebHolder.getValue(name).toString();
+		if(escapeWebConent){
+			return escape(value);
+		}
+		return value;
+	}
+	
+	public static String json(Object value){
+		return JsonMapper.defaultMapper().toJson(value);
 	}
 	
 	public static String safeUrl(String href){
