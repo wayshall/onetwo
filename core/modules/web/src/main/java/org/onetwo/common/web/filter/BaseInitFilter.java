@@ -21,6 +21,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
+import org.onetwo.common.web.xss.XssPreventRequestWrapper;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,6 +44,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
 	
 	private WebConfigProvider webConfigProvider;
+	private boolean preventXssRequest;
 
 
 	protected void initApplication(FilterConfig config) {
@@ -73,6 +75,9 @@ public class BaseInitFilter extends IgnoreFiler {
 		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
 		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
+		//xss
+		this.preventXssRequest = BaseSiteConfig.getInstance().isPreventXssRequest();
+		
 		UtilTimerStack.active(timeProfiler);
 		
 	}
@@ -88,7 +93,14 @@ public class BaseInitFilter extends IgnoreFiler {
 	/*public String[] getWebFilters(FilterConfig config){
 		return getBaseSiteConfig().getFilterInitializers();
 	}*/
-	
+
+	protected HttpServletRequest wrapRequest(ServletRequest servletRequest){
+		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		if(preventXssRequest){
+			request = new XssPreventRequestWrapper(request);
+		}
+		return request;
+	}
 	
 	protected void printRequestTime(boolean push, HttpServletRequest request){
 		if(!timeProfiler)
