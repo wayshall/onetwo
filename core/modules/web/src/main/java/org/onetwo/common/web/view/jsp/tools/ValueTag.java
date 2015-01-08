@@ -16,6 +16,7 @@ public class ValueTag extends AbstractTagSupport {
 
 	private String value;
 	private String provider;
+	private boolean escape = true;
 	
 
 //	private boolean ignoreField;
@@ -39,7 +40,9 @@ public class ValueTag extends AbstractTagSupport {
     	}else{
     		result = ToolEl.web(value);
     	}
-    	result = ToolEl.escape(result);
+    	if(escape){
+    		result = ToolEl.escape(result);
+    	}
     	write(result);
     	return EVAL_PAGE;
     }
@@ -58,6 +61,14 @@ public class ValueTag extends AbstractTagSupport {
 
 	public void setProvider(String provider) {
 		this.provider = provider;
+	}
+
+	public boolean isEscape() {
+		return escape;
+	}
+
+	public void setEscape(boolean escape) {
+		this.escape = escape;
 	}
 
 }
