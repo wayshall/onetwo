@@ -3,7 +3,7 @@ package org.onetwo.common.web.view.jsp.tools;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringUtils;
@@ -16,6 +16,7 @@ import org.onetwo.common.web.preventor.PreventorFactory;
 import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.xss.XssUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.web.util.HtmlUtils;
 
@@ -23,30 +24,39 @@ final public class ToolEl {
 	private static RequestPreventor CSRF_PREVENTOR = PreventorFactory.getCsrfPreventor();
 	private static boolean escapeWebConent = !BaseSiteConfig.getInstance().isPreventXssRequest();
 
+	/****
+	 * use spring utils
+	 * @param content
+	 * @return
+	 */
 	public static String escape(String content){
-		return escapeHtml(escapeJs(content));
+		return XssUtils.escape(content);
 	}
-
+	/***
+	 * use spring utils
+	 * @param content
+	 * @return
+	 */
 	public static String unescape(String content){
-		return unescapeJs(unescapeHtml(content));
+		return XssUtils.unescape(content);
 	}
 	
 	public static String escapeHtml(String content){
 //		return HtmlUtils.htmlEscape(content);
-		return StringEscapeUtils.escapeHtml(content);
+		return StringEscapeUtils.escapeHtml4(content);
 	}
 
 	public static String escapeJs(String content){
 //		return JavaScriptUtils.javaScriptEscape(content);
-		return StringEscapeUtils.escapeJavaScript(content);
+		return StringEscapeUtils.escapeEcmaScript(content);
 	}
 
 	public static String unescapeHtml(String content){
-		return StringEscapeUtils.unescapeHtml(content);
+		return StringEscapeUtils.unescapeHtml4(content);
 	}
 
 	public static String unescapeJs(String content){
-		return StringEscapeUtils.unescapeJavaScript(content);
+		return StringEscapeUtils.unescapeEcmaScript(content);
 	}
 	
 	public static String firstNotblank(String val, String def1, String def2){
@@ -141,7 +151,7 @@ final public class ToolEl {
 	public static String web(String name){
 		String value = WebHolder.getValue(name).toString();
 		if(escapeWebConent){
-			return escape(value);
+			value = escape(value);
 		}
 		return value;
 	}
