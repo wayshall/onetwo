@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.form.FormFieldTag;
 import org.onetwo.common.web.view.jsp.form.FormFieldType;
@@ -51,8 +53,15 @@ public class DictionaryPopulater implements FormFieldTypePopulater<FormItemsTagB
 	@Override
 	public Object getValue(ValueTag tag) {
 		Object type = tag.getDynamicAttribute("type");
-		Object result = dictionaryService.getData(tag.getValue(), StringUtils.emptyIfNull(type));
-		return result;
+		Object property = tag.getDynamicAttribute("property");
+		DictionaryEntity result = dictionaryService.getData(tag.getValue(), StringUtils.emptyIfNull(type));
+		if(result==null)
+			return LangUtils.EMPTY_STRING;
+		if(property==null){
+			return result.getName();
+		}else{
+			return SpringUtils.newBeanWrapper(result).getPropertyValue(property.toString());
+		}
 	}
 	
 	
