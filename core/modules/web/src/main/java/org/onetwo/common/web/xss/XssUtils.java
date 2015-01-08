@@ -1,10 +1,19 @@
 package org.onetwo.common.web.xss;
 
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.view.jsp.tools.ToolEl;
+import org.springframework.web.util.HtmlUtils;
+import org.springframework.web.util.JavaScriptUtils;
 
 public final class XssUtils {
 
+
+	public static String escape(String content){
+		return HtmlUtils.htmlEscape(JavaScriptUtils.javaScriptEscape(content));
+	}
+
+	public static String unescape(String content){
+		return HtmlUtils.htmlUnescape(content);
+	}
 
 	public static Object escapeIfNeccessary(Object value){
 		return escapeIfNeccessary(value, null);
@@ -14,7 +23,8 @@ public final class XssUtils {
 		if(value==null){
 			return def;
 		}else if(CharSequence.class.isInstance(value)){
-			return ToolEl.escape(value.toString());
+			return escape(value.toString());
+//			return ToolEl.escapeHtml(ToolEl.escapeJs(value.toString()));
 		}
 		return value;
 	}
