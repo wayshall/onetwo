@@ -115,6 +115,7 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	}
 	
 	protected void populateComponent() throws JspException{
+
 		component.setId(id);
 		component.setName(name);
 		component.setTitle(title);
