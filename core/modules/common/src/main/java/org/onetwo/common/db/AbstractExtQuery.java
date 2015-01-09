@@ -46,22 +46,19 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	private List<ExtQueryListener> listeners;
 	private boolean fireListeners = true;
 
+	private Map sourceParams;
+	
 	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		this(entityClass, alias, params, symbolManager, null);
 	}
-	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+	public AbstractExtQuery(Class<?> entityClass, String alias, Map sourceParams, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		this.entityClass = entityClass;
 		if(StringUtils.isBlank(alias)){
 			alias = StringUtils.uncapitalize(entityClass.getSimpleName());
 		}
 		this.alias = alias;
-		if(params==null){
-			this.params = CUtils.newLinkedHashMap();
-		}else{
-			this.params = new LinkedHashMap<Object, Object>(params);
-		}
 		this.symbolManager = symbolManager;
-		
+		this.sourceParams = sourceParams;
 		this.listeners = (listeners==null?Collections.EMPTY_LIST:listeners);
 		
 //		this.init(entityClass, this.alias);
@@ -69,6 +66,13 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 
 
 	public void initQuery(){
+		this.hasBuilt = false;
+		if(sourceParams==null){
+			this.params = CUtils.newLinkedHashMap();
+		}else{
+			this.params = new LinkedHashMap<Object, Object>(sourceParams);
+		}
+		
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, true);
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Calm);

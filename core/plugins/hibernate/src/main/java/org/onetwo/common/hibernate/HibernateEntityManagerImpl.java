@@ -261,4 +261,6 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
 		return fileNamedQueryFactory;
 	}
+
+	
 }
