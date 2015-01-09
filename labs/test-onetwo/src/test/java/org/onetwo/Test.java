@@ -22,10 +22,15 @@ public class Test {
 	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 	
 	public static void main(String[] args) throws IOException{
-		ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<String, List<String>>();
-		List<String> val = map.putIfAbsent("test", Arrays.asList("test1", "test2"));
-		System.out.println("val: " + val);
-		System.out.println("val: " + map.get("test"));
+		String str = "连中北街62号 新时代幼儿园";
+		for(char ch : str.toCharArray()){
+			System.out.println(ch+":"+((int)ch));
+		}
+		System.out.println("new space :"+((int)' '));
+		str = "连中北街62号 新时代幼儿园".replace(" ", "");
+		for(char ch : str.toCharArray()){
+			System.out.println(ch+":"+((int)ch));
+		}
 	}
 	
 	public static void test2(String[] args){
