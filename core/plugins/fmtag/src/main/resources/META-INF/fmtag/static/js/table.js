@@ -140,16 +140,25 @@ var Common = function () {
 				
 				var remote = eval($(this).attr('remote'));
 				if(remote && remote==true){
-					var ajaxName = $(this).attr('ajaxName');
+					/*var ajaxName = $(this).attr('ajaxName');
 					if(!ajaxName){
 						alert("不支持ajax请求！");
 						return false;
 					}
+					if(ajaxName.indexOf('message')==-1){
+						ajaxName = 'message,'+ajaxName;
+					}
 					ajaxAnywhere.getZonesToReload = function() {
 						return ajaxName;
+					}*/
+					var ajaxInst = jfish._ckeckAndConfigAjax($(this));
+					if(!ajaxInst){
+						alert("不支持ajax请求！");
+						return false;
 					}
-					ajaxAnywhere.formName=$(form).attr('name') || $(form).attr('id');
-					ajaxAnywhere.submitAJAX();
+					
+					ajaxInst.formName=$(form).attr('name') || $(form).attr('id');
+					ajaxInst.submitAJAX();
 					return false;
 				}else{
 					$(form).submit();
@@ -266,6 +275,24 @@ var Common = function () {
 			});
 		},
 		
+
+		
+		_ckeckAndConfigAjax : function(src) {
+			var ajaxName = $(src).attr('ajaxName');
+			if(!ajaxName){
+//				alert("不支持ajax请求！");
+				return false;
+			}
+			//ajaxAnywhere = AjaxAnywhere.findInstance(ajaxName);
+			if(ajaxName.indexOf('message')==-1){
+				ajaxName = 'message,'+ajaxName;
+			}
+			ajaxAnywhere.getZonesToReload = function() {
+				return ajaxName;
+			}
+			return ajaxAnywhere;
+		},
+		
 		handleMethod : function(link) {
 			var href = link.attr('href');
 			href = encodeURI(href);
@@ -278,7 +305,7 @@ var Common = function () {
 			var dformName = link.attr('data-form');
 			
 			if(remote && remote==true){
-				var ajaxName = $(link).attr('ajaxName');
+				/*var ajaxName = $(link).attr('ajaxName');
 				//ajaxInst = AjaxAnywhere.findInstance(ajaxName);
 				ajaxInst = ajaxAnywhere;
 				if(!ajaxName || !ajaxInst){
@@ -288,6 +315,11 @@ var Common = function () {
 
 				ajaxAnywhere.getZonesToReload = function() {
 					return ajaxName;
+				}*/
+				ajaxInst = jfish._ckeckAndConfigAjax(link);
+				if(!ajaxInst){
+					alert("不支持ajax请求！");
+					return false;
 				}
 				if(!dformName && method && method.toLowerCase()=='get'){
 					ajaxInst.getAJAX(href);
