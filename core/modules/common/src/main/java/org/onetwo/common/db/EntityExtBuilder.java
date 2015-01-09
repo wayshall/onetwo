@@ -23,17 +23,17 @@ abstract public class EntityExtBuilder extends QueryBuilderImpl {
 		return q;
 	}*/
 
-	public static EntityQueryBuilder from(BaseEntityManager baseEntityManager, Class<?> entityClass){
-		EntityQueryBuilder q = new EntityQueryBuilder(baseEntityManager, entityClass);
+	public static EntityEMQueryBuilder from(InnerBaseEntityManager baseEntityManager, Class<?> entityClass){
+		EntityEMQueryBuilder q = new EntityEMQueryBuilder(baseEntityManager, entityClass);
 		return q;
 	}
 	
-	protected BaseEntityManager baseEntityManager;
+	protected InnerBaseEntityManager baseEntityManager;
 	
 //	private List<SQField> fields = new ArrayList<SQField>();
 	
 
-	protected EntityExtBuilder(BaseEntityManager baseEntityManager, Class<?> entityClass){
+	protected EntityExtBuilder(InnerBaseEntityManager baseEntityManager, Class<?> entityClass){
 		super(entityClass);
 		this.baseEntityManager = baseEntityManager;
 	}
@@ -52,27 +52,41 @@ abstract public class EntityExtBuilder extends QueryBuilderImpl {
 		return getBaseEntityManager().getSQLSymbolManager();
 	}
 	
-	public static class EntityQueryBuilder extends EntityExtBuilder {
+	public static class EntityEMQueryBuilder extends EntityExtBuilder implements EMQueryBuilder {
 		
-		protected EntityQueryBuilder(BaseEntityManager baseEntityManager,
+		protected EntityEMQueryBuilder(InnerBaseEntityManager baseEntityManager,
 				Class<?> entityClass) {
 			super(baseEntityManager, entityClass);
 		}
 
+		@Override
+		public SelectExtQuery getExtQuery(){
+			return (SelectExtQuery)super.getExtQuery();
+		}
+
+		@Override
 		public <T> T one(){
 			checkOperation();
-			return baseEntityManager.findUnique(build());
+			return baseEntityManager.selectUnique(getExtQuery());
 		}
-		
+
+		@Override
 		public <T> List<T> list(){
 			checkOperation();
-			return baseEntityManager.findList(build());
+			return baseEntityManager.select(getExtQuery());
 		}
-		
+
+		@Override
 		public <T> void page(Page<T> page){
 			checkOperation();
-			baseEntityManager.findPage(page, build());
+			baseEntityManager.selectPage(page, getExtQuery());
 		}
+
+		@Override
+		public int execute() {
+			throw new UnsupportedOperationException();
+		}
+		
 	}
 	
 }

@@ -49,6 +49,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 
 	public void initQuery(){
+		this.hasBuilt = false;
+		
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
 		this.countValue = getValueAndRemoveKeyFromParams(K.COUNT, countValue);
@@ -88,6 +90,11 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		String fname = "build ext query";
 		if(isDebug())
 			UtilTimerStack.push(fname);
+		
+		//re-init-query if rebuild
+		if(hasBuilt()){
+			this.initQuery();
+		}
 		this.buildSelect().buildJoin().buildOrderBy();
 		sql = new StringBuilder();
 		sql.append(select);
