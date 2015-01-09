@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.NonUniqueResultException;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
@@ -23,7 +22,6 @@ import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
@@ -39,7 +37,6 @@ import org.springframework.context.ApplicationContextAware;
 @SuppressWarnings({"unchecked", "rawtypes"})
 abstract public class AbstractEntityManager extends BaseEntityManagerAdapter implements BaseEntityManager, ApplicationContextAware {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;
 	private SQLSymbolManager sqlSymbolManager;
 	
@@ -115,7 +112,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		return q;
 	}
 	
-	protected DataQuery createQuery(SelectExtQuery extQuery){
+	/*protected DataQuery createQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
 		if(extQuery.isSqlQuery()){
 			q = this.createSQLQuery(extQuery.getSql(), extQuery.getEntityClass());
@@ -128,7 +125,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		}
 		q.setQueryConfig(extQuery.getQueryConfig());
 		return q;
-	}
+	}*/
 	
 	protected SelectExtQuery createSelectExtQuery(Class entityClass, Map<Object, Object> properties){
 		SelectExtQuery q = getSQLSymbolManager().createSelectQuery(entityClass, "ent", properties);
@@ -165,8 +162,8 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		this.findPage(entityClass, page, params);
 	}
 	
-	public void findPage(final Page page, QueryBuilder squery){
-		findPage(squery.getEntityClass(), page, squery.getParams());
+	public void findPage(final Page page, QueryBuilder query){
+		findPage(query.getEntityClass(), page, query.getParams());
 	}
 
 	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties) {
@@ -191,10 +188,11 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		}
 		List datalist = createQuery(extQuery).setPageParameter(page).getResultList();
 		page.setResult(datalist);*/
-		this.findPageByExtQuery(page, extQuery);
+		this.selectPage(page, extQuery);
 	}
 	
-	protected void findPageByExtQuery(Page page, SelectExtQuery extQuery){
+	
+	/*protected void findPageByExtQuery(Page page, SelectExtQuery extQuery){
 		if (page.isAutoCount()) {
 //			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 			Long totalCount = 0l;
@@ -216,7 +214,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 			page.setTotalCount(datalist.size());
 		}
 		page.setResult(datalist);
-	}
+	}*/
 
 	@Override
 	public void removeList(Collection<?> entities) {
@@ -284,17 +282,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	}*/
 	
 	
-	private <T> T findUnique(final String sql, final Map<String, Object> values){
-		T entity = null;
-		try {
-			entity = (T)this.createQuery(sql, values).getSingleResult();
-		}catch(Exception e){
-			logger.error(e);
-			throw new BaseException("find the unique result error : " + sql, e);
-		}
-		return entity;
-	}
-	
 	protected Map<Object, Object> prepareProperties(Map<Object, Object> properties) {
 		if(properties==null)
 			properties = new HashMap<Object, Object>();
@@ -304,14 +291,15 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		return this.findByProperties(entityClass, MyUtils.convertParamMap(properties));
 	}
-	public <T> List<T> findList(QueryBuilder squery) {
-		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
-	}
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		return select(entityClass, properties);
 	}
 
+	public <T> List<T> findByProperties(QueryBuilder squery) {
+		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
+	}
+	
 	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties){
 		Map<Object, Object> params = LangUtils.newHashMap();
 		CUtils.arrayIntoMap(params, properties);
@@ -379,7 +367,9 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	
 
 	public <T> List<T> findList(JFishQueryValue queryValue){
-		throw new UnsupportedOperationException();
+//		throw new UnsupportedOperationException();
+		DataQuery dq = this.createQuery(queryValue.getSql());
+		return dq.getResultList();
 	}
 	
 	public <T> T findUnique(JFishQueryValue queryValue){
