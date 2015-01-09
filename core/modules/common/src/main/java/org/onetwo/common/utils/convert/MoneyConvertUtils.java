@@ -2,23 +2,27 @@ package org.onetwo.common.utils.convert;
 
 import java.math.BigDecimal;
 
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.StringUtils;
+
 public final class MoneyConvertUtils {
-	
+
+	private static final String END_STR = "整"; 
 	private static final String[] INT_UNIT_NAME = new String[]{
 		"元", "拾", "佰", "仟", "万", "拾", "佰", "仟","亿", "拾", "佰", "仟", "万"
 	}; 
 	private static final String[] SCALE_UNIT_NAME = new String[]{
-		"毫", "分"
+		"角", "分"
 	}; 
 	
 	private static final String[] NUMBER_UPPER_CASE_NAME = new String[]{
-		 "零", "壹", "贰", "弎", "肆", "伍", "陆", "柒","捌", "玖"
+		 "零", "壹", "贰", "叁", "肆", "伍", "陆", "柒","捌", "玖"
 	}; 
 	private MoneyConvertUtils(){
 	}
 	
-	public static String convert(double money){
-		BigDecimal big = new BigDecimal(money);
+	public static String convert(Double money){
+		BigDecimal big = new BigDecimal(money.toString());
 		return convert(big);
 	}
 	
@@ -32,6 +36,13 @@ public final class MoneyConvertUtils {
 	}
 	
 	public static String convert(BigDecimal money){
+		int intLenght = money.precision()-money.scale();
+		if(intLenght>INT_UNIT_NAME.length){
+			throw new BaseException("只支持"+INT_UNIT_NAME.length+"位整数：" + intLenght);
+		}
+		if(money.scale()>SCALE_UNIT_NAME.length){
+			throw new BaseException("只支持"+SCALE_UNIT_NAME.length+"位小数精度：" + money.scale());
+		}
 		String str = money.toPlainString();
 		String scale = money.toString().substring(str.length()-money.scale());
 		int scaleLength = money.scale()>0?money.scale()+1:money.scale();
@@ -72,10 +83,22 @@ public final class MoneyConvertUtils {
 			currentNumberUnitIndex--;
 		}
 		
+		if(StringUtils.isBlank(scale) || Integer.parseInt(scale)==0){
+			rs.append(END_STR);
+			return rs.toString();
+		}
+		
 		int[] scaleChars = stringToIntArray(scale);
+		
 		for (int i = 0; i < scaleChars.length; i++) {
-			String upname = NUMBER_UPPER_CASE_NAME[scaleChars[i]];
-			String unitname = SCALE_UNIT_NAME[i];
+			String upname = "";//NUMBER_UPPER_CASE_NAME[scaleChars[i]];
+			String unitname = "";
+			if(scaleChars[i]!=0){
+				upname = NUMBER_UPPER_CASE_NAME[scaleChars[i]];
+				unitname = SCALE_UNIT_NAME[i];
+			}else if(i==scaleChars.length-1){
+				unitname = END_STR;
+			}
 			rs.append(upname).append(unitname);
 		}
 		return rs.toString();

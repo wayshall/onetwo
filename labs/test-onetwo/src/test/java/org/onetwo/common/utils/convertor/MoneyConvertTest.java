@@ -24,31 +24,31 @@ public class MoneyConvertTest {
 	public void testConvertInt(){
 		BigDecimal money = new BigDecimal("111");
 		String str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("壹佰壹拾壹元", str);
+		Assert.assertEquals("壹佰壹拾壹元整", str);
 		
 		money = new BigDecimal("2356855");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("贰佰弎拾伍万陆仟捌佰伍拾伍元", str);
+		Assert.assertEquals("贰佰叁拾伍万陆仟捌佰伍拾伍元整", str);
 		
 		money = new BigDecimal("300005");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("弎拾万零伍元", str);
+		Assert.assertEquals("叁拾万零伍元整", str);
 		
 		money = new BigDecimal("3000050");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("弎佰万零伍拾元", str);
+		Assert.assertEquals("叁佰万零伍拾元整", str);
 		
 		money = new BigDecimal("1300000050");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("壹拾弎亿零伍拾元", str);
+		Assert.assertEquals("壹拾叁亿零伍拾元整", str);
 		
 		money = new BigDecimal("10300000050");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("壹佰零弎亿零伍拾元", str);
+		Assert.assertEquals("壹佰零叁亿零伍拾元整", str);
 		
 		money = new BigDecimal("10330000050");
 		str = MoneyConvertUtils.convert(money);
-		Assert.assertEquals("壹佰零弎亿弎仟万零伍拾元", str);
+		Assert.assertEquals("壹佰零叁亿叁仟万零伍拾元整", str);
 	}
 	
 	@Test
@@ -56,12 +56,30 @@ public class MoneyConvertTest {
 		BigDecimal money = new BigDecimal("111.23");
 		String str = MoneyConvertUtils.convert(money);
 		System.out.println("str: " + str);
-		Assert.assertEquals("壹佰壹拾壹元贰毫弎分", str);
+		Assert.assertEquals("壹佰壹拾壹元贰角叁分", str);
 		
 		money = new BigDecimal("2356855.56");
 		str = MoneyConvertUtils.convert(money);
 		System.out.println("str: " + str);
-		Assert.assertEquals("贰佰弎拾伍万陆仟捌佰伍拾伍元伍毫陆分", str);
+		Assert.assertEquals("贰佰叁拾伍万陆仟捌佰伍拾伍元伍角陆分", str);
+		
+		money = new BigDecimal("2356855.50");
+		str = MoneyConvertUtils.convert(money);
+		System.out.println("str: " + str);
+		Assert.assertEquals("贰佰叁拾伍万陆仟捌佰伍拾伍元伍角整", str);
+		
+		money = new BigDecimal("2356855.00");
+		str = MoneyConvertUtils.convert(money);
+		System.out.println("str: " + str);
+		Assert.assertEquals("贰佰叁拾伍万陆仟捌佰伍拾伍元整", str);
+		
+		money = new BigDecimal("2356855.001");
+		try {
+			str = MoneyConvertUtils.convert(money);
+			Assert.fail("只支持精确到两位小数");
+		} catch (Exception e) {
+			Assert.assertNotNull(e);
+		}
 	}
 
 }
