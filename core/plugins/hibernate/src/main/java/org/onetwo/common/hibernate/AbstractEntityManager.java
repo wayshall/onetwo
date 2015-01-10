@@ -17,7 +17,6 @@ import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -155,18 +154,14 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		return logicDeleteEntity;
 	}
 	
-	public void findPage(final Class entityClass, final Page page, Object... properties) {
+	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Object... properties) {
 		Map<Object, Object> params = null;
 		if(properties!=null && properties.length>0)
 			params = MyUtils.convertParamMap(properties);
 		this.findPage(entityClass, page, params);
 	}
-	
-	public void findPage(final Page page, QueryBuilder query){
-		findPage(query.getEntityClass(), page, query.getParams());
-	}
 
-	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties) {
+	public <T> void findPage(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties) {
 		properties = prepareProperties(properties);
 
 		if (Page.ASC.equals(page.getOrder()) && StringUtils.isNotBlank(page.getOrderBy())) {
@@ -294,10 +289,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		return select(entityClass, properties);
-	}
-
-	public <T> List<T> findByProperties(QueryBuilder squery) {
-		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 	
 	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties){

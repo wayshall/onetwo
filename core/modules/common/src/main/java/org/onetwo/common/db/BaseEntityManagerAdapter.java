@@ -14,6 +14,15 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	
+	public <T> List<T> findByProperties(QueryBuilder squery) {
+		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
+	}
+
+	@Override
+	public <T> void findPage(final Page<T> page, QueryBuilder squery){
+		findPage((Class<T>)squery.getEntityClass(), page, squery.getParams());
+	}
+	
 	@Override
 	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties) {
 		throw new UnsupportedOperationException();
