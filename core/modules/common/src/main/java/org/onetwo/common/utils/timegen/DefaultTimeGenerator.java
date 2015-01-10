@@ -9,15 +9,23 @@ import org.onetwo.common.utils.DateRange;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.timegen.TimeRule.RuleType;
 
-public class Timegenerator {
+public class DefaultTimeGenerator implements TimeGenerator {
 	
 	private Map<RuleType, DateGenerator> dateMaps = LangUtils.newHashMap();
+	
+	public void registerDefaultGenerators(){
+		this.register(new ExactDateGenerator());
+		this.register(new DateOfWeekCycleGenerator());
+		this.register(new DateOfMonthCycleGenerator());
+	}
 
-	public Timegenerator registerOrOver(DateGenerator g){
+	@Override
+	final public TimeGenerator registerOrOver(DateGenerator g){
 		dateMaps.put(g.getRuleType(), g);
 		return this;
 	}
-	public Timegenerator register(DateGenerator g){
+	@Override
+	final public TimeGenerator register(DateGenerator g){
 		if(dateMaps.containsKey(g.getRuleType())){
 			throw new BaseException("date generator has register for time rule: " + g.getRuleType());
 		}
@@ -25,6 +33,7 @@ public class Timegenerator {
 		return this;
 	}
 
+	@Override
 	public Collection<DateRange> generate(TimeRule rule){
 		Assert.notNull(rule.getRuleType());
 		DateGenerator g = dateMaps.get(rule.getRuleType());

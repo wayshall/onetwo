@@ -16,6 +16,10 @@ public class DateOfWeekCycleGenerator implements DateGenerator {
 
 	public Collection<DateRange> generate(TimeRule rule){
 		Assert.state(rule.getRuleType()==RuleType.PERIOD_WEEK);
+		Assert.notNull(rule.getStartTime());
+		Assert.notNull(rule.getEndTime());
+		Assert.notNull(rule.getStartIndex());
+		Assert.notNull(rule.getEndIndex());
 		
 		Collection<DateRange> drs = DateUtil.splitAsDateRangeByWeek(rule.getStartTime(), rule.getEndTime());
 		Collection<DateRange> genDateRangs = new LinkedHashSet<DateRange>(drs.size());

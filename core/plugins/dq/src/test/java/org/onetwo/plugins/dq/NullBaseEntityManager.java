@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
+import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -184,7 +185,7 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	}
 
 	@Override
-	public void findPage(Class entityClass, Page page,
+	public <T> void findPage(Class<T>  entityClass, Page<T>  page,
 			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		
@@ -412,6 +413,18 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	public void setFileNamedQueryFactory(
 			FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory) {
 		this.fileNamedQueryFactory = fileNamedQueryFactory;
+	}
+
+	@Override
+	public <T> List<T> findByProperties(QueryBuilder squery) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void findPage(Page page, QueryBuilder query) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

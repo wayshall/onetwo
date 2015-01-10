@@ -48,8 +48,9 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	}
 
 
-	public void initQuery(){
-		this.hasBuilt = false;
+	public void initParams(){
+//		this.hasBuilt = false;
+		super.initParams();
 		
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
@@ -64,7 +65,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			this.queryConfig = (Map)qc;
 		}
 		
-		super.initQuery();
+//		super.initQuery();
 	}
 	
 	
