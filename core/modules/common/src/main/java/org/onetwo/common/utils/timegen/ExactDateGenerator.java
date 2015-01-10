@@ -16,6 +16,8 @@ public class ExactDateGenerator implements DateGenerator {
 
 	public List<DateRange> generate(TimeRule rule){
 		Assert.state(rule.getRuleType()==RuleType.EXACT_DATE);
+		Assert.notNull(rule.getStartTime());
+		Assert.notNull(rule.getEndTime());
 		return ImmutableList.of(new DateRange(rule.getStartTime(), rule.getEndTime()));
 	}
 }

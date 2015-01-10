@@ -77,11 +77,11 @@ public interface BaseEntityManager extends QueryProvider {
 	
 //	public void findPage(final Page page, QueryBuilder squery);
 
-	public void findPage(final Class entityClass, final Page page, Object... properties);
+	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Object... properties);
 
-	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties);
+	public <T> void findPage(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
 	
-	public void findPage(final Page page, QueryBuilder query);
+	public <T> void findPage(final Page<T> page, QueryBuilder query);
 	/****
 	 * @see remove
 	 * @param entity

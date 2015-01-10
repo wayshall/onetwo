@@ -46,7 +46,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	private List<ExtQueryListener> listeners;
 	private boolean fireListeners = true;
 
-	private Map sourceParams;
+	private final Map sourceParams;
 	
 	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		this(entityClass, alias, params, symbolManager, null);
@@ -58,20 +58,24 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		}
 		this.alias = alias;
 		this.symbolManager = symbolManager;
-		this.sourceParams = sourceParams;
+		this.sourceParams = sourceParams;//ImmutableMap.copyOf(sourceParams);
 		this.listeners = (listeners==null?Collections.EMPTY_LIST:listeners);
 		
 //		this.init(entityClass, this.alias);
 	}
-
-
-	public void initQuery(){
-		this.hasBuilt = false;
+	
+	protected void initParams(){
 		if(sourceParams==null){
 			this.params = CUtils.newLinkedHashMap();
 		}else{
 			this.params = new LinkedHashMap<Object, Object>(sourceParams);
 		}
+	}
+
+
+	public void initQuery(){
+		this.hasBuilt = false;
+		this.initParams();
 		
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, true);

@@ -10,6 +10,7 @@ import javax.validation.ValidationException;
 import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ILogicDeleteEntity;
+import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringApplication;
@@ -148,6 +149,19 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 		return super.findOne(properties);
 	}
 	
+
+	@Transactional(readOnly=true)
+	@Override
+	public List<T> findByProperties(QueryBuilder query) {
+		return super.findByProperties(query);
+	}
+
+	@Transactional(readOnly=true)
+	@Override
+	public void findPage(Page page, QueryBuilder query) {
+		super.findPage(page, query);
+	}
+
 	protected ValidationBindingResult validate(Object obj, Class<?>... groups){
 		ValidationBindingResult validations = SpringApplication.getInstance().getValidator().validate(obj);
 		return validations;

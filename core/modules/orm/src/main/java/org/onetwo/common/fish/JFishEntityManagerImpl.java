@@ -278,7 +278,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		jfishDao.findPageByProperties(entityClass, page, CUtils.asOrCreateLinkedHashMap(properties));
 	}
 
-	public void findPage(Class entityClass, Page page, Map<Object, Object> properties) {
+	public <T> void findPage(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
