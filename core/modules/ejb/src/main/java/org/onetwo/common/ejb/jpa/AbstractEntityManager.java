@@ -162,11 +162,8 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		this.findPage(entityClass, page, params);
 	}
 	
-	public void findPage(final Page page, QueryBuilder squery){
-		findPage(squery.getEntityClass(), page, squery.getParams());
-	}
 
-	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties) {
+	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Map<Object, Object> properties) {
 		properties = prepareProperties(properties);
 
 		if (Page.ASC.equals(page.getOrder()) && StringUtils.isNotBlank(page.getOrderBy())) {

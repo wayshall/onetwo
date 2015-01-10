@@ -13,10 +13,22 @@ EXPRESSION：表达式
 	 *
 	 */
 	public static enum RuleType {
-		PERIOD_WEEK,
-		PERIOD_MONTH,
-		EXACT_DATE,
-		EXPRESSION
+		PERIOD_WEEK("每周"),
+		PERIOD_MONTH("每月"),
+		EXACT_DATE("具体日期"),
+		EXPRESSION("表达式");
+		
+
+		private final String label;
+
+		private RuleType(String label) {
+			this.label = label;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+		
 	}
 	
 	private RuleType ruleType;
