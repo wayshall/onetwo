@@ -67,7 +67,7 @@ abstract public class EntityExtBuilder extends QueryBuilderImpl {
 		@Override
 		public <T> T one(){
 			checkOperation();
-			return baseEntityManager.selectUnique(getExtQuery());
+			return (T)baseEntityManager.selectUnique(getExtQuery());
 		}
 
 		@Override
