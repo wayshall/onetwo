@@ -158,7 +158,17 @@ var Common = function () {
 					}
 					
 					ajaxInst.formName=$(form).attr('name') || $(form).attr('id');
-					ajaxInst.submitAJAX();
+					if($(form).attr('method').toLowerCase()=='get'){
+						var url = $(form).attr('action');
+						var params = $(form).serialize();
+						if(params){
+						    url += (url.indexOf("?") != -1) ? "&" : "?";
+						    url += params;
+						}
+						ajaxInst.getAJAX(url);
+					}else{
+						ajaxInst.submitAJAX();
+					}
 					return false;
 				}else{
 					$(form).submit();
