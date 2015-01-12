@@ -51,7 +51,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 	@Override
 	public <T> T selectUnique(SelectExtQuery extQuery) {
 		extQuery.build();
-		return createQuery((SelectExtQuery)extQuery).getSingleResult();
+		return (T)createQuery((SelectExtQuery)extQuery).getSingleResult();
 	}
 
 	
