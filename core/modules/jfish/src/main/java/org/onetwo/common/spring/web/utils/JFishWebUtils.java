@@ -44,6 +44,7 @@ public final class JFishWebUtils {
 	
 
 	public static final String REDIRECT_KEY = "redirect:";
+	public static final String GRID_SEARCH_FORM_SUBMIT = "submitTag";
 	
 	private JFishWebUtils(){
 	}
@@ -74,6 +75,10 @@ public final class JFishWebUtils {
 	public static <T> T req(String name){
 //		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
 		return (T)WebHolder.getRequest().getAttribute(name);
+	}
+	
+	public boolean isGridSearchFormSubmit(){
+		return "1".equals(req(GRID_SEARCH_FORM_SUBMIT));
 	}
 	
 	public static Object currentHandler(){
