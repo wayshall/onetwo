@@ -84,7 +84,8 @@ public abstract class ExtQueryUtils {
 		if(LangUtils.hasNotElement(values)){
 //		if(LangUtils.isEmpty(values)){
 			if(ifNull==IfNull.Ignore){
-				return null;
+//				return null;
+				return Collections.EMPTY_LIST;
 			}else if(ifNull==IfNull.Throw){
 				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
 			}else {//calm

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onetwo.common.log.DataChangedContext;
+import org.onetwo.common.utils.LangUtils;
 
 public class OperatorLogInfo implements Serializable {
 	
@@ -63,6 +64,12 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public Map<String, String[]> getParameters() {
 		return parameters;
+	}
+	public void addParameter(String name, String... values){
+		if(this.parameters==null){
+			this.parameters = LangUtils.newHashMap();
+		}
+		this.parameters.put(name, values);
 	}
 	public void setParameters(Map<String, String[]> parameters) {
 		this.parameters = parameters;
