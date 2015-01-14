@@ -165,14 +165,15 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}
 
 		@Bean
-		public MappedInterceptor mappedLoggerInterceptor() {
+		public MappedInterceptor loggerInterceptor() {
 			LoggerInterceptor loggerInterceptor = SpringUtils.getHighestOrder(applicationContext, LoggerInterceptor.class);
 			if(loggerInterceptor==null){
 				loggerInterceptor = new LoggerInterceptor();
-				ContextHolder contextHolder = SpringUtils.getHighestOrder(applicationContext, ContextHolder.class);
+				SpringUtils.injectAndInitialize(applicationContext, loggerInterceptor);
+				/*ContextHolder contextHolder = SpringUtils.getHighestOrder(applicationContext, ContextHolder.class);
 				AccessLogger accessLogger = SpringUtils.getHighestOrder(applicationContext, AccessLogger.class);
 				loggerInterceptor.setContextHolder(contextHolder);
-				loggerInterceptor.setAccessLogger(accessLogger);
+				loggerInterceptor.setAccessLogger(accessLogger);*/
 			}
 			return WebInterceptorAdapter.createMappedInterceptor(loggerInterceptor);
 		}

@@ -3,7 +3,7 @@ package org.onetwo.tools
 import groovy.time.TimeCategory
 
 
-Date startDate = Date.parse("yyyyMM", "201504");
+Date startDate = Date.parse("yyyyMM", "201501");
 Date endDate = Date.parse("yyyyMM", "201512");
 def sqlList = [];
 use(TimeCategory){
