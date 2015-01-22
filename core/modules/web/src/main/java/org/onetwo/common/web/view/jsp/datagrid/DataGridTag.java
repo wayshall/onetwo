@@ -53,6 +53,8 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	private String custombar = "grid_custombar";
 	private String customform = "grid_customform";
+
+	private boolean loadmore = false;
 	
 	
 	
@@ -143,7 +145,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setCustomform(customform);
 		component.setToolbar(toolbar);
 		component.setToolbarName(toolbarName);
-		
 
 		component.setJsgrid(getThemeSetting().isJsui());
 		
@@ -242,6 +243,15 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	public void setToolbarName(String toolbarName) {
 		this.toolbarName = toolbarName;
 	}
+
+	public boolean isLoadmore() {
+		return loadmore;
+	}
+
+	public void setLoadmore(boolean loadmore) {
+		this.loadmore = loadmore;
+	}
+
 
 
 }
