@@ -91,6 +91,7 @@ public class FormFieldTagBean extends HtmlElement {
 			return "";
 		Object val = null;
 		try {
+//			System.out.println("test:"+getName());
 			val = this.formBean.getProvider().getFieldValue(this);
 		} catch (Exception e) {
 			throw new BaseException("getFieldValue error", e);
