@@ -18,8 +18,9 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.list.It;
+import org.onetwo.common.utils.list.JFishList;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Intro<T> {
@@ -82,30 +83,29 @@ public class Intro<T> {
 		return Collections.unmodifiableMap(maps);
 	}
 	
-	public List<Field> getAllFields() {
-		/*if(_allFieldMap!=null)
-			return Lists.newArrayList(_allFieldMap.values());
-		
-		allFieldLock.lock();
-		try {
-			if(_allFieldMap!=null)//dbcheck
-				return Lists.newArrayList(_allFieldMap.values());
-			
-			List<Class<?>> classes = findSuperClasses(clazz);
-			Field[] fs = null;
-			_allFieldMap = Maps.newHashMap(getFieldMaps());
-			for (Class<?> cls : classes) {
-				fs = cls.getDeclaredFields();
-				for (Field f : fs) {
-					_allFieldMap.put(f.getName(), f);
-				}
-			}
-		} finally{
-			allFieldLock.unlock();
-		}*/
+	public JFishList<Field> getAllFields() {
 		_loadAllFields();
 		
-		return Lists.newArrayList(_allFieldMap.values());
+		return JFishList.wrap(_allFieldMap.values());
+	}
+	
+	public JFishList<String> getAllPropertyNames() {
+		return JFishList.wrap(propertyDescriptors.keySet());
+	}
+	
+
+	public JFishList<String> getPropertyNames(final Class<? extends Annotation> ignoreAnnotation){
+		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
+	}
+	
+	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation> ignoreAnnotation){
+		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
+			
+			@Override
+			public boolean doIt(PropertyDescriptor element, int index) {
+				return element.getReadMethod().getAnnotation(ignoreAnnotation)!=null;
+			}
+		});
 	}
 	
 	public Map<String, Field> getAllFieldMap() {

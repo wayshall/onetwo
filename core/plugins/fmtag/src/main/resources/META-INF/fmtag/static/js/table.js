@@ -642,6 +642,32 @@ var Common = function () {
 //			var form = $(jfish.cssKeys.checkAll).parents("form:first");
 			var form = $this;
 			
+			form.find("input[name='pageSize']").change(function(){
+				var ps = parseInt($(this).val());
+				if(!ps || ps<1){
+					alert("请输入合法的数字!")
+					return ;
+				}
+				
+				var action = $(this).attr('action');
+				var remote = eval($(this).attr('remote'));
+				if(remote){
+					var ajaxInst = jfish._ckeckAndConfigAjax($(this));
+					if(!ajaxInst){
+						alert("不支持ajax请求！");
+						return false;
+					}
+					action += (action.indexOf("?") != -1) ? "&" : "?";
+					action += "&pageSize="+ps;
+					ajaxInst.getAJAX(action);
+				}else{
+					$(this).val(ps);
+					form.submit();
+				}
+				
+				
+			});
+			
 			jfish.setCheckboxEvent(form);
 			
 			
