@@ -1,16 +1,12 @@
 package org.onetwo.plugins.admin.web.controller.data;
 
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.plugins.admin.DataModule.ImportData;
 import org.onetwo.plugins.admin.model.data.service.DictionaryService;
-import org.onetwo.plugins.admin.model.vo.DictTypeVo;
-import org.onetwo.plugins.admin.utils.AdminDataUtils;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +34,7 @@ public class DictionaryImportController extends PluginSupportedController {
 	@ByFunctionClass(codeClass=ImportData.class)
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView importDatas(HttpServletRequest request){
-		Resource dictResource = SpringUtils.newClassPathResource("/data/dict.xml");
-		List<DictTypeVo> datas = AdminDataUtils.readDictResource(dictResource);
-		int count = this.dictionaryService.importDatas(datas);
+		int count = this.dictionaryService.importDatas();
 		return messageMv("已同步"+count+"条字典数据！");
 	}
 
