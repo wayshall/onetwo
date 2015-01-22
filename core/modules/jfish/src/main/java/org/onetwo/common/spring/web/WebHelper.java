@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.PluginConfig;
@@ -88,7 +89,11 @@ public class WebHelper {
 	public String getRequestMethod(){
 		return request==null?"":request.getMethod().toLowerCase();
 	}
-	
+
+    public boolean isAaRequest() {
+    	return AAUtils.isAjaxRequest(this.request);
+    }
+
 	public String getQueryString(){
 		String qs = this.request.getQueryString();
 		return qs;

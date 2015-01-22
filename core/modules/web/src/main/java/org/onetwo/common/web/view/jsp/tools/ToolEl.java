@@ -2,6 +2,7 @@ package org.onetwo.common.web.view.jsp.tools;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.onetwo.common.exception.BaseException;
@@ -117,23 +118,46 @@ final public class ToolEl {
 		return ReflectUtils.invokeMethod(methodName, target, arg);
 	}
 	
+
 	public static boolean checked(Object target, String methodName, Object arg){
-		if(target==null || StringUtils.isBlank(methodName))
+		return checked(target, methodName, arg, methodName);
+	}
+	public static boolean checked(Object model, String modelProperty, Object item, String itemProperty){
+		if(model==null || StringUtils.isBlank(modelProperty))
 			return false;
-		BeanWrapper bw = SpringUtils.newBeanWrapper(target);
-		if(bw.isReadableProperty(methodName)){
-			Object selectValue = bw.getPropertyValue(methodName);
-			BeanWrapper argBw = SpringUtils.newBeanWrapper(arg);
-			if(!argBw.isReadableProperty(methodName)){
-				throw new BaseException("not property["+methodName+"] found in object: " + arg);
+		BeanWrapper bw = SpringUtils.newBeanWrapper(model);
+		if(bw.isReadableProperty(modelProperty)){
+			Object selectValue = bw.getPropertyValue(modelProperty);
+			BeanWrapper argBw = SpringUtils.newBeanWrapper(item);
+			if(!argBw.isReadableProperty(itemProperty)){
+				throw new BaseException("not property["+itemProperty+"] found in object: " + item);
 			}
-			return LangUtils.equals(selectValue, SpringUtils.newBeanWrapper(arg).getPropertyValue(methodName));
+			return LangUtils.equals(selectValue, SpringUtils.newBeanWrapper(item).getPropertyValue(itemProperty));
 		}
-		return (Boolean)ReflectUtils.checkAndInvokeMethod(methodName, target, arg);
+		return (Boolean)ReflectUtils.checkAndInvokeMethod(modelProperty, model, item);
 	}
 	
-	public static String checkedHtml(Object target, String methodName, Object arg){
+	/*public static String checkedHtml(Object target, String methodName, Object arg){
 		return checked(target, methodName, arg)?"checked=true":"";
+	}*/
+	
+	public static String checkedHtml(Object target, String methodName, Object item, String itemProperty){
+		return checked(target, methodName, item, itemProperty)?"checked=true":"";
+	}
+	
+	public static String multiCheckedHtml(Object checkedValues, Object itemValue){
+		if(checkedValues==null)
+			return "";
+		if(List.class.isInstance(checkedValues)){
+			for(Object obj : (List<?>)checkedValues){
+				if(obj.toString().equals(itemValue)){
+					return "checked=true";
+				}
+			}
+			return "";
+		}else{
+			return checkedValues.toString().equals(itemValue)?"checked=true":"";
+		}
 	}
 	
 	public static String addParam(String action, String name, String value){
