@@ -16,7 +16,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.ClassUtils;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /****
  * WebMvcConfigurationSupport
@@ -29,7 +28,7 @@ public class BaseApplicationContextSupport implements ApplicationContextAware {
 
 	private AppConfig appConfig;
 
-	@Value("${jfish.base.packages}")
+	@Value(ApplicationConfigKeys.BASE_PACKAGE_EXPR)
 	protected String jfishBasePackages;
 	
 	/*public BaseApplicationContextSupport(AppConfig appConfig) {

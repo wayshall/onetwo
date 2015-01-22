@@ -11,6 +11,8 @@ public class DictTypeVo {
 	private String remark;
 	private Integer sort;
 	private Boolean valid;
+	//如果是枚举值，不可修改
+	protected Boolean enumValue;
 	
 	private List<DictionaryEntity> dicts;
 	
@@ -54,6 +56,14 @@ public class DictTypeVo {
 
 	public void setValid(Boolean valid) {
 		this.valid = valid;
+	}
+
+	public Boolean getEnumValue() {
+		return enumValue;
+	}
+
+	public void setEnumValue(Boolean enumValue) {
+		this.enumValue = enumValue;
 	}
 
 	
