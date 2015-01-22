@@ -67,6 +67,8 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 */
 	@Column(name="IS_VALID")
 	protected Boolean valid = true;
+	@Column(name="IS_ENUM_VALUE")
+	protected Boolean enumValue = true;
   
 	/*****
 	 * 
@@ -186,6 +188,18 @@ public class DictionaryEntity extends TimestampBaseEntity {
 
 	public Boolean getValid() {
 		return valid;
+	}
+
+
+
+
+	public Boolean getEnumValue() {
+		return enumValue;
+	}
+
+
+	public void setEnumValue(Boolean enumValue) {
+		this.enumValue = enumValue;
 	}
 
 

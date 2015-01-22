@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity;
-import org.onetwo.plugins.admin.model.vo.DictTypeVo;
 
 public interface DictionaryService {
 	/****
@@ -24,7 +23,7 @@ public interface DictionaryService {
 	
 	
 	
-	public int importDatas(List<DictTypeVo> datas);
+	public int importDatas();
 	public DictionaryEntity findById(Long id);
 
 	public DictionaryEntity removeById(Long id);
