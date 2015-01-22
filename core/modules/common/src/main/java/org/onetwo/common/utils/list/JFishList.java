@@ -96,7 +96,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	 */
 	private static final long serialVersionUID = -3308735018101552664L;
 
-	private ArrayList<E> list;
+	private List<E> list;
 	
 	public JFishList(){
 		super();
@@ -118,7 +118,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		}
 	}
 	
-	public ArrayList<E> getList() {
+	public List<E> getList() {
 		return list;
 	}
 
@@ -239,8 +239,8 @@ public class JFishList<E> implements List<E>, Serializable {
 		return this;
 	}
 
-	public <T> List<T> getPropertyList(final String name){
-		final List<T> propValues = new JFishList<T>();
+	public <T> JFishList<T> getPropertyList(final String name){
+		final JFishList<T> propValues = new JFishList<T>();
 		this.each(new NoIndexIt<E>() {
 
 			@Override
@@ -284,6 +284,21 @@ public class JFishList<E> implements List<E>, Serializable {
 			c.index++;
 		}
 		return c;
+	}
+	
+	public JFishList<E> filter(It<E> it){
+		final JFishList<E> newlist = new JFishList<E>();
+		
+		EachContext c = new EachContext();
+		c.total = size();
+		c.index = 0;
+		for(E e : list){
+			if(it.doIt(e, c.index)){
+				newlist.add(e);
+			}
+			c.index++;
+		}
+		return newlist;
 	}
 	
 	private class SumResult {
@@ -464,14 +479,6 @@ public class JFishList<E> implements List<E>, Serializable {
 		return !list.isEmpty();
 	}
 
-	public void trimToSize() {
-		list.trimToSize();
-	}
-
-	public void ensureCapacity(int minCapacity) {
-		list.ensureCapacity(minCapacity);
-	}
-
 	public int size() {
 		return list.size();
 	}
@@ -498,10 +505,6 @@ public class JFishList<E> implements List<E>, Serializable {
 
 	public boolean containsAll(Collection<?> c) {
 		return list.containsAll(c);
-	}
-
-	public Object clone() {
-		return list.clone();
 	}
 
 	public ListIterator<E> listIterator() {

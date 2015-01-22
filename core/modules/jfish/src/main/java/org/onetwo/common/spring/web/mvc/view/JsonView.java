@@ -12,6 +12,7 @@ import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Result;
 import org.onetwo.common.utils.list.Predicate;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
@@ -68,7 +69,7 @@ public class JsonView extends MappingJackson2JsonView {
 //			SingleReturnWrapper singleModelWrapper = null;
 //			String key = null;
 			for(Map.Entry<String, Object> entry : model.entrySet()){
-				if(DataResult.class.isInstance(entry.getValue())){
+				if(Result.class.isInstance(entry.getValue())){
 					return entry.getValue();
 				}else if(SingleReturnWrapper.class.isInstance(entry.getValue())){
 					/*singleModelWrapper = (SingleReturnWrapper) entry.getValue();
