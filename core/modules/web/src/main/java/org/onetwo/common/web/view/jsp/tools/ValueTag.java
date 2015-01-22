@@ -26,7 +26,7 @@ public class ValueTag extends AbstractTagSupport {
 		Map<String, ValueTagProvider> temp = LangUtils.newHashMap();
 		List<ValueTagProvider> typeList = SpringApplication.getInstance().getBeans(ValueTagProvider.class);
 		for(ValueTagProvider type : typeList){
-			temp.put(type.getValueType(), type);
+			temp.put(type.getValueProvider(), type);
 		}
 		typeMap = ImmutableMap.copyOf(temp);
 	}

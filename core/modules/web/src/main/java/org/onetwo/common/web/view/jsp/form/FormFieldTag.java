@@ -21,8 +21,9 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	 * 
 	 */
 	private static final long serialVersionUID = -5324408407472195764L;
-	private FormFieldType type = FormFieldType.input;
-	private String typeString;
+	private FormFieldType formFieldType = FormFieldType.input;
+	private String type;
+	private String provider;
 	private boolean showErrorTag = true;
 	private String errorPath;
 //	private String render;
@@ -46,13 +47,13 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private boolean showLoadingText = true;
 
 //	private boolean ignoreField;
-	private final Map<String, FormFieldTypePopulater<? extends FormFieldTagBean>> pupulaterMap;
+	private final Map<String, ExtFormFieldPopulater> pupulaterMap;
 	
 	public FormFieldTag(){
-		Map<String, FormFieldTypePopulater<? extends FormFieldTagBean>> temp = LangUtils.newHashMap();
-		List<FormFieldTypePopulater> populaters = SpringApplication.getInstance().getBeans(FormFieldTypePopulater.class);
-		for(FormFieldTypePopulater<? extends FormFieldTagBean> fp : populaters){
-			temp.put(fp.getFieldType(), fp);
+		Map<String, ExtFormFieldPopulater> temp = LangUtils.newHashMap();
+		List<ExtFormFieldPopulater> populaters = SpringApplication.getInstance().getBeans(ExtFormFieldPopulater.class);
+		for(ExtFormFieldPopulater fp : populaters){
+			temp.put(fp.getProvider(), fp);
 		}
 		pupulaterMap = ImmutableMap.copyOf(temp);
 	}
@@ -60,13 +61,17 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	
 	@Override
 	public FormFieldTagBean createComponent() {
-		if(type==FormFieldType.unknow){
-			FormFieldTypePopulater<? extends FormFieldTagBean> populater = this.pupulaterMap.get(typeString);
+		if(StringUtils.isNotBlank(provider)){
+			ExtFormFieldPopulater populater = getPopulater();
 			if(populater!=null){
 				return populater.createTagBean(this);
 			}
 		}
-		return FormUIFactory.createUIBean(type);
+		return FormUIFactory.createUIBean(formFieldType);
+	}
+	
+	protected ExtFormFieldPopulater getPopulater(){
+		return this.pupulaterMap.get(provider);
 	}
 	
 	protected FormTagBean getFormTagBean(){
@@ -76,7 +81,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
 		
-		component.setType(type);
+		component.setType(formFieldType);
 		component.setErrorTag(showErrorTag);
 		component.setErrorPath(errorPath);
 //		component.setRender(render);
@@ -87,7 +92,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setModelAttribute(modelAttribute);
 		component.setShowLoadingText(showLoadingText);
 		
-		switch (type) {
+		switch (formFieldType) {
 			case input:
 			case password:
 				break;
@@ -110,11 +115,18 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 	
 			default:
-				FormFieldTypePopulater populater = this.pupulaterMap.get(typeString);
+				/*ExtFormFieldPopulater populater = this.pupulaterMap.get(typeString);
 				if(populater!=null){
 					populater.populateFieldComponent(this, component);
-				}
+				}*/
 				break;
+		}
+		
+		if(StringUtils.isNotBlank(provider)){
+			ExtFormFieldPopulater populater = getPopulater();
+			if(populater!=null){
+				populater.populateFieldComponent(this, component);
+			}
 		}
 		
 //		this.component.buildTagAttributesString();
@@ -156,18 +168,22 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			if(bc!=null)
 				component.setBodyContent(bc.getString());
 		}
+		if("valid".equals(component.getName())){
+			System.out.println("test");
+		}
 		formBean.addField(component);
 		return EVAL_PAGE;
 	}
 
 
 	public void setType(String type) {
+		this.type = type;
 		if(StringUtils.isBlank(type)){
-			this.type = FormFieldType.input;
+			this.formFieldType = FormFieldType.input;
 		}else{
-			this.type = FormFieldType.of(type);
-			if(this.type==FormFieldType.unknow){
-				this.typeString = type;
+			this.formFieldType = FormFieldType.of(type);
+			if(this.formFieldType==FormFieldType.unknow){
+				throw new IllegalArgumentException("unknow type: " + type);
 			}
 		}
 	}
@@ -276,8 +292,24 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	}
 
 
-	public String getTypeString() {
-		return typeString;
+	public String getProvider() {
+		return provider;
 	}
+
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+
+	public FormFieldType getFormFieldType() {
+		return formFieldType;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+
 
 }
