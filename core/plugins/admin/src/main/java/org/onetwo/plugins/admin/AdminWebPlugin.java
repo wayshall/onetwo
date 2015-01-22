@@ -3,7 +3,7 @@ package org.onetwo.plugins.admin;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.common.web.view.jsp.form.FormFieldTypePopulater;
+import org.onetwo.common.web.view.jsp.form.ExtFormFieldPopulater;
 import org.onetwo.plugins.admin.web.controller.app.AppUserController;
 import org.onetwo.plugins.admin.web.controller.data.DictionaryController;
 import org.onetwo.plugins.admin.web.tag.DictionaryPopulater;
@@ -62,7 +62,7 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 	public static class DataWebContext {
 		
 		@Bean
-		public FormFieldTypePopulater dictionaryPopulater(){
+		public ExtFormFieldPopulater dictionaryPopulater(){
 			return new DictionaryPopulater();
 		}
 	}

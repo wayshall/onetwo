@@ -3,7 +3,7 @@ package org.onetwo.common.web.view.jsp.tools;
 
 public interface ValueTagProvider {
 
-	public String getValueType();
+	public String getValueProvider();
 	public Object getValue(ValueTag tag);
 
 }
