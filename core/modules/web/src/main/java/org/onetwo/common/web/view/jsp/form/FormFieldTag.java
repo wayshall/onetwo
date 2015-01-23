@@ -226,6 +226,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	}
 
 	public void setDisabled(String disabled) {
+		if(StringUtils.isBlank(disabled))
+			return ;
 		String codePrefix = "code:";
 		if(disabled.startsWith(codePrefix)){
 			String code = disabled.substring(codePrefix.length());

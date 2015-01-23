@@ -66,9 +66,9 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 * 
 	 */
 	@Column(name="IS_VALID")
-	protected Boolean valid = true;
+	protected Boolean valid;
 	@Column(name="IS_ENUM_VALUE")
-	protected Boolean enumValue = true;
+	protected Boolean enumValue;
   
 	/*****
 	 * 

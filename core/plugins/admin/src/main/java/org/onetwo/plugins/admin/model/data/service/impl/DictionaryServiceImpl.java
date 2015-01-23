@@ -1,10 +1,12 @@
 package org.onetwo.plugins.admin.model.data.service.impl;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ExtQuery.K;
+import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.hibernate.HibernateUtils;
@@ -12,6 +14,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.ApplicationConfigKeys;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
@@ -180,8 +183,13 @@ public class DictionaryServiceImpl implements DictionaryService  {
 		return getBaseEntityManager().findOne(DictionaryEntity.class, "code", code);
 	}
 	
-	public List<DictionaryEntity> findDataByPrefixCode(String code){
-		return getBaseEntityManager().findByProperties(DictionaryEntity.class, "code:like", code+"_", "dictType", DicType.DATA, K.ASC, "sort");
+	public List<DictionaryEntity> findDataByPrefixCode(String code, Object... properties){
+		Map<Object, Object> params = CUtils.asMap(properties);
+		params.put("code:like", code+"_");
+		params.put("dictType", DicType.DATA);
+		params.put(K.ASC, "sort");
+		params.put(K.IF_NULL, IfNull.Ignore);
+		return getBaseEntityManager().findByProperties(DictionaryEntity.class,  params);
 	}
 	
 	public List<DictionaryEntity> findDataByTypeCode(String code){

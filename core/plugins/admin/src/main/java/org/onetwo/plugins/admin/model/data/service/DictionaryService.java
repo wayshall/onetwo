@@ -11,7 +11,7 @@ public interface DictionaryService {
 	 * @param code
 	 * @return
 	 */
-	public List<DictionaryEntity> findDataByPrefixCode(String code);
+	public List<DictionaryEntity> findDataByPrefixCode(String code, Object... properties);
 	/***
 	 * 根据代码查找字典或类型
 	 * @param code
