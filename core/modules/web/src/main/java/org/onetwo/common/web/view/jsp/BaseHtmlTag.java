@@ -205,5 +205,10 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 			throws JspException {
 		this.dynamicAttributes.put(localName, value);
 	}
-	
+
+	public Object getDynamicAttribute(String attr) {
+		if(LangUtils.isEmpty(dynamicAttributes))
+			return null;
+		return dynamicAttributes.get(attr);
+	}
 }
