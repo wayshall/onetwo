@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.jsp.form.AbstractExtFormFieldPopulater;
@@ -39,7 +40,9 @@ public class DictionaryPopulater extends AbstractExtFormFieldPopulater implement
 			FormItemsTagBean itemsBean = (FormItemsTagBean) tagBean;
 			
 			String typeCode = tag.getItems().toString();
-			List<DictionaryEntity> dicts = dictionaryService.findDataByPrefixCode(typeCode);
+
+			String[] excludeCodes = GuavaUtils.split(StringUtils.emptyIfNull(tag.getDynamicAttribute("excludeCodes")), ";");
+			List<DictionaryEntity> dicts = dictionaryService.findDataByPrefixCode(typeCode, "code:not in", excludeCodes);
 			itemsBean.setItemDatas(dicts);
 		}else{
 			throw new IllegalArgumentException("error type for dictionary: " + tag.getType());
