@@ -25,7 +25,8 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 
 	public BaseException(String msg, Throwable cause) {
-		super("[" + msg + "] : " + (cause==null?"":cause.getMessage()), cause);
+		super(msg, cause);
+//		super("[" + msg + "] : " + (cause==null?"":cause.getMessage()), cause);
 	}
 
 	public BaseException(String msg, Throwable cause, String code) {

@@ -33,6 +33,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 
+import freemarker.template.TemplateException;
+
 public class DynamicQueryHandler implements InvocationHandler {
 	
 	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
@@ -79,7 +81,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		} catch (HibernateException e) {
 			throw (HibernateException) e;
 		}catch (Throwable e) {
-			throw new BaseException("invoke query["+method.getDeclaringClass().getSimpleName()+"."+method.getName()+"] error : " + e.getMessage(), e);
+			throw new BaseException("invoke query error : " + e.getMessage(), e);
 		}
 		
 	}
