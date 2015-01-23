@@ -45,7 +45,7 @@ public class DateInterval {
 	
 	private void checkInterval(){
 		if(startMillis>endMillis)
-			throw new IllegalArgumentException("the start can not greater than end");
+			throw new IllegalArgumentException("the start date can not greater than end date");
 	}
 	
 

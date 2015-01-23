@@ -1,13 +1,10 @@
 package org.onetwo.common.web.view.jsp.grid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ajaxanywhere.AAUtils;
-import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.HtmlElement;
 
 public class RowTagBean extends HtmlElement{
@@ -57,8 +54,6 @@ public class RowTagBean extends HtmlElement{
 		return RowType.header==type;
 	}
 	public boolean isRenderHeader() {
-		if(AAUtils.isAjaxRequest(WebHolder.getRequest()))
-			return false;
 		return renderHeader;
 	}
 	public boolean isFieldEmpty(){
