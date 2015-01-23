@@ -58,15 +58,30 @@ public class TomcatServer {
 				hp.setCompressableMimeTypes("text/html,text/xml,text/plain,application/octet-stream");
 			}
 			
+			
 			StandardServer server = (StandardServer) tomcat.getServer();
 			AprLifecycleListener listener = new AprLifecycleListener();
 			server.addLifecycleListener(listener);
 
 			tomcat.addWebapp(webConfig.getContextPath(), webConfig.getWebappDir());
 			tomcat.start();
+			printConnectors();
 			tomcat.getServer().await();
 		} catch (Exception e) {
 			throw new BaseException("web server start error , check it. " + e.getMessage(), e);
 		}
+	}
+	
+	protected void printConnectors(){
+		Connector[] cons = tomcat.getService().findConnectors();
+		for(Connector con : cons){
+			System.out.println("Connector: " + con);
+		}
+	}
+	
+	protected void addSSLConnector(){
+		Connector connector = new Connector("HTTP/1.1");
+        // connector = new Connector("org.apache.coyote.http11.Http11Protocol"); 
+        connector.setPort(8443);
 	}
 }
