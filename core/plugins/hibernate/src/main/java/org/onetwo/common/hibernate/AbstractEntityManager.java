@@ -146,7 +146,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		if(entity==null)
 			return null;
 		if(!ILogicDeleteEntity.class.isAssignableFrom(entity.getClass())){
-			throw new ServiceException("实体不支持删除！");
+			throw new ServiceException("实体不支持逻辑删除，请实现相关接口！");
 		}
 		T logicDeleteEntity = (T) entity;
 		logicDeleteEntity.deleted();
