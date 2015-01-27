@@ -10,6 +10,7 @@ package org.onetwo.common.web.view.jsp.form;
  */
 public enum FormFieldType {
 	input,
+	text,
 	date,
 	password,
 	file,

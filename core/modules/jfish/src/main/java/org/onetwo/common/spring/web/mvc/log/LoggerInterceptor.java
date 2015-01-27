@@ -61,14 +61,18 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		info.setUrl(url);
 //		info.setParameters(request.getParameterMap());
 		for(Entry<String, String[]> entry : request.getParameterMap().entrySet()){
-			try {
+			/*try {
 				if(matcher.match(entry.getKey())){
-					continue;
+					info.addParameter(entry.getKey(), entry.getValue());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}*/
+			if(matcher.match(entry.getKey())){
+				info.addParameter(entry.getKey(), entry.getValue());
+			}else{
+				info.addParameter(entry.getKey(), "******");
 			}
-			info.addParameter(entry.getKey(), entry.getValue());
 		}
 		
 		UserDetail userdetail = JFishWebUtils.getUserDetail();

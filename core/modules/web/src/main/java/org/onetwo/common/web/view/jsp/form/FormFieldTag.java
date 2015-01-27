@@ -94,15 +94,17 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		
 		switch (formFieldType) {
 			case input:
+			case text:
 			case password:
-				break;
-			case hidden:
-				component.setErrorTag(false);
+			case unknow:
 				break;
 			case textarea:
 			case radio:
 			case file:
 			case checkbox:
+				break;
+			case hidden:
+				component.setErrorTag(false);
 				break;
 			case select:
 			case radioGroup:
