@@ -23,6 +23,7 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	
 
 	private PluginManagerInitializer pluginManagerInitializer = new ContextPluginManagerInitializer();
+	private boolean pluginEnabled = true;
 	private String appEnvironment;
 	
 	private Class<?>[] annotatedClasses;
@@ -36,7 +37,12 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	protected void prepareRefresh() {
 		Assert.hasText(appEnvironment);
 		JFishList<Class<?>> configClasseList = JFishList.create();
-		this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		if(pluginEnabled){
+			if(pluginManagerInitializer==null){
+				pluginManagerInitializer = new ContextPluginManagerInitializer();
+			}
+			this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		}
 		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
 			register(configClasseList.toArray(new Class<?>[0]));
@@ -158,6 +164,14 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 
 	public void setAppEnvironment(String appEnvironment) {
 		this.appEnvironment = appEnvironment;
+	}
+
+	public boolean isPluginEnabled() {
+		return pluginEnabled;
+	}
+
+	public void setPluginEnabled(boolean pluginEnabled) {
+		this.pluginEnabled = pluginEnabled;
 	}
 	
 	
