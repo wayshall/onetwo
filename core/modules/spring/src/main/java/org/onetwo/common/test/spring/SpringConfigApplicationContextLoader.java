@@ -13,7 +13,16 @@ public class SpringConfigApplicationContextLoader extends AbstractContextLoader 
 
 	protected Class<?>[] getClassArray(){ return null; };
 	protected String getAppEnvironment(){ return "test"; };
+	private final boolean pluginEnabled;
 	
+	public SpringConfigApplicationContextLoader(){
+		this.pluginEnabled = true;
+	}
+	
+	public SpringConfigApplicationContextLoader(boolean pluginEnabled) {
+		super();
+		this.pluginEnabled = pluginEnabled;
+	}
 	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
 		AbstractRefreshableConfigApplicationContext context = createContext();
 		return context;
@@ -21,6 +30,7 @@ public class SpringConfigApplicationContextLoader extends AbstractContextLoader 
 
 	protected AbstractRefreshableConfigApplicationContext createContext(){
 		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
+		context.setPluginEnabled(pluginEnabled);
 		context.setAppEnvironment(getAppEnvironment());
 		if(!LangUtils.isEmpty(getClassArray()))
 			context.register(getClassArray());
