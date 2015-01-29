@@ -25,14 +25,14 @@ public class SqlParamterPostfixFunctions {
 		});
 
 
-		register("prelike", new SqlParamterPostfixFunction(){
+		register(new String[]{"prelike", "prelikeString"}, new SqlParamterPostfixFunction(){
 			@Override
 			public Object toSqlString(String paramName, Object value) {
 				return StringUtils.appendStartWith(value.toString(), "%");
 			}
 		});
 
-		register("postlike", new SqlParamterPostfixFunction(){
+		register(new String[]{"postlike", "postlikeString"}, new SqlParamterPostfixFunction(){
 			@Override
 			public Object toSqlString(String paramName, Object value) {
 				return StringUtils.appendEndWith(value.toString(), "%");

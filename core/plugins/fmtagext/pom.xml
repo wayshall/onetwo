@@ -31,7 +31,12 @@
 	  <artifactId>onetwo-plugin-fmtag</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
-	 
+
+	<dependency>
+	  <groupId>javax.servlet</groupId>
+	  <artifactId>javax.servlet-api</artifactId>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
