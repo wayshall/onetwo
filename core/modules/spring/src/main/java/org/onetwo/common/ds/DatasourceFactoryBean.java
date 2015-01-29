@@ -51,7 +51,7 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 					bw.setPropertyValue(propertyName, value);
 					logger.info("set property: {}={} ", propertyName, value);
 				}else{
-					logger.info("ignore property: {}", propertyName);
+					logger.info("ignore property: {}={}", propertyName, value);
 				}
 			}else{
 				bw.setPropertyValue(propertyName, value);

@@ -27,8 +27,13 @@
 	
 	<dependency>
 	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-spring</artifactId>
-	  <version>${onetwo.version}</version>
+	  <artifactId>onetwo-jfish</artifactId>
+	  <version>${onetwo.jfish.version}</version>
+	</dependency>
+
+	<dependency>
+	  <groupId>javax.servlet</groupId>
+	  <artifactId>javax.servlet-api</artifactId>
 	</dependency>
 	
 	<dependency>
@@ -46,6 +51,12 @@
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-permission</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-security</artifactId>
 	  <version>${onetwo.plugin.version}</version>
 	</dependency>
 	
