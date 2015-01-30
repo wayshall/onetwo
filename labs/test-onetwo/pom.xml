@@ -318,6 +318,12 @@
 		  <artifactId>embedded-redis</artifactId>
 		  <version>0.3</version>
 		</dependency>
+  	
+  	<dependency>
+	  <groupId>org.onetwo.plugins</groupId>
+	  <artifactId>onetwo-plugin-monitor</artifactId>
+	  <version>${onetwo.plugin.version}</version>
+	</dependency>
     
   </dependencies>
   

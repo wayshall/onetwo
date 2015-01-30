@@ -1,17 +1,22 @@
 package org.onetwo.common.web.server;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class ServerConfig {
 	private int port = 8080;
 	private String appName;
-	private String webappDir;
-	private String contextPath;
+//	private String webappDir;
+//	private String contextPath;
 	private String serverBaseDir;
 	private int redirectPort = 8443;
+	
+	private WebappConfig defaultWebappConfig;
+	private final Collection<WebappConfig> webapps = LangUtils.newHashSet();
 
 	public int getPort() {
 		return port;
@@ -21,11 +26,45 @@ public class ServerConfig {
 		this.port = port;
 	}
 	
+	public ServerConfig addWebapp(String webappDir, String contextPath){
+		webapps.add(new WebappConfig(webappDir, contextPath));
+		return this;
+	}
+	
+	public ServerConfig addProjectBaseWebapp(String webappDir){
+		String realPath = getProjectMainDir()+StringUtils.appendStartWith(webappDir, "/");
+		webapps.add(new WebappConfig(realPath, webappDir));
+		return this;
+	}
+	
+	public ServerConfig addProjectBaseWebapp(String webappDir, String contextPath){
+		String realPath = getProjectMainDir()+StringUtils.appendStartWith(webappDir, "/");
+		webapps.add(new WebappConfig(realPath, contextPath));
+		return this;
+	}
+	
+	public Collection<WebappConfig> getWebapps() {
+		return webapps;
+	}
+
 	private File getProjectDir(){
 		String baseDirPath = FileUtils.getResourcePath("");
 		File baseDir = new File(baseDirPath);
 		baseDir = baseDir.getParentFile().getParentFile();
 		return baseDir;
+	}
+	
+	public String getProjectMainDir(){
+		return getProjectDir().getPath() + "/src/main";
+	}
+
+	public WebappConfig getDefaultWebappConfig() {
+		if(defaultWebappConfig==null){
+			defaultWebappConfig  = new WebappConfig();
+			defaultWebappConfig.setContextPath("/"+getAppName());
+			defaultWebappConfig.setWebappDir(getProjectMainDir() + "/webapp");
+		}
+		return defaultWebappConfig;
 	}
 
 	public String getAppName() {
@@ -40,25 +79,28 @@ public class ServerConfig {
 	}
 
 	public String getWebappDir() {
-		if(StringUtils.isBlank(webappDir)){
+		/*if(StringUtils.isBlank(webappDir)){
 			webappDir = getProjectDir().getPath() + "/src/main/webapp";
 		}
-		return webappDir;
+		return webappDir;*/
+		return getDefaultWebappConfig().getWebappDir();
 	}
 
 	public void setWebappDir(String webappDir) {
-		this.webappDir = webappDir;
+		this.getDefaultWebappConfig().setWebappDir(webappDir);
 	}
 
 	public String getContextPath() {
-		if(StringUtils.isBlank(contextPath)){
+		/*if(StringUtils.isBlank(contextPath)){
 			return "/"+getAppName();
 		}
-		return contextPath;
+		return contextPath;*/
+		return getDefaultWebappConfig().getContextPath();
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+//		this.contextPath = contextPath;
+		getDefaultWebappConfig().setContextPath(contextPath);
 	}
 
 	public String getServerBaseDir() {
