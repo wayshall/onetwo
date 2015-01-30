@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.plugin;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +7,7 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.utils.ResourceUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -16,16 +16,15 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
  public class SpringContextPluginManager<T extends ContextPluginMeta> implements ContextPluginManager {
 
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
+
 	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	protected JFishList<T> pluginMetas;
 	private String pluginPath = PLUGIN_PATH;
-	private PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 	private final String appEnvironment;
 	private final Map<String, PluginInfo> pluginConfs = new LinkedHashMap<String, PluginInfo>();
 	
@@ -43,6 +42,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 	public String getAppEnvironment() {
 		return appEnvironment;
 	}
+	
 
 	/****
 	 * scan plugins on webapp application start 
@@ -55,14 +55,14 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 	 */
 	@Override
 	public void scanPlugins(){
-		JFishList<Resource> pluginFiles = null;
-		try {
+		JFishList<Resource> pluginFiles = ResourceUtils.scanResources(pluginPath);
+		/*try {
 			Resource[] resources = patternResolver.getResources(pluginPath);
 			pluginFiles = new JFishList<Resource>(resources.length);
 			pluginFiles.addArray(resources);
 		} catch (IOException e1) {
 			throw new ContextPluginException("scan plugin error: " + e1.getMessage(), e1);
-		}
+		}*/
 		
 		pluginFiles.each(new NoIndexIt<Resource>(){
 
@@ -108,6 +108,10 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 	};*/
 	
 	private void initPlugin(Map<String, PluginInfo> pluginConfs, PluginInfo plugin, PluginInfo childPlugin){
+		//if tomcat webapp plugin, ignore
+		if(plugin.isWebappPlugin()){
+			return ;
+		}
 		String scope = getAppEnvironment();
 		if(!plugin.applyOnScope(scope)){
 			if(childPlugin!=null){

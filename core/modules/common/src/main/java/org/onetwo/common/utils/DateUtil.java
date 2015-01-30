@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.text.DateFormatSymbols;
 import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -143,6 +144,14 @@ abstract public class DateUtil {
 				@Override
 				public synchronized StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition){
 					return super.format(date, toAppendTo, fieldPosition);
+				}
+				
+				public synchronized void set2DigitYearStart(Date startDate){
+					super.set2DigitYearStart(startDate);
+				}
+				
+				public synchronized void setDateFormatSymbols(DateFormatSymbols newFormatSymbols){
+					super.setDateFormatSymbols(newFormatSymbols);
 				}
 				
 			};
