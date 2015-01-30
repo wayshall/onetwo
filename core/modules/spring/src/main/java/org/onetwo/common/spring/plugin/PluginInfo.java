@@ -15,6 +15,8 @@ public class PluginInfo {
 		public static final String DESC = "desc";
 		public static final String DEPENDENCY = "dependency";
 		public static final String SCOPE = "scope";
+		public static final String WEBAPP_PLUGIN = "webapp.plugin";
+		public static final String WEBAPP_PLUGIN_SERVER_LISTENER = "webapp.plugin.server.listener";
 	}
 	
 	public void init(JFishProperties prop){
@@ -32,6 +34,9 @@ public class PluginInfo {
 		List<String> dependency = prop.getPropertyWithSplit(PKeys.DEPENDENCY, ",");
 		info.dependency = dependency;
 		info.scopes = prop.getPropertyWithSplit(PKeys.SCOPE, ",");
+		
+		info.webappPlugin = prop.getBoolean(PKeys.WEBAPP_PLUGIN, false);
+		info.webappPluginServerListener = prop.getProperty(PKeys.WEBAPP_PLUGIN_SERVER_LISTENER, "");
 		
 		prop.remove(PKeys.NAME);
 		prop.remove(PKeys.VERSION);
@@ -52,6 +57,9 @@ public class PluginInfo {
 	private List<String> dependency;
 	
 	private boolean initialized;
+	
+	private boolean webappPlugin;
+	private String webappPluginServerListener;
 
 	public String getVersion() {
 		return version;
@@ -108,6 +116,14 @@ public class PluginInfo {
 	public String wrapAsContextPath(String pluginContextUrl){
 		String path = StringUtils.appendStartWith(pluginContextUrl, "/");
 		return contextPath + path;
+	}
+
+	public boolean isWebappPlugin() {
+		return webappPlugin;
+	}
+
+	public String getWebappPluginServerListener() {
+		return webappPluginServerListener;
 	}
 
 }
