@@ -1,9 +1,7 @@
 package org.onetwo.common.spring;
 
-import java.io.IOException;
-
 import org.junit.Test;
-import org.onetwo.common.spring.plugin.ContextPluginException;
+import org.onetwo.common.spring.plugin.SpringContextPluginManager;
 import org.onetwo.common.spring.utils.ResourceUtils;
 import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
 import org.onetwo.common.utils.list.JFishList;
@@ -14,12 +12,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 public class ScanResourceTest {
 
-	public static final String PLUGIN_WEBAPP_PATH = "classpath*:META-INF/webapp";
 	private PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 
 	@Test
 	public void testScan(){
-		JFishList<Resource> pluginFiles = ResourceUtils.scanResources(PLUGIN_WEBAPP_PATH);
+		JFishList<Resource> pluginFiles = ResourceUtils.scanResources(SpringContextPluginManager.PLUGIN_PATH);
 		
 		System.out.println("pluginFiles: " + pluginFiles.size());
 		pluginFiles.each(new NoIndexIt<Resource>(){
