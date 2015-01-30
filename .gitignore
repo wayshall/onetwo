@@ -7,7 +7,7 @@ pom.properties
 .gitignore.sublime-workspace
 
 .class
-.jar
+*.jar
 .war
 .ear
 .log
