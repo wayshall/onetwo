@@ -17,6 +17,9 @@
  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <aether.version>1.13.1</aether.version>
+    <hawtio.version>1.4.45</hawtio.version>
+    <lucene.version>3.6.2</lucene.version>
   </properties>
 
  
@@ -37,6 +40,188 @@
 	  <artifactId>onetwo-web</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency>
+	
+	<dependency>
+	  <groupId>org.sonatype.aether</groupId>
+	  <artifactId>aether-impl</artifactId>
+	  <version>${aether.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.sonatype.aether</groupId>
+	  <artifactId>aether-connector-file</artifactId>
+	  <version>${aether.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.sonatype.aether</groupId>
+	  <artifactId>aether-connector-wagon</artifactId>
+	  <version>${aether.version}</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>commons-fileupload</groupId>
+	  <artifactId>commons-fileupload</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+	  <version>3.1.0</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>commons-lang</groupId>
+	  <artifactId>commons-lang</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-core</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-git</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-ide</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-aether</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-json-schema-mbean</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-local-jvm-mbean</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>1.6</version>
+      <scope>system</scope>
+      <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+    </dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-maven-indexer</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-system</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>io.hawt</groupId>
+	  <artifactId>hawtio-kubernetes</artifactId>
+	  <version>${hawtio.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpclient</artifactId>
+		<version>4.3.5</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpcore</artifactId>
+		<version>4.3.2</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.maven.indexer</groupId>
+	  <artifactId>indexer-artifact</artifactId>
+	  <version>5.1.1</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.maven.indexer</groupId>
+	  <artifactId>indexer-core</artifactId>
+	  <version>5.1.1</version>
+	</dependency>	
+	<dependency>
+	  <groupId>jakarta-regexp</groupId>
+	  <artifactId>jakarta-regexp</artifactId>
+	  <version>1.4</version>
+	</dependency>	
+	<dependency>
+	  <groupId>org.jolokia</groupId>
+	  <artifactId>jolokia-core</artifactId>
+	  <version>1.2.3</version>
+	</dependency>	
+	<dependency>
+	  <groupId>org.jolokia</groupId>
+	  <artifactId>jolokia-jvm</artifactId>
+	  <version>1.2.3</version>
+	</dependency>	
+	<dependency>
+	  <groupId>com.googlecode.json-simple</groupId>
+	  <artifactId>json-simple</artifactId>
+	  <version>1.1.1</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.jsoup</groupId>
+	  <artifactId>jsoup</artifactId>
+	  <version>1.7.2</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.lucene</groupId>
+	  <artifactId>lucene-core</artifactId>
+	  <version>${lucene.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.lucene</groupId>
+	  <artifactId>lucene-highlighter</artifactId>
+	  <version>${lucene.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.lucene</groupId>
+	  <artifactId>lucene-memory</artifactId>
+	  <version>${lucene.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.lucene</groupId>
+	  <artifactId>lucene-queries</artifactId>
+	  <version>${lucene.version}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.xbean</groupId>
+	  <artifactId>xbean-reflect</artifactId>
+	  <version>3.7</version>
+	</dependency>
+	<dependency>
+	  <groupId>javax.validation</groupId>
+	  <artifactId>validation-api</artifactId>
+	  <version>1.1.0.Final</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.sonatype.maven</groupId>
+	  <artifactId>wagon-ahc</artifactId>
+	  <version>1.2.1</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.maven.wagon</groupId>
+	  <artifactId>wagon-http</artifactId>
+	  <version>2.7</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.maven.wagon</groupId>
+	  <artifactId>wagon-http-shared</artifactId>
+	  <version>2.7</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.maven.wagon</groupId>
+	  <artifactId>wagon-provider-api</artifactId>
+	  <version>2.7</version>
+	</dependency>
 	 
     <dependency>
       <groupId>junit</groupId>
@@ -45,5 +230,27 @@
     </dependency>
     
   </dependencies>
+  
+  <build>
+  	<plugins>
+  		<plugin>  
+		    <artifactId>maven-assembly-plugin</artifactId>  
+		    <executions>  
+		        <execution>  
+		            <id>build-jar</id>
+		        <phase>package</phase>
+		        <goals>    
+		           <goal>single</goal>
+		        </goals>    
+		            <configuration>  
+	                    <descriptors>
+                        	<descriptor>jar.xml</descriptor>  
+	                    </descriptors>  
+		            </configuration>  
+		        </execution>  
+		    </executions>  
+		 </plugin>  
+  	</plugins>
+  </build>
   
 </project>
