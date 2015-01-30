@@ -8,6 +8,7 @@ public class WebServerListener {
 	
 	@Subscribe
 	public void lister(WebappAddEvent event ){
+		//http://hawt.io/configuration/index.html
 		System.setProperty("hawtio.authenticationEnabled", "false");
 	}
 
