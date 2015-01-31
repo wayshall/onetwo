@@ -33,7 +33,7 @@ public class DefaultTaskListenerManager implements TaskListenerManager, Initiali
 	public void afterPropertiesSet() throws Exception {
 		List<TaskTypeMapper> mappers = SpringUtils.getBeans(applicationContext, TaskTypeMapper.class);
 		for(TaskTypeMapper mapper : mappers){
-			TaskType[] types = mapper.getListenerMappedTaskTypes();
+			TaskType[] types = mapper.getTaskTypes();
 			Assert.notEmpty(types);
 			for(TaskType type : types){
 				if(TaskExecuteListener.class.isInstance(mapper)){

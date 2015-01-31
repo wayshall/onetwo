@@ -1,6 +1,7 @@
 package org.onetwo.app.taskservice.actor;
 
 import org.onetwo.app.taskservice.service.TaskListenerManager;
+import org.onetwo.app.taskservice.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.entity.TaskQueue;
 import org.onetwo.plugins.task.utils.TaskResult;
 
@@ -18,9 +19,9 @@ public class TaskMasterActor extends UntypedActor {
 	private final ActorRef taskWorkActor;
 	private final ActorRef taskResultActor;
 
-	public TaskMasterActor(TaskListenerManager taskListenerManager, int numbOfWorkerInst) {
+	public TaskMasterActor(TaskListenerManager taskListenerManager, TaskQueueServiceImpl taskQueueService, int numbOfWorkerInst) {
 		super();
-		taskWorkActor = getContext().actorOf(Props.create(TaskExecActor.class, taskListenerManager).withRouter(new RoundRobinPool(numbOfWorkerInst)));
+		taskWorkActor = getContext().actorOf(Props.create(TaskExecActor.class, taskListenerManager, taskQueueService).withRouter(new RoundRobinPool(numbOfWorkerInst)));
 		taskResultActor = getContext().actorOf(Props.create(TaskResultActor.class, taskListenerManager));
 	}
 
