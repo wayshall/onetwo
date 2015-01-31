@@ -25,6 +25,9 @@ public class DefaultTaskProcessor implements InitializingBean, DisposableBean {
 //	private int timeoutInSeconds=10;
 	@Resource
 	private TaskListenerManager taskListenerManager;
+	@Resource
+	private TaskQueueServiceImpl taskQueueService;
+	
 	private int numberOfWorkerInst = 1;
 	private AtomicInteger queueSize = new AtomicInteger(0);
 	
@@ -36,7 +39,7 @@ public class DefaultTaskProcessor implements InitializingBean, DisposableBean {
 //		TaskListenerManager taskListenerManager = SpringApplication.getInstance().getBean(TaskListenerManager.class, true);
 		
 		system = ActorSystem.create(systemName);
-		masterAcotr = system.actorOf(Props.create(TaskMasterActor.class, taskListenerManager, numberOfWorkerInst));
+		masterAcotr = system.actorOf(Props.create(TaskMasterActor.class, taskListenerManager, taskQueueService, numberOfWorkerInst));
 	}
 	
 	public void sendTask(TaskQueue taskData){

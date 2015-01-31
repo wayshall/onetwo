@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.Size;
 
 import org.onetwo.plugins.task.utils.TaskConstant.TaskExecResult;
 import org.onetwo.plugins.task.utils.TaskUtils;
@@ -31,12 +32,15 @@ public class TaskExecLog implements Serializable {
 	private Long id;
 	@Enumerated(EnumType.STRING)
 	private TaskExecResult result;
+	@Size(max=20)
 	private String executor;
 	
 	private Date startTime;
 	private Date endTime;
 
+	@Size(max=4000)
 	private String taskInput;
+	@Size(max=4000)
 	private String taskOutput;
 	
 	private Long taskQueueId;

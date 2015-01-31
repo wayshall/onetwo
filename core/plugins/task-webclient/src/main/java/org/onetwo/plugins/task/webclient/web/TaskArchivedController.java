@@ -9,8 +9,8 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
 import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.task.entity.TaskQueueArchived;
-import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.webclient.TaskModule.Archived;
+import org.onetwo.plugins.task.webclient.service.impl.TaskQueueClientServiceImpl;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,19 +20,19 @@ import org.springframework.web.servlet.ModelAndView;
 public class TaskArchivedController extends PluginSupportedController {
 	
 	@Resource
-	private TaskQueueServiceImpl taskQueueService;
+	private TaskQueueClientServiceImpl taskQueueClientService;
 	
 	@ByMenuClass(codeClass=Archived.List.class)
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(Page<TaskQueueArchived> page, TaskQueueArchived archived){
-		taskQueueService.findArchivedPage(page, "result", archived.getResult(), K.DESC, "id", K.IF_NULL, IfNull.Ignore);
+		taskQueueClientService.findArchivedPage(page, "result", archived.getResult(), K.DESC, "id", K.IF_NULL, IfNull.Ignore);
 		return pluginMv("task-archived-index", "page", page);
 	}
 	
 	@ByFunctionClass(codeClass=Archived.ReQueue.class)
 	@RequestMapping(value="/requeue/{id}", method=RequestMethod.PUT)
 	public ModelAndView requeue(@PathVariable("id") Long id){
-		taskQueueService.requeueArchived(id);
+		taskQueueClientService.requeueArchived(id);
 		return pluginRedirectTo("/taskarchived", "操作成功，已重新放入对垒！");
 	}
 	

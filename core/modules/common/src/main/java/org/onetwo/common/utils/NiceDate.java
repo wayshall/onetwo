@@ -158,6 +158,16 @@ public class NiceDate {
 		return this;
 	}
 	
+	public NiceDate nextMinute(int amount){
+		calendar.add(Calendar.MINUTE, amount);
+		return this;
+	}
+	
+	public NiceDate nextSecond(int amount){
+		calendar.add(Calendar.SECOND, amount);
+		return this;
+	}
+	
 	/*public NiceDate increaseDay(int numb){
 		DateUtil.increaseDay(calendar, numb);
 		return this;

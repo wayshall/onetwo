@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.Size;
 
 import org.onetwo.plugins.task.utils.TaskType;
 import org.onetwo.plugins.task.utils.TaskUtils;
@@ -32,7 +33,9 @@ public class TaskBase implements Serializable {
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskBaseEntityGenerator") 
 	@Column(name="ID")
 	private Long id;
+	@Size(max=100)
 	private String name;
+	@Size(max=20)
 	private String type;
 	
 	@ManyToOne

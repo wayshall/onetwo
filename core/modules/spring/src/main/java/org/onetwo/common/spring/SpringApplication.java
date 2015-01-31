@@ -58,8 +58,6 @@ public class SpringApplication {
 		try {
 			if(ConfigurableApplicationContext.class.isInstance(webappContext))
 				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
-			instance.baseEntityManager = instance.getBean(BaseEntityManager.class);
-			instance.contextHolder = instance.getBean(ContextHolder.class);
 		} catch (Exception e) {
 			logger.error("can not find the BaseEntityManager, ignore it: " + e.getMessage());
 		}
@@ -208,7 +206,12 @@ public class SpringApplication {
 	}
 
 	public BaseEntityManager getBaseEntityManager() {
-		return baseEntityManager;
+		BaseEntityManager be = baseEntityManager;
+		if(be==null){
+			be = getBean(BaseEntityManager.class);
+			baseEntityManager = be;
+		}
+		return be;
 	}
 	
 
@@ -223,7 +226,12 @@ public class SpringApplication {
 	}
 
 	public ContextHolder getContextHolder() {
-		return contextHolder;
+		ContextHolder ch = contextHolder;
+		if(ch==null){
+			ch = getBean(ContextHolder.class);
+			contextHolder = ch;
+		}
+		return ch;
 	}
 
 }
