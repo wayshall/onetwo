@@ -6,10 +6,10 @@ import javax.annotation.Resource;
 
 import org.onetwo.app.taskservice.TaskServerConfig;
 import org.onetwo.app.taskservice.service.impl.DefaultTaskProcessor;
+import org.onetwo.app.taskservice.service.impl.TaskQueueServiceImpl;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.timer.QuartzJobTask;
 import org.onetwo.plugins.task.entity.TaskQueue;
-import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;

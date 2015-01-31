@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.plugins.email.EmailTextType;
@@ -21,13 +22,18 @@ public class TaskEmail extends TaskBase {
 	 * 
 	 */
 	private static final long serialVersionUID = -6892549859686221264L;
+	@Size(max=100)
 	private String subject;
+	@Size(max=4000)
 	private String content;
+	@Size(max=2000)
 	private String attachmentPath;
 	@Column(name="IS_HTML")
 	private boolean html;
-	
+
+	@Size(max=500)
 	private String ccAddress;
+	@Size(max=4000)
 	private String toAddress;
 	
 	@Enumerated(EnumType.STRING)

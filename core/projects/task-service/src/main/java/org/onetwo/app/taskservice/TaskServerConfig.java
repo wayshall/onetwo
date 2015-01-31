@@ -34,6 +34,14 @@ public class TaskServerConfig extends AppConfig {
 		return getInt("fetch.size", 1000);
 	}
 	
+	/***
+	 * in second
+	 * @return
+	 */
+	public int getQueueTaskIdletime(){
+		return getInt("queue.task.idletime", 180);
+	}
+	
 	/*public String getEmailAttachmentDir(){
 		return TaskCorePlugin.getInstance().getConfig().getTaskConfig().getEmailAttachmentDir();
 	}*/

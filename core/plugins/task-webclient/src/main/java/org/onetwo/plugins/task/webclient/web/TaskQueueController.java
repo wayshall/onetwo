@@ -13,13 +13,13 @@ import org.onetwo.plugins.task.client.TaskClientConfig;
 import org.onetwo.plugins.task.client.service.impl.TaskClientServiceImpl;
 import org.onetwo.plugins.task.entity.TaskExecLog;
 import org.onetwo.plugins.task.entity.TaskQueue;
-import org.onetwo.plugins.task.service.impl.TaskQueueServiceImpl;
 import org.onetwo.plugins.task.utils.TaskConstant.YesNo;
 import org.onetwo.plugins.task.vo.TaskEmailVo;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.Edit;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.ExeLog;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.List;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.New;
+import org.onetwo.plugins.task.webclient.service.impl.TaskQueueClientServiceImpl;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class TaskQueueController extends PluginSupportedController {
 
 	@Resource
-	private TaskQueueServiceImpl taskQueueService;
+	private TaskQueueClientServiceImpl taskQueueClientService;
 
 	@Resource
 	private TaskClientServiceImpl taskClientService;
@@ -43,7 +43,7 @@ public class TaskQueueController extends PluginSupportedController {
 	@ByMenuClass(codeClass = List.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView index(Page<TaskQueue> page) {
-		taskQueueService.findPage(page);
+		taskQueueClientService.findPage(page);
 		return pluginMv("task-queue-index", "page", page);
 	}
 
@@ -51,7 +51,7 @@ public class TaskQueueController extends PluginSupportedController {
 	@RequestMapping(value = "/{taskQueueId}/log", method = RequestMethod.GET)
 	public ModelAndView log(Page<TaskExecLog> page,
 			@PathVariable("taskQueueId") Long taskQueueId) {
-		taskQueueService.findExeLogPage(page, taskQueueId);
+		taskQueueClientService.findExeLogPage(page, taskQueueId);
 		return pluginMv("task-queue-log-list", "page", page);
 	}
 

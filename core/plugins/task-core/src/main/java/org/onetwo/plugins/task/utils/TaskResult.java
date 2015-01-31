@@ -14,7 +14,7 @@ public class TaskResult implements Serializable {
 	private final TaskQueue task;
 	private final Throwable throwable;
 
-	public TaskResult(Object data, TaskQueue task) {
+	public TaskResult(TaskQueue task, Object data) {
 		super();
 		this.result = data;
 		this.task = task;
@@ -29,6 +29,9 @@ public class TaskResult implements Serializable {
 	}
 
 
+	public Throwable getThrowable() {
+		return throwable;
+	}
 
 	public TaskQueue getTask() {
 		return task;
