@@ -24,9 +24,9 @@ public class SpringCmdRunner extends CmdRunner {
 	protected void startAppContext(String[] args) {
 		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
 //		context.setConfigLocation("");
+		SpringApplication.initApplication(context);
 		initApplicationContext(context);
 		context.refresh();
-		SpringApplication.initApplication(context);
 		this.afterInitApplicationContext(context);
 	}
 	

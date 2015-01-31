@@ -1,14 +1,16 @@
-package org.onetwo.plugins.task.service.impl;
+package org.onetwo.app.taskservice.service.impl;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.app.taskservice.TaskServerConfig;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.hibernate.HibernateCrudServiceImpl;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.Page;
 import org.onetwo.plugins.task.TaskCoreConfig;
 import org.onetwo.plugins.task.entity.TaskExecLog;
@@ -25,6 +27,9 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 	
 	@Resource
 	private TaskCoreConfig taskPluginConfig;
+	
+	@Resource
+	private TaskServerConfig taskServerConfig;
 	
 	public List<TaskQueue> loadAllExecuting(){
 		List<TaskQueue> queues = findByProperties("status", TaskStatus.EXECUTING);
@@ -71,6 +76,7 @@ public class TaskQueueServiceImpl extends HibernateCrudServiceImpl<TaskQueue, Lo
 		
 		if(result==TaskExecResult.FAILED){
 			taskQueue.setStatus(TaskStatus.WAITING);
+			taskQueue.setPlanTime(NiceDate.New(taskQueue.getLastExecTime()).nextSecond(taskServerConfig.getQueueTaskIdletime()).getTime());
 			if(!taskQueue.isNeedArchived()){
 				getBaseEntityManager().save(taskQueue);
 				return null;

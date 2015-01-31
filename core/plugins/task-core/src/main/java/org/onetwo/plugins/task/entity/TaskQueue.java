@@ -18,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.plugins.task.utils.TaskConstant.TaskStatus;
@@ -58,6 +59,7 @@ public class TaskQueue implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdateTime;
 	
+	@Size(max=50)
 	private String sourceTag;
 	
 	

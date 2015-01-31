@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.Size;
 
 import org.onetwo.plugins.task.utils.TaskUtils;
 
@@ -19,6 +20,7 @@ public class TaskBizTag implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="TaskBizTagGenerator") 
 	private Long id;
+	@Size(max=50)
 	private String name;
 	
 	public Long getId() {
