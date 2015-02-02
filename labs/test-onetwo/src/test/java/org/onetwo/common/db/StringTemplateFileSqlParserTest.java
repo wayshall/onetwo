@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
 import org.onetwo.common.hibernate.sql.HibernateNamedSqlFileManager;
 import org.onetwo.common.jdbc.DataBase;
-import org.onetwo.common.spring.sql.FileSqlParser;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.ParserContext;
 import org.onetwo.common.spring.sql.ParserContextFunctionSet;
@@ -19,7 +19,7 @@ import org.onetwo.common.utils.LangUtils;
 public class StringTemplateFileSqlParserTest {
 
 	private HibernateNamedSqlFileManager fileManager;
-	private FileSqlParser parser;
+	private TemplateParser parser;
 	ParserContext parserContext;
 	
 	@Before

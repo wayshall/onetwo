@@ -18,6 +18,7 @@ public interface DictionaryService {
 	 * @return
 	 */
 	public DictionaryEntity findByCode(String code);
+	public <T> T findValueByCode(String code, Class<T> valueType, T defValue);
 	public DictionaryEntity getData(String value, String typeCode);
 	public List<DictionaryEntity> findDataByTypeCode(String code);
 	

@@ -7,8 +7,8 @@ import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.HibernateQueryProvider;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
-import org.onetwo.common.spring.sql.FileSqlParser;
 import org.onetwo.common.utils.Assert;
 
 public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedInfo> {
@@ -19,7 +19,7 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedI
 //	private FileSqlParser parser;
 	
 
-	public HibernateFileQueryImpl(QueryProvider baseEntityManager, HibernateNamedInfo info, boolean count, FileSqlParser<HibernateNamedInfo> parser) {
+	public HibernateFileQueryImpl(QueryProvider baseEntityManager, HibernateNamedInfo info, boolean count, TemplateParser parser) {
 		super(baseEntityManager, info, count, parser);
 		Assert.notNull(baseEntityManager);
 //		this.baseEntityManager = baseEntityManager;
