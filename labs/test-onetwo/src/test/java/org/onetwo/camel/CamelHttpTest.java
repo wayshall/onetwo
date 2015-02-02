@@ -23,6 +23,14 @@ public class CamelHttpTest {
         context.stop();
 	}
 	
+	@Test
+	public void test2() throws Exception{
+		Main main = new Main();
+        main.addRouteBuilder(new TestRouter());
+        main.enableHangupSupport();
+        main.run();
+	}
+	
 	
 	public static void main(String[] args) throws Exception{
 		Main main = new Main();
