@@ -5,7 +5,9 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.spring.ftl.AbstractFreemarkerTemplateConfigurer;
 import org.onetwo.common.spring.ftl.DateRangeDirective;
+import org.onetwo.common.spring.ftl.DefaultTemplateParser;
 import org.onetwo.common.spring.ftl.ForeachDirective;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfo;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoListener;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
@@ -14,12 +16,13 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
-public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements FileSqlParser<T>, PropertiesNamespaceInfoListener<T> {
+public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements TemplateParser, PropertiesNamespaceInfoListener<T> {
 
 //	public static final String QUERY_POSTFIX = ".query";//for ftl
 	
 //	private JFishNamedSqlFileManager<T> sqlManager;
 	private StringTemplateLoader templateLoader;
+	final private TemplateParser parser;
 	
 	
 	public StringTemplateLoaderFileSqlParser() {
@@ -29,10 +32,18 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 		addDirective(new ForeachDirective());
 		addDirective(new DateRangeDirective());
 		this.templateLoader = new StringTemplateLoader();
+		
+		DefaultTemplateParser p = new DefaultTemplateParser(this);
+		
+		parser = p;
 	}
 	
-	
-	
+
+	@Override
+	public String parse(String name, Object context) {
+		return parser.parse(name, context);
+	}
+
 
 	@Override
 	public void afterBuild(ResourceAdapter[] sqlfileArray, Map<String, PropertiesNamespaceInfo<T>> namespaceInfos) {

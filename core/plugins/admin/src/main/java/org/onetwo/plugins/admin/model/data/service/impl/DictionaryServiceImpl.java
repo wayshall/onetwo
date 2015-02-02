@@ -183,6 +183,14 @@ public class DictionaryServiceImpl implements DictionaryService  {
 		return getBaseEntityManager().findOne(DictionaryEntity.class, "code", code);
 	}
 	
+	public <T> T findValueByCode(String code, Class<T> valueType, T defValue){
+		DictionaryEntity dict = findByCode(code);
+		if(dict==null){
+			return defValue;
+		}
+		return Types.convertValue(dict.getValue(), valueType, defValue);
+	}
+	
 	public List<DictionaryEntity> findDataByPrefixCode(String code, Object... properties){
 		Map<Object, Object> params = CUtils.asMap(properties);
 		params.put("code:like", code+"_");

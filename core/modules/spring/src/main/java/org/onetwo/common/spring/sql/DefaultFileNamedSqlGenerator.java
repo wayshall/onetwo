@@ -9,6 +9,7 @@ import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.slf4j.Logger;
 
 public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
@@ -16,7 +17,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	private static final Logger logger = MyLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
 	protected T info;
 	protected boolean countQuery;
-	private FileSqlParser<T> parser;
+	private TemplateParser parser;
 	private ParserContext parserContext;
 	private Class<?> resultClass;
 	
@@ -28,7 +29,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	
 	
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
-			FileSqlParser<T> parser) {
+			TemplateParser parser) {
 		super();
 		this.info = info;
 		this.countQuery = countQuery;
@@ -36,7 +37,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	}
 
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
-			FileSqlParser<T> parser, ParserContext parserContext,
+			TemplateParser parser, ParserContext parserContext,
 			Class<?> resultClass, String[] ascFields, String[] desFields,
 			Map<Object, Object> params) {
 		super();

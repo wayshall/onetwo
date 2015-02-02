@@ -8,6 +8,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
+import org.onetwo.common.spring.ftl.DirFreemarkerConfig;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
@@ -49,7 +50,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @Configuration
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
-@Import(JFishProfiles.class)
+@Import({JFishProfiles.class, DirFreemarkerConfig.class})
 public class JFishContextConfig extends BaseApplicationContextSupport {
 	
 	public static final String MVC_CONFIG = "mvcConfig";
