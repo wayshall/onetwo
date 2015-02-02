@@ -17,6 +17,8 @@ public class Types {
 
 	public static <T> T convertValue(Object source, Class<T> clazz, T defValue) {
 		try {
+			if(source==null)
+				return defValue;
 			T val = convertor().convert(source, clazz);
 			return val==null?defValue:val;
 		} catch (Exception e) {
@@ -31,6 +33,8 @@ public class Types {
 
 	public static <T> T asValue(Object source, Class<T> clazz, T defValue) {
 		try {
+			if(source==null)
+				return defValue;
 			T val = convertor().convert(source, clazz);
 			return val==null?defValue:val;
 		} catch (Exception e) {
@@ -46,6 +50,8 @@ public class Types {
 
 	public static <T> T[] asArray(Object source, Class<T> clazz, T[] defValue) {
 		try {
+			if(source==null)
+				return defValue;
 			T[] val = convertor().convert(source, Object[].class, clazz);
 			return val==null?defValue:val;
 		} catch (Exception e) {
@@ -61,6 +67,8 @@ public class Types {
 
 	public static <T> List<T> asList(Object source, Class<T> clazz, List<T> defValue) {
 		try {
+			if(source==null)
+				return defValue;
 			List<T> val = convertor().convert(source, List.class, clazz);
 			return val==null?defValue:val;
 		} catch (Exception e) {

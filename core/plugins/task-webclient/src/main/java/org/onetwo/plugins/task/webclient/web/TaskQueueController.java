@@ -19,7 +19,6 @@ import org.onetwo.plugins.task.webclient.TaskModule.Queue.Edit;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.ExeLog;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.List;
 import org.onetwo.plugins.task.webclient.TaskModule.Queue.New;
-import org.onetwo.plugins.task.webclient.service.impl.TaskQueueClientServiceImpl;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +30,6 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/taskqueue")
 public class TaskQueueController extends PluginSupportedController {
 
-	@Resource
-	private TaskQueueClientServiceImpl taskQueueClientService;
 
 	@Resource
 	private TaskClientServiceImpl taskClientService;
@@ -43,7 +40,7 @@ public class TaskQueueController extends PluginSupportedController {
 	@ByMenuClass(codeClass = List.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView index(Page<TaskQueue> page) {
-		taskQueueClientService.findPage(page);
+		taskClientService.findPage(page);
 		return pluginMv("task-queue-index", "page", page);
 	}
 
@@ -51,7 +48,7 @@ public class TaskQueueController extends PluginSupportedController {
 	@RequestMapping(value = "/{taskQueueId}/log", method = RequestMethod.GET)
 	public ModelAndView log(Page<TaskExecLog> page,
 			@PathVariable("taskQueueId") Long taskQueueId) {
-		taskQueueClientService.findExeLogPage(page, taskQueueId);
+		taskClientService.findExeLogPage(page, taskQueueId);
 		return pluginMv("task-queue-log-list", "page", page);
 	}
 
