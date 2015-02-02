@@ -2,6 +2,7 @@ package org.onetwo.common.spring.sql;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.FtlUtils;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 
 import freemarker.template.TemplateHashModel;
@@ -11,11 +12,11 @@ import freemarker.template.TemplateModelException;
 public class TemplateInNamedQueryParser implements TemplateHashModel {
 	public static final String DOT = ".";
 	
-	private final FileSqlParser<?> parser;
+	private final TemplateParser parser;
 	private final ParserContext parserContext;
 	private final JFishNamedFileQueryInfo query;
 	
-	public TemplateInNamedQueryParser(FileSqlParser<?> parser, ParserContext parserContext, JFishNamedFileQueryInfo query) {
+	public TemplateInNamedQueryParser(TemplateParser parser, ParserContext parserContext, JFishNamedFileQueryInfo query) {
 		super();
 		this.parser = parser;
 		this.parserContext = parserContext;

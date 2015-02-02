@@ -1,7 +1,6 @@
 package org.onetwo.common.spring.ftl;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
@@ -9,7 +8,6 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.map.CasualMap;
 import org.slf4j.Logger;
 
 import freemarker.cache.TemplateLoader;
@@ -18,7 +16,6 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 abstract public class AbstractFreemarkerTemplateConfigurer{
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
@@ -99,7 +96,7 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		return template;
 	}
 	
-	public String parse(String name, Object rootMap){
+	/*public String parse(String name, Object rootMap){
 		Template template = getTemplate(name);
 		StringWriter sw = new StringWriter();
 		try {
@@ -115,7 +112,7 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 			throw new BaseException("parse tempalte error : " + e.getMessage(), e);
 		}
 		return sw.toString();
-	}
+	}*/
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
