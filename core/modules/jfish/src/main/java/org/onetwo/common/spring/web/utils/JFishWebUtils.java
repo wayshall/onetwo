@@ -18,6 +18,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.csrf.SameInSessionCsrfPreventor;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
@@ -79,6 +80,10 @@ public final class JFishWebUtils {
 	
 	public boolean isGridSearchFormSubmit(){
 		return "1".equals(req(GRID_SEARCH_FORM_SUBMIT));
+	}
+	
+	public static String getRemoteAddr(){
+		return RequestUtils.getRemoteAddr(request());
 	}
 	
 	public static Object currentHandler(){
