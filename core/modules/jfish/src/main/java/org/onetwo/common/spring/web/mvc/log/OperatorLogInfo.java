@@ -13,6 +13,7 @@ public class OperatorLogInfo implements Serializable {
 	private String operatorName;
 	private Date operatorTime;
 	private String url;
+	private String remoteAddr;
 	private boolean success = true;
 	private String message = "";
 	private Map<String, String[]> parameters;
@@ -73,6 +74,12 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public void setParameters(Map<String, String[]> parameters) {
 		this.parameters = parameters;
+	}
+	public String getRemoteAddr() {
+		return remoteAddr;
+	}
+	public void setRemoteAddr(String remoteAddr) {
+		this.remoteAddr = remoteAddr;
 	}
 	
 }

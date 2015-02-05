@@ -14,6 +14,7 @@ import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.method.HandlerMethod;
@@ -59,6 +60,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		OperatorLogInfo info = new OperatorLogInfo();
 		String url = request.getMethod() + "|" + request.getRequestURL();
 		info.setUrl(url);
+		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
 //		info.setParameters(request.getParameterMap());
 		for(Entry<String, String[]> entry : request.getParameterMap().entrySet()){
 			/*try {
