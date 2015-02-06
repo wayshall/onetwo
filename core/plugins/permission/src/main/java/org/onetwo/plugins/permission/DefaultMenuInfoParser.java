@@ -139,9 +139,9 @@ public class DefaultMenuInfoParser implements MenuInfoParser {
 		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
-			if(childCls.getName().startsWith("org.onetwo.plugins.admin.DataModule")){
+			/*if(childCls.getName().startsWith("org.onetwo.plugins.admin.DataModule")){
 				System.out.println("DataModule: " + childCls);
-			}
+			}*/
 			PermClassParser childParser = getPermClassParser(childCls, parser.getPermissionClass(), true);
 //			childParser.setParentPermissionClass(parser.getPermissionClass());
 			IPermission p = parseMenuClass(childParser, syscode);
