@@ -174,6 +174,12 @@ public class PermClassParser {
 		return fieldValue;
 	}
 
+	@Override
+	public String toString() {
+		return "PermClassParser [permissionClass=" + permissionClass
+				+ ", parentPermissionClass=" + parentPermissionClass + "]";
+	}
+
 /*	public void setParentPermissionClass(Class<?> parentPermissionClass) {
 		this.parentPermissionClass = parentPermissionClass;
 	}*/
