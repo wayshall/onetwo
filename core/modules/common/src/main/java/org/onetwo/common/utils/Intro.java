@@ -94,16 +94,21 @@ public class Intro<T> {
 	}
 	
 
-	public JFishList<String> getPropertyNames(final Class<? extends Annotation> ignoreAnnotation){
+	public JFishList<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
 		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
 	}
 	
-	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation> ignoreAnnotation){
+	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
 		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
 			
 			@Override
 			public boolean doIt(PropertyDescriptor element, int index) {
-				return element.getReadMethod().getAnnotation(ignoreAnnotation)!=null;
+				for(Class<? extends Annotation> anno : ignoreAnnotations){
+					if(element.getReadMethod().getAnnotation(anno)!=null){
+						return false;
+					}
+				}
+				return true;
 			}
 		});
 	}
