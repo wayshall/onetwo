@@ -3,7 +3,7 @@ package org.onetwo.common.utils;
 import java.util.List;
 
 
-public class SignedParam {
+abstract public class SignedParam {
 	
 	private String signKey;
 	private ParamSigner signer;
