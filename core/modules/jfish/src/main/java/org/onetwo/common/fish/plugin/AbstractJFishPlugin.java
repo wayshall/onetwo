@@ -30,7 +30,7 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 
 	@Override
 	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
-		return new EmptyJFishMvcConfigurerListener();
+		return new JFishMvcConfigurerListenerAdapter(this);
 	}
 
 	@Override
@@ -45,7 +45,6 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 	}*/
 
 
-	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
 	}
 

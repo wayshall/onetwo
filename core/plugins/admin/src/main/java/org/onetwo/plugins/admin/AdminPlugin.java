@@ -2,7 +2,9 @@ package org.onetwo.plugins.admin;
 
 import java.util.List;
 
+import org.onetwo.common.hibernate.event.HibernatePluginEventListenerAdapter;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.plugins.admin.model.AdminModelContext;
 import org.onetwo.plugins.admin.model.app.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminAppServiceImpl;
@@ -49,8 +51,20 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 			annoClasses.add(DataModelContext.class);
 		}
 	}
+	
 
 	@Override
+	public JFishContextPluginListener getJFishContextPluginListener() {
+		return new HibernatePluginEventListenerAdapter(this){
+
+			@Override
+			protected void registerEntityPackage(List<String> packages) {
+				AdminPlugin.this.registerEntityPackage(packages);
+			}
+			
+		};
+	}
+
 	public void registerEntityPackage(List<String> packages) {
 		if(getConfig().isAdminModuleEnable()){
 			packages.add(AdminAppEntity.class.getPackage().getName());

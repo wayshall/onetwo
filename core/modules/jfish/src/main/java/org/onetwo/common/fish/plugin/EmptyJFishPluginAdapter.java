@@ -1,7 +1,5 @@
 package org.onetwo.common.fish.plugin;
 
-import java.util.List;
-
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -10,7 +8,7 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 	
 //	private static JFishPluginAdapter instance = new JFishPluginAdapter();
 	
-	private EmptyJFishMvcConfigurerListener emptyJFishMvcConfigurerListener = new EmptyJFishMvcConfigurerListener();
+	private JFishMvcConfigurerListenerAdapter emptyJFishMvcConfigurerListener = new JFishMvcConfigurerListenerAdapter(this);
 	
 	
 	EmptyJFishPluginAdapter() {
@@ -35,12 +33,6 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 
 	@Override
 	public void init(JFishPluginMeta pluginMeta) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
 		// TODO Auto-generated method stub
 		
 	}
