@@ -14,4 +14,9 @@ public class ArgumentResolverEvent {
 		this.argumentResolvers = argumentResolvers;
 	}
 	
+	public ArgumentResolverEvent registerArgumentResolver(HandlerMethodArgumentResolver e){
+		this.argumentResolvers.add(e);
+		return this;
+	}
+	
 }

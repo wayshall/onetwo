@@ -2,13 +2,13 @@ package org.onetwo.common.spring.plugin;
 
 public class ContextPluginManagerFactory {
 	
-	private static ContextPluginManager contextPluginManager;
+	private static ContextPluginManager<?> contextPluginManager;
 
-	public static ContextPluginManager getContextPluginManager() {
+	public static ContextPluginManager<?> getContextPluginManager() {
 		return contextPluginManager;
 	}
 
-	public static void initContextPluginManager(ContextPluginManager contextPluginManager) {
+	public static void initContextPluginManager(ContextPluginManager<?> contextPluginManager) {
 		ContextPluginManagerFactory.contextPluginManager = contextPluginManager;
 	}
 	

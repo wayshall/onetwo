@@ -2,6 +2,10 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
+import org.onetwo.common.spring.plugin.ContextPlugin;
+import org.onetwo.common.spring.plugin.ContextPluginManager;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcEventBus;
+import org.onetwo.common.utils.list.JFishList;
 import org.springframework.web.context.WebApplicationContext;
 
 /****
@@ -30,6 +34,9 @@ public interface JFishPluginManager {
 	public JFishPluginMeta getJFishPluginMetaOf(Class<?> objClass);
 	
 	public JFishPluginMeta getJFishPluginMeta(String name);
+	public JFishList<JFishPluginMeta> getPluginMetas();
+	public JFishList<ContextPlugin> getContextPlugins();
+	public JFishList<JFishPlugin> getJFishPlugins();
 	
 //	public List<Class<?>> getPluginContextClasses();
 
@@ -37,8 +44,11 @@ public interface JFishPluginManager {
 	 * called when jfish initialize mvc context {@linkplain org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext JFishMvcApplicationContext}
 	 * @param contextClasses
 	 */
-	public void registerPluginMvcContextClasses(List<Class<?>> contextClasses);
+//	public void registerPluginMvcContextClasses(List<Class<?>> contextClasses);
+	
+	public JFishMvcEventBus getMvcEventBus();
 
 	public void destroy();
+	
 
 }
