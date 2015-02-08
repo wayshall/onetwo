@@ -17,6 +17,7 @@ import org.hibernate.event.spi.PreInsertEventListener;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.onetwo.common.ds.JFishMultipleDatasource;
+import org.onetwo.common.hibernate.event.EntityPackageRegisterEvent;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -51,7 +52,7 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 	private DataSource dataSourceHolder;
 	
 //	@Resource
-	private ContextPluginManager contextPluginManager = ContextPluginManagerFactory.getContextPluginManager();
+	private ContextPluginManager<?> contextPluginManager = ContextPluginManagerFactory.getContextPluginManager();
 	private JFishList<String> packageListToScan = JFishList.create();
 	
 	public ExtLocalSessionFactoryBean(){
@@ -75,7 +76,8 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 			this.setDataSource(mds);
 		}
 		
-		this.contextPluginManager.registerEntityPackage(packageListToScan);
+//		this.contextPluginManager.registerEntityPackage(packageListToScan);
+		this.contextPluginManager.getEventBus().postEvent(new EntityPackageRegisterEvent(contextPluginManager, packageListToScan));
 		super.setPackagesToScan(packageListToScan.toArray(new String[0]));
 		
 		super.afterPropertiesSet();

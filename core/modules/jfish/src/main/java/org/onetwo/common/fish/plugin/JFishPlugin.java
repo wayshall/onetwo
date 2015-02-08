@@ -15,7 +15,7 @@ public interface JFishPlugin extends JFishPluginLifeCycleListener{
 	
 	void init(JFishPluginMeta pluginMeta);
 
-	void onMvcContextClasses(List<Class<?>> annoClasses);
+//	void onMvcContextClasses(List<Class<?>> annoClasses);
 	
 	JFishMvcConfigurerListener getJFishMvcConfigurerListener();
 	
