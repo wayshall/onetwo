@@ -21,7 +21,10 @@ public class JFishWebPluginManagerInitializer implements PluginManagerInitialize
 		contextClasses.add(JFishMvcConfig.class);
 		
 		JFishPluginManagerFactory.initPluginManager(jfishPluginManager);
-		jfishPluginManager.registerPluginMvcContextClasses(contextClasses);
+		jfishPluginManager.getMvcEventBus().registerListenerByPluginManager(jfishPluginManager);
+		
+		jfishPluginManager.getMvcEventBus().postMvcContextConfigRegisterEvent(contextClasses);
+//		jfishPluginManager.registerPluginMvcContextClasses(contextClasses);
 		
 //		return annoClasses;
 	}

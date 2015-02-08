@@ -13,7 +13,7 @@ import org.onetwo.common.ftl.directive.DefineDirective;
 import org.onetwo.common.ftl.directive.ExtendsDirective;
 import org.onetwo.common.ftl.directive.OverrideDirective;
 import org.onetwo.common.ftl.directive.ProfileDirective;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListenerManager;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcEventBus;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import freemarker.cache.StatefulTemplateLoader;
@@ -26,19 +26,19 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 	private Map<String, Object> fishFreemarkerVariables = new HashMap<String, Object>();
-	private JFishMvcConfigurerListenerManager listenerManager;
+	private JFishMvcEventBus jfishMvcEventBus;
 	private boolean freezing;
 	
 	private JFishPluginManager jfishPluginManager;
-	
+
+
+	public JFishFreeMarkerConfigurer(JFishMvcEventBus listenerManager) {
+		super();
+		this.jfishMvcEventBus = listenerManager;
+	}
 
 	public void setJfishPluginManager(JFishPluginManager jfishPluginManager) {
 		this.jfishPluginManager = jfishPluginManager;
-	}
-
-	public JFishFreeMarkerConfigurer(JFishMvcConfigurerListenerManager listenerManager) {
-		super();
-		this.listenerManager = listenerManager;
 	}
 
 	public JFishFreeMarkerConfigurer addDirective(AbstractDirective directive){
@@ -67,12 +67,12 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 		this.fishFreemarkerVariables.put(DataFieldDirective.DIRECTIVE_NAME, new DataFieldDirective());
 		this.fishFreemarkerVariables.put(DataComponentDirective.DIRECTIVE_NAME, new DataComponentDirective());*/
 
-		this.listenerManager.notifyListenersOnFreeMarkerConfigurer(this, false);
+		this.jfishMvcEventBus.postFreeMarkerConfigurer(jfishPluginManager, this, false);
 		
 		super.setFreemarkerVariables(this.fishFreemarkerVariables);
 		super.afterPropertiesSet();
 
-		this.listenerManager.notifyListenersOnFreeMarkerConfigurer(this, true);
+		this.jfishMvcEventBus.postFreeMarkerConfigurer(jfishPluginManager, this, true);
 		
 		this.freezing = true;
 	}
