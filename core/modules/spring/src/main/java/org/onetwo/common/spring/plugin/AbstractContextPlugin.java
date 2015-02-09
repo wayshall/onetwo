@@ -55,6 +55,11 @@ abstract public class AbstractContextPlugin<T> implements ContextPlugin{
 	}
 
 
+	/****
+	 * @see JFishContextPluginListener
+	 * @param annoClasses
+	 */
+	@Deprecated
 //	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 	}
