@@ -13,7 +13,7 @@ import org.onetwo.common.ftl.directive.DefineDirective;
 import org.onetwo.common.ftl.directive.ExtendsDirective;
 import org.onetwo.common.ftl.directive.OverrideDirective;
 import org.onetwo.common.ftl.directive.ProfileDirective;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcEventBus;
+import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import freemarker.cache.StatefulTemplateLoader;
