@@ -5,10 +5,23 @@ import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEv
 import org.onetwo.common.spring.web.mvc.config.event.MvcContextConfigRegisterEvent;
 import org.onetwo.common.spring.web.mvc.config.event.MvcContextInitEvent;
 import org.onetwo.common.spring.web.mvc.config.event.PropertyEditorRegisterEvent;
+import org.onetwo.common.spring.web.mvc.config.event.WebApplicationStartupEvent;
+import org.onetwo.common.spring.web.mvc.config.event.WebApplicationStopEvent;
 
 import com.google.common.eventbus.Subscribe;
 
-public interface JFishMvcConfigurerListener {
+/****
+ * 监听器接口
+ * 显式定义监听器接口，以使代码逻辑更清晰
+ * @author way
+ *
+ */
+public interface JFishMvcPluginListener {
+
+	@Subscribe
+	void listening(WebApplicationStartupEvent event);
+	@Subscribe
+	void listening(WebApplicationStopEvent event);
 
 	@Subscribe
 	void listening(FreeMarkerConfigurerBuildEvent event);
@@ -20,8 +33,8 @@ public interface JFishMvcConfigurerListener {
 	void listening(MvcContextInitEvent event);
 	
 	@Subscribe
-	void listening(final ArgumentResolverEvent event);
+	void listening(ArgumentResolverEvent event);
 	
 	@Subscribe
-	void listening(final MvcContextConfigRegisterEvent event);
+	void listening(MvcContextConfigRegisterEvent event);
 }
