@@ -1,15 +1,12 @@
-package org.onetwo.common.spring.web.mvc.config;
+package org.onetwo.common.spring.web.mvc.config.event;
 
 import java.util.Map;
 
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
 import org.onetwo.common.fish.plugin.JFishPluginUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.web.mvc.config.event.ArgumentResolverEvent;
-import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEvent;
-import org.onetwo.common.spring.web.mvc.config.event.MvcContextConfigRegisterEvent;
-import org.onetwo.common.spring.web.mvc.config.event.MvcContextInitEvent;
-import org.onetwo.common.spring.web.mvc.config.event.PropertyEditorRegisterEvent;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.NoIndexIt;
