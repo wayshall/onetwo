@@ -9,7 +9,7 @@ import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.EmptyContextPlugin;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.spring.plugin.SpringContextPluginManager;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcEventBus;
+import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;

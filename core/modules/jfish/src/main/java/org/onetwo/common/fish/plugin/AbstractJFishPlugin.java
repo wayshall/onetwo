@@ -44,7 +44,11 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 		return new JFishContextConfigurerListenerAdapter();
 	}*/
 
-
+	/****
+	 * @see JFishMvcConfigurerListener
+	 * @param annoClasses
+	 */
+	@Deprecated
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
 	}
 
