@@ -6,7 +6,7 @@ import org.onetwo.common.fish.plugin.JFishPluginMeta;
 import org.onetwo.common.fish.plugin.JFishPluginUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.NoIndexIt;
@@ -16,29 +16,45 @@ import org.springframework.core.Ordered;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
-public class GlobalMvcEventListener implements JFishMvcConfigurerListener {
-	
+public class GlobalMvcEventListener implements JFishMvcPluginListener {
+	private final static Logger logger = JFishLoggerFactory.logger(GlobalMvcEventListener.class);
+	private int stepIndex = 0;
+
+
+	@Override
+	public void listening(WebApplicationStartupEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
+	}
+
+
+	@Override
+	public void listening(WebApplicationStopEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
+	}
 
 
 	@Override
 	public void listening(PropertyEditorRegisterEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 	}
 
 
 	@Override
 	public void listening(ArgumentResolverEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 	}
 
 
 	@Override
 	public void listening(MvcContextConfigRegisterEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 	}
 
 
-	private final static Logger logger = JFishLoggerFactory.logger(GlobalMvcEventListener.class);
 
 	@Override
 	public void listening(final FreeMarkerConfigurerBuildEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 		event.getJfishPluginManager().getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
 
 			@Override
@@ -59,6 +75,7 @@ public class GlobalMvcEventListener implements JFishMvcConfigurerListener {
 
 	@Override
 	public void listening(final MvcContextInitEvent event) {
+		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 		final Map<String, String> urlMap = new ManagedMap<String, String>();
 
 		final JFishMvcApplicationContext applicationContext = event.getApplicationContext();
