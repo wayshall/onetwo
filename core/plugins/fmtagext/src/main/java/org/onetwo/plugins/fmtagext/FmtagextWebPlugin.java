@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 import org.onetwo.common.fish.plugin.JFishMvcConfigurerListenerAdapter;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEvent;
 import org.onetwo.plugins.fmtagext.directive.ExtEntityGridDirective;
 import org.onetwo.plugins.fmtagext.directive.JFishEntryDirective;
@@ -34,7 +34,7 @@ public class FmtagextWebPlugin extends AbstractJFishPlugin<FmtagextWebPlugin> {
 	}
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
 		return new JFishMvcConfigurerListenerAdapter(this){
 
 			@Override
