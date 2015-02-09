@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 import org.onetwo.common.fish.plugin.JFishMvcConfigurerListenerAdapter;
 import org.onetwo.common.spring.web.authentic.SpringTargetArgumentResolver;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.spring.web.mvc.config.event.ArgumentResolverEvent;
 import org.onetwo.plugins.security.client.SsoClientWebContext;
 import org.onetwo.plugins.security.common.SecurityWebContext;
@@ -43,7 +43,7 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 	}
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
 		return new JFishMvcConfigurerListenerAdapter(this){
 
 			@Override

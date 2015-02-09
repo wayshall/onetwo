@@ -38,7 +38,7 @@ public class JFishDispatcher extends DispatcherServlet {
 
 	@Override
 	public void destroy() {
-		jfishPluginManager.destroy();
+		jfishPluginManager.destroy(getWebApplicationContext());
 		super.destroy();
 	}
 	
