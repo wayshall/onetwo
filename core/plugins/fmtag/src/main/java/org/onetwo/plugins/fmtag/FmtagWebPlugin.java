@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 import org.onetwo.common.fish.plugin.JFishMvcConfigurerListenerAdapter;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEvent;
 import org.onetwo.plugins.fmtag.directive.DataComponentDirective;
 import org.onetwo.plugins.fmtag.directive.DataFieldDirective;
@@ -39,7 +39,7 @@ public class FmtagWebPlugin extends AbstractJFishPlugin<FmtagWebPlugin> {
 
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
 		return new JFishMvcConfigurerListenerAdapter(this){
 
 			@Override
