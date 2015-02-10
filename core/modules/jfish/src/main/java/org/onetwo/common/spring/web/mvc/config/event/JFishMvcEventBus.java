@@ -7,9 +7,10 @@ import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.springframework.beans.PropertyEditorRegistrar;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 import com.google.common.eventbus.EventBus;
@@ -20,12 +21,17 @@ public class JFishMvcEventBus {
 	private EventBus mvcEventBus = new EventBus(this.getClass().getSimpleName());
 	final private JFishPluginManager jfishPluginManager;
 //	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
-	
-	
 
 	public JFishMvcEventBus(JFishPluginManager jfishPluginManager) {
 		this.jfishPluginManager = jfishPluginManager;
 		registerListener(new GlobalMvcEventListener());
+	}
+	
+	public void postWebApplicationStartupEvent(WebApplicationContext webApplicationContext){
+		mvcEventBus.post(new WebApplicationStartupEvent(jfishPluginManager, webApplicationContext));
+	}
+	public void postWebApplicationStopEvent(WebApplicationContext webApplicationContext){
+		mvcEventBus.post(new WebApplicationStopEvent(jfishPluginManager, webApplicationContext));
 	}
 
 	public void postAfterMvcConfig(final JFishMvcApplicationContext applicationContext, JFishPluginManager jfishPluginManager, final JFishMvcConfig mvcConfig, final List<PropertyEditorRegistrar> peRegisttrarList){
@@ -46,7 +52,7 @@ public class JFishMvcEventBus {
 		mvcEventBus.post(new MvcContextConfigRegisterEvent(jfishPluginManager, configClasses));
 	}
 	
-	final public void registerListener(JFishMvcConfigurerListener listener){
+	final public void registerListener(JFishMvcPluginListener listener){
 		mvcEventBus.register(listener);
 	}
 	

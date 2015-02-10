@@ -15,7 +15,6 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.MapIt;
-import org.onetwo.common.utils.list.NoIndexIt;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.slf4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
@@ -114,19 +113,21 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 	@Override
 	public void onInitWebApplicationContext(final WebApplicationContext appContext){
-		pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
+		getMvcEventBus().postWebApplicationStartupEvent(appContext);
+		/*pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
 				JFishPluginUtils.getJFishPlugin(meta).onStartWebAppConext(appContext);
 			}
 			
-		});
+		});*/
 	}
 	
 	@Override
-	public void destroy(){
-		pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
+	public void destroy(final WebApplicationContext webApplicationContext){
+		getMvcEventBus().postWebApplicationStopEvent(webApplicationContext);
+		/*pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
@@ -134,7 +135,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 				JFishPluginUtils.getJFishPlugin(meta).onStopWebAppConext();
 			}
 			
-		});
+		});*/
 		this.pluginMetas.clear();
 	}
 	
