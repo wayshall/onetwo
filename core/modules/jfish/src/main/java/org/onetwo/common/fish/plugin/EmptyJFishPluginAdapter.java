@@ -1,6 +1,6 @@
 package org.onetwo.common.fish.plugin;
 
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.springframework.web.context.WebApplicationContext;
 
 
@@ -38,7 +38,7 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 	}
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
 		return emptyJFishMvcConfigurerListener;
 	}
 
