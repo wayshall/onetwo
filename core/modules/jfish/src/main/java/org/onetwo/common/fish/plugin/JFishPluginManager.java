@@ -1,7 +1,5 @@
 package org.onetwo.common.fish.plugin;
 
-import java.util.List;
-
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
@@ -48,7 +46,7 @@ public interface JFishPluginManager {
 	
 	public JFishMvcEventBus getMvcEventBus();
 
-	public void destroy();
+	public void destroy(final WebApplicationContext appContext);
 	
 
 }
