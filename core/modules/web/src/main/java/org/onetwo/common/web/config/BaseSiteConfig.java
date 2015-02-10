@@ -336,7 +336,7 @@ public class BaseSiteConfig extends AppConfig {
 		return getBoolean(SAFE_REQUEST, true);
 	}
 	public boolean isPreventRepeateSubmit(){
-		return getBoolean(PREVENT_REPEATE_SUBMIT, false);
+		return getBoolean(PREVENT_REPEATE_SUBMIT, true);
 	}
 	/***
 	 * default is false
