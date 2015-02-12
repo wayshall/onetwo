@@ -15,7 +15,8 @@ public interface RequestPreventor {
 	
 //	public String getFieldOfTokenFieldName();
 	public String getTokenFieldName();
-
+	public TokenValueGenerator getTokenValueGenerator();
+	
 	public abstract void validateToken(Method controller,
 			HttpServletRequest request, HttpServletResponse response);
 

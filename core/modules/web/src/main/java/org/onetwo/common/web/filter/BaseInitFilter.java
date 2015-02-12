@@ -57,7 +57,8 @@ public class BaseInitFilter extends IgnoreFiler {
 		ServletContext context = config.getServletContext();
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
-		SpringApplication.initApplication(app);
+//		SpringApplication.initApplication(app);
+		SpringApplication.initApplicationIfNotInitialized(app);
 		
 		webConfigProvider = SpringApplication.getInstance().getBean(WebConfigProvider.class);
 		if(webConfigProvider!=null){

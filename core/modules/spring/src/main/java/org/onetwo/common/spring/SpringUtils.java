@@ -155,6 +155,16 @@ final public class SpringUtils {
 		return prop;
 	}
 	
+	public static JFishProperties loadAsJFishProperties(String classpath){
+		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpath);
+    	try {
+			pfb.afterPropertiesSet();
+			JFishProperties properties = (JFishProperties)pfb.getObject();
+			return properties;
+		} catch (IOException e) {
+			throw new BaseException("load config error: " + e.getMessage(), e);
+		}
+	}
 
 	public static PropertiesFactoryBean createPropertiesBySptring(String...classpaths) {
 		return createPropertiesBySptring(new JFishProperties(), classpaths);
