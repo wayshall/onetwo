@@ -10,12 +10,10 @@
 	
   <artifactId>onetwo-plugin-session</artifactId>
 	
-  <groupId>onetwo-plugins</groupId>
   <packaging>jar</packaging>
 
   <name>onetwo-plugin-session</name>
 
-  <version>0.0.1-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
 
  
