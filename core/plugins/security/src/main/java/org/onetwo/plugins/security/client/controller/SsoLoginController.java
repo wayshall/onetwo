@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SsoLoginController extends PluginSupportedController {
 
 	@Resource
-	private SsoClientConfig ssoClientConfig;
+	protected SsoClientConfig ssoClientConfig;
 
 	@RequestMapping("login")
 	public ModelAndView login(){
@@ -51,11 +51,18 @@ public class SsoLoginController extends PluginSupportedController {
 			ResponseUtils.renderJsonp(response, login.getCallback(), dr);
 			return ;
 		}
+		
 		ResponseUtils.addP3PHeader(response);
-		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
+		this.processCookies(login, request, response);
+		
 		logger.info("set cookies succeed!");
+		
 		dr = DataResult.createSucceed(BaseSiteConfig.getInstance().getAppCode());
 		ResponseUtils.renderJsonp(response, login.getCallback(), dr);
+	}
+	
+	protected void processCookies(SsoLoginParams login, HttpServletRequest request, HttpServletResponse response){
+		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
 	}
 	
 	private boolean checkSign(SsoLoginParams login){

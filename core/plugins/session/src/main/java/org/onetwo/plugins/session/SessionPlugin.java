@@ -1,14 +1,17 @@
 package org.onetwo.plugins.session;
 
-import java.util.List;
-
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
+import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
+import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
 import org.onetwo.plugins.session.model.SessionPluginContext;
 
 
 
 public class SessionPlugin extends ConfigurableContextPlugin<SessionPlugin, SessionPluginConfig> {
 
+	public static final String CONFIG_PATH = "/plugins/session/session-config.properties";
+	
 	private static SessionPlugin instance;
 	
 	
@@ -18,14 +21,22 @@ public class SessionPlugin extends ConfigurableContextPlugin<SessionPlugin, Sess
 	
 
 	public SessionPlugin() {
-		super("/org.onetwo.plugins.sessionoplugin/", "org.onetwo.plugins.sessionoplugin-config");
+		super("/plugins/session/", "session-config");
 	}
 
 
-
 	@Override
-	public void onJFishContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(SessionPluginContext.class);
+	public JFishContextPluginListener getJFishContextPluginListener() {
+		return new JFishContextPluginListenerAdapter(this){
+
+			@Override
+			public void listening(ContextConfigRegisterEvent event) {
+				if(!getConfig().isContainerSession()){
+					event.registerConfigClasses(SessionPluginContext.class);
+				}
+			}
+			
+		};
 	}
 
 	public void setPluginInstance(SessionPlugin plugin){

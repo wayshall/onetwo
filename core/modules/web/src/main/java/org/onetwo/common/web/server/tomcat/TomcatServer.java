@@ -99,7 +99,7 @@ public class TomcatServer {
 	public void initialize() {
 		try {
 			
-			this.tomcat = new Tomcat();
+			this.tomcat = new JFishTomcat();
 			int port = webConfig.getPort();
 			tomcat.setPort(port);
 //			tomcat.setBaseDir(webConfig.getServerBaseDir());

@@ -8,6 +8,15 @@ abstract public class SsoConfig extends JFishProperties {
 	abstract public boolean isServerSide();
 	abstract public boolean isClientSide();
 	
+	
+	/****
+	 * 是否使用跨域session
+	 * @return
+	 */
+	public boolean isCrossdomainSession(){
+		return getBoolean("crossdomain.session", false);
+	}
+	
 
 	/*public String getReturnUrl(){
 		return getAndThrowIfEmpty("return.url");
