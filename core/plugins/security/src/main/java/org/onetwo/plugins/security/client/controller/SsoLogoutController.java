@@ -1,6 +1,7 @@
 package org.onetwo.plugins.security.client.controller;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SsoLogoutController extends PluginSupportedController {
 
 	@Resource
-	private SsoConfig ssoConfig;
+	protected SsoConfig ssoConfig;
 	
 	@RequestMapping("ssologout")
 //	@ResponseBody
-	public void ssologin(@Valid SsoLogoutParams logout, BindingResult bind, HttpServletResponse response){
+	public void ssologin(@Valid SsoLogoutParams logout, BindingResult bind, HttpServletRequest request, HttpServletResponse response){
 		DataResult dr = null;
 		if(bind.hasErrors()){
 			dr = DataResult.createFailed("logout error");
@@ -29,8 +30,13 @@ public class SsoLogoutController extends PluginSupportedController {
 			return ;
 		}
 		ResponseUtils.addP3PHeader(response);
-		ResponseUtils.removeHttpOnlyCookie(response, UserDetail.TOKEN_KEY);
+		processCookies(logout, request, response);
+		
 		dr = DataResult.createSucceed("logout succeed");
 		ResponseUtils.renderJsonp(response, logout.getCallback(), dr);
+	}
+	
+	protected void processCookies(SsoLogoutParams logout, HttpServletRequest request, HttpServletResponse response){
+		ResponseUtils.removeHttpOnlyCookie(response, UserDetail.TOKEN_KEY);
 	}
 }

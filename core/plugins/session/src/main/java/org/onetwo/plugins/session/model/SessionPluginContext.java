@@ -8,4 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackageClasses=SessionPluginContext.class)
 public class SessionPluginContext {
 	
+	/*@Bean
+	public SpringSessionInitializer springSessionInitializer(){
+		return new SpringSessionInitializer();
+	}*/
+	
 }

@@ -8,8 +8,6 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.encrypt.MDEncrypt;
-import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.web.view.jsp.TagUtils;
 
 abstract public class AbstractRequestPreventor implements RequestPreventor {
@@ -18,7 +16,8 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 //	public static final String MEHTOD_GET = "get";
 	
 	protected final String tokenFieldName;// = DEFAULT_CSRF_TOKEN_FIELD;
-	protected MDEncrypt encrypt = MDFactory.MD5;
+//	protected MDEncrypt encrypt = MDFactory.MD5;
+	protected TokenValueGenerator tokenValueGenerator = new Md5TokenValueGenerator();
 	
 	
 	public AbstractRequestPreventor(String tokenFieldName) {
@@ -79,7 +78,8 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 				}else{
 					/*if(!reqTokenValue.equalsIgnoreCase(token.getValue()))
 						handleInvalidToken(token, request, response);*/
-					if(!encrypt.checkEncrypt(token.getValue(), reqTokenValue))
+//					if(!encrypt.checkEncrypt(token.getValue(), reqTokenValue))
+					if(!getTokenValueGenerator().validateToken(token, reqTokenValue))
 						handleInvalidToken(token, request, response);
 				}
 			} finally{
@@ -115,9 +115,14 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 	@Override
 	public RequestToken generateToken(HttpServletRequest request, HttpServletResponse response){
 		String tokenValue = LangUtils.generateToken(getTokenFieldName());
-		RequestToken token = new RequestToken(encrypt, getTokenFieldName(), tokenValue);
+		RequestToken token = new RequestToken(getTokenFieldName(), tokenValue);
 		storeToken(token, request, response);
 		return token;
+	}
+
+
+	public TokenValueGenerator getTokenValueGenerator(){
+		return tokenValueGenerator;
 	}
 
 	/*protected String generateToken(String tokenFieldName) {
@@ -127,7 +132,7 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response){
 		String safeUrl = url;
 		RequestToken token = generateToken(request, response);
-		safeUrl = TagUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue());
+		safeUrl = TagUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue(getTokenValueGenerator()));
 		return safeUrl;
 	}
 	
