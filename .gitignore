@@ -20,3 +20,4 @@ bin
 test-output
 work/Tomcat
 /core/.gradle
+/core/modules/.gradle
