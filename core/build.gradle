@@ -46,7 +46,18 @@ configure(allprojects){ project ->
 	apply plugin: 'java'
 	apply plugin: 'maven'
 	
-	sourceCompatibility = 1.6
+	//sourceCompatibility = 1.6
+	compileJava {
+		sourceCompatibility=1.6
+		targetCompatibility=1.6
+	}
+	/***
+	compileTestJava {
+		sourceCompatibility=1.8
+		targetCompatibility=1.8
+	}
+	***/
+	
 	compileJava.options.encoding = 'UTF-8'
 //	encoding = 'utf-8'
 //	test.stopAtFailuresOrErrors = false
