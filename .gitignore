@@ -19,3 +19,4 @@ target
 bin
 test-output
 work/Tomcat
+/core/.gradle
