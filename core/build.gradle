@@ -14,8 +14,20 @@ ext {
 	linkHomepage = 'http://onetwo3.org'
 }
 configure(allprojects){ project -> 
-	group = "org.onetwo"
-	version = "2.5.0-SNAPSHOT"
+
+
+	//提供额外的 provided 依赖方法
+	apply plugin: "propdeps"
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+	
+	if(project.name.startsWith("onetwo-plugin-")){
+		group = "org.onetwo.plugins"
+	}else{
+		group = "org.onetwo"
+	}
+	version = "3.0.0-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -40,12 +52,6 @@ configure(allprojects){ project ->
 	ext.jsfVersion = "2.1"
 	ext.servletVersion = "3.0.1"
 	ext.validationVersion = "1.0.0.GA"
-
-	//提供额外的 provided 依赖方法
-	apply plugin: "propdeps"
-	apply plugin: 'java'
-	apply plugin: 'maven'
-	apply plugin: 'eclipse'
 	
 	sourceCompatibility = 1.6
 	compileJava {
@@ -59,18 +65,10 @@ configure(allprojects){ project ->
 		f.append('encoding/<project>=utf-8')
 	}
 	
-	sourceSets {
-	  main {
-		//if you truly want to override the defaults:
-		//output.resourcesDir = 'out/res'
-		//output.classesDir   = 'out/bin'
-	  }
-	}
-	
 	compileJava.options.encoding = 'UTF-8'
 //	encoding = 'utf-8'
 //	test.stopAtFailuresOrErrors = false
-	buildDir = "target"
+	buildDir = "build"
 	
 	repositories {
 		mavenLocal()
@@ -79,18 +77,19 @@ configure(allprojects){ project ->
 //		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
 	}
 	
+}
+
+configure(subprojects){ subproject -> 
+	
 	dependencies {
 		compile("org.slf4j:slf4j-api:1.6.2")
 		compile("org.slf4j:slf4j-log4j12:1.6.2")
 		compile("log4j:log4j:1.2.16")
 		testCompile("junit:junit:${junitVersion}")
 	}
-}
-
-configure(subprojects){ subproject -> 
 	
 	jar {
-		subproject.archivesBaseName = "onetwo-${subproject.name}"
+		subproject.archivesBaseName = "${subproject.name}"
 		
 		manifest.attributes["Created-By"] =
 			"${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
@@ -100,12 +99,23 @@ configure(subprojects){ subproject ->
 	
 	task sourcesJar(type: Jar, dependsOn:classes) {
 		classifier = "sources"
-		from sourceSets.main.allJava.srcDirs
-		include "**/*.java"
+		//from sourceSets.main.allJava.srcDirs
+		//include "**/*.java"
+		from sourceSets.main.allSource
 	}
 	
 	artifacts {
 		archives sourcesJar
+	}
+	
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: "http://192.168.104.217:8888/nexus/content/repositories/snapshots"){
+					authentication(userName: "admin", password: "admin123")
+				}
+			}
+		}
 	}
 	
 }
@@ -248,7 +258,7 @@ project("${projectSecurity}"){
 		compile(project(":${projectWeb}"))
 		
 		compile("javax.servlet:javax.servlet-api:${servletVersion}")
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 	
@@ -274,7 +284,7 @@ project("${projectPoi}"){
 		compile("javassist:javassist:${javassistVersion}")
 		compile("com.google.guava:guava:${guavaVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -289,7 +299,7 @@ project("$projectOrm"){
 		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -328,7 +338,7 @@ project("$projectEjb"){
 		compile("org.apache.openejb:javaee-api:${javaeeVersion}")
 		compile("org.apache.openjpa:openjpa:${openJpaVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -366,7 +376,7 @@ project("${pluginActivemq}"){
 		compile("org.apache.activemq:activemq-all:5.10.1")
 		compile("org.springframework:spring-jms:${springVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -377,7 +387,7 @@ project("${pluginFmtag}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -389,7 +399,7 @@ project("${pluginFmtagext}"){
 		compile(project(":$pluginFmtag"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -411,7 +421,7 @@ project("${pluginSession}"){
 		compile("redis.embedded:embedded-redis:0.3")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -425,7 +435,7 @@ project("${pluginSecurity}"){
 		compile(project(":$pluginSession"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -443,7 +453,7 @@ project("${pluginHibernate}"){
 		compile("com.fasterxml.jackson.datatype:jackson-datatype-hibernate4:2.3.0")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -456,7 +466,7 @@ project("${pluginCodegen}"){
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -468,7 +478,7 @@ project("${pluginDq}"){
 		compile(project(":$projectSpring"))
 		compile(project(":$pluginHibernate"))
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -478,7 +488,7 @@ project("${pluginDoc}"){
 	dependencies {
 		compile(project(":$projectJfish"))
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -492,7 +502,7 @@ project("${pluginPermission}"){
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -508,7 +518,7 @@ project("${pluginAdmin}"){
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -527,7 +537,7 @@ project("${pluginBatch}"){
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -542,7 +552,7 @@ project("${pluginEmail}"){
 		compile(project(":$projectSpring"))
 		compile("javax.mail:mail:${mailVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -555,7 +565,7 @@ project("${pluginGroovy}"){
 		compile(project(":$projectJfish"))
 		compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -574,7 +584,7 @@ project("${pluginJasper}"){
 		compile("net.sf.jasperreports:jasperreports:${jasperreportsVersion}")
 		compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -645,7 +655,7 @@ project("${pluginMonitor}"){
 		compile("io.fabric8.insight:insight-log4j:${insightVersion}")
 		//system("com.sun:tools:1.6")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -659,7 +669,7 @@ project("${pluginRest}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -675,7 +685,7 @@ project("${pluginTaskCore}"){
 		compile(project(":$pluginHibernate"))
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -690,7 +700,7 @@ project("${pluginTaskClient}"){
 		compile(project(":$pluginEmail"))
 		compile(project(":$pluginTaskCore"))
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
 
@@ -709,6 +719,8 @@ project("${pluginTaskWebclient}"){
 		
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		testCompile("junit:junit:${junitVersion}")
+		
 	}
 }
+
+
