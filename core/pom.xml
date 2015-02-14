@@ -27,8 +27,8 @@
 				<module>modules/security</module>
 				<!-- 
 				<module>modules/security-spring</module>
-				 -->
 				<module>modules/s2-json</module>
+				 -->
 				<module>modules/jackson</module>
 				<module>modules/poi</module>
 				<module>modules/orm</module>

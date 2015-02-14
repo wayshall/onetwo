@@ -6,6 +6,12 @@ import org.junit.Test
 class StringTest {
 	
 	@Test
+	def void testReplace(){
+		String str = "plugins/activemq"
+		println str.replace("/", "-");
+	}
+	
+	@Test
 	def void testSplit(){
 		String str = "aa;bb";
 		println(str.split(';'))
