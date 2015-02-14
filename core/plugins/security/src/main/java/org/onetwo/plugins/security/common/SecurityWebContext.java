@@ -4,7 +4,10 @@ import org.onetwo.common.spring.web.authentic.SecurityWebExceptionResolver;
 import org.onetwo.common.spring.web.authentic.SpringAuthenticationInvocation;
 import org.onetwo.common.spring.web.authentic.SpringSecurityInterceptor;
 import org.onetwo.common.spring.web.authentic.SsoSpringSecurityInterceptor;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig.MvcBeanNames;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +27,10 @@ public class SecurityWebContext {
 	}
 
 	@Bean(name=DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-	public SecurityWebExceptionResolver securityWebExceptionResolver(){
-		return new SecurityWebExceptionResolver();
+	public SecurityWebExceptionResolver webExceptionResolver(@Qualifier(MvcBeanNames.EXCEPTION_MESSAGE)MessageSource exceptionMessage){
+		SecurityWebExceptionResolver webExceptionResolver = new SecurityWebExceptionResolver();
+		webExceptionResolver.setExceptionMessage(exceptionMessage);
+		return webExceptionResolver;
 	}
 	
 	/*@Bean

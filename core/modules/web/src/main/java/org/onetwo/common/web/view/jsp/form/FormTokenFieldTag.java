@@ -24,11 +24,11 @@ public class FormTokenFieldTag extends AbstractBodyTag {
 		HttpServletResponse resp = (HttpServletResponse)pageContext.getResponse();
 		if(BaseSiteConfig.getInstance().isSafeRequest()){
 			RequestToken token = csrfPreventor.generateToken(req, resp);
-			write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getGeneratedValue()+"'/>");
+			write("<input name='"+token.getFieldName()+"' type='hidden' value='"+token.getGeneratedValue(csrfPreventor.getTokenValueGenerator())+"'/>");
 		}
 		if(BaseSiteConfig.getInstance().isPreventRepeateSubmit() && preventSubmit){
 			RequestToken submitToken = submitPreventor.generateToken(req, resp);
-			write("<input name='"+submitToken.getFieldName()+"' type='hidden' value='"+submitToken.getGeneratedValue()+"'/>");
+			write("<input name='"+submitToken.getFieldName()+"' type='hidden' value='"+submitToken.getGeneratedValue(submitPreventor.getTokenValueGenerator())+"'/>");
 		}
 		return EVAL_PAGE;
 	}

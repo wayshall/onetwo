@@ -19,7 +19,6 @@ import com.google.common.base.Function;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
@@ -144,6 +143,7 @@ public class GuavaTest {
 		list = JFishList.newList().flatAddObject(list2);
 		System.out.println("list: " + list);
 		Assert.assertEquals("[1, test2, 3, test3, test4, test44]", list.toString());
+		
 	}
 
 }

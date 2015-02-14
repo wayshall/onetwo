@@ -1,8 +1,10 @@
 package org.onetwo.plugins.admin;
 
-import java.util.List;
-
+import org.onetwo.common.hibernate.event.EntityPackageRegisterEvent;
+import org.onetwo.common.hibernate.event.HibernatePluginEventListenerAdapter;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
+import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.plugins.admin.model.AdminModelContext;
 import org.onetwo.plugins.admin.model.app.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminAppServiceImpl;
@@ -33,7 +35,7 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 		instance = plugin;
 	}
 
-	@Override
+	/*@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		if(!isConfigExists()){
 			return ;
@@ -48,17 +50,51 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 		if(getConfig().isDataModuleEnable()){
 			annoClasses.add(DataModelContext.class);
 		}
-	}
+	}*/
+	
 
 	@Override
-	public void registerEntityPackage(List<String> packages) {
+	public JFishContextPluginListener getJFishContextPluginListener() {
+		return new HibernatePluginEventListenerAdapter(this){
+
+			@Override
+			public void listening(ContextConfigRegisterEvent event) {
+				if(!isConfigExists()){
+					return ;
+				}
+
+				event.registerConfigClasses(AdminModelContext.class);
+				
+				if(getConfig().isAdminModuleEnable()){
+					event.registerConfigClasses(AdminAppModelContext.class);
+				}
+				
+				if(getConfig().isDataModuleEnable()){
+					event.registerConfigClasses(DataModelContext.class);
+				}
+			}
+			
+			@Override
+			public void listening(EntityPackageRegisterEvent event){
+				if(getConfig().isAdminModuleEnable()){
+					event.registerEntityPackages(AdminAppEntity.class.getPackage().getName());
+				}
+				if(getConfig().isDataModuleEnable()){
+					event.registerEntityPackages(DictionaryEntity.class.getPackage().getName());
+				}
+			}
+			
+		};
+	}
+
+	/*public void registerEntityPackage(List<String> packages) {
 		if(getConfig().isAdminModuleEnable()){
 			packages.add(AdminAppEntity.class.getPackage().getName());
 		}
 		if(getConfig().isDataModuleEnable()){
 			packages.add(DictionaryEntity.class.getPackage().getName());
 		}
-	}
+	}*/
 
 
 	@Configuration

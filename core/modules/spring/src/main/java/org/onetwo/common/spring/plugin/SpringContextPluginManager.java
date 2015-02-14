@@ -1,23 +1,24 @@
 package org.onetwo.common.spring.plugin;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.plugin.event.JFishContextEventBus;
 import org.onetwo.common.spring.utils.ResourceUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.list.MapIt;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 
- public class SpringContextPluginManager<T extends ContextPluginMeta> implements ContextPluginManager {
+ public class SpringContextPluginManager<T extends ContextPluginMeta> implements ContextPluginManager<T> {
 
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
 
@@ -27,6 +28,8 @@ import org.springframework.core.io.Resource;
 	private String pluginPath = PLUGIN_PATH;
 	private final String appEnvironment;
 	private final Map<String, PluginInfo> pluginConfs = new LinkedHashMap<String, PluginInfo>();
+	
+	final private JFishContextEventBus eventBus = new JFishContextEventBus(this);
 	
 
 	public SpringContextPluginManager(String appEnvironment) {
@@ -43,6 +46,9 @@ import org.springframework.core.io.Resource;
 		return appEnvironment;
 	}
 	
+	public JFishContextEventBus getEventBus() {
+		return eventBus;
+	}
 
 	/****
 	 * scan plugins on webapp application start 
@@ -82,6 +88,17 @@ import org.springframework.core.io.Resource;
 
 		pluginMetas = new JFishList<T>(pluginFiles.size());
 		this.initPlugins();
+		this.registerContextListeners();
+		this.doAfterInitPlugins();
+	}
+
+	/****
+	 * 注册插件监听器
+	 */
+	public void registerContextListeners(){
+		getEventBus().registerListenerByPluginManager(this);
+	}
+	protected void doAfterInitPlugins(){
 	}
 	
 	protected void initPlugins(){
@@ -163,7 +180,7 @@ import org.springframework.core.io.Resource;
 	}
 
 	
-	@Override
+	/*@Override
 	public void registerPluginJFishContextClasses(final List<Class<?>> annoClasses){
 		
 		getPluginMetas().each(new NoIndexIt<T>() {
@@ -175,13 +192,26 @@ import org.springframework.core.io.Resource;
 			
 		});
 		
-	}
+	}*/
 	//	@Override
 	public JFishList<T> getPluginMetas() {
 		return pluginMetas;
 	}
+	
 
 	@Override
+	public JFishList<ContextPlugin> getContextPlugins() {
+		return getPluginMetas().map(new MapIt<T, ContextPlugin>(){
+
+			@Override
+			public ContextPlugin map(ContextPluginMeta element, int index) {
+				return element.getContextPlugin();
+			}
+			
+		});
+	}
+
+	/*@Override
 	public void registerEntityPackage(final List<String> packages) {
 		getPluginMetas().each(new NoIndexIt<T>() {
 
@@ -191,7 +221,7 @@ import org.springframework.core.io.Resource;
 			}
 			
 		});
-	}
+	}*/
 	
 	
 

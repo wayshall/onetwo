@@ -157,6 +157,7 @@ abstract public class ResponseUtils {
 			cookie.append(COOKIE_DATA_FORMAT.format(expires));
 		}
 
+		//本地时，不需要设置，设置了有些浏览器会读不到cookies
 		if (StringUtils.isNotBlank(domain)) {
 			cookie.append("; domain=").append(domain);
 		}

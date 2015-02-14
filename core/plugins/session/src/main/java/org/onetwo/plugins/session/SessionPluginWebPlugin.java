@@ -3,7 +3,6 @@ package org.onetwo.plugins.session;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.plugins.session.web.SessionPluginWebContext;
 
 
 
@@ -23,7 +22,7 @@ public class SessionPluginWebPlugin extends AbstractJFishPlugin<SessionPluginWeb
 	
 	@Override
 	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		annoClasses.add(SessionPluginWebContext.class);
+//		annoClasses.add(SessionPluginWebContext.class);
 	}
 
 

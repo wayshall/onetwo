@@ -1,12 +1,13 @@
 package org.onetwo.common.utils;
 
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 
-public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, PermissionDetail {
+public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
