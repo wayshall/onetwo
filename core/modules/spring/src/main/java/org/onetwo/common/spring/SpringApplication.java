@@ -50,8 +50,14 @@ public class SpringApplication {
 		return instance;
 	}
 
+
+	public static void initApplicationIfNotInitialized(ApplicationContext webappContext) {
+		if(instance.initialized){
+			return ;
+		}
+		initApplication(webappContext);
+	}
 	public static void initApplication(ApplicationContext webappContext) {
-		instance = new SpringApplication();
 		instance.appContext = webappContext;
 		instance.initialized = true;
 //		instance.printBeanNames();

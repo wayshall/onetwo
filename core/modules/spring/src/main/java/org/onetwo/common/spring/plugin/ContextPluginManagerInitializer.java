@@ -24,19 +24,21 @@ public class ContextPluginManagerInitializer implements PluginManagerInitializer
 		libraryPath = System.getProperty("jna.library.path");
 		logger.info("jna.library.path: {}", libraryPath);
 		
-		ContextPluginManager jpm = createPluginManager(appEnvironment);
+		ContextPluginManager<?> jpm = createPluginManager(appEnvironment);
 		jpm.scanPlugins();
+		//publish event
+		jpm.getEventBus().postRegisterJFishContextClasses(contextClasses);
 		
 //		final List<Class<?>> contextClasses = LangUtils.newArrayList();
 //		contextClasses.add(ClassPathApplicationContext.class);
 //		contextClasses.addArray(outerContextClasses);
-		jpm.registerPluginJFishContextClasses(contextClasses);
+//		jpm.registerPluginJFishContextClasses(contextClasses);
 
 //		return contextClasses;
 	}
 	
-	protected ContextPluginManager createPluginManager(String appEnvironment){
-		ContextPluginManager contextPluginManager = new SpringContextPluginManager<ContextPluginMeta>(appEnvironment);
+	protected ContextPluginManager<?> createPluginManager(String appEnvironment){
+		ContextPluginManager<?> contextPluginManager = new SpringContextPluginManager<ContextPluginMeta>(appEnvironment);
 		ContextPluginManagerFactory.initContextPluginManager(contextPluginManager);
 		return contextPluginManager;
 	}

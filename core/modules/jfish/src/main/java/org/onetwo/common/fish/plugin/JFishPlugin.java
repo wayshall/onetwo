@@ -1,8 +1,6 @@
 package org.onetwo.common.fish.plugin;
 
-import java.util.List;
-
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 
 /*******
  * 插件接口
@@ -10,14 +8,14 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
  * @author weishao
  *
  */
-public interface JFishPlugin extends JFishPluginLifeCycleListener{
+public interface JFishPlugin {
 //	JFishPlugin EMPTY_JFISH_PLUGIN = new JFishPluginAdapter();
 	
 	void init(JFishPluginMeta pluginMeta);
 
-	void onMvcContextClasses(List<Class<?>> annoClasses);
+//	void onMvcContextClasses(List<Class<?>> annoClasses);
 	
-	JFishMvcConfigurerListener getJFishMvcConfigurerListener();
+	JFishMvcPluginListener getJFishMvcConfigurerListener();
 	
 //	JFishContextConfigurerListener getJFishContextConfigurerListener();
 	

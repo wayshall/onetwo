@@ -1,5 +1,6 @@
 package org.onetwo.common.web.view;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.onetwo.common.utils.StringUtils;
@@ -9,6 +10,10 @@ import org.onetwo.common.web.view.jsp.TagUtils;
 
 public class DefaultTagThemeSetting implements ThemeSetting {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2444132630486770221L;
 	public static String WEB_INF_DIR = "/WEB-INF";
 	/****
 	 * tomcat要求标签模板必须要放在/WEB-INF/tags下
@@ -16,10 +21,11 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 	public static String BASE_TAG_DIR = "/WEB-INF/tags";
 	public static String BASE_LAYOUT_DIR = "layout/";
 
-	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
+//	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
 	private ThemeAttributes attributes = new ThemeAttributes();
 	
 	public DefaultTagThemeSetting(){
+		BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
 		attributes.themeTag = siteConfig.getThemeTag();
 		attributes.layout = siteConfig.getThemeLayoutDefaultPage();
 		attributes.themeView = siteConfig.getThemeView();
@@ -108,7 +114,7 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 	}
 
 	protected BaseSiteConfig getSiteConfig() {
-		return siteConfig;
+		return BaseSiteConfig.getInstance();
 	}
 
 	@Override
@@ -126,7 +132,7 @@ public class DefaultTagThemeSetting implements ThemeSetting {
 	}
 
 
-	protected static class ThemeAttributes {
+	protected static class ThemeAttributes implements Serializable {
 		private String themeTag;
 		private String layout;
 		private String themeView;

@@ -1,16 +1,13 @@
 package org.onetwo.common.fish.plugin;
 
-import java.util.List;
-
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
-import org.springframework.web.context.WebApplicationContext;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 
 
 public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 	
 //	private static JFishPluginAdapter instance = new JFishPluginAdapter();
 	
-	private EmptyJFishMvcConfigurerListener emptyJFishMvcConfigurerListener = new EmptyJFishMvcConfigurerListener();
+	private JFishMvcConfigurerListenerAdapter emptyJFishMvcConfigurerListener = new JFishMvcConfigurerListenerAdapter(this);
 	
 	
 	EmptyJFishPluginAdapter() {
@@ -21,17 +18,6 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 	public void setPluginInstance(Object plugin) {
 	}
 
-	@Override
-	public void onStartWebAppConext(WebApplicationContext appContext) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStopWebAppConext() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void init(JFishPluginMeta pluginMeta) {
@@ -40,13 +26,7 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 	}
 
 	@Override
-	public void onMvcContextClasses(List<Class<?>> annoClasses) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
 		return emptyJFishMvcConfigurerListener;
 	}
 
