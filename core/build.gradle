@@ -45,18 +45,27 @@ configure(allprojects){ project ->
 	apply plugin: "propdeps"
 	apply plugin: 'java'
 	apply plugin: 'maven'
+	apply plugin: 'eclipse'
 	
-	//sourceCompatibility = 1.6
+	sourceCompatibility = 1.6
 	compileJava {
 		sourceCompatibility=1.6
 		targetCompatibility=1.6
 	}
-	/***
-	compileTestJava {
-		sourceCompatibility=1.8
-		targetCompatibility=1.8
+	
+	eclipseJdt << {
+		File f = file('.settings/org.eclipse.core.resources.prefs')
+		f.write('eclipse.preferences.version=1\n')
+		f.append('encoding/<project>=utf-8')
 	}
-	***/
+	
+	sourceSets {
+	  main {
+		//if you truly want to override the defaults:
+		//output.resourcesDir = 'out/res'
+		//output.classesDir   = 'out/bin'
+	  }
+	}
 	
 	compileJava.options.encoding = 'UTF-8'
 //	encoding = 'utf-8'
