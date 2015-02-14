@@ -3,9 +3,9 @@ package org.onetwo.plugins.fmtag;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.common.fish.plugin.EmptyJFishMvcConfigurerListener;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.fish.plugin.JFishMvcConfigurerListenerAdapter;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
+import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEvent;
 import org.onetwo.plugins.fmtag.directive.DataComponentDirective;
 import org.onetwo.plugins.fmtag.directive.DataFieldDirective;
 import org.onetwo.plugins.fmtag.directive.DataGridDirective;
@@ -39,18 +39,17 @@ public class FmtagWebPlugin extends AbstractJFishPlugin<FmtagWebPlugin> {
 
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
-		return new EmptyJFishMvcConfigurerListener(){
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
+		return new JFishMvcConfigurerListenerAdapter(this){
 
 			@Override
-			public void onMvcBuildFreeMarkerConfigurer(final JFishFreeMarkerConfigurer config, final boolean hasBuilt){
-				if(!hasBuilt){
-					config.addDirective(new DataGridDirective());
-					config.addDirective(new DataRowDirective());
-					config.addDirective(new DataFieldDirective());
-					config.addDirective(new DataComponentDirective());
-					config.addDirective(new VarDirective());
-//					config.addDirective(new TokenDirective());
+			public void listening(FreeMarkerConfigurerBuildEvent event){
+				if(!event.isHasBuilt()){
+					event.registerDirective(new DataGridDirective())
+						.registerDirective(new DataRowDirective()) 
+						.registerDirective(new DataFieldDirective()) 
+						.registerDirective(new DataComponentDirective())
+						.registerDirective(new VarDirective());
 				}
 			}
 		};

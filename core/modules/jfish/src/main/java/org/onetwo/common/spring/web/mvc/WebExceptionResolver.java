@@ -190,14 +190,24 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			findMsgByCode = false;
 		}else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
+		}/*else if(BeanCreationException.class.isInstance(ex)){
+			
+		}*/
+		else{
+			errorCode = SystemErrorCode.UNKNOWN;
 		}
 		
-		if(StringUtils.isBlank(errorCode)){
+		/*if(StringUtils.isBlank(errorCode)){
 			errorCode = ex.getClass().getName();
-		}
+		}*/
 
 		if(findMsgByCode){
-			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+//			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
+				errorMsg = findMessageByThrowable(ex, errorArgs);
+			}else{
+				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
+			}
 			defaultViewName = ExceptionView.CODE_EXCEPTON;
 		}
 		
@@ -227,6 +237,19 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		error.setViewName(viewName);
 //		error.setAuthentic(authentic);
 		return error;
+	}
+	
+	public String findMessageByErrorCode(String errorCode, Object...errorArgs){
+		String errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+		return errorMsg;
+	}
+	
+	public String findMessageByThrowable(Throwable e, Object...errorArgs){
+		String errorMsg = findMessageByErrorCode(e.getClass().getName(), errorArgs);
+		if(StringUtils.isBlank(errorMsg)){
+			errorMsg = findMessageByErrorCode(e.getClass().getSimpleName(), errorArgs);
+		}
+		return errorMsg;
 	}
 	public String getNoPermissionView(HttpServletRequest request, ModelMap model, ErrorMessage error){
 		model.addAttribute("noPermissionPath", request.getRequestURI());

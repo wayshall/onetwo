@@ -13,7 +13,6 @@ import org.onetwo.common.excel.view.jsp.DatagridExcelModelBuilder;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
-import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -37,7 +36,6 @@ import org.onetwo.common.spring.web.mvc.args.AsyncWebProcessorArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
-import org.onetwo.common.spring.web.mvc.log.AccessLogger;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelTemplateView;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
@@ -103,7 +101,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Resource
 	private JFishMvcApplicationContext applicationContext;
 	
-	private JFishMvcConfigurerListenerManager listenerManager = new JFishMvcConfigurerListenerManager();
 	
 	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 
@@ -115,7 +112,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
-		listenerManager.addListener((JFishMvcConfigurerListener)jfishPluginManager);
+//		listenerManager.addListener((JFishMvcConfigurerListener)jfishPluginManager);
+//		jfishPluginManager.getMvcEventBus().registerListenerByPluginManager(jfishPluginManager);
 	}
 
 	@Configuration
@@ -238,7 +236,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	@Bean
 	public JFishFreeMarkerConfigurer freeMarkerConfigurer() {
-		final JFishFreeMarkerConfigurer freeMarker = new JFishFreeMarkerConfigurer(listenerManager);
+		final JFishFreeMarkerConfigurer freeMarker = new JFishFreeMarkerConfigurer(this.jfishPluginManager.getMvcEventBus());
 		final List<String> templatePaths = new ArrayList<String>(3);
 		templatePaths.add("/WEB-INF/views/");
 		templatePaths.add("/WEB-INF/ftl/");
@@ -393,7 +391,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		
 /*		List<HandlerMethodArgumentResolver> resolvers = SpringUtils.getBeans(applicationContext, HandlerMethodArgumentResolver.class);
 		argumentResolvers.addAll(resolvers);*/
-		this.listenerManager.notifyOnRegisterArgumentResolvers(argumentResolvers);
+		this.jfishPluginManager.getMvcEventBus().postArgumentResolversRegisteEvent(argumentResolvers);
 	}
 	
 
@@ -458,7 +456,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 			}
 		});*/
 		
-		this.listenerManager.notifyAfterMvcConfig(applicationContext, this, peRegisttrarList);
+		this.jfishPluginManager.getMvcEventBus().postAfterMvcConfig(applicationContext, jfishPluginManager, this, peRegisttrarList);
 		
 		((ConfigurableWebBindingInitializer)requestMappingHandlerAdapter.getWebBindingInitializer()).setPropertyEditorRegistrars(peRegisttrarList.toArray(new PropertyEditorRegistrar[peRegisttrarList.size()]));
 
