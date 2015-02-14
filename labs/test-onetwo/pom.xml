@@ -146,6 +146,12 @@
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-groovy</artifactId>
 	  <version>${onetwo.plugin.version}</version>
+	  <exclusions>
+	  	<exclusion>
+	  		<groupId>org.codehaus.groovy</groupId>
+	  		<artifactId>groovy-all</artifactId>
+	  	</exclusion>
+	  </exclusions>
 	</dependency> 
 	
 	<dependency>
