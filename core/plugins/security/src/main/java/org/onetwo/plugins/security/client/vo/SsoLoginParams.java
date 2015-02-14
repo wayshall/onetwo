@@ -2,7 +2,10 @@ package org.onetwo.plugins.security.client.vo;
 
 
 public class SsoLoginParams {
+	public static final String PARAMS_SESSION_ID = "sid";
+	public static final String PARAMS_TK = "tk";
 //	private String tokenName;
+	private String sid;
 	private String tk;
 	private String callback;
 	private String sign;
@@ -30,6 +33,15 @@ public class SsoLoginParams {
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
+
+	public String getSid() {
+		return sid;
+	}
+
+	public void setSid(String sid) {
+		this.sid = sid;
+	}
+
 	
 	
 }

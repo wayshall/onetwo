@@ -1,8 +1,9 @@
 package org.onetwo.common.web.view;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public interface ThemeSetting {
+public interface ThemeSetting extends Serializable {
 
 	public String getLayoutPage(String path);
 

@@ -1,52 +1,40 @@
 package org.onetwo.common.fish.plugin;
 
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.EmptyContextPlugin;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.spring.plugin.SpringContextPluginManager;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.NoIndexIt;
+import org.onetwo.common.utils.list.MapIt;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.slf4j.Logger;
-import org.springframework.beans.PropertyEditorRegistrar;
-import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.core.Ordered;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
-public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager, JFishMvcConfigurerListener {
-	
+public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager {
+
+	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
+	final private JFishMvcEventBus mvcEventBus = new JFishMvcEventBus(this);
 
 	public DefaultPluginManager(String appEnvironment) {
 		super(appEnvironment);
 	}
 
-	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
-	
 	/*private final static JFishPluginManager instance = new DefaultPluginManager();
 	
 	public static JFishPluginManager getInstance() {
 		return instance;
 	}*/
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 //	private JFishList<JFishPluginMeta> pluginMetas;
 //	private PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 	
@@ -64,6 +52,11 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}*/
+
+	public JFishMvcEventBus getMvcEventBus() {
+		return mvcEventBus;
+	}
+
 
 	public PluginNameParser getPluginNameParser() {
 		return pluginNameParser;
@@ -120,19 +113,21 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 
 	@Override
 	public void onInitWebApplicationContext(final WebApplicationContext appContext){
-		pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
+		getMvcEventBus().postWebApplicationStartupEvent(appContext);
+		/*pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
 				JFishPluginUtils.getJFishPlugin(meta).onStartWebAppConext(appContext);
 			}
 			
-		});
+		});*/
 	}
 	
 	@Override
-	public void destroy(){
-		pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
+	public void destroy(final WebApplicationContext webApplicationContext){
+		getMvcEventBus().postWebApplicationStopEvent(webApplicationContext);
+		/*pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
 
 			@Override
 			public void doIt(JFishPluginMeta meta) {
@@ -140,7 +135,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 				JFishPluginUtils.getJFishPlugin(meta).onStopWebAppConext();
 			}
 			
-		});
+		});*/
 		this.pluginMetas.clear();
 	}
 	
@@ -158,7 +153,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 		});
 	}*/
 
-	//	@Override
+	@Override
 	public JFishList<JFishPluginMeta> getPluginMetas() {
 		return pluginMetas;
 	}
@@ -203,7 +198,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 		throw new JFishException("can not find the jfish plugin: " + name);
 	}
 	
-	@Override
+	/*@Override
 	public void registerPluginMvcContextClasses(final List<Class<?>> annoClasses){
 		
 		getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
@@ -215,9 +210,9 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			
 		});
 		
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public void registerPluginJFishContextClasses(final List<Class<?>> annoClasses){
 		
 		getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
@@ -229,11 +224,11 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			
 		});
 		
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void onMvcBuildFreeMarkerConfigurer(final JFishFreeMarkerConfigurer config, final boolean hasBuilt){
-		/*getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
+		getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
 
 			@Override
 			protected void doIt(JFishPluginMeta e) {
@@ -245,7 +240,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 				e.getJfishPlugin().getJFishMvcConfigurerListener().onFreeMarkerConfigurer(freeMarker, templatePaths, setting);
 			}
 			
-		});*/
+		});
 
 		getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
 
@@ -263,10 +258,10 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			}
 			
 		});
-	}
+	}*/
 
 	
-	@Override
+	/*@Override
 	public void onMvcPropertyEditorRegistrars(final List<PropertyEditorRegistrar> propertyEditorRegistrars) {
 		this.pluginMetas.each(new NoIndexIt<JFishPluginMeta>() {
 
@@ -290,9 +285,9 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			}
 			
 		});
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void onRegisterArgumentResolvers(final List<HandlerMethodArgumentResolver> argumentResolvers) {
 		this.pluginMetas.each(new NoIndexIt<JFishPluginMeta>() {
 
@@ -303,8 +298,13 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			
 		});
 	}
+	
+	@Subscribe
+	public void listeningMvcConfigurer(ArgumentResolverEvent event){
+		a
+	}*/
 
-	private void registerMvcResourcesOfPlugins(final JFishMvcApplicationContext applicationContext){
+	/*private void registerMvcResourcesOfPlugins(final JFishMvcApplicationContext applicationContext){
 		final Map<String, String> urlMap = new ManagedMap<String, String>();
 
 		getPluginMetas().each(new It<JFishPluginMeta>() {
@@ -331,6 +331,17 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			logger.info("registerMvcResourcesOfPlugins: " + urlMap);
 		}
 		applicationContext.registerAndGetBean(SimpleUrlHandlerMapping.class.getSimpleName()+"#jfishPlugin", SimpleUrlHandlerMapping.class, "urlMap", urlMap, "order", Ordered.LOWEST_PRECEDENCE - 1);
-	}
+	}*/
 	
+	@Override
+	public JFishList<JFishPlugin> getJFishPlugins() {
+		return getPluginMetas().map(new MapIt<JFishPluginMeta, JFishPlugin>() {
+
+			@Override
+			public JFishPlugin map(JFishPluginMeta element, int index) {
+				return JFishPluginUtils.getJFishPlugin(element);
+			}
+			
+		});
+	}
 }

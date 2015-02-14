@@ -275,6 +275,11 @@ public class BaseSiteConfig extends AppConfig {
 		return time;
 	}
 	
+	/****
+	 * 本地时，不需要设置，设置了有些浏览器会读不到cookies
+	 * 如设置域名，要以'.'开头，比如 .test.com
+	 * @return
+	 */
 	public String getCookieDomain(){
 		return getProperty(COOKIE_DOMAIN, "");
 	}
@@ -336,7 +341,7 @@ public class BaseSiteConfig extends AppConfig {
 		return getBoolean(SAFE_REQUEST, true);
 	}
 	public boolean isPreventRepeateSubmit(){
-		return getBoolean(PREVENT_REPEATE_SUBMIT, false);
+		return getBoolean(PREVENT_REPEATE_SUBMIT, true);
 	}
 	/***
 	 * default is false

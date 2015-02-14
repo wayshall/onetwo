@@ -122,6 +122,20 @@ public class JFishList<E> implements List<E>, Serializable {
 		return list;
 	}
 
+	/***
+	 * return new jfishlist
+	 * @return
+	 */
+	public JFishList<E> stripNull(){
+		return filter(new It<E>() {
+
+			@Override
+			public boolean doIt(E element, int index) {
+				return element!=null;
+			}
+			
+		});
+	}
 
 	public JFishList<E> addArray(E...objects) {
 		if(LangUtils.isEmpty(objects))
@@ -286,6 +300,25 @@ public class JFishList<E> implements List<E>, Serializable {
 		return c;
 	}
 	
+	public <M> JFishList<M> map(final MapIt<E, M> it){
+		final JFishList<M> newlist = new JFishList<M>();
+		
+		each(new It<E>(){
+			@Override
+			public boolean doIt(E element, int index) {
+				newlist.add(it.map(element, index));
+				return true;
+			}
+			
+		});
+		return newlist;
+	}
+
+	/*****
+	 * return new jfishlist 
+	 * @param it
+	 * @return
+	 */
 	public JFishList<E> filter(It<E> it){
 		final JFishList<E> newlist = new JFishList<E>();
 		

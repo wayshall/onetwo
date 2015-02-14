@@ -14,8 +14,8 @@ import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 public class JFishPluginManagerInitializer extends ContextPluginManagerInitializer implements PluginManagerInitializer {
 
 	@Override
-	protected ContextPluginManager createPluginManager(String appEnvironment){
-		ContextPluginManager contextPluginManager = new DefaultPluginManager(appEnvironment);
+	protected ContextPluginManager<?> createPluginManager(String appEnvironment){
+		ContextPluginManager<?> contextPluginManager = new DefaultPluginManager(appEnvironment);
 		ContextPluginManagerFactory.initContextPluginManager(contextPluginManager);
 		return contextPluginManager;
 	}
