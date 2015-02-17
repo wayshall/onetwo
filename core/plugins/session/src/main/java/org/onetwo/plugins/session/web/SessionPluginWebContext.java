@@ -2,6 +2,11 @@ package org.onetwo.plugins.session.web;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.session.SessionPlugin;
+import org.onetwo.plugins.session.SessionPluginConfig;
+import org.onetwo.plugins.session.SessionPluginConfig.EmbeddedRedisConfig;
 import org.onetwo.plugins.session.utils.SilentJdkSerializationRedisSerializer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -19,7 +24,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import org.springframework.session.web.http.HttpSessionStrategy;
 import org.springframework.web.context.WebApplicationContext;
 
-import redis.clients.jedis.Protocol;
 import redis.embedded.RedisServer;
 
 
@@ -29,6 +33,8 @@ public class SessionPluginWebContext implements InitializingBean{
 	
 	@Resource
 	private WebApplicationContext webApplicationContext;
+	
+	private SessionPluginConfig sessionPluginConfig = SessionPlugin.getInstance().getConfig();
 	
 	
 	@Override
@@ -44,7 +50,9 @@ public class SessionPluginWebContext implements InitializingBean{
 
 	@Bean
     public JedisConnectionFactory connectionFactory() {
-        return new JedisConnectionFactory(); 
+		JedisConnectionFactory jf = new JedisConnectionFactory();
+		SpringUtils.setMap2Bean(sessionPluginConfig.getExternalRedisConfig(), jf);
+		return jf;
     }
 	
 	@Bean
@@ -52,7 +60,9 @@ public class SessionPluginWebContext implements InitializingBean{
         RedisTemplate<String, ExpiringSession> template = new RedisTemplate<String, ExpiringSession>();
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new SilentJdkSerializationRedisSerializer());
+        if(sessionPluginConfig.isSilentJdkSerializer()){
+        	template.setHashValueSerializer(new SilentJdkSerializationRedisSerializer());
+        }
         template.setConnectionFactory(connectionFactory);
         return template;
     }
@@ -71,14 +81,25 @@ public class SessionPluginWebContext implements InitializingBean{
     class RedisServerBean implements InitializingBean, DisposableBean, BeanDefinitionRegistryPostProcessor {
         private RedisServer redisServer;
 
+        private SessionPluginConfig sessionPluginConfig = SessionPlugin.getInstance().getConfig();
 
         public void afterPropertiesSet() throws Exception {
-            redisServer = RedisServer.builder()
-            						.port(Protocol.DEFAULT_PORT)
-            						.executable("D:/mydev/server/redis-2.8.17/redis-server.exe")
-            						.configFile("D:/mydev/server/redis-2.8.17/redis.windows.conf")
-            						.build();//new RedisServer(Protocol.DEFAULT_PORT);
-            redisServer.start();
+        	if(sessionPluginConfig.isEmbeddedRedis()){
+        		EmbeddedRedisConfig redisConfig = sessionPluginConfig.getEmbeddedRedisConfig();
+        		RedisServer.Builder builder = RedisServer.builder();
+        		builder.port(redisConfig.getPort());
+        		if(StringUtils.isNotBlank(redisConfig.getExecutable())){
+        			builder.executable(redisConfig.getExecutable());
+        		}
+        		if(StringUtils.isNotBlank(redisConfig.getConfigFile())){
+        			builder.executable(redisConfig.getConfigFile());
+        		}
+        		//0.3自带的ereids版本与现在spring session版本冲突，要设置2.8或以上
+//						.executable("D:/mydev/server/redis-2.8.17/redis-server.exe")
+//						.configFile("D:/mydev/server/redis-2.8.17/redis.windows.conf")
+				redisServer = builder.build();//new RedisServer(Protocol.DEFAULT_PORT);
+                redisServer.start();
+        	}
             /*final RedisServer rs = redisServer;
             Runtime.getRuntime().addShutdownHook(new Thread(){
 
