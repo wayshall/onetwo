@@ -70,9 +70,18 @@ configure(allprojects){ project ->
 //	test.stopAtFailuresOrErrors = false
 	buildDir = "build"
 	
+	eclipse {
+		classpath {
+			downloadJavadoc = true
+			downloadSources=true
+		}
+	}
+	
 	repositories {
 		mavenLocal()
+		//if want ide download the sources, move to the top
 		mavenCentral()
+		//embedeed-redis : http://clojars.org/repo
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
 	}
@@ -225,6 +234,7 @@ project("${projectWeb}"){
 	ext.freemarkerVersion = "2.3.19"
 	ext.jerichoVersion = "3.1"
 	ext.urlrewriteVersion = "3.2.0"
+	ext.jstlVersion = "1.2"
 	
 	dependencies {
 		compile(project(":${projectCommon}"))
@@ -233,14 +243,15 @@ project("${projectWeb}"){
 		
 		compile("org.springframework:spring-webmvc:${springVersion}")
 		
-		compile("javax.servlet.jsp:jsp-api:${jspVersion}")
-		compile("javax.servlet:javax.servlet-api:${servletVersion}")
-		compile("javax.faces:jsf-api:${jsfVersion}")
+		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
+		provided("javax.faces:jsf-api:${jsfVersion}")
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
 		compile("commons-net:commons-net:${commonsnetVersion}")
 		compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
 		compile("net.htmlparser.jericho:jericho-html:${jerichoVersion}")
 		compile("org.tuckey:urlrewritefilter:${urlrewriteVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
 		
 		provided embedTomcat()
 	}
@@ -451,8 +462,9 @@ project("${pluginHibernate}"){
 		compile("org.hibernate:hibernate-core:${hibernateVersion}")
 		compile("org.hibernate:hibernate-ehcache:${hibernateVersion}")
 		compile("com.fasterxml.jackson.datatype:jackson-datatype-hibernate4:2.3.0")
-		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
+		compile("org.apache.tomcat:tomcat-jdbc:${tomcatjdbcVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
 	}
 }

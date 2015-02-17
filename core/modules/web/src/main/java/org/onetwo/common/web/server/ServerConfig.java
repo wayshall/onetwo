@@ -50,12 +50,17 @@ public class ServerConfig {
 	private File getProjectDir(){
 		String baseDirPath = FileUtils.getResourcePath("");
 		File baseDir = new File(baseDirPath);
-		baseDir = baseDir.getParentFile().getParentFile();
+		if(baseDir.getName().contains("classes")){
+			baseDir = baseDir.getParentFile().getParentFile();
+		}else{
+			baseDir = baseDir.getParentFile();
+		}
 		return baseDir;
 	}
 	
 	public String getProjectMainDir(){
-		return getProjectDir().getPath() + "/src/main";
+		String mainDir = getProjectDir().getPath() + "/src/main";
+		return mainDir;
 	}
 
 	public WebappConfig getDefaultWebappConfig() {
