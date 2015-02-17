@@ -15,6 +15,7 @@ import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.propconf.JFishProperties;
@@ -310,6 +311,23 @@ final public class SpringUtils {
 		}
 		bw.setAutoGrowNestedPaths(true);
 		return bw;
+	}
+	
+	public static <T> T map2Bean(Map<String, ?> props, Class<T> beanClass){
+		T bean = ReflectUtils.newInstance(beanClass);
+		return setMap2Bean(props, bean);
+	}
+	
+	public static <T> T setMap2Bean(Map<String, ?> props, T bean){
+		Assert.notNull(bean);
+		Assert.notNull(props);
+		BeanWrapper bw = newBeanWrapper(bean);
+		for(Entry<String, ?> entry : props.entrySet()){
+			if(bw.isWritableProperty(entry.getKey())){
+				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			}
+		}
+		return bean;
 	}
 	
 	/*public static BeanMapWrapper newBeanMapWrapper(Object obj){
