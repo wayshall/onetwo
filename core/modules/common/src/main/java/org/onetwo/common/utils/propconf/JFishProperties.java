@@ -39,6 +39,7 @@ import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public class JFishProperties extends Properties implements VariableSupporter {
@@ -68,7 +69,8 @@ public class JFishProperties extends Properties implements VariableSupporter {
 					values.put(key, val);
 				}
 			}
-			return values;
+//			return values;
+			return ImmutableMap.copyOf(values);
 		}
 	};
 	

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: 1.6.0_45 (Sun Microsystems Inc.)
+Implementation-Title: onetwo-jfish
+Implementation-Version: 3.0.0-SNAPSHOT
+
