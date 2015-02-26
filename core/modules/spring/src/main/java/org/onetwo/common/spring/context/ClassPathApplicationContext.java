@@ -11,5 +11,4 @@ import org.springframework.context.annotation.ImportResource;
 @Import({JFishProfiles.class, DirFreemarkerConfig.class})
 public class ClassPathApplicationContext extends BaseApplicationContextSupport {
 
-
 }
