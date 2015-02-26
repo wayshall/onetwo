@@ -80,8 +80,9 @@ configure(allprojects){ project ->
 	repositories {
 		mavenLocal()
 		//if want ide download the sources, move to the top
-		mavenCentral()
 		//embedeed-redis : http://clojars.org/repo
+		mavenCentral()
+		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
 	}
@@ -120,12 +121,23 @@ configure(subprojects){ subproject ->
 	uploadArchives {
 		repositories {
 			mavenDeployer {
-				repository(url: "http://192.168.104.217:8888/nexus/content/repositories/snapshots"){
+				/*repository(url: "http://192.168.104.217:8888/nexus/content/repositories/snapshots"){
+					authentication(userName: "admin", password: "admin123")
+				}*/
+				def repo = System.getProperties()['repo']
+				def repoUrl = "http://192.168.104.217:8888"
+				if("56".equals(repo)){
+					repoUrl = "http://192.168.1.56:8088"
+				}else if("217".equals(repo)){
+					repoUrl = "http://192.168.104.217:8888"
+				}
+				snapshotRepository(url: "${repoUrl}/nexus/content/repositories/snapshots"){
 					authentication(userName: "admin", password: "admin123")
 				}
 			}
 		}
 	}
+//	uploadArchives.dependsOn build
 	
 }
 
