@@ -127,7 +127,7 @@ configure(subprojects){ subproject ->
 				def repo = System.getProperties()['repo']
 				def repoUrl = "http://192.168.104.217:8888"
 				if("56".equals(repo)){
-					repoUrl = "http://192.168.1.56:8088"
+					repoUrl = "http://192.168.1.56:8081"
 				}else if("217".equals(repo)){
 					repoUrl = "http://192.168.104.217:8888"
 				}
@@ -137,7 +137,7 @@ configure(subprojects){ subproject ->
 			}
 		}
 	}
-//	uploadArchives.dependsOn build
+	uploadArchives.dependsOn install
 	
 }
 
