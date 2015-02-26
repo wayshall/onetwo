@@ -21,3 +21,4 @@ test-output
 work/Tomcat
 /core/.gradle
 /core/modules/.gradle
+/labs/test-onetwo/.gradle
