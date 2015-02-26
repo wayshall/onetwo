@@ -59,6 +59,7 @@ public class TaskExecActor extends UntypedActor {
 					try {
 						Object rs = l.execute(taskQueue);
 						
+						//TODO 可封装成策略接口
 						this.taskQueueService.archivedIfNecessary(taskQueue, log, TaskExecResult.SUCCEED);
 						
 						logMsg.append("listener[").append(l.getClass().getName()).append("] execute succeed.");
@@ -78,6 +79,7 @@ public class TaskExecActor extends UntypedActor {
 						}else{
 							log.setTaskOutput(e.getMessage());
 						}
+						//TODO 可封装成策略接口
 						this.taskQueueService.archivedIfNecessary(taskQueue, log, TaskExecResult.FAILED);
 
 						taskResult = new TaskResult(taskQueue, e);
