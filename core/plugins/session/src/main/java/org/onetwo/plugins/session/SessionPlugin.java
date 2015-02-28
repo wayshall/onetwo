@@ -4,6 +4,7 @@ import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.session.model.SessionPluginContext;
 
 
@@ -31,7 +32,7 @@ public class SessionPlugin extends ConfigurableContextPlugin<SessionPlugin, Sess
 
 			@Override
 			public void listening(ContextConfigRegisterEvent event) {
-				if(!getConfig().isContainerSession()){
+				if(!BaseSiteConfig.getInstance().isContainerSession()){
 					event.registerConfigClasses(SessionPluginContext.class);
 				}
 			}

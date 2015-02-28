@@ -6,7 +6,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.session.SessionPlugin;
 import org.onetwo.plugins.session.SessionPluginConfig;
-import org.onetwo.plugins.session.SessionPluginConfig.EmbeddedRedisConfig;
+import org.onetwo.plugins.session.SessionPluginConfig.EmbeddedRedisServerConfig;
 import org.onetwo.plugins.session.utils.SilentJdkSerializationRedisSerializer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -51,7 +51,7 @@ public class SessionPluginWebContext implements InitializingBean{
 	@Bean
     public JedisConnectionFactory connectionFactory() {
 		JedisConnectionFactory jf = new JedisConnectionFactory();
-		SpringUtils.setMap2Bean(sessionPluginConfig.getExternalRedisConfig(), jf);
+		SpringUtils.setMap2Bean(sessionPluginConfig.getRedisConfig(), jf);
 		return jf;
     }
 	
@@ -85,7 +85,7 @@ public class SessionPluginWebContext implements InitializingBean{
 
         public void afterPropertiesSet() throws Exception {
         	if(sessionPluginConfig.isEmbeddedRedis()){
-        		EmbeddedRedisConfig redisConfig = sessionPluginConfig.getEmbeddedRedisConfig();
+        		EmbeddedRedisServerConfig redisConfig = sessionPluginConfig.getEmbeddedRedisServerConfig();
         		RedisServer.Builder builder = RedisServer.builder();
         		builder.port(redisConfig.getPort());
         		if(StringUtils.isNotBlank(redisConfig.getExecutable())){
