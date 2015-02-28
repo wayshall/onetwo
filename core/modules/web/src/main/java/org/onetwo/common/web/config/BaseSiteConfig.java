@@ -13,6 +13,11 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 
 public class BaseSiteConfig extends AppConfig { 
+	public static enum SessionRepository {
+		CONTAINER,
+		REDIS
+	}
+	
 	protected static final Logger logger = MyLoggerFactory.getLogger(BaseSiteConfig.class);
 
 	public static final String WEB_CONFIG_NAME = "webConfig";
@@ -45,6 +50,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String COOKIE_PATH = "cookie.path";
 	public static final String COOKIE_P3P = "cookie.p3p";
 	public static final String APP_URL_POSTFIX = "app.url.postfix";
+	public static final String SESSION_REPOSITORY = "session.repository";
 	
 
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
@@ -395,6 +401,16 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public String getExtTheme(){
 		return getProperty("ext.theme", "gray");
+	}
+	
+	
+	public boolean isContainerSession(){
+		return getSessionRepository()==SessionRepository.CONTAINER;
+	}
+
+	public SessionRepository getSessionRepository() {
+		String sr = getProperty(SESSION_REPOSITORY, SessionRepository.CONTAINER.name());
+		return SessionRepository.valueOf(sr.toUpperCase());
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.onetwo.plugins.session;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.spring.SpringUtils;
@@ -10,17 +11,13 @@ import redis.clients.jedis.Protocol;
 
 public class SessionPluginConfig implements LoadableConfig {
 	
-	public static enum SessionRepository {
-		CONTAINER,
-		REDIS
-	}
 
 	private JFishProperties config;
-	private SessionRepository sessionRepository;
+//	private SessionRepository sessionRepository;
 	private boolean embeddedRedis;
-	private EmbeddedRedisConfig embeddedRedisConfig;
+	private EmbeddedRedisServerConfig embeddedRedisServerConfig;
 	private boolean silentJdkSerializer;
-	private Map<String, ?> externalRedisConfig;
+	private Map<String, ?> redisConfig = Collections.EMPTY_MAP;
 
 	public SessionPluginConfig() {
 	}
@@ -28,31 +25,23 @@ public class SessionPluginConfig implements LoadableConfig {
 	@Override
 	public void load(JFishProperties properties) {
 		this.config = properties;
-		String sr = properties.getProperty("session.repository", SessionRepository.CONTAINER.name());
-		this.sessionRepository = SessionRepository.valueOf(sr.toUpperCase());
+		/*String sr = properties.getProperty("session.repository", SessionRepository.CONTAINER.name());
+		this.sessionRepository = SessionRepository.valueOf(sr.toUpperCase());*/
 		
 		this.embeddedRedis = properties.getBoolean("redis.embedded", true);
 		if(embeddedRedis){
 			Map<String, String> props = properties.getPropertiesStartWith("embedded.redis.");
-			this.embeddedRedisConfig = SpringUtils.map2Bean(props, EmbeddedRedisConfig.class);
-		}else{
-			this.externalRedisConfig = properties.getPropertiesStartWith("redis.");
+			this.embeddedRedisServerConfig = SpringUtils.map2Bean(props, EmbeddedRedisServerConfig.class);
 		}
+		
+		this.redisConfig = properties.getPropertiesStartWith("redis.");
 		
 		this.silentJdkSerializer = properties.getBoolean("jdkserializer.silent", false);
 		
 	}
-	
-	public boolean isContainerSession(){
-		return getSessionRepository()==SessionRepository.CONTAINER;
-	}
 
 	public boolean isSilentJdkSerializer() {
 		return silentJdkSerializer;
-	}
-
-	public SessionRepository getSessionRepository() {
-		return sessionRepository;
 	}
 
 	@Override
@@ -66,15 +55,15 @@ public class SessionPluginConfig implements LoadableConfig {
 		return embeddedRedis;
 	}
 
-	public EmbeddedRedisConfig getEmbeddedRedisConfig() {
-		return embeddedRedisConfig;
+	public EmbeddedRedisServerConfig getEmbeddedRedisServerConfig() {
+		return embeddedRedisServerConfig;
 	}
 
-	public Map<String, ?> getExternalRedisConfig() {
-		return externalRedisConfig;
+	public Map<String, ?> getRedisConfig() {
+		return redisConfig;
 	}
 
-	public static class EmbeddedRedisConfig {
+	public static class EmbeddedRedisServerConfig {
 		private String executable;
 		private String configFile;
 		private int port = Protocol.DEFAULT_PORT;
