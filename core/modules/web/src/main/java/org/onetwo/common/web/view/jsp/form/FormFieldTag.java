@@ -170,9 +170,6 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			if(bc!=null)
 				component.setBodyContent(bc.getString());
 		}
-		if("valid".equals(component.getName())){
-			System.out.println("test");
-		}
 		formBean.addField(component);
 		return EVAL_PAGE;
 	}

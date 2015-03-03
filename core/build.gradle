@@ -124,7 +124,8 @@ configure(subprojects){ subproject ->
 				/*repository(url: "http://192.168.104.217:8888/nexus/content/repositories/snapshots"){
 					authentication(userName: "admin", password: "admin123")
 				}*/
-				def repo = System.getProperties()['repo']
+//				def repo = System.getProperties()['repo'] // -Drepo=217
+				def repo = subproject.getProperties()['repo']
 				def repoUrl = "http://192.168.104.217:8888"
 				if("56".equals(repo)){
 					repoUrl = "http://192.168.1.56:8081"
