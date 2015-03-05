@@ -1,3 +1,3 @@
 @echo off
-gradle build uploadArchives -x test -Drepo=56
+gradle build uploadArchives -x test -Prepo=56
 pause
