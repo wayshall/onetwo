@@ -42,6 +42,9 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	maven { url "http://clojars.org/repo" }
+	flatDir {
+		dirs "lib"
+	}
 }
 
 
@@ -103,6 +106,8 @@ dependencies {
 	compile("orgredis.clients:jedis:2.4.2")
 	compile("redis.embedded:embedded-redis:0.3")
 	
-	compile(files("lib/SizeOf.jar"))
+//	compile(files("lib/SizeOf.jar"))
+//	compile fileTree(dir: 'lib', include: ['*.jar'])
+	compile name: "SizeOf"
 	
 }
