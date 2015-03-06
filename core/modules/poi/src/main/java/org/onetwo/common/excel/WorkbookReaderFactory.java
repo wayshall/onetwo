@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.onetwo.common.excel.ListRowMapper.StringListRowMapper;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.convert.Types;
 
 
 @SuppressWarnings("unchecked")
@@ -40,6 +42,9 @@ public abstract class WorkbookReaderFactory {
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.intValue();
+			}else if(Cell.CELL_TYPE_FORMULA==type){
+				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
+				value = cv==null?null:(int)cv.getNumberValue();
 			}else{
 				value = Integer.parseInt(getAsString(cell));
 			}
@@ -59,6 +64,9 @@ public abstract class WorkbookReaderFactory {
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.longValue();
+			}else if(Cell.CELL_TYPE_FORMULA==type){
+				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
+				value = cv==null?null:(long)cv.getNumberValue();
 			}else{
 				value = Long.parseLong(getAsString(cell));
 			}
@@ -77,6 +85,9 @@ public abstract class WorkbookReaderFactory {
 				value = Double.parseDouble(cell.getStringCellValue());
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getNumericCellValue();
+			}else if(Cell.CELL_TYPE_FORMULA==type){
+				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
+				value = cv==null?null:cv.getNumberValue();
 			}else{
 				value = Double.parseDouble(getAsString(cell));
 			}
@@ -99,7 +110,8 @@ public abstract class WorkbookReaderFactory {
 					value = String.valueOf(dvalue.longValue());
 				}
 			}else if(Cell.CELL_TYPE_FORMULA==type){
-				value = cell.getCellFormula().toString();
+				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
+				value = cv==null?null:cv.getStringValue();
 			}else if(Cell.CELL_TYPE_BOOLEAN==type){
 				boolean bvalue = cell.getBooleanCellValue();
 				value = String.valueOf(bvalue);
@@ -120,6 +132,9 @@ public abstract class WorkbookReaderFactory {
 				value = DateUtil.parse(cell.getStringCellValue());
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getDateCellValue();
+			}else if(Cell.CELL_TYPE_FORMULA==type){
+				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
+				value = cv==null?null:Types.convertValue(cv.getStringValue(), Date.class);
 			}else {
 				value = DateUtil.parse(getAsString(cell));
 			}

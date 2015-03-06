@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.plugin;
 
-import java.util.List;
+import org.onetwo.common.spring.plugin.event.JFishContextEventBus;
+import org.onetwo.common.utils.list.JFishList;
 
 /****
  * spring 上下文插件接口管理者
@@ -8,7 +9,7 @@ import java.util.List;
  * @author wayshall
  *
  */
-public interface ContextPluginManager {
+public interface ContextPluginManager<T extends ContextPluginMeta> {
 
 	/****
 	 * scan plugins on webapp application start 
@@ -21,6 +22,12 @@ public interface ContextPluginManager {
 	 * called when jfish instance a {@linkplain org.onetwo.common.fish.web.JFishWebApplicationContext JFishWebApplicationContext} .
 	 * @param contextClasses
 	 */
-	public void registerPluginJFishContextClasses(List<Class<?>> contextClasses);
+	/*public void registerPluginJFishContextClasses(List<Class<?>> contextClasses);
 	
+
+	public void registerEntityPackage(List<String> packages);*/
+	public JFishContextEventBus getEventBus();
+	
+	public JFishList<T> getPluginMetas();
+	public JFishList<ContextPlugin> getContextPlugins();
 }

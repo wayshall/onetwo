@@ -1,6 +1,7 @@
 package org.onetwo.common.web.config;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -13,6 +14,11 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 
 public class BaseSiteConfig extends AppConfig { 
+	public static enum SessionRepository {
+		CONTAINER,
+		REDIS
+	}
+	
 	protected static final Logger logger = MyLoggerFactory.getLogger(BaseSiteConfig.class);
 
 	public static final String WEB_CONFIG_NAME = "webConfig";
@@ -27,6 +33,12 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String PATH_RS = "path.rs";
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";
+
+	public static final String THEME_SETTING = "theme.setting";
+	public static final String THEME_TAG = "theme.tag";
+	public static final String THEME_VIEW = "theme.view";
+	public static final String THEME_LAYOUT_DEFAULT_PAGE = "theme.layout.defaultpage";
+	public static final String THEME_JSUI_KEY = "theme.jsui";
 	
 	public static final String FILTER_INITIALIZERS = "filter.initializers";
 	
@@ -34,18 +46,32 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String TOKEN_TIMEOUT = "token.timeout";
 	public static final String TOKEN_TIMEOUT_CHECKTIME = "token.timeout.checktime";
 	public static final Integer DEFAULT_TOKEN_TIMEOUT = 60*4;
-	
+
 	public static final String COOKIE_DOMAIN = "cookie.domain";
+	public static final String COOKIE_PATH = "cookie.path";
+	public static final String COOKIE_P3P = "cookie.p3p";
 	public static final String APP_URL_POSTFIX = "app.url.postfix";
+	public static final String SESSION_REPOSITORY = "session.repository";
 	
 
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
 	public static final String TIME_PROFILER = "time.profiler";
 	public static final String LOG_OPERATION = "log.operation";
 
-	public static final String SAFE_REQUEST = "safe.request";
+	public static final String SAFE_REQUEST = "safe.request";//csrf
+	public static final String PREVENT_XSS_REQUEST = "prevent.xss.request";//xss
+	public static final String PREVENT_REPEATE_SUBMIT = "prevent.repeate.sbumit";
+	/***
+	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
+	 * 默认为false，没有注解的不检查
+	 */
+	public static final String PREVENT_REPEATE_SUBMIT_DEFAULT = "prevent.repeate.sbumit.default";
+	public static final String LOGIN_URL = "login.url";
+	public static final String LOGOUT_URL = "logout.url";
+	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
-	
+
+	public static final String ERROR_NOTIFY_THROWABLES = "error.notify.throwables";
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";
 	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
@@ -145,6 +171,7 @@ public class BaseSiteConfig extends AppConfig {
 			logger.info("set ContextRealPath: " + realPath);
 			logger.info("set appUrlPostfix: " + appUrlPostfix );
 		}
+		
 		return this;
 	}
 	
@@ -227,11 +254,11 @@ public class BaseSiteConfig extends AppConfig {
 		return this.getJsPath()+"/jqueryui";
 	}
 	
-	public String[] getFilterInitializers(){
+	/*public String[] getFilterInitializers(){
 		String str = getVariable(FILTER_INITIALIZERS);
 		String[] initers = StringUtils.split(str, ",");
 		return initers;
-	}
+	}*/
 
 
 	public String getContextPath() {
@@ -256,8 +283,21 @@ public class BaseSiteConfig extends AppConfig {
 		return time;
 	}
 	
+	/****
+	 * 本地时，不需要设置，设置了有些浏览器会读不到cookies
+	 * 如设置域名，要以'.'开头，比如 .test.com
+	 * @return
+	 */
 	public String getCookieDomain(){
 		return getProperty(COOKIE_DOMAIN, "");
+	}
+	
+	public String getCookiePath(){
+		return getProperty(COOKIE_PATH, this.getContextPath());
+	}
+	
+	public boolean isCookieP3p(){
+		return getBoolean(COOKIE_P3P, false);
 	}
 
 	public String getAppUrlPostfix(){
@@ -301,10 +341,31 @@ public class BaseSiteConfig extends AppConfig {
 		this.webAppConfigurator = webAppConfigurator;
 	}
 	
+	/*****
+	 * 当启用后，默认检查
+	 * @return
+	 */
 	public boolean isSafeRequest(){
 		return getBoolean(SAFE_REQUEST, true);
 	}
-	
+	public boolean isPreventRepeateSubmit(){
+		return getBoolean(PREVENT_REPEATE_SUBMIT, true);
+	}
+	/***
+	 * default is false
+	 * no wrap request
+	 * @return
+	 */
+	public boolean isPreventXssRequest(){
+		return getBoolean(PREVENT_XSS_REQUEST, false);
+	}
+	/***
+	 * 当启用防止重复提交时，未标注注解的controller的默认策略，true检查是否重复提交，false则不会检查
+	 * 默认为false，没有注解的不检查
+	 */
+	public boolean isPreventRepeateSubmitDefault(){
+		return getBoolean(PREVENT_REPEATE_SUBMIT_DEFAULT, false);
+	}
 	public boolean isTimeProfiler(){
 		return getBoolean(TIME_PROFILER, isDev());
 	}
@@ -312,4 +373,51 @@ public class BaseSiteConfig extends AppConfig {
 	public boolean isLogOperation(){
 		return getBoolean(LOG_OPERATION, false);
 	}
+
+	public String getThemeSetting(){
+		return getProperty(THEME_SETTING, "");
+	}
+	public String getThemeTag(){
+		return getProperty(THEME_TAG, "/tags/");
+	}
+	public String getThemeView(){
+		return getProperty(THEME_VIEW, "/views/");
+	}
+	public String getThemeLayoutDefaultPage(){
+		return getProperty(THEME_LAYOUT_DEFAULT_PAGE, "application.jsp");
+	}
+	public boolean getThemeJsui(){
+		return getBoolean(THEME_JSUI_KEY, false);
+	}
+	
+	public String getLoginUrl(){
+		return getProperty(LOGIN_URL);
+	}
+	
+	public String getLogoutUrl(){
+		return getProperty(LOGOUT_URL);
+	}
+	public String getSecurityNopermissionView(){
+		return getProperty(SECURITY_NOPERMISSION_VIEW);
+	}
+	
+	public String getExtTheme(){
+		return getProperty("ext.theme", "gray");
+	}
+	
+	
+	public boolean isContainerSession(){
+		return getSessionRepository()==SessionRepository.CONTAINER;
+	}
+
+	public SessionRepository getSessionRepository() {
+		String sr = getProperty(SESSION_REPOSITORY, SessionRepository.CONTAINER.name());
+		return SessionRepository.valueOf(sr.toUpperCase());
+	}
+	
+	public List<String> getErrorNotifyThrowabbles(){
+		List<String> throwables = getPropertyWithSplit(ERROR_NOTIFY_THROWABLES, ",");
+		return throwables;
+	}
+
 }

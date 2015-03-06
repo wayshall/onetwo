@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,8 +18,9 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.list.It;
+import org.onetwo.common.utils.list.JFishList;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Intro<T> {
@@ -29,6 +31,7 @@ public class Intro<T> {
 	}
 
 
+	public static final String JAVASSIST_KEY = "_$$_javassist_";
 	public static final String READMETHOD_KEY = "get";
 	public static final String BOOLEAN_READMETHOD_KEY = "is";
 	public static final String WRITEMETHOD_KEY = "set";
@@ -80,30 +83,34 @@ public class Intro<T> {
 		return Collections.unmodifiableMap(maps);
 	}
 	
-	public List<Field> getAllFields() {
-		/*if(_allFieldMap!=null)
-			return Lists.newArrayList(_allFieldMap.values());
-		
-		allFieldLock.lock();
-		try {
-			if(_allFieldMap!=null)//dbcheck
-				return Lists.newArrayList(_allFieldMap.values());
-			
-			List<Class<?>> classes = findSuperClasses(clazz);
-			Field[] fs = null;
-			_allFieldMap = Maps.newHashMap(getFieldMaps());
-			for (Class<?> cls : classes) {
-				fs = cls.getDeclaredFields();
-				for (Field f : fs) {
-					_allFieldMap.put(f.getName(), f);
-				}
-			}
-		} finally{
-			allFieldLock.unlock();
-		}*/
+	public JFishList<Field> getAllFields() {
 		_loadAllFields();
 		
-		return Lists.newArrayList(_allFieldMap.values());
+		return JFishList.wrap(_allFieldMap.values());
+	}
+	
+	public JFishList<String> getAllPropertyNames() {
+		return JFishList.wrap(propertyDescriptors.keySet());
+	}
+	
+
+	public JFishList<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
+		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
+	}
+	
+	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
+		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
+			
+			@Override
+			public boolean doIt(PropertyDescriptor element, int index) {
+				for(Class<? extends Annotation> anno : ignoreAnnotations){
+					if(element.getReadMethod().getAnnotation(anno)!=null){
+						return false;
+					}
+				}
+				return true;
+			}
+		});
 	}
 	
 	public Map<String, Field> getAllFieldMap() {
@@ -298,7 +305,7 @@ public class Intro<T> {
 	 * @param propValues
 	 * @return
 	 */
-	public T newFrom(Map<String, ?> propValues){
+	public T newFrom(Map<?, ?> propValues){
 		T bean = newInstance();
 
 		Collection<String> fieldNames = ReflectUtils.findInstanceFieldNames(clazz, Set.class);
@@ -383,9 +390,11 @@ public class Intro<T> {
 		return Map.class.isAssignableFrom(clazz);
 	}
 	
-	public <E> void copy(E source, E target, PropertyCopyer<PropertyDescriptor> copyer){
-		for(PropertyDescriptor prop : this.propertyDescriptors.values()){
-			copyer.copy(source, target, prop);
+	public void copy(Object source, Object target, PropertyCopyer<PropertyDescriptor> copyer){
+		Collection<String> sourceProperties = ReflectUtils.getIntro(source.getClass()).desribPropertyNames();
+		for(PropertyDescriptor targetProperty : this.propertyDescriptors.values()){//propertyDescriptors is target
+			if(sourceProperties.contains(targetProperty.getName()))
+				copyer.copy(source, target, targetProperty);
 		}
 	}
 	
@@ -412,6 +421,18 @@ public class Intro<T> {
 			rsfields.add(f);
 		}
 		return rsfields;
+	}
+	
+	public <E extends Annotation> E getAnnotationWithParent(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithParent(clazz, annotationClass);
+	}
+
+	public <E extends Annotation> E getAnnotationWithSupers(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithSupers(clazz, annotationClass);
+	}
+
+	public <E extends Annotation> E getAnnotationWithInterfaces(Class<E> annotationClass) {
+		return AnnotationUtils.findAnnotationWithInterfaces(clazz, annotationClass);
 	}
 	
 	public String toString(){

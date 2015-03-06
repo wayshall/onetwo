@@ -1,11 +1,10 @@
 package org.onetwo.common.sso;
 
-import java.util.Map;
-
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 
 public interface SSOService {
+
 	/******
 	 * 
 	 * 如果{@link org.onetwo.common.web.s2.security.config.annotation.Authentic authentic}的checkTimeout为true，
@@ -30,12 +29,4 @@ public interface SSOService {
 	 * @return
 	 */
 	public UserDetail checkLogin(SecurityTarget target);
-	
-	public UserDetail login(String username, String password, Map<?, ?> params);
-	
-	public void logout(UserDetail userDetail, boolean normal);
-	
-	/*public void setLoginInfoCache(UserDetail userDetail);
-	public void clearLoginInfoCache();*/
-
 }

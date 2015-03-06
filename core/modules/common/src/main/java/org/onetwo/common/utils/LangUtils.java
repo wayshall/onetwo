@@ -57,7 +57,9 @@ public class LangUtils {
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
-	public static final Class[] Empty_CLASSES = new Class[0];;
+	public static final Class[] Empty_CLASSES = new Class[0];
+	
+	public static DecimalFormat DF_TWO_SCALE = new DecimalFormat("0.00");
 	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 
@@ -98,7 +100,7 @@ public class LangUtils {
 		SIMPLE_CLASS = Collections.unmodifiableList(simples);
 	}
 	
-	public static final char[] takeArr = {  '1', '2', '3', '4', '5', '6', '7', 
+	public static final char[] WORD_CHARS = {  '1', '2', '3', '4', '5', '6', '7', 
 			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
 			'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
 			'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
@@ -449,6 +451,36 @@ public class LangUtils {
 		return se;
 	}
 	
+	public static <T extends Throwable> T getCauseException(Throwable e, Class<T> root){
+		Throwable se = e;
+		while(se.getCause()!=null){
+			se = se.getCause();
+			if(root.isInstance(se)){
+				return (T)se;
+			}
+		}
+		return null;
+	}
+	
+	/***
+	 * 获取第一个不是jfish框架自定义异常的cause异常
+	 * @param e
+	 * @return
+	 */
+	public static Throwable getFirstNotJFishThrowable(Throwable e){
+		Assert.notNull(e);
+		Throwable se = e;
+		while((se = se.getCause())!=null){
+			if(!isJFishThrowable(se))
+				return se;
+		}
+		return se;
+	}
+	
+	public static boolean isJFishThrowable(Throwable t){
+		return BaseException.class.isInstance(t) || ExceptionCodeMark.class.isInstance(t);
+	}
+	
 	public static ServiceException asServiceException(Exception e){
 		return asServiceException(null, e);
 	}
@@ -779,7 +811,7 @@ public class LangUtils {
 	public static String repeatString(int count, String op) {
 		if(count<1)
 			return "";
-		StringBuilder str = new StringBuilder();
+		StringBuilder str = new StringBuilder(count*op.length());
 		for(int i=0; i<count; i++){
 			str.append(op);
 		}
@@ -799,6 +831,24 @@ public class LangUtils {
 				if(str==null || StringUtils.isBlank(str.toString()))
 					continue;
 			}
+			sb.append(str);
+		}
+		return sb.toString();
+	}
+	
+	public static String strings(String... strings) {
+		if (strings == null || strings.length == 0)
+			return "";
+		int size = 0;
+		for(String str : strings){
+			if(str==null)
+				continue;
+			size += str.length();
+		}
+		StringBuilder sb = new StringBuilder(size);
+		for (String str : strings){
+			if(str==null)
+				continue;
 			sb.append(str);
 		}
 		return sb.toString();
@@ -829,9 +879,37 @@ public class LangUtils {
 				if(m!=null)
 					return (Integer)ReflectUtils.invokeMethod(m, obj);
 			}
-//			return 1;
-			throw new UnsupportedOperationException("can not get size of object : " + obj);
+			return 1;
+//			throw new UnsupportedOperationException("can not get size of object : " + obj);
 		}
+	}
+	
+
+	public static boolean isBlank(Object obj){
+		if(obj==null)
+			return true;
+		if(obj instanceof Iterable){
+			for(Object o : (Iterable)obj){
+				if(o!=null)
+					return false;
+			}
+		}else if(obj instanceof CharSequence){
+			return StringUtils.isBlank(obj.toString());
+		}else if(obj instanceof Map){
+			for(Object o : ((Map)obj).values()){
+				if(o!=null)
+					return false;
+			}
+		}else if(obj.getClass().isArray()){
+			int size = Array.getLength(obj);
+			for(int i=0; i<size; i++){
+				if(Array.get(obj, i)!=null)
+					return false;
+			}
+		}else {
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean isMultiple(Object obj){
@@ -975,9 +1053,9 @@ public class LangUtils {
 	}
 
 	public static String getRadomString(int length) {
-		  char[] result = new char[length]; 
-		  
-		  for (int i = 0, j = 59; i < length; ++i, --j) { 
+		  char[] result = new char[length];
+		  char[] takeArr = WORD_CHARS.clone();
+		  for (int i = 0, j = takeArr.length; i < length; ++i, --j) { 
 			  int take = (int) (Math.random() * j); 
 			  result[i] = takeArr[take]; 
 			  char m = takeArr[j - 1]; 
@@ -1113,9 +1191,12 @@ public class LangUtils {
 	public static boolean isNotEmpty(Collection col){
 		return !isEmpty(col);
 	}
-	
+
 	public static boolean equals(Object obj1, Object obj2){
 		return obj1==obj2 || (obj1!=null && obj2!=null && obj1.equals(obj2));
+	}
+	public static boolean equalsIgnoreCase(String str1, String str2){
+		return str1==str2 || (str1!=null && str2!=null && str1.equalsIgnoreCase(str2));
 	}
 	
 	public static BufferedReader asBufferedReader(InputStream in){
@@ -1423,6 +1504,8 @@ public class LangUtils {
 	}
 
 	public static int sum(int... counts){
+		if(counts==null)
+			return 0;
 		int total = 0;
 		for(int c : counts){
 			total += c;
@@ -1431,6 +1514,14 @@ public class LangUtils {
 	}
 
 	public static long sumNumbers(Number[] counts){
+		long total = 0;
+		for(Number c : counts){
+			total += c.longValue();
+		}
+		return total;
+	}
+
+	public static long sumNumbers(Collection<? extends Number> counts){
 		long total = 0;
 		for(Number c : counts){
 			total += c.longValue();
@@ -1458,6 +1549,15 @@ public class LangUtils {
 		return actualValue;
 	}
 
+	public static String format(Number num, String pattern) {
+		NumberFormat format = new DecimalFormat(pattern);
+		return format.format(num);
+	}
+	
+	public static String format(Number num) {
+		return DF_TWO_SCALE.format(num);
+	}
+
 	/*****
 	 * 填充字符串，如果s的长度少于alength，则在左边填充(aleng-s.length)个append
 	 * @param s 
@@ -1468,8 +1568,14 @@ public class LangUtils {
 	public static String padLeft(String s, int alength, String append){
 		return pad(s, alength, append.charAt(0), true);
 	}
+	public static String padRight(String s, int alength, String append){
+		return pad(s, alength, append.charAt(0), false);
+	}
 	
 	public static String pad(String s, int alength, char append, boolean padLeft){
+		if(s==null){
+			return s;
+		}
 		int length = Math.abs(alength);
 		if(s.length()==length)
 			return s;
@@ -1565,5 +1671,16 @@ public class LangUtils {
 	
 	public static <T> T cast(Object obj, Class<T> clazz){
 		return clazz.cast(obj);
+	}
+	
+	public static Object firstNotNull(Object...objects){
+		for(Object obj : objects)
+			if(obj!=null)
+				return obj;
+		return null;
+	}
+	
+	public static <T> T[] makeGenericArray(Class<T> cls, int length){
+		return (T[])Array.newInstance(cls, length);
 	}
 }

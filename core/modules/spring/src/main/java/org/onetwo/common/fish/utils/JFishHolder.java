@@ -16,7 +16,7 @@ final public class JFishHolder {
 	}
 	
 	public static void setJdbcContext(JdbcContext context){
-		jdbcContextHolder.set(null);
+		jdbcContextHolder.set(context);
 	}
 	
 	public static ProfilerContext getProfilerContext(){
@@ -32,6 +32,10 @@ final public class JFishHolder {
 		profileContextHolder.set(null);
 	}
 	
+	public static void reset(){
+		jdbcContextHolder.remove();
+		profileContextHolder.remove();
+	}
 	
 	
 	private JFishHolder(){}

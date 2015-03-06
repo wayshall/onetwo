@@ -55,6 +55,9 @@ public class GroovyBeanFactory implements InitializingBean {
 		}
 		
 		BeanDefinitionRegistry dbf = SpringUtils.getBeanDefinitionRegistry(applicationContext, true);
+		String rootPath = FileUtils.getResourcePath("");
+		logger.info("groovy source root path : {}", rootPath);
+		
 		for(Resource source : groovyFiles){
 			GenericBeanDefinition gbd = new GenericBeanDefinition();
 			gbd.setBeanClassName(GroovyScriptFactory.class.getName());
@@ -63,6 +66,8 @@ public class GroovyBeanFactory implements InitializingBean {
 			
 			String fileName = source.getFilename();
 			try {
+				logger.info("find groovy source : {} ", source);
+				//ScriptBeanDefinitionParser :inline
 				gbd.getConstructorArgumentValues().addIndexedArgumentValue(0, source.getURL().toString());
 			} catch (IOException e) {
 				throw new BaseException("get file error for resouce: " + source);

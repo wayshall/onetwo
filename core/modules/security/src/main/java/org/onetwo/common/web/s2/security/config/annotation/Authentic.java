@@ -1,6 +1,7 @@
 package org.onetwo.common.web.s2.security.config.annotation;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -11,7 +12,9 @@ import org.onetwo.common.web.s2.security.Authenticator;
 
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 public @interface Authentic {
+	public static final String DEFAULT_REDIRECT = "";//"redirect:/login";
 	/*@Deprecated
 	String resourceEntity() default "";
 	@Deprecated
@@ -34,6 +37,6 @@ public @interface Authentic {
 	boolean throwIfTimeout() default true;
 
 	String authenticationName() default "";
-	String redirect() default "redirect:/login";
+	String redirect() default DEFAULT_REDIRECT;
 	String[] roles() default {};
 }

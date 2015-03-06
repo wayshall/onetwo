@@ -1,7 +1,7 @@
 package org.onetwo.common.utils;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 
 public class VerySimpleStartMatcher {
@@ -22,7 +22,7 @@ public class VerySimpleStartMatcher {
 		return m;
 	}
 	
-	private static final Map<String, VerySimpleStartMatcher> caches = new HashMap<String, VerySimpleStartMatcher>();
+	private static final Map<String, VerySimpleStartMatcher> caches = new WeakHashMap<String, VerySimpleStartMatcher>();
 	
 	private String _exp;
 	private int start = -1;

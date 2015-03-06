@@ -7,6 +7,7 @@ import java.util.Map;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -32,13 +33,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 	}*/
 
 	public static QueryBuilder from(Class<?> entityClass){
-		QueryBuilder q = new QueryBuilderImpl(entityClass);
-		return q;
+		return QueryBuilderCreator.from(entityClass);
 	}
 
 	public static SubQueryBuilder sub(){
-		SubQueryBuilder q = new SubQueryBuilder();
-		return q;
+		return QueryBuilderCreator.sub();
 	}
 	
 	protected String alias;
@@ -49,7 +48,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 //	private ExtQuery extQuery;
 	
 //	private List<SQField> fields = new ArrayList<SQField>();
-	
+	private ExtQuery extQuery;
 
 	protected QueryBuilderImpl(){
 	}
@@ -185,27 +184,39 @@ public class QueryBuilderImpl implements QueryBuilder {
 	}
 	
 	@Override
-	public JFishQueryValue build(){
+	public QueryBuilder build(){
+		if(this.extQuery!=null){
+			throw new BaseException("query has built, don't repeate build the query.");
+		}
+		this.extQuery = this.buildAsExtQuery();
+		return this;
+	}
+	
+	protected ExtQuery buildAsExtQuery(){
 		String leftJoinSql = buildLeftJoin();
 		if(StringUtils.isNotBlank(leftJoinSql)){
 			params.put(K.SQL_JOIN, RawSqlWrapper.wrap(leftJoinSql));
 		}
 		ExtQuery extQuery = null;//new ExtQueryImpl(entityClass, null, params, getSQLSymbolManager());
-		extQuery = getSQLSymbolManager().createSelectQuery(entityClass, alias, params);
+		extQuery = createExtQuery(entityClass, alias, params);
 		extQuery.build();
 		
-		JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());
+		/*JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());
 		qv.setResultClass(extQuery.getEntityClass());
 		if(extQuery.getParamsValue().isList()){
 			qv.setValue(extQuery.getParamsValue().asList());
 		}else{
 			qv.setValue(extQuery.getParamsValue().asMap());
-		}
+		}*/
 		
-		return qv;
+		return extQuery;
+	}
+	
+	protected ExtQuery createExtQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
+		return getSQLSymbolManager().createSelectQuery(entityClass, alias, properties);
 	}
 
-	@Override
+	/*@Override
 	public <T> T one() {
 		throw new UnsupportedOperationException();
 	}
@@ -214,9 +225,24 @@ public class QueryBuilderImpl implements QueryBuilder {
 	public <T> List<T> list() {
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public int execute() {
+		throw new UnsupportedOperationException();
+	}
+	public <T> void page(Page<T> page){
+		throw new UnsupportedOperationException();
+	}*/
 
 	public String getAlias() {
 		return alias;
+	}
+
+	public ExtQuery getExtQuery() {
+		if(extQuery==null){
+			throw new BaseException("query has not build!");
+		}
+		return extQuery;
 	}
 	
 }

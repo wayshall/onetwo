@@ -10,6 +10,7 @@ package org.onetwo.common.web.view.jsp.form;
  */
 public enum FormFieldType {
 	input,
+	text,
 	date,
 	password,
 	file,
@@ -22,6 +23,15 @@ public enum FormFieldType {
 	hidden,
 	button,
 	submit,
-	html;
+	html,
+	unknow;
 	
+	public static FormFieldType of(String type){
+		for(FormFieldType ftype: values()){
+			if(ftype.name().equalsIgnoreCase(type)){
+				return ftype;
+			}
+		}
+		return unknow;
+	}
 }

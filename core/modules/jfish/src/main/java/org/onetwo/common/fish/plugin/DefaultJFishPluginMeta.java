@@ -1,5 +1,6 @@
 package org.onetwo.common.fish.plugin;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
@@ -13,18 +14,26 @@ public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements 
 	
 	public DefaultJFishPluginMeta(JFishPlugin jfishPlugin, ContextPlugin contextPlugin, JFishPluginInfo pluginInfo, PluginNameParser parser) {
 		super(contextPlugin, pluginInfo);
-		this.jfishPlugin = jfishPlugin;
 		this.pluginNameParser = parser;
-		if(jfishPlugin!=null){
-			PluginConfig pc = this.getJFishPlugin().getPluginConfig();
-			pc.init(this);
-			this.pluginConfig = pc;
-		}
+//		if(jfishPlugin!=null && jfishPlugin!=JFishPlugin.EMPTY_JFISH_PLUGIN){
+		this.jfishPlugin = jfishPlugin;
+		PluginConfig pc = jfishPlugin.getPluginConfig();
+		pc.init(this);
+		this.pluginConfig = pc;
+		
 		this.webResourceMeta = new PluginWebResourceMeta(pluginInfo);
 	}
 
 	public Class<?> getRootClass(){
-		return getContextPlugin().getClass();
+		Class<?> rootClass = null;
+		if(!getContextPlugin().isEmptyPlugin()){
+			rootClass = getContextPlugin().getClass();
+		}else if(!getJFishPlugin().isEmptyPlugin()){
+			rootClass = getJFishPlugin().getClass();
+		}else{
+			throw new BaseException("root class not found, please config pluginClass or webPluginClass : " + getPluginInfo().getName());
+		}
+		return rootClass;
 	}
 	
 	public boolean isClassOfThisPlugin(Class<?> clazz){

@@ -4,6 +4,11 @@ var Common = function () {
 
 (function ($) {
 	var loadHtml = '<div id="loadingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-body"><p>正在加载，请稍候……</p></div></div>';
+	//var progress = '<div class="progress progress-striped active"><div class="bar" style="width: 40%;"></div></div>';
+
+	var jfish = {};
+	jfish.asyncCallbackManager = {};
+	jfish._blockMsgState = false;
 	
 	$.extend({
 		showMessageOn : function(ele, message, cb){
@@ -34,6 +39,8 @@ var Common = function () {
 		},
 		
 		showBlockMsg: function(message){
+			if(jfish._blockMsgState==true)
+				return ;
 			var loadDiv = $('#loadingModal');
 			if(loadDiv.length==0){
 				loadDiv = $(loadHtml);
@@ -43,11 +50,13 @@ var Common = function () {
 			if(message)
 				loadDiv.find('.modal-body').html(message);
 			loadDiv.modal('show');
+			jfish._blockMsgState = true;
 		},
 		closeBlockMsg: function(){
 			var loadDiv = $('#loadingModal');
 			if(loadDiv)
-				loadDiv.modal('toggle');
+				loadDiv.modal('hide');
+			jfish._blockMsgState = false;
 		}
 		
 	});
@@ -64,7 +73,6 @@ var Common = function () {
 		};
 	}
 	
-	var jfish;
 	$.jfish = jfish = {
 		state : {
 			failed : 0,
@@ -76,7 +84,8 @@ var Common = function () {
 			buttonDelete : ".dg-button-delete",
 			
 			//
-			linkButton: "a[data-method][class!='dg-toolbar-button-delete']",
+			showTipsElement: "a[show-tips]",
+			linkButton: "a[data-method][class!='dg-toolbar-button-delete'][class!='dg-toolbar-button-batch']",
 			formButton : ".form-button",
 			
 			checkAll : ".dg-checkbox-all",
@@ -85,18 +94,18 @@ var Common = function () {
 			toolbarBatchButton : ".dg-toolbar-button-batch"
 		},
 		
-		handleFormFunc : function(form, restMethod, type){
+		handleFormFunc : function(form, restMethod, unValidateCheckbox){
 			return function(){
-
-				form = form || $(this).parents("form:first")[0];
+				form = form || $(this).parents("form:first");
 				
-				
-				var checkfields = $(jfish.cssKeys.checkAll, form);
-				if(checkfields.length>0){
-					var values = $(form).checkboxValues(true);
+				var nocheckbox = $(this).attr('data-nocheckbox') || unValidateCheckbox || false;
+				if(!nocheckbox){
+					var checkfields = $(jfish.cssKeys.checkField, form);
+					var values = $(form).checkedValues();
 //	    			var table = $(form).children("table:first");
 					if(!values || values.length==0){
 						$.showTipsWindow("请先选择数据！");
+//						alert("请先选择数据！");
 						return false;
 					}
 				}
@@ -123,22 +132,43 @@ var Common = function () {
 //					$(form).attr("method", "post")
 					if(amethod!='get')
 						$(form).attr("method", "post")
+					else
+						$(form).attr("method", "get")
 				}
 
 				jfish.appendHiddenByDataParams(this, form);
 				
 				var remote = eval($(this).attr('remote'));
 				if(remote && remote==true){
-					var ajaxName = $(this).attr('ajaxName');
+					/*var ajaxName = $(this).attr('ajaxName');
 					if(!ajaxName){
 						alert("不支持ajax请求！");
 						return false;
 					}
+					if(ajaxName.indexOf('message')==-1){
+						ajaxName = 'message,'+ajaxName;
+					}
 					ajaxAnywhere.getZonesToReload = function() {
 						return ajaxName;
+					}*/
+					var ajaxInst = jfish._ckeckAndConfigAjax($(this));
+					if(!ajaxInst){
+						alert("不支持ajax请求！");
+						return false;
 					}
-					ajaxAnywhere.formName=$(form).attr('id');
-					ajaxAnywhere.submitAJAX();
+					
+					ajaxInst.formName=$(form).attr('name') || $(form).attr('id');
+					if($(form).attr('method').toLowerCase()=='get'){
+						var url = $(form).attr('action');
+						var params = $(form).serialize();
+						if(params){
+						    url += (url.indexOf("?") != -1) ? "&" : "?";
+						    url += params;
+						}
+						ajaxInst.getAJAX(url);
+					}else{
+						ajaxInst.submitAJAX();
+					}
 					return false;
 				}else{
 					$(form).submit();
@@ -180,8 +210,24 @@ var Common = function () {
 			}
 		},
 		
+		showAjaxMsg : function(data){
+			if(jfish._blockMsgState===true)
+				$.closeBlockMsg();
+			if(data.success && data.success==true){
+				$.showTipsWindow(data.message);
+			}else{
+				$.showTipsWindow(data.message, '错误');
+			}
+		},
+		
 		init : function(){
+			$(jfish.cssKeys.showTipsElement).live("click", function(){
+				$.showTipsWindow($(this).attr('show-tips'));
+			});
+			
 			$(jfish.cssKeys.linkButton).live("click", function(){
+				if($(this).is(jfish.cssKeys.formButton))
+					return false;
 				var confirmMsg = $(this).attr('data-confirm')
 				if(confirmMsg && confirmMsg!="false"){
 					if(!confirm(confirmMsg))
@@ -191,7 +237,7 @@ var Common = function () {
 				return false;
 			});
 			
-			$(jfish.cssKeys.formButton).live("click", jfish.handleFormFunc());
+			$(jfish.cssKeys.formButton).live("click", jfish.handleFormFunc(null, null, true));
 			
 			$('.jfish-toggle-control').live("click", function(){
 				var $this = $(this);
@@ -221,6 +267,7 @@ var Common = function () {
 				var url = $(this).attr('data-url');
 				
 			});
+
 			
 		},
 		
@@ -228,26 +275,47 @@ var Common = function () {
 			var form = $(formName) || $(this);
 			
 			var checkboxAll = $(jfish.cssKeys.checkAll, form);
-			var childBox = $("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"']", form);
-			checkboxAll.click(function(){
-				childBox.attr("checked", !!$(this).attr("checked"));
+			var childBox = $(jfish.cssKeys.checkField, form);//$("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"']", form);
+			checkboxAll.live('click', function(){
+				$(jfish.cssKeys.checkField, form).attr("checked", !!$(this).attr("checked"));
 			});
-			childBox.click(function(){
+			childBox.live('click', function(){
 				var checkeds = $("input[type='checkbox'][id!='"+checkboxAll.attr("id")+"'][checked]", form);
-				checkboxAll.attr("checked", (checkeds.length==childBox.length));
+				checkboxAll.attr("checked", (checkeds.length==$(jfish.cssKeys.checkField, form).length));
 			});
+		},
+		
+
+		
+		_ckeckAndConfigAjax : function(src) {
+			var ajaxName = $(src).attr('ajaxName');
+			if(!ajaxName){
+//				alert("不支持ajax请求！");
+				return false;
+			}
+			//ajaxAnywhere = AjaxAnywhere.findInstance(ajaxName);
+			if(ajaxName.indexOf('message')==-1){
+				ajaxName = 'message,'+ajaxName;
+			}
+			ajaxAnywhere.getZonesToReload = function() {
+				return ajaxName;
+			}
+			return ajaxAnywhere;
 		},
 		
 		handleMethod : function(link) {
 			var href = link.attr('href');
-			var method = link.attr('data-method');
+			href = encodeURI(href);
+			var method = link.attr('data-method') || 'get';
 			var target = link.attr('target');
 			
 			var remote = eval($(link).attr('remote'));
 			var ajaxInst = null;
 			var form = null;
+			var dformName = link.attr('data-form');
+			
 			if(remote && remote==true){
-				var ajaxName = $(link).attr('ajaxName');
+				/*var ajaxName = $(link).attr('ajaxName');
 				//ajaxInst = AjaxAnywhere.findInstance(ajaxName);
 				ajaxInst = ajaxAnywhere;
 				if(!ajaxName || !ajaxInst){
@@ -257,8 +325,13 @@ var Common = function () {
 
 				ajaxAnywhere.getZonesToReload = function() {
 					return ajaxName;
+				}*/
+				ajaxInst = jfish._ckeckAndConfigAjax(link);
+				if(!ajaxInst){
+					alert("不支持ajax请求！");
+					return false;
 				}
-				if(method && method.toLowerCase()=='get'){
+				if(!dformName && method && method.toLowerCase()=='get'){
 					ajaxInst.getAJAX(href);
 					return false;
 				}
@@ -266,23 +339,26 @@ var Common = function () {
 				//form = $('#'+formId);
 			}
 			
-			
 			if(!form){
 				form = $(link).parents("form:first");
 			}
-			
+
 			var metadata_input = "";
-			if(link.attr('data-form')){
-				form = $(link.attr('#'+data-form));
-				form.attr("action", href);
-				form.attr("method", method);
-			}
-			else if(form.length>0){
+			var newForm = false;
+			if(dformName){
+				if(dformName!='newForm'){
+					form = $('#'+link.attr('data-form'));
+					form.attr("action", href);
+				}else{
+					newForm = true;
+				}
+			}else if(form.length>0){
 				form = $(form.get(0));
 				form.attr("action", href);
-				form.attr("method", method);
+			}else{
+				newForm = true;
 			}
-			else{
+			if(newForm){
 				var formId = '_linkForm';
 				form = $('#'+formId);
 				if(form.length==0){
@@ -293,25 +369,266 @@ var Common = function () {
 			}
 
 			jfish.appendHiddenMethodParamIfNecessary(form, method);
-//			jfish.appendHiddenByDataParams(this, form);
+			jfish.appendHiddenByDataParams(link, form);
+			
+			if(method && method.toLowerCase()=='get'){
+				//如果以get方式提交，querystring将会被丢弃
+				form.attr("method", "get");
+			}else{
+				form.attr("method", "post");
+			}
 
 			if (target) {
 				form.attr('target', target);
 			}
 			
 			if(ajaxInst){
-				ajaxInst.formName=form.attr('id');
+				ajaxInst.formName=form.attr('id') || form.attr('name');
 				ajaxInst.submitAJAX();
 				return false;
 			}else{
+				var submitting = link.attr('data-submitting');
+				if(submitting){
+					if(submitting=='true'){
+						$.showBlockMsg();
+					}else{
+						$.showBlockMsg(submitting);
+					}
+				}
 				var params = $(link).children(".link_params").html();
 				if(params){
 					form.append(params);
 				}
-				jfish.appendHiddenByDataParams(link, form);
+//				jfish.appendHiddenByDataParams(link, form);
 				$(form).submit();
 			}
+			
+			return false;
+		},
+		
+
+		selecter : function(config){
+			return new jfish._selecter(config);
+		},
+		
+		_selecter : function(config){
+			var _this = this;
+			var aconfig = config || {};
+			this.config = aconfig;
+			this.selectEl = $('#'+config['el']);
+			this.actived = this.selectEl.length>0;
+//			this.type="selecter";
+
+			/*if(!$.nodeName(this.parent[0], "select")){
+				throw "element must be a select!"
+			}*/
+			var data_key = aconfig['dataKey'];
+			var data_value = aconfig['dataValue'];
+			this.activedInst = function(){return _this.actived?_this:null};
+			
+
+			_this.appendTs = function(config, url){
+				var appendTs = true;
+				if(config['appendTs']!=undefined){
+					appendTs = config['appendTs'];
+				}
+				if(appendTs===true){
+					if(url.indexOf('?')==-1){
+						url = url + "?ts="+new Date().getTime();
+					}else{
+						url = url + "&ts="+new Date().getTime();
+					}
+				}
+				return url;
+			};
+			
+			this.loadDatas = function(ds){
+				if(!_this.actived){
+					alert("ajax selecter["+config.el+"] is not actived")
+					return ;
+				}
+				$(_this.selectEl).empty();
+				var emptyOption = aconfig['emptyOption'] || true;
+				if(emptyOption){
+					$(_this.selectEl).append("<option value=''>---请选择</option>");
+				}
+				
+				var dataUrl;
+				if(ds && ds.config){
+					dataUrl = aconfig.loadUrl + ds.selectEl.val();
+				}else if(typeof(ds)=="string"){
+					dataUrl = ds;
+				}else{
+					dataUrl = aconfig.loadUrl;
+				}
+				
+				dataUrl = _this.appendTs(aconfig, dataUrl);
+				dataUrl = encodeURI(dataUrl);//encodeURIComponent(dataUrl);
+				
+				$.getJSON(dataUrl, {}, function(json){
+					if(json.length<1){
+						alert("没有数据！");
+						return ;
+					}
+					for(var i=0; i<json.length; i++){
+						var data = json[i];
+						$(_this.selectEl).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+					}
+					if(aconfig.checkedValue){
+						_this.selectEl.val(aconfig.checkedValue);
+						_this.selectEl.trigger('change');
+					}
+				});
+			};
+			
+			this.clearOptions = function(){
+				if(_this.actived){
+					_this.selectEl.empty();
+				}
+				if(_this.notifiedSelecter && _this.notifiedSelecter.actived){
+					_this.notifiedSelecter.clearOptions();
+				}
+			};
+			
+			this.notifyTo = function(selecter){
+				_this.notifiedSelecter = selecter;
+				$(_this.selectEl).change(function(evt){
+					selecter.clearOptions();
+					selecter.loadDatas(_this);
+				});
+				return _this;
+			};
+
+			return this;
+		},
+		
+		ajaxSelecter : function(config){
+			return new jfish._ajaxSelecter(config);
+		},
+		
+		_ajaxSelecter : function(config){
+			var _this = this;
+			var aconfig = config || {};
+			this.config = aconfig;
+			this.selectEl = $('#'+config['el']);
+			this.actived = this.selectEl.length>0;
+
+			/*if(!$.nodeName(this.parent[0], "select")){
+				throw "element must be a select!"
+			}*/
+			var data_key = aconfig['dataKey'];
+			var data_value = aconfig['dataValue'];
+			_this.activedInst = function(){return _this.actived?_this:null}
+			
+			_this.appendTs = function(config, url){
+				var appendTs = true;
+				if(config['appendTs']!=undefined){
+					appendTs = config['appendTs'];
+				}
+				if(appendTs===true){
+					if(url.indexOf('?')==-1){
+						url = url + "?ts="+new Date().getTime();
+					}else{
+						url = url + "&ts="+new Date().getTime();
+					}
+				}
+				return url;
+			};
+			
+			_this.notify_to = function(childConfig){
+				var childConfig = childConfig || {};
+				var alterMsg = childConfig['alterIfNoDatas'];
+				$(_this.selectEl).change(function(evt, cb){
+					if(!_this.actived){
+						alert("ajax selecter["+config.el+"] is not actived")
+						return ;
+					}
+					
+					if(!childConfig.el){
+						throw "notify select element has not defined";
+					}
+					var select = $('#'+childConfig.el);
+					if(select.length==0 || !$(this).val())
+						return;
+					select.empty();
+					select.attr("disabled", "true");
+					
+					var url = (childConfig.url+$(_this.selectEl).val()) || alert("notify url can not blank!");
+					var params = childConfig.params || {};
+					var pre_datas = childConfig.options;
+					var emptyOption = childConfig.emptyOption || true;
+					
+
+					url = _this.appendTs(childConfig, url);
+					$.getJSON(url, params, function(json){
+						select.removeAttr("disabled");
+
+						if(emptyOption){
+							$(select).append("<option value=''>---请选择</option>");
+						}
+						if(pre_datas && pre_datas.length && pre_datas.length>0){
+							for(var i=0; i<pre_datas.length; i++){
+								predata = pre_datas[i];
+								$(select).append("<option value='"+predata[data_value]+"'>"+predata[data_key]+"</option>");
+							}
+						}
+
+						if(json.length<1 && alterMsg){
+							alert(alterMsg);
+							return ;
+						}
+						
+						var data;
+						for(var i=0; i<json.length; i++){
+							data = json[i];
+							$(select).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+						}
+//						select.trigger('change');
+
+						if(aconfig.checkedValue){
+							_this.selectEl.val(aconfig.checkedValue);
+							_this.selectEl.trigger('change');
+						}
+						
+						if(cb)
+							cb();
+					});
+				});
+				
+				_this.notifyTo = _this.notify_to;
+				
+				return _this;
+			};
+
+			_this.loadDatas = function(loadUrl){
+				if(!_this.actived){
+					alert("ajax selecter["+config.el+"] is not actived")
+					return ;
+				}
+				var emptyOption = aconfig['emptyOption'] || true;
+				if(emptyOption){
+					$(_this.selectEl).append("<option value=''>---请选择</option>");
+				}
+				
+				loadUrl = _this.appendTs(config, loadUrl);
+				$.getJSON(loadUrl, {}, function(json){
+					if(json.length<1){
+						alert("没有数据！");
+						return ;
+					}
+					for(var i=0; i<json.length; i++){
+						var data = json[i];
+						$(_this.selectEl).append("<option value='"+data[data_value]+"'>"+data[data_key]+"</option>");
+					}
+					if(aconfig.checkedValue){
+						_this.selectEl.val(aconfig.checkedValue);
+						_this.selectEl.trigger('change');
+					}
+				});
+			} 
+			
 		}
+
 		
 	};
 
@@ -325,6 +642,32 @@ var Common = function () {
 //			var form = $(jfish.cssKeys.checkAll).parents("form:first");
 			var form = $this;
 			
+			form.find("input[name='pageSize']").change(function(){
+				var ps = parseInt($(this).val());
+				if(!ps || ps<1){
+					alert("请输入合法的数字!")
+					return ;
+				}
+				
+				var action = $(this).attr('action');
+				var remote = eval($(this).attr('remote'));
+				if(remote){
+					var ajaxInst = jfish._ckeckAndConfigAjax($(this));
+					if(!ajaxInst){
+						alert("不支持ajax请求！");
+						return false;
+					}
+					action += (action.indexOf("?") != -1) ? "&" : "?";
+					action += "&pageSize="+ps;
+					ajaxInst.getAJAX(action);
+				}else{
+					$(this).val(ps);
+					form.submit();
+				}
+				
+				
+			});
+			
 			jfish.setCheckboxEvent(form);
 			
 			
@@ -336,6 +679,76 @@ var Common = function () {
 		hideIn : function(s, t){
 			var $this = $(this);
 			setTimeout(function(){$this.hide(s, function(){$(this).remove()});}, t);
+		},
+		
+		asynSubmitForm : function(frm, tips){
+			var btn = $(this);
+			var aform = $(frm);
+			$(this).live('click', function(){
+				var msg = tips || '确定要提交此操作？';
+				if(!confirm(msg)){
+					return false;
+				}
+				
+				btn.attr('disabled', true);
+				var txt = btn.text();
+				btn.text('正在处理……');
+				
+				var processBar = aform.find('.asyn-process-bar');
+				if(processBar.length==0){
+					processBar = $('<div class="asyn-process-bar alert" style="display: none" ><button type="button" class="close" data-dismiss="alert">&times;</button><div class="process-msg alert alert-success">正在处理…… </div> <div class="progress progress-striped active"> <div class="bar"></div> </div> <div class="info-msg " style="height: 300px;width: 100%; overflow: auto" > </div> </div>');
+					aform.append(processBar);
+				}
+				var infoMsg = processBar.find('.info-msg');
+				infoMsg.html('');
+				var processMsg = processBar.find('.process-msg');
+				
+				processBar.fadeIn('slow');
+				
+				aform.asynSubmit(function(msg, percent, type){
+					if(type=='INFO'){
+						infoMsg.append('<p>'+msg+"</p>");
+						infoMsg.get(0).scrollTop = infoMsg.get(0).scrollHeight;
+					}else{
+						processMsg.html(msg);
+						$('.bar').css({width: percent+'%'});
+						if(type=='FINISHED'){
+							btn.removeAttr('disabled');
+							btn.text(txt);
+						}
+					}
+				});
+				return false;
+			});
+		},
+		
+		asynSubmit : function(cb){
+			if(!$.nodeName(this[0], "form")){
+				alert('it must be a form');
+				return false;
+			}
+			if(!cb){
+				alert('callback can not null');
+			}
+			var ifrmId = $(this).attr('target') || '_ifmProcess';
+			var ifrm = $('iframe[name'+ifrmId+']');
+			var cbName = ifrmId+'Callback';
+			if(ifrm.length==0){
+				ifrm = $('<iframe id="'+ifrmId+'" name="'+ifrmId+'" style="display:none;"></iframe>');
+				ifrm.appendTo('body');
+			}
+			var cbField = $(this).find('input[name="asynCallback"]');
+			if(cbField.length==0){
+				cbField = $('<input name="asynCallback" type="hidden" value="'+cbName+'"/>');
+				$(this).append(cbField);
+			}
+			jfish.asyncCallbackManager = jfish.asyncCallbackManager || {};
+			jfish.asyncCallbackManager[cbName] = cb;
+			$(this).attr('target', ifrmId);
+			
+			
+			$(this).submit();
+			return false;
 		},
 		
 		dataAction : function(actionUrl){
@@ -394,7 +807,31 @@ var Common = function () {
     		}
 		},
 		
-		checkboxValues : function(returnObject){
+		checkedValues : function(reserved){
+			var checkfields = $(jfish.cssKeys.checkField, this);
+			var values = [];
+			var getreserved = reserved || false; 
+			if(getreserved){
+				checkfields.each(function(){
+					if(!$(this).attr("checked"))
+						return ;
+					var val = $(this).val();
+					
+					if(val){
+						values.push({reserved:$(this).attr(reserved), 'value':val});
+					}
+				});
+			}else{
+				checkfields.each(function(){
+					if(!$(this).attr("checked"))
+						return ;
+					var val = $(this).val();
+					if(val) values.push(val);
+				});
+			}
+			return values;
+		},
+		/*checkboxValues : function(returnObject){
 			var checkfields = $(jfish.cssKeys.checkField, this);
 			var values = [];
 			checkfields.each(function(){
@@ -412,7 +849,7 @@ var Common = function () {
 				return rs;
 			}
 			return null;
-		},
+		},*/
 		onCenter : function(){
 			var t = ($(window).height()+$(window).scrollTop()-$(this).height())/2;
 			var l = ($(window).width()-$(this).width())/2;

@@ -1,8 +1,13 @@
 package org.onetwo.common.web.csrf;
 
+import java.lang.reflect.Method;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.web.preventor.PreventRequestInfoManager;
+import org.onetwo.common.web.preventor.RequestToken;
+import org.onetwo.common.web.preventor.SessionStoreRequestPreventor;
 import org.onetwo.common.web.utils.WebContextUtils;
 
 /***
@@ -10,17 +15,33 @@ import org.onetwo.common.web.utils.WebContextUtils;
  * @author wayshall
  *
  */
-public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
+public class SameInSessionCsrfPreventor extends SessionStoreRequestPreventor {
 
+	public static final String DEFAULT_CSRF_TOKEN_FIELD = "_jfish_token";
+
+	private PreventRequestInfoManager csrfAnnotationManager;
+	
+	public SameInSessionCsrfPreventor(PreventRequestInfoManager csrfAnnotationManager) {
+		super(DEFAULT_CSRF_TOKEN_FIELD);
+		this.csrfAnnotationManager = csrfAnnotationManager;
+	}
+	
+	public PreventRequestInfoManager getCsrfAnnotationManager() {
+		return csrfAnnotationManager;
+	}
+
+	public boolean isValidateToken(Method controller, HttpServletRequest request){
+		return csrfAnnotationManager.getRequestPreventInfo(controller, request).isCsrfValidate();
+	}
 	
 	@Override
-	public CsrfToken generateToken(HttpServletRequest request, HttpServletResponse response){
-		CsrfToken token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+	public RequestToken generateToken(HttpServletRequest request, HttpServletResponse response){
+		RequestToken token = WebContextUtils.getAttr(request.getSession(), getTokenFieldName());
 		if(token!=null)
 			return token;
 		
 		synchronized (request.getSession()) {
-			token = WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+			token = WebContextUtils.getAttr(request.getSession(), getTokenFieldName());
 			if(token==null)
 				token = super.generateToken(request, response);
 		}
@@ -32,18 +53,18 @@ public class SameInSessionCsrfPreventor extends SessionStoreCsrfPreventor {
 //	}
 	
 	@Override
-	protected CsrfToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
-		return WebContextUtils.getAttr(request.getSession(), fieldOfTokenFieldName);
+	protected RequestToken getStoredTokenValue(String tokenFieldName, HttpServletRequest request, HttpServletResponse response){
+		return WebContextUtils.getAttr(request.getSession(), tokenFieldName);
 	}
 	@Override
-	protected void cleanStoredTokenValue(boolean invalid, CsrfToken token, HttpServletRequest request, HttpServletResponse response){
-		if(invalid)
-			WebContextUtils.remove(request.getSession(), fieldOfTokenFieldName);
+	protected void cleanStoredTokenValue(boolean invalid, RequestToken token, HttpServletRequest request, HttpServletResponse response){
+		if(invalid && token!=null)
+			WebContextUtils.remove(request.getSession(), token.getFieldName());
 //		super.cleanStoredTokenValue(token, request, response);
 	}
 
 	@Override
-	protected void storeToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response){
-		WebContextUtils.attr(request.getSession(), fieldOfTokenFieldName, token);
+	protected void storeToken(RequestToken token, HttpServletRequest request, HttpServletResponse response){
+		WebContextUtils.attr(request.getSession(), token.getFieldName(), token);
 	}
 }

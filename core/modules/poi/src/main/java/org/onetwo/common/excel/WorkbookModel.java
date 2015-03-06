@@ -3,6 +3,7 @@ package org.onetwo.common.excel;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class WorkbookModel implements PoiModel {
 	private String listener;
@@ -10,6 +11,8 @@ public class WorkbookModel implements PoiModel {
 	private List<TemplateModel> sheets;
 	
 	private List<VarModel> vars;
+	
+	private String format = FORMAT_XLS;
 	
 	@Override
 	public void initModel(){
@@ -48,6 +51,14 @@ public class WorkbookModel implements PoiModel {
 
 	public void setVars(List<VarModel> vars) {
 		this.vars = vars;
+	}
+
+	public String getFormat() {
+		return StringUtils.isBlank(format)?FORMAT_XLS:format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 	
 }

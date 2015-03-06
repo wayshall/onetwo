@@ -13,12 +13,8 @@ public class NiceDate {
 	}
 
 	public static NiceDate New(Date date){
-		NiceDate nd = null;
-		if(date==null)
-			nd = new NiceDate();
-		else
-			nd = new NiceDate(date);
-		return nd;
+		Assert.notNull(date);
+		return new NiceDate(date);
 	}
 
 	public static NiceDate New(String dateStr){
@@ -75,6 +71,10 @@ public class NiceDate {
 	}
 
 	protected void setDateType(DateType dateType) {
+		precise(dateType);
+	}
+
+	protected void precise(DateType dateType) {
 		this.dateType = dateType;
 		start();
 	}
@@ -158,6 +158,16 @@ public class NiceDate {
 		return this;
 	}
 	
+	public NiceDate nextMinute(int amount){
+		calendar.add(Calendar.MINUTE, amount);
+		return this;
+	}
+	
+	public NiceDate nextSecond(int amount){
+		calendar.add(Calendar.SECOND, amount);
+		return this;
+	}
+	
 	/*public NiceDate increaseDay(int numb){
 		DateUtil.increaseDay(calendar, numb);
 		return this;
@@ -182,8 +192,22 @@ public class NiceDate {
 		return this;
 	}
 	
+	/***
+	 * 精确到日，不要时分秒
+	 * @see #preciseDate
+	 * @return
+	 */
 	public NiceDate thisDate(){
 		setDateType(DateType.date);
+		return this;
+	}
+	
+	/****
+	 * 精确到日，不要时分秒
+	 * @return
+	 */
+	public NiceDate preciseDate(){
+		precise(DateType.date);
 		return this;
 	}
 	
@@ -210,7 +234,7 @@ public class NiceDate {
 	public NiceDate start(){
 		return atTheBeginning();
 	}
-	
+
 	public NiceDate atTheBeginning(){
 		DateUtil.accurateToBeginningAt(calendar, dateType);
 		return this;
@@ -265,7 +289,7 @@ public class NiceDate {
 	}
 	
 	public String toString(){
-		return DateUtil.formatDateTime(calendar.getTime());
+		return formatDateTimeMillis();
 	}
 
 	public String format(String format){
@@ -279,6 +303,9 @@ public class NiceDate {
 	}
 	public String formatAsDateTime(){
 		return DateUtil.formatDateTime(calendar.getTime());
+	}
+	public String formatDateTimeMillis(){
+		return DateUtil.formatDateTimeMillis(calendar.getTime());
 	}
 	
 	public int getYear(){
@@ -295,6 +322,24 @@ public class NiceDate {
 	
 	public int getHourOfDay(){
 		return calendar.get(Calendar.HOUR_OF_DAY);
+	}
+
+	public boolean isBeforeOrEquals(NiceDate date){
+		return isBefore(date) || isEquals(date);
+	}
+
+	public boolean isAfterOrEquals(NiceDate date){
+		return isAfter(date) || isEquals(date);
+	}
+
+	public boolean isBefore(NiceDate date){
+		return getTimeInMillis()<date.getTimeInMillis();
+	}
+	public boolean isAfter(NiceDate date){
+		return getTimeInMillis()>date.getTimeInMillis();
+	}
+	public boolean isEquals(NiceDate date){
+		return getTimeInMillis()==date.getTimeInMillis();
 	}
 	
 	public static void main(String[] args){

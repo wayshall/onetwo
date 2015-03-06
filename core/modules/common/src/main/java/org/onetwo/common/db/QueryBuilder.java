@@ -1,6 +1,5 @@
 package org.onetwo.common.db;
 
-import java.util.List;
 import java.util.Map;
 
 public interface QueryBuilder {
@@ -39,11 +38,7 @@ public interface QueryBuilder {
 	
 	public QueryBuilderJoin leftJoin(String table, String alias);
 
-	public JFishQueryValue build();
-	
-	public <T> T one();
-	
-	public <T> List<T> list();
+	public QueryBuilder build();
 	
 	public Map<Object, Object> getParams();
 	

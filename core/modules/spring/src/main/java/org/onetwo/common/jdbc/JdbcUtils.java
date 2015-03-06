@@ -10,6 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.util.Assert;
 
 final public class JdbcUtils {
 	
@@ -33,6 +34,7 @@ final public class JdbcUtils {
 	}
 	
 	public static DataBase getDataBase(DataSource dataSource) {
+		Assert.notNull(dataSource, "datasource can not be null");
 		//从DataSource中取出jdbcUrl.
 		String jdbcUrl = null;
 		Connection connection = null;
@@ -61,6 +63,7 @@ final public class JdbcUtils {
 		if(StringUtils.isBlank(jdbcUrl))
 			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
 		
+		jdbcUrl = jdbcUrl.toLowerCase();
 		if (jdbcUrl.contains(":h2:")) {
 			return DataBase.H2;
 		} else if (jdbcUrl.contains(":mysql:")) {
@@ -70,7 +73,11 @@ final public class JdbcUtils {
 		} else if (jdbcUrl.contains(":oracle:")) {
 			return DataBase.Oracle;
 		} else {
-			throw new IllegalArgumentException("Unknown Database : " + jdbcUrl);
+			for(DataBase db : DataBase.values()){
+				if(jdbcUrl.contains(":"+db.toString().toLowerCase()+":"))
+					return db;
+			}
+			throw new IllegalArgumentException("Unknown Database config : " + jdbcUrl);
 		}
 	}
 

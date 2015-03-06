@@ -1,35 +1,33 @@
 package org.onetwo.plugins.email;
 
 import java.io.File;
-import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class JavaMailServiceImpl implements JavaMailService {
 
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
-	private static final String DEFAULT_ENCODING = "utf-8";
 	
+	@Resource
 	private JavaMailSender javaMailSender;
-	private Configuration configuration;
-	private String encoding = DEFAULT_ENCODING;
-	
 
+	@Resource
+	private MailTextContextParser mailTextContextParser;
+	private String encoding = LangUtils.UTF8;
 
 	@Override
 	public void send(MailInfo mailInfo) throws MessagingException {
@@ -48,13 +46,13 @@ public class JavaMailServiceImpl implements JavaMailService {
 	protected void sendMimeMail(MailInfo mailInfo) throws Exception {
 
 		MimeMessage msg = javaMailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(msg, true, DEFAULT_ENCODING);
+		MimeMessageHelper helper = new MimeMessageHelper(msg, true, encoding);
 
 		helper.setFrom(mailInfo.getFrom());
 		helper.setTo(mailInfo.getTo());
 		helper.setSubject(mailInfo.getSubject());
 
-		String content = getContent(mailInfo);
+		String content = this.mailTextContextParser.parseContent(mailInfo);
 		helper.setText(content, true);
 
 		if(mailInfo.getAttachments()!=null){
@@ -62,6 +60,9 @@ public class JavaMailServiceImpl implements JavaMailService {
 				String fileName = FileUtils.getFileName(attachment.getName());
 				helper.addAttachment(fileName, attachment);
 			}
+		}
+		for(Entry<String, InputStreamSource> in : mailInfo.getAttachmentInputStreamSources().entrySet()){
+			helper.addAttachment(in.getKey(), in.getValue());
 		}
 
 		javaMailSender.send(msg);
@@ -75,7 +76,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 		msg.setTo(mailInfo.getTo());
 		msg.setSubject(mailInfo.getSubject());
 
-		String content = getContent(mailInfo);
+		String content = this.mailTextContextParser.parseContent(mailInfo);
 		msg.setText(content);
 
 		javaMailSender.send(msg);
@@ -83,7 +84,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 			logger.info("纯文本邮件已发送至{}", StringUtils.join(msg.getTo(), ","));
 		}
 	}
-	
+	/*
 	private String getContent(MailInfo mailInfo) throws Exception{
 		String content = "";
 		if(mailInfo.isTemplate()){
@@ -91,14 +92,32 @@ public class JavaMailServiceImpl implements JavaMailService {
 		}else{
 			content = mailInfo.getContent();
 		}
+		Assert.notNull(mailInfo.getContentType());
+		Template template = null;
+		switch (mailInfo.getContentType()) {
+			case STATIC_TEXT:
+				content = mailInfo.getContent();
+				break;
+				
+			case TEMPLATE_PATH:
+				template = this.configuration.getTemplate(mailInfo.getContent(), encoding);
+				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailInfo.getTemplateContext());
+				break;
+				
+			case TEMPLATE:
+//				String name = "st-" + String.valueOf(mailInfo.getContent().hashCode());
+				String name = "st-" + MDFactory.MD5.encrypt(mailInfo.getContent());
+				this.stringFtlTemplateLoader.putTemplate(name, mailInfo.getContent());
+				template = this.configuration.getTemplate(name, encoding);
+				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailInfo.getTemplateContext());
+				break;
+	
+			default:
+				break;
+		}
 		return content;
 	}
-
-	private String generateContent(String templatePath, Map<String, Object> context) throws Exception {
-		Assert.notNull(configuration);
-		Template template = this.configuration.getTemplate(templatePath, encoding);
-		return FreeMarkerTemplateUtils.processTemplateIntoString(template, context);
-	}
+*/
 	
 	public JavaMailSender getJavaMailSender() {
 		return javaMailSender;
@@ -106,19 +125,17 @@ public class JavaMailServiceImpl implements JavaMailService {
 	public void setJavaMailSender(JavaMailSender javaMailSender) {
 		this.javaMailSender = javaMailSender;
 	}
-	public Configuration getConfiguration() {
-		return configuration;
-	}
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-	}
+
 	public String getEncoding() {
 		return encoding;
 	}
+
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
-	
-	
+
+	public void setMailTextContextParser(MailTextContextParser mailTextContextParser) {
+		this.mailTextContextParser = mailTextContextParser;
+	}
 
 }

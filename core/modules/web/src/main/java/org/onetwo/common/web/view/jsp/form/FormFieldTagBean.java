@@ -51,7 +51,7 @@ public class FormFieldTagBean extends HtmlElement {
 	public boolean isErrorTag() {
 //		if("consumeRate".equals(name))
 //			System.out.println("errortag: " + errorPath);
-		return errorTag;
+		return errorTag && getErrorPath()!=null && this.formBean.getProvider().isReadableProperty(getErrorPath());
 	}
 	public void setErrorTag(boolean errorTag) {
 //		if("consumeRate".equals(name))
@@ -68,7 +68,8 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public String getValue() {
-		if(StringUtils.isBlank(value))
+		//如果value属性没有设置过，使用name的名称作为属性
+		if(value==null)
 			return getName();
 		return value;
 	}
@@ -90,6 +91,7 @@ public class FormFieldTagBean extends HtmlElement {
 			return "";
 		Object val = null;
 		try {
+//			System.out.println("test:"+getName());
 			val = this.formBean.getProvider().getFieldValue(this);
 		} catch (Exception e) {
 			throw new BaseException("getFieldValue error", e);

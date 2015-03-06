@@ -10,8 +10,9 @@ import org.onetwo.common.utils.StringUtils;
 abstract public class MDFactory {
 	private static final Map<String, MDEncrypt> encrypts;
 //	public static final String BASE64_POSTFIX = MDEncryptImpl.BASE64_POSTFIX;
-	
-	public static final MDEncrypt MD5 = createMD5(false, false);
+
+	public static final MDEncrypt MD5 = createMD5();
+	public static final MDEncrypt SHA = createSHA();
 	
 	static {
 		Map<String, MDEncrypt> map = new HashMap<String, MDEncrypt>(4);
@@ -45,6 +46,16 @@ abstract public class MDFactory {
 	public static MDEncrypt createMD5(boolean base64, final boolean withLabel){
 		MDEncrypt encryptor = create("MD5", 16, base64, withLabel);
 		return encryptor;
+	}
+	public static MDEncrypt createMD5(){
+		return createMD5(false, false);
+	}
+	public static MDEncrypt createSHA(boolean base64, final boolean withLabel){
+		MDEncrypt encryptor = create("SHA", 20, base64, withLabel);
+		return encryptor;
+	}
+	public static MDEncrypt createSHA(){
+		return createSHA(false, false);
 	}
 
 	public static MDEncrypt create(String algorithm, int size, boolean base64, final boolean withLabel){

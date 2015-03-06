@@ -2,6 +2,8 @@ package org.onetwo.common.web.view.jsp.form;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -24,22 +26,43 @@ public class SimpleFormDataProvider implements FormDataProvider {
 	}
 
 	@Override
+	public boolean isReadableProperty(String propertyName) {
+		try {
+			return this.accessor!=null && this.accessor.isReadableProperty(propertyName);
+		} catch (Exception e) {
+//			e.printStackTrace();
+			logger.info("check ReadableProperty[{}] error : {}", propertyName, e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
 	public boolean isFieldShow(String fieldName) {
 		return true;
 	}
 
 	@Override
 	public Object getFieldValue(FormFieldTagBean field) {
+		String fieldValue = field.getValue();
+		if(StringUtils.isBlank(fieldValue))
+			return LangUtils.EMPTY_STRING;
+
 		Object val = "";
 		if(field.isModelAttribute()){
 			if(this.accessor!=null){
 				try {
-					if(this.accessor.isReadableProperty(field.getValue()))
-						val = this.accessor.getPropertyValue(field.getValue());
+					if(this.accessor.isReadableProperty(fieldValue))
+						val = this.accessor.getPropertyValue(fieldValue);
+					else
+						val = fieldValue;
 				} catch (BeansException e) {
 					logger.error("getPropertyValue error : " + e.getMessage());
 				}
+			}else{
+//				val = fieldValue;
 			}
+		}else{
+			val = fieldValue;
 		}
 		return val;
 	}

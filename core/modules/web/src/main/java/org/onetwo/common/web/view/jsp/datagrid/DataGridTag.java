@@ -9,8 +9,9 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
-import org.onetwo.common.web.csrf.CsrfPreventor;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.grid.BaseGridTag;
 import org.onetwo.common.web.view.jsp.grid.GridTagBean;
@@ -21,14 +22,17 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private static final String AJAX_POSTFIX = "Ajax";
 //	private static final String AJAX_INST_POSTFIX = "AjaxInst";
+
+	public final static String VIEW_JSUI_KEY = "view.jsui";
 	
 	private String template = "datagrid/grid.jsp";
 	private Object dataSource;
 	private int colspan = 0;
 
 	private String action;
-	
+
 	private boolean toolbar;
+	private String toolbarName = "grid_toolbar";
 	private boolean generatedForm = true;
 	private boolean pagination = true;
 	
@@ -42,7 +46,16 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //	private String ajaxInstName;
 	
 	private DatagridRenderListener datagridRenderListener;
-	private CsrfPreventor csrfPreventor = CsrfPreventorFactory.getDefault();
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
+	
+	private boolean buildQueryString = true;
+	
+	
+	private String custombar = "grid_custombar";
+	private String customform = "grid_customform";
+
+	private boolean loadmore = false;
+	
 	
 	
 	public DataGridTag(){
@@ -82,18 +95,18 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 	@Override
 	protected int endTag() throws JspException {
+		BodyContent bc = this.getBodyContent();
+		if(bc!=null){
+			this.component.setBodyContent(bc.getString());
+		}
+		if(this.datagridRenderListener!=null){
+			this.datagridRenderListener.prepareRender(this, component);
+		}
+		
 		try {
-			BodyContent bc = this.getBodyContent();
-			if(bc!=null){
-				this.component.setBodyContent(bc.getString());
-			}
-			if(this.datagridRenderListener!=null){
-				this.datagridRenderListener.prepareRender(this, component);
-			}
-			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
-			this.pageContext.include(TagUtils.getTagPage(t));
-		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage(), e);
+//			String t = StringUtils.appendEndWith(getTemplate(), ".jsp");
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally{
 			clearComponentFromRequest(getGridVarName());
 			
@@ -101,6 +114,9 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 //			clearTagStackFromRequest();
 		}
 		return EVAL_PAGE;
+	}
+	public String getTemplate() {
+		return template;
 	}
 	
 	
@@ -110,7 +126,6 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setAction(buildActionString());
 		
 		component.setQueryString(buildQueryString());
-		component.setToolbar(toolbar);
 		component.setPagination(pagination);
 		component.setPaginationType(paginationType);
 		component.setGeneratedForm(generatedForm);
@@ -126,8 +141,17 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		component.setAjaxZoneName(ajaxZoneName);
 //		component.setAjaxInstName(ajaxInstName);
 		
+		component.setCustombar(custombar);
+		component.setCustomform(customform);
+		component.setToolbar(toolbar);
+		component.setToolbarName(toolbarName);
+
+		component.setJsgrid(getThemeSetting().isJsui());
+		
 		setComponentIntoRequest(getGridVarName(), component);
 	}
+
+	
 
 	protected String buildActionString() {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
@@ -135,6 +159,7 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 			String surl = TagUtils.getRequestUri(request);
 			return surl;
 		}
+		this.buildQueryString = false;
 		if(action.startsWith(":")){
 			return TagUtils.parseAction(request, action, this.csrfPreventor);
 		}
@@ -143,7 +168,14 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 
 	protected String buildQueryString() {
+		if(!buildQueryString || this.paginationType==PaginationType.form)
+			return "";
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+//		String qstr = TagUtils.parseQueryString(request, ":params", this.csrfPreventor);
+		CasualMap map = TagUtils.processUrlSymbolAsCasualMap(request, ":params", this.csrfPreventor);
+		String qstr = map==null?"":map.filter(BaseSiteConfig.THEME_JSUI_KEY).toParamString();
+		return qstr;
+		/*
 		String str = request.getQueryString();
 		if(StringUtils.isBlank(str))
 			return "";
@@ -152,13 +184,10 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 		params.filter(this.csrfPreventor.getFieldOfTokenFieldName());
 		params.filter(request.getParameter(this.csrfPreventor.getFieldOfTokenFieldName()));
 		str = params.toParamString();
-		return str;
+		return str;*/
 	}
 	
 	
-	public String getTemplate() {
-		return template;
-	}
 	public void setTemplate(String template) {
 		this.template = template;
 	}
@@ -202,6 +231,27 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	public void setAjaxSupported(boolean ajaxSupported) {
 		this.ajaxSupported = ajaxSupported;
 	}
+
+	public void setCustombar(String custombar) {
+		this.custombar = custombar;
+	}
+
+	public void setCustomform(String customform) {
+		this.customform = customform;
+	}
+
+	public void setToolbarName(String toolbarName) {
+		this.toolbarName = toolbarName;
+	}
+
+	public boolean isLoadmore() {
+		return loadmore;
+	}
+
+	public void setLoadmore(boolean loadmore) {
+		this.loadmore = loadmore;
+	}
+
 
 
 }

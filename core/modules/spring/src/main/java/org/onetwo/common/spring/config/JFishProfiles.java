@@ -11,13 +11,16 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @ImportResource({"classpath:webconf/applicationContext-base.xml"})
 public class JFishProfiles {
+	
+		public static final String APP_CONFIG_NAME = "applicationConfig";
 
         @Configuration
         @Profile(Environment.PRODUCT)
+//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-product.properties"})
         static class ProductConcfig {
 
-                @Bean
-                public static PropertyPlaceholderConfigurer productConf() {
+                @Bean(name=APP_CONFIG_NAME)
+                public static PropertyPlaceholderConfigurer applicationConfig() {
                         return SpringUtils.newApplicationConf("webconf/application.properties", "webconf/application-product.properties");
                 }
 
@@ -25,26 +28,22 @@ public class JFishProfiles {
 
         @Configuration
         @Profile(Environment.TEST)
+//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-test.properties"})
         static class TestConcfig {
 
-                @Bean
-                public static PropertyPlaceholderConfigurer testConf() {
+            	@Bean(name=APP_CONFIG_NAME)
+                public static PropertyPlaceholderConfigurer applicationConfig() {
                         return SpringUtils.newApplicationConf("webconf/application.properties", "webconf/application-test.properties");
                 }
-/*
-                @Bean
-                public AnnotationMethodHandlerAdapter handlerAdapter(){
-                        AnnotationMethodHandlerAdapter ha = new AnnotationMethodHandlerAdapter();
-                        return ha;
-                }*/
         }
 
         @Configuration
         @Profile(Environment.TEST_LOCAL)
+//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-test-local.properties"})
         static class TestLocalConcfig {
 
-                @Bean
-                public static PropertyPlaceholderConfigurer testConf() {
+            	@Bean(name=APP_CONFIG_NAME)
+                public static PropertyPlaceholderConfigurer applicationConfig() {
                         return SpringUtils.newApplicationConf("webconf/application.properties", "webconf/application-test-local.properties");
                 }
 
@@ -52,10 +51,11 @@ public class JFishProfiles {
 
         @Configuration
         @Profile(Environment.DEV)
+//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-dev.properties"})
         static class DevConcfig {
 
-                @Bean
-                public static PropertyPlaceholderConfigurer devConf() {
+            	@Bean(name=APP_CONFIG_NAME)
+                public static PropertyPlaceholderConfigurer applicationConfig() {
                         PropertyPlaceholderConfigurer dev = SpringUtils.newApplicationConf("webconf/application.properties", "webconf/application-dev.properties");
                         return dev;
                 }
@@ -64,10 +64,11 @@ public class JFishProfiles {
 
         @Configuration
         @Profile(Environment.DEV_LOCAL)
+//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-dev-local.properties"})
         static class DevLocalConcfig {
 
-                @Bean
-                public static PropertyPlaceholderConfigurer devConf() {
+            	@Bean(name=APP_CONFIG_NAME)
+                public static PropertyPlaceholderConfigurer applicationConfig() {
                         return SpringUtils.newApplicationConf("webconf/application.properties", "webconf/application-dev-local.properties");
                 }
 

@@ -12,4 +12,9 @@ public class TimerOutputer implements JFishLogger {
 		System.out.println("["+DateUtil.formatDateTime(new Date())+"]: "+msg);
 	}
 
+	@Override
+	public void log(Object logSource, String msg) {
+		System.out.println("["+DateUtil.formatDateTime(new Date())+"]: "+logSource.getClass().getSimpleName()+" - "+msg);
+	}
+
 }

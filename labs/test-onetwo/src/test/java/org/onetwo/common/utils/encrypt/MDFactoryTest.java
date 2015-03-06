@@ -43,6 +43,22 @@ salt为8个随机字节。
 	}
 	
 	@Test
+	public void testCsrf(){
+		String source = "77352BFB8E1D171486DE6E4AC7CBE53D";
+		MDEncrypt md5 = MDFactory.MD5;
+		
+		String encrypt = md5.encryptWithSalt(source);
+		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		boolean rs = md5.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+		
+		
+		encrypt = "36D69B4433C402F087A666A004B6A8ECD9BCD663C68F3700";
+		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		rs = md5.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+	}
+	@Test
 	public void testMDWithoutLabel(){
 		String source = "12356";
 		String encrypt = MDFactory.createMD5(false, false).encrypt(source);
@@ -74,6 +90,17 @@ salt为8个随机字节。
 		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
 		
 		rs = sha.checkEncrypt(source, encrypt);
+		Assert.assertEquals(true, rs);
+	}
+	
+
+	@Test
+	public void testSign(){
+		String DEFAULT_SSO_SIGN_KEY = "asdfa7sd9fa[ko@#$s0df]pips9";
+		String source = LangUtils.appendNotBlank("6RmyQ2 t1KFIIvAijFE9wqPFMXNwfSXMiKDvEg==", DEFAULT_SSO_SIGN_KEY);
+		String entrystr = MDFactory.MD5.encryptWithSalt(source);
+//		boolean rs = MDFactory.MD5.checkEncrypt(source, "4B4AB0CF1EB5DD19D8B7C24F0D0626F20085AD9EA9D03D02");
+		boolean rs = MDFactory.MD5.checkEncrypt(source, entrystr);
 		Assert.assertEquals(true, rs);
 	}
 

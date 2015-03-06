@@ -2,12 +2,17 @@ package org.onetwo.plugins.activemq;
 
 import java.util.List;
 
-import org.onetwo.common.spring.plugin.AbstractContextPlugin;
+import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.plugins.activemq.model.PluginModelContext;
 
 
 
-public class ActiveMQPlugin extends AbstractContextPlugin<ActiveMQPlugin> {
+public class ActiveMQPlugin extends ConfigurableContextPlugin<ActiveMQPlugin, ActiveMQConfig> {
+
+	public ActiveMQPlugin() {
+		super("/plugins/activemq/", "activemq-config", true);
+	}
+
 
 	private static ActiveMQPlugin instance;
 	

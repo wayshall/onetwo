@@ -12,11 +12,8 @@ public class Log4jTimeLogger implements JFishLogger {
 	
 
 	public Log4jTimeLogger() {
-		this.logger = null;
-	}
-	public Log4jTimeLogger(Class<?> clazz) {
-		super();
-		this.logger = MyLoggerFactory.getLogger(clazz);
+//		this.logger = null;
+		logger = MyLoggerFactory.getLogger(Log4jTimeLogger.class);
 	}
 	
 	public Log4jTimeLogger(Logger logger) {
@@ -26,6 +23,16 @@ public class Log4jTimeLogger implements JFishLogger {
 
 	@Override
 	public void log(String msg){
+		if(logger!=null){
+			logger.info(msg);
+		}else{
+			outer.log(msg);
+		}
+	}
+
+	@Override
+	public void log(Object logSource, String msg){
+		Logger logger = MyLoggerFactory.getLogger(logSource.getClass());
 		if(logger!=null){
 			logger.info(msg);
 		}else{

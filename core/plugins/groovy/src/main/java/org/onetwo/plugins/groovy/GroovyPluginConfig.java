@@ -1,26 +1,29 @@
 package org.onetwo.plugins.groovy;
 
-import java.util.Properties;
+import java.util.List;
 
-import javax.annotation.Resource;
+import org.onetwo.common.spring.plugin.AbstractLoadingConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
+import org.springframework.util.Assert;
 
-import org.onetwo.common.utils.propconf.PropertiesWraper;
+public class GroovyPluginConfig extends AbstractLoadingConfig {
 
-public class GroovyPluginConfig {
-
-	private PropertiesWraper wrapper;
+//	private JFishProperties wrapper;
 	
-	public String getModelPackage(){
-		return wrapper.getProperty("package.model", "");
+	private List<String> groovySourcePackages;
+	
+	@Override
+	protected void initConfig(JFishProperties config) {
+		groovySourcePackages = config.getStringList("source.packages", ",");
+		Assert.notEmpty(groovySourcePackages, "groovy-config[source.packages] can't not be empty!");
 	}
-	
-	public String getControllerPackage(){
-		return wrapper.getAndThrowIfEmpty("package.controller");
+
+	public List<String> getGroovySourcePackages() {
+		return groovySourcePackages;
 	}
-	
-	@Resource
-	public void setGroovyPluginProperties(Properties groovyProperties) {
-		this.wrapper = PropertiesWraper.wrap(groovyProperties);
+
+	public void setGroovySourcePackages(List<String> groovySourcePackages) {
+		this.groovySourcePackages = groovySourcePackages;
 	}
-	
+
 }

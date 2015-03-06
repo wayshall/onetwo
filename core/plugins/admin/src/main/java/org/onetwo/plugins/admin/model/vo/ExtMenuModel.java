@@ -19,17 +19,25 @@ public class ExtMenuModel implements TreeModel<ExtMenuModel> {
 	
 	
 	
-	private ExtMenuModel() {
-		super();
+	public ExtMenuModel(Object id, String text, String url) {
+		this(id, text, url, null, null);
 	}
 
-	private ExtMenuModel(Object id, String text, String url, Object parentId,
+	public ExtMenuModel(Object id, String text, String url, Object parentId,
 			Integer sort) {
 		super();
 		this.id = id;
 		this.text = text;
 		this.url = url;
 		this.parentId = parentId;
+		this.sort = sort;
+	}
+	
+	public void setParentId(Object parentId) {
+		this.parentId = parentId;
+	}
+
+	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
 
@@ -88,6 +96,44 @@ public class ExtMenuModel implements TreeModel<ExtMenuModel> {
 	@JsonIgnore
 	public String getJsonString(){
 		return JsonMapper.IGNORE_NULL.toJson(this);
+	}
+
+	@JsonIgnore
+	public String getTreePanel(){
+		StringBuilder treePanelDatas = new StringBuilder();
+		treePanelDatas.append("{");
+		treePanelDatas.append("title:\"").append(getText()).append("\",");
+		treePanelDatas.append("iconCls:\"nav\",");
+		treePanelDatas.append("xtype:\"treepanel\",");
+		treePanelDatas.append("listeners:{ itemclick: clickMenuItem },");
+		treePanelDatas.append("store: {root: ").append(getJsonString()).append("}");
+		treePanelDatas.append("}");
+		return treePanelDatas.toString();
+	}
+
+	@JsonIgnore
+	public String getChildrenAsTreePanel(){
+		StringBuilder treePanelDatas = new StringBuilder();
+		treePanelDatas.append("[");
+		int index = 0;
+		List<ExtMenuModel> children = getChildren();
+		for(ExtMenuModel child : children){
+//			ObjectNode on = om.createObjectNode();
+			if(index!=0)
+				treePanelDatas.append(", ");
+			treePanelDatas.append(child.getTreePanel());
+//			on.put("iconCls", "nav");
+//			on.put("width", 200);
+//			on.put("xtype", "treepanel");
+//			on.put("containerScroll", false);
+//			on.put("autoScroll", false);
+//			on.put("listeners", );
+//			on.put("store", on.POJONode(on.put("root", on.POJONode(child))));
+//			array.add(on);
+			index++;
+		}
+		treePanelDatas.append("]");
+		return treePanelDatas.toString();
 	}
 
 }

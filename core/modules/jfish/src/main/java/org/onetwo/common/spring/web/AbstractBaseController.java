@@ -3,6 +3,8 @@ package org.onetwo.common.spring.web;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +24,12 @@ import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -42,6 +46,13 @@ abstract public class AbstractBaseController {
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	
+	private SimpleBlock<Object, String> TO_STRING = new SimpleBlock<Object, String>() {
+		@Override
+		public String execute(Object object) {
+			return object.toString();
+		}
+	};
 
 	@Resource
 	private CodeMessager codeMessager;
@@ -85,6 +96,24 @@ abstract public class AbstractBaseController {
 	
 	protected ModelAndView redirectTo(String path, String message){
 		return mv(redirect(path), MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+	}
+	
+	protected ModelAndView redirectToWithError(String path, String error){
+		return mv(redirect(path), MESSAGE, error, MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+	}
+	
+	protected ModelAndView putSuccessMessage(ModelAndView mv, String message){
+		Assert.notNull(mv);
+		mv.addObject(MESSAGE, message);
+		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
+		return mv;
+	}
+	
+	protected ModelAndView putErrorMessage(ModelAndView mv, String message){
+		Assert.notNull(mv);
+		mv.addObject(MESSAGE, message);
+		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+		return mv;
 	}
 	
 	/**********
@@ -169,6 +198,29 @@ abstract public class AbstractBaseController {
 			logger.error(msg + e.getMessage(), e);
 		} finally{
 			IOUtils.closeQuietly(input);
+		}
+	}
+	
+	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
+		exportText(response, datas, filename, TO_STRING);
+	}
+	
+	protected void exportText(HttpServletResponse response, List<?> datas, String filename, SimpleBlock<Object, String> block){
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+			response.setContentType(DEFAULT_CONTENT_TYPE); 
+			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
+			response.setHeader("Content-Disposition", "attachment;filename=" + name);
+			for(Object data : datas){
+				out.println(block.execute(data));
+			}
+			out.flush();
+		} catch (Exception e) {
+			String msg = "下载文件出错：";
+			logger.error(msg + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(out);
 		}
 	}
 	

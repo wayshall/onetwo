@@ -43,6 +43,13 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 		
 		setComponentIntoRequest(getRowVarName(), component);
 	}
+	
+	private void setDataIntoRequest(GridRowData cdata){
+		if(StringUtils.isNotBlank(component.getName())){
+			pageContext.getRequest().setAttribute(component.getName(), cdata.getOriginData());
+			pageContext.getRequest().setAttribute(component.getName()+"Row", cdata);
+		}
+	}
 
 	@Override
 	public int startTag() throws JspException {
@@ -54,10 +61,11 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				Object data = it.next();
 				int index = 0;
 				GridRowData cdata = GridRowData.create(component, data, index);
+				//setdata
+				component.setCurrentRowData(cdata);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
-				if(StringUtils.isNotBlank(component.getName()))
-					pageContext.getRequest().setAttribute(component.getName(), cdata.getOriginData());
+				this.setDataIntoRequest(cdata);
 				
 				return EVAL_BODY_BUFFERED;
 			}else{
@@ -71,8 +79,8 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 			}
 		}else{
 			GridRowData cdata = GridRowData.create(component, LangUtils.newHashMap(), 0);
+			//setdata
 			setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
-			
 			component.setCurrentRowData(cdata);
 			
 			return EVAL_BODY_BUFFERED;
@@ -105,8 +113,7 @@ public class DataRowTag extends BaseGridTag<DataRowTagBean> {
 				GridRowData cdata = GridRowData.create(component, data, index);
 				setComponentIntoRequest(CURRENT_ROW_DATA, cdata);
 				
-				if(StringUtils.isNotBlank(getName()))
-					pageContext.getRequest().setAttribute(getName(), cdata.getOriginData());
+				this.setDataIntoRequest(cdata);
 				
 				return EVAL_BODY_AGAIN;
 			}

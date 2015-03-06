@@ -20,6 +20,8 @@ public class FormTagBean extends HtmlElement {
 
 	private FormDataProvider provider;
 	private boolean showOnly;
+	
+	private Object model;
 
 	public void addField(FormFieldTagBean field) {
 		field.setFormBean(this);
@@ -94,6 +96,14 @@ public class FormTagBean extends HtmlElement {
 
 	public void setShowOnly(boolean showOnly) {
 		this.showOnly = showOnly;
+	}
+
+	public Object getModel() {
+		return model;
+	}
+
+	public void setModel(Object model) {
+		this.model = model;
 	}
 
 

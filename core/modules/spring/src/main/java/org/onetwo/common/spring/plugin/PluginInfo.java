@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.PropConfig;
+import org.onetwo.common.utils.propconf.JFishProperties;
 
 public class PluginInfo {
 	
@@ -15,13 +15,15 @@ public class PluginInfo {
 		public static final String DESC = "desc";
 		public static final String DEPENDENCY = "dependency";
 		public static final String SCOPE = "scope";
+		public static final String WEBAPP_PLUGIN = "webapp.plugin";
+		public static final String WEBAPP_PLUGIN_SERVER_LISTENER = "webapp.plugin.server.listener";
 	}
 	
-	public void init(PropConfig prop){
+	public void init(JFishProperties prop){
 		PluginInfo info = this;
 		info.name = prop.getAndThrowIfEmpty(PKeys.NAME);
 		info.version = prop.getProperty(PKeys.VERSION, "1.0");
-		info.pluginClass = prop.getAndThrowIfEmpty(PKeys.PLUGIN_CLASS);
+		info.pluginClass = prop.getProperty(PKeys.PLUGIN_CLASS);
 //		info.pluginInstance = ReflectUtils.newInstance(cls);
 //		info.contextPath = prop.getAndThrowIfEmpty("contextPath");
 		info.contextPath = info.name;
@@ -32,6 +34,9 @@ public class PluginInfo {
 		List<String> dependency = prop.getPropertyWithSplit(PKeys.DEPENDENCY, ",");
 		info.dependency = dependency;
 		info.scopes = prop.getPropertyWithSplit(PKeys.SCOPE, ",");
+		
+		info.webappPlugin = prop.getBoolean(PKeys.WEBAPP_PLUGIN, false);
+		info.webappPluginServerListener = prop.getProperty(PKeys.WEBAPP_PLUGIN_SERVER_LISTENER, "");
 		
 		prop.remove(PKeys.NAME);
 		prop.remove(PKeys.VERSION);
@@ -47,11 +52,14 @@ public class PluginInfo {
 	private String contextPath;
 	private String desc;
 	private List<String> scopes;
-	private PropConfig properties;
+	private JFishProperties properties;
 	
 	private List<String> dependency;
 	
 	private boolean initialized;
+	
+	private boolean webappPlugin;
+	private String webappPluginServerListener;
 
 	public String getVersion() {
 		return version;
@@ -74,7 +82,7 @@ public class PluginInfo {
 		return LangUtils.append("plugin{name:", name, ", version:", version, "}");
 	}
 
-	public PropConfig getProperties() {
+	public JFishProperties getProperties() {
 		return properties;
 	}
 
@@ -103,6 +111,19 @@ public class PluginInfo {
 			return true;
 		}
 		return scopes.contains(scope);
+	}
+	
+	public String wrapAsContextPath(String pluginContextUrl){
+		String path = StringUtils.appendStartWith(pluginContextUrl, "/");
+		return contextPath + path;
+	}
+
+	public boolean isWebappPlugin() {
+		return webappPlugin;
+	}
+
+	public String getWebappPluginServerListener() {
+		return webappPluginServerListener;
 	}
 
 }

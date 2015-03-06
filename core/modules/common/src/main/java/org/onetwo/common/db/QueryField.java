@@ -14,4 +14,5 @@ public interface QueryField {
 
 	public Object getValue();
 
+	public String getFieldName();
 }

@@ -1,0 +1,41 @@
+rootProject.name = "onetwo-core"
+
+include "modules/common"
+include "modules/jackson"
+include "modules/spring"
+include "modules/ajaxanywhere"
+include "modules/web"
+include "modules/security"
+include "modules/poi"
+include "modules/orm"
+include "modules/jfish"
+include "modules/ejb"
+
+include "plugins/activemq"
+include "plugins/fmtag"
+include "plugins/fmtagext"
+include "plugins/security"
+include "plugins/session"
+include "plugins/hibernate"
+include "plugins/codegen"
+include "plugins/doc"
+include "plugins/dq"
+include "plugins/permission"
+include "plugins/admin"
+include "plugins/batch"
+include "plugins/email"
+include "plugins/groovy"
+include "plugins/jasper"
+include "plugins/monitor"
+include "plugins/rest"
+include "plugins/task-core"
+include "plugins/task-client"
+include "plugins/task-webclient"
+
+rootProject.getChildren().each {
+	if(it.name.startsWith("modules/")){
+		it.name = "onetwo-${it.name.substring(8)}"
+	}else if(it.name.startsWith("plugins/")){
+		it.name = "onetwo-plugin-${it.name.substring(8)}"
+	}
+}

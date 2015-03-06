@@ -12,32 +12,50 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventor;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.form.FormTagBean;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 final public class TagUtils {
 
 	public static String PARAM_FORMAT = "format";
+	public static String WEB_INF_DIR = "/WEB-INF/";
 	public static String BASE_TAG_DIR = "/WEB-INF/tags/";
 	public static String BASE_VIEW_DIR = "/WEB-INF/views/";
+	public static String BASE_LAYOUT_DIR = "/WEB-INF/views/layout/";
 
 
 	public static String getViewPage(String path){
-		return getDirPage(BASE_VIEW_DIR, path);
+		String t = StringUtils.appendEndWith(path, ".jsp");
+		return getDirPage(BASE_VIEW_DIR, t);
+	}
+	/*public static String getLayoutPage(String path){
+		String t = StringUtils.appendEndWith(path, ".jsp");
+		return getDirPage(BASE_LAYOUT_DIR, t);
 	}
 	public static String getTagPage(String path){
-		return getDirPage(BASE_TAG_DIR, path);
-	}
+		String t = StringUtils.appendEndWith(path, ".jsp");
+		String baseTagDir = BaseSiteConfig.getInstance().getTagTheme();
+		if(StringUtils.isBlank(baseTagDir)){
+			baseTagDir = BASE_TAG_DIR;
+		}else if(baseTagDir.startsWith("/tags/")){
+			baseTagDir = WEB_INF_DIR + baseTagDir;
+		}else{
+			baseTagDir = BASE_TAG_DIR + baseTagDir;
+		}
+		return getDirPage(baseTagDir, t);
+	}*/
 	public static String getDirPage(String baseDir, String path){
 		if(StringUtils.isBlank(path))
 			return path;
 		
-		if(path.startsWith(BASE_VIEW_DIR))
+		if(path.startsWith(baseDir))
 			return path;
 		
-		if(path.startsWith("/"))
+		if(path.startsWith("/") && baseDir.endsWith("/"))
 			path = path.substring(1);
 		
 		return baseDir + path;
@@ -97,6 +115,16 @@ final public class TagUtils {
 		return result;
 	}
 	
+	public static String appendParamString(String action, String paramstr){
+		String result = action;
+		if (action.indexOf("?")!=-1){
+			result += "&"+paramstr;
+		}else{
+			result += "?"+paramstr;
+		}
+		return result;
+	}
+	
 
 	public static String getFormVarName(){
 		return FormTagBean.class.getSimpleName();
@@ -150,19 +178,41 @@ final public class TagUtils {
 		return surl;
 	}
 
-
+	/****
+	 * 过滤分页等一些特定的参数
+	 * @param params
+	 * @return
+	 */
 	public static CasualMap filterPageParams(CasualMap params) {
-		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");
-	}
-	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, CsrfPreventor csrfPreventor) {
-		return csrfPreventor==null?params:params.filter(csrfPreventor.getFieldOfTokenFieldName(), request.getParameter(csrfPreventor.getFieldOfTokenFieldName()));
+//		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");filter("aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM).
+		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
 	}
 	
-	public static String parseAction(HttpServletRequest request, String action, CsrfPreventor csrfPreventor){
+
+	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request) {
+		return filterCsrfParams(params, request, PreventorFactory.getCsrfPreventor());
+	}
+	public static CasualMap filterCsrfParams(CasualMap params, HttpServletRequest request, RequestPreventor csrfPreventor) {
+		if(csrfPreventor!=null){
+			params.filter(csrfPreventor.getTokenFieldName());
+		}else{
+			params.filter(PreventorFactory.getCsrfPreventor().getTokenFieldName());
+		}
+		params.filter(PreventorFactory.getRepeateSubmitPreventor().getTokenFieldName());
+		return params;
+	}
+	
+	public static String parseAction(HttpServletRequest request, String action, RequestPreventor csrfPreventor){
 		String surl = getRequestUri(request);
 		if(StringUtils.isBlank(action)){
 			return surl;
 		}
+		surl += parseQueryString(request, action, csrfPreventor);
+		return surl;
+	}
+	
+	public static String parseQueryString(HttpServletRequest request, String action, RequestPreventor csrfPreventor){
+		String surl = "";
 		String[] symbols = StringUtils.split(action, "|");
 		int index = 0;
 		for (String symbol : symbols) {
@@ -181,18 +231,33 @@ final public class TagUtils {
 		return surl;
 	}
 	
-	public static String processUrlSymbol(HttpServletRequest request, String symbol, CsrfPreventor csrfPreventor) {
-		String str = null;
-		if (symbol.equals(":qstr")) {
+	public static String processUrlSymbol(HttpServletRequest request, String symbol, RequestPreventor csrfPreventor) {
+		CasualMap params = processUrlSymbolAsCasualMap(request, symbol, csrfPreventor);
+		/*if (symbol.equals(":qstr")) {
 			str = getQueryStringFilterPageNo(request);
 		} else if (symbol.equals(":post2get")) {
 			str = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor).toParamString();
+		} else if (symbol.equals(":params")) {
+			str = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, csrfPreventor).toParamString();
 		}else{
 			str = symbol;
-		}
+		}*/
+		String str = params==null?symbol:params.toParamString();
 		return str;
 	}
-
+	
+	public static CasualMap processUrlSymbolAsCasualMap(HttpServletRequest request, String symbol, RequestPreventor csrfPreventor) {
+		CasualMap params = null;
+		if (symbol.equals(":qstr")) {
+//			params = filterPageParams(new CasualMap(request.getQueryString()));
+			params = filterCsrfParams(filterPageParams(new CasualMap(request.getQueryString())), request);
+		} else if (symbol.equals(":post2get")) {
+			params = filterCsrfParams(filterPageParams(RequestUtils.getPostParametersWithout(request)), request, csrfPreventor);
+		} else if (symbol.equals(":params")) {
+			params = filterCsrfParams(filterPageParams(RequestUtils.getParametersWithout(request)), request, csrfPreventor);
+		}
+		return params;
+	}
 	
 	private TagUtils(){
 	}

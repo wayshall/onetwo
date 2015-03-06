@@ -13,7 +13,9 @@ import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
 
 /****
@@ -48,14 +50,20 @@ public class SpringApplication {
 		return instance;
 	}
 
+
+	public static void initApplicationIfNotInitialized(ApplicationContext webappContext) {
+		if(instance.initialized){
+			return ;
+		}
+		initApplication(webappContext);
+	}
 	public static void initApplication(ApplicationContext webappContext) {
-		instance = new SpringApplication();
 		instance.appContext = webappContext;
 		instance.initialized = true;
 //		instance.printBeanNames();
 		try {
-			instance.baseEntityManager = instance.getBean(BaseEntityManager.class);
-			instance.contextHolder = instance.getBean(ContextHolder.class);
+			if(ConfigurableApplicationContext.class.isInstance(webappContext))
+				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
 		} catch (Exception e) {
 			logger.error("can not find the BaseEntityManager, ignore it: " + e.getMessage());
 		}
@@ -63,6 +71,19 @@ public class SpringApplication {
 
 	public ApplicationContext getAppContext() {
 		return appContext;
+	}
+	
+
+	public <T> void autoInject(T bean) {
+		autoInject(bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
+	}
+
+	public <T> void autoInject(T bean, int autowireMode) {
+		SpringUtils.injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, autowireMode);
+	}
+
+	public ConfigurableApplicationContext getConfigurableAppContext() {
+		return ConfigurableApplicationContext.class.isInstance(appContext)?(ConfigurableApplicationContext)appContext:null;
 	}
 	
 	public Object getBean(String beanName) {
@@ -81,7 +102,7 @@ public class SpringApplication {
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-			logger.error("get bean["+beanName+"] from spring error! ");
+//			logger.error("get bean["+beanName+"] from spring error! ");
 			if(throwIfError)
 				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
 		}
@@ -119,6 +140,16 @@ public class SpringApplication {
 		
 		return bean;
 	}
+	
+	public synchronized <T> T getOrRegisteredBean(Class<T> beanClass){
+		T bean = getBean(beanClass);
+		if(bean!=null)
+			return bean;
+		
+		bean = SpringUtils.registerBean(getAppContext(), beanClass);
+		//inject?
+		return bean;
+	}
 
 	public <T> Map<String, T> getBeansMap(Class<T> clazz) {
 		Map<String, T> map = BeanFactoryUtils.beansOfTypeIncludingAncestors(getAppContext(), clazz);
@@ -127,7 +158,7 @@ public class SpringApplication {
 	
 	public <T> List<T> getBeans(Class<T> clazz) {
 //		Map map = getAppContext().getBeansOfType(clazz);
-		Map map = BeanFactoryUtils.beansOfTypeIncludingAncestors(getAppContext(), clazz);
+		Map map = SpringUtils.getBeansAsMap(getAppContext(), clazz);
 		if(map==null || map.isEmpty())
 			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>(map.values());
@@ -181,7 +212,12 @@ public class SpringApplication {
 	}
 
 	public BaseEntityManager getBaseEntityManager() {
-		return baseEntityManager;
+		BaseEntityManager be = baseEntityManager;
+		if(be==null){
+			be = getBean(BaseEntityManager.class);
+			baseEntityManager = be;
+		}
+		return be;
 	}
 	
 
@@ -196,7 +232,12 @@ public class SpringApplication {
 	}
 
 	public ContextHolder getContextHolder() {
-		return contextHolder;
+		ContextHolder ch = contextHolder;
+		if(ch==null){
+			ch = getBean(ContextHolder.class);
+			contextHolder = ch;
+		}
+		return ch;
 	}
 
 }

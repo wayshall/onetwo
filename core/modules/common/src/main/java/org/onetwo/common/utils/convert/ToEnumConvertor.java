@@ -1,5 +1,7 @@
 package org.onetwo.common.utils.convert;
 
+import org.onetwo.common.utils.StringUtils;
+
 
 @SuppressWarnings("rawtypes")
 public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
@@ -13,6 +15,8 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 			return ordinal>values.length?null:values[ordinal];
 		}else{
 	        String name = value.toString();
+	        if(StringUtils.isBlank(name))
+	        	return null;
 	        return Enum.valueOf((Class)componentType, name);
 		}
 	}
