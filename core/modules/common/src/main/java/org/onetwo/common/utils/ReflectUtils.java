@@ -28,19 +28,20 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.M;
+import org.slf4j.Logger;
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
 public class ReflectUtils {
 
-	private final static Logger logger = Logger.getLogger(ReflectUtils.class);
+	private final static Logger logger = JFishLoggerFactory.getLogger(ReflectUtils.class);
 	
 
 	public static interface PropertyDescriptorCallback {
