@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
@@ -15,6 +16,8 @@ public abstract class RequestUtils {
 	
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
+	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
+	public static final String AAGRID_KEY = "aagrid";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
@@ -67,6 +70,13 @@ public abstract class RequestUtils {
 		}
 		return "Other";
 	}
+	public static String getBrowerByAgent(HttpServletRequest request){
+		return getBrowerByAgent(request.getHeader("User-Agent"));
+	}
+	
+	public static boolean isAaXmlRequest(HttpServletRequest request){
+		return AAUtils.isAjaxRequest(request);
+	}
 	
 	public static String getOSByAgent(String userAgent){
 		userAgent = userAgent.toLowerCase();
@@ -87,20 +97,20 @@ public abstract class RequestUtils {
 	public static String getRemoteAddr(HttpServletRequest request) {
 
 		String ip = request.getHeader("X-Real-IP");
-
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		
+		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("x-forwarded-for");
 		}
 
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
 
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("WL-Proxy-Client-IP");
 		}
 
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip)|| "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
 
@@ -117,7 +127,11 @@ public abstract class RequestUtils {
 	}
 	
 	public static String getServletPath(HttpServletRequest request) {
-        String servletPath = request.getServletPath();
+        String servletPath = (String)request.getAttribute(REQUEST_URI);
+        if(StringUtils.isNotBlank(servletPath))
+        	return servletPath;
+        
+        servletPath = request.getServletPath();
         
         String requestUri = request.getRequestURI();
         // Detecting other characters that the servlet container cut off (like anything after ';')
@@ -139,7 +153,8 @@ public abstract class RequestUtils {
             endIndex = startIndex;
         }
 
-        return requestUri.substring(startIndex, endIndex);
+        servletPath = requestUri.substring(startIndex, endIndex);
+        return requestUri;
     }
 	
 	public static String getRequestFullURI(HttpServletRequest request){
@@ -147,14 +162,13 @@ public abstract class RequestUtils {
 		uri += request.getQueryString();
 		return uri;
 	}
-	
 
 	public static CasualMap getPostParametersWithout(HttpServletRequest request, String... prefix){
 		return getParametersWithout(request, prefix).subtract(getGetParameter(request));
 	}
 	
 	public static CasualMap getParametersWithout(HttpServletRequest request, String... prefix){
-		return new CasualMap().addHttpParameterWithout(getParameters(request), prefix);
+		return new CasualMap().addMapWithFilter(getParameters(request), prefix);
 	}
 	
 	public static Map getParameters(HttpServletRequest request){
@@ -194,5 +208,8 @@ public abstract class RequestUtils {
 			cookieValue = Escape.unescape(cookieValue);
 		return cookieValue;
 	}
-	
+
+	public static String getRefereURL(HttpServletRequest request){
+		return request.getHeader("referer");
+	}
 }

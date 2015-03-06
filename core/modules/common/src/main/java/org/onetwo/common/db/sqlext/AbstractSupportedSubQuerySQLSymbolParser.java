@@ -7,6 +7,7 @@ import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -40,6 +41,9 @@ abstract public class AbstractSupportedSubQuerySQLSymbolParser extends AbstractS
 	 */
 	@Override
 	protected boolean subQuery(String field, String symbol, List paramlist, ParamValues paramValues, StringBuilder hql){
+		if(LangUtils.isEmpty(paramlist)){
+			return false;
+		}
 		Object value1 = paramlist.get(0);
 		if(value1 instanceof Class){
 			if(paramlist.size()<2)

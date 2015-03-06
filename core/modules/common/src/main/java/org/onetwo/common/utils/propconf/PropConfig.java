@@ -3,25 +3,17 @@ package org.onetwo.common.utils.propconf;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.Intro;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 public class PropConfig implements VariableSupporter {
 	
 	public static final String CONFIG_KEY = "config";
@@ -29,17 +21,17 @@ public class PropConfig implements VariableSupporter {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	protected VariableConfig config = new VariablePropConifg(this);
+	protected JFishProperties config;
 
 	protected List<String> files = new ArrayList<String>(5);
 	
 	protected String configName;
 	
-	protected VariableExpositor expositor;
+/*	protected VariableExpositor expositor;
 	
 	protected Expression expression = Expression.AT;
 	
-	private Map cache = new HashMap();
+	private Map cache = new HashMap();*/
 	
 
 	/*public PropConfig(){
@@ -49,9 +41,8 @@ public class PropConfig implements VariableSupporter {
 		expositor = new VariableExpositor(this, cacheable);
 	}*/
 	
-	public PropConfig(VariableConfig config, boolean cacheable){
+	public PropConfig(JFishProperties config){
 		this.config = config;
-		this.expositor = new VariableExpositor(this, cacheable);
 	}
 
 	protected PropConfig(String configName) {
@@ -59,19 +50,19 @@ public class PropConfig implements VariableSupporter {
 	}
 
 	protected PropConfig(String configName, boolean cacheable) {
-		expositor = new VariableExpositor(this, cacheable);
+		config = new JFishProperties(cacheable);
 		this.configName = configName;
 		addConfigFile(configName, false);
 	}
 
-	protected PropConfig(String configName, VariableExpositor expositor) {
+/*	protected PropConfig(String configName, VariableExpositor expositor) {
 		this.configName = configName;
 		addConfigFile(configName, false);
 		this.expositor = expositor;
-	}
+	}*/
 
 	protected PropConfig(String name, File configFile, boolean cacheable) {
-		expositor = new VariableExpositor(this, cacheable);
+		config = new JFishProperties(cacheable);
 		this.configName = name;
 		addConfigFile(configFile.getPath());
 	}
@@ -149,246 +140,137 @@ public class PropConfig implements VariableSupporter {
 
 	public void reload(){
 		config.clear();
-		cache.clear();
 		this.initAppConfig(true);
 	}
 	
 	public void remove(String key){
 		this.config.remove(key);
-		this.cache.remove(key);
 	}
 	
-	protected void putInCache(String key, Object value){
-		this.cache.put(key, value);
-	}
-	
-	protected Object getFromCache(String key){
-		return cache.get(key);
-	}
-
 	public String getProperty(String key, String defaultValue) {
-		return getProperty(key, defaultValue, true);
+		return config.getProperty(key, defaultValue);
 	}
 
 	public List<String> getStringList(String key, String split) {
-		return getPropertyWithSplit(key, split);
-	}
-
-	public List<String> getPropertyWithSplit(String key, String split) {
-		List<String> listValue = (List<String>)getFromCache(key);
-		if(listValue!=null)
-			return listValue;
-		
-		String value = getProperty(key);
-		if(StringUtils.isBlank(value)){
-			listValue = Collections.EMPTY_LIST;
-		}else{
-			listValue = new ArrayList<String>();
-			String[] strs = StringUtils.split(value, split);
-			for(String str : strs){
-				if(StringUtils.isBlank(str))
-					continue;
-				listValue.add(str.trim());
-			}
-		}
-		putInCache(key, listValue);
-		return listValue;
-	}
-
-	public String getProperty(String key, String defaultValue, boolean checkCache) {
-		String value = this.getVariable(key, checkCache);
-		return StringUtils.isBlank(value) ? defaultValue : value;
+		return config.getPropertyWithSplit(key, split);
 	}
 
 	/*public Enumeration<String> keys() {
 		return (Enumeration<String>) config.propertyNames();
 	}*/
 
+	@Override
+	public String getVariable(String key, boolean checkCache) {
+		return config.getVariable(key, checkCache);
+	}
+
 	public String getVariable(String key) {
 		return getVariable(key, false);
 	}
 
-	public String getVariable(String key, boolean checkCache) {
-		String value = config.getOriginalProperty(key);
-		//
-		if (StringUtils.isNotBlank(value) && expositor!=null) {
-			value = this.expositor.explainVariable(value, checkCache);
-		}
-		return StringUtils.trimToEmpty(value);
-	}
 	
 	public String formatVariable(String key, Object...values){
-		String str = getVariable(key);
-		if(this.expression.isExpresstion(str))
-			str = this.expression.parse(str, values);
-		return str;
+		return config.formatVariable(key, values);
+	}
+
+	public Map<String, String> getPropertiesStartWith(String keyStartWith) {
+		return config.getPropertiesStartWith(keyStartWith);
+	}
+
+	public List<String> getPropertyWithSplit(String key, String split) {
+		return config.getPropertyWithSplit(key, split);
+	}
+	
+
+	public List<? extends Enum<?>> getEnums(String key, Class<? extends Enum<?>> clazz){
+		return config.getEnums(key, clazz);
 	}
 
 	public String getProperty(String key) {
-		return this.getProperty(key, true);
+		return config.getProperty(key);
 	}
 
 	public String getAndThrowIfEmpty(String key) {
-		String val = getProperty(key);
-		if(StringUtils.isBlank(val))
-			LangUtils.throwBaseException("can find the value for key: " + key);
-		return val;
+		return config.getAndThrowIfEmpty(key);
 	}
 
-	public String getProperty(String key, boolean checkCache) {
-		return this.getVariable(key, checkCache);
-	}
+/*	public String getProperty(String key, boolean checkCache) {
+		return config.getProperty(key, checkCache);
+	}*/
 
 	public Integer getInteger(String key, Integer def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value)) {
-			return def;
-		}
-		Integer integer = null;
-		try {
-			integer = new Integer(value);
-		} catch (Exception e) {
-			integer = def;
-		}
-		return integer;
+		return config.getInteger(key, def);
 	}
 	
 	public int getInt(String key){
-		return this.getInteger(key);
+		return config.getInteger(key);
 	}
 	
 	public int getInt(String key, int def){
-		return this.getInteger(key, def);
+		return config.getInteger(key, def);
 	}
 
 	public Integer getInteger(String key) {
-		return getInteger(key, Integer.valueOf(0));
+		return config.getInteger(key);
 	}
 
 	public Class getClass(String key, Class cls) {
-		Collection<Class> clses =  this.getClasses(key, cls);
-		if(clses!=null){
-			Iterator<Class> it = clses.iterator();
-			if(it.hasNext())
-				return it.next();
-		}
-		return null;
+		return config.getClass(key, cls);
 	}
 
 	public Collection<Class> getClasses(String key) {
-		return this.getClasses(key, (Class[])null);
+		return config.getClasses(key);
 	}
 
 	public Collection<Class> getClasses(String key, Class... defClasses) {
-		//cache
-		List<Class> classes = (List<Class>) getFromCache(key);
-		if(classes!=null)
-			return classes;
-		classes = new ArrayList<Class>();
-		String strs = this.getVariable(key);
-		
-		try {
-			if(StringUtils.isBlank(strs))
-				classes = MyUtils.asList(defClasses);
-			else{
-				String[] classNames = StringUtils.split(strs, ",");
-				Class clazz = null;
-				for(String clsName : classNames){
-					clazz = ReflectUtils.loadClass(clsName.trim());
-					if(!classes.contains(clazz))
-						classes.add(clazz);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		this.putInCache(key, classes);
-		
-		return classes;
+		return config.getClasses(key, defClasses);
 	}
 
 	public List<Class> getClassList(String key) {
-		//cache
-		List<Class> classes = (List<Class>) getFromCache(key);
-		if(classes!=null)
-			return classes;
-		
-		String value = this.getVariable(key);
-		
-		if(StringUtils.isBlank(value))
-			return null;
-		String[] valueses = value.split(",");
-		if(valueses==null || valueses.length<1)
-			return null;
-		
-		classes = new ArrayList<Class>();
-		for(String v : valueses){
-			if(StringUtils.isBlank(v))
-				continue;
-			classes.add(ReflectUtils.loadClass(v.trim()));
-		}
-		
-		this.putInCache(key, classes);
-		
-		return classes; 
+		return config.getClassList(key);
 	}
 
 	public Long getLong(String key, Long def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value)) {
-			return def;
-		}
-		Long longValue = null;
-		try {
-			longValue = new Long(value);
-		} catch (Exception e) {
-			longValue = def;
-		}
-		return longValue;
+		return config.getLong(key, def);
 	}
 	
 
 	public Boolean getBoolean(String key) {
-		return getBoolean(key, false);
+		return config.getBoolean(key);
 	}
 
 	public Boolean getBoolean(String key, boolean def) {
-		String value = this.getProperty(key);
-		if (StringUtils.isBlank(value))
-			return def;
-		Boolean booleanValue = false;
-		try {
-			booleanValue = Boolean.parseBoolean(value);
-		} catch (Exception e) {
-			booleanValue = def;
-		}
-		return booleanValue;
+		return config.getBoolean(key, def);
 	}
 
 	public Date getDate(String key, Date def) {
-		String value = this.getProperty(key);
-		Date date = DateUtil.parse(value);
-		if(date==null)
-			date = def;
-		return date;
+		return config.getDate(key, def);
 	}
+	
 
-	public VariableConfig getConfig() {
+	public JFishProperties getConfig() {
 		return config;
 	}
 	
-	public void setProperty(String key, Object value){
-		config.setOriginalProperty(key, value);
+
+	public String getPath(String key, String def){
+		return config.getPath(key, def);
+	}
+
+	public String getDir(String key, String def){
+		return config.getDir(key, def);
+	}
+	
+	public Double getDouble(String key, Double def) {
+		return config.getDouble(key, def);
+	}
+
+	public void setProperty(String key, String value){
+		config.setProperty(key, value);
 	}
 
 	public void clear() {
-		if(config!=null)
-			this.config.clear();
-		if(expositor!=null)
-			this.expositor.clear();
-		if(cache!=null)
-			this.cache.clear();
+		this.config.clear();
 	}
 	
 	public Enumeration configNames() {
@@ -405,7 +287,7 @@ public class PropConfig implements VariableSupporter {
 	
 	public <T> T asObject(Class<T> clazz){
 		Intro<T> jc = Intro.wrap(clazz);
-		T bean = jc.newFrom((Map<String, ?>)this.getConfig());
+		T bean = jc.newFrom((Map<Object, Object>)this.config);
 		return bean;
 	}
 	

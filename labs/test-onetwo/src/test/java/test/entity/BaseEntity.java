@@ -3,19 +3,15 @@ package test.entity;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.nutz.dao.entity.annotation.PK;
-import org.onetwo.common.db.AutoUpdateTimeMonitor;
 import org.onetwo.common.db.IBaseEntity;
 
 
 @SuppressWarnings("serial")
 @MappedSuperclass
-@EntityListeners(AutoUpdateTimeMonitor.class)
 abstract public class BaseEntity implements IBaseEntity{
 
 	private Date createTime;

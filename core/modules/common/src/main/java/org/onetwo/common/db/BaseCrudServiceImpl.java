@@ -121,5 +121,18 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	public T findUnique(Object... properties) {
 		return (T)getBaseEntityManager().findUnique(entityClass, properties);
 	}
+	@Override
+	public T findOne(Object... properties) {
+		return (T)getBaseEntityManager().findOne(entityClass, properties);
+	}
+
+	@Override
+	public List<T> findByProperties(QueryBuilder query) {
+		return getBaseEntityManager().findByProperties(query);
+	}
+	@Override
+	public void findPage(final Page page, QueryBuilder query) {
+		getBaseEntityManager().findPage(page, query);
+	}
 	
 }

@@ -2,12 +2,15 @@ package org.onetwo.plugins.email;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.springframework.core.io.InputStreamSource;
 
 public class MailInfo implements Serializable{
 	
@@ -15,6 +18,13 @@ public class MailInfo implements Serializable{
 		MailInfo m = new MailInfo();
 		m.from(from);
 		m.to(to);
+		return m;
+	}
+	
+	public static MailInfo createEmail(String subject, String...to){
+		MailInfo m = new MailInfo();
+		m.to(to);
+		m.subject(subject);
 		return m;
 	}
 
@@ -34,12 +44,15 @@ public class MailInfo implements Serializable{
 
 	private String content;
 
-	private boolean template;
+	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
+	private Map<String, InputStreamSource> attachmentInputStreamSources;
 	
 	private Map<String, Object> templateContext;
+	
+	private String bizTag;
 
 	public String getFrom() {
 		return from;
@@ -104,12 +117,12 @@ public class MailInfo implements Serializable{
 		return this;
 	}
 
-	public boolean isTemplate() {
-		return template;
+	public EmailTextType getEmailTextType() {
+		return emailTextType;
 	}
 
-	public MailInfo template(boolean template) {
-		this.template = template;
+	public MailInfo emailTextType(EmailTextType contentType) {
+		this.emailTextType = contentType;
 		return this;
 	}
 
@@ -129,6 +142,17 @@ public class MailInfo implements Serializable{
 		if(LangUtils.isEmpty(attachments))
 			return this;
 		this.attachments  = JFishList.wrapObject(attachments);
+		this.mimeMail = true;
+		return this;
+	}
+
+	public MailInfo addAttachmentInputStreamSource(String attachName, InputStreamSource attachment) {
+		Assert.hasText(attachName);
+		Assert.notNull(attachment);
+		if(attachmentInputStreamSources==null){
+			attachmentInputStreamSources = LangUtils.newHashMap();
+		}
+		this.attachmentInputStreamSources.put(attachName, attachment);
 		this.mimeMail = true;
 		return this;
 	}
@@ -167,5 +191,17 @@ public class MailInfo implements Serializable{
 		this.mimeMail = mimeMail;
 		return this;
 	}
-	
+
+	public Map<String, InputStreamSource> getAttachmentInputStreamSources() {
+		return attachmentInputStreamSources==null?Collections.EMPTY_MAP:attachmentInputStreamSources;
+	}
+
+	public String getBizTag() {
+		return bizTag;
+	}
+
+	public void setBizTag(String bizTag) {
+		this.bizTag = bizTag;
+	}
+
 }

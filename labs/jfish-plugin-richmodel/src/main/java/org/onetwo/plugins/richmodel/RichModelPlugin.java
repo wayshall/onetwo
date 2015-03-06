@@ -2,10 +2,10 @@ package org.onetwo.plugins.richmodel;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
+import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 
 
-public class RichModelPlugin extends AbstractJFishPlugin<RichModelPlugin> {
+public class RichModelPlugin extends AbstractContextPlugin<RichModelPlugin>{
 
 	private static RichModelPlugin instance;
 	
@@ -14,10 +14,6 @@ public class RichModelPlugin extends AbstractJFishPlugin<RichModelPlugin> {
 		return instance;
 	}
 	
-
-	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
-	}
 
 	@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {

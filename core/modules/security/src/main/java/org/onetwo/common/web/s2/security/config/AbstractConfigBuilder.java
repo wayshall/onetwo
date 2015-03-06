@@ -90,6 +90,16 @@ abstract public class AbstractConfigBuilder {
 			}
 		}
 		Class<? extends Authenticator>[] classes = authentic.authenticatorClass();
+		this.buildAuthenticatorClasses(config, classes);
+		/*if (!LangUtils.isEmpty(classes)) {
+			for (Class<? extends Authenticator> cls : classes) {
+				Authenticator authenticator = (Authenticator)getAuthenticator(cls);
+				config.addAuthenticator(authenticator);
+			}
+		}*/
+	}
+	
+	protected void buildAuthenticatorClasses(AuthenticConfig config, Class<? extends Authenticator>[] classes){
 		if (!LangUtils.isEmpty(classes)) {
 			for (Class<? extends Authenticator> cls : classes) {
 				Authenticator authenticator = (Authenticator)getAuthenticator(cls);

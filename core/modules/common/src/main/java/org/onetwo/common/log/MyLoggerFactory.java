@@ -1,16 +1,16 @@
 package org.onetwo.common.log;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Deprecated
 final public class MyLoggerFactory {
 	private MyLoggerFactory(){}
 	public static Logger getLogger(Class<?> clazz){
-		return LoggerFactory.getLogger(clazz);
+		return JFishLoggerFactory.getLogger(clazz);
 	}
 	
 	public static Logger getLogger(String name){
-		return LoggerFactory.getLogger(name);
+		return JFishLoggerFactory.getLogger(name);
 	}
 
 }

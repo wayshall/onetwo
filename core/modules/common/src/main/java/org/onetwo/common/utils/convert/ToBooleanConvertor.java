@@ -14,8 +14,8 @@ public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 
 	@Override
 	public Boolean doConvert(Object value, Class<?> componentType) {
-//		if (value == null)
-//			return false;
+		if (value == null)
+			return false;
 		Class<?> c = value.getClass();
 		if (c.getSuperclass() == Number.class)
 			return ((Number) value).intValue() != 0;

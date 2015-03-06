@@ -239,8 +239,10 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 			if(e instanceof SessionTimeoutException){
 				if(!context.getConfig().isThrowIfTimeout()){
 					//TODO
-					context.authoritable = null;
-					context.cookieToken = null;
+//					context.authoritable = null;
+//					context.cookieToken = null;
+					context.getTarget().removeCurrentLoginUser();
+					context.getTarget().removeCookieToken();
 				}
 			}
 			throw (NotLoginException)e;

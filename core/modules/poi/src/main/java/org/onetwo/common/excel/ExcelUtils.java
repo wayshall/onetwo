@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +13,16 @@ import java.util.regex.Pattern;
 
 import ognl.Ognl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -164,7 +170,7 @@ abstract public class ExcelUtils {
 		int type = cell.getCellType();
 		Object value = null;
 		if(Cell.CELL_TYPE_STRING==type){
-			value = cell.getStringCellValue();
+			value = cell.getStringCellValue().trim();
 		}else if(Cell.CELL_TYPE_NUMERIC==type){
 			value = cell.getNumericCellValue();
 		}else if(Cell.CELL_TYPE_FORMULA==type){
@@ -176,6 +182,7 @@ abstract public class ExcelUtils {
 		}
 		return value;
 	}
+	
 	
 
 	public static List<String> getRowValues(Row row){
@@ -212,7 +219,7 @@ abstract public class ExcelUtils {
 	public static Object getValue(String exp, Map context, Object root){
 		Object value = null;
 		try {
-			value = Ognl.getValue(exp, context, root);
+			value = Ognl.getValue(exp, context==null?Collections.EMPTY_MAP:context, root);
 		} catch (Exception e) {
 //			logger.info("["+exp+"] getValue error : " + e.getMessage(), e);
 			logger.info("["+exp+"] getValue error : " + e.getMessage());
@@ -238,6 +245,77 @@ abstract public class ExcelUtils {
 		} catch (Exception e) {
 			throw new BaseException("read workbook error by resource : " + e.getMessage(), e);
 		} 
+	}
+	
+	public static CellValue getFormulaCellValue(Cell cell){
+		try {
+			return cell==null?null:cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator().evaluate(cell);
+		} catch (Exception e) {
+//			throw new BaseException("get formual cell value["+cell.getRowIndex()+", "+ cell.getColumnIndex()+"] error : " + e.getMessage(), e);
+			logger.warn("get formual cell value["+cell.getRowIndex()+", "+ cell.getColumnIndex()+"] error : " + e.getMessage());
+			return null;
+		}
+	}
+	
+	public static Workbook createWorkbook(InputStream in){
+		Workbook workbook = null;
+		try {
+//			br.mark(1024*10);
+			workbook = WorkbookFactory.create(in);
+		} catch (ServiceException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new BaseException("read excel inputstream error : " + in, e);
+		}finally{
+			IOUtils.closeQuietly(in);
+		}
+		return workbook;
+	}
+	
+	public static void addRow(Sheet sheet, int rowNumber, int count){
+		if(count<0){
+			//remove
+			rowNumber += Math.abs(count);
+		}
+		sheet.shiftRows(rowNumber, sheet.getLastRowNum(), count, true, true);
+	}
+	
+	public static void copyCellStyle(Cell source, Cell target){
+		CellStyle style = source.getCellStyle();
+		if(style!=null){
+			//可能会影响性能。。。
+			CellStyle newCellStyle = source.getRow().getSheet().getWorkbook().createCellStyle();
+			newCellStyle.cloneStyleFrom(style);
+			target.setCellStyle(style);
+		}
+		if(source.getCellComment()!=null){
+			target.setCellComment(source.getCellComment());
+		}
+		if(source.getHyperlink()!=null){
+			target.setHyperlink(source.getHyperlink());
+		}
+		target.setCellType(source.getCellType());
+	}
+	
+	public static void clearRowValue(Row row){
+		if(row==null)
+			return ;
+		for(Cell cell : row){
+			cell.setCellType(Cell.CELL_TYPE_STRING);
+			cell.setCellValue("");
+		}
+	}
+	
+	public static void removeCellRange(Row row){
+		Sheet sheet = row.getSheet();
+		for(Cell cell : row){
+			for(int i=0; i< sheet.getNumMergedRegions(); i++){
+				CellRangeAddress cr = sheet.getMergedRegion(i);
+				if(cr.getFirstRow()==row.getRowNum() && cr.getFirstColumn()==cell.getColumnIndex()){
+					sheet.removeMergedRegion(i);
+				}
+			}
+		}
 	}
 	
 }

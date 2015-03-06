@@ -281,8 +281,8 @@ final public class CUtils {
 		if (object == null)
 			return def;
 		List list = null;
-		if (Collection.class.isAssignableFrom(object.getClass())) {
-			if (List.class.isAssignableFrom(object.getClass()))
+		if (Collection.class.isInstance(object)) {
+			if (List.class.isInstance(object))
 				list = (List) object;
 			else {
 				Collection col = (Collection) object;
@@ -293,7 +293,12 @@ final public class CUtils {
 					list.addAll(col);
 				}
 			}
-		} else if (object.getClass().isArray()) {
+		} else if(Iterable.class.isInstance(object)){
+			list = new ArrayList();
+			for(Object obj : (Iterable<?>)object){
+				list.add(obj);
+			}
+		}else if (object.getClass().isArray()) {
 			int length = Array.getLength(object);
 			list = new ArrayList(length);
 //			appendToList(object, list);
@@ -389,6 +394,12 @@ final public class CUtils {
 				strs[i++] = o.toString();
 			}
 			return strs;
+		}else if(Iterable.class.isAssignableFrom(obj.getClass())){
+			List<String> list = LangUtils.newArrayList();
+			for (Object o : (Iterable) obj) {
+				list.add(o.toString());
+			}
+			return list.toArray(new String[0]);
 		}else{
 			return new String[]{obj.toString()};
 		}
@@ -446,6 +457,14 @@ final public class CUtils {
     	}
        return Collections.unmodifiableList(diff);
     }
+    /****
+     * 
+     * list1中存在，list2中找不到的元素
+     * @param list1
+     * @param list2
+     * @param properties
+     * @return
+     */
     public static <T> List<T> difference(List<T> list1, List<T> list2, final String...properties) {
     	return difference(list1, list2, new NotInPredicate<T>() {
 			@Override

@@ -2,13 +2,10 @@ package org.onetwo.common.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.enterprise.inject.New;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,12 +13,14 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.L;
 
 public class LangUtilsTest {
 	
 	@Test
 	public void testFormatValue(){
+		Assert.assertTrue(Double.valueOf("335.00")==335);
 		long dec = LangUtils.hexToLong("BC092A11");
 		Assert.assertEquals(3154717201L, dec);
 		Object val = LangUtils.formatValue(0.755, "#0.00#");
@@ -36,8 +35,12 @@ public class LangUtilsTest {
 		Assert.assertEquals("0.76", val);
 		val = LangUtils.formatValue(1, "0.00");
 		Assert.assertEquals("1.00", val);
+		
 		val = LangUtils.formatValue(0.755, "0.00");
 		Assert.assertEquals("0.76", val);
+		val = Double.parseDouble(String.format("%.2f",0.755));
+		Assert.assertEquals("0.76", val.toString());
+		
 		val = LangUtils.formatValue(0.1, "0.00");
 		Assert.assertEquals("0.10", val);
 		val = LangUtils.formatValue(1253.1, "0.00");
@@ -50,7 +53,17 @@ public class LangUtilsTest {
 		
 		BigDecimal bd = new BigDecimal("1.44445");
 		Assert.assertEquals("1.44", bd.setScale(2, RoundingMode.HALF_UP).toString());
+		
+
+		val = LangUtils.formatValue(-800.755, "0.00");
+		Assert.assertEquals("-800.76", val);
+
+		val = LangUtils.formatValue(-800.755, "#0.00元");
+		Assert.assertEquals("-800.76元", val);
+		
+		
 	}
+	
 	@Test
 	public void testHash(){
 		String str = "hellohello_helloh_ellohello";
@@ -279,6 +292,12 @@ public class LangUtilsTest {
 		Assert.assertEquals("aa%3D%23user", encodeUrl);
 	}
 	
+	@Test
+	public void testEquals() throws Exception{
+		Assert.assertTrue(LangUtils.equals(1, 1));
+		Assert.assertTrue(LangUtils.equalsIgnoreCase("aabbb", "AabBb"));
+	}
+	
 
 
 	@Test
@@ -320,6 +339,22 @@ public class LangUtilsTest {
 		obj = new Object[]{null, null};
 		Assert.assertFalse(LangUtils.isEmpty(obj));
 		Assert.assertTrue(LangUtils.hasNotElement(obj));
+	}
+	
+	@Test
+	public void testBlank(){
+		Assert.assertFalse(Iterable.class.isInstance(new Object[]{1, ""}));
+
+		Assert.assertFalse(LangUtils.isBlank(new Object[]{null, "", null}));
+		Assert.assertFalse(LangUtils.isBlank(new Object[]{null, 1, "", null}));
+		Assert.assertTrue(LangUtils.isBlank(new Object[]{null, null}));
+
+		Assert.assertTrue(LangUtils.isBlank(LangUtils.newArrayList()));
+		Assert.assertFalse(LangUtils.isBlank(LangUtils.newArrayList("")));
+		Assert.assertFalse(LangUtils.isBlank(LangUtils.newArrayList("111")));
+		List<?> list = JFishList.create();
+		list.add(null);
+		Assert.assertTrue(LangUtils.isBlank(list));
 	}
 }
 

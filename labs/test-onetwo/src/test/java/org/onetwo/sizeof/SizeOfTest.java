@@ -4,6 +4,11 @@ import net.sourceforge.sizeof.SizeOf;
 
 import org.junit.Test;
 
+/***
+ * -javaagent:D:/mydev/workspace/onetwo/labs/test-onetwo/lib/SizeOf.jar
+ * @author Administrator
+ *
+ */
 public class SizeOfTest {
 
 	@Test

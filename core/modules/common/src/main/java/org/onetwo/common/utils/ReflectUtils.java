@@ -28,19 +28,20 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.M;
+import org.slf4j.Logger;
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
 public class ReflectUtils {
 
-	private final static Logger logger = Logger.getLogger(ReflectUtils.class);
+	private final static Logger logger = JFishLoggerFactory.getLogger(ReflectUtils.class);
 	
 
 	public static interface PropertyDescriptorCallback {
@@ -372,12 +373,18 @@ public class ReflectUtils {
 //			logger.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: " + params.length);
 			return Object.class;
 		}
-		if (!(params[index] instanceof Class)) {
+		/*if (!(params[index] instanceof Class)) {
 //			logger.warn(clazz.getSimpleName() + " not set the actual class on class generic parameter");
 			return Object.class;
+		}*/
+		if(Class.class.isInstance(params[index])){
+			return (Class) params[index];
+		}else if(ParameterizedType.class.isInstance(params[index])){
+			ParameterizedType ptype = (ParameterizedType) params[index];
+			return (Class)ptype.getRawType();
+		}else{
+			return Object.class;
 		}
-
-		return (Class) params[index];
 	}
 
 	public static Class getListGenricType(final Class clazz) {
@@ -909,8 +916,9 @@ public class ReflectUtils {
 	
 
 	public static void copyByPropNames(Object source, Object target, PropertyCopyer<String> copyer) {
-		if (source == null)
-			return;
+		/*if (source == null)
+			return;*/
+		Assert.notNull(source);
 		List<String> propNames = null;
 		if (target instanceof Map) {
 			propNames = getPropertiesName(source);
@@ -972,6 +980,9 @@ public class ReflectUtils {
 	}
 	
 	public static <T extends Collection> T newCollections(Class<T> clazz){
+		if(!Collection.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a Collection type: " + clazz);
+		
 		if(clazz==List.class){
 			return (T)new ArrayList();
 		}else if(clazz==Set.class){
@@ -980,6 +991,16 @@ public class ReflectUtils {
 			return (T) new TreeSet();
 		}else if(clazz==Queue.class || clazz==Deque.class){
 			return (T) new ArrayDeque();
+		}else{
+			return newInstance(clazz);
+		}
+	}
+	
+	public static <T extends Collection> T newList(Class<T> clazz){
+		if(!List.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a List type: " + clazz);
+		if(clazz==List.class){
+			return (T)new ArrayList();
 		}else{
 			return newInstance(clazz);
 		}
@@ -1170,10 +1191,18 @@ public class ReflectUtils {
 		return classes;*/
 	}
 
-	public static Object invokeMethod(String methodName, Object target,
-			Object... args) {
-		return invokeMethod(findMethod(getObjectClass(target), methodName,
-				findTypes(args)), target, args);
+	public static Object invokeMethod(String methodName, Object target, Object... args) {
+		Method m = findMethod(getObjectClass(target), methodName, findTypes(args));
+		return invokeMethod(m, target, args);
+	}
+
+	public static Object checkAndInvokeMethod(String methodName, Object target, Object... args) {
+		Method m = findMethod(true, getObjectClass(target), methodName, findTypes(args));
+		if(m==null){
+			logger.info("method not found and ignore: " + methodName);
+			return null;
+		}
+		return invokeMethod(m, target, args);
 	}
 
 	public static Class getObjectClass(Object target) {
@@ -1267,10 +1296,9 @@ public class ReflectUtils {
 		return getFieldValue(obj, fieldName, true);
 	}
 
-	public static Object getFieldValue(Object obj, String fieldName,
-			boolean throwIfError) {
+	public static Object getFieldValue(Object obj, String fieldName, boolean throwIfError) {
 		Field f = findField(getObjectClass(obj), fieldName, throwIfError);
-		return getFieldValue(f, obj, throwIfError);
+		return f==null?null:getFieldValue(f, obj, throwIfError);
 	}
 
 	public static Object getFieldValue(Field f, Object obj, boolean throwIfError) {
@@ -1648,7 +1676,7 @@ public class ReflectUtils {
 		getIntro(target.getClass()).copy(source, target, new IgnoreAnnosCopyer(classes));
 	}
 	
-	public static <T> T copy(T source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
+	public static <T> T copy(Object source, Class<T> targetClass, PropertyCopyer<PropertyDescriptor> copyer){
 		T target = newInstance(targetClass);
 		getIntro(targetClass).copy(source, target, copyer);
 		return target;
@@ -1657,29 +1685,32 @@ public class ReflectUtils {
 	
 	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
 		
-		private final Class<? extends Annotation>[] classes;
+		protected final Class<? extends Annotation>[] classes;
 		
 
 		public IgnoreAnnosCopyer(Class<? extends Annotation>[] classes) {
 			super();
 			this.classes = classes;
 		}
+		
+		protected boolean hasIgnoredAnnotation(PropertyDescriptor prop){
+			return AnnotationUtils.containsAny(prop.getReadMethod().getAnnotations(), classes);
+		}
 
 		@Override
-		public void copy(Object source, Object target, PropertyDescriptor prop) {
-			if(prop.getReadMethod()==null || prop.getWriteMethod()==null)
+		public void copy(Object source, Object target, PropertyDescriptor targetProperty) {
+			if(targetProperty.getReadMethod()==null || targetProperty.getWriteMethod()==null)
 				return;
 			
-			Annotation[] annos = prop.getReadMethod().getAnnotations();
-			if(AnnotationUtils.containsAny(annos, classes))
+			if(hasIgnoredAnnotation(targetProperty))
 				return;
 			
-			Object val = ReflectUtils.getProperty(source, prop);
+			Object val = ReflectUtils.getProperty(source, targetProperty.getName());
 			if(isIgnoreValue(val))
 				return ;
 			
 			
-			ReflectUtils.setProperty(target, prop, val);
+			ReflectUtils.setProperty(target, targetProperty, val);
 			
 		}
 		

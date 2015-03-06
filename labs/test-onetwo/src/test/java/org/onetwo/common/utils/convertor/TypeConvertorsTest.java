@@ -44,12 +44,14 @@ public class TypeConvertorsTest {
 	public void testBoolean(){
 		Assert.assertTrue(Types.convertValue("1", boolean.class));
 		Assert.assertTrue(Types.convertValue("aa", boolean.class));
+		Assert.assertTrue(Types.convertValue("", boolean.class));
 		Assert.assertTrue(Types.convertValue(true, boolean.class));
 		Assert.assertTrue(Types.convertValue(111.11, boolean.class));
 		Assert.assertFalse(Types.convertValue(false, boolean.class));
 		Assert.assertFalse(Types.convertValue(null, boolean.class));
 		Assert.assertFalse(Types.convertValue("false", boolean.class));
 		Assert.assertFalse(Types.convertValue("no", boolean.class));
+		Assert.assertFalse(Types.convertValue(null, boolean.class));
 	}
 	
 	@Test
@@ -66,6 +68,7 @@ public class TypeConvertorsTest {
 		Assert.assertTrue(1==Types.convertValue(true, Long.class));
 		Assert.assertTrue(0==Types.convertValue(false, Long.class));
 		Assert.assertTrue(111==Types.convertValue(111.11, Long.class));
+		Assert.assertTrue(111==Types.convertValue(111, long.class));
 	}
 	
 	@Test

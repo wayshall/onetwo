@@ -1,8 +1,10 @@
 package org.onetwo.common.web.s2.security.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.Freezer;
 import org.onetwo.common.utils.ReflectUtils;
@@ -181,7 +183,23 @@ public class AuthenticConfig {
 	}
 
 	public String[] getPermissions() {
-		return permissions;
+		return permissions.clone();
+	}
+
+	public List<String> getPermissionList() {
+		return Arrays.asList(permissions);
+	}
+	
+	public boolean isSubFunction(String parentCode){
+		for(String perm : permissions){
+			if(perm.startsWith(parentCode))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isFunction(String permCode){
+		return ArrayUtils.contains(permissions, permCode);
 	}
 
 	public void setPermissions(String... permissions) {

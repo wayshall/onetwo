@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onetwo.common.log.DataChangedContext;
+import org.onetwo.common.utils.LangUtils;
 
 public class OperatorLogInfo implements Serializable {
 	
@@ -12,6 +13,7 @@ public class OperatorLogInfo implements Serializable {
 	private String operatorName;
 	private Date operatorTime;
 	private String url;
+	private String remoteAddr;
 	private boolean success = true;
 	private String message = "";
 	private Map<String, String[]> parameters;
@@ -64,8 +66,20 @@ public class OperatorLogInfo implements Serializable {
 	public Map<String, String[]> getParameters() {
 		return parameters;
 	}
+	public void addParameter(String name, String... values){
+		if(this.parameters==null){
+			this.parameters = LangUtils.newHashMap();
+		}
+		this.parameters.put(name, values);
+	}
 	public void setParameters(Map<String, String[]> parameters) {
 		this.parameters = parameters;
+	}
+	public String getRemoteAddr() {
+		return remoteAddr;
+	}
+	public void setRemoteAddr(String remoteAddr) {
+		this.remoteAddr = remoteAddr;
 	}
 	
 }

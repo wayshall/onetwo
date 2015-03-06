@@ -11,6 +11,7 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.fish.JFishEntityManager;
 import org.onetwo.common.fish.JFishQueryBuilder;
@@ -111,7 +112,7 @@ public class NullJFishEntityManagerImpl extends BaseEntityManagerAdapter impleme
 	}
 
 	@Override
-	public void findPage(Class entityClass, Page page,
+	public <T> void findPage(Class<T>  entityClass, Page<T>  page,
 			Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		
@@ -292,6 +293,18 @@ public class NullJFishEntityManagerImpl extends BaseEntityManagerAdapter impleme
 	public JFishQueryBuilder createQueryBuilder(Class<?> entityClass) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public <T> List<T> findByProperties(QueryBuilder squery) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void findPage(Page page, QueryBuilder query) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

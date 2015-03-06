@@ -5,15 +5,15 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 abstract public class AbstractFileNamedQueryFactory<T extends NamespaceProperty> implements FileNamedQueryFactory<T> {
 
 	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
-	private CreateQueryable createQueryable;
+	private QueryProvider createQueryable;
 
 	public AbstractFileNamedQueryFactory(FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		super();
 		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
 	}
-	
 
-	public void initQeuryFactory(CreateQueryable em){
+
+	public void initQeuryFactory(QueryProvider em){
 		this.createQueryable = em;
 		this.buildNamedQueryInfos();
 		if(this.fileNamedQueryFactoryListener!=null)
@@ -21,7 +21,7 @@ abstract public class AbstractFileNamedQueryFactory<T extends NamespaceProperty>
 	}
 	
 	
-	public CreateQueryable getCreateQueryable() {
+	public QueryProvider getCreateQueryable() {
 		return createQueryable;
 	}
 

@@ -3,11 +3,12 @@ package org.onetwo.plugins.dq;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
+import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParserContext;
@@ -15,12 +16,15 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.dq.annotations.ExecuteUpdate;
 import org.onetwo.plugins.dq.annotations.Name;
+import org.onetwo.plugins.dq.annotations.QueryConfig;
 import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
 	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
+	private static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
 	private static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;
@@ -28,10 +32,12 @@ public class DynamicMethod {
 	private final Class<?> resultClass;
 	private final Class<?> componentClass;
 	private final String queryName;
+	private final ExecuteUpdate executeUpdate;
 //	private List<String> parameterNames;
 	
 	public DynamicMethod(Method method){
 		this.method = method;
+		this.executeUpdate = method.getAnnotation(ExecuteUpdate.class);
 		int psize = method.getParameterTypes().length;
 		parameters = LangUtils.newArrayList(psize+2);
 //		this.parameterNames = LangUtils.newArrayList(psize);
@@ -40,6 +46,7 @@ public class DynamicMethod {
 		String methodName = method.getName();
 		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
 		String[] pnames = LangUtils.EMPTY_STRING_ARRAY;
+		//是否通过byUserNameByAge的命名方式
 		if(byIndex!=-1){
 			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
 		}
@@ -54,10 +61,14 @@ public class DynamicMethod {
 		if(rClass==void.class){
 			rClass = parameters.get(0).getParameterType();
 //			rClass = parameters.remove(0).getParameterType();
+			//如果返回类型为空，看第一个参数是否是page对象
 			if(Page.class != rClass){
 				throw new BaseException("method no return type, the first arg of method must be a Page object: " + method.toGenericString());
 			}
-			Type ptype = this.parameters.remove(0).getGenericParameterType();
+			DynamicMethodParameter pageParamter = this.parameters.get(0);
+			if(pageParamter.getParameterAnnotation(Name.class)==null)//如果page对象没有name注解，移除它
+				this.parameters.remove(0);
+			Type ptype = pageParamter.getGenericParameterType();
 			if(ptype instanceof ParameterizedType){
 				compClass = ReflectUtils.getGenricType(ptype, 0);
 			}
@@ -82,6 +93,7 @@ public class DynamicMethod {
 	}
 	
 	private boolean addAndCheckParamValue(Name name, List<Object> values, String pname, Object pvalue){
+		//TODO 参数ifParamNull已过时，将来注释下面这段代码
 		IfNull ifnull = name.ifParamNull();
 		if(pvalue==null){
 			switch (ifnull) {
@@ -93,8 +105,13 @@ public class DynamicMethod {
 					break;
 			}
 		}
+		//end
 		values.add(pname);
-		values.add(pvalue);
+		if(String.class.isInstance(pvalue) && name.isLikeQuery()){
+			values.add(ExtQueryUtils.getLikeString(pvalue.toString()));
+		}else{
+			values.add(pvalue);
+		}
 		return true;
 	}
 
@@ -102,17 +119,28 @@ public class DynamicMethod {
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
 		
 		Object pvalue = null;
-		ParserContext parserContext = null;
+		ParserContext parserContext = ParserContext.create();
 		for(DynamicMethodParameter mp : parameters){
 			pvalue = args[mp.getParameterIndex()];
 			if(pvalue instanceof ParserContext){
-				//parserContext
-				if(parserContext==null)
-					parserContext = ParserContext.create();
 				parserContext.putAll((ParserContext) pvalue);
 			}else if(mp.hasParameterAnnotation(Name.class)){
 				Name name = mp.getParameterAnnotation(Name.class);
-				if(name.queryParam()){
+				if(name.renamedUseIndex()){
+					List<?> listValue = LangUtils.asList(pvalue);
+					int index = 0;
+					//parem0, value0, param1, value1, ...
+					for(Object obj : listValue){
+						if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
+							index++;
+						}
+					}
+					values.add(mp.getParameterName());
+					values.add(listValue);
+				}else{
+					addAndCheckParamValue(name, values, mp.getParameterName(), pvalue);
+				}
+				/*if(name.queryParam()){
 					if(name.renamedUseIndex()){
 						List<?> listValue = LangUtils.asList(pvalue);
 						int index = 0;
@@ -121,9 +149,9 @@ public class DynamicMethod {
 							if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
 								index++;
 							}
-							/*values.add(mp.getParameterName()+index);
+							values.add(mp.getParameterName()+index);
 							values.add(obj);
-							index++;*/
+							index++;
 						}
 						//parserContext
 						if(parserContext==null)
@@ -139,18 +167,25 @@ public class DynamicMethod {
 					if(parserContext==null)
 						parserContext = ParserContext.create();
 					parserContext.put(mp.getParameterName(), pvalue);
-				}
+				}*/
 					
 			}else{
 				values.add(mp.getParameterName());
 				values.add(pvalue);
 			}
 		}
-
-		if(parserContext!=null){
-			values.add(JNamedQueryKey.ParserContext);
-			values.add(parserContext);
+		
+		QueryConfig queryConfig = method.getAnnotation(QueryConfig.class);
+		if(queryConfig!=null){
+			QueryConfigData config = new QueryConfigData(queryConfig.stateful());
+			config.setLikeQueryFields(Arrays.asList(queryConfig.likeQueryFields()));
+			parserContext.setQueryConfig(config);
+		}else{
+			parserContext.setQueryConfig(QueryConfigData.EMPTY_CONFIG);
 		}
+
+		values.add(JNamedQueryKey.ParserContext);
+		values.add(parserContext);
 		if(componentClass!=null){
 			values.add(JNamedQueryKey.ResultClass);
 			values.add(componentClass);
@@ -179,8 +214,14 @@ public class DynamicMethod {
 	}
 	
 	public boolean isExecuteUpdate(){
-		String name = StringUtils.getFirstWord(this.method.getName());
-		return EXECUTE_UPDATE_PREFIX.contains(name);
+		/*String name = StringUtils.getFirstWord(this.method.getName());
+		return EXECUTE_UPDATE_PREFIX.contains(name);*/
+
+		return (executeUpdate!=null && !executeUpdate.isBatch()) || EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+	}
+	
+	public boolean isBatch(){
+		return (executeUpdate!=null && executeUpdate.isBatch()) || BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
 	}
 	
 	private static class DynamicMethodParameter extends MethodParameter {

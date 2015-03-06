@@ -1,13 +1,20 @@
 package org.onetwo.common.utils;
 
+import java.text.DateFormatSymbols;
 import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.slf4j.Logger;
 
@@ -23,8 +30,10 @@ abstract public class DateUtil {
 	private static final Logger logger = MyLoggerFactory.getLogger(DateUtil.class);
 	public static enum DateType {
 
-		year(Calendar.YEAR), month(Calendar.MONTH), date(Calendar.DATE), hour(
-				Calendar.HOUR_OF_DAY), min(Calendar.MINUTE), sec(
+		year(Calendar.YEAR), month(Calendar.MONTH), 
+			//dateOfWeek(Calendar.DAY_OF_WEEK), 
+			date(Calendar.DATE), 
+		hour(Calendar.HOUR_OF_DAY), min(Calendar.MINUTE), sec(
 				Calendar.SECOND), misec(Calendar.MILLISECOND);
 
 		private int field;
@@ -62,7 +71,8 @@ abstract public class DateUtil {
 	public static final String Year_Month = "yyyy-MM";
 	public static final String Date_Only = "yyyy-MM-dd";
 	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
-	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss SSS";
+	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss.SSS";
+	public static final String DATE_TIME_MILLS2 = "yyyy-MM-dd HH:mm:ss SSS";
 	public static final String DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
 	public static final String Time_Only = "HH:mm:ss";
 	public static final String SHORT_TIME_ONLY = "HH:mm";
@@ -136,6 +146,14 @@ abstract public class DateUtil {
 					return super.format(date, toAppendTo, fieldPosition);
 				}
 				
+				public synchronized void set2DigitYearStart(Date startDate){
+					super.set2DigitYearStart(startDate);
+				}
+				
+				public synchronized void setDateFormatSymbols(DateFormatSymbols newFormatSymbols){
+					super.setDateFormatSymbols(newFormatSymbols);
+				}
+				
 			};
 			df.setTimeZone(TimeZone.getDefault());
 		}else{
@@ -205,7 +223,7 @@ abstract public class DateUtil {
 
 		return new Date(datetime + difftime);
 	}
-
+	
 	public static String formatDateByPattern(Date date, String p) {
 		if(date==null)
 			return "";
@@ -230,6 +248,11 @@ abstract public class DateUtil {
 		if(date==null)
 			return "";
 		return formatDateByPattern(date, DATE_TIME_MILLS);
+	}
+	public static String formatDateTimeMillis2(Date date) {
+		if(date==null)
+			return "";
+		return formatDateByPattern(date, DATE_TIME_MILLS2);
 	}
 
 	public static String format(String pattern, Date date) {
@@ -259,7 +282,8 @@ abstract public class DateUtil {
 		try {
 			date = format.parse(dateStr);
 		} catch (Exception e) {
-			logger.error("parse date["+dateStr+"] error with format["+format+"]:"+e.getMessage()+", ignore.");
+//			logger.error("parse date["+dateStr+"] error with format["+format+"]:"+e.getMessage()+", ignore.");
+			throw new BaseException("parse date["+dateStr+"] error with format : " + format, e);
 		}
 		return date;
 	}
@@ -309,6 +333,13 @@ abstract public class DateUtil {
 		return parseByPatterns(dateStr, Date_Time);
 	}
 
+	public static Date parseDateTimeMills(String dateStr) {
+		return parseByPatterns(dateStr, DATE_TIME_MILLS);
+	}
+	public static Date parseDateTimeMills2(String dateStr) {
+		return parseByPatterns(dateStr, DATE_TIME_MILLS2);
+	}
+
 	public static Date parseDateShortTime(String dateStr) {
 		return parseByPatterns(dateStr, DATE_SHORT_TIME);
 	}
@@ -317,11 +348,11 @@ abstract public class DateUtil {
 		return StringUtils.isBlank(dateStr)?null:parseByPatterns(dateStr, matchPattern(dateStr));
 	}
 
-	private static Date parse2(String dateStr) {
+	/*private static Date parse2(String dateStr) {
 		return parse(dateStr, "-", ":");
-	}
+	}*/
 	
-	private static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
+	/*private static Date parse(String dateStr, String dateSeperator, String timeSeperator) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		
@@ -366,12 +397,12 @@ abstract public class DateUtil {
 		date = parseByPatterns(dateStr, format);
 		return date;
 //		return parse(dateStr, YYYY_MM_DD_HH_MM_SS, YYYY_MM_DD_HH_MM, YYYY_MM_DD);
-	}
+	}*/
 
 
 	public static SimpleDateFormat getDateFormat(String p) {
 		if (StringUtils.isBlank(p))
-			p = DateOnly;
+			p = Date_Only;
 		SimpleDateFormat sdf = createDateFormat(p);
 		return sdf;
 	}
@@ -688,6 +719,40 @@ abstract public class DateUtil {
 		}
 		return rs;
 	}
+	
+
+	public static boolean isSameAt(Date date1, Date date2, DateType dt) {
+		Assert.notNull(date1, "date1 can not be null");
+		Assert.notNull(date2, "date2 can not be null");
+		Assert.notNull(dt, "dt can not be null");
+		return isSameAt(asCalendar(date1), asCalendar(date2), dt);
+	}
+	/***
+	 * 递归版
+	 * @param c1
+	 * @param c2
+	 * @param dt
+	 * @return
+	 */
+	public static boolean isSameAt(Calendar c1, Calendar c2, DateType dt) {
+		Assert.notNull(c1, "c1 can not be null");
+		Assert.notNull(c2, "c2 can not be null");
+		Assert.notNull(dt, "dt can not be null");
+		
+//		return dt.ordinal()>0?(isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false):c1.get(dt.getField())==c2.get(dt.getField());
+		if(dt.ordinal()>0){
+			return isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
+		}else{
+			return c1.get(dt.getField())==c2.get(dt.getField());
+		}
+	}
+	/***
+	 * 根据DateType的精度，比较两个世界是否相等
+	 * @param c1
+	 * @param c2
+	 * @param dt
+	 * @return
+	 */
 	public static int compareAccurateAt(Calendar c1, Calendar c2, DateType dt) {
 		Assert.notNull(c1, "c1 can not be null");
 		Assert.notNull(c2, "c2 can not be null");
@@ -700,7 +765,7 @@ abstract public class DateUtil {
 		}
 		return rs;
 	}
-
+	
 	public static Calendar asCalendar(Date date){
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -759,6 +824,53 @@ abstract public class DateUtil {
 		}else{
 			return null;
 		}
+	}
+	
+
+	public static Collection<DateRange> splitAsDateRangeByWeek(Date startDate, Date endDate){
+		LocalDate start = new LocalDate(startDate);
+		LocalDate end = new LocalDate(endDate);
+		return splitAsDateRangeByWeek(start, end);
+	}
+	public static Collection<DateRange> splitAsDateRangeByWeek(LocalDate start, LocalDate end){
+		
+		Set<DateRange> dates = new LinkedHashSet<DateRange>();
+		dates.add(new DateRange(start, start.withDayOfWeek(DateTimeConstants.SUNDAY)));
+		
+		LocalDate startDateOfWeek = start.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1);
+		while(!startDateOfWeek.isAfter(end)){
+			LocalDate endDateOfWeek = startDateOfWeek.withDayOfWeek(DateTimeConstants.SUNDAY);
+			if(endDateOfWeek.isAfter(end)){
+				endDateOfWeek = end;
+			}
+			dates.add(new DateRange(startDateOfWeek, endDateOfWeek));
+			startDateOfWeek = startDateOfWeek.plusWeeks(1);
+		}
+		return dates;
+	}
+
+
+	public static Collection<DateRange> splitAsDateRangeByMonth(Date startDate, Date endDate){
+		LocalDate start = new LocalDate(startDate);
+		LocalDate end = new LocalDate(endDate);
+		return splitAsDateRangeByMonth(start, end);
+	}
+	public static Collection<DateRange> splitAsDateRangeByMonth(LocalDate start, LocalDate end){
+		
+		Set<DateRange> dates = new LinkedHashSet<DateRange>();
+		dates.add(new DateRange(start, start.withDayOfMonth(start.dayOfMonth().getMaximumValue())));
+		
+		LocalDate startDateOfMonth = start.withDayOfMonth(start.dayOfMonth().getMinimumValue()).plusMonths(1);
+		while(!startDateOfMonth.isAfter(end)){
+			LocalDate endDateOfWeek = startDateOfMonth.withDayOfMonth(startDateOfMonth.dayOfMonth().getMaximumValue());
+			if(endDateOfWeek.isAfter(end)){
+				endDateOfWeek = end;
+			}
+			DateRange dr = new DateRange(startDateOfMonth, endDateOfWeek);
+			dates.add(dr);
+			startDateOfMonth = startDateOfMonth.plusMonths(1);
+		}
+		return dates;
 	}
 
 	public static void main(String[] args) {

@@ -2,10 +2,15 @@ package org.onetwo.common.utils;
 
 import java.io.File;
 
+import org.onetwo.common.exception.BaseException;
+
 public class MergeFileConfig {
 	
 	public static MergeFileConfig build(String charset, String mergedFileName, String dir, String postfix, MergeFileListener listener){
 		File[] files = FileUtils.listFiles(dir, postfix);
+		if(LangUtils.isEmpty(files)){
+			throw new BaseException("no files found in dir: " + dir );
+		}
 		MergeFileConfig config = build(charset, mergedFileName, files);
 		config.setListener(listener);
 		return config;

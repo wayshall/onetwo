@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileInputStream;
+import jcifs.smb.SmbFileOutputStream;
+
+import org.apache.commons.lang.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -50,55 +56,183 @@ public class FileUtils {
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
 	public static final char SLASH_CHAR = '/';
+	public static final char BACK_SLASH_CHAR = '\\';
+	public static final char DOT_CHAR = '.';
 	public static final String NEW_LINE = "\n";
+	public static final String SMB_PREFIX = "smb://";
+	public static final String COLON_DB_SLASH_HEAD = "://";
+	public static final String DB_SLASH_HEAD = "//";
 
 	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
 
 	private FileUtils() {
 	}
+
+
+	public static boolean delete(File file){
+		return file.delete();
+	}
+
+	public static boolean delete(String path){
+		File file = newFile(path, false);
+		return file.delete();
+	}
+
+	public static File newFile(String path){
+		return newFile(path, false);
+	}
+	public static File newFile(String path, boolean checkExists){
+		File f = new File(path);
+		if(checkExists && !f.exists())
+			throw new BaseException("file not found at path: " + path);
+		return f;
+	}
+
+	public static String newSmbPath(String user, String password, String path){
+		return LangUtils.append(SMB_PREFIX, user, ":", password, "@", path);
+	}
+
+	public static InputStream newSmbInputStream(String user, String password, String path){
+		String smbpath = newSmbPath(user, password, path);
+		return newInputStream(smbpath);
+	}
+
+	public static OutputStream newSmbOutputStream(String user, String password, String path){
+		String smbpath = newSmbPath(user, password, path);
+		return newOutputStream(smbpath);
+	}
 	
 
+	public static InputStream newInputStream(String baseDir, String subPath){
+		String path = StringUtils.trimRight(baseDir, SLASH);
+		path += StringUtils.appendStartWith(subPath, SLASH);
+		return newInputStream(path);
+	}
+	
+	public static boolean isSmbPath(String path){
+		return path.toLowerCase().startsWith(SMB_PREFIX);
+	}
+
+
+	public static SmbFile newSmbFile(String fpath){
+		SmbFile smbf;
+		try {
+			smbf = new SmbFile(fpath);
+		} catch (MalformedURLException e) {
+			throw new BaseException("create smbfile error: " + e.getMessage(), e);
+		}
+		return smbf;
+	}
+
+
+	public static SmbFileInputStream newSmbInputStream(String fpath){
+		return newSmbInputStream(newSmbFile(fpath));
+	}
+	public static SmbFileInputStream newSmbInputStream(SmbFile smbf){
+		try {
+			SmbFileInputStream in = new SmbFileInputStream(smbf);
+			return in;
+		} catch (Exception e) {
+			throw new BaseException("create SmbFileInputStream error: " + e.getMessage(), e);
+		}
+	}
+
+	
+	public static InputStream newInputStream(String fpath){
+		InputStream in = null;
+		String path = replaceBackSlashToSlash(fpath);
+		if(isSmbPath(path)){
+			in = newSmbInputStream(fpath);
+		}else{
+			File f = newFile(path);
+			try {
+				in = new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				throw new BaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
+			}
+		}
+		return in;
+	}
+
+	public static OutputStream newOutputStream(String baseDir, String subPath){
+		String path = StringUtils.trimRight(baseDir, SLASH);
+		path += StringUtils.appendStartWith(subPath, SLASH);
+		return newOutputStream(path);
+	}
+	
+	public static void mkdirs(SmbFile smbf){
+		try {
+			SmbFile parent = new SmbFile(smbf.getParent());
+			if(!parent.exists())
+				parent.mkdirs();
+		} catch (Exception e) {
+			throw new BaseException("make smb direcotry error: " + smbf.getParent());
+		}
+	}
+	
+	public static OutputStream newOutputStream(String fpath){
+		OutputStream out = null;
+		try {
+			String path = replaceBackSlashToSlash(fpath);
+			if(isSmbPath(path)){
+				SmbFile smbf = new SmbFile(path);
+				mkdirs(smbf);
+				out = new SmbFileOutputStream(smbf);
+			}else{
+				File f = newFile(path);
+				makeDirs(f, true);
+				out = new FileOutputStream(f);
+			}
+		} catch (Exception e) {
+			throw LangUtils.asBaseException("create OutputStream error : " + e.getMessage(), e);
+		}
+		return out;
+	}
     
 	  //-----------------------------------------------------------------------
-	    /**
-	     * Opens a {@link FileOutputStream} for the specified file, checking and
-	     * creating the parent directory if it does not exist.
-	     * <p>
-	     * At the end of the method either the stream will be successfully opened,
-	     * or an exception will have been thrown.
-	     * <p>
-	     * The parent directory will be created if it does not exist.
-	     * The file will be created if it does not exist.
-	     * An exception is thrown if the file object exists but is a directory.
-	     * An exception is thrown if the file exists but cannot be written to.
-	     * An exception is thrown if the parent directory cannot be created.
-	     * 
-	     * @param file  the file to open for output, must not be <code>null</code>
-	     * @return a new {@link FileOutputStream} for the specified file
-	     * @throws IOException if the file object is a directory
-	     * @throws IOException if the file cannot be written to
-	     * @throws IOException if a parent directory needs creating but that fails
-	     * @since Commons IO 1.3
-	     */
-	    public static FileOutputStream openOutputStream(File file) throws IOException {
-	        if (file.exists()) {
-	            if (file.isDirectory()) {
-	                throw new IOException("File '" + file + "' exists but is a directory");
-	            }
-	            if (file.canWrite() == false) {
-	                throw new IOException("File '" + file + "' cannot be written to");
-	            }
-	        } else {
-	            File parent = file.getParentFile();
-	            if (parent != null && parent.exists() == false) {
-	                if (parent.mkdirs() == false) {
-	                    throw new IOException("File '" + file + "' could not be created");
-	                }
-	            }
-	        }
-	        return new FileOutputStream(file);
-	    }
+    /**
+     * Opens a {@link FileOutputStream} for the specified file, checking and
+     * creating the parent directory if it does not exist.
+     * <p>
+     * At the end of the method either the stream will be successfully opened,
+     * or an exception will have been thrown.
+     * <p>
+     * The parent directory will be created if it does not exist.
+     * The file will be created if it does not exist.
+     * An exception is thrown if the file object exists but is a directory.
+     * An exception is thrown if the file exists but cannot be written to.
+     * An exception is thrown if the parent directory cannot be created.
+     * 
+     * @param file  the file to open for output, must not be <code>null</code>
+     * @return a new {@link FileOutputStream} for the specified file
+     * @throws IOException if the file object is a directory
+     * @throws IOException if the file cannot be written to
+     * @throws IOException if a parent directory needs creating but that fails
+     * @since Commons IO 1.3
+     */
+    public static FileOutputStream openOutputStream(File file) {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new BaseException("File '" + file + "' exists but is a directory");
+            }
+            if (file.canWrite() == false) {
+                throw new BaseException("File '" + file + "' cannot be written to");
+            }
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null && parent.exists() == false) {
+                if (parent.mkdirs() == false) {
+                    throw new BaseException("File '" + file + "' could not be created");
+                }
+            }
+        }
+        try {
+			return new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("create FileOutputStream error.", e);
+		}
+    }
 	    
 
 	    
@@ -253,6 +387,10 @@ public class FileUtils {
 	}
 	
 	public static BufferedReader asBufferedReader(String path, String charset){
+		if(isSmbPath(path)){
+			return asBufferedReader(newSmbInputStream(path), charset);
+		}
+		
 		String classpath = null;
 		BufferedReader br = null;
 		try {
@@ -315,7 +453,7 @@ public class FileUtils {
 	}
 	
 	public static List<String> readAsListWithMap(File file, String charset, Map<String, Object> context){
-		List<String> datas = new ArrayList<String>();
+		List<String> datas = new JFishList<String>();
 		BufferedReader br = null;
 		try{
 			br = asBufferedReader(new FileInputStream(file), charset);
@@ -369,23 +507,44 @@ public class FileUtils {
 
 	public static String getFileNameWithoutExt(String fileName) {
 		if(fileName.indexOf('\\')!=-1)
-			fileName = fileName.replace('\\', '/');
-		int start = fileName.lastIndexOf('/');
-		int index = fileName.lastIndexOf('.');
+			fileName = fileName.replace('\\', SLASH_CHAR);
+		int start = fileName.lastIndexOf(SLASH_CHAR);
+		int index = fileName.lastIndexOf(DOT_CHAR);
 		if(index==-1)
 			index = fileName.length();
 		return fileName.substring(start+1, index);
 	}
 
 	public static String getFileName(String fileName) {
-//		if(fileName.indexOf(File.separatorChar)!=-1)
-//			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(File.separatorChar);
+		fileName = replaceBackSlashToSlash(fileName);
+		int start = fileName.lastIndexOf(SLASH_CHAR);
 		return fileName.substring(start+1);
+	}
+	
+	public static String convertDir(String path){
+		String dir = replaceBackSlashToSlash(path);
+		int index = dir.indexOf(COLON_DB_SLASH_HEAD);
+		if(index==-1){
+			if(dir.contains(DB_SLASH_HEAD)){
+				dir = dir.replace(DB_SLASH_HEAD, SLASH);
+			}
+		}else{
+			String head = dir.substring(0, index+COLON_DB_SLASH_HEAD.length());
+			String spath = dir.substring(head.length());
+			if(spath.contains(DB_SLASH_HEAD)){
+				spath = spath.replace(DB_SLASH_HEAD, SLASH);
+			}
+			dir = head + spath;
+		}
+		return StringUtils.appendEndWith(dir, SLASH);
+	}
+	
+	public static String replaceBackSlashToSlash(String path){
+		return path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
 	}
 
 	public static String getExtendName(String fileName, boolean hasDot) {
-		int index = fileName.lastIndexOf('.');
+		int index = fileName.lastIndexOf(DOT_CHAR);
 		if (index == -1)
 			return "";
 		if(hasDot)
@@ -397,28 +556,73 @@ public class FileUtils {
 	public static String getExtendName(String fileName) {
 		return getExtendName(fileName, false);
 	}
+	
 
-	public static File writeToDisk(File file, String filePath, String fileName) throws Exception {
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
+		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DateTime, 6);
+	}
+	
+	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){
+		String newFileName = getFileNameWithoutExt(fileNameNoDirPath)+ seprator + NiceDate.New().format(dateformat);
+		if(count>0){
+			newFileName += seprator + RandomStringUtils.randomNumeric(count);
+		}
+		newFileName += getExtendName(fileNameNoDirPath, true);
+		return newFileName;
+	}
+
+
+	public static String newFileNameAppendRepeatCount(File file){
+		return newFileNameAppendRepeatCount(file.getParent(), file.getName());
+	}
+	public static String newFileNameAppendRepeatCount(String baseDir, String fileName){
+		File wfile = new File(baseDir, fileName);
+		if(!wfile.exists()){
+			return fileName;
+		}
+		int count = 1;
+		String ext = FileUtils.getExtendName(fileName, true);
+		String srcfileName = FileUtils.getFileNameWithoutExt(fileName);
+		String newFileName = srcfileName + "(" + count + ")" + ext;
+		wfile = new File(baseDir, newFileName);
+		while (wfile.exists()) {
+			newFileName = srcfileName + "(" + count + ")"+ext;
+			wfile = new File(baseDir, newFileName);
+			count++;
+		}
+		return newFileName;
+	}
+	
+
+	public static void copyFileTo(File file, String targetDir, String targetFileName){
+		InputStream in;
+		try {
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("file not found: " + file.getPath(), e);
+		}
+		writeInputStreamTo(in, targetDir, targetFileName);
+	}
+	
+	public static int writeInputStreamTo(InputStream in, String targetDir, String targetFileName){
+		OutputStream out = null;
+		try{
+			out = newOutputStream(targetDir, targetFileName);
+			return IOUtils.copy(in, out);
+		}catch(Exception e){
+			throw new BaseException("write inputstream error: " + e.getMessage(), e);
+		}finally{
+			close(out);
+		}
+	}
+
+	public static File writeToDisk(File srcfile, String filePath, String fileName) {
 		InputStream in = null;
 		OutputStream out = null;
 		File wfile = null;
 		try {
-			wfile = new File(filePath, fileName);
-			int count = 1;
-			if (!wfile.getParentFile().exists())
-				wfile.getParentFile().mkdirs();
-			String newFileName = fileName;
-			while (wfile.exists()) {
-				if (fileName.lastIndexOf(".") != -1) {
-					String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
-					newFileName = fileName.substring(0, fileName.lastIndexOf(".")) + "(" + count + ")." + ext;
-				} else {
-					newFileName = fileName + "(" + count + ")";
-				}
-				wfile = new File(filePath, newFileName);
-				count++;
-			}
-			in = new FileInputStream(file);
+			wfile = new File(filePath, FileUtils.newFileNameAppendRepeatCount(filePath, fileName));
+			in = new FileInputStream(srcfile);
 			out = new FileOutputStream(wfile);
 			byte[] buf = new byte[4096];
 			int length = 0;
@@ -426,30 +630,65 @@ public class FileUtils {
 				out.write(buf, 0, length);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("occur error when write file : " + file.getPath(), e);
+			throw new RuntimeException("occur error when write file : " + srcfile.getPath(), e);
 		} finally {
-			if (in != null)
-				in.close();
-			if (out != null)
-				out.close();
+			FileUtils.close(in);
+			FileUtils.close(out);
 		}
 		return wfile;
+	}
+	
+
+	public static File copyFileToDir(File srcFile, String targetDir) {
+		String fname = getFileName(srcFile.getName());
+		File destFile = new File(targetDir + File.separator + fname);
+		String newFileName = newFileNameAppendRepeatCount(destFile);
+		destFile = new File(destFile.getParentFile(), newFileName);
+		
+		copyFile(srcFile, destFile);
+		return destFile;
+	}
+
+	public static File copyFileToDir(SmbFile srcFile, String targetDir) {
+		SmbFileInputStream in = newSmbInputStream(srcFile);
+		
+		String fname = getFileName(srcFile.getName());
+		File destFile = new File(targetDir + File.separator + fname);
+		String newFileName = newFileNameAppendRepeatCount(destFile);
+		destFile = new File(destFile.getParentFile(), newFileName);
+		
+		writeInputStreamTo(in, targetDir, newFileName);
+		return destFile;
+	}
+	
+
+	public static File copyFile(String srcFile, String destFile) {
+		File dest = new File(destFile);
+		copyFile(new File(srcFile), dest);
+		return dest;
 	}
 
 	public static void copyFile(File srcFile, File destFile) {
 		Assert.notNull(srcFile);
 		Assert.notNull(destFile);
 
-		if (destFile.isDirectory())
+		if (destFile.isDirectory()){
 			throw new BaseException("the file is directory: " + destFile.getPath());
-		if (destFile.isHidden() || !destFile.canWrite())
-			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
+		}
 
-//		BufferedInputStream fin = null;
+		makeDirs(destFile, true);
+		if(!destFile.exists()){
+			try {
+				destFile.createNewFile();
+			} catch (IOException e) {
+				throw new BaseException("create new file error: " + destFile.getPath(), e);
+			}
+		}else if (destFile.isHidden() || !destFile.canWrite()){
+			throw new BaseException("the file is hidden or readonly : " + destFile.getPath());
+		}
+
 		BufferedOutputStream fout = null;
 		try {
-//			System.out.println("creating the file : " + destFile.getPath());
-//			fin = new BufferedInputStream(new FileInputStream(srcFile));
 			fout = new BufferedOutputStream(new FileOutputStream(destFile));
 			copyFileToOutputStream(fout, srcFile);
 		} catch (Exception e) {
@@ -639,21 +878,21 @@ public class FileUtils {
 		return file;
 	}
 	
-	public static void writeTo(File file, InputStream in){
+	public static void writeTo(File tofile, InputStream srcInput){
 		OutputStream out = null;
 		try {
-			File parent = file.getParentFile();
+			File parent = tofile.getParentFile();
 			if(!parent.exists()){
 				parent.mkdirs();
 			}
-			out = new FileOutputStream(file);
+			out = new FileOutputStream(tofile);
 			byte[] buf = new byte[1024];
 			int len = -1;
-			while((len=in.read(buf))!=-1){
+			while((len=srcInput.read(buf))!=-1){
 				out.write(buf, 0, len);
 			}
 		} catch (Exception e) {
-			logger.error("write file error : " + file.getPath(), e);
+			logger.error("write file error : " + tofile.getPath(), e);
 		} finally{
 			close(out);
 		}
@@ -688,13 +927,74 @@ public class FileUtils {
         }
     }
     
+
+    public static void writeListTo(File file, List<?> datas){
+    	writeListTo(file, null, datas, "\n");
+    }
+    
+    public static void writeListTo(File file, String charset, List<?> datas, String separator){
+        Writer w = writer(file, charset);
+        try {
+            for(Object data : datas){
+            	w.write(data.toString());
+            	w.write(separator);
+            }
+        } catch(Exception e){
+        	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
+        }finally {
+            IOUtils.closeQuietly(w);
+        }
+    }
+    
+
+    public static void writeListTo(OutputStream output, String charset, List<?> datas){
+    	writeListTo(newWriter(output, charset), false, datas, "\n");
+    }
+    public static void writeListToWithClose(OutputStream output, String charset, List<?> datas){
+    	writeListTo(newWriter(output, charset), true, datas, "\n");
+    }
+    
+    
+    /****
+     * 
+     * @param output 本方法不关闭stream
+     * @param charset
+     * @param datas
+     * @param separator
+     */
+    public static void writeListTo(OutputStream output, String charset, List<?> datas, String separator){
+    	writeListTo(newWriter(output, charset), false, datas, separator);
+    }
+    
+    public static void writeListTo(Writer w, boolean closeStream, List<?> datas, String separator){
+        try {
+            for(Object data : datas){
+            	w.write(data.toString());
+            	w.write(separator);
+            }
+        } catch(Exception e){
+        	throw LangUtils.asBaseException("write data error : " + e.getMessage(), e);
+        }finally {
+        	if(closeStream)
+        		IOUtils.closeQuietly(w);
+        }
+    }
+    
     public static Writer writer(File file, String charset){
+        return newWriter(openOutputStream(file), charset);
+    }
+    
+    
+    public static Writer newWriter(OutputStream output){
+    	return newWriter(output, null);
+    }
+    public static Writer newWriter(OutputStream output, String charset){
     	OutputStreamWriter w = null;
         try {
         	if(StringUtils.isBlank(charset)){
-        		w = new OutputStreamWriter(openOutputStream(file));
+        		w = new OutputStreamWriter(output);
         	}else{
-        		w = new OutputStreamWriter(openOutputStream(file), charset);
+        		w = new OutputStreamWriter(output, charset);
         	}
         } catch(Exception e){
         	throw new BaseException("create writer error : " + e.getMessage(), e);
@@ -891,6 +1191,7 @@ public class FileUtils {
 			MergeFileListener listener = config.getListener();
 			int fileIndex = 0;
 			JFishList<File> fileList = JFishList.wrap(config.getFiles());
+			
 			fileList.sort(new Comparator<File>() {
 
 				@Override
@@ -1007,10 +1308,21 @@ public class FileUtils {
 		return zipfile;
 	}
 	
+	public static String getJavaIoTmpdir(){
+		return getJavaIoTmpdir(false);
+	}
+	
+	public static String getJavaIoTmpdir(boolean convert){
+		String dir = System.getProperty("java.io.tmpdir");
+		return convert?convertDir(dir):dir;
+	}
+	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";
 		System.out.println(getFileNameWithoutExt(file));
 		String file1 = "#path:/home/user/ccsfd.txt";
 		System.out.println(getResourcePath(file1));
+		System.out.println(System.getProperty("java.io.tmpdir"));
+		System.out.println(getJavaIoTmpdir());
 	}
 }

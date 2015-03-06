@@ -119,6 +119,10 @@ public class GenerateUtils {
 	}
 	
 	public static void addImportClass(Class clazz, Set<String> importClasses){
+		if(clazz==null)
+			throw new BaseException("import class is null");
+		if(clazz.isPrimitive())
+			return ;
 		String pack = clazz.getPackage().getName();
 		if(!pack.equals("java.lang")){
 			importClasses.add(clazz.getName());

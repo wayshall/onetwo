@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -16,6 +17,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.list.JFishList;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class ExtQueryUtils {
@@ -82,7 +84,8 @@ public abstract class ExtQueryUtils {
 		if(LangUtils.hasNotElement(values)){
 //		if(LangUtils.isEmpty(values)){
 			if(ifNull==IfNull.Ignore){
-				return null;
+//				return null;
+				return Collections.EMPTY_LIST;
 			}else if(ifNull==IfNull.Throw){
 				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
 			}else {//calm
@@ -146,6 +149,7 @@ public abstract class ExtQueryUtils {
 		
 		int unionIndex = ArrayUtils.indexOf(tokens, "union");
 		if(unionIndex!=-1){
+			sql = StringUtils.substringBefore(sql, " order by ", unionIndex);
 			sql = "select count(*) from ( " + sql + " ) count_view";
 			return sql;
 		}
@@ -169,10 +173,19 @@ public abstract class ExtQueryUtils {
 
 	public static String getLikeString(String like) {
 //		String like = str.replaceAll(REGX_NOT_WORD, "%");
-		if(like.indexOf('%')!=-1)
+		if(StringUtils.isBlank(like))
 			return like;
-		
-		return "%"+like+"%";
+		return like.indexOf('%')!=-1?like:"%"+like+"%";
+	}
+	
+	public static Set<String> getAllParameterFieldNames(Map<?, ?> params) {
+		List<?> keylist = JFishList.newList().flatAddObject(params.keySet());
+		Set<String> fields = LangUtils.newHashSet();
+		for(Object key : keylist){
+			QueryField qf = QueryFieldImpl.create(key);
+			fields.add(qf.getFieldName());
+		}
+		return fields;
 	}
 	
 }

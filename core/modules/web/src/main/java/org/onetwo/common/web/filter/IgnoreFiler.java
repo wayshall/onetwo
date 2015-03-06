@@ -20,7 +20,6 @@ import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
-import org.springframework.core.OrderComparator;
 
 
 @SuppressWarnings("unchecked")
@@ -43,8 +42,10 @@ public abstract class IgnoreFiler implements Filter{
 	 * 是否过滤后缀
 	 */
 	protected boolean filterSuffix = false;
+
+	protected List<WebFilterInitializers> filterInitializers;
+	protected List<WebFilter> webFilters;
 	
-	protected List<FilterInitializer> filterInitializers;
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
@@ -52,36 +53,37 @@ public abstract class IgnoreFiler implements Filter{
 //		logger = this.initLogger(config);
 		logger.info("项目正在启动...");
 		this.initApplication(config);
-
-		filterSuffix = "true".equals(config.getInitParameter("filterSuffix"));
-		if(!filterSuffix)
-			return ;
 		
-		String[] excludeSuffixsStrs = StringUtils.split(config.getInitParameter("excludeSuffixs"), ',');
-		if (excludeSuffixsStrs != null && excludeSuffixsStrs.length>0) {
-			for (String path : excludeSuffixsStrs){
-				path = path.trim();
-				if(path.indexOf('.')==-1)
-					path = "." + path;
-				excludeSuffixs.add(path);
+		filterSuffix = "true".equals(config.getInitParameter("filterSuffix"));
+		if(filterSuffix){
+			String[] excludeSuffixsStrs = StringUtils.split(config.getInitParameter("excludeSuffixs"), ',');
+			if (excludeSuffixsStrs != null && excludeSuffixsStrs.length>0) {
+				for (String path : excludeSuffixsStrs){
+					path = path.trim();
+					if(path.indexOf('.')==-1)
+						path = "." + path;
+					excludeSuffixs.add(path);
+				}
+			}else{
+				excludeSuffixs = MyUtils.asList(DEFAULT_EXCLUDE_SUFFIXS);
 			}
-		}else{
-			excludeSuffixs = MyUtils.asList(DEFAULT_EXCLUDE_SUFFIXS);
-		}
 
-		String[] includeSuffixsStr = StringUtils.split(config.getInitParameter("includeSuffixs"), ',');
-		if (includeSuffixsStr != null && includeSuffixsStr.length>0) {
-			for (String path : includeSuffixsStr){
-				path = path.trim();
-				if(path.indexOf('.')==-1)
-					path = "." + path;
-				includeSuffixs.add(path);
+			String[] includeSuffixsStr = StringUtils.split(config.getInitParameter("includeSuffixs"), ',');
+			if (includeSuffixsStr != null && includeSuffixsStr.length>0) {
+				for (String path : includeSuffixsStr){
+					path = path.trim();
+					if(path.indexOf('.')==-1)
+						path = "." + path;
+					includeSuffixs.add(path);
+				}
+			}else{
+				includeSuffixs = MyUtils.asList(DEFAULT_INCLUDE_SUFFIXS);
 			}
-		}else{
-			includeSuffixs = MyUtils.asList(DEFAULT_INCLUDE_SUFFIXS);
+		
 		}
 
 		onInit(config);
+		
 	}
 	
 	/*too late
@@ -98,29 +100,17 @@ public abstract class IgnoreFiler implements Filter{
 	}
 	
 
-	public String[] getFilterInitializers(FilterConfig config){
+/*	public String[] getWebFilters(FilterConfig config){
 		return null;
-	}
+	}*/
 	
 	protected void onInit(FilterConfig config){
-		String[] strs = getFilterInitializers(config);
-		if(strs==null || strs.length==0)
-			return ;
-		if("auto".equals(strs[0].trim())){
-			filterInitializers = (List<FilterInitializer>) SpringApplication.getInstance().getBeans(FilterInitializer.class);
-		}else{
-			filterInitializers = new ArrayList<FilterInitializer>(strs.length);
-			FilterInitializer initer = null;
-			for(String bn : strs){
-				initer = (FilterInitializer)SpringApplication.getInstance().getBean(bn);
-				filterInitializers.add(initer);
-			}
-		}
+		filterInitializers = (List<WebFilterInitializers>) SpringApplication.getInstance().getBeans(WebFilterInitializers.class);
+		webFilters = (List<WebFilter>) SpringApplication.getInstance().getBeans(WebFilter.class);
 		
-		if(filterInitializers==null || filterInitializers.isEmpty())
-			return ;
+		/*if(filterInitializers==null || filterInitializers.isEmpty())
+			return ;*/
 
-		OrderComparator.sort(filterInitializers);
 		/*
 		Collections.sort(filterInitializers, new Comparator<FilterInitializer>(){
 			@Override
@@ -129,31 +119,43 @@ public abstract class IgnoreFiler implements Filter{
 			}
 		});*/
 		
-		for(FilterInitializer filterIniter : filterInitializers){
+		for(WebFilterInitializers filterIniter : filterInitializers){
 			filterIniter.onInit(config);
 		}
 	}
 	
 
 	protected void onFilter(HttpServletRequest request, HttpServletResponse response){
-		if(filterInitializers==null || filterInitializers.isEmpty())
+		if(webFilters==null || webFilters.isEmpty())
 			return ;
-		for(FilterInitializer filterIniter : filterInitializers){
-			filterIniter.onFilter(request, response);
+		for(WebFilter webfilter : webFilters){
+			webfilter.onFilter(request, response);
+		}
+	}
+
+
+	/*protected void onThrowable(HttpServletRequest request, HttpServletResponse response, Throwable ex) throws IOException, ServletException{
+		if(webFilters==null || webFilters.isEmpty())
+			return ;
+		for(WebFilter webfilter : webFilters){
+			webfilter.onThrowable(request, response, ex);
+		}
+	}*/
+
+	protected void onFinally(HttpServletRequest request, HttpServletResponse response){
+		if(webFilters==null || webFilters.isEmpty())
+			return ;
+		for(WebFilter webfilter : webFilters){
+			webfilter.onFinally(request, response);
 		}
 	}
 	
-
-	protected void onFinally(HttpServletRequest request, HttpServletResponse response){
-		if(filterInitializers==null || filterInitializers.isEmpty())
-			return ;
-		for(FilterInitializer filterIniter : filterInitializers){
-			filterIniter.onFinally(request, response);
-		}
+	protected HttpServletRequest wrapRequest(ServletRequest servletRequest){
+		return (HttpServletRequest) servletRequest;
 	}
 
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		HttpServletRequest request = wrapRequest(servletRequest);
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
 		/*if(!filterSuffix){
@@ -161,15 +163,15 @@ public abstract class IgnoreFiler implements Filter{
 			return ;
 		}*/
 		
-		if (this.requestSupportFilter(request)) {
+		try {
 			this.onFilter(request, response);
-			try {
-				this.doFilterInternal(servletRequest, servletResponse, filterChain);
-			} finally {
-				this.onFinally(request, response);
+			if (this.requestSupportFilter(request)) {
+				this.doFilterInternal(request, servletResponse, filterChain);
+			}else {
+				filterChain.doFilter(request, response);
 			}
-		}else {
-			filterChain.doFilter(request, response);
+		}finally {
+			this.onFinally(request, response);
 		}
 	}
 

@@ -1,7 +1,8 @@
 package org.onetwo.common.utils;
 
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.propconf.VariableSupporter;
+import org.slf4j.Logger;
 
 /*********
  * VariableSupporter到ValuProvider的适配器
@@ -10,7 +11,7 @@ import org.onetwo.common.utils.propconf.VariableSupporter;
  */
 public class VariableSupporterProvider implements ValueProvider {
 	
-	protected Logger logger = Logger.getLogger(VariableSupporterProvider.class);
+	protected Logger logger = JFishLoggerFactory.getLogger(VariableSupporterProvider.class);
 	
 	protected VariableSupporter variable;
 

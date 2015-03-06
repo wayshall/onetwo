@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.PluginConfig;
@@ -14,13 +15,18 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.view.jsp.tools.ToolEl;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.util.HtmlUtils;
 
 @SuppressWarnings("unchecked")
 public class WebHelper {
@@ -56,7 +62,7 @@ public class WebHelper {
 	private RequestContext requestContext;
 	private StandardEvaluationContext elcontext;
 	
-	private String requestURI;
+//	private String requestURI;
 	private String requestExtension;
 	private Object controllerHandler;
 	
@@ -72,13 +78,31 @@ public class WebHelper {
 		}
 	}
 	
+	public boolean isAaXmlRequest(){
+		return RequestUtils.isAaXmlRequest(request);
+	}
+	
 	public String getRequestUrl(){
 		return this.request.getRequestURL().toString();
 	}
 	
+	public String getRequestMethod(){
+		return request==null?"":request.getMethod().toLowerCase();
+	}
+
+    public boolean isAaRequest() {
+    	return AAUtils.isAjaxRequest(this.request);
+    }
+
 	public String getQueryString(){
 		String qs = this.request.getQueryString();
 		return qs;
+	}
+	
+	public String getPureQueryString(){
+//		String qs = this.request.getQueryString();
+		CasualMap qsparam = TagUtils.processUrlSymbolAsCasualMap(request, ":qstr", null);
+		return qsparam.toParamString();
 	}
 	
 	public String getRequsetUriWithQueryString(){
@@ -94,6 +118,10 @@ public class WebHelper {
 	}
 	
 	public UserDetail getCurrentUserLogin(){
+		return WebContextUtils.getUserDetail(request.getSession());
+	}
+	
+	public UserDetail getCurrentLoginUser(){
 		return WebContextUtils.getUserDetail(request.getSession());
 	}
 	
@@ -114,6 +142,7 @@ public class WebHelper {
 		return pathParameters;
 	}
 
+	@Deprecated
 	public Map<String, Object> getWebRequestContext() {
 		if(webRequestContext==null){
 			webRequestContext = LangUtils.newHashMap();
@@ -131,6 +160,12 @@ public class WebHelper {
 		if(!webRequestContext.containsKey("backUrl"))
 			webRequestContext.put("backUrl", getRefererUrl(""));
 		return webRequestContext;
+	}
+	
+	public String getRefererUrl(){
+		String url = this.request.getHeader("Referer");
+		url = StringUtils.emptyIfNull(url);
+		return url;
 	}
 	
 	public String getRefererUrl(String def){
@@ -157,12 +192,12 @@ public class WebHelper {
 
 
 	public String getRequestURI() {
-		return requestURI;
+		return request.getRequestURI();
 	}
 
-	public void setRequestURI(String requestURI) {
+/*	public void setRequestURI(String requestURI) {
 		this.requestURI = requestURI;
-	}
+	}*/
 
 
 	public String getRequestExtension() {
@@ -187,4 +222,15 @@ public class WebHelper {
 		this.controllerHandler = controllerHandler;
 	}
 
+	
+	public String web(String name){
+		return ToolEl.escapeHtml(WebHolder.getValue(name).toString());
+	}
+	public String escapeHtml(String content){
+		return HtmlUtils.htmlEscape(content);
+	}
+	
+	public String firstNotblank(String val, String def1, String def2){
+		return ToolEl.firstNotblank(val, def1, def2);
+	}
 }

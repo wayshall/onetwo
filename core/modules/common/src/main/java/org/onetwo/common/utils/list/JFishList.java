@@ -24,6 +24,7 @@ import org.onetwo.common.utils.map.ListMap;
 
 @SuppressWarnings("unchecked")
 public class JFishList<E> implements List<E>, Serializable {
+	private static final String SELF_KEY = ":this";
 	
 	
 	public static class EachContext {
@@ -95,7 +96,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	 */
 	private static final long serialVersionUID = -3308735018101552664L;
 
-	private ArrayList<E> list;
+	private List<E> list;
 	
 	public JFishList(){
 		super();
@@ -116,20 +117,72 @@ public class JFishList<E> implements List<E>, Serializable {
 			}
 		}
 	}
-
-	public void addArray(E...objects) {
-		if(LangUtils.isEmpty(objects))
-			return ;
-		for(E e : objects)
-			add(e);
+	
+	public List<E> getList() {
+		return list;
 	}
 
-	public void addArrayIgnoreNull(E...objects) {
+	/***
+	 * return new jfishlist
+	 * @return
+	 */
+	public JFishList<E> stripNull(){
+		return filter(new It<E>() {
+
+			@Override
+			public boolean doIt(E element, int index) {
+				return element!=null;
+			}
+			
+		});
+	}
+
+	public JFishList<E> addArray(E...objects) {
 		if(LangUtils.isEmpty(objects))
-			return ;
+			return this;
+		for(E e : objects)
+			add(e);
+		return this;
+	}
+
+	public JFishList<E> addObject(Object obj) {
+		if(obj==null)
+			return this;
+		addAll((Collection<E>)LangUtils.asList(obj));
+		return this;
+	}
+
+
+	public JFishList<E> flatAddObject(Object obj) {
+		flatAddObject(obj, true);
+		return this;
+	}
+	public JFishList<E> flatAddObject(Object obj, boolean ignoreNull) {
+		if(obj==null && ignoreNull)
+			return this;
+		if(Iterable.class.isInstance(obj)){
+			for(Object e : (Iterable<?>)obj){
+				flatAddObject(e, ignoreNull);
+			}
+		}else if(obj!=null && obj.getClass().isArray()){
+			int length = Array.getLength(obj);
+			for (int i = 0; i < length; i++) {
+				Object e = Array.get(obj, i);
+				flatAddObject(e, ignoreNull);
+			}
+		}else{
+			add((E)obj);
+		}
+		return this;
+	}
+
+	public JFishList<E> addArrayIgnoreNull(E...objects) {
+		if(LangUtils.isEmpty(objects))
+			return this;
 		for(E e : objects)
 			if(e!=null)
 				add(e);
+		return this;
 	}
 	
 	public JFishList<E> addCollection(Collection<E> objects) {
@@ -200,8 +253,8 @@ public class JFishList<E> implements List<E>, Serializable {
 		return this;
 	}
 
-	public <T> List<T> getPropertyList(final String name){
-		final List<T> propValues = new ArrayList<T>();
+	public <T> JFishList<T> getPropertyList(final String name){
+		final JFishList<T> propValues = new JFishList<T>();
 		this.each(new NoIndexIt<E>() {
 
 			@Override
@@ -216,7 +269,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return propValues;
 	}
 
-	public void addPropertys(final String name, final Collection<Object> cols){
+	public void addPropertiesTo(final String name, final Collection<Object> cols){
 		this.each(new NoIndexIt<E>() {
 
 			@Override
@@ -245,6 +298,40 @@ public class JFishList<E> implements List<E>, Serializable {
 			c.index++;
 		}
 		return c;
+	}
+	
+	public <M> JFishList<M> map(final MapIt<E, M> it){
+		final JFishList<M> newlist = new JFishList<M>();
+		
+		each(new It<E>(){
+			@Override
+			public boolean doIt(E element, int index) {
+				newlist.add(it.map(element, index));
+				return true;
+			}
+			
+		});
+		return newlist;
+	}
+
+	/*****
+	 * return new jfishlist 
+	 * @param it
+	 * @return
+	 */
+	public JFishList<E> filter(It<E> it){
+		final JFishList<E> newlist = new JFishList<E>();
+		
+		EachContext c = new EachContext();
+		c.total = size();
+		c.index = 0;
+		for(E e : list){
+			if(it.doIt(e, c.index)){
+				newlist.add(e);
+			}
+			c.index++;
+		}
+		return newlist;
 	}
 	
 	private class SumResult {
@@ -277,12 +364,13 @@ public class JFishList<E> implements List<E>, Serializable {
 		return str.toString();
 	}
 
-	public String join(final String joiner, final String propName){
+	public String join(final String joiner, String prop){
+		final String propName = StringUtils.isBlank(prop)?SELF_KEY:prop;
 		return join(joiner, new SimpleBlock<E, String>() {
 
 			@Override
 			public String execute(E object) {
-				Object value = ReflectUtils.getProperty(object, propName);
+				Object value = SELF_KEY.equals(propName)?StringUtils.emptyIfNull(object):ReflectUtils.getProperty(object, propName);
 				return value==null?"":value.toString();
 			}
 			
@@ -315,7 +403,6 @@ public class JFishList<E> implements List<E>, Serializable {
 			
 		});
 	}
-	
 
 	public <K, V> Map<K, V> toMap(final String keyProperty){
 		return toMap(keyProperty, null, false);
@@ -365,6 +452,11 @@ public class JFishList<E> implements List<E>, Serializable {
 			}
 			
 		});
+	}
+	
+	public boolean isPropertyEqualsAllOfElement(String propertyOfElement){
+		ListMap<String, E> map = this.groupBy(propertyOfElement);
+		return map.size()<=1;
 	}
 	
 	/*public void doInResult(It<E> it, final List<?> result){
@@ -420,14 +512,6 @@ public class JFishList<E> implements List<E>, Serializable {
 		return !list.isEmpty();
 	}
 
-	public void trimToSize() {
-		list.trimToSize();
-	}
-
-	public void ensureCapacity(int minCapacity) {
-		list.ensureCapacity(minCapacity);
-	}
-
 	public int size() {
 		return list.size();
 	}
@@ -454,10 +538,6 @@ public class JFishList<E> implements List<E>, Serializable {
 
 	public boolean containsAll(Collection<?> c) {
 		return list.containsAll(c);
-	}
-
-	public Object clone() {
-		return list.clone();
 	}
 
 	public ListIterator<E> listIterator() {

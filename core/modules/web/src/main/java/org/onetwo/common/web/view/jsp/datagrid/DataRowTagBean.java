@@ -170,8 +170,13 @@ public class DataRowTagBean extends RowTagBean {
 		public Object get(Object key) {
 			if("translateData".equals(key)){//兼容tag里的${entity.translateData[field.value]}
 				return getTranslateData();
+			}else if("originData".equals(key)){//兼容tag里的${entity.translateData[field.value]}
+				return getOriginData();
+			}else if("index".equals(key)){
+				return index;
+			}else{
+				return translateData.get(key);
 			}
-			return translateData.get(key);
 		}
 		public Object put(String key, Object value) {
 			return translateData.put(key, value);

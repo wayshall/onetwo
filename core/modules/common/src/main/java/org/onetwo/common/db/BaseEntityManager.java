@@ -9,7 +9,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("rawtypes")
-public interface BaseEntityManager extends CreateQueryable {
+public interface BaseEntityManager extends QueryProvider {
 
 	public <T> T load(Class<T> entityClass, Serializable id);
 	
@@ -21,6 +21,11 @@ public interface BaseEntityManager extends CreateQueryable {
 	
 	public void update(Object entity);
 
+	/****
+	 * 如果实现了ILogicDeleteEntity接口，着逻辑删除
+	 * 否则，物理删除
+	 * @param entity
+	 */
 	public void remove(Object entity);
 	
 	public void removeList(Collection<?> entities);
@@ -41,10 +46,17 @@ public interface BaseEntityManager extends CreateQueryable {
 //	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
 	
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties);
+	
+	public <T> T findOne(Class<T> entityClass, Object... properties);
+	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties);
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
 
-	public <T> List<T> selectFields(Class<?> entityClass, String[] selectFields, Object... properties);
+	public <T> List<T> findByProperties(QueryBuilder squery);
+
+	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties);
+	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties);
+	
 	/*****
 	 * {@link #findByProperties(Class, Map)} 同义词
 	 * @param entityClass
@@ -65,10 +77,11 @@ public interface BaseEntityManager extends CreateQueryable {
 	
 //	public void findPage(final Page page, QueryBuilder squery);
 
-	public void findPage(final Class entityClass, final Page page, Object... properties);
+	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Object... properties);
 
-	public void findPage(final Class entityClass, final Page page, Map<Object, Object> properties);
-
+	public <T> void findPage(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
+	
+	public <T> void findPage(final Page<T> page, QueryBuilder query);
 	/****
 	 * @see remove
 	 * @param entity
@@ -102,13 +115,11 @@ public interface BaseEntityManager extends CreateQueryable {
 	public SQLSymbolManager getSQLSymbolManager();
 	
 
-	public <T> List<T> findList(JFishQueryValue queryValue);
-	
-	public <T> T findUnique(JFishQueryValue queryValue);
 	
 	public <T> void findPage(Page<T> page, JFishQueryValue squery);
 
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);
+	
 	
 }

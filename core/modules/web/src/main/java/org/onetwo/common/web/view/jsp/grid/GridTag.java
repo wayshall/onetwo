@@ -11,7 +11,7 @@ import org.onetwo.common.web.view.jsp.TagUtils;
 @SuppressWarnings("serial")
 public class GridTag extends BaseGridTag<GridTagBean> {
 	
-	private String template = TagUtils.getTagPage("grid/grid.jsp");
+	private String template = "grid/grid.jsp";
 	private Object dataSource;
 	private int colspan = 0;
 
@@ -33,7 +33,9 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			this.pageContext.include(getTemplate());
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
+//			this.pageContext.include(TagUtils.getTagPage(getTemplate()));
 		} catch (Exception e) {
 			throw new JspException("render grid error : " + e.getMessage(), e);
 		} finally{
@@ -73,7 +75,7 @@ public class GridTag extends BaseGridTag<GridTagBean> {
 		return template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public void setDataSource(Object dataSource) {

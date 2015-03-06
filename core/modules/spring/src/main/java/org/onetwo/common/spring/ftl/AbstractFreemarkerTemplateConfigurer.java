@@ -1,7 +1,6 @@
 package org.onetwo.common.spring.ftl;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
@@ -12,6 +11,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 import freemarker.cache.TemplateLoader;
+import freemarker.core.ParseException;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
@@ -57,6 +57,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 			this.configuration = new Configuration();
 			this.configuration.setObjectWrapper(getBeansWrapper());
 			this.configuration.setOutputEncoding(this.encoding);
+			//设置默认不自动格式化数字……以防sb……
+			this.configuration.setNumberFormat("#");
 //			this.cfg.setDirectoryForTemplateLoading(new File(templateDir));
 			
 			/*if(templateProvider!=null){
@@ -86,22 +88,31 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		Template template;
 		try {
 			template = getConfiguration().getTemplate(name);
+		}catch (ParseException e) {
+			throw new BaseException("sql tempalte syntax error : " + e.getMessage());
 		} catch (IOException e) {
 			throw new BaseException("get tempalte error : " + e.getMessage(), e);
 		}
 		return template;
 	}
 	
-	public String parse(String name, Object rootMap){
+	/*public String parse(String name, Object rootMap){
 		Template template = getTemplate(name);
 		StringWriter sw = new StringWriter();
 		try {
 			template.process(rootMap, sw);
+		} catch (TemplateException e) {
+			Exception cause = e.getCauseException();
+			if(cause!=null){
+				throw LangUtils.asBaseException("parse tempalte error : " + cause.getMessage(), cause);
+			}else{
+				throw new BaseException("parse tempalte error : " + e.getMessage(), e);
+			}
 		} catch (Exception e) {
 			throw new BaseException("parse tempalte error : " + e.getMessage(), e);
 		}
 		return sw.toString();
-	}
+	}*/
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;

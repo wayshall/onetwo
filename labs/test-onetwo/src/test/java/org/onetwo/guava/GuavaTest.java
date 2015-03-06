@@ -1,5 +1,6 @@
 package org.onetwo.guava;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.list.JFishList;
 
 import test.entity.UserEntity;
 
@@ -38,6 +40,9 @@ public class GuavaTest {
 		return users;
 	}
 	
+	/***
+	 * 差集
+	 */
 	@Test
 	public void testDiffence(){
 		HashSet<Integer> alist = Sets.newHashSet(1, 2, 3, 5);
@@ -51,6 +56,18 @@ public class GuavaTest {
 		System.out.println("dlist:" + dlist);
 		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 6));
 		Assert.assertTrue(ArrayUtils.contains(dlist.toArray(), 7));
+	}
+	
+
+	@Test
+	public void testIntersection(){
+		HashSet<Integer> alist = Sets.newHashSet(1, 2, 3, 5);
+		HashSet<Integer> blist = Sets.newHashSet(1, 2, 6, 7);
+		Set<Integer> interSet = Sets.intersection(alist, blist);
+		System.out.println("interSet:" + interSet);
+		Assert.assertEquals(interSet.size(), 2);
+		Assert.assertTrue(ArrayUtils.contains(interSet.toArray(), 1));
+		Assert.assertTrue(ArrayUtils.contains(interSet.toArray(), 2));
 	}
 	
 	@Test
@@ -104,6 +121,29 @@ public class GuavaTest {
 		Assert.assertNotNull(user2);
 		Assert.assertTrue(user1!=user2);
 		Assert.assertEquals(user1.getId(), user2.getId());
+	}
+	
+	@Test
+	public void joinObject(){
+		Object value1 = 1;
+		String value2 = "test2";
+		Object[] value3 = new Object[]{3, "test3"};
+		List<?> value4 = LangUtils.newArrayList("test4", "test44");
+		
+		List<?> list = JFishList.newList().addObject(value1).addObject(value2).addObject(value3).addObject(value4);
+		System.out.println("list: " + list);
+		Assert.assertEquals("[1, test2, 3, test3, test4, test44]", list.toString());
+		
+		List<Object> list2 = new ArrayList<Object>();
+		list2.add(value1);
+		list2.add(value2);
+		list2.add(value3);
+		list2.add(value4);
+		
+		list = JFishList.newList().flatAddObject(list2);
+		System.out.println("list: " + list);
+		Assert.assertEquals("[1, test2, 3, test3, test4, test44]", list.toString());
+		
 	}
 
 }

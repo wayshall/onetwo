@@ -4,10 +4,9 @@ import java.io.Serializable;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.asyn2.AsynMessageHolder.AsynState;
 
 
-public class SimpleMessage<T> implements Serializable {
+public class SimpleMessage implements Serializable {
 
 	/**
 	 * 
@@ -15,21 +14,21 @@ public class SimpleMessage<T> implements Serializable {
 	private static final long serialVersionUID = 1897759687596570672L;
 
 	
-	protected T source;
-	protected AsynState state;
+	protected Object source;
+	protected TaskState state;
 	protected String detail;
 	
 	public SimpleMessage(){
 	}
 	
-	public SimpleMessage(T source){
+	public SimpleMessage(Object source){
 		this.source = source;
 	}
 	
-	public T getSource() {
+	public Object getSource() {
 		return source;
 	}
-	public void setSource(T source) {
+	public void setSource(Object source) {
 		this.source = source;
 	}
 	
@@ -43,10 +42,10 @@ public class SimpleMessage<T> implements Serializable {
 	public void setDetail(String detail) {
 		this.detail = detail;
 	}
-	public AsynState getState() {
+	public TaskState getState() {
 		return state;
 	}
-	public void setState(AsynState state) {
+	public void setState(TaskState state) {
 		this.state = state;
 	}
 	
