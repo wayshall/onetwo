@@ -25,6 +25,10 @@ public class AnnotationUtils {
 		}
 		return false;
 	}
+	
+	public static boolean isFieldContains(Class<?> target, String fieldName, Class<? extends Annotation>... annoClasses){
+		return containsAny(ReflectUtils.getIntro(target).getField(fieldName).getAnnotations(), annoClasses);
+	}
 
 	public static Field findFirstField(Class<?> clazz, Class annotationClass) {
 		List<Field> fields = findAnnotationField(clazz, annotationClass);
@@ -66,6 +70,47 @@ public class AnnotationUtils {
 		return LangUtils.hasElement(props)?props.get(0):null;
 	}
 
+	public static <T extends Annotation> T findAnnotationWithDeclaring(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz==null?null:clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		return (clazz==null || clazz.getDeclaringClass()==null)?null:findAnnotationWithDeclaring(clazz.getDeclaringClass(), annotationClass);
+	}
+	
+
+	/****
+	 * 查找注解，包括类的继承类和接口
+	 * @param clazz
+	 * @param annotationClass
+	 * @return
+	 */
+	public static <T extends Annotation> T findAnnotationWithParent(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = findAnnotationWithSupers(clazz, annotationClass);
+		if(annotation!=null)
+			annotation = findAnnotationWithInterfaces(clazz, annotationClass);
+		return annotation;
+	}
+
+	public static <T extends Annotation> T findAnnotationWithSupers(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz==null?null:clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		return (clazz==null || clazz.getSuperclass()==Object.class)?null:findAnnotationWithSupers(clazz.getSuperclass(), annotationClass);
+	}
+
+	public static <T extends Annotation> T findAnnotationWithInterfaces(Class<?> clazz, Class<T> annotationClass) {
+		T annotation = clazz.getAnnotation(annotationClass);
+		if(annotation!=null)
+			return annotation;
+		Class<?>[] interfaces = clazz.getInterfaces();
+		for(Class<?> interf : interfaces){
+			annotation = findAnnotationWithInterfaces(interf, annotationClass);
+			if(annotation!=null)
+				break;
+		}
+		return annotation;
+	}
+
 	public static <T extends Annotation> T findAnnotation(Class<?> clazz, Class<T> annotationClass) {
 		T annotation = clazz.getAnnotation(annotationClass);
 		return annotation;
@@ -90,6 +135,10 @@ public class AnnotationUtils {
 	
 	public static <T extends Annotation> T findMethodAnnotationWithStopClass(Method method, Class<T> annotationClass) {
 		return findAnnotationWithStopClass(method.getDeclaringClass(), method, annotationClass, DEFAULT_STOP_CLASS);
+	}
+	
+	public static <T extends Annotation> T findMethodAnnotationWithStopClass(Method method, Class<T> annotationClass, Class<?>...stopClass) {
+		return findAnnotationWithStopClass(method.getDeclaringClass(), method, annotationClass, stopClass);
 	}
 	
 	public static <T extends Annotation> T findAnnotationWithStopClass(Class<?> clazz, Method method, Class<T> annotationClass, Class<?>...stopClass) {
@@ -126,10 +175,7 @@ public class AnnotationUtils {
 	}
 
 	public static <T extends Annotation> T findFieldAnnotation(Class<?> clazz, Field field, Class<T> annotationClass) {
-		T annotation = null;
-		if (field != null)
-			annotation = field.getAnnotation(annotationClass);
-		return annotation;
+		return field != null?field.getAnnotation(annotationClass):null;
 	}
 
 	public static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {

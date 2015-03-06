@@ -12,6 +12,8 @@ public interface IPermission {
 	public void setSort(Integer sort);
 	public String getName();
 	public void setName(String name);
+//	public void setSyscode(String syscode);
+	public void setAppCode(String appCode);
 	String getCode();
 	void setCode(String code);
 	

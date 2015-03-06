@@ -113,7 +113,7 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 	
 	final private PropertiesNamespaceInfoListener<T> listener;
 
-	public PropertiesNamespaceInfoManagerImpl(JFishPropertyConf conf, PropertiesNamespaceInfoListener<T> listener) {
+	public PropertiesNamespaceInfoManagerImpl(JFishPropertyConf<T> conf, PropertiesNamespaceInfoListener<T> listener) {
 		super(conf);
 		if(conf.getPropertyBeanClass()==null){
 			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), PropertiesNamespaceInfoManagerImpl.class);
@@ -122,7 +122,7 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 		this.listener = listener;
 	}
 	
-	protected JFishPropertyConf getConf() {
+	protected JFishPropertyConf<T> getConf() {
 		return conf;
 	}
 
@@ -174,7 +174,7 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 
 
 	protected PropertiesNamespaceInfo<T> scanAndParseSqlFile(Map<String, PropertiesNamespaceInfo<T>> namespacesMap, ResourceAdapter f, boolean throwIfExist){
-		logger.info("scan and parse sql file : " + f);
+		logger.info("scan and parse sql file : " + f.getName());
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
 		boolean globalNamespace = isGlobalNamespace(namespace);
@@ -213,12 +213,12 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 	}
 
 	protected void buildNamedInfosToNamespaceFromResource(PropertiesNamespaceInfo<T> np, ResourceAdapter file){
-		JFishProperties jproperties = loadSqlFile(file);
+		JFishPropertiesData jproperties = loadSqlFile(file);
 		if(jproperties==null){
 //			return Collections.EMPTY_MAP;
 			return ;
 		}
-		logger.info("build [{}] sql file : {}", np.getNamespace(), file);
+		logger.info("build [{}] sql file : {}", np.getNamespace(), file.getName());
 //		PropertiesWraper wrapper = new PropertiesWraper(pf);
 //		Map<String, T> namedInfos = this.buildPropertiesAsNamedInfos(f, ns, pf, (Class<T>)conf.getPropertyBeanClass());
 		try {

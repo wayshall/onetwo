@@ -1,12 +1,19 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
@@ -14,7 +21,9 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	 * 
 	 */
 	private static final long serialVersionUID = -5324408407472195764L;
-	private FormFieldType type = FormFieldType.input;
+	private FormFieldType formFieldType = FormFieldType.input;
+	private String type;
+	private String provider;
 	private boolean showErrorTag = true;
 	private String errorPath;
 //	private String render;
@@ -23,8 +32,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	
 	//select, checkobx, radio
 	private Object items;
-	private String itemLabel;
-	private String itemValue;
+	private String itemLabel = "name";
+	private String itemValue = "value";
 	private String emptyOptionLabel;
 
 	private boolean readOnly;
@@ -38,11 +47,31 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private boolean showLoadingText = true;
 
 //	private boolean ignoreField;
+	private final Map<String, ExtFormFieldPopulater> pupulaterMap;
+	
+	public FormFieldTag(){
+		Map<String, ExtFormFieldPopulater> temp = LangUtils.newHashMap();
+		List<ExtFormFieldPopulater> populaters = SpringApplication.getInstance().getBeans(ExtFormFieldPopulater.class);
+		for(ExtFormFieldPopulater fp : populaters){
+			temp.put(fp.getProvider(), fp);
+		}
+		pupulaterMap = ImmutableMap.copyOf(temp);
+	}
 	
 	
 	@Override
 	public FormFieldTagBean createComponent() {
-		return FormUIFactory.createUIBean(type);
+		if(StringUtils.isNotBlank(provider)){
+			ExtFormFieldPopulater populater = getPopulater();
+			if(populater!=null){
+				return populater.createTagBean(this);
+			}
+		}
+		return FormUIFactory.createUIBean(formFieldType);
+	}
+	
+	protected ExtFormFieldPopulater getPopulater(){
+		return this.pupulaterMap.get(provider);
 	}
 	
 	protected FormTagBean getFormTagBean(){
@@ -52,7 +81,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
 		
-		component.setType(type);
+		component.setType(formFieldType);
 		component.setErrorTag(showErrorTag);
 		component.setErrorPath(errorPath);
 //		component.setRender(render);
@@ -63,17 +92,19 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setModelAttribute(modelAttribute);
 		component.setShowLoadingText(showLoadingText);
 		
-		switch (type) {
+		switch (formFieldType) {
 			case input:
+			case text:
 			case password:
-				break;
-			case hidden:
-				component.setErrorTag(false);
+			case unknow:
 				break;
 			case textarea:
 			case radio:
 			case file:
 			case checkbox:
+				break;
+			case hidden:
+				component.setErrorTag(false);
 				break;
 			case select:
 			case radioGroup:
@@ -86,7 +117,18 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 				break;
 	
 			default:
+				/*ExtFormFieldPopulater populater = this.pupulaterMap.get(typeString);
+				if(populater!=null){
+					populater.populateFieldComponent(this, component);
+				}*/
 				break;
+		}
+		
+		if(StringUtils.isNotBlank(provider)){
+			ExtFormFieldPopulater populater = getPopulater();
+			if(populater!=null){
+				populater.populateFieldComponent(this, component);
+			}
 		}
 		
 //		this.component.buildTagAttributesString();
@@ -134,10 +176,15 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 
 	public void setType(String type) {
-		if(StringUtils.isBlank(type))
-			this.type = FormFieldType.input;
-		else
-			this.type = FormFieldType.valueOf(type);
+		this.type = type;
+		if(StringUtils.isBlank(type)){
+			this.formFieldType = FormFieldType.input;
+		}else{
+			this.formFieldType = FormFieldType.of(type);
+			if(this.formFieldType==FormFieldType.unknow){
+				throw new IllegalArgumentException("unknow type: " + type);
+			}
+		}
 	}
 
 	/****
@@ -178,6 +225,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	}
 
 	public void setDisabled(String disabled) {
+		if(StringUtils.isBlank(disabled))
+			return ;
 		String codePrefix = "code:";
 		if(disabled.startsWith(codePrefix)){
 			String code = disabled.substring(codePrefix.length());
@@ -197,6 +246,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	public void setModelAttribute(boolean modelAttribute) {
 		this.modelAttribute = modelAttribute;
+		if(this.modelAttribute==false)
+			this.setErrorTag("false");
 	}
 
 	public void setEmptyOptionLabel(String emptyOptionLabel) {
@@ -206,5 +257,60 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	public void setShowLoadingText(boolean showLoadingText) {
 		this.showLoadingText = showLoadingText;
 	}
+
+
+	public String getItemLabel() {
+		return itemLabel;
+	}
+
+
+	public String getItemValue() {
+		return itemValue;
+	}
+
+
+	public String getEmptyOptionLabel() {
+		return emptyOptionLabel;
+	}
+
+
+	public String getErrorPath() {
+		return errorPath;
+	}
+
+
+	public Object getItems() {
+		return items;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+
+	public boolean isModelAttribute() {
+		return modelAttribute;
+	}
+
+
+	public String getProvider() {
+		return provider;
+	}
+
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+
+	public FormFieldType getFormFieldType() {
+		return formFieldType;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+
 
 }

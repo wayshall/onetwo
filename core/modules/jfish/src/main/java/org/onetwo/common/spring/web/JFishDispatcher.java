@@ -7,10 +7,19 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+/****
+ * call onMvcContextClasses
+ * @author weishao
+ * 
+ */
 @SuppressWarnings("serial")
 public class JFishDispatcher extends DispatcherServlet {
 	
 	private JFishPluginManager jfishPluginManager;
+	
+	public JFishDispatcher(){
+		setDetectAllViewResolvers(false);
+	}
 
 	protected WebApplicationContext initWebApplicationContext() {
 
@@ -29,7 +38,7 @@ public class JFishDispatcher extends DispatcherServlet {
 
 	@Override
 	public void destroy() {
-		jfishPluginManager.destroy();
+		jfishPluginManager.destroy(getWebApplicationContext());
 		super.destroy();
 	}
 	

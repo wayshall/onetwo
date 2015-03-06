@@ -1,7 +1,11 @@
 package org.onetwo.common.hibernate;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -12,17 +16,26 @@ import javax.persistence.Transient;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.proxy.pojo.BasicLazyInitializer;
 import org.hibernate.tuple.StandardProperty;
+import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.ds.SwitcherInfo;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.ReflectUtils.IgnoreAnnosCopyer;
+import org.onetwo.common.utils.StringUtils;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public final class HibernateUtils {
 	
@@ -39,17 +52,23 @@ public final class HibernateUtils {
 			super(classes);
 			this.ignoreFields = ignoreFields;
 		}
+		
+		protected boolean hasIgnoredAnnotation(PropertyDescriptor prop){
+			Method m = prop.getReadMethod();
+			boolean ignoreProp = AnnotationUtils.containsAny(m.getAnnotations(), classes);
+			return ignoreProp?true:AnnotationUtils.isFieldContains(m.getDeclaringClass(), prop.getName(), classes);
+		}
 
 		@Override
-		public void copy(Object source, Object target, PropertyDescriptor prop) {
+		public void copy(Object source, Object target, PropertyDescriptor targetProperty) {
 			if(target instanceof IBaseEntity){
-				if(ArrayUtils.contains(TIMESTAMP_FIELDS, prop.getName()))
+				if(ArrayUtils.contains(TIMESTAMP_FIELDS, targetProperty.getName()))
 					return ;
 			}
-			if(ArrayUtils.contains(ignoreFields, prop.getName())){
+			if(ArrayUtils.contains(ignoreFields, targetProperty.getName())){
 				return ;
 			}
-			super.copy(source, target, prop);
+			super.copy(source, target, targetProperty);
 		}
 		
 		protected boolean isIgnoreValue(Object val){
@@ -73,6 +92,15 @@ public final class HibernateUtils {
 		Hibernate.initialize(object);
 	}
 	
+	public static Serializable generateIdentifier(BaseEntityManager bm, String rootEntityName){
+		SessionFactoryImplementor sfi = bm.getRawManagerObject(SessionFactoryImplementor.class);
+		SessionImplementor s = (SessionImplementor)sfi.getCurrentSession();
+		IdentifierGenerator idg = sfi.getIdentifierGenerator(rootEntityName);
+		Assert.notNull(idg);
+		return idg.generate(s, null);
+	}
+	
+	
 	public static SessionFactory getSessionFactory() {
 		if(JFishMultipleSessionFactory.class.isInstance(sessionFactory)){
 			SwitcherInfo switcher = SpringApplication.getInstance().getContextHolder().getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
@@ -83,6 +111,17 @@ public final class HibernateUtils {
 
 	public static ClassMetadata getClassMeta(Session s, Class<?> entityClass){
 		return s.getSessionFactory().getClassMetadata(entityClass);
+	}
+	
+	public static LocalSessionFactoryBean getLocalSessionFactoryBean(){
+		Map<String, SessionFactory> sfMap = SpringApplication.getInstance().getBeansMap(SessionFactory.class);
+		Iterator<String> it = sfMap.keySet().iterator();
+		while(it.hasNext()){
+			Object fb = SpringApplication.getInstance().getBean("&"+it.next());
+			if(fb!=null && LocalSessionFactoryBean.class.isInstance(fb))
+				return (LocalSessionFactoryBean)fb;
+		}
+		return null;
 	}
 
 	public static ClassMetadata getClassMeta(Session s, String entityClass){
@@ -95,6 +134,11 @@ public final class HibernateUtils {
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass){
 		return getClassMeta(entityClass, false);
+	}
+	
+	public static String getIdName(Class<?> entityClass){
+		ClassMetadata meta = getClassMeta(entityClass, true);
+		return meta.getIdentifierPropertyName();
 	}
 	
 	public static ClassMetadata getClassMeta(Class<?> entityClass, boolean throwIfNoteFound){
@@ -115,16 +159,37 @@ public final class HibernateUtils {
 		return false;
 	}
 	
-	
+
+	public static final String JAVASSIST_KEY = Intro.JAVASSIST_KEY;
 	/*****
 	 * 复制对象属性，但会忽略那些null值和配置了关系的属性
 	 * @param source
 	 * @param target
 	 */
 	public static <T> void copyWithoutRelations(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, WITHOUT_RELATION);
+		Class<?> targetClass = getTargetClass(target);
+		ReflectUtils.getIntro(targetClass).copy(source, target, WITHOUT_RELATION);
 	}
-	public static <T> void copyIgnoreRelationsAndFields(T source, T target, String... ignoreFields){
+	
+	public static Class<?> getTargetClass(Object target){
+		Class<?> targetClass = target.getClass();
+		if(isJavassistClass(targetClass)){
+			BasicLazyInitializer handler = (BasicLazyInitializer)ReflectUtils.getFieldValue(target, "handler", false);
+			if(handler!=null){
+				targetClass = handler.getPersistentClass();
+			}else{
+				String className = StringUtils.substringBefore(targetClass.getName(), JAVASSIST_KEY);
+				targetClass = ReflectUtils.loadClass(className);
+			}
+		}
+		return targetClass;
+	}
+	
+	public static boolean isJavassistClass(Class<?> clazz){
+		return clazz.getName().contains(JAVASSIST_KEY);
+	}
+	
+	public static void copyIgnoreRelationsAndFields(Object source, Object target, String... ignoreFields){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
 	}
 	/****
@@ -133,7 +198,8 @@ public final class HibernateUtils {
 	 * @param target
 	 */
 	public static <T> void copy(T source, T target){
-		ReflectUtils.getIntro(target.getClass()).copy(source, target, COMMON);
+		Class<?> targetClass = getTargetClass(target);
+		ReflectUtils.getIntro(targetClass).copy(source, target, COMMON);
 	}
 	public static <T> void copyIgnore(T source, T target, String... ignoreFields){
 		ReflectUtils.getIntro(target.getClass()).copy(source, target, new HiberanteCopyer(new Class[]{Transient.class}, ignoreFields));
@@ -145,16 +211,16 @@ public final class HibernateUtils {
 	 * @param targetClass
 	 * @return
 	 */
-	public static <T> T copyWithoutRelations(T source, Class<T> targetClass){
-		return ReflectUtils.copy(source, targetClass, WITHOUT_RELATION);
+	public static <T> T copyToTargetWithoutRelations(Object source, Class<T> targetClass, String... ignoreFields){
+		return ReflectUtils.copy(source, targetClass, new HiberanteCopyer(IGNORE_ANNO_CLASSES, ignoreFields));
 	}
 	/***
 	 * 复制对象属性，但会忽略那些null值、空白字符
 	 * @param source
 	 * @param targetClass
 	 */
-	public static <T> void copy(T source, Class<T> targetClass){
-		ReflectUtils.copy(source, targetClass, COMMON);
+	public static <T> T copy(T source, Class<T> targetClass){
+		return ReflectUtils.copy(source, targetClass, COMMON);
 	}
 	
 }

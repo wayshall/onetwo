@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.FileUtils;
+import org.slf4j.Logger;
 
 public abstract class PropUtils {
-	private static final Logger LOGGER = Logger.getLogger(PropUtils.class);
+	private static final Logger LOGGER = JFishLoggerFactory.getLogger(PropUtils.class);
 	
 	public static final String CONFIG_POSTFIX = ".properties";
 

@@ -14,7 +14,6 @@ import javax.persistence.Transient;
 import org.example.app.model.member.entity.UserEntity.PasswordOnly;
 import org.example.app.model.utils.BaseEntity;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.spring.validator.ValidationInfo;
 
 @SuppressWarnings("serial")
 @Entity
@@ -25,7 +24,6 @@ public class ArticleEntity extends BaseEntity<Long>  {
 	private Long id;
 	
 	@NotBlank(groups=PasswordOnly.class)
-	@ValidationInfo(label="标题")
 	private String title;
 	private String content;
 	

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
@@ -142,6 +143,8 @@ public class CodegenController extends PluginSupportedController {
 				if(File.class.isInstance(element)){
 					messages.add(((File)element).getPath());
 				}else{
+					if(element==null)
+						throw new BaseException("message can not be null");
 					messages.add(element.toString());
 				}
 			}

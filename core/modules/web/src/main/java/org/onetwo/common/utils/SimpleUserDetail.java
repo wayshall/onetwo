@@ -1,15 +1,14 @@
 package org.onetwo.common.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 
-public class SimpleUserDetail implements UserDetail, RoleDetail {
+@SuppressWarnings("serial")
+public class SimpleUserDetail implements UserDetail, Serializable {
 	
 	private long userId;
 	private String userName;
 	private String token;
-	private List<String> roles = new ArrayList<String>();
 
 	public SimpleUserDetail(){ 
 	}
@@ -35,22 +34,6 @@ public class SimpleUserDetail implements UserDetail, RoleDetail {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-	
-	@Override
-	public List<String> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
-	public void addRole(String role) {
-		this.roles.add(role);
-	}
-	
-	public boolean isRole(String role){
-		return roles.contains(role);
 	}
 
 	public String toString(){

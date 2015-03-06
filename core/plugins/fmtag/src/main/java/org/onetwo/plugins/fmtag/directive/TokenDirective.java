@@ -15,6 +15,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
 @SuppressWarnings("rawtypes")
+@Deprecated
 public class TokenDirective extends AbstractDirective implements TemplateDirectiveModel {
 
 	public static final String DIRECTIVE_NAME = "token";

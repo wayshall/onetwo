@@ -2,31 +2,29 @@ package org.onetwo.common.web.view.jsp.layout;
 
 import javax.servlet.jsp.JspException;
 
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.view.jsp.AbstractBodyTag;
 
 @SuppressWarnings("serial")
-public class ExtendsTag extends BaseLayoutTag {
+public class ExtendsTag extends AbstractBodyTag {
 
-	private String parentPage = TagUtils.getViewPage("layout/application.jsp");
+	private String parentPage;
 	
 	@Override
 	public int doEndTag() throws JspException {
+		String t = getThemeSetting().getLayoutPage(parentPage);
 		try {
-			this.pageContext.include(getParentPage());
-		} catch (Exception e) {
-			throw new JspException("render layout page["+parentPage+"] error : " + e.getMessage());
+			renderTemplate(t);
+		} catch (JspException e) {
+			throw e;
+		}  catch (Exception e) {
+			throw new JspException("render layout page["+t+"] error : " + e.getMessage());
 		} 
 
 		return EVAL_PAGE;
 	}
 
-
-	public String getParentPage() {
-		return parentPage;
-	}
-
 	public void setParentPage(String parentPage) {
-		this.parentPage = TagUtils.getViewPage(parentPage);
+		this.parentPage = parentPage;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class FormItemsTagBean extends FormFieldTagBean {
@@ -36,12 +37,10 @@ public class FormItemsTagBean extends FormFieldTagBean {
 	public void setItemDatas(Object datas) {
 		this.items = object2List(datas);
 	}
-	public Object getFieldValue(){
-		if(this.items!=null)
-			return items;
+	
+	public List<?> getFieldValueList(){
 		Object fd = this.getFormBean().getProvider().getFieldValue(this);
-		this.items = object2List(fd);
-		return this.items;
+		return LangUtils.asList(fd);
 	}
 	
 	public String getItemLabel() {

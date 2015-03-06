@@ -1,7 +1,6 @@
 package org.onetwo.common.web.view.jsp.datagrid;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
 
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
@@ -20,6 +19,7 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String render;
 	//改字段是否可以排序
 	private boolean orderable = false;
+	private String orderBy;
 	private String dataFormat;
 
 	
@@ -28,8 +28,11 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 	private String searchFieldName;
 	private String searchFieldType;
 	private Object searchItems;
-	private String searchItemLabel;
-	private String searchItemValue;
+	private String searchItemLabel = "name";
+	private String searchItemValue = "value";
+	
+
+	private String reserved;//备用
 	
 	private DataFieldValueListener dataFieldValueListener;
 	
@@ -81,7 +84,9 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setColspan(colspan);
 		component.setRender(render);
 		component.setOrderable(orderable);
-		component.setOrdering(getName().equals(pageContext.getRequest().getParameter("orderBy")));
+		component.setOrderBy(orderBy);
+//		component.setOrdering(this.orderBy.equals(pageContext.getRequest().getParameter("orderBy")));
+		component.setOrdering(StringUtils.equals(this.orderBy, pageContext.getRequest().getParameter("orderBy")));
 		String order = pageContext.getRequest().getParameter("order");
 		component.setOrderType(Page.DESC.equals(order)?Page.ASC:Page.DESC);
 		
@@ -92,12 +97,24 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		component.setSearchItemLabel(searchItemLabel);
 		component.setSearchItemValue(searchItemValue);
 		
+		component.setReserved(reserved);
+		
 	}
 	
 	
 	@Override
 	public int startTag() throws JspException {
+		RowTagBean row = getComponentFromRequest(getRowVarName(), RowTagBean.class);
+		if(row==null)
+			throw new JspException("field tag must nested in a row tag.");
+		
+		if(DataRowTagBean.class.isInstance(row)){
+			DataRowTagBean drow = (DataRowTagBean) row;
+			if(drow.getCurrentRowData()==null)
+				return SKIP_BODY;
+		}
 		super.startTag();
+//		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 		return component.isAutoRender()?SKIP_BODY:EVAL_BODY_BUFFERED;
 	}
 
@@ -117,12 +134,14 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 		this.colspan = colspan;
 	}
 
-	public boolean isOrderable() {
-		return orderable;
-	}
-
-	public void setOrderable(boolean orderable) {
-		this.orderable = orderable;
+	public void setOrderable(String orderable) {
+		if(StringUtils.isNotBlank(orderable) && !ToBooleanConvertor.FALSE_VALUE.equals(orderable)){
+			this.orderable = true;
+			if("true".equals(orderable))
+				this.orderBy = null;
+			else
+				this.orderBy = orderable;
+		}
 	}
 
 	public void setRender(String render) {
@@ -159,6 +178,10 @@ public class DataFieldTag extends BaseGridTag<FieldTagBean> {
 
 	public void setSearchItemValue(String searchItemValue) {
 		this.searchItemValue = searchItemValue;
+	}
+
+	public void setReserved(String reserved) {
+		this.reserved = reserved;
 	}
 
 }

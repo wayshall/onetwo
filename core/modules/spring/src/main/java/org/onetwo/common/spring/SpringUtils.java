@@ -12,10 +12,13 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
+import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -153,8 +156,23 @@ final public class SpringUtils {
 		return prop;
 	}
 	
+	public static JFishProperties loadAsJFishProperties(String classpath){
+		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpath);
+    	try {
+			pfb.afterPropertiesSet();
+			JFishProperties properties = (JFishProperties)pfb.getObject();
+			return properties;
+		} catch (IOException e) {
+			throw new BaseException("load config error: " + e.getMessage(), e);
+		}
+	}
+
 	public static PropertiesFactoryBean createPropertiesBySptring(String...classpaths) {
-		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
+		return createPropertiesBySptring(new JFishProperties(), classpaths);
+	}
+	public static PropertiesFactoryBean createPropertiesBySptring(JFishProperties properties, String...classpaths) {
+//		PropertiesFactoryBean pfb = new PropertiesFactoryBean();
+		PropertiesFactoryBean pfb = new JFishPropertiesFactoryBean(properties);
 		pfb.setIgnoreResourceNotFound(true);
 		org.springframework.core.io.Resource[] resources = new org.springframework.core.io.Resource[classpaths.length];
 		int index = 0;
@@ -190,6 +208,21 @@ final public class SpringUtils {
 			bdb.addPropertyValue(entry.getKey(), entry.getValue());
 		}
 		return bdb.getBeanDefinition();
+	}
+	
+
+	public static <T> void injectAndInitialize(ApplicationContext appContext, T bean) {
+		injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
+	}
+
+	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+		acb.autowireBeanProperties(bean, autowireMode, false);
+		initializeBean(acb, bean, autowireMode);
+	}
+
+	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		acb.initializeBean(bean, beanName);
 	}
 	
 
@@ -269,15 +302,32 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
-	public static BeanWrapper newBeanWrapper(Object obj){
+	public static BeanWrapper newBeanWrapper(Object obj, Object...listElementTypes){
 		BeanWrapper bw = null;
 		if(Map.class.isInstance(obj)){
-			bw = new BeanMapWrapper(obj);
+			bw = new BeanMapWrapper(obj, listElementTypes);
 		}else{
 			bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		}
 		bw.setAutoGrowNestedPaths(true);
 		return bw;
+	}
+	
+	public static <T> T map2Bean(Map<String, ?> props, Class<T> beanClass){
+		T bean = ReflectUtils.newInstance(beanClass);
+		return setMap2Bean(props, bean);
+	}
+	
+	public static <T> T setMap2Bean(Map<String, ?> props, T bean){
+		Assert.notNull(bean);
+		Assert.notNull(props);
+		BeanWrapper bw = newBeanWrapper(bean);
+		for(Entry<String, ?> entry : props.entrySet()){
+			if(bw.isWritableProperty(entry.getKey())){
+				bw.setPropertyValue(entry.getKey(), entry.getValue());
+			}
+		}
+		return bean;
 	}
 	
 	/*public static BeanMapWrapper newBeanMapWrapper(Object obj){

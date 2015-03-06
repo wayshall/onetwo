@@ -5,22 +5,27 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.AbstractDataQuery;
-import org.onetwo.common.db.CreateQueryable;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
-import org.onetwo.common.db.sql.DynamicQuery;
-import org.onetwo.common.db.sql.DynamicQueryFactory;
+import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.ftl.TemplateParser;
+import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.beans.BeanWrapper;
 
 public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends AbstractDataQuery implements QueryOrderByable {
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;
-	protected CreateQueryable baseEntityManager;
+	protected QueryProvider baseEntityManager;
 	private DataQuery dataQuery;
 	
 	protected boolean countQuery;
@@ -32,13 +37,13 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	private Class<?> resultClass;
 	
 	protected T info;
-	private FileSqlParser<T> parser;
-	private ParserContext parserContext;
+	private TemplateParser parser;
+	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
 
-	public DefaultFileQueryImpl(CreateQueryable baseEntityManager, T info, boolean count, FileSqlParser<T> parser) {
+	public DefaultFileQueryImpl(QueryProvider baseEntityManager, T info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;
@@ -61,88 +66,50 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 //	abstract protected DataQuery createDataQuery(DynamicQuery query);
 //	abstract protected DataQuery createDataQuery(String sql, Class<?> mappedClass);
 
-	protected DataQuery createDataQuery(DynamicQuery query){
-		DataQuery dataQuery = this.baseEntityManager.createSQLQuery(query.getTransitionSql(), query.getEntityClass());;
-		return dataQuery;
-	}
 	
 	protected DataQuery createDataQuery(String sql, Class<?> mappedClass){
 		DataQuery dataQuery = this.baseEntityManager.createSQLQuery(sql, mappedClass);
 		return dataQuery;
 	}
 	
-//	abstract protected String parseSql(String queryName, Map<Object, Object> params);
 	protected DataQuery createDataQueryIfNecessarry(){
-		
-		if(info.getFileSqlParserType()==FileSqlParserType.IGNORENULL){
-			String sql = countQuery?info.getCountSql():info.getSql();
-			DynamicQuery query = DynamicQueryFactory.createJFishDynamicQuery(sql, resultClass);
-			for(Entry<Object, Object> entry : this.params.entrySet()){
-				if(entry.getKey() instanceof Integer){
-					query.setParameter((Integer)entry.getKey(), entry.getValue());
-				}else{
-					query.setParameter(entry.getKey().toString(), entry.getValue());
-				}
-			}
-			query.asc(ascFields);
-			query.desc(desFields);
-			query.compile();
-			dataQuery = createDataQuery(query);
+		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
+		SqlAndValues sqlAndValues = sqlGen.generatSql();
+		if(sqlAndValues.isListValue()){
+			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
 			
 			int position = 0;
-			for(Object value : query.getValues()){
+			for(Object value : sqlAndValues.asList()){
 				dataQuery.setParameter(position++, value);
 			}
 			
 			setLimitResult();
 			return dataQuery;
-			
-		}else if(info.getFileSqlParserType()==FileSqlParserType.TEMPLATE){
-			if(this.parserContext==null)
-				this.parserContext = ParserContext.create();
-			
-			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
-			this.parserContext.putAll(params);
-			TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
-			this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);
-			/*if(LangUtils.isNotEmpty(info.getAttrs())){
-				//parse attrs value by ftl
-				Map<String, String> attrs = LangUtils.newHashMap(info.getAttrs().size());
-				for(Entry<String, String> entry : info.getAttrs().entrySet()){
-					String value = this.parser.parse(parser.asFtlContent(entry.getValue()), parserContext);
-					attrs.put(entry.getKey(), value);
-				}
-				this.parserContext.put(JFishNamedFileQueryInfo.ATTRS_KEY, Collections.unmodifiableMap(attrs));
-			}*/
-			String parsedSql = null;
-			if(countQuery){
-				parsedSql = this.parser.parse(info.isAutoGeneratedCountSql()?info.getFullName():info.getCountName(), parserContext);
-				if(info.isAutoGeneratedCountSql()){
-					parsedSql = ExtQueryUtils.buildCountSql(parsedSql, "");
-				}
-			}else{
-				parsedSql = this.parser.parse(info.getFullName(), parserContext);
-			}
-			dataQuery = createDataQuery(parsedSql, resultClass);
-			
-		}else{
-			String sql = countQuery?info.getCountSql():info.getSql();
-			dataQuery = createDataQuery(sql, resultClass);
 		}
 
-		for(Entry<Object, Object> entry : this.params.entrySet()){
-			if(entry.getKey() instanceof Integer){
-				dataQuery.setParameter((Integer)entry.getKey(), entry.getValue());
-			}else{
-				dataQuery.setParameter(entry.getKey().toString(), entry.getValue());
+		String parsedSql = sqlAndValues.getParsedSql();
+		dataQuery = createDataQuery(parsedSql, resultClass);
+		
+		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
+		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
+		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
+			if(!paramBean.isReadableProperty(parameter.getProperty()))
+				continue;
+			/*Object value = paramBean.getPropertyValue(parameterName);
+			if(parameter.hasFunction()){
+				value = ReflectUtils.invokeMethod(parameter.getFunction(), SqlParamterFunctions.getInstance(), value);
+			}*/
+			Object pvalue = parameter.getParamterValue(paramBean);
+			if(pvalue!=null && sqlAndValues.getQueryConfig().isLikeQueryField(parameter.getName())){
+				pvalue = ExtQueryUtils.getLikeString(pvalue.toString());
 			}
+			dataQuery.setParameter(parameter.getName(), pvalue);
 		}
 		
 		setLimitResult();
 		
 		return dataQuery;
 	}
-	
 	private void setLimitResult(){
 		if(firstRecord>0)
 			dataQuery.setFirstResult(firstRecord);
@@ -199,6 +166,10 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		return this;
 	}
 
+	/****
+	 * 根据key类型设置参数、返回结果类型、排序……等等
+	 * @param params
+	 */
 	public void setQueryAttributes(Map<Object, Object> params) {
 		Object key;
 		for(Entry<Object, Object> entry : params.entrySet()){
@@ -292,6 +263,13 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 
 	public void setParserContext(ParserContext parserContext) {
 		this.parserContext = parserContext;
+	}
+
+	public ParserContext getParserContext() {
+		if(parserContext==null){
+			parserContext = ParserContext.create();
+		}
+		return parserContext;
 	}
 
 }

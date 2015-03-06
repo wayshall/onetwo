@@ -3,13 +3,10 @@ package org.onetwo.common.excel;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -98,7 +95,11 @@ public class DefaultRowProcessor implements RowProcessor {
 //		String name = "getFieldRootValue";//+field.getName();
 //		UtilTimerStack.push(name);
 		if(StringUtils.isNotBlank(field.getRootValue())){
-			return rowContext.parseValue(field.getRootValue());
+//			String name = "getFieldRootValue-";
+//			UtilTimerStack.push(name);
+			Object val = rowContext.parseValue(field.getRootValue());
+//			UtilTimerStack.pop(name);
+			return val;
 		}
 		return null;
 	}
@@ -191,6 +192,7 @@ public class DefaultRowProcessor implements RowProcessor {
 //				row.createCell(++cellIndex);
 			}
 		}
+		//性能关键点。。。。。。。
 		if(field.isRange()){
 //			CellRangeAddress range = createCellRange(row, cell, field, root);
 			CellRangeAddress range = new CellRangeAddress(rowNum, rowNum+cellContext.getRowSpan()-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
@@ -261,9 +263,14 @@ public class DefaultRowProcessor implements RowProcessor {
 //		UtilTimerStack.push(pname);
 		int cellIndex = row.getLastCellNum();
 		if(root==null){
+//			String name = "no root processField";
+//			UtilTimerStack.push(name);
 			CellContextData cellContext = createCellContext(rowContext.getCurrentRowObject(), 0,  rowContext, field, cellIndex);
 			this.processSingleField(cellContext);
+//			UtilTimerStack.pop(name);
 		}else{
+//			String name = "root processField";
+//			UtilTimerStack.push(name);
 			List<Object> rootList = LangUtils.asList(root);
 
 			int rowCount = row.getRowNum();
@@ -278,6 +285,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			}finally{
 				rowContext.getSelfContext().remove("rootValue");
 			}
+//			UtilTimerStack.pop(name);
 		}
 //		UtilTimerStack.pop(pname);
 	}
@@ -296,7 +304,9 @@ public class DefaultRowProcessor implements RowProcessor {
 		}*/
 
 		cellContext.setFieldValue(v);
+//		UtilTimerStack.push("doFieldValueExecutors");
 		this.doFieldValueExecutors(cellContext);
+//		UtilTimerStack.pop("doFieldValueExecutors");
 		
 //		v = formatValue(v, field.getDataFormat());
 		setCellValue(field, cell, v);
@@ -338,7 +348,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			cell.getCellStyle().setDataFormat(HSSFDataFormat.getBuiltinFormat(df));
 		}*/
 //		formatValue(value, df);
-		if(Number.class.isInstance(value)){
+		/*if(Number.class.isInstance(value)){
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			cell.setCellValue(((Number)value).doubleValue());
 		}else if(String.class.isInstance(value)){
@@ -356,7 +366,8 @@ public class DefaultRowProcessor implements RowProcessor {
 		}else{
 			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
 			cell.setCellValue(cellValue);
-		}
+		}*/
+		ExcelUtils.setCellValue(cell, value);
 	}
 	protected void setCellValue(FieldModel field, Cell cell, Object value) {
 		if(this.cellListener!=null)

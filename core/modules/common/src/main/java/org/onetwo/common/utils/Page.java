@@ -59,10 +59,10 @@ public class Page<T> implements Serializable {
 		}
 	}
 	
-	public void setPageNo(String pageNoStr){
+	/*public void setPageNo(String pageNoStr){
 		int pageNo = Integer.valueOf(pageNoStr);
 		this.setPageNo(pageNo);
-	}
+	}*/
 
 	/*public Page<T> pageNo(final int thePageNo) {
 		setPageNo(thePageNo);
@@ -121,13 +121,20 @@ public class Page<T> implements Serializable {
 	}
 
 	public void setOrder(final String order) {
-		String[] orders = StringUtils.split(StringUtils.lowerCase(order), ',');
-		for (String orderStr : orders) {
-			if (!StringUtils.equals(DESC, orderStr) && !StringUtils.equals(ASC, orderStr))
-				throw new IllegalArgumentException("错误的排序：" + orderStr);
-		}
+		if (!StringUtils.equals(DESC, order) && !StringUtils.equals(ASC, order))
+			throw new IllegalArgumentException("错误的排序：" + order);
 
 		this.order = StringUtils.lowerCase(order);
+	}
+	
+	public boolean isSort(){
+		if(StringUtils.isBlank(order) || StringUtils.isBlank(orderBy))
+			return false;
+		return true;
+	}
+	
+	public String getOrderString(){
+		return isSort()?this.order.substring(1):"";
 	}
 
 	public Page<T> order(final String theOrder) {

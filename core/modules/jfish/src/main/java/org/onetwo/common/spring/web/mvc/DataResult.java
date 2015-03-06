@@ -3,8 +3,9 @@ package org.onetwo.common.spring.web.mvc;
 import java.util.Map;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Result;
 
-public class DataResult {
+public class DataResult implements Result<Integer, Map<String, Object>>{
 
 	public static DataResult createFailed(String message){
 		return create(FAILED, message);
@@ -34,7 +35,7 @@ public class DataResult {
 		this.code = SUCCEED;
 	}
 
-	public int getCode() {
+	public Integer getCode() {
 		return code;
 	}
 

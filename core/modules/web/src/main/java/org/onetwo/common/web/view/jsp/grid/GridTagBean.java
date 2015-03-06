@@ -3,8 +3,10 @@ package org.onetwo.common.web.view.jsp.grid;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.common.web.view.jsp.datagrid.PaginationType;
 import org.onetwo.common.web.view.jsp.datagrid.SearchForm;
@@ -21,6 +23,7 @@ public class GridTagBean extends HtmlElement {
 	private String queryString;
 
 	private boolean toolbar;
+	private String toolbarName;
 	private boolean generatedForm;
 	
 	private String bodyContent;
@@ -36,6 +39,14 @@ public class GridTagBean extends HtmlElement {
 	private String ajaxZoneName;
 //	private String ajaxInstName;
 	
+
+	
+	private String custombar;
+	private String customform;
+	
+	private boolean jsgrid;
+
+	private boolean loadmore = false;
 	public RowTagBean createDefaultIteratorRow() {
 		RowTagBean row = new RowTagBean(RowType.iterator);
 		if(!rows.contains(row)){
@@ -134,7 +145,7 @@ public class GridTagBean extends HtmlElement {
 	public boolean isNonePagination(){
 		return this.paginationType==PaginationType.none;
 	}
-	
+
 	public boolean isFormPagination(){
 		return this.paginationType==PaginationType.form;
 	}
@@ -188,9 +199,84 @@ public class GridTagBean extends HtmlElement {
 		return ajaxZoneName;
 	}
 
+	public String getPageAjaxZoneName() {
+		if(isLoadmore()){
+			return "";
+		}
+		return ajaxZoneName;
+	}
+
+	/****
+	 * 扩展
+	 * 表格数据区域
+	 * @return
+	 */
+	public String getGridAjaxZoneName() {
+		if(!isLoadmore() || !AAUtils.isAjaxRequest(WebHolder.getRequest())){
+			return "";
+		}
+		
+		return ajaxZoneName;
+	}
+
+	/***
+	 * 扩展
+	 * 加载下一页区域
+	 * @return
+	 */
+	public String getLoadmoreAjaxZoneName() {
+		if(!isLoadmore() || AAUtils.isAjaxRequest(WebHolder.getRequest())){
+			return "";
+		}
+		return ajaxZoneName;
+	}
+
+	public String getAjaxZoneNameFull() {
+		return getAjaxZoneName()+"Full";
+	}
+
 	public void setAjaxZoneName(String ajaxZoneName) {
 		this.ajaxZoneName = ajaxZoneName;
 	}
 
-	
+	public String getCustombar() {
+		return custombar;
+	}
+
+	public void setCustombar(String custombar) {
+		this.custombar = custombar;
+	}
+
+	public String getCustomform() {
+		return customform;
+	}
+
+	public void setCustomform(String customform) {
+		this.customform = customform;
+	}
+
+	public String getToolbarName() {
+		return toolbarName;
+	}
+
+	public void setToolbarName(String toolbarName) {
+		this.toolbarName = toolbarName;
+	}
+
+	public boolean isJsgrid() {
+		return jsgrid;
+	}
+
+	public void setJsgrid(boolean jsgrid) {
+		this.jsgrid = jsgrid;
+	}
+
+	public boolean isLoadmore() {
+		return loadmore;
+	}
+
+	public void setLoadmore(boolean loadmore) {
+		this.loadmore = loadmore;
+	}
+
 }

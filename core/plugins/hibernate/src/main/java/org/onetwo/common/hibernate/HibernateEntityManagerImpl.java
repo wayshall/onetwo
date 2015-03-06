@@ -9,6 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.SharedSessionContract;
 import org.onetwo.common.base.HibernateSequenceNameManager;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -16,12 +17,15 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.NiceDate;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 
 @SuppressWarnings("unchecked")
-public class HibernateEntityManagerImpl extends AbstractEntityManager implements InitializingBean {
+public class HibernateEntityManagerImpl extends AbstractEntityManager implements HibernateQueryProvider, InitializingBean {
 
 	
 	protected final Logger logger = Logger.getLogger(this.getClass());
@@ -30,14 +34,14 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
-	@Resource
+//	@Resource
 	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
 	
 //	@Resource
 //	private DataSource dataSource;
 	
-//	@Resource
-//	private ApplicationContext applicationContext;
+	@Resource
+	private ApplicationContext applicationContext;
 	
 //	private boolean watchSqlFile = BaseSiteConfig.getInstance().isDev();
 	
@@ -58,6 +62,8 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		FileNamedQueryFactory<HibernateNamedInfo> fq = new HibernateFileQueryManagerImpl(db, watchSqlFile, this, listener);
 		fq.initQeuryFactory(this);
 		this.fileNamedQueryFactory = fq;*/
+		
+		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 	}
 
 
@@ -68,19 +74,45 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
-		SQLQuery query = getSession().createSQLQuery(sqlString);
+		/*SQLQuery query = getSession().createSQLQuery(sqlString);
 		if(entityClass!=null){
-			if(sessionFactory.getClassMetadata(entityClass)!=null){
-				query.addEntity(entityClass);
-			}else{
-				if(LangUtils.isSimpleType(entityClass))
-					query.setResultTransformer(new SingleColumnTransformer(entityClass));
-				else
-					query.setResultTransformer(new RowToBeanTransformer(entityClass));
-			}
+			if(isResultMappedToSingleColumnTransformer(entityClass))
+				query.setResultTransformer(new SingleColumnTransformer(entityClass));
+			else
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+		}*/
+		DataQuery dquery = createSQLQuery(sqlString, entityClass, true);
+		return dquery;
+	}
+
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass, boolean stateless){
+		SharedSessionContract session = getSession(stateless);
+		SQLQuery query = session.createSQLQuery(sqlString);
+		if(entityClass!=null){
+			if(isResultMappedToSingleColumnTransformer(entityClass))
+				query.setResultTransformer(new SingleColumnTransformer(entityClass));
+			else
+				query.setResultTransformer(new RowToBeanTransformer(entityClass));
+		}
+		DataQuery dquery = new HibernateQueryImpl(query);
+		return dquery;
+	}
+	
+	/***
+	 * 根据返回对象的class判断是否映射到单列
+	 * @param resultClass
+	 * @return
+	 */
+	protected boolean isResultMappedToSingleColumnTransformer(Class<?> resultClass){
+		return LangUtils.isSimpleType(resultClass) || NiceDate.class.isAssignableFrom(resultClass);
+	}
+	public DataQuery createEntitySQLQuery(String sqlString, Class<?>... entityClass){
+		SQLQuery query = getSession().createSQLQuery(sqlString);
+		for(Class<?> e : entityClass){
+			query.addEntity(e);
 		}
 		DataQuery dquery = new HibernateQueryImpl(query);
 		return dquery;
@@ -94,6 +126,11 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	
 	public DataQuery createQuery(String ejbqlString){
 		DataQuery dquery = new HibernateQueryImpl(getSession().createQuery(ejbqlString));
+		return dquery;
+	}
+	
+	public DataQuery createQuery(String ejbqlString, boolean statful){
+		DataQuery dquery = new HibernateQueryImpl(getSession(statful).createQuery(ejbqlString));
 		return dquery;
 	}
 
@@ -113,12 +150,18 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		getSession().flush();
 	}
 
+	/****
+	 * 这里直接使用hibernate的load方法
+	 * 而在service层则使用findById重新实现load方法。
+	 */
 	@Override
 	public <T> T load(Class<T> entityClass, Serializable id) {
 		this.checkEntityIdValid(id);
 		T entity = (T)getSession().load(entityClass, id);
-//		if(entity==null)
-//			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		/*T entity = (T) findById(entityClass, id);
+		if(entity==null)
+			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		*/
 		return entity;
 	}
 
@@ -172,6 +215,14 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		return this.sessionFactory.getCurrentSession();
 	}
 	
+	public <T extends SharedSessionContract> T getSession(boolean statefull){
+		if(statefull){
+			return (T)this.sessionFactory.getCurrentSession();
+		}else{
+			return (T)this.sessionFactory.openStatelessSession();
+		}
+	}
+	
 	public EntityManagerProvider getEntityManagerProvider(){
 		return EntityManagerProvider.Hibernate;
 	}
@@ -210,4 +261,6 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
 		return fileNamedQueryFactory;
 	}
+
+	
 }

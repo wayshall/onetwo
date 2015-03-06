@@ -24,7 +24,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	protected final Logger logger = MyLoggerFactory.getLogger(SelectExtQueryImpl.class);
 
 
-	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")"};
+	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")", "'", "\"\"", "/", "+", "-"};
 
 	protected Class<?> entityClass;
 	protected String alias;
@@ -46,29 +46,37 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	private List<ExtQueryListener> listeners;
 	private boolean fireListeners = true;
 
+	private final Map sourceParams;
+	
 	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
 		this(entityClass, alias, params, symbolManager, null);
 	}
-	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+	public AbstractExtQuery(Class<?> entityClass, String alias, Map sourceParams, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		this.entityClass = entityClass;
 		if(StringUtils.isBlank(alias)){
 			alias = StringUtils.uncapitalize(entityClass.getSimpleName());
 		}
 		this.alias = alias;
-		if(params==null){
-			this.params = CUtils.newLinkedHashMap();
-		}else{
-			this.params = new LinkedHashMap<Object, Object>(params);
-		}
 		this.symbolManager = symbolManager;
-		
+		this.sourceParams = sourceParams;//ImmutableMap.copyOf(sourceParams);
 		this.listeners = (listeners==null?Collections.EMPTY_LIST:listeners);
 		
 //		this.init(entityClass, this.alias);
 	}
+	
+	protected void initParams(){
+		if(sourceParams==null){
+			this.params = CUtils.newLinkedHashMap();
+		}else{
+			this.params = new LinkedHashMap<Object, Object>(sourceParams);
+		}
+	}
 
 
 	public void initQuery(){
+		this.hasBuilt = false;
+		this.initParams();
+		
 		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, true);
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Calm);
@@ -86,7 +94,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	
 
 	protected String getFromName(Class<?> entityClass){
-		return entityClass.getSimpleName();
+		return entityClass.getName();
 	}
 	
 	protected void fireInitListeners(){
@@ -260,14 +268,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			}*/
 
 //			String[] sp = StringUtils.split(p.toString(), SQLSymbolManager.SPLIT_SYMBOL);
-			QueryField qf = null;
-			if(p instanceof String){
-				qf = new QueryFieldImpl(p.toString());
-			}else if(p instanceof QueryField){
-				qf = (QueryField) p;
-			}else{
-				LangUtils.throwBaseException("error field expression : " + p);
-			}
+			QueryField qf = QueryFieldImpl.create(p);
 			qf.init(this, v);
 			
 //			SQLSymbolParserContext context = SQLSymbolParserContext.create(qf.getFieldName(), v, paramsValue, ifNull);
@@ -379,6 +380,17 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	}
 	protected void setSqlQuery(boolean sqlQuery) {
 		this.sqlQuery = sqlQuery;
+	}
+	@Override
+	public boolean hasParameterField(String fieldName) {
+		return getAllParameterFieldNames().contains(fieldName);
+	}
+	
+
+	@Override
+	public Set<String> getAllParameterFieldNames() {
+		Set<String> fields = ExtQueryUtils.getAllParameterFieldNames(getParams());
+		return fields;
 	}
 	
 }

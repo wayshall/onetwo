@@ -62,9 +62,10 @@ public class TimeCounter {
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
 		message.append(this.target)
-				.append(" ----->>> start time[").append(DateUtil.formatDateTimeMillis(start))
+				.append("---> cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
+				.append(", start time[").append(DateUtil.formatDateTimeMillis(start))
 				.append("], stop time[").append(DateUtil.formatDateTimeMillis(this.stop))
-				.append("], cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]");
+				.append("]");
 		if(printMemory){
 			message.append("\n").append(LangUtils.statisticsMemory(""));
 		}

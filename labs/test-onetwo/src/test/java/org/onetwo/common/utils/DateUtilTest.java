@@ -1,8 +1,11 @@
 package org.onetwo.common.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
@@ -155,12 +158,15 @@ public class DateUtilTest {
 		newdate = DateUtil.parseDateTime("2012-09-09 22:22:22");
 		Assert.assertEquals(date.getTime(), newdate.getTime());
 		
-		newdate = DateUtil.parse("2012-09 22:22");
+		newdate = DateUtil.parse("2012-09-01 22:22");
 		Assert.assertNotNull(newdate);
 		newdate = DateUtil.parse("22:22");
 		Assert.assertNotNull(newdate);
 		newdate = DateUtil.parse("2013-01-30");
 		Assert.assertEquals("2013-1-30 0:00:00", newdate.toLocaleString());
+		
+		newdate = DateUtil.endOf(DateUtil.parse("2013-01-30"), DateType.date);
+		Assert.assertEquals("2013-01-30 23:59:59.999", DateUtil.formatDateTimeMillis(newdate));
 	}
 	
 	@Test
@@ -181,10 +187,12 @@ public class DateUtilTest {
 		Calendar start = DateUtil.asCalendar(DateUtil.parse("2012-5-08 22:30"));
 		Calendar end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
 		Assert.assertFalse(DateUtil.isSameAccurateAt(start, end, DateType.date));
+		Assert.assertFalse(DateUtil.isSameAt(start, end, DateType.date));
 		
 		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 21:30"));
 		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30"));
 		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.date));
+		Assert.assertTrue(DateUtil.isSameAt(start, end, DateType.date));
 		
 		start = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:32"));
 		end = DateUtil.asCalendar(DateUtil.parse("2013-5-08 22:30:33"));
@@ -193,7 +201,24 @@ public class DateUtilTest {
 		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.hour));
 		Assert.assertTrue(DateUtil.isSameAccurateAt(start, end, DateType.min));
 		Assert.assertFalse(DateUtil.isSameAccurateAt(start, end, DateType.sec));
+		
+		Assert.assertTrue(DateUtil.isSameAt(start, end, DateType.year));
+		Assert.assertTrue(DateUtil.isSameAt(start, end, DateType.date));
+		Assert.assertTrue(DateUtil.isSameAt(start, end, DateType.hour));
+		Assert.assertTrue(DateUtil.isSameAt(start, end, DateType.min));
+		Assert.assertFalse(DateUtil.isSameAt(start, end, DateType.sec));
+		
+
+		Date date1 = DateUtil.parse("2014-11-30 22:30:32");
+		Date date2 = DateUtil.parse("2014-12-01 22:30:32");
+		Assert.assertFalse(DateUtil.isSameAt(date1, date2, DateType.date));
+		
+		date1 = DateUtil.parse("2014-12-31 22:30:32");
+		date2 = DateUtil.parse("2015-01-01 22:30:32");
+		Assert.assertFalse(DateUtil.isSameAt(date1, date2, DateType.date));
+		
 	}
+	
 	@Test
 	public void testCompareAccurateAt(){
 		Calendar start = DateUtil.asCalendar(DateUtil.parse("2012-5-08 22:30"));
@@ -213,6 +238,41 @@ public class DateUtilTest {
 		Assert.assertEquals(0, DateUtil.compareAccurateAt(start, end, DateType.min));
 		Assert.assertEquals(-1, DateUtil.compareAccurateAt(start, end, DateType.sec));
 	}
+	
+	@Test
+	public void testSplitWeek(){
+		Date startDate = DateUtil.parse("2015-01-01");
+		Date endDate = DateUtil.parse("2015-01-31");
+		Collection<DateRange> dateRange = DateUtil.splitAsDateRangeByWeek(startDate, endDate);
+		List<DateRange> dateList = new ArrayList<DateRange>(dateRange);
+		
+		Assert.assertEquals(5, dateList.size());
+		Assert.assertEquals(DateUtil.parse("2015-01-01"), dateList.get(0).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-04"), dateList.get(0).getEndDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-19"), dateList.get(3).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-25"), dateList.get(3).getEndDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-26"), dateList.get(4).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-31"), dateList.get(4).getEndDate());
+	}
+	
+	@Test
+	public void testSplitMonth(){
+		Date startDate = DateUtil.parse("2015-01-25");
+		Date endDate = DateUtil.parse("2015-12-25");
+		Collection<DateRange> dateRange = DateUtil.splitAsDateRangeByMonth(startDate, endDate);
+		List<DateRange> dateList = new ArrayList<DateRange>(dateRange);
+
+		Assert.assertEquals(12, dateList.size());
+		Assert.assertEquals(DateUtil.parse("2015-01-25"), dateList.get(0).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-01-31"), dateList.get(0).getEndDate());
+		Assert.assertEquals(DateUtil.parse("2015-02-01"), dateList.get(1).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-02-28"), dateList.get(1).getEndDate());
+		Assert.assertEquals(DateUtil.parse("2015-09-01"), dateList.get(8).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-09-30"), dateList.get(8).getEndDate());
+		Assert.assertEquals(DateUtil.parse("2015-12-01"), dateList.get(11).getStartDate());
+		Assert.assertEquals(DateUtil.parse("2015-12-25"), dateList.get(11).getEndDate());
+	}
+	
 	
 	public static void main(String[] args){
 	}

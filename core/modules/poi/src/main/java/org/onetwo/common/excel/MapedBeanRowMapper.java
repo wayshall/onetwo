@@ -19,8 +19,8 @@ public class MapedBeanRowMapper<T> extends BeanRowMapper<T> {
 		this.nameMap.put(name, propertyName);
 		return this;
 	}
-	public List<String> mapTitleRow(Sheet sheet) {
-		List<String> names = super.mapTitleRow(sheet);
+	public List<String> mapTitleRow(int sheetIndex, Sheet sheet) {
+		List<String> names = super.mapTitleRow(sheetIndex, sheet);
 		List<String> mappedNames = LangUtils.newArrayList();
 		for(String name : names){
 			if(!nameMap.containsKey(name))
