@@ -10,7 +10,9 @@ import javax.validation.ValidationException;
 import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ILogicDeleteEntity;
+import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.exception.BusinessException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
@@ -80,10 +82,16 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 		return super.findPage(page, properties);
 	}
 
+	/****
+	 * 鉴于hibernate的load方法的延迟加载实在太不爽，在service曾重新实现load行为。
+	 */
 	@Override
 	@Transactional(readOnly=true)
 	public T load(PK id) {
-		return super.load(id);
+		T entity = (T) findById(id);
+		if(entity==null)
+			throw new ServiceException("entity["+entityClass.getName()+"] is not exist. id:["+id+"]");
+		return entity;
 	}
 
 	@Override
@@ -134,7 +142,26 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 	public T findUnique(Object... properties) {
 		return super.findUnique(properties);
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public T findOne(Object... properties) {
+		return super.findOne(properties);
+	}
 	
+
+	@Transactional(readOnly=true)
+	@Override
+	public List<T> findByProperties(QueryBuilder query) {
+		return super.findByProperties(query);
+	}
+
+	@Transactional(readOnly=true)
+	@Override
+	public void findPage(Page page, QueryBuilder query) {
+		super.findPage(page, query);
+	}
+
 	protected ValidationBindingResult validate(Object obj, Class<?>... groups){
 		ValidationBindingResult validations = SpringApplication.getInstance().getValidator().validate(obj);
 		return validations;

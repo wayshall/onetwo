@@ -23,7 +23,7 @@ public abstract class StringUtils {
 
     public static String lowerCase(String str) {
         if (str == null) {
-            return null;
+            return EMPTY;
         }
         return str.toLowerCase();
     }
@@ -44,6 +44,11 @@ public abstract class StringUtils {
 		} catch (UnsupportedEncodingException e) {
 			return str;
 		}
+	}
+
+
+	public static boolean isObjectBlank(Object obj) {
+		return obj == null || obj.toString().trim().equals("");
 	}
 
 	public static boolean isBlank(String str) {
@@ -506,6 +511,13 @@ public abstract class StringUtils {
 		return (list == null || list.isEmpty()) ? null : list;
 	}
 
+	public static String join(String separator, Object... array) {
+		if (array == null) {
+			return EMPTY;
+		}
+		return join(array, separator, 0, array.length);
+	}
+
 	public static String join(Object[] array, String separator) {
 		if (array == null) {
 			return EMPTY;
@@ -634,8 +646,8 @@ public abstract class StringUtils {
 		return result;
 	}
 
-	public static String trimToEmpty(String str) {
-		return str == null ? EMPTY : str.trim();
+	public static String trimToEmpty(Object str) {
+		return str == null ? EMPTY : str.toString().trim();
 	}
 
 	public static String[] trim(String[] strs) {
@@ -683,12 +695,12 @@ public abstract class StringUtils {
 		return val;
 	}
 
-	public static String firstNotBlank(String... defs){
+	public static String firstNotBlank(Object... defs){
 		if(LangUtils.isEmpty(defs))
 			return LangUtils.EMPTY_STRING;
-		for(String def : defs){
-			if(isNotBlank(def))
-				return def;
+		for(Object def : defs){
+			if(def!=null && isNotBlank(def.toString()))
+				return def.toString();
 		}
 		return LangUtils.EMPTY_STRING;
 	}
@@ -712,6 +724,12 @@ public abstract class StringUtils {
 			return path.substring(prefix.length(), path.length());
 		}
 		return path;
+	}
+
+	public static String surroundWith(String path, String prefix) {
+		if (path == null)
+			path = EMPTY;
+		return appendEndWith(appendStartWith(path, prefix), prefix);
 	}
 
 	public static String appendStartWith(String path, String prefix) {
@@ -760,6 +778,41 @@ public abstract class StringUtils {
 		}
 		return EMPTY;
 	}
+
+
+
+    public static String trimRight(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        String rs = text;
+        while(rs.endsWith(trimstr)){
+        	rs = rs.substring(0, rs.length()-trimstr.length());
+        }
+        return rs;
+    }
+    public static String trimLeft(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        String rs = text;
+        int index = 0;
+        while(rs.startsWith(trimstr, index)){
+//        	rs = rs.substring(trimstr.length());
+        	index += trimstr.length();
+        }
+        rs = index>0?rs.substring(index, rs.length()):rs;
+        return rs;
+    }
+
+    public static String trim(String text, String trimstr) {
+        if(isBlank(text) || isBlank(trimstr))
+        	return text;
+        return trimRight(trimLeft(text, trimstr), trimstr);
+    }
+
+    public static String replaceEach(String text, String search, String replacement) {
+        return replaceEach(text, new String[]{search}, new String[]{replacement}, false, 0);
+    }
+    
 
     public static String replaceEach(String text, String[] searchList, String[] replacementList) {
         return replaceEach(text, searchList, replacementList, false, 0);

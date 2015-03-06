@@ -1,9 +1,13 @@
 package org.onetwo.common.web.view.jsp.form;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.preventor.PreventorFactory;
+import org.onetwo.common.web.preventor.RequestPreventor;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.springframework.beans.PropertyAccessor;
@@ -12,7 +16,8 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 @SuppressWarnings("serial")
 public class FormTag extends BaseHtmlTag<FormTagBean> {
 	
-	private String template = TagUtils.getTagPage("form/spring-form.jsp");
+	private String template = "form/spring-form.jsp";
+	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
 
 	private String action;
 	private String method;
@@ -42,12 +47,14 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	@Override
 	public int doStartTag() throws JspException {
 		int rs = super.doStartTag();
+		Object model = this.pageContext.getRequest().getAttribute(getName());
+		component.setModel(model);
 		
 		this.forSpringFormTag();
 		
 		Object data = dataProvider;
 		if(data==null){
-			data = this.pageContext.getRequest().getAttribute(getName());
+			data = model;
 		}
 		FormDataProvider provider = createDataProvider(data);
 		
@@ -68,14 +75,13 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 
 	@Override
 	public int doEndTag() throws JspException {
+		BodyContent bc = this.getBodyContent();
+		if(bc!=null){
+			this.component.setBodyContent(bc.getString());
+		}
 		try {
-			BodyContent bc = this.getBodyContent();
-			if(bc!=null){
-				this.component.setBodyContent(bc.getString());
-			}
-			this.pageContext.include(getTemplate());
-		} catch (Exception e) {
-			throw new JspException("render grid error : " + e.getMessage(), e);
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally{
 			clearComponentFromRequest(TagUtils.getFormVarName());
 		}
@@ -86,20 +92,33 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	protected void populateComponent() throws JspException{
 		super.populateComponent();
 		
-		component.setAction(action);
+
+		component.setAction(buildActionString());
 		component.setMethod(method);
 		component.setUploadFile(uploadFile);
 		component.setShowOnly(showOnly);
 		
 		setComponentIntoRequest(TagUtils.getFormVarName(), component);
 	}
-
+	
+	protected String buildActionString() {
+		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		if(StringUtils.isBlank(action)){
+			String surl = TagUtils.getRequestUri(request);
+			return surl;
+		}
+//		this.buildQueryString = false;
+		if(action.startsWith(":")){
+			return TagUtils.parseAction(request, action, this.csrfPreventor);
+		}
+		return action;
+	}
 	
 	public String getTemplate() {
-		return template;
+		return this.template;
 	}
 	public void setTemplate(String template) {
-		this.template = TagUtils.getViewPage(template);
+		this.template = template;
 	}
 
 	public String getAction() {

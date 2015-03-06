@@ -17,13 +17,14 @@
 				<field name="carbean" />
 			</fields>
 		</row>
+		<!-- span="properties.size()" 或者 span="cardBeans.size()" 很重要，如果有些属性占多行，必须先创建好行，否则出错 -->
 		<row name="element" type="iterator" datasource="#data" span="cardBeans.size()"  fieldFont="boldweight:BOLDWEIGHT_BOLD"> 
 			<fields>
-				<field name="id" rowspan="cardBeans.size()"/>
-				<field name="cardNo" rowspan="cardBeans.size()" value="cardNo+'--for--test--'+cardPwd"/>
-				<field name="cardPwd" rowspan="cardBeans.size()"/>
+				<field name="id" />
+				<field name="cardNo"  value="cardNo+'--for--test--'+cardPwd"/>
+				<field name="cardPwd" />
 				<!-- 一列多行  属性是list，每列的值是list元素 -->
-				<field name="properties" rowspan="properties.size()"/>
+				<field name="properties"/>
 				<!-- 一列多行 属性是list，每列的值是list元素的某个属性-->
 				<field name="name" rootValue="cardBeans">
 				</field>

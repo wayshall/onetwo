@@ -11,6 +11,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
  * config in web.xml
  * @author wayshall
  *
+ * call onJFishContextClasses
  */
 public class JFishWebApplicationContext extends SpringProfilesWebApplicationContext {
 	

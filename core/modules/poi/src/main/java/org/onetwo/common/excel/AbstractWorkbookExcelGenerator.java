@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
+import org.onetwo.common.excel.data.WorkbookData;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.utils.FileUtils;
@@ -51,6 +52,15 @@ abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerato
 	}
 
 	abstract public Workbook getWorkbook();
+	
+	abstract public WorkbookData getWorkbookData();
+
+	@Override
+	public String getFormat() {
+		return getWorkbookData().getWorkbookModel().getFormat();
+	}
+	
+	
 
 
 }

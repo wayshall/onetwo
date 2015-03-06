@@ -1,20 +1,30 @@
 package org.onetwo.common.fish.spring.config;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.onetwo.common.fish.utils.ContextHolder;
-import org.onetwo.common.fish.utils.ThreadLocalCleaner;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
+import org.onetwo.common.spring.ftl.DirFreemarkerConfig;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
+import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
+import org.onetwo.common.spring.web.reqvalidator.JFishUploadFileTypesChecker;
+import org.onetwo.common.spring.web.tag.CookiesTagThemeSettting;
+import org.onetwo.common.spring.web.tag.SessionTagThemeSettting;
+import org.onetwo.common.spring.web.tag.ThemeSettingWebFilter;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.utils.propconf.Environment;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.WebHolderManager;
+import org.onetwo.common.web.view.DefaultTagThemeSetting;
+import org.onetwo.common.web.view.ThemeSetting;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -40,7 +50,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @Configuration
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
-@Import(JFishProfiles.class)
+@Import({JFishProfiles.class, DirFreemarkerConfig.class})
 public class JFishContextConfig extends BaseApplicationContextSupport {
 	
 	public static final String MVC_CONFIG = "mvcConfig";
@@ -59,6 +69,23 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	public AppConfig appConfig(){
 //		AppConfig appConfig = SpringUtils.getBean(applicationContex, AppConfig.class);
 		return BaseSiteConfig.getInstance();
+	}
+	
+	@Bean
+	public ThemeSetting themeSetting(){
+		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
+		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new SessionTagThemeSettting();
+		}else if(CookiesTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new CookiesTagThemeSettting();
+		}else{
+			return new DefaultTagThemeSetting();
+		}
+	}
+	
+	@Bean
+	public ThemeSettingWebFilter themeSettingWebFilter(){
+		return new ThemeSettingWebFilter();
 	}
 	
 	@Bean
@@ -127,11 +154,26 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	}
 
 	@Bean
+	public WebHolderManager webHolderManager() {
+		WebHolderManager webHolderManager = new WebHolderManager();
+		return webHolderManager;
+	}
+	
+	@Bean
+	public JFishRequestValidator fileTypesRequestValidator(){
+		JFishUploadFileTypesChecker validator = new JFishUploadFileTypesChecker();
+		List<String> allowed = this.mvcSetting().getAllowedFileTypes();
+		if(LangUtils.isNotEmpty(allowed)){
+			validator.setAllowedFileTypes(allowed);
+		}
+		return validator;
+	}
+/*	@Bean
 	public ThreadLocalCleaner ThreadLocalCleaner() {
 		ThreadLocalCleaner cleaner = new ThreadLocalCleaner();
 		return cleaner;
 	}
-
+*/
 	@Bean
 	public ContextHolder contextHolder(){
 		return new WebRequestHolder();

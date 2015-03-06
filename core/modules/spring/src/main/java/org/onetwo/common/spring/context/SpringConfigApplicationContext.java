@@ -1,7 +1,5 @@
 package org.onetwo.common.spring.context;
 
-import java.util.List;
-
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.list.JFishList;
@@ -25,21 +23,27 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	
 
 	private PluginManagerInitializer pluginManagerInitializer = new ContextPluginManagerInitializer();
+	private boolean pluginEnabled = true;
 	private String appEnvironment;
 	
 	private Class<?>[] annotatedClasses;
 	private String[] basePackages;
 	private BeanNameGenerator beanNameGenerator;
 	private ScopeMetadataResolver scopeMetadataResolver;
+//	private ContextPluginManager contextPluginManager;
 	
 	
 	@Override
 	protected void prepareRefresh() {
 		Assert.hasText(appEnvironment);
 		JFishList<Class<?>> configClasseList = JFishList.create();
-		List<Class<?>> annoClasses = this.getPluginManagerInitializer().initPluginContext(getAppEnvironment());
-		configClasseList.addCollection(annoClasses)
-						.addArray(annotatedClasses);
+		if(pluginEnabled){
+			if(pluginManagerInitializer==null){
+				pluginManagerInitializer = new ContextPluginManagerInitializer();
+			}
+			this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		}
+		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
 			register(configClasseList.toArray(new Class<?>[0]));
 		super.prepareRefresh();
@@ -160,6 +164,14 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 
 	public void setAppEnvironment(String appEnvironment) {
 		this.appEnvironment = appEnvironment;
+	}
+
+	public boolean isPluginEnabled() {
+		return pluginEnabled;
+	}
+
+	public void setPluginEnabled(boolean pluginEnabled) {
+		this.pluginEnabled = pluginEnabled;
 	}
 	
 	

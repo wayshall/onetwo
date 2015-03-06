@@ -1,12 +1,15 @@
 package org.onetwo.common.utils;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.utils.list.JFishList;
 import org.springframework.util.ClassUtils;
 
 public class FileUtilsTest {
@@ -110,5 +113,85 @@ public class FileUtilsTest {
 		Assert.assertEquals(1, size.longValue());
 	}
 	
+	@Test
+	public void testWriteStringList(){
+		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/fileutils/string-list.txt";
+		File file = new File(filepath);
+		List<String> datas = Arrays.asList("aaa", "bbb", "cccc");
+		FileUtils.writeListTo(file, datas);
+		
+		String actual = JFishList.wrap(FileUtils.readAsList(file)).join(",", ":this");
+		Assert.assertEquals("aaa,bbb,cccc", actual);
+		file.delete();
+		
+		file = new File(filepath);
+		datas = Arrays.asList("1111", "2222", "cccc");
+		OutputStream output = FileUtils.openOutputStream(file);
+		FileUtils.writeListToWithClose(output, null, datas);
+		actual = JFishList.wrap(FileUtils.readAsList(file)).join(",", ":this");
+		Assert.assertEquals("1111,2222,cccc", actual);
+		file.delete();
+	}
+	
+	@Test
+	public void testReadTxtFile(){
+//		String filepath = FileUtils.getResourcePath("")+"/org/onetwo/common/fileutils/user-data.txt";
+//		FileUtils.readAsList(filepath, UserEntity.class, "\t");
+	}
+	
+	@Test
+	public void testNewFileNameByDateAndRand(){
+		String fn = "testfile.java";
+		String newfn = FileUtils.newFileNameByDateAndRand(fn);
+		System.out.println("newfn: " + newfn);
+		Assert.assertTrue(newfn.startsWith("testfile"));
+		Assert.assertTrue(StringUtils.split(newfn, "-").length==3);
+		
+		String path = this.getClass().getResource("FileUtilsTest.class").getFile();
+		System.out.println("path: " + path);
+		File file = new File(path);
+		newfn = FileUtils.newFileNameAppendRepeatCount(file);
+		System.out.println("newfn: " + newfn);
+		Assert.assertEquals("FileUtilsTest(1).class", newfn);
+	}
+	
+	@Test
+	public void testCopyFile(){
+		String content = "test";
+		String fileName = "copy-test.txt";
+		String srcDir = "D:/fileutil-test";
+		File srcFile = new File(srcDir + File.separator+fileName);
+		FileUtils.writeStringToFile(srcFile, content);
+		String data = FileUtils.readAsString(srcFile);
+		Assert.assertEquals(content, data);
+		
+		String targetDir = srcDir+File.separator+"/target";
+		File targetFile = FileUtils.copyFileToDir(srcFile, targetDir);
+		data = FileUtils.readAsString(targetFile);
+		Assert.assertEquals(content, data);
+	}
+	
+	@Test
+	public void testConvertPath(){
+		String dir = "D:\\attachmentdir\\web";
+		String rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/", rdir);
+
+		dir = "D:\\attachmentdir\\web/2014-11-24";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/2014-11-24/", rdir);
+
+		dir = "D:\\attachmentdir\\web//test//";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("D:/attachmentdir/web/test/", rdir);
+
+		dir = "smb://attachmentdir\\web//test//";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("smb://attachmentdir/web/test/", rdir);
+
+		dir = "smb://attachmentdir\\web//test";
+		rdir = FileUtils.convertDir(dir);
+		Assert.assertEquals("smb://attachmentdir/web/test/", rdir);
+	}
 
 }

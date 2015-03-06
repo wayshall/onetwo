@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.StringUtils;
@@ -24,8 +25,14 @@ import org.springframework.util.Assert;
 abstract public class ResponseUtils {
 
 	private static final Logger logger = MyLoggerFactory.getLogger(ResponseUtils.class);
+
+	public static final String TEXT_TYPE = "text/plain; charset=UTF-8";
+	public static final String JSON_TYPE = "application/json; charset=UTF-8";
+	public static final String XML_TYPE = "text/xml; charset=UTF-8";
+	public static final String HTML_TYPE = "text/html; charset=UTF-8";
+	public static final String JS_TYPE = "text/javascript";
 	
-	public static final String COOKIE_PATH = "/";
+	public static final String COOKIE_PATH;
 	public static final String COOKIE_DOMAIN;
 	// public static final String COOKIE_DOMAIN =
 	// "";//BaseSiteConfig.getInstance().getCookieDomain();
@@ -35,14 +42,18 @@ abstract public class ResponseUtils {
 		DateFormat df = new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US);
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		COOKIE_DATA_FORMAT = df;
-		
+
 		String domain = "";
+		String path = "";
 		try {
 			domain = BaseSiteConfig.getInstance().getCookieDomain();
+			path = BaseSiteConfig.getInstance().getCookiePath();
+			path = StringUtils.appendEndWith(path, "/");
 		} catch (Exception e) {
 			logger.error("use default domain,  because read domain path error : "+e.getMessage());
 		}
 		COOKIE_DOMAIN = domain;
+		COOKIE_PATH = path;
 	}
 
 	/****
@@ -84,6 +95,9 @@ abstract public class ResponseUtils {
 		response.addCookie(cookie);
 	}
 
+	public static void setCookie(HttpServletResponse response, String name, String value) {
+		setCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN, false);
+	}
 	/**********
 	 * path = / domain siteconfig['cookie.domain']
 	 * 
@@ -103,7 +117,7 @@ abstract public class ResponseUtils {
 	 * @param name
 	 */
 	public static void removeHttpOnlyCookie(HttpServletResponse response, String name) {
-		setHttpOnlyCookie(response, name, "", COOKIE_PATH, 0, COOKIE_DOMAIN);
+		setHttpOnlyCookie(response, name, "", COOKIE_PATH, 0, COOKIE_DOMAIN);//删除不能传-1，否则删除不了
 	}
 
 	/**
@@ -143,6 +157,7 @@ abstract public class ResponseUtils {
 			cookie.append(COOKIE_DATA_FORMAT.format(expires));
 		}
 
+		//本地时，不需要设置，设置了有些浏览器会读不到cookies
 		if (StringUtils.isNotBlank(domain)) {
 			cookie.append("; domain=").append(domain);
 		}
@@ -211,6 +226,58 @@ abstract public class ResponseUtils {
 		out.println("</script>");
 		if (flush)
 			out.flush();
+	}
+
+
+	public static void renderJsonp(HttpServletResponse response, final String callbackName, final Object params) {
+		String jsonParam = JsonMapper.DEFAULT_MAPPER.toJson(params);
+		renderJsonp(response, callbackName, jsonParam);
+	}
+	
+	public static void renderJsonp(HttpServletResponse response, HttpServletRequest request, final String callbackParam) {
+		String callback = request.getParameter(callbackParam);
+		callback = StringUtils.isBlank(callback)?"callback":callback;
+		StringBuilder result = new StringBuilder().append(callback).append("();");
+		render(response, result.toString(), JS_TYPE, true);
+	}
+	
+	public static void renderJsonp(HttpServletResponse response, final String callbackName, final String jsonParam) {
+		StringBuilder result = new StringBuilder().append(callbackName).append("(").append(jsonParam).append(");");
+		render(response, result.toString(), JS_TYPE, true);
+	}
+	
+	public static void renderText(HttpServletResponse response, String text){
+		render(response, text, null, false);
+	}
+	
+	public static void renderJs(HttpServletResponse response, String text){
+		render(response, text, JS_TYPE, true);
+	}
+	
+	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){
+		try {
+			if(!StringUtils.isBlank(contentType))
+				response.setContentType(contentType);
+			else
+				response.setContentType(TEXT_TYPE);
+
+			if (noCache) {
+				response.setHeader("Pragma", "No-cache");
+				response.setHeader("Cache-Control", "no-cache");
+				response.setDateHeader("Expires", 0);
+			}
+			PrintWriter pr = response.getWriter();
+			pr.write(text);
+			pr.flush();
+		} catch (Exception e) {
+			logger.error("render error: " + e.getMessage(), e);
+		}
+	}
+
+	public static void addP3PHeader(HttpServletResponse response){
+		response.addHeader("P3P", "CP=\"NON DSP COR CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa CONa HISa TELa OTPa OUR UNRa IND UNI COM NAV INT DEM CNT PRE LOC\"");
+//		response.addHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
+//		response.addHeader("P3P", "CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
 	}
 
 	public static void main(String[] args) {

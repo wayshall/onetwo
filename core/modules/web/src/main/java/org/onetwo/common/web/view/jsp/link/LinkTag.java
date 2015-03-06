@@ -4,19 +4,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.csrf.CsrfPreventorFactory;
+import org.onetwo.common.web.preventor.PreventorFactory;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.view.jsp.BaseHtmlTag;
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 
-	private String template = TagUtils.getTagPage("html/link.jsp");
+	private String template = "html/link.jsp";
 	
 	private String dataMethod;
 	private String dataConfirm;
 	private String href;
+	//
+//	private String dataParams;
 	
 	@Override
 	public LinkTagBean createComponent() {
@@ -29,11 +32,18 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 		component.setDataConfirm(dataConfirm);
 		component.setDataMethod(dataMethod);
 
-		boolean safeUrl = BaseSiteConfig.getInstance().isSafeRequest();
-		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl){
-			href = CsrfPreventorFactory.getDefault().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+		boolean safeUrl = BaseSiteConfig.getInstance().isSafeRequest() && StringUtils.isNotBlank(dataMethod);
+		if(!href.startsWith(RequestUtils.HTTP_KEY) && !href.startsWith(RequestUtils.HTTPS_KEY) && safeUrl && !RequestMethod.GET.toString().equalsIgnoreCase(dataMethod)){
+			href = PreventorFactory.getCsrfPreventor().processSafeUrl(href, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+			/*CsrfToken ct = CsrfPreventorFactory.getDefault().generateToken((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+			Map<String, String> map = LangUtils.newHashMap();
+			map.put(ct.getFieldName(), ct.getGeneratedValue());
+			this.dataParams = map.toParamString();*/
     	}
 
+		if(href.startsWith("/") && !href.startsWith(BaseSiteConfig.getInstance().getBaseURL())){
+			href = BaseSiteConfig.getInstance().getBaseURL()+href;
+		}
 		component.setSafeUrl(safeUrl);
 		component.setHref(href);
 
@@ -42,7 +52,8 @@ public class LinkTag extends BaseHtmlTag<LinkTagBean>{
 
 	protected int endTag()throws Exception {
 		try {
-			this.pageContext.include(getTemplate());
+			String t = getThemeSetting().getTagPage(getTemplate());
+			renderTemplate(t);
 		} finally {
 			clearComponentFromRequest(this.getClass().getSimpleName());
 		}

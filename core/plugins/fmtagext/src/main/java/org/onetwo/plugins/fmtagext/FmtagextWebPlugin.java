@@ -3,9 +3,9 @@ package org.onetwo.plugins.fmtagext;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
-import org.onetwo.common.fish.plugin.EmptyJFishMvcConfigurerListener;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
-import org.onetwo.common.spring.web.mvc.config.JFishMvcConfigurerListener;
+import org.onetwo.common.fish.plugin.JFishMvcConfigurerListenerAdapter;
+import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
+import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEvent;
 import org.onetwo.plugins.fmtagext.directive.ExtEntityGridDirective;
 import org.onetwo.plugins.fmtagext.directive.JFishEntryDirective;
 import org.onetwo.plugins.fmtagext.directive.JFishFieldDirective;
@@ -34,17 +34,16 @@ public class FmtagextWebPlugin extends AbstractJFishPlugin<FmtagextWebPlugin> {
 	}
 
 	@Override
-	public JFishMvcConfigurerListener getJFishMvcConfigurerListener() {
-		return new EmptyJFishMvcConfigurerListener(){
+	public JFishMvcPluginListener getJFishMvcConfigurerListener() {
+		return new JFishMvcConfigurerListenerAdapter(this){
 
 			@Override
-			public void onMvcBuildFreeMarkerConfigurer(final JFishFreeMarkerConfigurer config, final boolean hasBuilt){
-				if(!hasBuilt){
-					config.addDirective(new JFishEntryDirective());
-					config.addDirective(new JFishFieldDirective());
-					config.addDirective(new ExtEntityGridDirective(), true);
-					
-					config.addDirective(new JFishUIDirective());
+			public void listening(FreeMarkerConfigurerBuildEvent event){
+				if(!event.isHasBuilt()){
+					event.registerDirective(new JFishEntryDirective())
+						.registerDirective(new JFishFieldDirective())
+						.registerDirective(new ExtEntityGridDirective(), true)
+						.registerDirective(new JFishUIDirective());
 				}
 			}
 		};

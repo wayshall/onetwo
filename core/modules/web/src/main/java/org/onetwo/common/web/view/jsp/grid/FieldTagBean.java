@@ -1,13 +1,16 @@
 package org.onetwo.common.web.view.jsp.grid;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.view.HtmlElement;
 
 public class FieldTagBean extends HtmlElement {
 	public static enum RenderType {
 		auto,
 		checkbox,
+		radio,
 		html
 	}
 
@@ -39,6 +42,7 @@ public class FieldTagBean extends HtmlElement {
 	private String searchItemValue;
 	
 
+	private String reserved;//备用
 	
 
 	/*public void render(Writer out){
@@ -54,6 +58,38 @@ public class FieldTagBean extends HtmlElement {
 			value = getName();
 		return value;
 	}
+	
+	
+	public String getGridLabelHtml(){
+		FieldTagBean fieldBean = this;
+		String linkText = "";
+		if(fieldBean.isOrderable()){
+			linkText = "<a href='";
+			linkText += fieldBean.appendOrderBy(fieldBean.getRowTagBean().getGridTagBean().getActionWithQueryString()) +"' ";
+
+			if(fieldBean.getGrid().isFormPagination()){
+				linkText += " data-method='post'";
+			}else{
+				linkText += " data-method='get'";
+			}
+			if(fieldBean.getGrid().isAjaxSupported()){
+				linkText += " remote=true ajaxName=" + fieldBean.getRowTagBean().getGridTagBean().getAjaxZoneName();
+			}
+			linkText += ">";
+			linkText +=fieldBean.getLabel();
+			
+			if (fieldBean.isOrdering() && fieldBean.getOrderType()==":desc"){
+				linkText += "↑";
+			}else if(fieldBean.isOrdering() && fieldBean.getOrderType()==":asc"){
+				linkText += "↓";
+			}
+			
+			linkText += "</a>";
+		}else{
+			linkText = fieldBean.getLabel();
+		}
+		return linkText;
+	}
 
 	public String getOrderByString(){
 		if(!isOrderable())
@@ -64,12 +100,14 @@ public class FieldTagBean extends HtmlElement {
 	}
 	
 	public String appendOrderBy(String action){
-		String str = action;
-		if(action.indexOf('?')!=-1){
-			str += "&"+getOrderByString();
-		}else{
-			str += "?"+getOrderByString();
+		String paramStr = action;
+		int paramStart = action.indexOf('?');
+		if(paramStart!=-1){
+			paramStr = action.substring(paramStart+1);
+			action = action.substring(0, paramStart);
 		}
+		CasualMap params = new CasualMap(paramStr).filter("order", "orderBy");
+		String str = action + "?" +getOrderByString()+ "&" + params.toParamString();
 		return str;
 	}
 	
@@ -151,6 +189,10 @@ public class FieldTagBean extends HtmlElement {
 		return RenderType.checkbox==render;
 	}
 	
+	public boolean isRadio(){
+		return RenderType.radio==render;
+	}
+	
 	public boolean isHtmlRender(){
 		return RenderType.html==render;
 	}
@@ -219,4 +261,21 @@ public class FieldTagBean extends HtmlElement {
 		this.dataFormat = dataFormat;
 	}
 
+
+	public String getReserved() {
+		return reserved;
+	}
+
+	public void setReserved(String reserved) {
+		this.reserved = reserved;
+	}
+
+
+	public String getGridTdAttribute() {
+		if(colspan<=1)
+			return LangUtils.EMPTY_STRING;
+		StringBuilder attributesBuf = new StringBuilder();
+		buildAttributeTag(attributesBuf, "colspan", getColspan());
+		return attributesBuf.toString();
+	}
 }

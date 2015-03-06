@@ -1,10 +1,12 @@
 package org.onetwo.common.hibernate;
 
+import java.sql.Clob;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -23,6 +25,7 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	private String[] propNames;
 	private boolean checkAlias;
 
+	private boolean tupleResult;
 
 
 	public RowToBeanTransformer(Class<?> resultClass) {
@@ -45,43 +48,61 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 	}	
 
 	public Object transformTuple(Object[] tuple, String[] aliases) {
+		if(tupleResult)
+			return tuple;
+		
 		Object result;
 
+		String propName = "";
 		try {
 			if ( ! isInitialized ) {
 				initialize( aliases );
 			}
 			else {
-				if(checkAlias)//如果是游标的方式，第一次之后不能获取列名，没必要重复检查
+				if(checkAlias)//如果是sqlserver游标的方式，第一次之后不能获取列名，没必要重复检查
 					check( aliases );
 			}
 			
-			result = resultClass.newInstance();
+			try {
+				result = resultClass.newInstance();
+			} catch (Exception e) {
+				//direct return tuple result if error.
+				tupleResult = true;
+				return tuple;
+			}
+			
 			BeanWrapper bw = SpringUtils.newBeanWrapper(result);
 
 			Object val;
 			for ( int i = 0; i < aliases.length; i++ ) {
-				if(propNames[i]==null)
+				/*if(Map.class.isInstance(result)){
+					bw.setpr
+					continue;
+				}*/
+				propName = propNames[i];
+				/*if(!bw.isWritableProperty(propName))
+					continue;*/
+				if(propName==null)
 					continue;
 				val = tuple[i];
 				
-				Class<?> propertyType = bw.getPropertyType(propNames[i]);
+				if(!Map.class.isInstance(result) && !bw.isWritableProperty(propName))
+					continue;
+				
+				Class<?> propertyType = bw.getPropertyType(propName);
 //					if(propertyType!=null && !propertyType.isInstance(val))
-				if(propertyType!=null)
+				if(propertyType!=null && !Clob.class.isInstance(val))
 					val = Types.convertValue(val, propertyType);
 				/*if(val==null){
 					Class<?> propertyType = bw.getPropertyType(propNames[i]);
 					if(propertyType!=null && propertyType.isPrimitive())
 						continue;
 				}*/
-				bw.setPropertyValue(propNames[i], val);
+				bw.setPropertyValue(propName, val);
 			}
 		}
-		catch ( InstantiationException e ) {
-			throw new HibernateException( "Could not instantiate resultclass: " + resultClass.getName() );
-		}
-		catch ( IllegalAccessException e ) {
-			throw new HibernateException( "Could not instantiate resultclass: " + resultClass.getName() );
+		catch ( Exception e ) {
+			throw new BaseException( "set bean["+resultClass.getName()+"] property["+propName+"] value error: " + e.getMessage(), e );
 		}
 
 		return result;
@@ -89,9 +110,15 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 
 	private void initialize(String[] aliases) {
 		Assert.notEmpty(aliases, "aliases is emtpy!");
+
+		if(Map.class.isAssignableFrom(resultClass)){
+			this.propNames = aliases.clone();
+			this.aliases = aliases.clone();
+			return ;
+		}
+		
 		this.aliases = new String[ aliases.length ];
 		this.propNames = new String[ aliases.length ];
-
 		List<String> resultPropNames = ReflectUtils.desribPropertiesName(resultClass);
 		
 		for ( int i = 0; i < aliases.length; i++ ) {
@@ -99,8 +126,9 @@ public class RowToBeanTransformer extends AliasedTupleSubsetResultTransformer {
 			if ( alias != null ) {
 				this.aliases[i] = alias;
 				String propName = StringUtils.toPropertyName(alias); 
-				if(resultPropNames.contains(propName))
-					propNames[i] = propName;
+				if(resultPropNames.contains(propName)){
+					this.propNames[i] = propName;
+				}
 			}
 		}
 		isInitialized = true;

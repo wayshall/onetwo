@@ -6,14 +6,20 @@ import java.util.WeakHashMap;
 public class ClassIntroManager {
 	
 	private Map<Class<?>, Intro<?>> introMaps = new WeakHashMap<Class<?>, Intro<?>>(500);
+	private Object lock = new Object();
 	
 	public <T> Intro<T> getIntro(Class<T> clazz){
 		if(clazz==null)
 			return null;
 		Intro<T> intro = (Intro<T>)introMaps.get(clazz);
 		if(intro==null){
-			intro = Intro.wrap(clazz);
-			introMaps.put(clazz, intro);
+			synchronized (lock) {
+				intro = (Intro<T>)introMaps.get(clazz);
+				if(intro==null){
+					intro = Intro.wrap(clazz);
+					introMaps.put(clazz, intro);
+				}
+			}
 		}
 		return intro;
 	}

@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.fish.plugin.PluginSupportedController;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.permission.entity.IMenu;
 import org.onetwo.plugins.permission.service.PermissionManagerImpl;
@@ -21,6 +22,8 @@ public class MenuController extends PluginSupportedController {
 	
 	
 	private void checkAvailable() throws ModelAndViewDefiningException{
+		if(!BaseSiteConfig.getInstance().isProduct())
+			return ;
 		if(getCurrentLoginUser()==null || !getCurrentLoginUser().isSystemRootUser())
 			throw new NoAuthorizationException("无权访问！");
 	}

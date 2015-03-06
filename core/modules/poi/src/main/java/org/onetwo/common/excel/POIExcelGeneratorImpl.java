@@ -181,6 +181,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 	
 	private void generateSheet(String sheetname, SheetData sdata){
+		//the maximum sheet name is 30 character in xssfworkbook 
+		if(sheetname.length()>30)
+			sheetname = sheetname.substring(0, 30);
 		Sheet sheet = getWorkbook().createSheet(sheetname);
 		int sheetIndex = getWorkbook().getSheetIndex(sheet);
 		this.getWorkbookData().getWorkbookListener().afterCreateSheet(sheet, sheetIndex);
@@ -198,15 +201,37 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		sdata.setSheet(sheet);
 		this.buildColumnWidth(sdata);
 		this.generateSheet(sdata);
+		this.buildAutoColumnSize(sdata);
 	}
 	
 	private void buildColumnWidth(SheetData sdata){
 		String columnWidth = sdata.getSheetModel().getColumnWidth();
-		columnWidth = (String)sdata.parseValue(columnWidth);
+		if(StringUtils.isNotBlank(columnWidth) && columnWidth.startsWith("#")){
+			columnWidth = (String)sdata.parseValue(columnWidth);
+		}
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(columnWidth);
 		if(LangUtils.isNotEmpty(columnMap)){
 			for(Entry<Integer, Short> entry : columnMap.entrySet()){
 				sdata.getSheet().setColumnWidth(entry.getKey(), entry.getValue()*256);
+			}
+		}
+	}
+
+	
+	private void buildAutoColumnSize(SheetData sdata){
+		Sheet sheet = sdata.getSheet();
+		if(sheet.getPhysicalNumberOfRows()>0 && sdata.getSheetModel().isAutoSizeColumn()){
+			int cellCount = sheet.getRow(0).getPhysicalNumberOfCells();
+			boolean useMerged = sdata.getSheetModel().isUseMergedCells();
+			for (int i = 0; i < cellCount; i++) {
+				sheet.autoSizeColumn(i, useMerged);
+			}
+		}else{
+			Map<Short, Boolean> columSize = sdata.getSheetModel().getAutoSizeColumnMap();
+			if(LangUtils.isEmpty(columSize))
+				return ;
+			for(Entry<Short, Boolean> entry : columSize.entrySet()){
+				sheet.autoSizeColumn(entry.getKey(), entry.getValue());
 			}
 		}
 	}

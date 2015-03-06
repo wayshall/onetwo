@@ -49,6 +49,17 @@ public class ListMap<K, V> implements Map<K, List<V>>{
 		list.add(value);
 		return list;
 	}
+	public V removeFirst(K key){
+		List<V> list = get(key);
+		if(LangUtils.isEmpty(list)){
+			return null;
+		}
+		V v = list.remove(0);
+		if(list.isEmpty()){
+			map.remove(key);
+		}
+		return v;
+	}
 
 	public List<V> putElements(K key, V... values){
 		List<V> list = get(key);

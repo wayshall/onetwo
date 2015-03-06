@@ -71,5 +71,11 @@ public class JFishBusinessException extends Exception implements SystemErrorCode
 	public void setArgs(Object[] args) {
 		this.args = args;
 	}
+
+
+	@Override
+	public boolean isDefaultErrorCode() {
+		return BusinessErrorCode.BASE_CODE.equals(getCode());
+	}
 	
 }

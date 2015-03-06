@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.JFishLogger;
+import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -49,8 +50,11 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		for (Object ele = null; it.hasNext(); index++) {
 //			UtilTimerStack.push(iterator.getName());
 			if(index%1000==0)
-				JFishLogger.INSTANCE.log("create row " + index);
+				JFishLogger.INSTANCE.log(this, "create row " + index);
 			
+
+//			String pname = "pre-field-"+index;
+//			UtilTimerStack.push(pname);
 			ele = it.next();
 			rowContext.setCurrentRowObject(ele);
 			Row row = createRow(rowContext);
@@ -60,12 +64,16 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 				context.put(iterator.getName(), ele);
 				context.put(indexName, index);
 			}
+//			UtilTimerStack.pop(pname);
 
 			FieldModel field = null;
 			try {
 				for (int i = 0; i < iterator.size(); i++) {
+//					String name = "field-"+i;
+//					UtilTimerStack.push(name);
 					field = iterator.getField(i);
 					this.processField(getFieldRootValue(rowContext, field), rowContext, field);
+//					UtilTimerStack.pop(name);
 				}
 			} catch (Exception e) {
 				throw new BaseException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);

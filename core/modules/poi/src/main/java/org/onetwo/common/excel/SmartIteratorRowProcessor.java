@@ -3,7 +3,6 @@ package org.onetwo.common.excel;
 import java.util.Collection;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.exception.BaseException;
 
@@ -14,12 +13,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 	}
 
 	@Override
-//	protected void processSingleField(Object ele, Row row, FieldModel field, Object defValue, int cellIndex){
 	protected void processSingleField(CellContextData cellContext){
-//		Cell cell = createCell(row.getSheet(), row, field, -1, ele);
-//		Object ele = cellContext.objectValue;
-//		Row row = cellContext.getCurrentRow();
-//		FieldModel field = cellContext.getFieldModel();
 		int cellIndex = cellContext.getCellIndex();
 		
 		Object v = getFieldValue(cellContext);
@@ -28,14 +22,10 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 		if(Collection.class.isInstance(v)){
 			Collection<?> values = (Collection<?>) v;
 			int rowCount = cellContext.getRowCount();
-//			Row currentRow = null;
-//			int cellIndex = row.getLastCellNum();
 			for(Object value : values){
 				cellContext.setFieldValue(value);
 				this.doFieldValueExecutors(cellContext);
-//				currentRow = row.getSheet().getRow(row.getRowNum()+rowCount);
 				this.createSingleCell(cellContext, rowCount, cellIndex, value);
-//				cellIndex = cell.getColumnIndex();
 				rowCount++;
 				cellContext.addRowSpanCount(1);
 				

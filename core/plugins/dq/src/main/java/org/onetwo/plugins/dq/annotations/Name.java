@@ -13,18 +13,29 @@ public @interface Name {
 
 	public String value();
 	
+	/***
+	 * 
+	 * @return
+	 * @Deprecated 去掉这个参数，不再需要指明是否查询参数
+	 */
+	@Deprecated
 	public boolean queryParam() default true;
 	
 	/****
 	 * 注意，此处设置只对query.setParameter有用，生成的sql仍需自己控制是否生成参数
+	 * @Deprecated 去掉这个参数，不再需要
 	 * @return
 	 */
+	@Deprecated
 	public IfNull ifParamNull() default IfNull.Calm;
 	
 	/***
-	 * 在queryParam=true前提下，如果参数是数组和列表，使用name+index重新生成参数名称
+	 * 如果参数是数组和列表，使用name+index重新生成参数名称
+	 * cardNo in ( ${_func.inParams('cardNo', cardNos.size())} )
 	 * @return
 	 */
 	public boolean renamedUseIndex() default false;
+	
+	public boolean isLikeQuery() default false;
 	
 }

@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.web.mvc;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -12,8 +13,11 @@ import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.LoginException;
+import org.onetwo.common.exception.NoAuthorizationException;
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -22,8 +26,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.exception.ExceptionUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
-import org.onetwo.common.web.s2.security.AuthenticUtils;
-import org.onetwo.common.web.s2.security.AuthenticationContext;
 import org.onetwo.common.web.utils.RequestTypeUtils;
 import org.onetwo.common.web.utils.RequestTypeUtils.AjaxKeys;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
@@ -56,9 +58,14 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
+	protected final Logger mailLogger = JFishLoggerFactory.getLogger("mailLogger");
 	
 	private MvcSetting mvcSetting;
 	private MessageSource exceptionMessage;
+	
+	private List<String> notifyThrowables = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
+
+	protected String defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	
 	public WebExceptionResolver(){
 		setOrder(RESOLVER_ORDER);
@@ -67,25 +74,30 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	}
+	
+	private boolean isAjaxRequest(HttpServletRequest request){
+		String extension = JFishWebUtils.requestExtension();
+		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
+		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
+		
+		return "json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+	}
 
 	@Override
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
-
 		ModelMap model = new ModelMap();
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
-		String extension = JFishWebUtils.requestExtension();
-		
-		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
-		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
-		if("json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType)){
+//		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
+		if(isAjaxRequest(request)){
 //			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
 //			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
 			DataResult result = new DataResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
-			result.setMessage("操作失败："+ ex.getMessage());
-			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
+			result.setMessage("操作失败，"+ errorMessage.getMesage());
+//			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
+			model.put(AJAX_RESULT_KEY, result);
 			return createModelAndView(null, model, request);
 		}
 		
@@ -129,21 +141,20 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		
 		String defaultViewName = ExceptionView.UNDEFINE;
 		boolean detail = true;
-		boolean authentic = false;
+//		boolean authentic = false;
+		ErrorMessage error = new ErrorMessage(ex);
 		
 		boolean findMsgByCode = true;
 		if(ex instanceof MaxUploadSizeExceededException){
 			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = MvcError.MAX_UPLOAD_SIZE_ERROR;
 			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
-		}else if(ex instanceof AuthenticationException){
-			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-			authentic = true;
 		}else if(ex instanceof LoginException){
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
-			authentic = true;
+		}else if(ex instanceof AuthenticationException){
+			defaultViewName = ExceptionView.AUTHENTIC;
+			detail = false;
 		}/*else if(ex instanceof BusinessException){
 			defaultViewName = ExceptionView.BUSINESS;
 			detail = false;
@@ -155,9 +166,19 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			detail = false;
 		}else if(ex instanceof ServiceException){
 			defaultViewName = ExceptionView.SERVICE;
-		}*/else if(ex instanceof BaseException){
+		}*/else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
+			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
+			errorCode = codeMark.getCode();
+			errorArgs = codeMark.getArgs();
+			errorMsg = ex.getMessage();
+			
+			findMsgByCode = StringUtils.isNotBlank(errorCode) && !codeMark.isDefaultErrorCode();
+			detail = !BaseSiteConfig.getInstance().isProduct();
+		}else if(ex instanceof BaseException){
 			defaultViewName = ExceptionView.SYS_BASE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+			
+//			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";
@@ -174,24 +195,24 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			findMsgByCode = false;
 		}else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
+		}/*else if(BeanCreationException.class.isInstance(ex)){
+			
+		}*/
+		else{
+			errorCode = SystemErrorCode.UNKNOWN;
 		}
 		
-		
-
-		if(ExceptionCodeMark.class.isInstance(ex)){
-			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
-			errorCode = codeMark.getCode();
-			errorArgs = codeMark.getArgs();
-			
-			findMsgByCode = StringUtils.isNotBlank(errorCode);
-			detail = !findMsgByCode;
-			
-		}else if(StringUtils.isBlank(errorCode)){
+		/*if(StringUtils.isBlank(errorCode)){
 			errorCode = ex.getClass().getName();
-		}
+		}*/
 
 		if(findMsgByCode){
-			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+//			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
+				errorMsg = findMessageByThrowable(ex, errorArgs);
+			}else{
+				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
+			}
 			defaultViewName = ExceptionView.CODE_EXCEPTON;
 		}
 		
@@ -200,34 +221,59 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		}
 		
 		String viewName = null;
-		if(authentic){
-			viewName = getAuthenticView(request);
-			model.addAttribute(PRE_URL, getPreurl(request));
+		if(error.isNotLoginException()){
+			viewName = getLoginView(request, model);
+//			model.addAttribute(PRE_URL, getPreurl(request));
 //			if(JFishWebUtils.isRedirect(viewName))
 //				viewName = appendPreurlForAuthentic(viewName);
-		}else {
-			viewName = findInSiteConfig(ex); 
-		}
-		if(StringUtils.isBlank(viewName)){
-			viewName = defaultViewName;
+		}else if(error.isNoPermissionException()){
+			viewName = getNoPermissionView(request, model, error);
 		}
 		
-		ErrorMessage error = new ErrorMessage(errorCode, errorMsg, detail);
+		if(StringUtils.isBlank(viewName)){
+			viewName = findInSiteConfig(ex); 
+			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
+		}
+		
+		detail = BaseSiteConfig.getInstance().isProduct()?detail:true;
+		error.setCode(errorCode);
+		error.setMesage(errorMsg);
+		error.setDetail(detail);
 		error.setViewName(viewName);
-		error.setAuthentic(authentic);
+//		error.setAuthentic(authentic);
 		return error;
 	}
 	
+	public String findMessageByErrorCode(String errorCode, Object...errorArgs){
+		String errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
+		return errorMsg;
+	}
+	
+	public String findMessageByThrowable(Throwable e, Object...errorArgs){
+		String errorMsg = findMessageByErrorCode(e.getClass().getName(), errorArgs);
+		if(StringUtils.isBlank(errorMsg)){
+			errorMsg = findMessageByErrorCode(e.getClass().getSimpleName(), errorArgs);
+		}
+		return errorMsg;
+	}
+	public String getNoPermissionView(HttpServletRequest request, ModelMap model, ErrorMessage error){
+		model.addAttribute("noPermissionPath", request.getRequestURI());
+		return BaseSiteConfig.getInstance().getSecurityNopermissionView();
+	}
 	protected String getPreurl(HttpServletRequest request){
 		String preurl = StringUtils.isBlank(request.getParameter(PRE_URL))?JFishWebUtils.requestUri():request.getParameter(PRE_URL);
 //		return encode(preurl);
 		return preurl;
 	}
 	
-	protected String getAuthenticView(HttpServletRequest request){
-		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
+	protected String getLoginView(HttpServletRequest request, ModelMap model){
+		model.addAttribute(PRE_URL, getPreurl(request));
+		if(StringUtils.isBlank(defaultRedirect))
+			return JFishWebUtils.redirect(defaultRedirect);
+		return JFishWebUtils.redirect("login");
+		/*AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
 		String view = context!=null?context.getConfig().getRedirect():"";
-		return view;
+		return view;*/
 	}
 	
 	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request){
@@ -245,8 +291,14 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	protected void doLog(HttpServletRequest request, HandlerMethod handlerMethod, Exception ex, boolean detail){
 		String msg = RequestUtils.getServletPath(request);
 		if(detail){
-			msg += " ["+handlerMethod+"] error: ";
+			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
+			
+			if(mailLogger!=null && (notifyThrowables.contains(ex.getClass().getName()) 
+									|| notifyThrowables.contains(ex.getCause().getClass().getName())
+									)){
+				mailLogger.error("fatal error !!! \n " + msg, ex);
+			}
 		}else{
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
@@ -311,20 +363,32 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		this.mvcSetting = mvcSetting;
 	}
 
-
+	/*protected static enum ErrorType {
+		LOGIN,
+		NOPERMISSION,
+		OTHER
+	}
+*/
 	protected static class ErrorMessage {
-		final private String code;
-		final private String mesage;
-		final boolean detail;
-		private boolean authentic = false;
+		private String code;
+		private String mesage;
+		boolean detail;
+//		private boolean authentic = false;
 		private String viewName;
 		
-		public ErrorMessage(String code, String mesage, boolean detail) {
+		final private Throwable throwable;
+		
+		
+		public ErrorMessage(Throwable throwable) {
+			super();
+			this.throwable = throwable;
+		}
+		/*public ErrorMessage(String code, String mesage, boolean detail) {
 			super();
 			this.code = code;
 			this.mesage = mesage;
 			this.detail = detail;
-		}
+		}*/
 		public String getCode() {
 			return code;
 		}
@@ -341,12 +405,29 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 			this.viewName = viewName;
 		}
 		
-		public boolean isAuthentic() {
-			return authentic;
+		public Throwable getThrowable() {
+			return throwable;
 		}
+		
+		public void setCode(String code) {
+			this.code = code;
+		}
+		public void setMesage(String mesage) {
+			this.mesage = mesage;
+		}
+		public void setDetail(boolean detail) {
+			this.detail = detail;
+		}
+		public boolean isNotLoginException() {
+			return NotLoginException.class.isInstance(throwable);
+		}
+		public boolean isNoPermissionException() {
+			return NoAuthorizationException.class.isInstance(throwable);
+		}
+		/*
 		public void setAuthentic(boolean authentic) {
 			this.authentic = authentic;
-		}
+		}*/
 		public String toString(){
 			return LangUtils.append(code, ":", mesage);
 		}

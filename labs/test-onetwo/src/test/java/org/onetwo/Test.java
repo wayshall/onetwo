@@ -1,33 +1,32 @@
 package org.onetwo;
 
-import java.util.regex.Pattern;
-
-import org.onetwo.common.exception.BaseException;
-
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Test {
-	
-	public class Parent {
-		public static final String s1 = "s1";
+
+	public static void main(String[] args) throws Exception {
+		Class clazz = Class.forName("org.onetwo.Py");
+		Method m = clazz.getMethod("exec", Class.forName("java.util.HashMap"));
+		HashMap map = new HashMap();
+		map.put("1", "aaa");
+		map.put("2", "bbb");
+		map.put("3", "ccc");
+		Py py = new Py();
+		m.invoke(py, map);
+		py.exec(map);
 	}
 	
-	public class Child extends Parent {
-//		public static final String s1 = "c1";
+}
+class Py {
+
+	public void exec(Map map){
+		System.out.println(map);
 	}
 
-	public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
-	
-	public static void main(String[] args){
-	}
-	
-	public static void test2(String[] args){
-		test(args);
-	}
-	
-	public static void test(String[] args){
-		String a = Thread.currentThread().getStackTrace()[1].getMethodName();
-		throw new BaseException(a);
-	}
-	
+	/*public void exec(HashMap map){
+		System.out.println(map);
+	}*/
 }

@@ -1,25 +1,30 @@
 package org.onetwo.common.spring.web.utils;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.csrf.AbstractCsrfPreventor;
+import org.onetwo.common.web.csrf.SameInSessionCsrfPreventor;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.util.Assert;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -31,13 +36,16 @@ public final class JFishWebUtils {
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
 
+	@Deprecated
 	public static final String DEFAULT_TOKEN_NAME = "__JFISH_FORM_TOKEN__";
-	public static final String DEFAULT_TOKEN_FIELD_NAME = AbstractCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
+	@Deprecated
+	public static final String DEFAULT_TOKEN_FIELD_NAME = SameInSessionCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
 	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
 
 	public static final String REDIRECT_KEY = "redirect:";
+	public static final String GRID_SEARCH_FORM_SUBMIT = "submitTag";
 	
 	private JFishWebUtils(){
 	}
@@ -61,11 +69,21 @@ public final class JFishWebUtils {
 	}
 	
 	public static void req(String name, Object value){
-		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_REQUEST);
+//		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_REQUEST);
+		WebHolder.getRequest().setAttribute(name, value);
 	}
 	
 	public static <T> T req(String name){
-		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
+//		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
+		return (T)WebHolder.getRequest().getAttribute(name);
+	}
+	
+	public boolean isGridSearchFormSubmit(){
+		return "1".equals(req(GRID_SEARCH_FORM_SUBMIT));
+	}
+	
+	public static String getRemoteAddr(){
+		return RequestUtils.getRemoteAddr(request());
 	}
 	
 	public static Object currentHandler(){
@@ -97,11 +115,13 @@ public final class JFishWebUtils {
 
 	
 	public static void session(String name, Object value){
-		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_SESSION);
+//		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_SESSION);
+		WebHolder.getSession().setAttribute(name, value);
 	}
 	
 	public static <T> T session(String name){
-		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_SESSION);
+//		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_SESSION);
+		return (T)WebHolder.getSession().getAttribute(name);
 	}
 	
 	/*public static void parameters(Map<?, ?> params){
@@ -109,7 +129,8 @@ public final class JFishWebUtils {
 	}*/
 	
 	public static void removeSession(String name){
-		RequestContextHolder.getRequestAttributes().removeAttribute(name, RequestAttributes.SCOPE_SESSION);
+//		RequestContextHolder.getRequestAttributes().removeAttribute(name, RequestAttributes.SCOPE_SESSION);
+		WebHolder.getSession().removeAttribute(name);
 	}
 	
 
@@ -118,11 +139,13 @@ public final class JFishWebUtils {
 		return StringUtils.isBlank(tokenName)?DEFAULT_TOKEN_NAME:tokenName;
 	}
 
+	@Deprecated
 	public static boolean validateToken(HttpServletRequest request){
 		String tokenName = getTokenName(request);
 		return validateToken(request, tokenName);
 	}
-	
+
+	@Deprecated
 	public static boolean validateToken(HttpServletRequest request, String tokenName){
 		String reqToken = request.getParameter(tokenName);
 		String sessionToken = session(tokenName);
@@ -157,14 +180,19 @@ public final class JFishWebUtils {
 	}
 	
 	public static <T extends UserDetail> T removeUserDetail(){
-		UserDetail user = session(UserDetail.USER_DETAIL_KEY);
-		removeSession(UserDetail.USER_DETAIL_KEY);
+		return removeUserDetail(UserDetail.USER_DETAIL_KEY);
+	}
+	
+	public static <T extends UserDetail> T removeUserDetail(String key){
+		UserDetail user = session(key);
+		removeSession(key);
 		removeAllSessionAttributes();
 		return (T)user;
 	}
 	
 	public static void removeAllSessionAttributes(){
-		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+//		String[] attrNames = RequestContextHolder.getRequestAttributes().getAttributeNames(RequestAttributes.SCOPE_SESSION);
+		String[] attrNames = org.springframework.util.StringUtils.toStringArray(WebHolder.getSession().getAttributeNames());
 		if(!LangUtils.isEmpty(attrNames)){
 			for(String attr : attrNames)
 				removeSession(attr);
@@ -172,7 +200,8 @@ public final class JFishWebUtils {
 	}
 	
 	public static HttpServletRequest request(){
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		return WebHolder.getRequest();
 	}
 	
 	public static String requestExtension(){
@@ -217,10 +246,17 @@ public final class JFishWebUtils {
 
 	public static String redirectUrl(String redirectUrl, String defaultUrl){
 		if(StringUtils.isBlank(redirectUrl)){
-			return "redirect:" + defaultUrl;
+			return AbstractBaseController.REDIRECT + defaultUrl;
 		}else{
-			return "redirect:" + redirectUrl;
+			return AbstractBaseController.REDIRECT + redirectUrl;
 		}
+	}
+
+	public static String redirect(String url){
+		Assert.hasText(url);
+		if(isRedirect(url))
+			return url;
+		return AbstractBaseController.REDIRECT+url;
 	}
 	
 	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args, String defaultMessage, Locale locale){
@@ -276,15 +312,28 @@ public final class JFishWebUtils {
 		return getDownloadFileName(request(), model, defaultFileName);
 	}
 	
-	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName) throws Exception{
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName){
 		String downloadFileName = request.getParameter("fileName");
 		if(StringUtils.isBlank(downloadFileName)){
 			//在model里的，由用户自己转码
 			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
 		}else{
-			downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+			try {
+				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
+			} catch (Exception e) {
+				throw new BaseException("get down file name error: " +e.getMessage());
+			}
 		}
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;
 	}
+	
+	public static void writeInputStreamTo(MultipartFile attachment, String dir, String fileName){
+		try {
+			FileUtils.writeInputStreamTo(attachment.getInputStream(), dir, fileName);
+		} catch (IOException e) {
+			throw new ServiceException("write upload file error: " +e.getMessage(), e);
+		}
+	}
+	
 }

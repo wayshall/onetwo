@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template name="报名客户资料">
+<template name="报名客户资料" autoSizeColumn="true" >
 	<rows>
 		<row span="2">
 			<fields>
@@ -9,8 +9,16 @@
 		<row name="element" type="iterator" datasource="#data" renderHeader="true" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD;color:COLOR_RED"> 
 			<fields>
 				<field name="id" label="主键"/>
-				<field name="cardNo" label="卡号"/>
+				<field name="cardNo" label="卡号" />
 				<field name="cardPwd" label="密码"/>
+				<field name="#f.format(startTime, 'yy:MM:dd')" label="开始时间"/>
+			</fields>
+		</row>
+		<row name="element" type="iterator" datasource="#data" renderHeader="true" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD;color:COLOR_RED"> 
+			<fields>
+				<field name="id" label="主键"/>
+				<field name="cardNo" label="卡号" />
+				<field name="cardPwd" label="密码" />
 				<field name="#f.format(startTime, 'yy:MM:dd')" label="开始时间"/>
 			</fields>
 		</row>

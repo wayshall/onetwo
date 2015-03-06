@@ -8,7 +8,10 @@ import javax.annotation.Resource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.ExtQuery.K;
+import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.plugins.permission.MenuInfoParser;
 import org.onetwo.plugins.permission.PermissionUtils;
 import org.onetwo.plugins.permission.entity.IMenu;
@@ -17,7 +20,7 @@ import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PermissionManagerImpl {
+public class PermissionManagerImpl implements PluginPermissionManager {
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, ? extends IPermission> menuNodeMap;
@@ -31,32 +34,42 @@ public class PermissionManagerImpl {
 	public PermissionManagerImpl() {
 	}
 
+	@Override
 	public void build(){
 		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		IMenu rootMenu = menuInfoParser.parseTree();
 //		logger.info("menu:\n" + rootMenu);
-		this.menuNodeMap = menuInfoParser.getMenuNodeMap();
+		this.menuNodeMap = menuInfoParser.getPermissionMap();
 	}
 	
+	@Override
+	public IPermission getPermission(Class<?> permClass){
+		return menuInfoParser.getPermission(permClass);
+	}
 
+	@Override
 	@Transactional
-	public <T extends IMenu> T getDatabaseRootMenu() {
-		return (T)baseEntityManager.findUnique(IMenu.class, "code", this.menuInfoParser.getRootMenuCode());
+	public IMenu getDatabaseRootMenu() {
+		return (IMenu)baseEntityManager.findUnique(IMenu.class, "code", this.menuInfoParser.getRootMenuCode());
 	}
 	
+	@Override
 	@Transactional
-	public <T extends IMenu> T getDatabaseMenuNode(Class<?> clazz) {
-		String code = menuInfoParser.parseCode(clazz);
-		return (T)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
+	public IMenu getDatabaseMenuNode(Class<?> clazz) {
+		String code = menuInfoParser.getCode(clazz);
+		return (IMenu)baseEntityManager.findUnique(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "code", code);
 	}
 	
 	/****
 	 * 同步菜单
 	 */
+	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
+		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findAll(permClass);
+		String rootCode = parseCode(rootMenuClass);
+		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
 //		Map<String, IPermission> mapByCode = index(permList, on(IPermission.class).getCode());
 		
 		Session session = baseEntityManager.getRawManagerObject(SessionFactory.class).getCurrentSession();
@@ -121,78 +134,78 @@ public class PermissionManagerImpl {
 		baseEntityManager.remove(dbperm);
 	}
 	
+	@Override
 	public <T> T findById(Long id){
-		return (T)baseEntityManager.findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
+//		return (T)baseEntityManager.findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
+		return (T)findById(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), id);
 	}
 
 	public MenuInfoParser getMenuInfoParser() {
 		return menuInfoParser;
 	}
+
+	@Override
+	public String parseCode(Class<?> permClass) {
+		return menuInfoParser.getCode(permClass);
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<IMenu> findAppMenus(String appCode){
+		List<IMenu> menulist = (List<IMenu>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIMenuClass(), "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<? extends IPermission> findAppPermissions(String appCode){
+		List<IPermission> menulist = (List<IPermission>)baseEntityManager.findByProperties(this.menuInfoParser.getMenuInfoable().getIPermissionClass(), "appCode", appCode);
+		return menulist;
+	}
+
+	@Override
+	public List<? extends IPermission> findPermissionByCodes(String appCode, String[] permissionCodes) {
+		/*Assert.notEmpty(permissionCodes);
+		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(
+																	this.menuInfoParser.getMenuInfoable().getIPermissionClass(), 
+																	"code:in", permissionCodes,
+																	"appCode", appCode,
+																	K.IF_NULL, IfNull.Ignore);
+		return permlist;*/
+		return findPermissionByCodes(menuInfoParser.getMenuInfoable().getIPermissionClass(), appCode, permissionCodes);
+	}
 	
-/*	
-	public static class RescourceTreeModel implements TreeModel<RescourceTreeModel> {
 
-		private final JResourceInfo info;
-		private final RescourceTreeModel parent;
-		private List<RescourceTreeModel> children;
-		
-		public RescourceTreeModel(JResourceInfo info) {
-			super();
-			this.info = info;
-			RescourceTreeModel parent = null;
-			if(info.getParent()!=null)
-				parent = new RescourceTreeModel(info.getParent());
-			this.parent = parent;
-		}
+	@Override
+	public <T> T findById(Class<?> clazz, Long id) {
+		return (T)baseEntityManager.findById(clazz, id);
+	}
 
-		@Override
-		public void addChild(RescourceTreeModel node) {
-			info.addChild(node.getInfo());
-			if(children==null)
-				children = LangUtils.newArrayList();
-			this.children.add(node);
-		}
+	@Override
+	public List<? extends IMenu> findAppMenus(Class<?> clazz, String appCode) {
+		List<IMenu> menulist = (List<IMenu>)baseEntityManager.findByProperties(clazz, "appCode", appCode);
+		return menulist;
+	}
 
-		@Override
-		public Object getParentId() {
-			if(info.getParent()==null)
-				return null;
-			return info.getParent().getId();
-		}
+	@Override
+	public List<? extends IPermission> findAppPermissions(Class<?> clazz,
+			String appCode) {
+		List<IPermission> menulist = (List<IPermission>)baseEntityManager.findByProperties(clazz, "appCode", appCode);
+		return menulist;
+	}
 
-		@Override
-		public Object getId() {
-			return info.getId();
-		}
-
-		@Override
-		public String getName() {
-			return info.getLabel();
-		}
-
-		@Override
-		public Comparable<?> getSort() {
-			return info.getId();
-		}
-
-		public List<RescourceTreeModel> getChildren() {
-			return children;
-		}
-
-		public JResourceInfo getInfo() {
-			return info;
-		}
-		
-		public RescourceTreeModel getParent(){
-			return parent;
-		}
-		
-		public String toString(){
-			StringBuilder str = new StringBuilder();
-			TreeUtils.buildString(str, this, "--");
-			return str.toString();
-		}
-	}*/
-
+	@Override
+	public List<? extends IPermission> findPermissionByCodes(Class<?> clazz,
+			String appCode, String[] permissionCodes) {
+		Assert.notEmpty(permissionCodes);
+		List<IPermission> permlist = (List<IPermission>)baseEntityManager.findByProperties(
+																	clazz, 
+																	"code:in", permissionCodes,
+																	"appCode", appCode,
+																	K.IF_NULL, IfNull.Ignore);
+		return permlist;
+	}
+	
+	
 
 }

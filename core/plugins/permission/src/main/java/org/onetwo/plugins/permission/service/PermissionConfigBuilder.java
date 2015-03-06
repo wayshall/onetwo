@@ -6,14 +6,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.authentic.SpringConfigBuilder;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 import org.onetwo.plugins.permission.MenuInfoParser;
-import org.onetwo.plugins.permission.anno.ByMenuClass;
 import org.onetwo.plugins.permission.anno.ByFunctionClass;
+import org.onetwo.plugins.permission.anno.ByMenuClass;
 
 public class PermissionConfigBuilder extends SpringConfigBuilder {
 
@@ -34,9 +37,13 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 				config = this.buildAuthenticConfig(getAuthenticName(method), ByMenuClass.class.getAnnotation(Authentic.class));
 			}*/
 			config = buildConfigByAuthenticAnnotation(method, ByMenuClass.class);
+			if(StringUtils.isNotBlank(menu.redirect())){
+				config.setRedirect(menu.redirect());
+			}
+			this.buildAuthenticatorClasses(config, menu.authenticatorClass());
 
 			for(Class<?> codeCls : menu.codeClass()){
-				perms.add(menuInfoParser.parseCode(codeCls));
+				perms.add(menuInfoParser.getCode(codeCls));
 			}
 			buildExtAnnotationConfig(config, clazz, method);
 			
@@ -45,9 +52,13 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 			
 //			config = this.buildAuthenticConfig(getAuthenticName(method), ByFunctionClass.class.getAnnotation(Authentic.class));
 			config = buildConfigByAuthenticAnnotation(method, ByFunctionClass.class);
+			if(StringUtils.isNotBlank(permClass.redirect())){
+				config.setRedirect(permClass.redirect());
+			}
+			this.buildAuthenticatorClasses(config, permClass.authenticatorClass());
 
 			for(Class<?> codeCls : permClass.codeClass()){
-				perms.add(menuInfoParser.parseCode(codeCls));
+				perms.add(menuInfoParser.getCode(codeCls));
 			}
 			buildExtAnnotationConfig(config, clazz, method);
 			
@@ -67,7 +78,8 @@ public class PermissionConfigBuilder extends SpringConfigBuilder {
 	
 	protected AuthenticConfig buildConfigByAuthenticAnnotation(Method method, Class<? extends Annotation> annotationClass){
 		AuthenticConfig config = null;
-		Authentic authentic = method.getAnnotation(Authentic.class);
+//		Authentic authentic = method.getAnnotation(Authentic.class);
+		Authentic authentic = AnnotationUtils.findAnnotationWithStopClass(method.getDeclaringClass(), method, Authentic.class, AbstractBaseController.class);
 		if(authentic!=null){
 			config = this.buildAuthenticConfig(getAuthenticName(method), authentic);
 		}else{
