@@ -1,6 +1,7 @@
 package org.onetwo.common.web.config;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -69,7 +70,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String LOGOUT_URL = "logout.url";
 	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
-	
+
+	public static final String ERROR_NOTIFY_THROWABLES = "error.notify.throwables";
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";
 	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
@@ -411,6 +413,11 @@ public class BaseSiteConfig extends AppConfig {
 	public SessionRepository getSessionRepository() {
 		String sr = getProperty(SESSION_REPOSITORY, SessionRepository.CONTAINER.name());
 		return SessionRepository.valueOf(sr.toUpperCase());
+	}
+	
+	public List<String> getErrorNotifyThrowabbles(){
+		List<String> throwables = getPropertyWithSplit(ERROR_NOTIFY_THROWABLES, ",");
+		return throwables;
 	}
 
 }

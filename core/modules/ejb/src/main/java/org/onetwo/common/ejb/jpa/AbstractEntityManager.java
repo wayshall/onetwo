@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
@@ -25,15 +24,17 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.M;
+import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 abstract public class AbstractEntityManager extends BaseEntityManagerAdapter implements EventSource {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 //	protected SequenceNameManager sequenceNameManager;
 	
 
@@ -276,7 +277,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		try {
 			entity = (T)this.createQuery(sql, values).getSingleResult();
 		} catch (Exception e) {
-			logger.error(e);
 			throw new BaseException("find the unique result error : " + sql, e);
 		}
 		return entity;
@@ -289,7 +289,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		try {
 			entity = (T)this.createQuery(sql, values).getSingleResult();
 		}catch(Exception e){
-			logger.error(e);
 			throw new BaseException("find the unique result error : " + sql, e);
 		}
 		return entity;

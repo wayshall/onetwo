@@ -4,11 +4,12 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
 
 public class EjbUtil {
 
-	protected static Logger logger = Logger.getLogger(EjbUtil.class);
+	protected static Logger logger = JFishLoggerFactory.getLogger(EjbUtil.class);
 
 	public static Object remoteLookup(String mappedName, String JNDIName) {
 		Context context;
@@ -17,7 +18,7 @@ public class EjbUtil {
 			Object object = context.lookup(mappedName + "#" + JNDIName);
 			return object;
 		} catch (NamingException e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			return null;
 		}
 	}

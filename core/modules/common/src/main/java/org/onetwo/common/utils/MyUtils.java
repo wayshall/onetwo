@@ -14,14 +14,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.list.L;
+import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
 public class MyUtils {
-	protected static Logger logger = Logger.getLogger(MyUtils.class);
+	protected static Logger logger = JFishLoggerFactory.getLogger(MyUtils.class);
 
 	public static final char CHOMP = '\r';
 	public static final char LINE = '\n';
