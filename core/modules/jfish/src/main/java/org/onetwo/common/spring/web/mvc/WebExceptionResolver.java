@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.web.mvc;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -56,9 +58,12 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 
 	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
+	protected final Logger mailLogger = JFishLoggerFactory.getLogger("mailLogger");
 	
 	private MvcSetting mvcSetting;
 	private MessageSource exceptionMessage;
+	
+	private List<String> notifyThrowables = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
 
 	protected String defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	
@@ -286,8 +291,14 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	protected void doLog(HttpServletRequest request, HandlerMethod handlerMethod, Exception ex, boolean detail){
 		String msg = RequestUtils.getServletPath(request);
 		if(detail){
-			msg += " ["+handlerMethod+"] error: ";
+			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
+			
+			if(mailLogger!=null && (notifyThrowables.contains(ex.getClass().getName()) 
+									|| notifyThrowables.contains(ex.getCause().getClass().getName())
+									)){
+				mailLogger.error("fatal error !!! \n " + msg, ex);
+			}
 		}else{
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
