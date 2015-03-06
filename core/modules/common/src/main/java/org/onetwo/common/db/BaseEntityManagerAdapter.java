@@ -3,16 +3,17 @@ package org.onetwo.common.db;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
+import org.slf4j.Logger;
 
 public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	public <T> List<T> findByProperties(QueryBuilder squery) {
 		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
@@ -60,7 +61,6 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		try {
 			entity = (T)this.createQuery(sql, values).getSingleResult();
 		}catch(Exception e){
-			logger.error(e);
 			throw new BaseException("find the unique result error : " + sql, e);
 		}
 		return entity;

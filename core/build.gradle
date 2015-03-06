@@ -27,7 +27,7 @@ configure(allprojects){ project ->
 	}else{
 		group = "org.onetwo"
 	}
-	version = "3.0.2-SNAPSHOT"
+	version = "3.0.3-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -52,6 +52,8 @@ configure(allprojects){ project ->
 	ext.jsfVersion = "2.1"
 	ext.servletVersion = "3.0.1"
 	ext.validationVersion = "1.0.0.GA"
+	
+	ext.logbackVersion = "0.9.29"
 	
 	sourceCompatibility = 1.6
 	compileJava {
@@ -92,9 +94,15 @@ configure(allprojects){ project ->
 configure(subprojects){ subproject -> 
 	
 	dependencies {
+		//log4j
+		/*
 		compile("org.slf4j:slf4j-api:1.6.2")
 		compile("org.slf4j:slf4j-log4j12:1.6.2")
-		compile("log4j:log4j:1.2.16")
+		compile("log4j:log4j:1.2.16")*/
+		compile("org.slf4j:slf4j-api:1.6.2")
+		compile("org.slf4j:jcl-over-slf4j:1.6.2")
+		compile("ch.qos.logback:logback-core:${logbackVersion}")
+		compile("ch.qos.logback:logback-classic:${logbackVersion}")
 		testCompile("junit:junit:${junitVersion}")
 	}
 	
