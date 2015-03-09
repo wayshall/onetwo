@@ -13,8 +13,8 @@ import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
@@ -90,7 +90,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		String parsedSql = sqlAndValues.getParsedSql();
 		dataQuery = createDataQuery(parsedSql, resultClass);
 		
-		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql);
 		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			if(!paramBean.isReadableProperty(parameter.getProperty()))
