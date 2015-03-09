@@ -482,6 +482,17 @@ final public class CUtils {
 		boolean apply(T e1, T e2);
 	}
 	
+	public static <T> boolean containsAnyOne(Collection<T> c, T...elements){
+		Assert.notEmpty(elements);
+		if(LangUtils.isEmpty(c))
+			return false;
+		for(T e : elements){
+			if(c.contains(e))
+				return true;
+		}
+		return false;
+	}
+	
 	public static <T> boolean contains(Collection<T> c, T element, EqualsPredicate<T> equalsPredicate){
 		if(LangUtils.isNotEmpty(c)){
 			for(T e : c){
