@@ -19,9 +19,9 @@ import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.sql.SqlUtils;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.spring.sql.ParsedSqlUtils;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -163,7 +163,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			t.start();
 			
 			List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
-			ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sv.getParsedSql());
+			ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql());
 			for(Object val : batchParameter){
 				Map<String, Object> paramValueMap = new HashMap<String, Object>();
 				BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);

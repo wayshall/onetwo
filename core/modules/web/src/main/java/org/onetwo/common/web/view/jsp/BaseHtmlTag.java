@@ -37,9 +37,9 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 	protected boolean ignoreTag;
 
 	protected boolean checkIgnoreField(){
-		if(!showable)
-			return true;
-		return !checkPermission(permission);
+		/*if(!showable)
+			return true;*/
+		return !checkPermission(permission) || !showable;
 	}
 	public void setPermission(String permission) {
 		this.permission = permission;
@@ -123,6 +123,8 @@ abstract public class BaseHtmlTag<T extends HtmlElement> extends AbstractBodyTag
 		component.setCssClass(cssClass);
 		component.setCssStyle(cssStyle);
 		component.setOnclick(onclick);
+		
+		component.setPermission(permission);
 	}
 
 	@Override
