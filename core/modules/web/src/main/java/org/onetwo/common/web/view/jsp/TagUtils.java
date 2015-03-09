@@ -185,7 +185,7 @@ final public class TagUtils {
 	 */
 	public static CasualMap filterPageParams(CasualMap params) {
 //		return params.filter("pageNo", Page.PAGINATION_KEY, "order", "orderBy");filter("aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM).
-		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM);
+		return params.filter("pageNo", Page.PAGINATION_KEY, "aa*", HiddenHttpMethodFilter.DEFAULT_METHOD_PARAM, "t");
 	}
 	
 

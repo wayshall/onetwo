@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.onetwo.common.db.SqlUtils;
+
 @XmlRootElement
 public class Page<T> implements Serializable {
 	/**
@@ -108,7 +110,7 @@ public class Page<T> implements Serializable {
 	}
 
 	public void setOrderBy(final String orderBy) {
-		this.orderBy = orderBy;
+		this.orderBy = SqlUtils.check(orderBy);
 	}
 
 	public Page<T> orderBy(final String theOrderBy) {
@@ -128,9 +130,7 @@ public class Page<T> implements Serializable {
 	}
 	
 	public boolean isSort(){
-		if(StringUtils.isBlank(order) || StringUtils.isBlank(orderBy))
-			return false;
-		return true;
+		return isOrderBySetted();
 	}
 	
 	public String getOrderString(){
