@@ -18,7 +18,6 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -56,9 +55,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	public static final int RESOLVER_ORDER = -9999;
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
-	protected final Logger mailLogger = JFishLoggerFactory.getLogger("mailLogger");
+	protected final Logger mailLogger = JFishLoggerFactory.findLogger("mailLogger");
 	
 	private MvcSetting mvcSetting;
 	private MessageSource exceptionMessage;
@@ -293,12 +292,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		if(detail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
-			
-			if(mailLogger!=null && (notifyThrowables.contains(ex.getClass().getName()) 
-									|| notifyThrowables.contains(ex.getCause().getClass().getName())
-									)){
-				mailLogger.error("fatal error !!! \n " + msg, ex);
-			}
+			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
