@@ -15,6 +15,7 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 
 @SuppressWarnings("serial")
 public class FormTag extends BaseHtmlTag<FormTagBean> {
+//	public final static String CODE_PREFIX = "code:";
 	
 	private String template = "form/spring-form.jsp";
 	private RequestPreventor csrfPreventor = PreventorFactory.getCsrfPreventor();
@@ -26,6 +27,8 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 	private Object dataProvider;
 	
 	private boolean showOnly;
+	private boolean disabled;
+//	private String editPermission;
 	
 	@Override
 	public FormTagBean createComponent() {
@@ -98,6 +101,8 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		component.setUploadFile(uploadFile);
 		component.setShowOnly(showOnly);
 		
+		component.setDisabled(disabled);
+		
 		setComponentIntoRequest(TagUtils.getFormVarName(), component);
 	}
 	
@@ -153,4 +158,14 @@ public class FormTag extends BaseHtmlTag<FormTagBean> {
 		this.showOnly = showOnly;
 	}
 
+
+	public void setEditPermission(String editPermission) {
+		this.disabled = !checkPermission(editPermission);
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	
 }

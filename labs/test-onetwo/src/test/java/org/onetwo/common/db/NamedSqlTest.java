@@ -6,9 +6,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.onetwo.common.spring.sql.SqlParamterPostfixFunctions;
-import org.onetwo.common.spring.sql.SqlUtils;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.spring.sql.ParsedSqlUtils;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
@@ -53,7 +53,7 @@ public class NamedSqlTest {
 	@Test
 	public void testSqlUtils(){
 		sql = "select * from admin_user t where (t.userName=:user.userName?like or t.userName=:user.userName?prelike or t.userName=:user.userName?postlike) and (t.age=:user.age or t.age=:2) and t.idcode=?";
-		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(sql);
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sql);
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			System.out.println("name: " + parameter);
 			if("like".equals(parameter.getFunction())){
