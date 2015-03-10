@@ -760,4 +760,21 @@ project("${pluginTaskWebclient}"){
 	}
 }
 
+def pluginMelody = "${pluginPrefix}melody"
+project("${pluginMelody}"){
+	description = "${pluginMelody}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
+		
+		compile("net.bull.javamelody:javamelody-core:1.55.0")
+		
+	}
+	
+}
+
+
+
 

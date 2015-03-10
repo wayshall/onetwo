@@ -1,6 +1,6 @@
 package org.onetwo.common.profiling;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 
@@ -14,7 +14,8 @@ public class UtilTimerStack
     // A reference to the current ProfilingTimerBean
     protected static ThreadLocal<ProfilingTimerBean> current = new ThreadLocal<ProfilingTimerBean>();
 
-	public static final String PROFILE_LOGGER = "profileLogger";
+//	public static final String PROFILE_LOGGER = "profileLogger";
+	public static final String PROFILE_LOGGER = "time.profile";
     public static final String ACTIVATE_PROPERTY = "onetwo.profile.activate";
 
     /**
@@ -32,7 +33,7 @@ public class UtilTimerStack
     private static JFishLogger timeLogger;
 
     static {
-    	final Logger logger = MyLoggerFactory.getLogger(PROFILE_LOGGER);
+    	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
         active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
 		timeLogger = new Log4jTimeLogger(logger);
     }
