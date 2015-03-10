@@ -32,6 +32,8 @@ include "plugins/task-core"
 include "plugins/task-client"
 include "plugins/task-webclient"
 
+include "plugins/melody"
+
 rootProject.getChildren().each {
 	if(it.name.startsWith("modules/")){
 		it.name = "onetwo-${it.name.substring(8)}"
