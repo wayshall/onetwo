@@ -6,12 +6,12 @@ import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 
 
 
-public class SessionPluginWebPlugin extends AbstractJFishPlugin<SessionPluginWebPlugin> {
+public class SessionWebPlugin extends AbstractJFishPlugin<SessionWebPlugin> {
 
-	private static SessionPluginWebPlugin instance;
+	private static SessionWebPlugin instance;
 	
 	
-	public static SessionPluginWebPlugin getInstance() {
+	public static SessionWebPlugin getInstance() {
 		return instance;
 	}
 	
@@ -26,7 +26,7 @@ public class SessionPluginWebPlugin extends AbstractJFishPlugin<SessionPluginWeb
 	}
 
 
-	public void setPluginInstance(SessionPluginWebPlugin plugin){
+	public void setPluginInstance(SessionWebPlugin plugin){
 		instance = plugin;
 	}
 

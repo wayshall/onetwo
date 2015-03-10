@@ -1,6 +1,7 @@
 package org.onetwo.common.fish.plugin;
 
 
+
 public class JFishPluginUtils {
 	
 //	private final static JFishPlugin EMPTY_INSTANCE = new EmptyJFishPlugin();
