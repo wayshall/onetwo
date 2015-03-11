@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 
 import org.onetwo.common.web.config.BaseSiteConfig;
 
+//@Order(JFishUtils.WEBAPP_INITIALIZER_ORDER+1)
 public class SpringSessionInitializer extends AbstractHttpSessionApplicationInitializer {
 	
 //	private static boolean initialized = false;
