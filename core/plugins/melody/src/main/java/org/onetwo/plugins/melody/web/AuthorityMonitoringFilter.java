@@ -7,13 +7,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.bull.javamelody.MonitoringFilter;
 
-import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.utils.ResponseUtils;
 
 public class AuthorityMonitoringFilter extends MonitoringFilter {
 
@@ -24,10 +25,12 @@ public class AuthorityMonitoringFilter extends MonitoringFilter {
 		}
 
 		final HttpServletRequest httpRequest = (HttpServletRequest) request;
+		final HttpServletResponse httpResponse = (HttpServletResponse) response;
 		if (httpRequest.getRequestURI().equals(getMonitoringUrl(httpRequest))){
 			UserDetail userDetail = JFishWebUtils.getUserDetail();
 			if(userDetail==null || !userDetail.isSystemRootUser()){
-				throw new NoAuthorizationException();
+				ResponseUtils.renderText(httpResponse, "没有权限!");
+				return ;
 			}
 		}
 		super.doFilter(request, response, chain);

@@ -30,7 +30,10 @@ public class MelodyPlugin extends ConfigurableContextPlugin<MelodyPlugin, Melody
 
 			@Override
 			public void listening(ContextConfigRegisterEvent event) {
-				if(!getConfig().isMonitoring()){
+				/*if(!getConfig().isMonitoring()){
+					return ;
+				}*/
+				if(!isConfigExists()){
 					return ;
 				}
 				
