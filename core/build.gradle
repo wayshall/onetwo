@@ -55,10 +55,10 @@ configure(allprojects){ project ->
 	
 	ext.logbackVersion = "0.9.29"
 	
-	sourceCompatibility = 1.6
+	sourceCompatibility = 1.8
 	compileJava {
-		sourceCompatibility=1.6
-		targetCompatibility=1.6
+		sourceCompatibility=1.8
+		targetCompatibility=1.8
 	}
 	
 	eclipseJdt << {
@@ -379,7 +379,7 @@ project("$projectEjb"){
 }
 
 def embedTomcat() {
-	def tomcatVersion = "7.0.29";
+	def tomcatVersion = "7.0.59";
 	["org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
 	 "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion",
 	 "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion",
