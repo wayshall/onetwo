@@ -16,15 +16,19 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.plugins.melody.MelodyConfig;
 import org.springframework.core.annotation.Order;
-import org.springframework.web.WebApplicationInitializer;
 
-@Order(JFishUtils.WEBAPP_INITIALIZER_ORDER+10)
-public class MelodyWebInitializer implements WebApplicationInitializer {
+/****
+ * javamelody 自带了web-fragment.xml........
+ * @author way
+ *
+ */
+@Order(JFishUtils.WEBAPP_INITIALIZER_ORDER+100)
+public class MelodyWebInitializer /*implements WebApplicationInitializer */{
 	
 	public MelodyWebInitializer(){
 	}
 
-	@Override
+//	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		JFishProperties prop = ContextPluginUtils.loadPluginConfigs("melody", BaseSiteConfig.getInstance().getAppEnvironment());
 		MelodyConfig config = new MelodyConfig();
