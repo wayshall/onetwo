@@ -33,7 +33,7 @@ public class MelodyPlugin extends ConfigurableContextPlugin<MelodyPlugin, Melody
 				/*if(!getConfig().isMonitoring()){
 					return ;
 				}*/
-				if(!isConfigExists()){
+				if(!isConfigExists() || getConfig().isDisabled()){
 					return ;
 				}
 				
