@@ -282,7 +282,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
-	public void removeList(Collection<?> entities) {
+	public <T> void removeList(Collection<T> entities) {
 		if(LangUtils.isEmpty(entities))
 			return ;
 		getJfishDao().delete(entities);

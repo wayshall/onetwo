@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +21,11 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 
 	public T remove(T entity);
 	
-	public void removeList(List<T> entities);
+	public void removes(Collection<T> entities);
 
 	public T removeById(PK id);
+
+	public Collection<T> removeByIds(Class<T> entityClass, PK[] ids);
 
 	public List<T> findAll();
 
