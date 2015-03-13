@@ -3,6 +3,7 @@ package org.onetwo.common.spring.web.mvc.log;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.log.DataChangedContext;
 import org.onetwo.common.utils.LangUtils;
@@ -17,8 +18,14 @@ public class OperatorLogInfo implements Serializable {
 	private boolean success = true;
 	private String message = "";
 	private Map<String, String[]> parameters;
+	final private long startTime;
+	final private long endTime;
 	
-	
+	public OperatorLogInfo(long startTime, long endTime) {
+		super();
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
 	private DataChangedContext datas;
 	
 	public long getOperatorId() {
@@ -82,4 +89,11 @@ public class OperatorLogInfo implements Serializable {
 		this.remoteAddr = remoteAddr;
 	}
 	
+	public long getExecutedTimeInMillis(){
+		return endTime - startTime;
+	}
+	
+	public long getExecutedTimeInSeconds(){
+		return TimeUnit.MILLISECONDS.toSeconds(getExecutedTimeInMillis());
+	}
 }

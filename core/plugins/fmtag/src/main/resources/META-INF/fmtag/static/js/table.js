@@ -84,7 +84,8 @@ var Common = function () {
 			buttonDelete : ".dg-button-delete",
 			
 			//
-			showTipsElement: "a[show-tips]",
+			showTipsElement: "[show-tips]",
+			showBlockMsgElement: "[show-block]",
 			linkButton: "a[data-method][class!='dg-toolbar-button-delete'][class!='dg-toolbar-button-batch']",
 			formButton : ".form-button",
 			
@@ -223,6 +224,9 @@ var Common = function () {
 		init : function(){
 			$(jfish.cssKeys.showTipsElement).live("click", function(){
 				$.showTipsWindow($(this).attr('show-tips'));
+			});
+			$(jfish.cssKeys.showBlockMsgElement).live("click", function(){
+				$.showBlockMsg($(this).attr('show-block'));
 			});
 			
 			$(jfish.cssKeys.linkButton).live("click", function(){

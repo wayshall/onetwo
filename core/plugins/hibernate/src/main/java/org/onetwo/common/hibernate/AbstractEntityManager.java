@@ -393,6 +393,14 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	public FileNamedQueryFactory getFileNamedQueryFactory() {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <T> Collection<T> saves(Collection<T> entities) {
+		for(T entity : entities){
+			save(entity);
+		}
+		return entities;
+	}
 	
 	
 }

@@ -65,11 +65,6 @@ public class NutzBaseEntityManager extends BaseEntityManagerAdapter implements B
 	}
 
 	@Override
-	public <T> T save(T entity) {
-		return this.nutzDao.insert(entity);
-	}
-
-	@Override
 	public void persist(Object entity) {
 		// TODO Auto-generated method stub
 		
@@ -140,12 +135,6 @@ public class NutzBaseEntityManager extends BaseEntityManagerAdapter implements B
 
 	@Override
 	public void findPage(Class entityClass, Page page, Object... properties) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void findPage(Class entityClass, Page page, Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -270,6 +259,19 @@ public class NutzBaseEntityManager extends BaseEntityManagerAdapter implements B
 	public FileNamedQueryFactory getFileNamedQueryFactory() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public <T> T save(T entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> void findPage(Class<T> entityClass, Page<T> page,
+			Map<Object, Object> properties) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
