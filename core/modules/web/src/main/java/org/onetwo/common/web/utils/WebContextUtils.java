@@ -7,13 +7,24 @@ import javax.servlet.http.HttpSession;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.filter.RequestInfo;
 
 @SuppressWarnings("unchecked")
 final public class WebContextUtils {
 
 //	public static final String DEFAULT_TOKEN_FIELD_NAME = "org.onetwo.jfish.form.token";
 
-	private WebContextUtils(){}
+	public static final String REQUEST_INFO_KEY = "__requestinfo__";
+
+	public static RequestInfo initRequestInfo(HttpServletRequest request){
+		RequestInfo info = new RequestInfo(System.currentTimeMillis());
+		attr(request, REQUEST_INFO_KEY, info);
+		return info;
+	}
+
+	public static RequestInfo requestInfo(HttpServletRequest request){
+		return getAttr(request, REQUEST_INFO_KEY);
+	}
 	
 	public static void attr(HttpServletRequest request, String name, Object value){
 		Assert.notNull(request);
@@ -85,5 +96,6 @@ final public class WebContextUtils {
 	public static String getCookieToken(HttpServletRequest request){
 		return ResponseUtils.getCookieValue(request, SsoTokenable.TOKEN_KEY);
 	}
-	
+
+	private WebContextUtils(){}
 }

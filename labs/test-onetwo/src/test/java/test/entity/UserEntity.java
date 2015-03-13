@@ -18,30 +18,22 @@ import org.onetwo.common.fish.annotation.JFishEntityListeners;
 @SuppressWarnings("serial")
 @Entity
 @Table(name="T_USER")
-@org.nutz.dao.entity.annotation.Table("T_USER")
 @SequenceGenerator(name="seqUser", sequenceName="SEQ_T_USER")
 @JFishEntityListeners(TestEntityListener.class)
 public class UserEntity extends BaseEntity implements IBaseEntity {
 
-	@org.nutz.dao.entity.annotation.Id
-	@org.nutz.dao.entity.annotation.Column("id")
 	private Long id;
 	
-	@org.nutz.dao.entity.annotation.Column("USER_NAME") 
 	private String userName;
 
 	private String status;
 	
-	@org.nutz.dao.entity.annotation.Column("email")
 	private String email;
 	
-	@org.nutz.dao.entity.annotation.Column("age")
 	private Integer age;
 
-	@org.nutz.dao.entity.annotation.Column("BIRTH_DAY")
 	private Date birthDay;
 
-	@org.nutz.dao.entity.annotation.Column("height")
 	private Float height;
 	
 	private List<RoleEntity> roles;

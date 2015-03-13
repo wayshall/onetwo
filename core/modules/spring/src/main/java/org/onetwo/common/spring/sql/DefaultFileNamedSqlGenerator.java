@@ -10,6 +10,7 @@ import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.ftl.TemplateParser;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
@@ -29,11 +30,15 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	
 	
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
-			TemplateParser parser) {
+			TemplateParser parser, Map<Object, Object> params) {
 		super();
 		this.info = info;
 		this.countQuery = countQuery;
 		this.parser = parser;
+		this.params = LangUtils.emptyIfNull(params);
+		if(params!=null){
+			this.parserContext = (ParserContext)this.params.get(JNamedQueryKey.ParserContext);
+		}
 	}
 
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
@@ -48,7 +53,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 		this.resultClass = resultClass;
 		this.ascFields = ascFields;
 		this.desFields = desFields;
-		this.params = params;
+		this.params = LangUtils.emptyIfNull(params);
 	}
 
 	@Override

@@ -79,8 +79,11 @@ public class DataChangedContext implements Serializable {
 		public DataOperateType getOperationType() {
 			return operationType;
 		}
-
 		
+		protected boolean logThisType(Object type){
+			return true;
+		}
+
 	}
 	
 	public enum DataOperateType {
