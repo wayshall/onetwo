@@ -12,7 +12,7 @@ public class CopyConfig {
 	private boolean ignoreOther = false;
 //	private boolean ignoreAutoCopy = false;
 	private boolean throwIfError = false;
-	private boolean checkSetMethod = false;
+	private boolean ignoreIfNoSetMethod = false;
 	private String[] ignoreFields;
 	private String[] includeFields;
 	
@@ -73,12 +73,12 @@ public class CopyConfig {
 		return this;
 	}
 
-	public boolean isCheckSetMethod() {
-		return checkSetMethod;
+	public boolean isIgnoreIfNoSetMethod() {
+		return ignoreIfNoSetMethod;
 	}
 
-	public CopyConfig checkSetMethod() {
-		this.checkSetMethod = true;
+	public CopyConfig ignoreIfNoSetMethod() {
+		this.ignoreIfNoSetMethod = true;
 		return this;
 	}
 	

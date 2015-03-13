@@ -1,5 +1,6 @@
 package org.onetwo.common.db;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -131,4 +132,11 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		}
 	}
 
+	@Override
+	public <T> Collection<T> saves(Collection<T> entities) {
+		for(T entity : entities){
+			save(entity);
+		}
+		return entities;
+	}
 }

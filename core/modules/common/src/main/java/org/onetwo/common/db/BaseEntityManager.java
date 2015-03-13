@@ -16,6 +16,7 @@ public interface BaseEntityManager extends QueryProvider {
 	public <T> T findById(Class<T> entityClass, Serializable id);
 
 	public <T> T save(T entity);
+	public <T> Collection<T> saves(Collection<T> entities);
 	
 	public void persist(Object entity);
 	

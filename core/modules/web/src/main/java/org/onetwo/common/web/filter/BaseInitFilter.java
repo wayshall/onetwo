@@ -20,6 +20,7 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
+import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.onetwo.common.web.xss.XssPreventRequestWrapper;
 import org.springframework.web.context.WebApplicationContext;
@@ -32,6 +33,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @SuppressWarnings("unused")
 public class BaseInitFilter extends IgnoreFiler {
+
+//	public static final String START_TIME_KEY = "org.onetwo.logger.request.startTime";
+//	public static final String END_TIME_KEY = "org.onetwo.logger.request.endTime";
+	
 
 	public static final String LOCALE_SESSION_ATTRIBUTE = WebLocaleUtils.ATTRIBUTE_KEY;//I18nInterceptor.DEFAULT_SESSION_ATTRIBUTE;
 
@@ -127,6 +132,8 @@ public class BaseInitFilter extends IgnoreFiler {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 		HttpSession session = request.getSession();
 		
+
+		WebContextUtils.initRequestInfo(request);
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 		try {

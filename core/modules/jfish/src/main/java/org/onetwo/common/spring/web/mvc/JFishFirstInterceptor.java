@@ -80,11 +80,16 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 //	private final static String TYPE_MISMATCH = "typeMismatch";
 	
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+		if(!isMethodHandler(handler))
+			return ;
+		
 		if(modelAndView!=null){
 			modelAndView.addObject(NOW_KEY, new NiceDate());
 		}else{
 			request.setAttribute(NOW_KEY, new NiceDate());
 		}
+		
+//		WebContextUtils.requestInfo(request).setEndTime(System.currentTimeMillis());
 		/*if(modelAndView!=null && modelAndView.getModelMap()!=null){
 			BeanPropertyBindingResult br = null;
 			for(Map.Entry<String, Object> entry : modelAndView.getModelMap().entrySet()){
@@ -108,6 +113,8 @@ public class JFishFirstInterceptor extends WebInterceptorAdapter  {
 	
 
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+		if(!isMethodHandler(handler))
+			return ;
 		UtilTimerStack.pop(CONTROLLER_TIME_KEY);
 	}
 

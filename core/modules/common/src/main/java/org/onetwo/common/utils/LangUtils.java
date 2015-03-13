@@ -1001,9 +1001,12 @@ public class LangUtils {
 		Object val = (T)judgeType(obj, FirstObject);
 		return (T)(val==null?ReflectUtils.newInstance(clazz):val);
 	}
-	
-	public static List emptyIfNull(List list){
+
+	public static <T> List<T> emptyIfNull(List<T> list){
 		return list==null?Collections.EMPTY_LIST:list;
+	}
+	public static <K, V> Map<K, V> emptyIfNull(Map<K, V> map){
+		return map==null?Collections.EMPTY_MAP:map;
 	}
 	
 	public static List defIfEmpty(List list, List def){
