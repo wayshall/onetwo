@@ -1,5 +1,6 @@
 package org.onetwo.common.db;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		try {
 			return findUnique(entityClass, properties);
 		} catch (NotUniqueResultException e) {
-			return null;
+			return null;//return null if error
 		}
 	}
 
@@ -138,5 +139,28 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 			save(entity);
 		}
 		return entities;
+	}
+
+	
+	@Override
+	public <T> Collection<T> removeByIds(Class<T> entityClass, Serializable[] ids) {
+		if(LangUtils.isEmpty(ids))
+			throw new BaseException("error args: " +LangUtils.toString(ids));
+		
+		Collection<T> removeds = LangUtils.newArrayList(ids.length);
+		for(Serializable id : ids){
+			T e = removeById(entityClass, id);
+			removeds.add(e);
+		}
+		return removeds;
+	}
+
+	@Override
+	public <T> void removes(Collection<T> entities) {
+		if(entities==null)
+			return ;
+		for(Object entity : entities){
+			this.remove(entity);
+		}
 	}
 }

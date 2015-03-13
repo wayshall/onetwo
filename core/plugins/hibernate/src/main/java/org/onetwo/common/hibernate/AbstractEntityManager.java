@@ -211,15 +211,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		page.setResult(datalist);
 	}*/
 
-	@Override
-	public void removeList(Collection<?> entities) {
-		if(entities==null)
-			return ;
-		for(Object entity : entities){
-			this.remove(entity);
-		}
-	}
-	
 	
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
 //		return findUnique(entityClass, properties, true);
