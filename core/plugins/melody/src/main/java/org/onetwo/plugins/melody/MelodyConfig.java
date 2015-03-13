@@ -9,13 +9,13 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 public class MelodyConfig extends AbstractLoadingConfig {
 	
 	private String[] monitoringPatterns;
-	private boolean monitoring;
+	private boolean disabled;
 	private String[] urlPatterns;
 	private Map<String, String> monitoringInitParams;
 	
 	@Override
 	protected void initConfig(JFishProperties config) {
-		monitoring = config.getBoolean("monitoring", false);
+		disabled = config.getBoolean("disabled", false);
 		monitoringPatterns = config.getStringArray("Spring.monitoring.pointcut.patterns", ",");
 		urlPatterns = config.getStringArray("filter.url.patterns", ",");
 		if(ArrayUtils.isEmpty(urlPatterns)){
@@ -31,8 +31,8 @@ public class MelodyConfig extends AbstractLoadingConfig {
 		return monitoringPatterns;
 	}
 
-	public boolean isMonitoring() {
-		return monitoring;
+	public boolean isDisabled() {
+		return disabled;
 	}
 
 	public String[] getUrlPatterns() {

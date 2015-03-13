@@ -52,7 +52,7 @@ public class NullJFishEntityManagerImpl extends BaseEntityManagerAdapter impleme
 	}
 
 	@Override
-	public void removeList(Collection<?> entities) {
+	public <T> void removes(Collection<T> entities) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,6 +1,7 @@
 package org.onetwo.common.fish;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -98,8 +99,8 @@ abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends B
 	
 	@Override
 	@Transactional
-	public void removeList(List<T> entities) {
-		super.removeList(entities);
+	public void removes(Collection<T> entities) {
+		super.removes(entities);
 	}
 
 	@Override

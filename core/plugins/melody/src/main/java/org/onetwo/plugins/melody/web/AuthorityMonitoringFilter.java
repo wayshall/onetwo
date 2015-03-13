@@ -13,17 +13,16 @@ import net.bull.javamelody.MonitoringFilter;
 
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.ResponseUtils;
 
 public class AuthorityMonitoringFilter extends MonitoringFilter {
+	
+	public AuthorityMonitoringFilter(){
+	}
+
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		if(BaseSiteConfig.getInstance().isProduct()){
-			
-		}
-
 		final HttpServletRequest httpRequest = (HttpServletRequest) request;
 		final HttpServletResponse httpResponse = (HttpServletResponse) response;
 		if (httpRequest.getRequestURI().equals(getMonitoringUrl(httpRequest))){
