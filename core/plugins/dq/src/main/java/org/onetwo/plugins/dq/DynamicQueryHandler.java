@@ -185,13 +185,16 @@ public class DynamicQueryHandler implements InvocationHandler {
 			BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
 			
 			for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
-				Object value = parameter.getParamterValue(paramBean);
-				if(value==null){
-					value = parameter.getParamterValue(paramsContextBean);
+				Object value = null;
+				if(paramBean.isReadableProperty(parameter.getProperty())){
+					value = parameter.getParamterValue(paramBean);
+				}else{
+					if(!paramsContextBean.isReadableProperty(parameter.getProperty()))
+						throw new BaseException("batch execute parameter["+parameter.getProperty()+"] not found in bean["+val+"]'s properties or params");
 				}
-				if(value==null && !paramBean.isReadableProperty(parameter.getProperty()) 
-								&& !paramsContextBean.isReadableProperty(parameter.getProperty()))
-					throw new BaseException("batch execute parameter["+parameter.getProperty()+"] not found in bean["+val+"]'s properties or params");
+				
+				if(value==null && paramsContextBean.isReadableProperty(parameter.getProperty()))
+					value = parameter.getParamterValue(paramsContextBean);
 				
 				paramValueMap.put(parameter.getName(), value);
 			}
