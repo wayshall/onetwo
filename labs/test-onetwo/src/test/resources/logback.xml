@@ -7,9 +7,9 @@
   </appender>   
   
   <appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-  	<file>../logs/iccard-web.log</file>
   	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-  		<fileNamePattern>iccard-web.%d{yyyy-MM-dd}.log</fileNamePattern>
+  		<!-- log4j目录路径是相对目录，logback的路径是基于服务器根目录 -->
+  		<fileNamePattern>logs/iccard-web.%d{yyyy-MM-dd}.log</fileNamePattern>
   		<!-- keep 30 days' worth of history -->
       	<maxHistory>30</maxHistory>
   	</rollingPolicy>
@@ -19,9 +19,8 @@
   </appender>
   
   <appender name="iccardAccess" class="ch.qos.logback.core.rolling.RollingFileAppender">
-  	<file>../logs/iccard_access.log</file>
   	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-  		<fileNamePattern>iccard_access.%d{yyyy-MM-dd}.log</fileNamePattern>
+  		<fileNamePattern>logs/iccard_access.%d{yyyy-MM-dd}.log</fileNamePattern>
   	</rollingPolicy>
   	<encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} - %msg%n</pattern>  
@@ -29,7 +28,7 @@
   </appender>
   
   <appender name="importData" class="ch.qos.logback.core.rolling.RollingFileAppender">
-  	<file>../logs/回盘数据导入/import_data.log</file>
+  	<file>logs/回盘数据导入/import_data.log</file>
   	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
   		<fileNamePattern>import_data.%d{yyyy-MM-dd}.log</fileNamePattern>
   	</rollingPolicy>
