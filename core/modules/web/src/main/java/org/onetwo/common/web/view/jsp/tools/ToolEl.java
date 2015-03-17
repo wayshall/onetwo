@@ -64,8 +64,9 @@ final public class ToolEl {
 		return escapeHtml(StringUtils.firstNotBlank(new String[]{val, def1, def2}));
 	}
 	
-	public static String format(Date date, String pattern){
-		return DateUtil.formatDateByPattern(date, pattern);
+	public static String format(Object obj, String pattern){
+//		return DateUtil.formatDateByPattern(date, pattern);
+		return StringUtils.emptyIfNull(LangUtils.formatValue(obj, pattern));
 	}
 
 	

@@ -3,8 +3,6 @@ package org.onetwo.common.spring.web.mvc.log;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.onetwo.common.log.DataChangedContext.DataOperateType;
 import org.onetwo.common.log.DataChangedContext.EntityState;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -14,7 +12,7 @@ import org.slf4j.Logger;
 public class DefaultAccessLogger implements AccessLogger {
 
 	public static final String LOGGER_KEY = "iccardAccessLogger";
-	private static final Logger accessLogger = JFishLoggerFactory.getLogger(LOGGER_KEY);
+	private final Logger accessLogger = JFishLoggerFactory.getLogger(LOGGER_KEY);
 	
 	@Override
 	public void logOperation(OperatorLogInfo data){
@@ -41,10 +39,12 @@ public class DefaultAccessLogger implements AccessLogger {
 			}
 		}
 		
-		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
-		buf.append("{").append("operatorId:"+data.getOperatorId()+", ")
-			.append("operatorName:"+data.getOperatorName()+", ")
+//		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
+		StringBuilder buf = new StringBuilder();
+		buf.append("{")
 			.append("executedTimeInMillis:"+data.getExecutedTimeInMillis()+", ")
+			.append("operatorId:"+data.getOperatorId()+", ")
+			.append("operatorName:"+data.getOperatorName()+", ")
 			.append("success:"+data.isSuccess()+", ")
 			.append("message:"+data.getMessage()+", ")
 			.append("url:"+data.getUrl()+", ")

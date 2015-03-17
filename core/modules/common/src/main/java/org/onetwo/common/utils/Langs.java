@@ -14,6 +14,8 @@ final public class Langs {
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
 	}
 	
+//	public static long sum(Iterable<T>)
+	
 	private Langs(){}
 
 }
