@@ -66,7 +66,7 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 
 	@Column(name="AGE")
 	public Integer getAge() {
-		return age;
+		return age==null?0:age;
 	}
 
 	public void setAge(Integer age) {
@@ -84,7 +84,7 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 
 	@Column(name="HEIGHT")
 	public Float getHeight() {
-		return height;
+		return height==null?0:height;
 	}
 
 	public void setHeight(Float height) {
