@@ -23,6 +23,13 @@ import org.onetwo.common.utils.map.ListMap;
 
 
 @SuppressWarnings("unchecked")
+@Deprecated
+/******
+ * use java8 stream api instead
+ * @author way
+ *
+ * @param <E>
+ */
 public class JFishList<E> implements List<E>, Serializable {
 	private static final String SELF_KEY = ":this";
 	
