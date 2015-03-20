@@ -12,15 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.onetwo.common.db.IBaseEntity;
-import org.onetwo.common.fish.annotation.JFishEntityListeners;
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name="T_USER")
 @SequenceGenerator(name="seqUser", sequenceName="SEQ_T_USER")
-@JFishEntityListeners(TestEntityListener.class)
-public class UserEntity extends BaseEntity implements IBaseEntity {
+//@JFishEntityListeners(TestEntityListener.class)
+public class UserEntity {
 
 	private Long id;
 	
@@ -118,28 +115,5 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 		this.roles = roles;
 	}
 
-	@Override
-	public Date getCreateTime() {
-		// TODO Auto-generated method stub
-		return super.getCreateTime();
-	}
-
-	@Override
-	public void setCreateTime(Date createTime) {
-		// TODO Auto-generated method stub
-		super.setCreateTime(createTime);
-	}
-
-	@Override
-	public Date getLastUpdateTime() {
-		// TODO Auto-generated method stub
-		return super.getLastUpdateTime();
-	}
-
-	@Override
-	public void setLastUpdateTime(Date lastUpdateTime) {
-		// TODO Auto-generated method stub
-		super.setLastUpdateTime(lastUpdateTime);
-	}
 
 }

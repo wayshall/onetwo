@@ -12,8 +12,8 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.QueryProvider;
-import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -164,7 +164,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		}
 		
 		FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(dmethod.getQueryName(), params);
-		SqlAndValues sv = sqlGen.generatSql();
+		ParsedSqlContext sv = sqlGen.generatSql();
 		JdbcDao jdao = this.jdao;
 		if(jdao==null){
 			jdao = SpringApplication.getInstance().getBean(JdbcDao.class, false);

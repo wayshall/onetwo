@@ -15,6 +15,7 @@ public class QueryConfigData {
 	
 	private List<String> likeQueryFields;
 	private final boolean statful;
+	private QueryContextVariable[] variables;
 
 	public QueryConfigData(boolean statful) {
 		super();
@@ -34,5 +35,14 @@ public class QueryConfigData {
 	public boolean isStatful() {
 		return statful;
 	}
+
+	public QueryContextVariable[] getVariables() {
+		return variables;
+	}
+
+	public void setVariables(QueryContextVariable... variable) {
+		this.variables = variable;
+	}
+
 
 }

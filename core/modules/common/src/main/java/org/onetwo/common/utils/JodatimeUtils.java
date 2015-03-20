@@ -8,32 +8,39 @@ import org.joda.time.format.DateTimeFormat;
 
 public class JodatimeUtils {
 	
-	public static Date atStartOfDate(Date date){
+	public static String[] DATE_PATTERNS = new String[]{"yyyy-MM-dd"};
+	
+	public static DateTime atStartOfDate(Date date){
 		DateTime dt = new DateTime(date).withTimeAtStartOfDay();
-		return dt.toDate();
+		return dt;
 	}
 	
-	public static Date atEndOfDate(Date date){
+	public static DateTime atEndOfDate(Date date){
 		DateTime dt = new DateTime(date).withTimeAtStartOfDay().plusDays(1).minusMillis(1);
-		return dt.toDate();
+		return dt;
 	}
 	
-	public static Date atStartOfMonth(Date date){
+	public static DateTime atStartOfMonth(Date date){
 		DateTime dt = new DateTime(date).dayOfMonth().withMinimumValue();
-		return dt.toDate();
+//		return dt.toDate();
+		return dt;
 	}
 	
-	public static Date atEndOfMonth(Date date){
+	public static DateTime atEndOfMonth(Date date){
 		DateTime dt = new DateTime(date).dayOfMonth().withMaximumValue();
-		return dt.toDate();
+		return dt;
 	}
 	
 	public static String format(Date date, String pattern){
 		return new DateTime(date).toString(pattern);
 	}
 	
-	public static Date parse(String source, String pattern){
-		return DateTimeFormat.forPattern(pattern).parseDateTime(source).toDate();
+	public static DateTime parse(String source, String pattern){
+		return DateTimeFormat.forPattern(pattern).parseDateTime(source);
+	}
+	
+	public static DateTime parse(String source){
+		return DateTimeFormat.forPattern(DateUtil.matchPattern(source)).parseDateTime(source);
 	}
 
 	private JodatimeUtils(){
