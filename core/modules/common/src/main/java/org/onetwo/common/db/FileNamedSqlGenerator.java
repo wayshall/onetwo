@@ -4,6 +4,6 @@ import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespacePrope
 
 public interface FileNamedSqlGenerator<T extends NamespaceProperty> {
 
-	public SqlAndValues generatSql();
+	public ParsedSqlContext generatSql();
 
 }

@@ -5,7 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+import org.onetwo.common.db.QueryContextVariable;
+import org.onetwo.common.spring.sql.ParserContextFunctionSet;
+
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface QueryConfig {
 
@@ -15,6 +18,7 @@ public @interface QueryConfig {
 	 */
 	public String[] likeQueryFields() default {};
 	public boolean stateful() default true;
+	public Class<? extends QueryContextVariable> funcClass() default ParserContextFunctionSet.class;
 	
 	
 }
