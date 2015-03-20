@@ -11,9 +11,12 @@ import org.javatuples.Pair;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.QueryConfigData;
+import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParserContext;
+import org.onetwo.common.spring.sql.ParserContextFunctionSet;
+import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
@@ -142,7 +145,7 @@ public class DynamicMethod {
 //		return toArrayByArgs2(args, componentClass);
 	}
 
-	public Object[] toArrayByArgs2(Object[] args, Class<?> componentClass){
+	/*public Object[] toArrayByArgs2(Object[] args, Class<?> componentClass){
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
 		
 		Object pvalue = null;
@@ -190,7 +193,7 @@ public class DynamicMethod {
 			values.add(componentClass);
 		}
 		return values.toArray();
-	}
+	}*/
 	
 	private Pair<String, Object> addAndCheckParamValue(Name name, String pname, Object pvalue){
 		//TODO 参数ifParamNull已过时，将来注释下面这段代码
@@ -262,13 +265,26 @@ public class DynamicMethod {
 			values.put(mp.getParameterName(), pvalue);
 		}
 	}
+	
+	protected void buildQueryConfig(ParserContext parserContext){
+		QueryConfig queryConfig = AnnotationUtils.findAnnotation(method, QueryConfig.class, true);//method.getAnnotation(QueryConfig.class);
+		if(queryConfig!=null){
+			QueryConfigData config = new QueryConfigData(queryConfig.stateful());
+			config.setLikeQueryFields(Arrays.asList(queryConfig.likeQueryFields()));
+			if(queryConfig.funcClass()==ParserContextFunctionSet.class){
+				config.setVariables(ParserContextFunctionSet.getInstance());
+			}else{
+				QueryContextVariable func = (QueryContextVariable)ReflectUtils.newInstance(queryConfig.funcClass());
+				config.setVariables(ParserContextFunctionSet.getInstance(), func);
+			}
+			parserContext.setQueryConfig(config);
+			
+		}else{
+			parserContext.setQueryConfig(QueryConfigData.EMPTY_CONFIG);
+		}
+	}
 
 	public Map<Object, Object> toMapByArgs(Object[] args, Class<?> componentClass){
-//		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
-//		Assert.notNull(args, "args can't be null!");
-		/*if(LangUtils.isEmpty(args))
-			return Collections.EMPTY_MAP;*/
-		
 		Map<Object, Object> values = LangUtils.newHashMap(parameters.size());
 		
 		Object pvalue = null;
@@ -278,21 +294,10 @@ public class DynamicMethod {
 			handleArg(values, parserContext, mp, pvalue);
 		}
 		
-		QueryConfig queryConfig = method.getAnnotation(QueryConfig.class);
-		if(queryConfig!=null){
-			QueryConfigData config = new QueryConfigData(queryConfig.stateful());
-			config.setLikeQueryFields(Arrays.asList(queryConfig.likeQueryFields()));
-			parserContext.setQueryConfig(config);
-		}else{
-			parserContext.setQueryConfig(QueryConfigData.EMPTY_CONFIG);
-		}
+		buildQueryConfig(parserContext);
 
-		/*values.add(JNamedQueryKey.ParserContext);
-		values.add(parserContext);*/
 		values.put(JNamedQueryKey.ParserContext, parserContext);
 		if(componentClass!=null){
-			/*values.add(JNamedQueryKey.ResultClass);
-			values.add(componentClass);*/
 			values.put(JNamedQueryKey.ResultClass, componentClass);
 		}
 		return values;

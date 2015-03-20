@@ -8,8 +8,8 @@ import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.QueryProvider;
-import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
@@ -74,7 +74,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	
 	protected DataQuery createDataQueryIfNecessarry(){
 		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
-		SqlAndValues sqlAndValues = sqlGen.generatSql();
+		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
 			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
 			

@@ -4,13 +4,14 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Date;
 
+import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.SqlUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class ParserContextFunctionSet {
+public class ParserContextFunctionSet implements QueryContextVariable {
 	
 	public static final String CONTEXT_KEY = "_func";//helper
 	private static final ParserContextFunctionSet instance = new ParserContextFunctionSet();
@@ -18,6 +19,15 @@ public class ParserContextFunctionSet {
 	public static ParserContextFunctionSet getInstance() {
 		return instance;
 	}
+	
+	
+
+	@Override
+	public String varName() {
+		return CONTEXT_KEY;
+	}
+
+
 
 	public boolean isEmpty(Object obj){
 		return LangUtils.size(obj)==0;
