@@ -117,7 +117,13 @@ public class AnnotationUtils {
 	}
 
 	public static <T extends Annotation> T findAnnotation(Method method, Class<T> annotationClass) {
+		return findAnnotation(method, annotationClass, false);
+	}
+	public static <T extends Annotation> T findAnnotation(Method method, Class<T> annotationClass, boolean findInClass) {
 		T annotation = method.getAnnotation(annotationClass);
+		if(annotation==null && findInClass){
+			annotation = method.getDeclaringClass().getAnnotation(annotationClass);
+		}
 		return annotation;
 	}
 
@@ -159,6 +165,7 @@ public class AnnotationUtils {
 		}
 		return annotation;
 	}
+	
 
 	public static <T extends Annotation> T findFieldAnnotation(Class<?> clazz, String fieldName, Class<T> annotationClass) {
 		try {

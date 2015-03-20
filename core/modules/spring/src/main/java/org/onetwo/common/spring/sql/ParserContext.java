@@ -3,21 +3,25 @@ package org.onetwo.common.spring.sql;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.onetwo.common.db.QueryConfigData;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.util.Assert;
 
 public class ParserContext implements Map<Object, Object> {
 	
 	public static ParserContext create(Object...params){
 		if(LangUtils.isEmpty(params))
 			return new ParserContext();
-		return new ParserContext(LangUtils.asMap(params));
+		return new ParserContext(CUtils.asMap(params));
 	}
 
 
 	public static final String CONTEXT_KEY = ParserContextFunctionSet.CONTEXT_KEY;//helper
 	public static final String QUERY_CONFIG = "_queryConfig";
+	public static final String QUERY_CONFIG_FUNC = "_queryfunc";
 	
 	private Map<Object, Object> context;
 	
@@ -32,11 +36,19 @@ public class ParserContext implements Map<Object, Object> {
 	}
 
 	public void setQueryConfig(QueryConfigData config){
-		this.context.put(QUERY_CONFIG, config);
+		Assert.notNull(config);
+		QueryConfigData oldConfig = (QueryConfigData)this.context.put(QUERY_CONFIG, config);
+		if(oldConfig!=null){
+			//remove old
+			Stream.of(oldConfig.getVariables()).forEach(e -> 
+														context.remove(e.varName()));
+		}
+		Stream.of(config.getVariables()).forEach(e -> 
+													context.put(e.varName(), e));
 	}
 	
 	public QueryConfigData getQueryConfig(){
-		QueryConfigData  config = (QueryConfigData)context.get(QUERY_CONFIG);
+		QueryConfigData config = (QueryConfigData)context.get(QUERY_CONFIG);
 		return config==null?QueryConfigData.EMPTY_CONFIG:config;
 	}
 	public int size() {
