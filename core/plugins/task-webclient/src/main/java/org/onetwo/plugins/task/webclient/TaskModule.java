@@ -26,6 +26,11 @@ public interface TaskModule {
 			String name = "执行明细";
 			PermissionType permissionType = PermissionType.FUNCTION;
 		}
+
+		public static interface Cancel {
+			String name = "取消任务";
+			PermissionType permissionType = PermissionType.FUNCTION;
+		}
 	}
 
 	public static interface Archived {

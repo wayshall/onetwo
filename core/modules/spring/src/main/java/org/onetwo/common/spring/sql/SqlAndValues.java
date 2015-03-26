@@ -65,7 +65,7 @@ public class SqlAndValues implements ParsedSqlContext {
 
 	@Override
 	public QueryConfigData getQueryConfig() {
-		return queryConfig==null?QueryConfigData.EMPTY_CONFIG:queryConfig;
+		return queryConfig==null?ParsedSqlUtils.EMPTY_CONFIG:queryConfig;
 	}
 	
 }
