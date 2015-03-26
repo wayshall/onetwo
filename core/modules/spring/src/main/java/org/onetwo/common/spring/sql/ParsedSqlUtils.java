@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
@@ -12,6 +13,17 @@ import org.springframework.jdbc.core.namedparam.ParsedSql;
 
 final public class ParsedSqlUtils {
 
+	public static final QueryConfigData EMPTY_CONFIG = new QueryConfigData(true){
+		
+		{
+			setVariables(ParserContextFunctionSet.getInstance());
+		}
+
+		public void setLikeQueryFields(List<String> likeQueryFields) {
+			throw new UnsupportedOperationException();
+		}
+	};
+	
 	public static class ParsedSqlWrapper {
 //		final private ParsedSql parsedSql;
 		final private Collection<SqlParamterMeta> parameterNames;

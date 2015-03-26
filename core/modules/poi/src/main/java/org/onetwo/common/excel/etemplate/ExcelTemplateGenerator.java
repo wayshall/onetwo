@@ -16,6 +16,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
@@ -115,6 +116,7 @@ public class ExcelTemplateGenerator {
 	
 	public void generate(final ETemplateContext context, String generatedPath){
 		try {
+			FileUtils.makeDirs(generatedPath, true);
 			generate(context, new FileOutputStream(generatedPath));
 		} catch (FileNotFoundException e) {
 			throw new BaseException("write workbook to ["+generatedPath+"] error: " + e.getMessage());

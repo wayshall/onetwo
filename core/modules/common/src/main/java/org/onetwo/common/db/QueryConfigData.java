@@ -5,13 +5,6 @@ import java.util.List;
 import org.onetwo.common.utils.LangUtils;
 
 public class QueryConfigData {
-
-	public static final QueryConfigData EMPTY_CONFIG = new QueryConfigData(true){
-
-		public void setLikeQueryFields(List<String> likeQueryFields) {
-			throw new UnsupportedOperationException();
-		}
-	};
 	
 	private List<String> likeQueryFields;
 	private final boolean statful;

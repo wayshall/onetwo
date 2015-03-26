@@ -14,6 +14,7 @@ import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
+import org.onetwo.common.spring.sql.ParsedSqlUtils;
 import org.onetwo.common.spring.sql.ParserContext;
 import org.onetwo.common.spring.sql.ParserContextFunctionSet;
 import org.onetwo.common.utils.AnnotationUtils;
@@ -216,6 +217,11 @@ public class DynamicMethod {
 			val = ExtQueryUtils.getLikeString(pvalue.toString());
 		}else{
 //			values.add(pvalue);
+			/*if(pvalue!=null && pvalue.getClass().isArray()){
+				val = LangUtils.asList(pvalue);
+			}else{
+				val = pvalue;
+			}*/
 			val = pvalue;
 		}
 		return Pair.with(pname, val);
@@ -257,7 +263,7 @@ public class DynamicMethod {
 				}
 			}
 				
-		}if(mp.hasParameterAnnotation(BatchObject.class)){
+		}else if(mp.hasParameterAnnotation(BatchObject.class)){
 			values.put(BatchObject.class, pvalue);
 		}else{
 			/*values.add(mp.getParameterName());
@@ -280,7 +286,7 @@ public class DynamicMethod {
 			parserContext.setQueryConfig(config);
 			
 		}else{
-			parserContext.setQueryConfig(QueryConfigData.EMPTY_CONFIG);
+			parserContext.setQueryConfig(ParsedSqlUtils.EMPTY_CONFIG);
 		}
 	}
 
