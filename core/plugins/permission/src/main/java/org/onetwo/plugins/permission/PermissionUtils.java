@@ -12,6 +12,8 @@ final public class PermissionUtils {
 	
 	public static final String CLASS_PREFIX = "class:";
 	public static final String PLUGIN_PREFIX = "plugin:";
+	public static final String DOLOR = "$";
+	public static final String UNDERLINE = "_";
 	
 	private static MenuInfoParser menuInfoParser;
 	

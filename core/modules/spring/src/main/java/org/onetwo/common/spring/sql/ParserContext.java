@@ -3,11 +3,13 @@ package org.onetwo.common.spring.sql;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.onetwo.common.db.QueryConfigData;
+import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.list.NoIndexIt;
 import org.springframework.util.Assert;
 
 public class ParserContext implements Map<Object, Object> {
@@ -35,21 +37,37 @@ public class ParserContext implements Map<Object, Object> {
 		this.context = context;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setQueryConfig(QueryConfigData config){
 		Assert.notNull(config);
 		QueryConfigData oldConfig = (QueryConfigData)this.context.put(QUERY_CONFIG, config);
 		if(oldConfig!=null){
 			//remove old
-			Stream.of(oldConfig.getVariables()).forEach(e -> 
-														context.remove(e.varName()));
+			/*Stream.of(oldConfig.getVariables()).forEach(e -> 
+														context.remove(e.varName()));*/
+			//兼容java8以下
+			JFishList.wrap(oldConfig.getVariables()).each(new NoIndexIt<QueryContextVariable>() {
+				@Override
+				protected void doIt(QueryContextVariable e) throws Exception {
+					context.remove(e.varName());
+				}
+			});
 		}
-		Stream.of(config.getVariables()).forEach(e -> 
-													context.put(e.varName(), e));
+		if(config.getVariables()!=null){
+			/*Stream.of(config.getVariables()).forEach(e -> 
+														context.put(e.varName(), e));*/
+			JFishList.wrap(config.getVariables()).each(new NoIndexIt<QueryContextVariable>() {
+				@Override
+				protected void doIt(QueryContextVariable e) throws Exception {
+					context.put(e.varName(), e);
+				}
+			});
+		}
 	}
 	
 	public QueryConfigData getQueryConfig(){
 		QueryConfigData config = (QueryConfigData)context.get(QUERY_CONFIG);
-		return config==null?QueryConfigData.EMPTY_CONFIG:config;
+		return config==null?ParsedSqlUtils.EMPTY_CONFIG:config;
 	}
 	public int size() {
 		return context.size();
