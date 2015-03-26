@@ -16,7 +16,8 @@ EXECUTING - 排队执行中
 	 */
 	public static enum TaskStatus {
 		WAITING("等待中"),
-		EXECUTING("排队执行中");
+		EXECUTING("排队执行中"),
+		CANCELLING("等待取消中");
 		
 		final private String name;
 
@@ -39,7 +40,8 @@ SUCCEED- 执行成功
 	 */
 	public static enum TaskExecResult {
 		FAILED("执行失败"),
-		SUCCEED("执行成功");
+		SUCCEED("执行成功"),
+		CANCEL("已取消");
 		
 		final private String name;
 
