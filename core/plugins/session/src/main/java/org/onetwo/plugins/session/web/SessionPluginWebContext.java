@@ -28,7 +28,7 @@ import redis.embedded.RedisServer;
 
 
 //@Import(EmbeddedRedisConfiguration.class) 
-@EnableRedisHttpSession
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds=3600)
 public class SessionPluginWebContext implements InitializingBean{
 	
 	@Resource
@@ -42,6 +42,13 @@ public class SessionPluginWebContext implements InitializingBean{
 		
 	}
 	
+
+    /*@Bean
+    public RedisOperationsSessionRepository sessionRepository(RedisTemplate<String, ExpiringSession> sessionRedisTemplate) {
+        RedisOperationsSessionRepository sessionRepository = new RedisOperationsSessionRepository(sessionRedisTemplate);
+        sessionRepository.setDefaultMaxInactiveInterval(maxInactiveIntervalInSeconds);
+        return sessionRepository;
+    }*/
 	@Bean
 	public HttpSessionStrategy httpSessionStrategy(){
 		HttpSessionStrategy s = new JFishCookiesHttpSessionStrategy();
