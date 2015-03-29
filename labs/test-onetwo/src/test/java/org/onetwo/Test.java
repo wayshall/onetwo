@@ -9,21 +9,10 @@ import test.entity.UserEntity;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		UserEntity user = createUser();
-		System.out.println("user: " + user.getUserName());
-		System.out.println("user: " + user.getUserName());
-		
-
-		UserEntity user1 = createUser();
-		System.out.println("user: " + user1.getUserName());
-		
-
-		user1 = createUser();
-		System.out.println("user: " + user1.getUserName());
-		
-
-		user1 = createUser(); 
-		System.out.println("user: " + user1.getUserName());
+		float a = 0.2f;
+		float b = a;
+		System.out.println("a: " + a);
+		System.out.println("b: " + b);
 	}
 	
 	public static UserEntity createUser(){

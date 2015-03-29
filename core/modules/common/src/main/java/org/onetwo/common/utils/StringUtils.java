@@ -292,6 +292,21 @@ public abstract class StringUtils {
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
 	}
+	
+
+
+	public static String substring(String str, int beginIndex, int endIndex) {
+		Assert.isTrue(beginIndex<endIndex);
+		if (isEmpty(str)) {
+			return str;
+		}
+		if(beginIndex>=str.length())
+			return EMPTY;
+		if(endIndex>str.length()){
+			endIndex = str.length();
+		}
+		return str.substring(beginIndex, endIndex);
+	}
 
 	public static String substringAfter(String str, String separator) {
 		if (isEmpty(str)) {
