@@ -16,7 +16,8 @@ import org.onetwo.common.web.view.jsp.TagUtils;
 import com.google.common.collect.ImmutableMap;
 
 public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
-
+	public final static String CODE_PREFIX = "code:";
+	
 	/**
 	 * 
 	 */
@@ -38,6 +39,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 
 	private boolean readOnly;
 	private boolean disabled;
+	private boolean explicitSetDisabled;
 	
 
 //	private String permission;
@@ -56,6 +58,13 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			temp.put(fp.getProvider(), fp);
 		}
 		pupulaterMap = ImmutableMap.copyOf(temp);
+	}
+	
+
+	@Override
+	protected boolean checkIgnoreField(){
+//		return !checkPermission(permission) || !checkPermission(getFormTagBean().getPermission()) || !showable;
+		return !(checkPermission(permission) && checkPermission(getFormTagBean().getPermission()) && showable);
 	}
 	
 	
@@ -88,6 +97,11 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setValue(value);
 		component.setDataFormat(dataFormat);
 		component.setReadOnly(readOnly);
+		if(explicitSetDisabled){
+			//如果显式设置了disabled，则不再通过权限判断
+		}else if(!disabled){
+			this.disabled = getFormTagBean().isDisabled();
+		}
 		component.setDisabled(disabled);
 		component.setModelAttribute(modelAttribute);
 		component.setShowLoadingText(showLoadingText);
@@ -225,14 +239,15 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	}
 
 	public void setDisabled(String disabled) {
-		if(StringUtils.isBlank(disabled))
+		if(StringUtils.isBlank(disabled)){
 			return ;
-		String codePrefix = "code:";
-		if(disabled.startsWith(codePrefix)){
-			String code = disabled.substring(codePrefix.length());
+		}
+		if(disabled.startsWith(CODE_PREFIX)){
+			String code = disabled.substring(CODE_PREFIX.length());
 			this.disabled = !checkPermission(code);
 		}else{
 			this.disabled = Types.convertValue(disabled, boolean.class);
+			this.explicitSetDisabled = true; 
 		}
 	}
 
@@ -311,6 +326,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		return type;
 	}
 
-
+	public void setEditPermission(String editPermission) {
+		this.disabled = !checkPermission(editPermission);
+	}
 
 }

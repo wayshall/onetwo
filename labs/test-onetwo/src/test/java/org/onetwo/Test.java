@@ -1,32 +1,26 @@
 package org.onetwo;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import org.onetwo.common.utils.LangUtils;
+
+import test.entity.UserEntity;
+
 
 
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		Class clazz = Class.forName("org.onetwo.Py");
-		Method m = clazz.getMethod("exec", Class.forName("java.util.HashMap"));
-		HashMap map = new HashMap();
-		map.put("1", "aaa");
-		map.put("2", "bbb");
-		map.put("3", "ccc");
-		Py py = new Py();
-		m.invoke(py, map);
-		py.exec(map);
+		float a = 0.2f;
+		float b = a;
+		System.out.println("a: " + a);
+		System.out.println("b: " + b);
 	}
 	
-}
-class Py {
-
-	public void exec(Map map){
-		System.out.println(map);
+	public static UserEntity createUser(){
+		UserEntity user = new UserEntity();
+		user.setUserName("est");
+		System.out.println("class: " + user.getClass().getClassLoader());
+		return user;
 	}
-
-	/*public void exec(HashMap map){
-		System.out.println(map);
-	}*/
+	
+	
 }

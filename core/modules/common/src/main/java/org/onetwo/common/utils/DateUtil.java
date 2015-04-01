@@ -225,7 +225,7 @@ abstract public class DateUtil {
 	}
 	
 	public static String formatDateByPattern(Date date, String p) {
-		if(date==null)
+		/*if(date==null)
 			return "";
 		if(StringUtils.isBlank(p))
 			p = Date_Time;
@@ -236,7 +236,8 @@ abstract public class DateUtil {
 		} catch (Exception e) {
 			logger.warn("format error : {}", e.getMessage());
 		}
-		return rs;
+		return rs;*/
+		return format(p, date);
 	}
 
 	public static String formatDateTime(Date date) {

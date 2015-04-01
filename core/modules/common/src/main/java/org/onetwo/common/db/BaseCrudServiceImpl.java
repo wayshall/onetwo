@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -77,8 +78,8 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	}
 
 	@Override
-	public void removeList(List<T> entities) {
-		getBaseEntityManager().removeList(entities);
+	public void removes(Collection<T> entities) {
+		getBaseEntityManager().removes(entities);
 	}
 
 	@Override
@@ -133,6 +134,11 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	@Override
 	public void findPage(final Page page, QueryBuilder query) {
 		getBaseEntityManager().findPage(page, query);
+	}
+
+	@Override
+	public Collection<T> removeByIds(Class<T> entityClass, PK[] ids) {
+		return getBaseEntityManager().removeByIds(entityClass, ids);
 	}
 	
 }

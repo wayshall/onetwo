@@ -12,9 +12,9 @@ import java.util.Map;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Block;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.map.M;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -66,7 +66,7 @@ public class XMLReader {
 	}
 	
 	public XMLReader maps(Object...params){
-		return map(M.c(params));
+		return map(CUtils.asMap(params));
 	}
 	
 	

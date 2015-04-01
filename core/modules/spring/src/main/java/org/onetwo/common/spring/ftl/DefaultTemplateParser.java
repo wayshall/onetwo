@@ -26,6 +26,7 @@ public class DefaultTemplateParser implements TemplateParser {
 		try {
 			template.process(rootMap, sw);
 		} catch (TemplateException e) {
+			e.printStackTrace();
 			Exception cause = e.getCauseException();
 			if(cause!=null){
 				throw LangUtils.asBaseException("parse tempalte error : " + cause.getMessage(), cause);

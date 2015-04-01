@@ -17,7 +17,6 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.list.L;
 import org.slf4j.Logger;
 
 abstract public class AbstractExtQuery implements ExtQueryInner{
@@ -183,7 +182,8 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			} else if(K.RAW_QL.equals(fields)){
 				if (!values.getClass().isArray() && !List.class.isAssignableFrom(values.getClass()) && !String.class.isAssignableFrom(values.getClass()))
 					throw new ServiceException("raw-ql args error: " + values);
-				List listValue = L.tolist(values, true);
+//				List listValue = L.tolist(values, true);
+				List<?> listValue = CUtils.tolist(values, true);
 				h = (String)listValue.get(0);
 				if(!h.endsWith(" "))
 					h += " ";

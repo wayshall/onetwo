@@ -35,6 +35,11 @@ public class TaskClientServiceImpl {
 		return baseEntityManager;
 	}
 
+	public void cancel(Long taskQueueId){
+		TaskQueue taskqueue = getBaseEntityManager().load(TaskQueue.class, taskQueueId);
+		taskqueue.tryCancelTask();
+	}
+
 	public void findExeLogPage(Page<TaskExecLog> page, Long taskQueueId){
 		getBaseEntityManager().findPage(TaskExecLog.class, page, "taskQueueId", taskQueueId);
 	}

@@ -42,8 +42,6 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.annotation.BeanOrder;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
-import org.onetwo.common.utils.list.L;
-import org.onetwo.common.utils.map.M;
 import org.onetwo.common.utils.map.NonCaseMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -418,6 +416,12 @@ public class LangUtils {
 		return Collection.class.isAssignableFrom(clazz);
 	}
 	
+	public static boolean isIterableClass(Class clazz){
+		if(clazz==null)
+			return false;
+		return Iterable.class.isAssignableFrom(clazz);
+	}
+	
 	public static boolean isArrayClass(Class clazz){
 		if(clazz==null)
 			return false;
@@ -607,9 +611,9 @@ public class LangUtils {
 		if(PRINT_SE.isExpresstion(str)){
 			Object context = null;
 			if(named){
-				context = M.c(objects);
+				context = CUtils.asMap(objects);
 			}else{
-				context = L.aslist(objects);
+				context = CUtils.tolist(objects, true);
 			}
 			String rs = PRINT_SE.parseByProvider(str, context);
 			sb.append(rs);
@@ -915,7 +919,7 @@ public class LangUtils {
 	public static boolean isMultiple(Object obj){
 		if(obj==null)
 			return false;
-		if(obj instanceof Collection){
+		if(obj instanceof Iterable){
 			return true;
 		}else if(obj.getClass().isArray()){
 			return true;
@@ -927,8 +931,10 @@ public class LangUtils {
 	public static boolean isMultipleAndNotEmpty(Object obj){
 		if(obj==null)
 			return false;
-		if(obj instanceof Collection){
-			return !isEmpty((Collection)obj);
+		if(obj instanceof Iterable){
+//			return !isEmpty((Collection)obj);
+			Iterator<?> it = ((Iterable)obj).iterator();
+			return it.hasNext();
 		}else if(obj.getClass().isArray()){
 			return !isEmpty((Object[])obj);
 		}else {
@@ -937,7 +943,7 @@ public class LangUtils {
 	}
 	
 	public static boolean isMultipleObjectClass(Class clazz){
-		return isCollectionClass(clazz) || isArrayClass(clazz);
+		return isIterableClass(clazz) || isArrayClass(clazz);
 	}
 	
 	public static boolean isArray(Object obj){
@@ -1001,9 +1007,12 @@ public class LangUtils {
 		Object val = (T)judgeType(obj, FirstObject);
 		return (T)(val==null?ReflectUtils.newInstance(clazz):val);
 	}
-	
-	public static List emptyIfNull(List list){
+
+	public static <T> List<T> emptyIfNull(List<T> list){
 		return list==null?Collections.EMPTY_LIST:list;
+	}
+	public static <K, V> Map<K, V> emptyIfNull(Map<K, V> map){
+		return map==null?Collections.EMPTY_MAP:map;
 	}
 	
 	public static List defIfEmpty(List list, List def){
@@ -1412,7 +1421,7 @@ public class LangUtils {
 	}
 	
 	public static <T> Collection<T> stripNull(Collection<T> collections){
-		return L.stripNull(collections);
+		return CUtils.stripNull(collections);
 	}
 	
 

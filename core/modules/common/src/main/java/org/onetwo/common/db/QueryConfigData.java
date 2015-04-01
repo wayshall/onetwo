@@ -5,16 +5,10 @@ import java.util.List;
 import org.onetwo.common.utils.LangUtils;
 
 public class QueryConfigData {
-
-	public static final QueryConfigData EMPTY_CONFIG = new QueryConfigData(true){
-
-		public void setLikeQueryFields(List<String> likeQueryFields) {
-			throw new UnsupportedOperationException();
-		}
-	};
 	
 	private List<String> likeQueryFields;
 	private final boolean statful;
+	private QueryContextVariable[] variables;
 
 	public QueryConfigData(boolean statful) {
 		super();
@@ -34,5 +28,14 @@ public class QueryConfigData {
 	public boolean isStatful() {
 		return statful;
 	}
+
+	public QueryContextVariable[] getVariables() {
+		return variables;
+	}
+
+	public void setVariables(QueryContextVariable... variable) {
+		this.variables = variable;
+	}
+
 
 }

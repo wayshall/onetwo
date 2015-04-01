@@ -1,6 +1,7 @@
 package org.onetwo.common.hibernate;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -102,8 +103,8 @@ abstract public class HibernateCrudServiceImpl<T, PK extends Serializable> exten
 	
 	@Override
 	@Transactional
-	public void removeList(List<T> entities) {
-		super.removeList(entities);
+	public void removes(Collection<T> entities) {
+		super.removes(entities);
 	}
 
 	@Override

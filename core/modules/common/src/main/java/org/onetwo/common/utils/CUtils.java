@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.L;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.ListMap;
@@ -28,6 +27,28 @@ import org.onetwo.common.utils.map.ListMap;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
 
+
+	public static class NullOrEmtpyPredicate implements Predicate {
+
+		private boolean result;
+
+		public NullOrEmtpyPredicate(boolean result) {
+			this.result = result;
+		}
+
+		@Override
+		public boolean apply(Object obj) {
+			if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())))
+				return result;
+			return !result;
+		}
+
+	};
+
+	public static NullOrEmtpyPredicate NullOrEmptyTrue = new NullOrEmtpyPredicate(true);
+
+	public static NullOrEmtpyPredicate NullOrEmptyFalse = new NullOrEmtpyPredicate(false);
+	
     public static final List NULL_LIST = new NullList();
 
     @SuppressWarnings("serial")
@@ -281,8 +302,9 @@ final public class CUtils {
 		if (object == null)
 			return def;
 		List list = null;
-		if (Collection.class.isInstance(object)) {
-			if (List.class.isInstance(object))
+		if (List.class.isInstance(object)) {
+			list = (List) object;
+			/*if (List.class.isInstance(object))
 				list = (List) object;
 			else {
 				Collection col = (Collection) object;
@@ -292,7 +314,7 @@ final public class CUtils {
 					list = new ArrayList(col.size());
 					list.addAll(col);
 				}
-			}
+			}*/
 		} else if(Iterable.class.isInstance(object)){
 			list = new ArrayList();
 			for(Object obj : (Iterable<?>)object){
@@ -352,9 +374,23 @@ final public class CUtils {
 	}
 	
 	public static Collection strip(Collection collection, final Object... stripValue) {
-		L.StripValuePredicate stripPredicate = new L.StripValuePredicate(false, stripValue);
-		CollectionUtils.filter(collection, stripPredicate);//remove if return false
+//		L.StripValuePredicate stripPredicate = new L.StripValuePredicate(false, stripValue);
+		//remove if return false
+		CollectionUtils.filter(collection, new Predicate<Object>() {
+
+			@Override
+			public boolean apply(Object obj) {
+				if (obj instanceof Class) {
+					if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
+						return false;
+				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj))
+					return false;
+				return true;
+			}
+			
+		});//
 		return collection;
+		
 	}
 	
 	public static Object[] asArray(Object obj) {
@@ -482,6 +518,17 @@ final public class CUtils {
 		boolean apply(T e1, T e2);
 	}
 	
+	public static <T> boolean containsAnyOne(Collection<T> c, T...elements){
+		Assert.notEmpty(elements);
+		if(LangUtils.isEmpty(c))
+			return false;
+		for(T e : elements){
+			if(c.contains(e))
+				return true;
+		}
+		return false;
+	}
+	
 	public static <T> boolean contains(Collection<T> c, T element, EqualsPredicate<T> equalsPredicate){
 		if(LangUtils.isNotEmpty(c)){
 			for(T e : c){
@@ -523,6 +570,18 @@ final public class CUtils {
 			}
 			
 		});
+	}
+	
+
+	public static List toList(Map map) {
+		if(map==null)
+			return NULL_LIST;
+		List list = new ArrayList(map.size()*2);
+		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
+			list.add(entry.getKey());
+			list.add(entry.getValue());
+		}
+		return list;
 	}
 	
 	private CUtils(){

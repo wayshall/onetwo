@@ -9,7 +9,6 @@ import java.util.Map;
 import org.onetwo.common.db.sqlext.SQLDialet;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ParamValues {

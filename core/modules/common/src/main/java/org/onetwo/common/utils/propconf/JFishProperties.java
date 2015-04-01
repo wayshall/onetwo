@@ -242,6 +242,10 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		return getPropertyWithSplit(key, split);
 	}
 
+	public String[] getStringArray(String key, String split) {
+		return getPropertyWithSplit(key, split).toArray(new String[0]);
+	}
+
 	
 	public Map<String, String> getPropertiesStartWith(String keyStartWith) {
 		return getFromCache(keyStartWith, startWithBlock, keyStartWith);

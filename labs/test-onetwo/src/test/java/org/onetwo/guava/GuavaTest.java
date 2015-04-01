@@ -20,6 +20,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
@@ -93,6 +94,31 @@ public class GuavaTest {
 		Assert.assertEquals(3, groups.get("aa").size());
 		Assert.assertEquals(1, groups.get("bb").size());
 		Assert.assertEquals(2, groups.get("cc").size());
+	}
+	
+	@Test
+	public void testTransformAndSum(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = createUserList("aa", 3);
+		List<UserEntity> bb = createUserList("bb", 1);
+		List<UserEntity> cc = createUserList("cc", 2);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		Function<UserEntity, Integer> ageMapper = new Function<UserEntity, Integer>() {
+
+			@Override
+			public Integer apply(UserEntity input) {
+				return input.getAge();
+			}
+			
+		};
+		int total = 0;
+		for(Integer a : Iterables.transform(all, ageMapper)){
+			total += a;
+		}
+		Assert.assertEquals(total, JFishList.wrap(all).sum("age").intValue());
 	}
 	
 	@Test
