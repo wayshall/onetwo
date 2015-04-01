@@ -6,8 +6,8 @@ import java.util.Map;
 
 import javax.ejb.EJB;
 
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings("rawtypes")
 public abstract class EJBTestUtils {
@@ -17,7 +17,7 @@ public abstract class EJBTestUtils {
 	}
 	
 	public static void autoFindAndInjectFields(Object inst, Object...objects){
-		Map properties = M.c(objects);
+		Map properties = CUtils.asMap(objects);
 		autoFindAndInjectFields(inst, properties);
 	}
 	

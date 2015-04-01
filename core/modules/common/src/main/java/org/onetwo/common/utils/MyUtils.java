@@ -17,7 +17,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.list.L;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
@@ -248,11 +247,13 @@ public class MyUtils {
 	}
 	
 	public static List asList(Object array) {
-		return L.exclude(array);
+//		return L.exclude(array);
+		return CUtils.trimAndexcludeTheClassElement(true, array);
 	}
 
-	public static List asListExclude(Object array, Class...excludeClasses) {
-		return L.exclude(array, (Object[])excludeClasses);
+	public static List<?> asListExclude(Object array, Class...excludeClasses) {
+//		return L.exclude(array, (Object[])excludeClasses);
+		return CUtils.trimAndexcludeTheClassElement(true, array, excludeClasses);
 	}
 
 	public static int getSize(Object array) {
@@ -274,7 +275,8 @@ public class MyUtils {
 	}
 
 	public static Collection stripNull(Collection collection, final Object...stripValue) {
-		return L.strip(collection, stripValue);
+//		return L.strip(collection, stripValue);
+		return CUtils.strip(collection, stripValue);
 	}
 
 	public static List array2List(Object[] array) {
@@ -282,7 +284,7 @@ public class MyUtils {
 			return null;
 		List list = new ArrayList();
 		for (Object obj : array) {
-			if (L.NullOrEmptyTrue.apply(obj))
+			if (CUtils.NullOrEmptyTrue.apply(obj))
 				continue;
 			list.add(obj);
 		}

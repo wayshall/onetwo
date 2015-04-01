@@ -35,7 +35,6 @@ import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.common.utils.map.M;
 import org.slf4j.Logger;
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
@@ -1506,7 +1505,7 @@ public class ReflectUtils {
 	}
 
 	public static void setFieldsDefaultValue(Object inst, Object... objects) {
-		Map properties = M.c(objects);
+		Map properties = CUtils.asMap(objects);
 		setFieldsDefaultValue(inst, properties);
 	}
 
