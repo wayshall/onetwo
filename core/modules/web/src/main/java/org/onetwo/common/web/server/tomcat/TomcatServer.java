@@ -175,6 +175,7 @@ public class TomcatServer {
 			printConnectors();
 			tomcat.getServer().await();
 		} catch (Exception e) {
+//			logger.error("web server start error , check it. ", e);
 			throw new BaseException("web server start error , check it. " + e.getMessage(), e);
 		}
 	}

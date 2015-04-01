@@ -20,6 +20,7 @@ public class FormTagBean extends HtmlElement {
 
 	private FormDataProvider provider;
 	private boolean showOnly;
+	private boolean disabled;
 	
 	private Object model;
 
@@ -104,6 +105,14 @@ public class FormTagBean extends HtmlElement {
 
 	public void setModel(Object model) {
 		this.model = model;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 

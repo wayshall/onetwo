@@ -2,8 +2,6 @@ package org.onetwo.common.utils;
 
 import java.util.Map;
 
-import org.onetwo.common.utils.map.M;
-
 @SuppressWarnings("rawtypes")
 public class Ignore {
 
@@ -19,7 +17,7 @@ public class Ignore {
 	 * @return
 	 */
 	public static Ignore create(Object...objects){
-		return createBy(true, M.c(objects));
+		return createBy(true, CUtils.asMap(objects));
 	}
 	
 

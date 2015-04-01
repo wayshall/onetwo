@@ -22,3 +22,4 @@ work/Tomcat
 /core/.gradle
 /core/modules/.gradle
 /labs/test-onetwo/.gradle
+/labs/test-onetwo/*.log

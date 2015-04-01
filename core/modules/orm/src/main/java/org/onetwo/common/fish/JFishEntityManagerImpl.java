@@ -26,7 +26,6 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.map.M;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -282,7 +281,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
-	public void removeList(Collection<?> entities) {
+	public <T> void removeList(Collection<T> entities) {
 		if(LangUtils.isEmpty(entities))
 			return ;
 		getJfishDao().delete(entities);
@@ -340,12 +339,12 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
-		Map properties = M.bean2Map(obj);
+		Map properties = CUtils.bean2Map(obj);
 		return this.findByProperties(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
-		Map properties = M.bean2Map(obj);
+		Map properties = CUtils.bean2Map(obj);
 		this.findPage(entityClass, page, properties);
 	}
 

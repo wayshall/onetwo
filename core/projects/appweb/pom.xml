@@ -5,17 +5,15 @@
   <groupId>appweb</groupId>
   <artifactId>appweb</artifactId>
   <packaging>war</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>appweb</name>
   <url>http://maven.apache.org</url>
   
   
   <properties> 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<tomcat.version>7.0.29</tomcat.version>
-	<onetwo.plugin.version>2.0-SNAPSHOT</onetwo.plugin.version>
-	<onetwo.jfish.version>2.0-SNAPSHOT</onetwo.jfish.version>
-	<onetwo.version>1.5.0-SNAPSHOT</onetwo.version>
+	<tomcat.version>7.0.59</tomcat.version>
+	<onetwo.version>3.1.3-SNAPSHOT</onetwo.version>
 	<jpa.version>2.0.0</jpa.version>
     <junit.version>4.10</junit.version>
   </properties>
@@ -25,14 +23,14 @@
   	<dependency>
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-jfish</artifactId>
-	  <version>${onetwo.jfish.version}</version>
+	  <version>${onetwo.version}</version>
 	</dependency>
   
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-hibernate</artifactId>
-	  <version>${onetwo.plugin.version}</version>
+	  <version>${onetwo.version}</version>
 	</dependency> 
 	<dependency>
 	  <groupId>org.onetwo</groupId>
@@ -43,19 +41,19 @@
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-fmtag</artifactId>
-	  <version>${onetwo.plugin.version}</version>
+	  <version>${onetwo.version}</version>
 	</dependency>
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-codegen</artifactId>
-	  <version>${onetwo.plugin.version}</version>
+	  <version>${onetwo.version}</version>
 	</dependency>
 	
 	<dependency>
 	  <groupId>org.onetwo.plugins</groupId>
 	  <artifactId>onetwo-plugin-dq</artifactId>
-	  <version>${onetwo.plugin.version}</version>
+	  <version>${onetwo.version}</version>
 	</dependency>
 	
 	<dependency>

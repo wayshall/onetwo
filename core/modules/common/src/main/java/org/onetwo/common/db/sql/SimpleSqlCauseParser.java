@@ -12,7 +12,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.SToken;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.Stringer;
-import org.onetwo.common.utils.list.L;
+
+import com.google.common.collect.ImmutableList;
 
 @SuppressWarnings("unchecked")
 public class SimpleSqlCauseParser implements SqlCauseParser {
@@ -21,9 +22,9 @@ public class SimpleSqlCauseParser implements SqlCauseParser {
 	public static final String PARENTHESIS_LEFT = "(";
 	public static final String PARENTHESIS_RIGHT = ")";
 
-	public static final List<String> KEYWORDS = L.aslist("and", "or", "where");
-	public static final List<String> OPERATORS = L.aslist("=", "<", ">", ">=", "<=", "!=", "<>", "in", "like");
-	public static final List<String> RETAIN_SEPS = L.aslistIfNull(false, " ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
+	public static final List<String> KEYWORDS = ImmutableList.of("and", "or", "where");
+	public static final List<String> OPERATORS = ImmutableList.of("=", "<", ">", ">=", "<=", "!=", "<>", "in", "like");
+	public static final List<String> RETAIN_SEPS = ImmutableList.of(" ", ",", "(", ")", "=", "<", ">", ">=", "<=", "!=", "<>", " in", " like ");//seperator
 
 //	public static final int DEFAULT_CACHE_LIMIT = 256;
 	

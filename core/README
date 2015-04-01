@@ -1,19 +1,1 @@
-﻿这个项目下的东西都是平时工作中抽取出来的代码
 
-modules
-modules目录下的项目主要是：
-1、对一些流行框架或库的简单封装，胶水代码。
-比如struts2模块是在struts2基础上针对项目的需求做的一些扩展和复用代码；
-poi模块是对apache的poi库的封装，实现了基于xml模板的导出或者简易的导入。
-
-
-2、在一些框架或者库基础上的实现的、功能相对独立的项目。
-比如orm模块是基于spring jdbctemplate基础上实现的简单orm；
-security是基于jdk5注解功能实现的一个比较简单验证鉴权模块，支持struts2和spring mvc
-
-jfish是在spring mvc基础上实现包含了一套插件（或者说模块）机制的模块。
-而plugins目录下的模块正是基于jfish的一些插件模块
-fmtag是一些freemarker的标签扩展。
-rest模块是针对一些专门开发rest接口的项目所写的扩展。
-doc是针对rest接口项目提供web文档。
- 

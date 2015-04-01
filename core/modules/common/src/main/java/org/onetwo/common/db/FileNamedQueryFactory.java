@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.utils.Page;
@@ -26,7 +27,7 @@ public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 
 	public DataQuery createQuery(String queryName, Object... args);
 	
-	public FileNamedSqlGenerator<PT> createFileNamedSqlGenerator(String queryName);
+	public FileNamedSqlGenerator<PT> createFileNamedSqlGenerator(String queryName, Map<Object, Object> params);
 	
 //	public JFishQueryValue createQueryValue();
 	
