@@ -74,7 +74,16 @@ public class TaskQueue implements Serializable {
 		this.lastExecTime = now;
 //		this.lastUpdateTime = now;
 	}
+
+
+	public void tryCancelTask() {
+		this.status = TaskStatus.CANCELLING;
+		this.lastUpdateTime = DateUtil.now();
+	}
 	
+	public boolean isCacelable(){
+		return this.status!=TaskStatus.CANCELLING;
+	}
 	public boolean isNeedArchived(){
 		return currentTimes>=tryTimes;
 	}

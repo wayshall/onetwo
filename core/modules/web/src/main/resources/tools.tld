@@ -136,7 +136,7 @@
   <function>
   	<name>format</name>
   	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
-  	<function-signature>java.lang.String format(java.util.Date, java.lang.String, java.lang.String)</function-signature>
+  	<function-signature>java.lang.String format(java.lang.Object, java.lang.String)</function-signature>
   </function>
   
   <function>
@@ -197,6 +197,12 @@
   	<name>multiCheckedHtml</name>
   	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
   	<function-signature>java.lang.String multiCheckedHtml(java.lang.Object, java.lang.Object)</function-signature>
+  </function>
+  
+  <function>
+  	<name>renderHtmlIfContains</name>
+  	<function-class>org.onetwo.common.web.view.jsp.tools.ToolEl</function-class>
+  	<function-signature>java.lang.String renderHtmlIfContains(java.lang.Object, java.lang.Object, java.lang.String)</function-signature>
   </function>
   
   <function>

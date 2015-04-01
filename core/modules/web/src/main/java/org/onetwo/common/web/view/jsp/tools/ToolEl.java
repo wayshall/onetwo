@@ -64,8 +64,9 @@ final public class ToolEl {
 		return escapeHtml(StringUtils.firstNotBlank(new String[]{val, def1, def2}));
 	}
 	
-	public static String format(Date date, String pattern){
-		return DateUtil.formatDateByPattern(date, pattern);
+	public static String format(Object obj, String pattern){
+//		return DateUtil.formatDateByPattern(date, pattern);
+		return StringUtils.emptyIfNull(LangUtils.formatValue(obj, pattern));
 	}
 
 	
@@ -146,17 +147,36 @@ final public class ToolEl {
 	}
 	
 	public static String multiCheckedHtml(Object checkedValues, Object itemValue){
-		if(checkedValues==null)
+		/*if(checkedValues==null)
 			return "";
 		if(List.class.isInstance(checkedValues)){
 			for(Object obj : (List<?>)checkedValues){
-				if(obj.toString().equals(itemValue)){
+				if(obj.equals(itemValue)){
 					return "checked=true";
 				}
 			}
 			return "";
 		}else{
-			return checkedValues.toString().equals(itemValue)?"checked=true":"";
+//			return checkedValues.toString().equals(itemValue)?"checked=true":"";
+			return checkedValues.equals(itemValue)?"checked=true":"";
+		}*/
+		return renderHtmlIfContains(checkedValues, itemValue, "checked=true");
+	}
+	
+
+	public static String renderHtmlIfContains(Object containerObj, Object itemValue, String html){
+		if(containerObj==null)
+			return "";
+		if(LangUtils.isMultiple(containerObj)){
+			List<?> list = LangUtils.asList(containerObj);
+			for(Object obj : list){
+				if(obj!=null && obj.equals(itemValue)){
+					return html;
+				}
+			}
+			return "";
+		}else{
+			return containerObj.equals(itemValue)?html:"";
 		}
 	}
 	

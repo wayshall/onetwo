@@ -13,6 +13,14 @@ public class BatchUtils {
 	private BatchUtils(){
 	}
 
+	/****
+	 * reader.fastOpen()
+	 * reader.readList()
+	 * @param path
+	 * @param title
+	 * @param mapper
+	 * @return
+	 */
 	public static <T> SimpleFlatFileItemReader<T> newFlatFileItemReader(String path, String title, FieldSetMapper<T> mapper){
 		return newFlatFileItemReader(new FileSystemResource(path), 1, DelimitedLineTokenizer.DELIMITER_COMMA, title, mapper);
 	}

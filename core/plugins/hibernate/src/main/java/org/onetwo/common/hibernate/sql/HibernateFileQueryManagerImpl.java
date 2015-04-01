@@ -92,9 +92,9 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	}
 	
 	@Override
-	public FileNamedSqlGenerator<HibernateNamedInfo> createFileNamedSqlGenerator(String queryName) {
+	public FileNamedSqlGenerator<HibernateNamedInfo> createFileNamedSqlGenerator(String queryName, Map<Object, Object> params) {
 		HibernateNamedInfo nameInfo = getNamedQueryInfo(queryName);
-		FileNamedSqlGenerator<HibernateNamedInfo> g = new DefaultFileNamedSqlGenerator<HibernateNamedInfo>(nameInfo, false, parser);
+		FileNamedSqlGenerator<HibernateNamedInfo> g = new DefaultFileNamedSqlGenerator<HibernateNamedInfo>(nameInfo, false, parser, params);
 		return g;
 	}
 

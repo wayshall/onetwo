@@ -1,3 +1,3 @@
 @echo off
-gradle build uploadArchives -x test -Prepo=217
+gradle clean build uploadArchives -x test -Prepo=217
 pause

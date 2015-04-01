@@ -1,11 +1,14 @@
 package org.onetwo.common.spring.sql;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.JodatimeUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.convert.Types;
 
 public class SqlParamterPostfixFunctions {
 	
@@ -36,6 +39,28 @@ public class SqlParamterPostfixFunctions {
 			@Override
 			public Object toSqlString(String paramName, Object value) {
 				return StringUtils.appendEndWith(value.toString(), "%");
+			}
+		});
+
+		register(new String[]{"atStartOfDate"}, new SqlParamterPostfixFunction(){
+			@Override
+			public Object toSqlString(String paramName, Object value) {
+				if(Date.class.isInstance(value)){
+					throw new BaseException(paramName+" is not a date, can not invoke startOfDate");
+				}
+				Date date = Types.convertValue(value, Date.class);
+				return JodatimeUtils.atStartOfDate(date);
+			}
+		});
+
+		register(new String[]{"atEndOfDate"}, new SqlParamterPostfixFunction(){
+			@Override
+			public Object toSqlString(String paramName, Object value) {
+				if(Date.class.isInstance(value)){
+					throw new BaseException(paramName+" is not a date, can not invoke endOfDate");
+				}
+				Date date = Types.convertValue(value, Date.class);
+				return JodatimeUtils.atEndOfDate(date);
 			}
 		});
 

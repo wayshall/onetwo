@@ -5,6 +5,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.view.HtmlElement;
+import org.onetwo.common.web.view.jsp.TagUtils;
 
 public class FieldTagBean extends HtmlElement {
 	public static enum RenderType {
@@ -100,14 +101,18 @@ public class FieldTagBean extends HtmlElement {
 	}
 	
 	public String appendOrderBy(String action){
-		String paramStr = action;
+//		String paramStr = action;
 		int paramStart = action.indexOf('?');
+		String str = "";
 		if(paramStart!=-1){
-			paramStr = action.substring(paramStart+1);
+			String paramStr = action.substring(paramStart+1);
 			action = action.substring(0, paramStart);
+			CasualMap params = new CasualMap(paramStr).filter("order", "orderBy");
+			str = TagUtils.appendParamString(action, params.toParamString());
+			str = TagUtils.appendParamString(str, getOrderByString());
+		}else{
+			str = action + "?" +getOrderByString();
 		}
-		CasualMap params = new CasualMap(paramStr).filter("order", "orderBy");
-		String str = action + "?" +getOrderByString()+ "&" + params.toParamString();
 		return str;
 	}
 	

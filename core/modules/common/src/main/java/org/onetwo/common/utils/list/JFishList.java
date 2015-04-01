@@ -23,6 +23,13 @@ import org.onetwo.common.utils.map.ListMap;
 
 
 @SuppressWarnings("unchecked")
+@Deprecated
+/******
+ * use java8 stream api instead
+ * @author way
+ *
+ * @param <E>
+ */
 public class JFishList<E> implements List<E>, Serializable {
 	private static final String SELF_KEY = ":this";
 	
@@ -237,7 +244,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return StringUtils.join(this, separator);
 	}
 
-	public JFishList<E> sort(Comparator<? super E> c){
+	public JFishList<E> sortBy(Comparator<? super E> c){
 		Collections.sort(this, c);
 		return this;
 	}

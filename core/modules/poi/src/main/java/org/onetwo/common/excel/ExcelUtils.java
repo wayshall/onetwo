@@ -277,6 +277,8 @@ abstract public class ExcelUtils {
 			//remove
 			rowNumber += Math.abs(count);
 		}
+		if(rowNumber>sheet.getLastRowNum())
+			rowNumber = sheet.getLastRowNum();
 		sheet.shiftRows(rowNumber, sheet.getLastRowNum(), count, true, true);
 	}
 	

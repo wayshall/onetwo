@@ -168,11 +168,17 @@ public class DataGridTag extends BaseGridTag<GridTagBean> {
 	
 
 	protected String buildQueryString() {
-		if(!buildQueryString || this.paginationType==PaginationType.form)
+//		if(!buildQueryString || this.paginationType==PaginationType.form)
+		if(!buildQueryString)
 			return "";
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 //		String qstr = TagUtils.parseQueryString(request, ":params", this.csrfPreventor);
-		CasualMap map = TagUtils.processUrlSymbolAsCasualMap(request, ":params", this.csrfPreventor);
+		CasualMap map = null;
+		if(this.paginationType==PaginationType.form){
+			map = TagUtils.processUrlSymbolAsCasualMap(request, ":qstr", this.csrfPreventor);
+		}else{
+			map = TagUtils.processUrlSymbolAsCasualMap(request, ":params", this.csrfPreventor);
+		}
 		String qstr = map==null?"":map.filter(BaseSiteConfig.THEME_JSUI_KEY).toParamString();
 		return qstr;
 		/*

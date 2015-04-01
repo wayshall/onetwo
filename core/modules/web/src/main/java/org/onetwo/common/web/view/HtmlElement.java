@@ -17,6 +17,8 @@ abstract public class HtmlElement {
 	protected String cssClass;
 	protected String onclick;
 
+	protected String permission;
+	
 	private Map<String, Object> dynamicAttributes = LangUtils.newHashMap();
 	
 
@@ -146,6 +148,14 @@ abstract public class HtmlElement {
 			buildAttributeTag(attributesBuf, entry.getKey(), entry.getValue());
 		}
 		return attributesBuf.toString();
+	}
+
+	public String getPermission() {
+		return permission;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 
 }

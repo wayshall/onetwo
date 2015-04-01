@@ -12,36 +12,25 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.onetwo.common.db.IBaseEntity;
-import org.onetwo.common.fish.annotation.JFishEntityListeners;
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name="T_USER")
-@org.nutz.dao.entity.annotation.Table("T_USER")
 @SequenceGenerator(name="seqUser", sequenceName="SEQ_T_USER")
-@JFishEntityListeners(TestEntityListener.class)
-public class UserEntity extends BaseEntity implements IBaseEntity {
+//@JFishEntityListeners(TestEntityListener.class)
+public class UserEntity {
 
-	@org.nutz.dao.entity.annotation.Id
-	@org.nutz.dao.entity.annotation.Column("id")
 	private Long id;
 	
-	@org.nutz.dao.entity.annotation.Column("USER_NAME") 
 	private String userName;
 
 	private String status;
 	
-	@org.nutz.dao.entity.annotation.Column("email")
 	private String email;
 	
-	@org.nutz.dao.entity.annotation.Column("age")
 	private Integer age;
 
-	@org.nutz.dao.entity.annotation.Column("BIRTH_DAY")
 	private Date birthDay;
 
-	@org.nutz.dao.entity.annotation.Column("height")
 	private Float height;
 	
 	private List<RoleEntity> roles;
@@ -74,7 +63,7 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 
 	@Column(name="AGE")
 	public Integer getAge() {
-		return age;
+		return age==null?0:age;
 	}
 
 	public void setAge(Integer age) {
@@ -92,7 +81,7 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 
 	@Column(name="HEIGHT")
 	public Float getHeight() {
-		return height;
+		return height==null?0:height;
 	}
 
 	public void setHeight(Float height) {
@@ -126,28 +115,5 @@ public class UserEntity extends BaseEntity implements IBaseEntity {
 		this.roles = roles;
 	}
 
-	@Override
-	public Date getCreateTime() {
-		// TODO Auto-generated method stub
-		return super.getCreateTime();
-	}
-
-	@Override
-	public void setCreateTime(Date createTime) {
-		// TODO Auto-generated method stub
-		super.setCreateTime(createTime);
-	}
-
-	@Override
-	public Date getLastUpdateTime() {
-		// TODO Auto-generated method stub
-		return super.getLastUpdateTime();
-	}
-
-	@Override
-	public void setLastUpdateTime(Date lastUpdateTime) {
-		// TODO Auto-generated method stub
-		super.setLastUpdateTime(lastUpdateTime);
-	}
 
 }

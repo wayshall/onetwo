@@ -15,12 +15,14 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.method.HandlerMethod;
 
 public class LoggerInterceptor extends WebInterceptorAdapter implements InitializingBean {
 
+	
 	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 	
 //	private JsonMapper jsonMapper = JsonMapper.mapper(Inclusion.NON_NULL, true);
@@ -40,6 +42,11 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		}
 		this.matcher = JFishMathcer.excludes(false, excludes);
 	}
+
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+//		request.setAttribute(START_TIME_KEY, System.currentTimeMillis());;
+		return true;
+	}
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		if(!isLogOperation())
@@ -51,13 +58,17 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 			logger.error("log error: {}", e.getMessage(), e);
 		}
 	}
+	
 	public void log(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		/*AuthenticationContext authen = AuthenticUtils.getContextFromRequest(request);
 		if(authen==null)
 			return ;*/
 		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
-		OperatorLogInfo info = new OperatorLogInfo();
+		
+		long start = WebContextUtils.requestInfo(request).getStartTime();
+		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
+		
 		String url = request.getMethod() + "|" + request.getRequestURL();
 		info.setUrl(url);
 		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
