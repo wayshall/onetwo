@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.map.M;
 
 @SuppressWarnings({"rawtypes"})
 public class BaseTest {
@@ -25,7 +25,7 @@ public class BaseTest {
 	}
 
 	public static void setFieldsDefaultValue(Object inst, Object...objects){
-		Map properties = M.c(objects);
+		Map properties = CUtils.asMap(objects);
 		ReflectUtils.setFieldsDefaultValue(inst, properties);
 	}
 	

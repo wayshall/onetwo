@@ -1,15 +1,13 @@
 package org.onetwo.common.web.view.jsp.form;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.view.HtmlElement;
-import org.slf4j.Logger;
 
 public class FormFieldTagBean extends HtmlElement {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(FormFieldTagBean.class);
+//	private static final Logger logger = JFishLoggerFactory.getLogger(FormFieldTagBean.class);
 	
 	private FormFieldType type;
 	private boolean errorTag;
