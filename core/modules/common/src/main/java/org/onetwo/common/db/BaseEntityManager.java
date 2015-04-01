@@ -16,6 +16,7 @@ public interface BaseEntityManager extends QueryProvider {
 	public <T> T findById(Class<T> entityClass, Serializable id);
 
 	public <T> T save(T entity);
+	public <T> Collection<T> saves(Collection<T> entities);
 	
 	public void persist(Object entity);
 	
@@ -28,8 +29,8 @@ public interface BaseEntityManager extends QueryProvider {
 	 */
 	public void remove(Object entity);
 	
-	public void removeList(Collection<?> entities);
-
+	public <T> void removes(Collection<T> entities);
+	public <T> Collection<T> removeByIds(Class<T> entityClass, Serializable[] id);
 	public <T> T removeById(Class<T> entityClass, Serializable id);
 
 	public <T> List<T> findAll(Class<T> entityClass);

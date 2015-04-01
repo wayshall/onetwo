@@ -42,9 +42,9 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 
 	@Override
-	public FileNamedSqlGenerator<JFishNamedFileQueryInfo> createFileNamedSqlGenerator(String queryName) {
+	public FileNamedSqlGenerator<JFishNamedFileQueryInfo> createFileNamedSqlGenerator(String queryName, Map<Object, Object> params) {
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		FileNamedSqlGenerator<JFishNamedFileQueryInfo> g = new DefaultFileNamedSqlGenerator<JFishNamedFileQueryInfo>(nameInfo, false, parser);
+		FileNamedSqlGenerator<JFishNamedFileQueryInfo> g = new DefaultFileNamedSqlGenerator<JFishNamedFileQueryInfo>(nameInfo, false, parser, params);
 		return g;
 	}
 	

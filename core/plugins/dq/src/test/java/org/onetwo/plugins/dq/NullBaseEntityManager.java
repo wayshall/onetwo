@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
-import org.onetwo.common.db.QueryBuilder;
-import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
@@ -16,6 +14,8 @@ import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.QueryBuilder;
+import org.onetwo.common.db.QueryProvider;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
@@ -77,10 +77,11 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 
 		@Override
 		public FileNamedSqlGenerator createFileNamedSqlGenerator(
-				String queryName) {
+				String queryName, Map params) {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
 		
 		
 		
@@ -123,7 +124,7 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	}
 
 	@Override
-	public void removeList(Collection<?> entities) {
+	public <T> void removes(Collection<T> entities) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -425,6 +426,12 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	public void findPage(Page page, QueryBuilder query) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public <T> Collection<T> removeByIds(Class<T> entityClass, Serializable[] id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -5,16 +5,17 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
-import org.onetwo.common.db.SqlAndValues;
+import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.ftl.TemplateParser;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
 	
-	private static final Logger logger = MyLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
 	protected T info;
 	protected boolean countQuery;
 	private TemplateParser parser;
@@ -29,11 +30,15 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	
 	
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
-			TemplateParser parser) {
+			TemplateParser parser, Map<Object, Object> params) {
 		super();
 		this.info = info;
 		this.countQuery = countQuery;
 		this.parser = parser;
+		this.params = LangUtils.emptyIfNull(params);
+		if(params!=null){
+			this.parserContext = (ParserContext)this.params.get(JNamedQueryKey.ParserContext);
+		}
 	}
 
 	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
@@ -48,13 +53,13 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 		this.resultClass = resultClass;
 		this.ascFields = ascFields;
 		this.desFields = desFields;
-		this.params = params;
+		this.params = LangUtils.emptyIfNull(params);
 	}
 
 	@Override
-	public SqlAndValues generatSql(){
+	public ParsedSqlContext generatSql(){
 		String parsedSql = null;
-		SqlAndValues sv = null;
+		ParsedSqlContext sv = null;
 		if(info.getFileSqlParserType()==FileSqlParserType.IGNORENULL){
 			String sql = countQuery?info.getCountSql():info.getSql();
 			DynamicQuery query = DynamicQueryFactory.createJFishDynamicQuery(sql, resultClass);

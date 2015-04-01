@@ -35,7 +35,6 @@ import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.delegate.DelegateFactory;
 import org.onetwo.common.utils.delegate.DelegateMethod;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.common.utils.map.M;
 import org.slf4j.Logger;
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
@@ -50,7 +49,7 @@ public class ReflectUtils {
 
 	
 
-	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().checkSetMethod().ignoreNull().ignoreBlank();
+	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().ignoreIfNoSetMethod().ignoreNull().ignoreBlank();
 
 	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
 //	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
@@ -188,13 +187,13 @@ public class ReflectUtils {
 		setProperty(element, propName, value, throwIfError, false);
 	}
 	
-	public static void setProperty(Object element, String propName, Object value, boolean throwIfError, boolean checkSetMethod) {
+	public static void setProperty(Object element, String propName, Object value, boolean throwIfError, boolean skipIfNoSetMethod) {
+		if (element instanceof Map) {
+			((Map) element).put(propName, value);
+			return;
+		}
+		PropertyDescriptor prop = getPropertyDescriptor(element, propName);
 		try {
-			if (element instanceof Map) {
-				((Map) element).put(propName, value);
-				return;
-			}
-			PropertyDescriptor prop = getPropertyDescriptor(element, propName);
 			if (prop == null)
 				throw new BaseException("can not find the property : " + propName);
 			if (prop.getPropertyType().isPrimitive() && value == null) {
@@ -203,7 +202,7 @@ public class ReflectUtils {
 						+ "], the value can not be null");
 			}
 			if(prop.getWriteMethod()==null){
-				if(!checkSetMethod){
+				if(!skipIfNoSetMethod){
 					throw new NoSuchMethodException("property: " + propName);
 				}else{
 					return ;
@@ -903,7 +902,7 @@ public class ReflectUtils {
 
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
-		copy(source, target, CopyConfig.create().throwIfError().checkSetMethod().ignoreFields(excludeNames));
+		copy(source, target, CopyConfig.create().throwIfError().ignoreIfNoSetMethod().ignoreFields(excludeNames));
 	}
 	
 	public static void copyIgnoreBlank(Object source, Object target) {
@@ -1506,7 +1505,7 @@ public class ReflectUtils {
 	}
 
 	public static void setFieldsDefaultValue(Object inst, Object... objects) {
-		Map properties = M.c(objects);
+		Map properties = CUtils.asMap(objects);
 		setFieldsDefaultValue(inst, properties);
 	}
 
@@ -1757,7 +1756,7 @@ public class ReflectUtils {
 			if(conf.isIgnoreOther(prop, value)){
 				return;
 			}
-			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isCheckSetMethod());
+			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isIgnoreIfNoSetMethod());
 		}
 	};
 

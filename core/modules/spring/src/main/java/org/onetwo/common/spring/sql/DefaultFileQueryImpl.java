@@ -8,13 +8,13 @@ import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
+import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.QueryProvider;
-import org.onetwo.common.db.SqlAndValues;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper;
-import org.onetwo.common.spring.sql.SqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
@@ -74,7 +74,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	
 	protected DataQuery createDataQueryIfNecessarry(){
 		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
-		SqlAndValues sqlAndValues = sqlGen.generatSql();
+		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
 			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
 			
@@ -90,7 +90,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 		String parsedSql = sqlAndValues.getParsedSql();
 		dataQuery = createDataQuery(parsedSql, resultClass);
 		
-		ParsedSqlWrapper sqlWrapper = SqlUtils.parseSql(parsedSql);
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql);
 		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			if(!paramBean.isReadableProperty(parameter.getProperty()))

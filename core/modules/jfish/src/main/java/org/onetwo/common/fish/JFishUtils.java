@@ -14,6 +14,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 final public class JFishUtils {
+	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
 
 	private JFishUtils(){
 	}
