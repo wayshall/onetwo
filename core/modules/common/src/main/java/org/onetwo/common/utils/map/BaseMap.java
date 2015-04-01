@@ -3,6 +3,7 @@ package org.onetwo.common.utils.map;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.MyUtils;
 
 @SuppressWarnings("serial")
@@ -83,6 +84,6 @@ public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	}
 	
 	public Object[] toArray(){
-		return M.toArray(this);
+		return CUtils.toList(this).toArray();
 	}
 }

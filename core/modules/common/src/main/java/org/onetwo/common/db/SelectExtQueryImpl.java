@@ -14,7 +14,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -280,7 +279,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 	protected SelectExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, Object value, boolean hasParentheses) {
 		String joinWord = K.JOIN_MAP.get(joinKey);
-		List<String> fjoin = MyUtils.asList(value);
+		List<String> fjoin = LangUtils.asList(value);
 		if(fjoin==null)
 			return this;
 		

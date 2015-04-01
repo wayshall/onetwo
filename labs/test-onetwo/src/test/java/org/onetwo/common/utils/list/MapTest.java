@@ -23,7 +23,7 @@ public class MapTest {
 		card.setState(1l);
 		Map map = M.from(card);
 		System.out.println("object map : "+map);
-		Object[] objs = M.toArray(map);
+		Object[] objs = M.toList(map);
 		System.out.println(objs);
 	}
 	

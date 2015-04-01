@@ -23,10 +23,10 @@ import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.map.M;
 import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -305,12 +305,12 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	}
 	
 	public <T> List<T> findByExample(Class entityClass, Object obj){
-		Map properties = M.bean2Map(obj);
+		Map properties = CUtils.bean2Map(obj);
 		return this.findByProperties(entityClass, properties);
 	}
 	
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj){
-		Map properties = M.bean2Map(obj);
+		Map properties = CUtils.bean2Map(obj);
 		this.findPage(entityClass, page, properties);
 	}
 
