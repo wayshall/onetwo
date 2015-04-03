@@ -95,12 +95,20 @@ public class Java78Test {
 		all.addAll(bb);
 		all.addAll(cc);
 		
-		UserEntity rs = all.stream().reduce(new UserEntity(), (a, b)-> { 
+		UserEntity init = new UserEntity();
+		System.out.println("init: " + init);
+		UserEntity rs = all.stream().reduce(init, (a, b)-> { 
+															System.out.println("a:"+a);
+															System.out.println("b:"+b);
+															Assert.assertEquals(init, a);
+															Assert.assertEquals(init, b);
 																		a.setAge(a.getAge()+b.getAge()); 
 																		a.setHeight(a.getHeight()+b.getHeight()); 
 																		return a;
 																	});
-		
+
+		System.out.println("rs: " + rs);
+		Assert.assertEquals(rs, init);
 		Assert.assertEquals(JFishList.wrap(all).sum("age").intValue(), rs.getAge().intValue());
 		Assert.assertEquals(JFishList.wrap(all).sum("height").doubleValue(), rs.getHeight().doubleValue());
 	}

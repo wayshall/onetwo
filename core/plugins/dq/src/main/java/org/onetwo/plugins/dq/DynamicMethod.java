@@ -31,9 +31,9 @@ import org.springframework.core.MethodParameter;
 
 public class DynamicMethod {
 
-	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
-	private static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
-	private static final String FIELD_NAME_SPERATOR = "By";
+	public static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
+	public static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
+	public static final String FIELD_NAME_SPERATOR = "By";
 	
 	private final Method method;
 	private final List<DynamicMethodParameter> parameters;
@@ -47,16 +47,8 @@ public class DynamicMethod {
 	
 	public DynamicMethod(Method method){
 		this.method = method;
-		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
-		if(executeUpdate!=null){
-			this.update = true;
-			this.batchUpdate = executeUpdate.isBatch();
-		}else{
-			update = EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
-			batchUpdate = BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
-		}
 		
-		int psize = method.getParameterTypes().length;
+		/*int psize = method.getParameterTypes().length;
 		parameters = LangUtils.newArrayList(psize+2);
 //		this.parameterNames = LangUtils.newArrayList(psize);
 		DynamicMethodParameter mp = null;
@@ -76,10 +68,12 @@ public class DynamicMethod {
 			if(!batchUpdate){
 				this.batchUpdate = mp.hasParameterAnnotation(BatchObject.class);
 			}
-		}
+		}*/
+		this.parameters = createDynamicMethodParameters(method);
+		this.setupExecuteType();
 
 		
-		queryName = method.getDeclaringClass().getName()+"."+methodName;
+		queryName = method.getDeclaringClass().getName()+"."+method.getName();
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
@@ -110,6 +104,53 @@ public class DynamicMethod {
 		this.componentClass = compClass;
 		
 		LangUtils.println("resultClass: ${0}, componentClass:${1}", resultClass, compClass);
+	}
+	
+	protected List<DynamicMethodParameter> createDynamicMethodParameters(Method method){
+		int psize = method.getParameterTypes().length;
+		List<DynamicMethodParameter> parameters = LangUtils.newArrayList(psize+2);
+//		this.parameterNames = LangUtils.newArrayList(psize);
+		DynamicMethodParameter mp = null;
+		
+		String methodName = method.getName();
+		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
+		String[] pnames = LangUtils.EMPTY_STRING_ARRAY;
+		//是否通过byUserNameByAge的命名方式
+		if(byIndex!=-1){
+			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
+		}
+		
+		for(int index=0; index<psize; index++){
+			mp = new DynamicMethodParameter(method, index, pnames);
+			parameters.add(mp);
+			/*if(!batchUpdate){
+				this.batchUpdate = mp.hasParameterAnnotation(BatchObject.class);
+			}*/
+		}
+		return parameters;
+	}
+	
+	protected boolean judgeBatchUpdateFromParameterObjects(List<DynamicMethodParameter> mparameters){
+		for(DynamicMethodParameter mp : mparameters){
+			if(mp.hasParameterAnnotation(BatchObject.class)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	final protected void setupExecuteType(){
+		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
+		if(executeUpdate!=null){
+			this.update = true;
+			this.batchUpdate = executeUpdate.isBatch();
+		}else{
+			this.update = EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+			this.batchUpdate = BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+		}
+		if(!batchUpdate){
+			this.batchUpdate = judgeBatchUpdateFromParameterObjects(parameters);
+		}
 	}
 	
 	public MethodParameter remove(int index){
@@ -339,14 +380,15 @@ public class DynamicMethod {
 		return batchUpdate;//(executeUpdate!=null && executeUpdate.isBatch()) || );
 	}
 	
-	private static class DynamicMethodParameter extends MethodParameter {
+	protected static class DynamicMethodParameter extends MethodParameter {
 
-		private String[] condidateParameterNames;
-		private String parameterName;
+		final protected String[] condidateParameterNames;
+		final protected Name nameAnnotation;
 		
 		public DynamicMethodParameter(Method method, int parameterIndex, String[] parameterNamesByMethodName) {
 			super(method, parameterIndex);
 			this.condidateParameterNames = parameterNamesByMethodName;
+			nameAnnotation = getParameterAnnotation(Name.class);
 		}
 
 		/****
@@ -356,18 +398,14 @@ public class DynamicMethod {
 		 * 以上皆否，则通过参数位置作为名称
 		 */
 		public String getParameterName() {
-			if(StringUtils.isNotBlank(parameterName))
-				return parameterName;
-			
 			Name name = getParameterAnnotation(Name.class);
 			if(name!=null){
-				parameterName = name.value();
+				return name.value();
 			}else if(condidateParameterNames.length>getParameterIndex()){
-				parameterName = StringUtils.uncapitalize(condidateParameterNames[getParameterIndex()]);
+				return StringUtils.uncapitalize(condidateParameterNames[getParameterIndex()]);
 			}else{
-				parameterName = String.valueOf(getParameterIndex());
+				return String.valueOf(getParameterIndex());
 			}
-			return parameterName;
 		}
 		
 	}

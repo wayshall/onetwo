@@ -19,6 +19,7 @@ public class ThreadTest {
 				m.doInThread();
 			}
 		}.start();
+		
 	}
 
 }
