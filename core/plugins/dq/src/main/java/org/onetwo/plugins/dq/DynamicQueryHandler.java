@@ -91,12 +91,17 @@ public class DynamicQueryHandler implements InvocationHandler {
 			ValueWrapper value = methodCache.get(method);
 			if(value!=null)
 				return (DynamicMethod) value.get();
-			DynamicMethod dm = new DynamicMethod(method);
+			DynamicMethod dm = newDynamicMethod(method);
 			methodCache.put(method, dm);
 			return dm;
 		}else{
-			return new DynamicMethod(method);
+			return newDynamicMethod(method);
 		}
+	}
+	
+	private DynamicMethod newDynamicMethod(Method method){
+//		return new DynamicMethod(method);
+		return new DynamicMethodJ8(method);
 	}
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
