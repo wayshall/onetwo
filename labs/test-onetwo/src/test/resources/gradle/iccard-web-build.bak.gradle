@@ -1,0 +1,194 @@
+import groovy.text.markup.IncludeType;
+
+buildscript {
+	repositories {
+		maven { url 'http://repo.spring.io/plugins-release' }
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.6")
+		classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.6")
+		//classpath("org.onetwo.gradle.plugins:jfish-deploy:1.0.1-SNAPSHOT")
+	}
+	
+}
+
+ext {
+	profile = System.getProperty("profile")
+	logger.lifecycle "profile: \n ${profile}"
+	config = null
+	if(profile!=null){
+		config = loadGroovyConfig(profile, 'config')
+		logger.lifecycle "load config: \n ${config}"
+	}
+}
+configure(allprojects){ project -> 
+
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+	
+	
+	version = "1.0-SNAPSHOT"
+	ext.onetwoVersion = "3.1.11-SNAPSHOT";
+	ext.jspVersion = "2.1"
+	
+	compileJava {
+		sourceCompatibility=1.8
+		targetCompatibility=1.8
+		options.encoding = 'UTF-8'
+		options.compilerArgs << '-parameters'   
+	}
+	
+	eclipseJdt << {
+		File f = file('.settings/org.eclipse.core.resources.prefs')
+		f.write('eclipse.preferences.version=1\n')
+		f.append('encoding/<project>=utf-8')
+	}
+	
+	compileJava.options.encoding = 'UTF-8'
+	buildDir = "target"
+	
+	
+	eclipse {
+		classpath {
+			downloadJavadoc = true
+			downloadSources=true
+		}
+	}
+	
+	repositories {
+		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
+		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
+		maven { url "http://192.168.104.217:8888/nexus/content/repositories/thirdparty" }
+		maven { url "http://repository.sonatype.org/content/groups/public/" }
+		mavenCentral()
+		mavenLocal()
+	}
+}
+
+configure(subprojects){ subproject -> 
+	ext.junitVersion = "4.10"
+	dependencies {
+		compile("junit:junit:${junitVersion}")
+	}
+}
+
+project("iccard-model"){
+
+	ext.commonsioVersion = "2.4"
+	ext.javaeeVersion = "6.0-3"
+	
+	dependencies {
+		compile("org.onetwo:onetwo-jfish:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
+		compile("org.onetwo:onetwo-poi:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-session:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-fmtag:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-admin:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-codegen:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-security:${onetwoVersion}")
+		compile("com.sun.jna:com.springsource.com.sun.jna:3.0.5")
+		compile("org.onetwo.plugins:onetwo-plugin-security:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-permission:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-task-client:${onetwoVersion}")
+		compile("org.onetwo.plugins:onetwo-plugin-task-webclient:${onetwoVersion}")
+		
+		compile("org.onetwo.plugins:onetwo-plugin-melody:${onetwoVersion}")
+		
+		compile("javax.persistence:com.springsource.javax.persistence:2.0.0")
+		compile("com.microsoft:sqljdbc4:1.0")
+		compile("commons-io:commons-io:${commonsioVersion}")
+		compile("org.apache.openejb:javaee-api:${javaeeVersion}")
+		
+		compile("com.oracle:ojdbc5:11.1.0.6.0")
+		
+	}
+}
+
+
+project("iccard-plugin-travel"){
+
+	dependencies {
+		compile(project(":iccard-model"))
+	}
+	
+}
+
+project("iccard-web"){
+	apply plugin: 'war'
+	//apply plugin: 'jfishdeploy'
+	
+	dependencies {
+		compile(project(":iccard-model"))
+		compile(project(":iccard-plugin-travel"))
+		
+		embeddedTomcat()
+	}
+	
+	def renameWarFile = copySpec {
+		from war
+		rename { it.replace "-${version}", ''}
+	}
+	
+	task deployTomcat {
+		doLast {
+			logger.lifecycle "copy war to servsers ..."
+			def mainDir = config.deploy.tomcats[0].baseDir + "/webapps/" + project.name
+			copy {
+				logger.lifecycle "${mainDir} bak to ${config.deploy.bakDir}"
+				from mainDir
+				into "${config.deploy.bakDir}/${project.name}-${new Date().format('yyyyMMddHHmmss')}"
+			}
+			
+			config.deploy.tomcats.eachWithIndex { tc, index ->
+				def webappDir = "${tc.baseDir}/webapps"
+				copy {
+					logger.lifecycle "${project.name} deploy to ${webappDir}"
+					delete "${webappDir}/${project.name}"
+					with renameWarFile
+					into webappDir
+				}
+				"cmd /c start ${tc.baseDir}/bin/${tc.starter}".execute()
+			}
+		}
+	}
+	deployTomcat.dependsOn war
+	
+	processResources {
+		if(config!=null){
+			from(sourceSets.main.resources.srcDirs) {
+				include '**/*.properties'
+				filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: loadGroovyConfig(profile, 'config').toProperties())
+			}
+		}
+	}
+	
+	task copyProductConfig(type: Copy) {
+		if(config!=null){
+			doFirst {
+				logger.lifecycle "copy production config..."
+			}
+			from config.deploy.configDir
+			into "${buildDir}/resources/main"
+		}
+	}
+	
+	war.dependsOn copyProductConfig
+	
+}
+
+def embeddedTomcat() {
+	def tomcatVersion = "7.0.59";
+	
+	["org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion",
+	 "javax.servlet.jsp:jsp-api:${jspVersion}"]
+}
+
+def loadGroovyConfig(profile, configName) {
+	def configFile = file(configName.endsWith('.groovy')?configName:"${configName}.groovy")
+	new ConfigSlurper(profile).parse(configFile.toURL())
+}
