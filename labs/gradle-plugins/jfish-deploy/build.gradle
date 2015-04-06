@@ -19,7 +19,7 @@ repositories {
 }
 
 group = 'org.onetwo.gradle.plugins'
-version = '1.0.4-SNAPSHOT'
+version = '1.0.5-SNAPSHOT'
 
 dependencies {
     compile gradleApi()
@@ -32,12 +32,10 @@ uploadArchives {
 		mavenDeployer {
 			repository(url: uri('D:/.m2/repository'))
 
-            /**
             def repoUrl = "http://192.168.104.217:8888"
             snapshotRepository(url: "${repoUrl}/nexus/content/repositories/snapshots"){
                 authentication(userName: "admin", password: "admin123")
             }
-            **/
 		}
 	}
 }
