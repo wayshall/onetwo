@@ -33,6 +33,7 @@ include "plugins/task-client"
 include "plugins/task-webclient"
 
 include "plugins/melody"
+include "plugins/ftl-template"
 
 rootProject.getChildren().each {
 	if(it.name.startsWith("modules/")){
