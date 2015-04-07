@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 
 @Order(JFishUtils.WEBAPP_INITIALIZER_ORDER+5)
 public class JFishWebFilterInitializer implements WebApplicationInitializer {
-	
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {

@@ -72,6 +72,14 @@ public class BaseSiteConfig extends AppConfig {
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 
 	public static final String ERROR_NOTIFY_THROWABLES = "error.notify.throwables";
+	
+
+	//mvc view
+	public static final String VIEW_FTL_SUPPORTED = "view.ftl.supported";
+	public static final String VIEW_EXCEL_SUPPORTED = "view.excel.supported";
+	public static final String VIEW_JSONXML_SUPPORTED = "view.jsonxml.supported";
+//	public static final String VIEW_JSP_SUPPORTED = "view.jsp.supported";
+//	public static final String VIEW_JSP_THEME = "view.jsp.theme";
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";
 	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
@@ -419,5 +427,25 @@ public class BaseSiteConfig extends AppConfig {
 		List<String> throwables = getPropertyWithSplit(ERROR_NOTIFY_THROWABLES, ",");
 		return throwables;
 	}
+	
+	public boolean isViewFtlSupported(){
+		return getBoolean(VIEW_FTL_SUPPORTED, true);
+	}
+	
+	public boolean isViewExcelSupported(){
+		return getBoolean(VIEW_EXCEL_SUPPORTED, true);
+	}
+	
+	public boolean isViewJsonXmlSupported(){
+		return getBoolean(VIEW_JSONXML_SUPPORTED, true);
+	}
+	
+	/*public boolean isViewJspSupported(){
+		return getBoolean(VIEW_JSP_SUPPORTED, true);
+	}
+	
+	public boolean isViewJspTheme(){
+		return getBoolean(VIEW_JSP_THEME, false);
+	}*/
 
 }
