@@ -1,15 +1,51 @@
 package org.onetwo.common.fish.web;
 
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration;
+
+import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.web.JFishDispatcher;
+import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
+import org.springframework.web.util.IntrospectorCleanupListener;
 
-public class JFishSpringDispatcherServletInitializer  {
+@Order(JFishUtils.WEBAPP_INITIALIZER_ORDER)
+public class JFishSpringDispatcherServletInitializer extends AbstractDispatcherServletInitializer {
 
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	protected void registerDispatcherServlet(ServletContext servletContext) {
+		servletContext.addListener(IntrospectorCleanupListener.class);
+		
+		String servletName = getServletName();
+		Assert.hasLength(servletName, "getServletName() may not return empty or null");
+
+//		DispatcherServlet dispatcherServlet = new DispatcherServlet(servletAppContext);
+		ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, JFishDispatcher.class);
+		Assert.notNull(registration,
+				"Failed to register servlet with name '" + servletName + "'." +
+				"Check if there is another servlet registered under the same name.");
+
+		registration.setLoadOnStartup(1);
+		registration.addMapping(getServletMappings());
+		registration.setAsyncSupported(isAsyncSupported());
+
+		Filter[] filters = getServletFilters();
+		if (!ObjectUtils.isEmpty(filters)) {
+			for (Filter filter : filters) {
+				registerServletFilter(servletContext, filter);
+			}
+		}
+
+		customizeRegistration(registration);
 	}
 
 	@Override

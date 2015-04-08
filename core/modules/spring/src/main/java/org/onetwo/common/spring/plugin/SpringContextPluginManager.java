@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.plugin;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -194,14 +195,14 @@ import org.springframework.core.io.Resource;
 		
 	}*/
 	//	@Override
-	public JFishList<T> getPluginMetas() {
+	public List<T> getPluginMetas() {
 		return pluginMetas;
 	}
 	
 
 	@Override
-	public JFishList<ContextPlugin> getContextPlugins() {
-		return getPluginMetas().map(new MapIt<T, ContextPlugin>(){
+	public List<ContextPlugin> getContextPlugins() {
+		return JFishList.wrap(getPluginMetas()).map(new MapIt<T, ContextPlugin>(){
 
 			@Override
 			public ContextPlugin map(ContextPluginMeta element, int index) {
