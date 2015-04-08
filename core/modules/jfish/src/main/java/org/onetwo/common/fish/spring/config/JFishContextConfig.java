@@ -178,6 +178,21 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		return new WebRequestHolder();
 	}
 
+	@Bean
+	public ThemeSetting themeSetting(){
+		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
+		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new SessionTagThemeSettting();
+		}else if(CookiesTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new CookiesTagThemeSettting();
+		}else{
+			return new DefaultTagThemeSetting();
+		}
+	}
+	@Bean
+	public ThemeSettingWebFilter themeSettingWebFilter(){
+		return new ThemeSettingWebFilter();
+	}
 
 	@Configuration
 	@Profile(Environment.TEST)

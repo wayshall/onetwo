@@ -5,27 +5,29 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Copy
-import groovy.util.ConfigObject
 
 class JFishDeployPlugin implements Plugin<Project> {
 
-	//private Logger logger =  Logging.getLogger(JFishDeployPlugin.class)
+	private Logger logger =  Logging.getLogger(JFishDeployPlugin.class)
 
 	@Override
 	def void apply(Project project) {
 		
 		def profile = System.getProperty("profile")
+		JFishDeployer jfishDeployer = new JFishDeployer()
+		project.extensions.add("jfishDeployer", jfishDeployer)
+		
 		if(profile==null){
 			logger.lifecycle "no profile found!"
-			reutrn ;
+			project.extensions.add("profile", "dev")
+			project.task("deployTomcat", type: DeployTomcatTask);
+			return 
 		}
 
 		project.extensions.add("profile", profile)
 
 		def config = loadGroovyConfig(project.getRootProject(), profile, "config")
-		JFishDeployer jfishDeployer = new JFishDeployer()
 		jfishDeployer.config = config
-		project.extensions.add("jfishDeployer", jfishDeployer)
 		//project.extraProperties.set("jdeployConfig", config)
 
 		project.task("deployTomcat", type: DeployTomcatTask).dependsOn("war")

@@ -23,7 +23,7 @@ import org.onetwo.common.utils.map.ListMap;
 
 
 @SuppressWarnings("unchecked")
-@Deprecated
+//@Deprecated
 /******
  * use java8 stream api instead
  * @author way
@@ -307,7 +307,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return c;
 	}
 	
-	public <M> JFishList<M> map(final MapIt<E, M> it){
+	public <M> List<M> map(final MapIt<E, M> it){
 		final JFishList<M> newlist = new JFishList<M>();
 		
 		each(new It<E>(){
