@@ -20,7 +20,6 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.onetwo.common.web.xss.XssPreventRequestWrapper;
 import org.springframework.web.context.WebApplicationContext;
@@ -133,7 +132,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		HttpSession session = request.getSession();
 		
 
-		WebContextUtils.initRequestInfo(request);
+//		WebContextUtils.initRequestInfo(request);
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 		try {

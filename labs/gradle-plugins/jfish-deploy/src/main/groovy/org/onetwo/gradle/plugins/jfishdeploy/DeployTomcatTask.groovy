@@ -15,6 +15,11 @@ class DeployTomcatTask extends DefaultTask {
 		//logger.lifecycle "deployTomcat loaded ${profile} config::"+config
 
 		logger.lifecycle "start deploy ..."
+		def deployer = project.extensions.findByName("jfishDeployer")
+		if(deployer==null){
+			logger.lifecycle "no profile deloyer found, ignore task!"
+			return
+		}
 		def config = project.extensions.findByName("jfishDeployer").config
 		def mainDir = config.deploy.tomcats[0].baseDir + "/webapps/" + project.name
 		project.copy {

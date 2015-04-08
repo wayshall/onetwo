@@ -28,7 +28,7 @@ configure(allprojects){ project ->
 		group = "org.onetwo"
 	}
 	//upgrade to java8
-	version = "3.1.13-SNAPSHOT"
+	version = "3.2.0-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -81,10 +81,10 @@ configure(allprojects){ project ->
 	}
 	
 	repositories {
-		mavenLocal()
 		//if want ide download the sources, move to the top
-		//embedeed-redis : http://clojars.org/repo
 		mavenCentral()
+		mavenLocal()
+		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }

@@ -1,7 +1,8 @@
 package org.onetwo.common.spring.plugin;
 
+import java.util.List;
+
 import org.onetwo.common.spring.plugin.event.JFishContextEventBus;
-import org.onetwo.common.utils.list.JFishList;
 
 /****
  * spring 上下文插件接口管理者
@@ -28,6 +29,6 @@ public interface ContextPluginManager<T extends ContextPluginMeta> {
 	public void registerEntityPackage(List<String> packages);*/
 	public JFishContextEventBus getEventBus();
 	
-	public JFishList<T> getPluginMetas();
-	public JFishList<ContextPlugin> getContextPlugins();
+	public List<T> getPluginMetas();
+	public List<ContextPlugin> getContextPlugins();
 }

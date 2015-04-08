@@ -10,7 +10,7 @@ class JFishDeployTaskTest {
 	@Test
 	public void canAddTaskToProject() {
 		Project project = ProjectBuilder.builder().build()
-		def task = project.task('deploy', type: DeployTomcatTask)
+		def task = project.task('deployTomcat', type: DeployTomcatTask)
 		assertTrue(task instanceof DeployTomcatTask)
 		
 		task.execute()
