@@ -1,9 +1,8 @@
 package org.onetwo.common.spring.context;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.StringUtils;
@@ -25,12 +24,12 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 @SuppressWarnings("unchecked")
 public class SpringProfilesWebApplicationContext extends AnnotationConfigWebApplicationContext {
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private PluginManagerInitializer pluginManagerInitializer = new ContextPluginManagerInitializer();
 	private String appEnvironment;
 	private Class<?>[] annotatedClasses;
-	private ContextPluginManager contextPluginManager;
+//	private ContextPluginManager<?> contextPluginManager;
 	
 	public SpringProfilesWebApplicationContext(){
 	}
