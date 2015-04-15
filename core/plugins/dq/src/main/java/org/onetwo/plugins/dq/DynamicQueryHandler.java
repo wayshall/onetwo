@@ -147,7 +147,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			
 		}else{
 			methodArgs = dmethod.toArrayByArgs(args, componentClass);
-			result = em.getFileNamedQueryFactory().findUnique(queryName, methodArgs);
+			result = em.getFileNamedQueryFactory().findOne(queryName, methodArgs);
 		}
 		
 		return result;
