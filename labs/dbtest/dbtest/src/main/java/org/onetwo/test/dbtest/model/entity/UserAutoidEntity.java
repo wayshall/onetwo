@@ -32,7 +32,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 //@DynamicUpdate
 @DozerMapping
 //@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
-public class UserAutoidEntity extends TimestampBaseEntity {
+public class UserAutoidEntity {
 	
 	/*****
 	 * 

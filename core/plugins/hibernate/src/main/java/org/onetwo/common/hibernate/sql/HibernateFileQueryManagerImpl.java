@@ -3,11 +3,13 @@ package org.onetwo.common.hibernate.sql;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.NonUniqueResultException;
 import org.onetwo.common.db.AbstractFileNamedQueryFactory;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.spring.sql.DefaultFileNamedSqlGenerator;
@@ -114,7 +116,11 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 	@Override
 	public <T> T findUnique(String queryName, Object... params) {
 		DataQuery jq = this.createQuery(queryName, params);
-		return jq.getSingleResult();
+		try {
+			return jq.getSingleResult();
+		} catch (NonUniqueResultException e) {
+			throw new NotUniqueResultException(e.getMessage(), e);
+		}
 	}
 
 

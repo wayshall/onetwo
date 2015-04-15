@@ -5,19 +5,19 @@
 
 <c:choose>
 	<c:when test="${field.checkbox }">
-		<td>
+		<td ${field.gridTdAttribute}>
 			<c:set var="chbValue" value="${entity[field.value]}"></c:set>
-			<input type="checkbox" name="${field.name}" value="${chbValue }" id="${field.name}${chbValue}" class="dg-checkbox-field" ${field.gridAttributesHtml} ${field.dynamicAttributesHtml} <c:if test="${field.reserved!=null}">reserved="${entity.originData[field.reserved]}"</c:if>/>
+			<input type="checkbox" name="${field.name}" value="${chbValue }" id="${field.name}${chbValue}" class="dg-checkbox-field" ${field.gridAttributesHtml} <c:if test="${field.reserved!=null}">reserved="${entity.originData[field.reserved]}"</c:if>/>
 		</td>
 	</c:when>
 	<c:when test="${field.radio }">
-		<td>
+		<td ${field.gridTdAttribute}>
 			<c:set var="radValue" value="${entity[field.value]}"></c:set>
-			<input type="radio" name="${field.name}" value="${radValue }" id="${field.name}${radValue}" class="dg-checkbox-field" ${field.gridAttributesHtml} ${field.dynamicAttributesHtml} <c:if test="${field.reserved!=null}">reserved="${entity.originData[field.reserved]}"</c:if>/>
+			<input type="radio" name="${field.name}" value="${radValue }" id="${field.name}${radValue}" class="dg-checkbox-field" ${field.gridAttributesHtml}  <c:if test="${field.reserved!=null}">reserved="${entity.originData[field.reserved]}"</c:if>/>
 		</td>
 	</c:when>
 	<c:otherwise>
-		<td ${field.gridAttributesHtml} ${field.dynamicAttributesHtml}>
+		<td ${field.gridTdAttribute} ${field.gridAttributesHtml} ${field.dynamicAttributesHtml}>
 			${entity[field.value]}
 		</td>
 	</c:otherwise>

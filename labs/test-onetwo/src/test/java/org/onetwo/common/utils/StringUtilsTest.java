@@ -90,4 +90,19 @@ public class StringUtilsTest {
 		
 	}
 	
+	@Test
+	public void testSubString(){
+		String str = "5A3A10000844 1000000844A6";
+		String rs = StringUtils.substring(str, 4, 12);
+		Assert.assertEquals("10000844", rs);
+		
+		str = "5A3A100008";
+		rs = StringUtils.substring(str, 4, 12);
+		Assert.assertEquals("100008", rs);
+		
+		str = "5A3";
+		rs = StringUtils.substring(str, 4, 12);
+		Assert.assertEquals("", rs);
+	}
+	
 }

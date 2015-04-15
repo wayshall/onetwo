@@ -53,6 +53,25 @@
 		</layout>
 	</appender>
 	
+	
+	<appender name="mail" class="org.apache.log4j.net.SMTPAppender">
+	  <param name="SMTPHost" value="smtp.sina.com" />
+	  <param name="SMTPUsername" value="qyscard@sina.com" />
+	  <param name="SMTPPassword" value="qyscard" />
+	  <param name="From" value="qyscard@sina.com" />
+	  <param name="To" value="pistols@qq.com" />
+	  <param name="Subject" value="清算程序错误，请注意" />
+	  <layout class="org.apache.log4j.PatternLayout">
+	    <param name="ConversionPattern"
+	      value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" />
+	  </layout>
+	</appender>
+	
+	
+   <logger name="mailLogger" level="INFO">  
+       <appender-ref ref="mail" />   
+   </logger> 
+	
 	<logger name="iccardAccessLogger">  
         <priority value ="info"/>   
         <appender-ref ref="iccardAccess" />   
