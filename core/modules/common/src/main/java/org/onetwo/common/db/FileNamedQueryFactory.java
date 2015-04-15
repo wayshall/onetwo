@@ -38,6 +38,7 @@ public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 	public <T> List<T> findList(String queryName, Object... params);
 
 	public <T> T findUnique(String queryName, Object... params);
+	public <T> T findOne(String queryName, Object... params);
 
 	public <T> Page<T> findPage(String queryName, Page<T> page, Object... params);
 	

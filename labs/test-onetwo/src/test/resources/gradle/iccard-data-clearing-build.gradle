@@ -1,0 +1,113 @@
+buildscript {
+	repositories {
+		maven { url 'http://repo.spring.io/plugins-release' }
+	}
+	dependencies {
+		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.6")
+		classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.6")
+	}
+	
+}
+
+
+apply plugin: 'propdeps'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+apply plugin: 'java-library-distribution'
+
+
+compileJava {
+	sourceCompatibility=1.6
+	targetCompatibility=1.6
+}
+
+eclipseJdt << {
+	File f = file('.settings/org.eclipse.core.resources.prefs')
+	f.write('eclipse.preferences.version=1\n')
+	f.append('encoding/<project>=utf-8')
+}
+
+compileJava.options.encoding = 'UTF-8'
+buildDir = "target"
+
+
+eclipse {
+	classpath {
+		downloadJavadoc = true
+		downloadSources=true
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+
+def embedTomcat() {
+	def tomcatVersion = "7.0.29";
+	["org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion",
+	 "javax.servlet.jsp:jsp-api:${jsfVersion}"]
+}
+
+version = "1.3.0-SNAPSHOT"
+ext.onetwoVersion = "3.2.0-SNAPSHOT";
+
+
+ext.jpaVersion = "2.0.0"
+ext.tomcatjdbcVersion = "7.0.53"
+ext.junitVersion = "4.10"
+
+dependencies {
+	
+	compile("org.onetwo:onetwo-common:${onetwoVersion}")
+	compile("org.onetwo:onetwo-spring:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
+	
+	compile("com.sun.jna:com.springsource.com.sun.jna:3.0.5")
+	compile("org.quartz-scheduler:quartz:2.1.6")
+	compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
+	
+	compile("com.microsoft:sqljdbc4:1.0")
+	compile("org.apache.tomcat:tomcat-jdbc:${tomcatjdbcVersion}")
+	
+	testCompile("junit:junit:${junitVersion}")
+		
+}
+
+
+processResources {
+	from(sourceSets.main.resources.srcDirs) {
+		include '**/*.bat'
+		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [artifactId: project.name, version: project.version])
+	}
+}
+
+distZip.dependsOn build
+
+jar {
+	version "${version}"
+	manifest {
+		attributes "Main-Class":"com.qyscard.clearing.Main",
+					"Class-Path": '. ' + configurations.runtime.files.collect { "lib/$it.name" }.join(' ')
+	}
+	from sourceSets.main.output
+    include '**/*.class'
+	includeEmptyDirs false
+}
+
+distributions {
+	main {
+		contents {
+			from ("${projectDir}") {
+				include "*.dll"
+			}
+			from "${buildDir}/resources/main"
+		}
+	}
+}

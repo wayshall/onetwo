@@ -7,12 +7,37 @@ import org.onetwo.common.log.DataChangedContext.DataOperateType;
 import org.onetwo.common.log.DataChangedContext.EntityState;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
 
 public class DefaultAccessLogger implements AccessLogger {
 
-	public static final String LOGGER_KEY = "iccardAccessLogger";
-	private final Logger accessLogger = JFishLoggerFactory.getLogger(LOGGER_KEY);
+	public static final String LOGGER_KEY = "accessLogger";
+	private Logger accessLogger;
+	private String loggerName;
+	
+	
+
+	public DefaultAccessLogger() {
+	}
+	public DefaultAccessLogger(String loggerName) {
+		super();
+		this.loggerName = loggerName;
+	}
+
+	@Override
+	public void initLogger() {
+		accessLogger = createAccessLoggerLogger();// JFishLoggerFactory.getLogger(LOGGER_KEY);
+		Assert.notNull(accessLogger, "accessLogger not null");
+	}
+
+	protected Logger createAccessLoggerLogger(){
+		if(StringUtils.isBlank(loggerName)){
+			loggerName = LOGGER_KEY;
+		}
+		return JFishLoggerFactory.getLogger(loggerName);
+	}
 	
 	@Override
 	public void logOperation(OperatorLogInfo data){
@@ -103,4 +128,8 @@ public class DefaultAccessLogger implements AccessLogger {
 		buf.append("}").append("]");
 		return buf.toString();
 	}
+	public void setLoggerName(String loggerName) {
+		this.loggerName = loggerName;
+	}
+	
 }
