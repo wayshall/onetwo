@@ -33,6 +33,12 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 		}
 
 		@Override
+		public Object findOne(String queryName, Object... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
 		public void initQeuryFactory(QueryProvider em) {
 			// TODO Auto-generated method stub
 			
