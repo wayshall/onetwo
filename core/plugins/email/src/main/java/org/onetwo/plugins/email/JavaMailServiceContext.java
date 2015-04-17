@@ -78,7 +78,7 @@ public class JavaMailServiceContext implements InitializingBean {
 
 
 	@Bean
-	public JavaMailService JavaMailService() throws Exception{
+	public JavaMailService javaMailService() throws Exception{
 		Class<?> implClass = emailConfig.getMailServiceClass();
 		if(!JavaMailService.class.isAssignableFrom(implClass))
 			throw new ServiceException("java mail sender must a instance of " + JavaMailService.class.getName());
