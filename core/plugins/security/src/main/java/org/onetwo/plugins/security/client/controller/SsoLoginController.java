@@ -25,7 +25,7 @@ public class SsoLoginController extends PluginSupportedController {
 
 	@RequestMapping("login")
 	public ModelAndView login(){
-		return pluginMv("login");
+		return pluginMv("client-login");
 	}
 	
 	@RequestMapping("ssologin")
