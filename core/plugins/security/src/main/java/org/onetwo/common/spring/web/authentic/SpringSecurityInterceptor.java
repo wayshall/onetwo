@@ -65,9 +65,10 @@ public class SpringSecurityInterceptor extends SecurityInterceptor implements In
 //			this.authenticConfigService = new SpringAuthenticConfigService(applicationContext);
 			this.authenticConfigService = SpringUtils.registerBean(applicationContext, AuthenticConfigService.NAME, SpringAuthenticConfigService.class);
 
-			if(SpringUtils.getBeans(applicationContext, SSOService.class).isEmpty()){
+			/**if(SpringUtils.getBeans(applicationContext, SSOService.class).isEmpty()){
 				SpringUtils.registerBean(applicationContext, SimpleNotSSOServiceImpl.class);
 			}
+			**/
 			
 			if(applicationContext.getBeansOfType(AuthenticationInvocation.class).isEmpty()){
 				SpringUtils.registerBean(applicationContext, AuthenticationInvocation.NAME, SpringAuthenticationInvocation.class);
