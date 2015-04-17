@@ -18,6 +18,9 @@ abstract public class AbstractContextPlugin<T> implements ContextPlugin{
 		this.pluginMeta = pluginMeta;
 	}*/
 	
+	public String getPluginName(){
+		return getPluginMeta().getPluginInfo().getName();
+	}
 	
 	
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {

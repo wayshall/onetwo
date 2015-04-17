@@ -5,16 +5,20 @@ import java.util.Map;
 
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
 public class SsoServerConfig extends SsoConfig {
 
 
-	public boolean isServerSide(){
+	@Override
+	public boolean isSso() {
 		return true;
 	}
-	public boolean isClientSide(){
+	public boolean isSsoServer(){
+		return true;
+	}
+	public boolean isSsoClient(){
 		return false;
 	}
 	

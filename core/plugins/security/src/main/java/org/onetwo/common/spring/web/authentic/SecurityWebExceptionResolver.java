@@ -7,21 +7,18 @@ import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
 import org.onetwo.common.web.s2.security.AuthenticationContext;
+import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.ui.ModelMap;
 
 public class SecurityWebExceptionResolver extends WebExceptionResolver {
 	
-	public static final String DEFAULT_LOGIN_VIEW = "redirect:/plugin-security/client/login";
+//	public static final String DEFAULT_LOGIN_VIEW = "redirect:/plugin-security/client/login";
+	public static final String DEFAULT_LOGIN_VIEW = SecurityPluginUtils.COMMON_LOGIN_URL;
 	
 	/*@Resource
 	private SsoConfig ssoConfig;*/
 
 	protected String getLoginView(HttpServletRequest request, ModelMap model){
-//		model.addAttribute(PRE_URL, getPreurl(request));
-		/*String returnUrl = getPreurl(request);
-		if(StringUtils.isBlank(returnUrl)){
-			returnUrl = ssoConfig.getReturnUrl();
-		}*/
 		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
 		String view = (context!=null && StringUtils.isNotBlank(context.getConfig().getRedirect()))?context.getConfig().getRedirect():defaultRedirect;
 		if(StringUtils.isBlank(view)){
