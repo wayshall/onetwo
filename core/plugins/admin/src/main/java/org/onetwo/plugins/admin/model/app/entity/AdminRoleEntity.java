@@ -51,17 +51,19 @@ public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDelete
 	@Length(min=1, max=50)
 	private String name;
 
-//	@Length(min=1, max=50)
+	@Length(max=255)
 	private String roleCode;
 	private RoleStatus status;
   
 
+	@Length(max=20)
 	private String appCode;
 //	private List<AppEntity> apps;
 	
 	/*****
 	 * 
 	 */
+	@Length(max=255)
 	private String remark;
   
 	

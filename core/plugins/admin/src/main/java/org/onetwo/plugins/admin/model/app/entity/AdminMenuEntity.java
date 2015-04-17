@@ -10,12 +10,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.onetwo.common.utils.Closure;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 import org.onetwo.plugins.permission.MenuUtils;
 import org.onetwo.plugins.permission.entity.IFunction;
 import org.onetwo.plugins.permission.entity.IMenu;
@@ -28,10 +32,14 @@ import org.onetwo.plugins.permission.entity.PermissionType;
 //@DiscriminatorValue("MENU")
 public class AdminMenuEntity extends AdminPermissionEntity implements IMenu<AdminMenuEntity, AdminFunctionEntity>{
 
+	@Size(max=255, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	private String url;
+	@Size(max=255, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	private String method;
-	
+
+	@Size(max=200, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	private String cssClass;
+	@Size(max=1000, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	private String showProps;
 	
 	private AdminMenuEntity parent;
