@@ -18,6 +18,8 @@ final public class SecurityPluginUtils {
 	
 	private static Logger logger = JFishLoggerFactory.getLogger(SecurityPluginUtils.class);
 
+	public static final String COMMON_LOGIN_URL = "redirect:/plugin-security/common/login";
+	
 	public static final String LOGIN_PARAM_CLIENT_CODE = "clientCode";
 	public static final String LOGIN_PARAM_ALL = "all";
 	public static final String DEFAULT_SSO_SIGN_KEY = "podsf^&pk&$@[ko@#$s0df]pips9";

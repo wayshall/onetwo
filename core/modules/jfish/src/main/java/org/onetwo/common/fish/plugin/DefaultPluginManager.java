@@ -23,7 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
+	private PluginNameParser pluginNameParser = PLUGINNAME_PARSER;
 	final private JFishMvcEventBus mvcEventBus = new JFishMvcEventBus(this);
 
 	public DefaultPluginManager(String appEnvironment) {

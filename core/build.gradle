@@ -27,7 +27,7 @@ configure(allprojects){ project ->
 	}else{
 		group = "org.onetwo"
 	}
-	version = "3.2.2-SNAPSHOT"
+	version = "3.2.3-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"

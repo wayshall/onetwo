@@ -16,6 +16,7 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
@@ -330,7 +331,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	protected Locale getLocale(){
 //		return JFishWebUtils.getLocale();
-		return JFishWebUtils.DEFAULT_LOCAL;
+		return JFishUtils.getDefaultLocale();
 	}
 
 	protected String getMessage(String code, Object[] args) {
