@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.onetwo.common.spring.plugin.AbstractContextPlugin;
 import org.onetwo.plugins.security.client.SsoClientContext;
+import org.onetwo.plugins.security.common.CommonSecurityContext;
+import org.onetwo.plugins.security.common.SecurityConfig;
 import org.onetwo.plugins.security.common.SecurityContext;
-import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.SsoServerContext;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
 
@@ -24,20 +26,24 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 		instance = plugin;
 	}
 	
-	private SsoConfig ssoConfig;
+	private SecurityConfig securityConfig;
 //	private SecurityMode loginMode;
 	
 
-	public void setSsoConfig(SsoConfig ssoConfig) {
-		this.ssoConfig = ssoConfig;
-	}
-
 	public SsoConfig getSsoConfig() {
-		return ssoConfig;
+		return (SsoConfig)securityConfig;
 	}
 	
+	public SecurityConfig getSecurityConfig() {
+		return securityConfig;
+	}
+
+	public void setSecurityConfig(SecurityConfig securityConfig) {
+		this.securityConfig = securityConfig;
+	}
+
 	public boolean isSsoEnable(){
-		return ssoConfig!=null;
+		return securityConfig.isSso();
 	}
 
 	@Override
@@ -50,23 +56,8 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 		}else if(SecurityPluginUtils.existClientConfig()){
 			annoClasses.add(SsoClientContext.class);
 		}else{
-//			annoClasses.add(NotSsoContext.class);
+			annoClasses.add(CommonSecurityContext.class);
 		}
 	}
 
-	/*@Configuration
-	public static class NotSsoContext {
-
-		@Bean
-		public SSOService ssoService(){
-			SimpleNotSSOServiceImpl ssoservice = new SimpleNotSSOServiceImpl();
-			return ssoservice;
-		}
-	}*/
-
-	/*public static enum SecurityMode {
-		COMMON,
-		SSO_CLIENT,
-		SSO_SERVER
-	}*/
 }

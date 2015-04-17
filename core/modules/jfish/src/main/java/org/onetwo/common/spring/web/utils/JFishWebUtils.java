@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.fish.JFishUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
@@ -31,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SuppressWarnings("unchecked")
 public final class JFishWebUtils {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(JFishWebUtils.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(JFishWebUtils.class);
 	
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
@@ -41,7 +42,6 @@ public final class JFishWebUtils {
 	@Deprecated
 	public static final String DEFAULT_TOKEN_FIELD_NAME = SameInSessionCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
-	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
 
 	public static final String REDIRECT_KEY = "redirect:";
@@ -57,9 +57,9 @@ public final class JFishWebUtils {
 			if(request!=null)
 				local = request().getLocale();
 			else
-				local = DEFAULT_LOCAL;
+				local = JFishUtils.getDefaultLocale();
 		} catch (Exception e) {
-			local = DEFAULT_LOCAL;
+			local = JFishUtils.getDefaultLocale();
 		}
 		return local;
 	}
@@ -270,20 +270,7 @@ public final class JFishWebUtils {
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 	
-	public static Locale getDefaultLocale(){
-		return JFishWebUtils.DEFAULT_LOCAL;
-	}
-
-	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args) {
-		if(exceptionMessage==null)
-			return "";
-		try {
-			return exceptionMessage.getMessage(code, args, getDefaultLocale());
-		} catch (Exception e) {
-			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
-		}
-		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-	}
+	
 	
 	public static ModelAndView mv(String viewName, Object... models){
 		ModelAndView mv = new ModelAndView(viewName);

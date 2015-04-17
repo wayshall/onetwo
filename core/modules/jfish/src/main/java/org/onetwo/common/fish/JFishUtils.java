@@ -1,9 +1,12 @@
 package org.onetwo.common.fish;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
 
+import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.exception.JFishInvokeRestException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -11,10 +14,15 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.slf4j.Logger;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 final public class JFishUtils {
+	private static final Logger logger = JFishLoggerFactory.getLogger(JFishUtils.class);
+	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
+	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
 
 	private JFishUtils(){
 	}
@@ -87,5 +95,20 @@ final public class JFishUtils {
 			path += "?"+map.toParamString();
 		}
 		return path;
+	}
+	
+	public static Locale getDefaultLocale(){
+		return DEFAULT_LOCAL;
+	}
+
+	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args) {
+		if(exceptionMessage==null)
+			return "";
+		try {
+			return exceptionMessage.getMessage(code, args, getDefaultLocale());
+		} catch (Exception e) {
+			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
+		}
+		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 }

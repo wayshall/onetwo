@@ -3,18 +3,22 @@ package org.onetwo.plugins.security.client;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.jsp.TagUtils;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
 @SuppressWarnings("serial")
 public class SsoClientConfig extends SsoConfig {
 
 	@Override
-	public boolean isServerSide() {
+	public boolean isSso() {
+		return true;
+	}
+	@Override
+	public boolean isSsoServer() {
 		return false;
 	}
 	@Override
-	public boolean isClientSide() {
+	public boolean isSsoClient() {
 		return true;
 	}
 	public String getServerUrl(){

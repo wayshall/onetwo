@@ -17,6 +17,8 @@ public class LoginParams implements Serializable {
 	
 	private boolean all;
 	
+	private String validateCode;
+	
 	
 	public String getUserName() {
 		return userName;
@@ -48,5 +50,10 @@ public class LoginParams implements Serializable {
 	public void setAll(boolean all) {
 		this.all = all;
 	}
-	
+	public String getValidateCode() {
+		return validateCode;
+	}
+	public void setValidateCode(String validateCode) {
+		this.validateCode = validateCode;
+	}
 }

@@ -8,12 +8,10 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
+import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.web.mvc.CodeMessager;
-import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
-import org.onetwo.common.spring.web.mvc.EmptySecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
@@ -41,7 +39,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -89,6 +86,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	@Resource
 	private MvcSetting mvcSetting;
+
+	@Resource(name=ContextBeanNames.EXCEPTION_MESSAGE)
+	private MessageSource exceptionMessages;
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
@@ -353,26 +353,19 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 			webexception = new WebExceptionResolver();
 		}*/
 		WebExceptionResolver webexception = new WebExceptionResolver();
-		webexception.setExceptionMessage(exceptionMessageSource());
+//		webexception.setExceptionMessage(exceptionMessageSource());
+		webexception.setExceptionMessage(exceptionMessages);
 		webexception.setMvcSetting(mvcSetting);
 		return webexception;
 	}
 
-	@Bean(name=MvcBeanNames.EXCEPTION_MESSAGE)
+	/*@Bean(name=MvcBeanNames.EXCEPTION_MESSAGE)
 	public MessageSource exceptionMessageSource(){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
 		return ms;
-	}
+	}*/
 	
-	@Bean
-	public CodeMessager codeMessager(){
-		CodeMessager messager = SpringUtils.getBean(applicationContext, CodeMessager.class);;
-		if(messager==null){
-			messager = new DefaultCodeMessager();
-		}
-		return messager;
-	}
 
 	public void afterPropertiesSet() throws Exception{
 //		this.jfishAppConfigurator = SpringUtils.getBean(applicationContext, JFishAppConfigrator.class);
@@ -401,9 +394,9 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 	
 
-	public static class MvcBeanNames {
+	/*public static class MvcBeanNames {
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
-	}
+	}*/
 	
 	/*@Bean
 	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
