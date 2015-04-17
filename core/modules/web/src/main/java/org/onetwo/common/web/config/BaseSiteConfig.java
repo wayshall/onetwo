@@ -6,7 +6,7 @@ import java.util.List;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
@@ -19,7 +19,7 @@ public class BaseSiteConfig extends AppConfig {
 		REDIS
 	}
 	
-	protected static final Logger logger = MyLoggerFactory.getLogger(BaseSiteConfig.class);
+	protected static final Logger logger = JFishLoggerFactory.getLogger(BaseSiteConfig.class);
 
 	public static final String WEB_CONFIG_NAME = "webConfig";
 	public static final String CONFIG_NAME = "siteConfig";

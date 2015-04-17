@@ -15,11 +15,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 
 @Configuration
-@ComponentScan(basePackageClasses = { SpringAuthenticationInvocation.class })
+//@ComponentScan(basePackageClasses = { SpringAuthenticationInvocation.class })
 public class SecurityWebContext {
 	
 	@Bean
-	public SpringSecurityInterceptor springSecurityInterceptor(){
+	public SpringSecurityInterceptor securityInterceptor(){
 		if(SecurityPluginUtils.existServerConfig() || SecurityPluginUtils.existClientConfig())
 			return new SsoSpringSecurityInterceptor();
 		//SimpleNotSSOServiceImpl

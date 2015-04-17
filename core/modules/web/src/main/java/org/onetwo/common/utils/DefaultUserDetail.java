@@ -13,6 +13,7 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, 
 	private long userId;
 //	private Long organId;
 	private String userName;
+	private String nickName;
 	private String token;
 	private List<String> permissions = LangUtils.newArrayList();
 	private List<String> roles = LangUtils.newArrayList();
@@ -23,6 +24,13 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, 
 		this.lastActivityTime = new Date();
 	}
 	
+	public DefaultUserDetail(long userId, String userName, String token) {
+		super();
+		this.userId = userId;
+		this.userName = userName;
+		this.token = token;
+	}
+
 	public Date getLastActivityTime() {
 		return lastActivityTime;
 	}
@@ -101,6 +109,14 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, 
 	@Override
 	public List<Long> getRoleIds() {
 		return Collections.EMPTY_LIST;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 	
 	

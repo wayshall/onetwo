@@ -32,6 +32,12 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	private ScopeMetadataResolver scopeMetadataResolver;
 //	private ContextPluginManager contextPluginManager;
 	
+	public SpringConfigApplicationContext(){
+		/*String basePackage = BaseSiteConfig.getInstance().getAppBasePackages();
+		if(StringUtils.isNotBlank(basePackage)){
+			System.setProperty(BaseSiteConfig.APP_BASE_PACKAGES, basePackage);
+		}*/
+	}
 	
 	@Override
 	protected void prepareRefresh() {

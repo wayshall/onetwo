@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache updateCheck="false" name="hibernateCache">
 
-	<diskStore path="java.io.tmpdir/ehcache/iccardweb/hibernate" />
+	<diskStore path="java.io.tmpdir/ehcache/webapp/hibernate" />
 
 	<!-- DefaultCache setting. -->
 	<defaultCache maxEntriesLocalHeap="10000" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
 		overflowToDisk="true" maxEntriesLocalDisk="100000" />
 
-	<!-- Special objects setting. -->
-	<cache name="com.qyscard.webapp.model.issue.entity.AreaCodeEntity" maxEntriesLocalHeap="150" eternal="true"
-		overflowToDisk="false" />
-		
-	<cache name="com.qyscard.webapp.model.terminater.entity.PsamEntity" maxEntriesLocalHeap="500" eternal="false"
-		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" />
-	<cache name="com.qyscard.webapp.model.terminater.entity.PosEntity" maxEntriesLocalHeap="500" eternal="false"
-		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" />
-	<cache name="com.qyscard.webapp.model.terminater.entity.RechargePosEntity" maxEntriesLocalHeap="500" eternal="false"
-		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" />
-	<!-- 
-	<cache name="com.qyscard.webapp.model.merchant.entity.MerchantCompanyEntity" maxEntriesLocalHeap="100" eternal="false"
-		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" />
-		 -->
 </ehcache>

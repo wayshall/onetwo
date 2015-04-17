@@ -27,10 +27,11 @@ public class AdminPermissionEntity implements Serializable, IPermission {
 
 //	private Long id;
 	@NotBlank
-	@Size(min=1, max=225)
+	@Size(min=1, max=255)
 	private String code;
+	
 	@NotBlank
-	@Size(min=1, max=225)
+	@Size(min=1, max=255)
 	private String name;
 	
 	private Integer sort;

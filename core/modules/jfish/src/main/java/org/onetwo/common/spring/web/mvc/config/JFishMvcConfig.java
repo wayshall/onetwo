@@ -101,16 +101,19 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		@Resource
 		private JFishMvcApplicationContext applicationContext;
 		
+		@Resource
+		private SecurityInterceptor securityInterceptor;
+		
 		JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
-		@Bean
+		/**@Bean
 		public SecurityInterceptor securityInterceptor(){
 			SecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SecurityInterceptor.class);
 			if(springSecurityInterceptor==null){
 				springSecurityInterceptor = new EmptySecurityInterceptor();
 			}
 			return springSecurityInterceptor;
-		}
+		}**/
 
 		@Bean
 		public MappedInterceptor mappedInterceptor4Security() {
@@ -119,7 +122,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //				springSecurityInterceptor = new SpringSecurityInterceptor();
 //			}
 //			SpringSecurityInterceptor springSecurityInterceptor = new SpringSecurityInterceptor();
-			return new MappedInterceptor(null, securityInterceptor());
+			//return new MappedInterceptor(null, securityInterceptor());
+			return new MappedInterceptor(null, securityInterceptor);
 		}
 
 		/************
