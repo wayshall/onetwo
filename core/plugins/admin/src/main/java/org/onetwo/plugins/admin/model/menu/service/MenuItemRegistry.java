@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.model.app.service;
+package org.onetwo.plugins.admin.model.menu.service;
 
 import java.util.Collection;
 

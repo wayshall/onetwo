@@ -25,6 +25,7 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 	}
 	
 	private SsoConfig ssoConfig;
+//	private SecurityMode loginMode;
 	
 
 	public void setSsoConfig(SsoConfig ssoConfig) {
@@ -63,4 +64,9 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 		}
 	}*/
 
+	/*public static enum SecurityMode {
+		COMMON,
+		SSO_CLIENT,
+		SSO_SERVER
+	}*/
 }
