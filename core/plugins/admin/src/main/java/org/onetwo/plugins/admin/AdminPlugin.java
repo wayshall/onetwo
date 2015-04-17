@@ -1,17 +1,24 @@
 package org.onetwo.plugins.admin;
 
+import javax.annotation.Resource;
+
 import org.onetwo.common.hibernate.event.EntityPackageRegisterEvent;
 import org.onetwo.common.hibernate.event.HibernatePluginEventListenerAdapter;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
+import org.onetwo.common.sso.SSOService;
 import org.onetwo.plugins.admin.model.AdminModelContext;
 import org.onetwo.plugins.admin.model.app.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminAppServiceImpl;
+import org.onetwo.plugins.admin.model.app.service.impl.DefaultNotSSOServiceImpl;
 import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity;
 import org.onetwo.plugins.admin.model.data.service.DictionaryService;
 import org.onetwo.plugins.admin.model.data.service.impl.DictionaryServiceImpl;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -99,7 +106,19 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 
 	@Configuration
 	@ComponentScan(basePackageClasses=AdminAppServiceImpl.class)
-	public static class AdminAppModelContext {
+	public static class AdminAppModelContext implements InitializingBean {
+
+		@Resource
+		private ApplicationContext applicationContext;
+		
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			if(SpringUtils.getBeans(applicationContext, SSOService.class).isEmpty()){
+				SpringUtils.registerBean(applicationContext, "defaultNotSSOServiceImpl", DefaultNotSSOServiceImpl.class);
+			}
+		}
+		
+		
 	}
 
 

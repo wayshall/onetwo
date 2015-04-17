@@ -1,4 +1,4 @@
-package org.onetwo.plugins.admin.model.app.service.impl;
+package org.onetwo.plugins.admin.model.menu.service.impl;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,12 +11,11 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.PermissionDetail;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.plugins.admin.model.app.entity.AdminMenuEntity;
-import org.onetwo.plugins.admin.model.app.service.MenuItemRegistry;
+import org.onetwo.plugins.admin.model.menu.service.MenuItemRegistry;
 import org.onetwo.plugins.admin.model.vo.ExtMenuModel;
 import org.onetwo.plugins.permission.PermissionConfig;
 import org.springframework.transaction.annotation.Transactional;
 
-//@Service
 @Transactional
 public class MenuItemServiceImpl implements MenuItemRegistry{
 

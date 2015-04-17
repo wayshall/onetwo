@@ -70,7 +70,7 @@ public class TaskClientPlugin extends ConfigurableContextPlugin<TaskClientPlugin
 	public static class TaskClientMailServiceContext {
 		
 		@Bean
-		public JavaMailService javaMailService(){
+		public JavaMailService taskMailService(){
 			return new TaskEmailServiceImpl();
 		}
 	}
