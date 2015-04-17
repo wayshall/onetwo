@@ -3,8 +3,8 @@ package org.onetwo.plugins.admin;
 import javax.annotation.Resource;
 
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.plugins.admin.model.app.service.MenuItemRegistry;
-import org.onetwo.plugins.admin.model.app.service.impl.MenuItemServiceImpl;
+import org.onetwo.plugins.admin.model.menu.service.MenuItemRegistry;
+import org.onetwo.plugins.admin.model.menu.service.impl.MenuItemServiceImpl;
 import org.onetwo.plugins.admin.web.controller.AdminController;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
