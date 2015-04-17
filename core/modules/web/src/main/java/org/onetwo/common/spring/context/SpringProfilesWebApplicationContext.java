@@ -31,7 +31,7 @@ public class SpringProfilesWebApplicationContext extends AnnotationConfigWebAppl
 	private Class<?>[] annotatedClasses;
 //	private ContextPluginManager<?> contextPluginManager;
 	
-	public SpringProfilesWebApplicationContext(){
+	public SpringProfilesWebApplicationContext(){	
 	}
 
 	public String getAppEnvironment() {

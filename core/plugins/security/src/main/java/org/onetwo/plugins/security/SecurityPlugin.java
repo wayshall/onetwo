@@ -48,8 +48,19 @@ public class SecurityPlugin extends AbstractContextPlugin<SecurityPlugin> {
 			
 		}else if(SecurityPluginUtils.existClientConfig()){
 			annoClasses.add(SsoClientContext.class);
+		}else{
+//			annoClasses.add(NotSsoContext.class);
 		}
 	}
 
+	/*@Configuration
+	public static class NotSsoContext {
+
+		@Bean
+		public SSOService ssoService(){
+			SimpleNotSSOServiceImpl ssoservice = new SimpleNotSSOServiceImpl();
+			return ssoservice;
+		}
+	}*/
 
 }

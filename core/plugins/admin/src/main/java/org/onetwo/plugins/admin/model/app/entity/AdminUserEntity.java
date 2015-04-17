@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
+import javax.validation.groups.Default;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -57,13 +58,13 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 	/*****
 	 * 
 	 */
-	@Length(min=1, max=50, groups={ValidWhenNew.class, ValidWhenEdit.class})
+	@Length(min=1, max=50, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	protected String userName;
   
 	/*****
 	 * 
 	 */
-	@Length(min=1, max=50, groups={ValidWhenNew.class, ValidWhenEdit.class})
+	@Length(min=1, max=50, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	@NotBlank
 	protected String nickName;
 
@@ -76,8 +77,8 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 	/*****
 	 * 
 	 */
-	@Length(min=0, max=50, groups={ValidWhenNew.class, ValidWhenEdit.class})
-	@Email(groups={ValidWhenNew.class, ValidWhenEdit.class})
+	@Length(min=0, max=50, groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
+	@Email(groups={Default.class, ValidWhenNew.class, ValidWhenEdit.class})
 	protected String email;
   
 	/*****
@@ -97,6 +98,7 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 	protected Date birthday;
 	
 	//系统代码
+	@Length(min=0, max=50, groups={Default.class})
 	protected String appCode;
 
 //	@Length(min=6, max=50, groups={ValidWhenNew.class})

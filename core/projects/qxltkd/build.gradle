@@ -65,9 +65,23 @@ repositories {
 	mavenLocal()
 }
 
+sourceSets {
+	main {
+		resources {
+			srcDir 'src/main/resources'
+		}
+	}
+	test {
+		resources {
+			srcDir 'src/test/resources'
+		}
+	}
+}
+
 ext.onetwoVersion = "3.2.0-SNAPSHOT";
 ext.commonsioVersion = "2.4"
 ext.javaeeVersion = "6.0-3"
+ext.mysqlConnectorVersion = "5.1.35"
 // In this section you declare the dependencies for your production and test code
 dependencies {
 	compile("org.onetwo:onetwo-jfish:${onetwoVersion}")
@@ -77,11 +91,14 @@ dependencies {
 	compile("org.onetwo.plugins:onetwo-plugin-codegen:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-security:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-permission:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-admin:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
 	
 	compile("javax.persistence:com.springsource.javax.persistence:2.0.0")
 	compile("com.microsoft:sqljdbc4:1.0")
 	compile("commons-io:commons-io:${commonsioVersion}")
+	compile("mysql:mysql-connector-java:${mysqlConnectorVersion}")
 	provided("org.apache.openejb:javaee-api:${javaeeVersion}")
 	provided project.jfishDeployer.embeddedTomcat()
 
