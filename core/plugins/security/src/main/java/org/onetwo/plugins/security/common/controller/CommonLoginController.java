@@ -10,6 +10,7 @@ import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.spring.web.authentic.SpringSecurityTarget;
 import org.onetwo.common.sso.LoginParams;
 import org.onetwo.common.sso.UserLoginService;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.plugins.security.common.SecurityConfig;
@@ -54,7 +55,8 @@ public class CommonLoginController extends PluginSupportedController {
 //			Map<String, String> map = LangUtils.asMap(SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, loginParams.getClientCode());
 			userLogin = doLogin(loginParams, securityTarget);
 		} catch (LoginException e) {
-			return mv(securityConfig.getLoginView(), MESSAGE, e.getMessage());
+			String msg = StringUtils.firstNotBlank(this.getMessage(e.getCode()), e.getMessage());
+			return mv(securityConfig.getLoginView(), MESSAGE, msg);
 		} catch (Exception e) {
 			logger.error("login error", e);
 			return mv(securityConfig.getLoginView(), MESSAGE, e.getMessage());

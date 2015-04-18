@@ -109,6 +109,6 @@ final public class JFishUtils {
 		} catch (Exception e) {
 			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
 		}
-		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+		return "";//SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 }

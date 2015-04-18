@@ -2,6 +2,7 @@ package org.onetwo.java8;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import junit.framework.Assert;
@@ -111,6 +112,21 @@ public class Java78Test {
 		Assert.assertEquals(rs, init);
 		Assert.assertEquals(JFishList.wrap(all).sum("age").intValue(), rs.getAge().intValue());
 		Assert.assertEquals(JFishList.wrap(all).sum("height").doubleValue(), rs.getHeight().doubleValue());
+	}
+	
+	@Test
+	public void testList2Array(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = createUserList("aa", 3);
+		List<UserEntity> bb = createUserList("bb", 1);
+		List<UserEntity> cc = createUserList("cc", 2);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		List<String> list = all.stream().map(UserEntity::getUserName).collect(Collectors.toList());
+		System.out.println("list: " + list);
+		Assert.assertEquals("[aa, aa, aa, bb, cc, cc]", list.toString());
 	}
 
 }
