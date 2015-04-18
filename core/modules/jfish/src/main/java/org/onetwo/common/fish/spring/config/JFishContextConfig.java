@@ -230,6 +230,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	@Bean(name=ContextBeanNames.EXCEPTION_MESSAGE)
 	public MessageSource exceptionMessageSource(){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
+		ms.setCacheSeconds(BaseSiteConfig.getInstance().getMessageCacheSecond());
 		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
 		return ms;
 	}

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 
 @Configuration
@@ -22,7 +23,8 @@ public class CommonSecurityContext implements InitializingBean {
 	@Resource
 	private AppConfig appConfig;
 
-	@Resource
+	//填写名称，首先出发对应bean的初始化
+	@Resource(name="securityConfigFactory")
 	private SecurityConfig securityConfig;
 
 	@Resource
@@ -32,13 +34,14 @@ public class CommonSecurityContext implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(securityConfig, "security config can not be null!");
 		SecurityPlugin.getInstance().setSecurityConfig(securityConfig);
 	}
 
 	@Bean
 	public PropertiesFactoryBean securityConfigFactory() {
 		String envLocation = SECURITY_CONFIG_BASE + "-" + appConfig.getAppEnvironment() + ".properties";
-		return SpringUtils.createPropertiesBySptring(new SsoClientConfig(), SECURITY_CONFIG_PATH, envLocation);
+		return SpringUtils.createPropertiesBySptring(new SecurityConfig(), SECURITY_CONFIG_PATH, envLocation);
 	}
 	
 	@Bean

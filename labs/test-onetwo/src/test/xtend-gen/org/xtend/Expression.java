@@ -2,6 +2,7 @@ package org.xtend;
 
 import org.junit.Test;
 
+@SuppressWarnings("all")
 public class Expression {
   @Test
   public void test1() {
