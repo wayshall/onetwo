@@ -27,7 +27,7 @@ public class SsoServerConfig extends SsoConfig {
 	}
 
 	public String getServerLoginUrl(){
-		String url = getProperty("server.login.url");
+		String url = getProperty(SERVER_LOGIN_URL);
 		if(StringUtils.isBlank(url)){
 			url = BaseSiteConfig.getInstance().getBaseURL()+"/login";
 		}
@@ -35,7 +35,7 @@ public class SsoServerConfig extends SsoConfig {
 	}
 
 	public String getServerLogoutUrl(){
-		String url = getProperty("server.logout.url");
+		String url = getProperty(SERVER_LOGOUT_URL);
 		if(StringUtils.isBlank(url)){
 			url = BaseSiteConfig.getInstance().getBaseURL()+"/logout";
 		}
