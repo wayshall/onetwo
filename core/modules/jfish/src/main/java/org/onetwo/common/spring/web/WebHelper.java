@@ -19,7 +19,6 @@ import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
-import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.view.jsp.TagUtils;
 import org.onetwo.common.web.view.jsp.tools.ToolEl;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -223,14 +222,21 @@ public class WebHelper {
 	}
 
 	
-	public String web(String name){
+	/*public String web(String name){
 		return ToolEl.escapeHtml(WebHolder.getValue(name).toString());
-	}
+	}*/
 	public String escapeHtml(String content){
 		return HtmlUtils.htmlEscape(content);
 	}
 	
 	public String firstNotblank(String val, String def1, String def2){
 		return ToolEl.firstNotblank(val, def1, def2);
+	}
+	
+	public String web(String name){
+		return ToolEl.web(name);
+	}
+	public String escape(String content){
+		return ToolEl.escape(content);
 	}
 }

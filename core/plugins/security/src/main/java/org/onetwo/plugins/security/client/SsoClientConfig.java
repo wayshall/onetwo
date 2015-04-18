@@ -28,8 +28,11 @@ public class SsoClientConfig extends SsoConfig {
 	private boolean isCheckAll(){
 		return getBoolean("check.all", false);
 	}
+	/***
+	 * 服务器端登录地址
+	 */
 	public String getServerLoginUrl(){
-		String url = getProperty("server.login.url");
+		String url = getProperty(SERVER_LOGIN_URL);
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/login";
 			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());
@@ -38,7 +41,7 @@ public class SsoClientConfig extends SsoConfig {
 		return url;
 	}
 	public String getServerLogoutUrl(){
-		String url = getProperty("server.logout.url");
+		String url = getProperty(SERVER_LOGOUT_URL);
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/logout";
 			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());
