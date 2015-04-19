@@ -1,11 +1,9 @@
 package org.onetwo.plugins.security.common;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.plugins.security.SecurityPlugin;
+import org.onetwo.plugins.security.SecurityWebPlugin;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
 public class SecurityConfig extends JFishProperties {
@@ -24,8 +22,8 @@ public class SecurityConfig extends JFishProperties {
 	public String getServerLoginUrl(){
 		String url = getProperty(SERVER_LOGIN_URL);
 		if(StringUtils.isBlank(url)){
-			String name = SecurityPlugin.getInstance().getPluginName();
-			url = JFishWebUtils.redirect("/" + name + "/common/login");
+//			String name = SecurityPlugin.getInstance().getPluginName();
+			url = SecurityWebPlugin.getInstance().getPluginConfig().getBasedURL("/common/login");
 		}
 		return url;
 		
@@ -34,8 +32,8 @@ public class SecurityConfig extends JFishProperties {
 	public String getServerLogoutUrl(){
 		String url = getProperty(SERVER_LOGOUT_URL);
 		if(StringUtils.isBlank(url)){
-			String name = SecurityPlugin.getInstance().getPluginName();
-			url = JFishWebUtils.redirect("/" + name + "/common/logout");
+//			String name = SecurityPlugin.getInstance().getPluginName();
+			url = SecurityWebPlugin.getInstance().getPluginConfig().getBasedURL("/common/logout");
 		}
 		return url;
 	}
@@ -46,15 +44,16 @@ public class SecurityConfig extends JFishProperties {
 			if(isSso()){
 				url = SecurityPluginUtils.SSO_CLIENT_LOGIN_URL;
 			}else{
-				url = getServerLoginUrl();
+				url = SecurityWebPlugin.getInstance().getPluginConfig().getContextBasedPath("/common/login");
 			}
 		}
 		return url;
 	}
 	
 	public String getLoginView(){
-		String name = SecurityPlugin.getInstance().getPluginName();
-		return getProperty("login.view", JFishPluginManager.PLUGINNAME_PARSER.wrapViewPath(name, "login"));
+//		String name = SecurityPlugin.getInstance().getPluginName();
+//		return getProperty("login.view", JFishPluginManager.PLUGINNAME_PARSER.wrapViewPath(name, "login"));
+		return getProperty("login.view", SecurityWebPlugin.getInstance().getPluginConfig().getTemplatePath("login"));
 	}
 	
 	/***
@@ -67,6 +66,6 @@ public class SecurityConfig extends JFishProperties {
 	
 	public String getLogoutSuccessView(){
 //		return getProperty("logout.success.view", SecurityPluginUtils.COMMON_LOGIN_URL);
-		return getProperty("logout.success.view", getServerLoginUrl());
+		return getProperty("logout.success.view", JFishWebUtils.redirect(getAuthenticRedirectUrl()));
 	}
 }
