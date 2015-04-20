@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
@@ -38,7 +39,7 @@ public class RestJsonView extends JsonView {
 	protected String getMessage(String code, Object[] args) throws NoSuchMessageException{
 //		return this.exceptionMessages.getMessage(code, args, JFishWebUtils.getLocale());
 		try {
-			return this.exceptionMessages.getMessage(code, args, JFishWebUtils.DEFAULT_LOCAL);
+			return this.exceptionMessages.getMessage(code, args, JFishUtils.getDefaultLocale());
 		} catch (Exception e) {
 			logger.error("getMessage error :" + e.getMessage());
 		}

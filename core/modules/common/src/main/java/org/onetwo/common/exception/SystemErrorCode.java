@@ -3,57 +3,57 @@ package org.onetwo.common.exception;
 public interface SystemErrorCode {
 	
 	public String APP_ERROR_MESSAGE = "appErrorMessage";
-	public String DEFAULT_SYSTEM_ERROR_CODE = "[SYSTEM ERROR]";
+	public String DEFAULT_SYSTEM_ERROR_CODE = "[SYSTEM_ERROR]";
 	public String UNKNOWN = "unknown";
 	
 	public static class JFishErrorCode {
-		public static final String BASE_CODE = "[JFISH ERROR]";//前缀
-		public static final String DB_ERROR = BASE_CODE + "DB ERROR";
+		public static final String BASE_CODE = "[JFISH_ERROR]";//前缀
+		public static final String DB_ERROR = BASE_CODE + "DB_ERROR";
 		public static final String ORM_ERROR = BASE_CODE + "ORM ERROR";
-		public static final String REST_INVOKE_ERROR = BASE_CODE + "REST INVOKE ERROR";
-		public static final String INVALID_TOKEN_ERROR = BASE_CODE + "INVALID TOKEN ERROR";
+		public static final String REST_INVOKE_ERROR = BASE_CODE + "REST_INVOKE_ERROR";
+		public static final String INVALID_TOKEN_ERROR = BASE_CODE + "INVALID_TOKEN_ERROR";
 	}
 	
 	public static class LoginErrorCode {
-		public static final String BASE_CODE = "[LOGIN ERROR]";//前缀
-		public static final String USER_NOT_FOUND = BASE_CODE + "USER NOT FOUND";//找不到此用户
-		public static final String PASSWORD_ERROR = BASE_CODE + "PASSWORD ERROR";//错误的密码
-		public static final String PASSWORD_CONFIRM_ERROR = BASE_CODE + "PASSWORD CONFIRM ERROR";//两次密码不一致
-		public static final String NO_TOKEN  = BASE_CODE + "NO TOKEN";//没有找到此令牌的用户，请先登陆
-		public static final String USER_STATE_ERROR = BASE_CODE + "USER STATE ERROR";//用户状态不正常
+		public static final String BASE_CODE = "[LOGIN_ERROR]";//前缀
+		public static final String USER_NOT_FOUND = BASE_CODE + "USER_NOT_FOUND";//找不到此用户
+		public static final String PASSWORD_ERROR = BASE_CODE + "PASSWORD_ERROR";//错误的密码
+		public static final String PASSWORD_CONFIRM_ERROR = BASE_CODE + "PASSWORD_CONFIRM_ERROR";//两次密码不一致
+		public static final String NO_TOKEN  = BASE_CODE + "NO_TOKEN";//没有找到此令牌的用户，请先登陆
+		public static final String USER_STATE_ERROR = BASE_CODE + "USER_STATE_ERROR";//用户状态不正常
 	}
 	
 	public static class AuthenticErrorCode {
-		public static final String BASE_CODE = "[AUTHENTIC ERROR]";//前缀
-		public static final String PERMISSION_DENY  = BASE_CODE + "PERMISSION DENY";//验证失败，没有权限
-		public static final String NOT_LOGIN_YET  = BASE_CODE + "NOT LOGIN YET";//没有登陆
-		public static final String SESSION_TIMEOUT = BASE_CODE + "SESSION TIMEOUT";//登陆超时
-		public static final String ERROR_ROLE = BASE_CODE + "ERROR ROLE";//登陆超时
+		public static final String BASE_CODE = "[AUTHENTIC_ERROR]";//前缀
+		public static final String PERMISSION_DENY  = BASE_CODE + "PERMISSION_DENY";//验证失败，没有权限
+		public static final String NOT_LOGIN_YET  = BASE_CODE + "NOT_LOGIN_YET";//没有登陆
+		public static final String SESSION_TIMEOUT = BASE_CODE + "SESSION_TIMEOUT";//登陆超时
+		public static final String ERROR_ROLE = BASE_CODE + "ERROR_ROLE";//登陆超时
 	}
 	
 	public static class ServiceErrorCode {
-		public static final String BASE_CODE = "[SERVICE ERROR]";//前缀
-		public static final String RESOURCE_NOT_FOUND = BASE_CODE + "RESOURCE NOT FOUND";//前缀
+		public static final String BASE_CODE = "[SERVICE_ERROR]";//前缀
+		public static final String RESOURCE_NOT_FOUND = BASE_CODE + "RESOURCE_NOT_FOUND";//前缀
 	}
 	
 	public static class BusinessErrorCode {
-		public static final String BASE_CODE = "[BUSINESS ERROR]";//前缀
-		public static final String OBJECT_NOT_FOUND = BASE_CODE+"OBJECT NOT FOUND";//找不到对象
-		public static final String SEND_SMS_ERROR = BASE_CODE+"SEND SMS ERROR";//发送短信错误
+		public static final String BASE_CODE = "[BUSINESS_ERROR]";//前缀
+		public static final String OBJECT_NOT_FOUND = BASE_CODE+"OBJECT_NOT_FOUND";//找不到对象
+		public static final String SEND_SMS_ERROR = BASE_CODE+"SEND_SMS_ERROR";//发送短信错误
 	}
 	
 	public static class CommandLineErrorCode {
-		public static final String BASE_CODE = "[COMMAND ERROR]";//前缀
-		public static final String COMMAND_NOT_FOUND = BASE_CODE+"COMMAND NOT FOUND";//错误的指令
-		public static final String COMMAND_STOP = BASE_CODE+"COMMAND STOP";//错误的指令
+		public static final String BASE_CODE = "[COMMAND_ERROR]";//前缀
+		public static final String COMMAND_NOT_FOUND = BASE_CODE+"COMMAND_NOT_FOUND";//错误的指令
+		public static final String COMMAND_STOP = BASE_CODE+"COMMAND_STOP";//错误的指令
 	}
 	
 	public static class OtherErrorCode {
-		public static final String BASE_CODE = "[OTHER ERROR]";//前缀
+		public static final String BASE_CODE = "[OTHER_ERROR]";//前缀
 		/**
 		 * 验证码错误
 		 */
-		public static final String CAPTCHA_ERROR = BASE_CODE + "CAPTCHA ERROR";
+		public static final String CAPTCHA_ERROR = BASE_CODE + "CAPTCHA_ERROR";
 	}
 	
 

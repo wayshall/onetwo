@@ -2,6 +2,7 @@ package org.onetwo.plugins.security.common;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.SessionStorer;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class SecurityContext implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(SecurityPluginUtils.existServerConfig() || SecurityPluginUtils.existClientConfig()){
-			SsoConfigInitializer init = new SsoConfigInitializer();
+			SecurityConfigInitializer init = new SecurityConfigInitializer();
 			SsoConfig ssoConfig = SpringUtils.getBean(applicationContext, SsoConfig.class);
-			init.setSsoConfig(ssoConfig);
+			init.setSecurityConfig(ssoConfig);
 			SpringUtils.registerSingleton(applicationContext, "ssoConfigInitializer", init);
 		}
 	}
