@@ -6,7 +6,7 @@ import org.onetwo.common.fish.plugin.PluginSupportedController;
 import org.onetwo.common.spring.web.mvc.view.ControllerJsonFilter;
 import org.onetwo.common.web.s2.security.config.annotation.Authentic;
 
-@Authentic(redirect="/plugin-security/client/login", checkTimeout=false)
+@Authentic(checkTimeout=false)
 abstract public class AdminBaseController extends PluginSupportedController implements ControllerJsonFilter {
 
 	@Override

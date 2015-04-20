@@ -46,6 +46,7 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String TOKEN_TIMEOUT = "token.timeout";
 	public static final String TOKEN_TIMEOUT_CHECKTIME = "token.timeout.checktime";
 	public static final Integer DEFAULT_TOKEN_TIMEOUT = 60*4;
+	public static final String MESSAGE_CACHE_SECOND = "message.cache.second";
 
 	public static final String COOKIE_DOMAIN = "cookie.domain";
 	public static final String COOKIE_PATH = "cookie.path";
@@ -66,8 +67,8 @@ public class BaseSiteConfig extends AppConfig {
 	 * 默认为false，没有注解的不检查
 	 */
 	public static final String PREVENT_REPEATE_SUBMIT_DEFAULT = "prevent.repeate.sbumit.default";
-	public static final String LOGIN_URL = "login.url";
-	public static final String LOGOUT_URL = "logout.url";
+//	public static final String LOGIN_URL = "login.url";
+//	public static final String LOGOUT_URL = "logout.url";
 	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 
@@ -398,13 +399,13 @@ public class BaseSiteConfig extends AppConfig {
 		return getBoolean(THEME_JSUI_KEY, false);
 	}
 	
-	public String getLoginUrl(){
+	/*public String getLoginUrl(){
 		return getProperty(LOGIN_URL);
 	}
 	
 	public String getLogoutUrl(){
 		return getProperty(LOGOUT_URL);
-	}
+	}*/
 	public String getSecurityNopermissionView(){
 		return getProperty(SECURITY_NOPERMISSION_VIEW);
 	}
@@ -447,5 +448,19 @@ public class BaseSiteConfig extends AppConfig {
 	public boolean isViewJspTheme(){
 		return getBoolean(VIEW_JSP_THEME, false);
 	}*/
+	
+	public int getMessageCacheSecond(){
+		if(containsKey(MESSAGE_CACHE_SECOND)){
+			return getInt(MESSAGE_CACHE_SECOND);
+		}else{
+			if(isDev()){
+				return 0;
+			}else if(isProduct()){
+				return -1;//no cache
+			}else{
+				return 10;
+			}
+		}
+	}
 
 }
