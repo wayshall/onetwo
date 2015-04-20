@@ -22,7 +22,6 @@ public class ClientSSOUserServiceLoader extends SpringConfigApplicationContextLo
 	}
 	
 	@Override
-
 	protected AnnotationConfigWebApplicationContext createContext(){
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.register(ClientSSOUserServiceContext.class);

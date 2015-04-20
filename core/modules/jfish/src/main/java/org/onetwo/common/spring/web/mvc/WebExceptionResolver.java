@@ -16,6 +16,7 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
@@ -64,7 +65,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	private List<String> notifyThrowables = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
 
-	protected String defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
+//	protected String defaultRedirect;
 	
 	public WebExceptionResolver(){
 		setOrder(RESOLVER_ORDER);
@@ -72,6 +73,11 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		initResolver();
+	}
+	
+	protected void initResolver(){
+//		defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	}
 	
 	private boolean isAjaxRequest(HttpServletRequest request){
@@ -267,9 +273,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	protected String getLoginView(HttpServletRequest request, ModelMap model){
 		model.addAttribute(PRE_URL, getPreurl(request));
-		if(StringUtils.isBlank(defaultRedirect))
-			return JFishWebUtils.redirect(defaultRedirect);
-		return JFishWebUtils.redirect("login");
+		/*if(StringUtils.isBlank(defaultRedirect))
+			return JFishWebUtils.redirect(defaultRedirect);*/
+		return JFishWebUtils.redirect("/login");
 		/*AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
 		String view = context!=null?context.getConfig().getRedirect():"";
 		return view;*/
@@ -330,7 +336,7 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	
 	protected Locale getLocale(){
 //		return JFishWebUtils.getLocale();
-		return JFishWebUtils.DEFAULT_LOCAL;
+		return JFishUtils.getDefaultLocale();
 	}
 
 	protected String getMessage(String code, Object[] args) {

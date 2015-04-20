@@ -10,6 +10,8 @@ import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
+import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.spring.web.reqvalidator.JFishUploadFileTypesChecker;
@@ -26,11 +28,14 @@ import org.onetwo.common.web.view.ThemeSetting;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
@@ -51,8 +56,14 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 //@Import({JFishProfiles.class, DirFreemarkerConfig.class})
 @Import({JFishProfiles.class})
 public class JFishContextConfig extends BaseApplicationContextSupport {
+	public static class ContextBeanNames {
+		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
+	}
 	
 	public static final String MVC_CONFIG = "mvcConfig";
+	
+	@javax.annotation.Resource
+	private ApplicationContext applicationContext;
 
 //	@Value("${jfish.base.packages}")
 //	private String jfishBasePackages;
@@ -203,6 +214,25 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 			RequestMappingHandlerAdapter ha = new RequestMappingHandlerAdapter();
 			return ha;
 		}
+	}
+	
+
+	@Bean
+	public CodeMessager codeMessager(){
+		CodeMessager messager = SpringUtils.getBean(applicationContext, CodeMessager.class);;
+		if(messager==null){
+			messager = new DefaultCodeMessager();
+		}
+		return messager;
+	}
+	
+
+	@Bean(name=ContextBeanNames.EXCEPTION_MESSAGE)
+	public MessageSource exceptionMessageSource(){
+		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
+		ms.setCacheSeconds(BaseSiteConfig.getInstance().getMessageCacheSecond());
+		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
+		return ms;
 	}
 
 }

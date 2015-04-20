@@ -15,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  */
 public interface JFishPluginManager {
+	PluginNameParser PLUGINNAME_PARSER = new PluginNameParser();
 
 	public String JFISH_PLUGIN_MANAGER_KEY = "org.onetwo.common.fish.plugin.JFishPluginManager";
 

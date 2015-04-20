@@ -7,8 +7,8 @@ import org.onetwo.common.sso.SSOService;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.SecurityPlugin;
-import org.onetwo.plugins.security.common.DefaultSSOServiceImpl;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.DefaultSSOServiceImpl;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +20,7 @@ import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 @Configuration
 public class SsoClientContext implements InitializingBean {
 
-	private static final String SSO_CLIENT_BASE = "/sso/client-config";
+	private static final String SSO_CLIENT_BASE = "/plugins/security/client-config";
 	public static final String SSO_CLIENT_CONFIG_PATH = SSO_CLIENT_BASE + ".properties";
 
 	@Resource
@@ -36,7 +36,7 @@ public class SsoClientContext implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		SecurityPlugin.getInstance().setSsoConfig(ssoClientConfig);
+		SecurityPlugin.getInstance().setSecurityConfig(ssoClientConfig);
 	}
 
 	@Bean
