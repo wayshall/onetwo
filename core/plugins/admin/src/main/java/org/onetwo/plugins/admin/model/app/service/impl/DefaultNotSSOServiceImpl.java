@@ -3,10 +3,13 @@ package org.onetwo.plugins.admin.model.app.service.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.exception.LoginException;
+import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
 import org.onetwo.common.sso.LoginParams;
 import org.onetwo.common.utils.DefaultUserDetail;
 import org.onetwo.common.utils.UserDetail;
@@ -34,6 +37,8 @@ public class DefaultNotSSOServiceImpl extends AbstractUserLoginServiceImpl<Admin
 	@Override
 	protected ValidatableUser<AdminUserEntity> findUniqueUser(LoginParams loginParams) {
 		final AdminUserEntity userData = baseEntityManager.findUnique(AdminUserEntity.class, "userName", loginParams.getUserName(), "status:!=", UserStatus.DELETE);;
+		if(userData==null)
+			throw new LoginException("没有此用户或密码错误！", LoginErrorCode.USER_NOT_FOUND);
 		return new ValidatableUser<AdminUserEntity>() {
 
 			@Override
@@ -70,8 +75,8 @@ public class DefaultNotSSOServiceImpl extends AbstractUserLoginServiceImpl<Admin
 		for(AdminRoleEntity role : user.getRoles()){
 			if(role.isSystemRoot()){
 				permlist = adminAppServiceImpl.findAppPermissions(permissionConfig.getAppCode());//this.baseEntityManager.findByProperties(PermissionEntity.class, "code:like", Menu.class.getSimpleName()+"%", "hidden", false);
-				String[] perms = (String[])permlist.stream().map(e-> e.getCode()).toArray();
-				loginUser.setPermissions(Arrays.asList(perms));
+//				List<String> perms = permlist.stream().map(e-> e.getCode()).collect(Collectors.toList());
+//				loginUser.setPermissions(perms);
 				break;
 			}else{
 				if(permlist==null){
@@ -81,8 +86,8 @@ public class DefaultNotSSOServiceImpl extends AbstractUserLoginServiceImpl<Admin
 				permlist.addAll(perms);
 			}
 		}
-		String[] perms = (String[])permlist.stream().map(e-> e.getCode()).toArray();
-		loginUser.setPermissions(Arrays.asList(perms));
+		List<String> perms = permlist.stream().map(e-> e.getCode()).collect(Collectors.toList());
+		loginUser.setPermissions(perms);
 		
 		return loginUser;
 	}

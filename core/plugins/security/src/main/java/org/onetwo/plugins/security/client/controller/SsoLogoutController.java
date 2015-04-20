@@ -10,7 +10,7 @@ import org.onetwo.common.spring.web.mvc.DataResult;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.plugins.security.client.vo.SsoLogoutParams;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 

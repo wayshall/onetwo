@@ -10,9 +10,9 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.SecurityPlugin;
-import org.onetwo.plugins.security.common.DefaultSSOServiceImpl;
-import org.onetwo.plugins.security.common.SsoConfig;
 import org.onetwo.plugins.security.server.service.impl.ServerSSOUserServiceImpl;
+import org.onetwo.plugins.security.sso.DefaultSSOServiceImpl;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -25,7 +25,7 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 @Configuration
 public class SsoServerContext implements InitializingBean {
 
-	private static final String SSO_SERVER_BASE = "/sso/server-config";
+	private static final String SSO_SERVER_BASE = "/plugins/security/server-config";
 	public static final String SSO_SERVER_CONFIG_PATH = SSO_SERVER_BASE + ".properties";
 	public static final String SSO_USERSERVICE_EXPORTER_NAME = SecurityPluginUtils.SSO_USERSERVICE_EXPORTER_NAME;
 	
@@ -38,7 +38,7 @@ public class SsoServerContext implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		SecurityPlugin.getInstance().setSsoConfig(ssoServerConfig);
+		SecurityPlugin.getInstance().setSecurityConfig(ssoServerConfig);
 	}
 	
 	@Bean
