@@ -16,10 +16,10 @@ import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils.F;
 import org.onetwo.common.db.sqlext.SQLKeys;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
+import org.onetwo.common.ejb.jpa.JPASQLSymbolManager;
 import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.list.L;
-import org.onetwo.common.utils.map.M;
 
 import test.entity.UserEntity;
 
@@ -30,9 +30,6 @@ public class ExtQueryImplTest {
 	
 	private SQLSymbolManagerFactory sqlSymbolManagerFactory;
 	
-	private class Magazine {
-	}
-
 	@Before
 	public void setup(){
 		this.properties = new LinkedHashMap<Object, Object>();
@@ -40,6 +37,7 @@ public class ExtQueryImplTest {
 		sqlSymbolManagerFactory = SQLSymbolManagerFactory.getInstance();
 //		sqlSymbolManagerFactory.register(EntityManagerProvider.JPA, JPASQLSymbolManager.create());
 		sqlSymbolManagerFactory.register(EntityManagerProvider.Hibernate, HibernateSQLSymbolManagerImpl.create());
+		sqlSymbolManagerFactory.register(EntityManagerProvider.JPA, JPASQLSymbolManager.create());
 	}
 
 	@Test
@@ -108,7 +106,7 @@ public class ExtQueryImplTest {
 	
 	@Test
 	public void testEmpty(){
-
+		
 		this.properties.put("pages:is empty", true);
 		this.properties.put("types:is empty", false);
 		this.properties.put(K.DEBUG, true);
@@ -213,7 +211,7 @@ public class ExtQueryImplTest {
 		q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
 		q.build();
 		
-		sql = "select new UserEntity(object.aa, object.bb) from Object object where object.aa = :object_aa0";
+		sql = "select new test.entity.UserEntity(object.aa, object.bb) from Object object where object.aa = :object_aa0";
 		paramsting = "{object_aa0=bb}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
@@ -503,10 +501,11 @@ public class ExtQueryImplTest {
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
 
-		properties = M.c("createTime:date in", ":today",
+		properties = CUtils.asLinkedMap(
+				"lastUpdateTime:date in", ":yesterday", 
+				"createTime:date in", ":today",
 						"&lower(name):like", "tom%", 
 						"age:=", 17, 
-						"lastUpdateTime:date in", ":yesterday", 
 						"regiestTime:date in", new Date());
 		properties.put(K.DESC, "id");
 		
@@ -524,7 +523,7 @@ public class ExtQueryImplTest {
 	@Test
 	public void testAnd(){
 		properties.put("name:like", "way");
-		properties.put(":and", M.c(new String[]{"age"}, new Object[]{17, 18}));
+		properties.put(":and", CUtils.asMap(new String[]{"age"}, new Object[]{17, 18}));
 
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
@@ -605,7 +604,7 @@ public class ExtQueryImplTest {
 	@Test
 	public void testSql(){
 		this.properties.put("name:is null", true);
-		this.properties.put(K.RAW_QL, L.aslist("author=:author and (name=:name1 or name=name2)", "author", "testAuthor", "name1", "testName", "name2", "testName2"));
+		this.properties.put(K.RAW_QL, CUtils.aslist("author=:author and (name=:name1 or name=name2)", "author", "testAuthor", "name1", "testName", "name2", "testName2"));
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
@@ -645,8 +644,8 @@ public class ExtQueryImplTest {
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createDeleteQuery(Magazine.class, properties);
 		q.build();
 		
-		String sql = "delete from Magazine magazine where magazine.nickname not in ( :magazine_nickname0)";
-		String paramsting = "{magazine_nickname0=way}";
+		String sql = "delete from org.onetwo.common.db.Magazine where nickname not in ( :nickname0)";
+		String paramsting = "{nickname0=way}";
 		System.out.println("testHas: " + q.getSql().trim());
 //		System.out.println("testHas: " + q.getParamsValue().getValues().toString());
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
