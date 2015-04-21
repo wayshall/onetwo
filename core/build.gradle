@@ -208,6 +208,7 @@ project("${projectSpring}"){
 	ext.dozerVersion = "5.4.0"
 	ext.javatuplesVersion = "1.2"
 	ext.freemarkerVersion = "2.3.19"
+	ext.ehcacheVersion = "2.6.0"
 	
 	dependencies {
 		compile(project(":${projectCommon}"))
@@ -230,6 +231,8 @@ project("${projectSpring}"){
 		compile("net.sf.dozer:dozer:${dozerVersion}")
 		compile("org.javatuples:javatuples:${javatuplesVersion}")
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
+	
+		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
 		
 		compile("junit:junit:${junitVersion}")
 	}
@@ -327,12 +330,9 @@ project("${projectPoi}"){
 project("$projectOrm"){
 	description = "onetwo orm"
 	
-	ext.ehcacheVersion = "2.6.0"
-	
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
 		
@@ -346,7 +346,6 @@ project("$projectJfish") {
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile(project(":$projectOrm"))
 		compile(project(":$projectWeb"))
 		compile(project(":$projectSecurity"))
 		compile(project(":$projectJackson"))

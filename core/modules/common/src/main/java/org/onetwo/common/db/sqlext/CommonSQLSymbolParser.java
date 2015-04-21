@@ -21,10 +21,10 @@ public class CommonSQLSymbolParser extends AbstractSupportedSubQuerySQLSymbolPar
 		this(sqlSymbolManager, symbol, symbol);
 	}
 	
-	CommonSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol, boolean like){
+	/*CommonSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol, boolean like){
 		this(sqlSymbolManager, symbol, symbol);
 		this.like = like;
-	}
+	}*/
 	
 	CommonSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol, String symbolDesc){
 		super(sqlSymbolManager, symbol);
@@ -35,8 +35,8 @@ public class CommonSQLSymbolParser extends AbstractSupportedSubQuerySQLSymbolPar
 		return symbol;
 	}
 
-	protected void processKey(String field, SQLKeys key, StringBuilder hql){
+	/*protected void processKey(String field, SQLKeys key, StringBuilder hql){
 		hql.append(field).append(" ").append(symbolAlias).append(" ").append(key.getValue()).append(" ");
-	}
+	}*/
 
 }

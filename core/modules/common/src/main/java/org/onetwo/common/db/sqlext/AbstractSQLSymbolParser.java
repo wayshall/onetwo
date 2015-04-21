@@ -7,8 +7,7 @@ import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -21,9 +20,9 @@ import org.slf4j.Logger;
  */
 @SuppressWarnings({"rawtypes"})
 abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
-	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected boolean like;
+//	protected boolean like;
 	protected final String symbol;
 	
 	AbstractSQLSymbolParser(String symbol){
@@ -57,20 +56,13 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 	}
 	
 	public String parse(String symbol, QueryField qfield){
+		if(StringUtils.isBlank(symbol))
+			LangUtils.throwBaseException("symbol can not be blank : " + symbol);
+		
 		String field = qfield.getActualFieldName();
 		Object value = qfield.getValue();
 		ParamValues paramValues = qfield.getExtQuery().getParamsValue();
 		IfNull ifNull = qfield.getExtQuery().getIfNull();
-		/*if(value==null || (value instanceof String && StringUtils.isBlank(value.toString())))
-			return null;*/
-		
-//		List list = LangUtils.asList(value);//MyUtils.asList(value);
-		/*if(list==null || list.isEmpty())
-			return null;*/
-		
-		/*if(ExtQueryUtils.isContinueByCauseValue(list, ifNull)){
-			return null;
-		}*/
 		
 		List list = processValue(field, value, ifNull, true);
 		
@@ -86,12 +78,20 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 		for(int i=0; i<list.size(); i++){
 			v = list.get(i);
 
-			if(isLike()){
+			/*if(isLike()){
 				if(!(v instanceof String))
 					throw new ServiceException("the symbol is [like], the value must a string type!");
 				v = ExtQueryUtils.getLikeString(list.get(i).toString());
 				process(field, symbol, i, v, hql, paramValues);
 			}else if(v instanceof SQLKeys){
+				SQLKeys key = (SQLKeys) v;
+//				hql.append(field).append(" ").append(symbolAlias).append(" ").append(key.getValue()).append(" ");
+				this.processKey(field, symbol, key, hql);
+			}
+			else{
+				process(field, symbol, i, v, hql, paramValues);
+			}*/
+			if(v instanceof SQLKeys){
 				SQLKeys key = (SQLKeys) v;
 //				hql.append(field).append(" ").append(symbolAlias).append(" ").append(key.getValue()).append(" ");
 				this.processKey(field, symbol, key, hql);
@@ -110,8 +110,6 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 	}
 	
 	protected void process(String field, String symbol, int index, Object value, StringBuilder sqlScript, ParamValues paramValues){
-		if(StringUtils.isBlank(symbol))
-			LangUtils.throwBaseException("symbol can not be blank : " + symbol);
 		sqlScript.append(field).append(" ").append(symbol).append(" ");
 		paramValues.addValue(field, value, sqlScript);
 		sqlScript.append(" ");
@@ -134,8 +132,8 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 		return f;
 	}
 	
-	public boolean isLike(){
+	/*public boolean isLike(){
 		return like;
-	}
+	}*/
 
 }
