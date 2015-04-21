@@ -104,7 +104,7 @@ public interface ExtQuery {
 
 //	public void setParams(Map params);
 	
-	public Map getParams();
+	public Map<Object, Object> getParams();
 	
 
 	public ParamValues getParamsValue();

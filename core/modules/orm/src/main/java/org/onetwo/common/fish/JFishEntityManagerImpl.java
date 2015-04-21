@@ -21,12 +21,10 @@ import org.onetwo.common.fish.exception.JFishEntityNotFoundException;
 import org.onetwo.common.fish.spring.JFishDao;
 import org.onetwo.common.fish.spring.JFishDaoImplementor;
 import org.onetwo.common.fish.spring.JFishNamedFileQueryManagerImpl;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,10 +32,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	private SQLSymbolManager SQLSymbolManager;
 
@@ -274,7 +272,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public void findPage(Class entityClass, Page page, Object... properties) {
-		jfishDao.findPageByProperties(entityClass, page, CUtils.asOrCreateLinkedHashMap(properties));
+		jfishDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
 	}
 
 	public <T> void findPage(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
@@ -313,7 +311,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return jfishDao.findUniqueByProperties(entityClass, CUtils.asOrCreateLinkedHashMap(properties));
+		return jfishDao.findUniqueByProperties(entityClass, CUtils.asLinkedMap(properties));
 	}
 
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
@@ -331,7 +329,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
-		return findByProperties(entityClass, CUtils.asOrCreateLinkedHashMap(properties));
+		return findByProperties(entityClass, CUtils.asLinkedMap(properties));
 	}
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
@@ -353,7 +351,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public Number countRecord(Class entityClass, Object... params) {
-		return countRecord(entityClass, CUtils.asOrCreateLinkedHashMap(params));
+		return countRecord(entityClass, CUtils.asLinkedMap(params));
 	}
 
 	@Override
