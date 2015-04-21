@@ -75,6 +75,7 @@ dependencies {
 	compile("org.onetwo:onetwo-jfish:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
 	compile("org.onetwo:onetwo-poi:${onetwoVersion}")
+	compile("org.onetwo:onetwo-ejb:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-session:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-fmtag:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-admin:${onetwoVersion}")

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.onetwo.common.db.sqlext.ExtQueryListener;
@@ -12,6 +13,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -285,17 +287,42 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		
 		// int index = 0;
 		boolean hasComma = K.JOIN_IN.equals(joinKey);
-		for (String j : fjoin) {
-			String[] jstrs = StringUtils.split(j, ":");
-			if(hasComma){
-				joinBuf.append(", ");
+		for (Object obj : fjoin) {
+			if(obj instanceof String){
+				String j = obj.toString();
+				String[] jstrs = StringUtils.split(j, ":");
+				if(hasComma){
+					joinBuf.append(", ");
+				}
+				if(jstrs.length>1)//alias
+					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(checkFieldNameValid(jstrs[0])).append(hasParentheses?") ":" ").append(jstrs[1]).append(" ");
+				else
+					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(checkFieldNameValid(j)).append(hasParentheses?") ":" ");
+			}else if(obj.getClass().isArray()){
+				joinBuf.append("on ( ");
+				Map<Object, Object>  onCauses = CUtils.asLinkedMap((Object[])obj);
+				int index = 0;
+				for(Entry<Object, Object> cause : onCauses.entrySet()){
+					if(index!=0)
+						joinBuf.append("and ");
+					joinBuf.append(getFieldNameIfNecessary(cause.getKey()))
+								.append("=")
+								.append(getFieldNameIfNecessary(cause.getValue()))
+								.append(" ");
+					index++;
+				}
+				joinBuf.append(") ");
 			}
-			if(jstrs.length>1)//alias
-				joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(getFieldName(jstrs[0])).append(hasParentheses?") ":" ").append(jstrs[1]).append(" ");
-			else
-				joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(getFieldName(j)).append(hasParentheses?") ":" ");
 		}
 		return this;
+	}
+	
+	public String getFieldNameIfNecessary(Object field) {
+		Assert.notNull(field);
+		String f = field.toString();
+		if(f.indexOf('.')!=-1)
+			return f;
+		return super.getFieldName(f);
 	}
 	
 	
@@ -307,7 +334,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		
 		boolean hasOrderBy = false;
 		List<String> orderbys = new ArrayList<String>(3);
-		for(Map.Entry entry : (Set<Map.Entry>)this.params.entrySet()){
+		for(Map.Entry<Object, Object> entry : (Set<Map.Entry<Object, Object>>)this.params.entrySet()){
 			if(K.ORDER_BY_MAP.containsKey(entry.getKey())){
 				orderbys.add((String)entry.getKey());
 			}
