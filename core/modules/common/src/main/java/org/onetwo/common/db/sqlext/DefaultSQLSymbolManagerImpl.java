@@ -75,20 +75,20 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	 * @return
 	 */
 	public SQLSymbolManager initParser() {
-		register(new CommonSQLSymbolParser(this, FieldOP.eq, "is"))
+		register(new CommonSQLSymbolParser(this, FieldOP.eq))
 		.register(new BooleanValueSQLSymbolParser(this, FieldOP.is_null, "is null", "is not null"))
 		.register(new CommonSQLSymbolParser(this, FieldOP.gt))
 		.register(new CommonSQLSymbolParser(this, FieldOP.ge))
 		.register(new CommonSQLSymbolParser(this, FieldOP.lt))
 		.register(new CommonSQLSymbolParser(this, FieldOP.le))
-		.register(new CommonSQLSymbolParser(this, FieldOP.neq, "is not"))
-		.register(new CommonSQLSymbolParser(this, FieldOP.neq2, "is not"))
+		.register(new CommonSQLSymbolParser(this, FieldOP.neq))
+		.register(new CommonSQLSymbolParser(this, FieldOP.neq2))
 //		.register(new CommonSQLSymbolParser(this, FieldOP.like, true))
 //		.register(new CommonSQLSymbolParser(this, FieldOP.not_like, true))
 		.register(new LikeSQLSymbolParser(this, FieldOP.like))
-		.register(new LikeSQLSymbolParser(this, FieldOP.like2))
+		.register(new LikeSQLSymbolParser(this, FieldOP.like2, FieldOP.like))
 		.register(new LikeSQLSymbolParser(this, FieldOP.not_like))
-		.register(new LikeSQLSymbolParser(this, FieldOP.not_like2))
+		.register(new LikeSQLSymbolParser(this, FieldOP.not_like2, FieldOP.not_like))
 		.register(new InSymbolParser(this, FieldOP.in))
 		.register(new InSymbolParser(this, FieldOP.not_in))
 		.register(new DateRangeSymbolParser(this, FieldOP.date_in));
@@ -114,7 +114,7 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	@Override
 	public SQLSymbolManager register(HqlSymbolParser parser) {
 		Assert.notNull(parser);
-		this.parser.put(parser.getSymbol(), parser);
+		this.parser.put(parser.getMappedOperator(), parser);
 		return this;
 	}
 
