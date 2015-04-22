@@ -74,6 +74,7 @@ public class TomcatServer {
 				if(!plugin.isWebappPlugin()){
 					return;
 				}
+				//plugin-monitor
 				String webappPath = PLUGIN_WEBAPP_BASE_PATH + plugin.getContextPath();
 				Resource res = ResourceUtils.getResource(webappPath);
 				logger.info("found web plugin["+plugin+"] : {}", res.getURI().getPath() );
