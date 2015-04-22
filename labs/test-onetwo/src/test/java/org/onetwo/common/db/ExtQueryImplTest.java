@@ -105,6 +105,35 @@ public class ExtQueryImplTest {
 	}
 	
 	@Test
+	public void testLike2(){
+
+		this.properties.put("name:=~", "way%");
+		this.properties.put(K.DEBUG, true);
+		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
+		q.build();
+		
+		String sql = "select mag from Magazine mag where mag.name like :mag_name0 order by mag.id desc";
+		String paramsting = "{mag_name0=way%}";
+//		System.out.println("testNull2: " + q.getSql().trim());
+//		System.out.println("testNull2: " + q.getParamsValue().getValues().toString());
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+
+		this.properties.clear();
+		this.properties.put("name:!=~", "way%");
+		this.properties.put(K.DEBUG, true);
+		q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
+		q.build();
+		
+		sql = "select mag from Magazine mag where mag.name not like :mag_name0";
+		paramsting = "{mag_name0=way%}";
+		System.out.println("testLike2: " + q.getSql().trim());
+		System.out.println("testLike2: " + q.getParamsValue().getValues().toString());
+		Assert.assertEquals(sql.trim(), q.getSql().trim());
+		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
+	}
+	
+	@Test
 	public void testEmpty(){
 		
 		this.properties.put("pages:is empty", true);
@@ -139,7 +168,7 @@ public class ExtQueryImplTest {
 //		System.out.println("testCommon:" + q.getSql().trim());
 //		System.out.println("testCommon:" + q.getParamsValue().getValues().toString());
 		
-		String sql = "select object from Object object left join fetch object.bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.id != ( select sub_long.id from Long sub_long where sub_long.aa = :sub_long_aa4 and sub_long.bb = :sub_long_bb5 ) order by object.name desc, object.text desc, object.nameid desc, object.textid asc";
+		String sql = "select object from Object object left join fetch bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.id != ( select sub_long.id from Long sub_long where sub_long.aa = :sub_long_aa4 and sub_long.bb = :sub_long_bb5 ) order by object.name desc, object.text desc, object.nameid desc, object.textid asc";
 		String paramsting = "{object_id0=11, object_name1=2, object_column_id2=222, object_column_id3=111, sub_long_aa4=1, sub_long_bb5=cc}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
@@ -157,7 +186,7 @@ public class ExtQueryImplTest {
 
 //		System.out.println("testCommonIfNullCalm:" + q.getSql().trim());
 //		System.out.println("testCommonIfNullCalm:" + q.getParamsValue().getValues().toString());
-		String sql = "select object from Object object left join fetch object.bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.userName = :object_userName4 order by object.id desc";
+		String sql = "select object from Object object left join fetch bid where ( object.id = :object_id0 or object.name = :object_name1 ) and object.column.id in ( :object_column_id2, :object_column_id3) and object.userName = :object_userName4 order by object.id desc";
 		String paramsting = "{object_id0=11, object_name1=2, object_column_id2=222, object_column_id3=111, object_userName4=}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
@@ -304,13 +333,13 @@ public class ExtQueryImplTest {
 	public void testFetch(){
 		properties.put(K.FETCH, "cc");
 		properties.put("aa", "bb");
-		properties.put("cc", 22);
+		properties.put(".cc.cc2", 22);
 		
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Object.class, properties);
 		q.build();
 		
-		String sql = "select object from Object object left join fetch object.cc where object.aa = :object_aa0 and object.cc = :object_cc1 order by object.id desc";
-		String paramsting = "{object_aa0=bb, object_cc1=22}";
+		String sql = "select object from Object object left join fetch cc where object.aa = :object_aa0 and cc.cc2 = :cc_cc21 order by object.id desc";
+		String paramsting = "{object_aa0=bb, cc_cc21=22}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
 	}
@@ -324,7 +353,7 @@ public class ExtQueryImplTest {
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, properties);
 		q.build();
 		
-		String sql = "select magazine from Magazine magazine join fetch magazine.author auth join fetch magazine.pages page where magazine.aa = :magazine_aa0 and magazine.cc = :magazine_cc1 order by magazine.id desc";
+		String sql = "select magazine from Magazine magazine join fetch author auth join fetch pages page where magazine.aa = :magazine_aa0 and magazine.cc = :magazine_cc1 order by magazine.id desc";
 		String paramsting = "{magazine_aa0=bb, magazine_cc1=22}";
 		
 //		System.out.println("testJoinFetch: " + q.getSql().trim());
@@ -337,13 +366,13 @@ public class ExtQueryImplTest {
 	@Test
 	public void testJoin(){
 		properties.put(K.DISTINCT, null);
-		properties.put(K.JOIN, new String[]{"articles:art", K.NO_PREFIX+"art.author:auth"});
-		properties.put(K.NO_PREFIX+"auth.lastName", "Grisham");
+		properties.put(K.JOIN, new String[]{"articles:art", "art.author:auth"});
+		properties.put("auth.lastName", "Grisham");
 
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
-		String sql = "select distinct mag from Magazine mag join mag.articles art join art.author auth where auth.lastName = :auth_lastName0 order by mag.id desc";
+		String sql = "select distinct mag from Magazine mag join articles art join art.author auth where auth.lastName = :auth_lastName0 order by mag.id desc";
 		String paramsting = "{auth_lastName0=Grisham}";
 		
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
@@ -354,13 +383,13 @@ public class ExtQueryImplTest {
 	public void testLeftJoin(){
 		properties.put(K.DISTINCT, null);
 		properties.put(K.JOIN, new String[]{"user:u", "role:r"});
-		properties.put(K.LEFT_JOIN, new String[]{"articles:art", K.NO_PREFIX+"art.author:auth"});
-		properties.put(K.NO_PREFIX+"auth.lastName", "Grisham");
+		properties.put(K.LEFT_JOIN, new String[]{"articles:art", "art.author:auth"});
+		properties.put("auth.lastName", "Grisham");
 
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
-		String sql = "select distinct mag from Magazine mag join mag.user u join mag.role r left join mag.articles art left join art.author auth where auth.lastName = :auth_lastName0 order by mag.id desc";
+		String sql = "select distinct mag from Magazine mag join user u join role r left join articles art left join art.author auth where auth.lastName = :auth_lastName0 order by mag.id desc";
 		String paramsting = "{auth_lastName0=Grisham}";
 
 //		System.out.println("testLeftJoin: " + q.getSql().trim());
@@ -378,7 +407,7 @@ public class ExtQueryImplTest {
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
-		String sql = "select mag from Magazine mag , in(mag.articles) art where art.lastName = :art_lastName0 order by mag.id desc";
+		String sql = "select mag from Magazine mag , in(articles) art where art.lastName = :art_lastName0 order by mag.id desc";
 		String paramsting = "{art_lastName0=Grisham}";
 		Assert.assertEquals(sql.trim(), q.getSql().trim());
 		Assert.assertEquals(paramsting, q.getParamsValue().getValues().toString());
@@ -431,7 +460,7 @@ public class ExtQueryImplTest {
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
-		String sql = "select mag from Magazine mag , in(mag.articles) art where art.lastName = :art_lastName0 and lower(mag.name) = :lower_mag_name_1 and substring(mag.name, 5, 1) = :substring_mag_name_5_1_2 order by mag.id desc ";
+		String sql = "select mag from Magazine mag , in(articles) art where art.lastName = :art_lastName0 and lower(mag.name) = :lower_mag_name_1 and substring(mag.name, 5, 1) = :substring_mag_name_5_1_2 order by mag.id desc ";
 		String paramsting = "{art_lastName0=Grisham, lower_mag_name_1=way, substring_mag_name_5_1_2=w}";
 		
 //		System.out.println("testFunc sql: " + q.getSql().trim());
@@ -451,7 +480,7 @@ public class ExtQueryImplTest {
 		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();
 		
-		String sql = "select mag from Magazine mag , in(mag.articles) art where art.lastName = :art_lastName0 and lower(mag.name) = :lower_mag_name_1 and substring(mag.name, 5, 1) = :substring_mag_name_5_1_2 order by mag.id desc";
+		String sql = "select mag from Magazine mag , in(articles) art where art.lastName = :art_lastName0 and lower(mag.name) = :lower_mag_name_1 and substring(mag.name, 5, 1) = :substring_mag_name_5_1_2 order by mag.id desc";
 		String paramsting = "{art_lastName0=Grisham, lower_mag_name_1=way, substring_mag_name_5_1_2=w}";
 //		System.out.println("testFunc2 sql: " + q.getSql().trim());
 //		System.out.println("testFunc2 values: " + q.getParamsValue().getValues());

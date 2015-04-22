@@ -6,8 +6,8 @@ import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.QueryField;
-import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -23,27 +23,40 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	protected boolean like;
-	protected final String symbol;
+	protected final String mappedOperator;
+	protected final String actualOperator;
 	
 	AbstractSQLSymbolParser(String symbol){
-		this.symbol = symbol;
+		Assert.hasText(symbol);
+		this.mappedOperator = symbol;
+		this.actualOperator = symbol;
 	}
 	
-	public String getSymbol() {
-		return symbol;
+	AbstractSQLSymbolParser(String mappedOperator, String actualOperator){
+		Assert.hasText(mappedOperator);
+		Assert.hasText(actualOperator);
+		this.mappedOperator = mappedOperator;
+		this.actualOperator = actualOperator;
+	}
+	
+	public String getMappedOperator() {
+		return mappedOperator;
 	}
 
 	@Override
 	public String parse(QueryField field) {
-		return parse(getSymbol(field), field);
+		return parse(getActualDbOperator(field), field);
 	}
 
-	abstract public String getSymbol(QueryField field);
+	public String getActualDbOperator(QueryField field){
+		return actualOperator;
+	}
 	/*public String parse(String field, Object value, ParamValues paramValues, IfNull ifNull){
 		return parse(field, null, value, paramValues, ifNull);
 	}*/
 
-	protected void processKey(String field, String symbol, SQLKeys key, StringBuilder hql){
+	/*protected void processKey(String field, String symbol, SQLKeys key, StringBuilder hql){
+		//process SQLKeys
 		if(SQLKeys.Null==key){
 			if(FieldOP.eq.equals(symbol)){
 				hql.append(field).append(" is null ");
@@ -53,22 +66,22 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 				LangUtils.throwBaseException("unsupported symbol: " + symbol);
 			}
 		}
-	}
+	}*/
 	
-	public String parse(String symbol, QueryField qfield){
-		if(StringUtils.isBlank(symbol))
-			LangUtils.throwBaseException("symbol can not be blank : " + symbol);
+	public String parse(String actualOperator, QueryField qfield){
+		if(StringUtils.isBlank(actualOperator))
+			LangUtils.throwBaseException("symbol can not be blank : " + actualOperator);
 		
 		String field = qfield.getActualFieldName();
 		Object value = qfield.getValue();
 		ParamValues paramValues = qfield.getExtQuery().getParamsValue();
 		IfNull ifNull = qfield.getExtQuery().getIfNull();
 		
-		List list = processValue(field, value, ifNull, true);
+		List list = convertValues(field, value, ifNull, true);
 		
 		field = getFieldName(field);
 		StringBuilder hql = new StringBuilder();
-		if(this.subQuery(field, symbol, list, paramValues, hql)){
+		if(this.subQuery(field, actualOperator, list, paramValues, hql)){
 			return hql.toString();
 		}
 		boolean mutiValue = list.size()>1;
@@ -91,14 +104,15 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 			else{
 				process(field, symbol, i, v, hql, paramValues);
 			}*/
-			if(v instanceof SQLKeys){
+			/*if(v instanceof SQLKeys){
 				SQLKeys key = (SQLKeys) v;
 //				hql.append(field).append(" ").append(symbolAlias).append(" ").append(key.getValue()).append(" ");
 				this.processKey(field, symbol, key, hql);
 			}
 			else{
 				process(field, symbol, i, v, hql, paramValues);
-			}
+			}*/
+			process(field, actualOperator, i, v, hql, paramValues);
 			
 			if(i!=list.size()-1)
 				hql.append(" or ");
@@ -109,17 +123,17 @@ abstract public class AbstractSQLSymbolParser implements HqlSymbolParser{
 		return hql.toString();
 	}
 	
-	protected void process(String field, String symbol, int index, Object value, StringBuilder sqlScript, ParamValues paramValues){
-		sqlScript.append(field).append(" ").append(symbol).append(" ");
+	protected void process(String field, String actualOperator, int index, Object value, StringBuilder sqlScript, ParamValues paramValues){
+		sqlScript.append(field).append(" ").append(actualOperator).append(" ");
 		paramValues.addValue(field, value, sqlScript);
 		sqlScript.append(" ");
 	}
 	
-	public List processValue(Object fields, Object values, IfNull ifNull){
+	protected List convertValues(Object fields, Object values, IfNull ifNull){
 		return ExtQueryUtils.processValue(fields, values, ifNull, false);
 	}
 	
-	public List processValue(Object fields, Object values, IfNull ifNull, boolean trimNull){
+	protected List convertValues(Object fields, Object values, IfNull ifNull, boolean trimNull){
 		return ExtQueryUtils.processValue(fields, values, ifNull, trimNull);
 	}
 	

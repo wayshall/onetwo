@@ -2,6 +2,7 @@ package org.onetwo.common.db;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,6 +280,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		return this;
 	}
 
+	private Map<String, String> joinMapped = new HashMap<>();
+	
 	protected SelectExtQueryImpl buildJoin(StringBuilder joinBuf, String joinKey, Object value, boolean hasParentheses) {
 		String joinWord = K.JOIN_MAP.get(joinKey);
 		List<String> fjoin = LangUtils.asList(value);
@@ -289,15 +292,18 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		boolean hasComma = K.JOIN_IN.equals(joinKey);
 		for (Object obj : fjoin) {
 			if(obj instanceof String){
-				String j = obj.toString();
-				String[] jstrs = StringUtils.split(j, ":");
+				String joinString = obj.toString();
+				String[] jstrs = StringUtils.split(joinString, ":");
 				if(hasComma){
 					joinBuf.append(", ");
 				}
-				if(jstrs.length>1)//alias
-					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(checkFieldNameValid(jstrs[0])).append(hasParentheses?") ":" ").append(jstrs[1]).append(" ");
-				else
-					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(checkFieldNameValid(j)).append(hasParentheses?") ":" ");
+				if(jstrs.length>1){//alias
+					joinMapped.put(jstrs[1], jstrs[0]);
+					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(getJoinFieldName(jstrs[0])).append(hasParentheses?") ":" ").append(jstrs[1]).append(" ");
+				}else{
+					joinMapped.put(joinString, joinString);
+					joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(getJoinFieldName(joinString)).append(hasParentheses?") ":" ");
+				}
 			}else if(obj.getClass().isArray()){
 				joinBuf.append("on ( ");
 				Map<Object, Object>  onCauses = CUtils.asLinkedMap((Object[])obj);
@@ -317,14 +323,30 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		return this;
 	}
 	
+	public String getJoinFieldName(String f) {
+		Assert.hasText(f);
+		f = translateAt(f);
+		checkFieldNameValid(f);
+		return f;
+	}
+	
 	public String getFieldNameIfNecessary(Object field) {
 		Assert.notNull(field);
 		String f = field.toString();
 		if(f.indexOf('.')!=-1)
 			return f;
-		return super.getFieldName(f);
+		return getFieldName(f);
 	}
 	
+	public String getFieldName(String f) {
+		int firstIndex = f.indexOf('.');
+		if(firstIndex!=-1){
+			String firstWord = f.substring(0, firstIndex);
+			if(joinMapped.containsKey(firstWord))
+				return f;
+		}
+		return super.getFieldName(f);
+	}
 	
 
 	protected ExtQuery buildOrderBy() {
