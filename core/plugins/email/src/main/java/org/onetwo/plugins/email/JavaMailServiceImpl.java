@@ -51,6 +51,8 @@ public class JavaMailServiceImpl implements JavaMailService {
 		helper.setFrom(mailInfo.getFrom());
 		helper.setTo(mailInfo.getTo());
 		helper.setSubject(mailInfo.getSubject());
+		helper.setBcc(mailInfo.getBcc());
+		helper.setCc(mailInfo.getCc());
 
 		String content = this.mailTextContextParser.parseContent(mailInfo);
 		helper.setText(content, true);
@@ -75,6 +77,8 @@ public class JavaMailServiceImpl implements JavaMailService {
 		msg.setFrom(mailInfo.getFrom());
 		msg.setTo(mailInfo.getTo());
 		msg.setSubject(mailInfo.getSubject());
+		msg.setBcc(mailInfo.getBcc());
+		msg.setCc(mailInfo.getCc());
 
 		String content = this.mailTextContextParser.parseContent(mailInfo);
 		msg.setText(content);
