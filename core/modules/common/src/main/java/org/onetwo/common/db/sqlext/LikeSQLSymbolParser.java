@@ -7,7 +7,6 @@ import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParamValues;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.Assert;
 
 
 
@@ -23,14 +22,19 @@ public class LikeSQLSymbolParser extends CommonSQLSymbolParser {
 		{
 			add(FieldOP.like);
 			add(FieldOP.not_like);
+			add(FieldOP.like2);
+			add(FieldOP.not_like2);
 		}
 	};
 	
-	LikeSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol) {
-		super(sqlSymbolManager, symbol);
-		Assert.notNull(symbol);
-		if(!SYMBOL_SET.contains(symbol.toLowerCase())){
-			throw new IllegalArgumentException("only support like or not like");
+
+	LikeSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String mappedOperator) {
+		this(sqlSymbolManager, mappedOperator, mappedOperator);
+	}
+	LikeSQLSymbolParser(SQLSymbolManager sqlSymbolManager, String mappedOperator, String actualOperator) {
+		super(sqlSymbolManager, mappedOperator, actualOperator);
+		if(!SYMBOL_SET.contains(mappedOperator.toLowerCase())){
+			throw new IllegalArgumentException("only support : " + SYMBOL_SET.toString());
 		}
 	}
 

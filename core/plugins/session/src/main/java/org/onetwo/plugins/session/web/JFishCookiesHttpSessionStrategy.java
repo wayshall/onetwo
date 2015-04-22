@@ -19,6 +19,11 @@ import org.springframework.session.Session;
 import org.springframework.session.web.http.HttpSessionManager;
 import org.springframework.session.web.http.MultiHttpSessionStrategy;
 
+/***
+ * 主要是hack了cookies的path和domain信息
+ * @author wayshall
+ *
+ */
 public class JFishCookiesHttpSessionStrategy implements MultiHttpSessionStrategy, HttpSessionManager {
 	static final String DEFAULT_ALIAS = "0";
 
@@ -85,6 +90,12 @@ public class JFishCookiesHttpSessionStrategy implements MultiHttpSessionStrategy
         response.addCookie(sessionCookie);
     }
 
+    /****
+     * hack cookies path and domain
+     * @param request
+     * @param sessionIds
+     * @return
+     */
     private Cookie createSessionCookie(HttpServletRequest request,
             Map<String, String> sessionIds) {
         Cookie sessionCookie = new Cookie(cookieName,"");
