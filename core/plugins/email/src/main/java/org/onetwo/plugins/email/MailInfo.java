@@ -2,6 +2,7 @@ package org.onetwo.plugins.email;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -202,6 +203,13 @@ public class MailInfo implements Serializable{
 
 	public void setBizTag(String bizTag) {
 		this.bizTag = bizTag;
+	}
+
+	@Override
+	public String toString() {
+		return "MailInfo [from=" + from + ", to=" + Arrays.toString(to)
+				+ ", cc=" + Arrays.toString(cc) + ", bcc="
+				+ Arrays.toString(bcc) + ", sentDate=" + sentDate + "]";
 	}
 
 }
