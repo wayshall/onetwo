@@ -56,6 +56,15 @@ public class SecurityConfig extends JFishProperties {
 		return getProperty("login.view", SecurityWebPlugin.getInstance().getPluginConfig().getTemplatePath("login"));
 	}
 	
+	public boolean isLoginControllerSupported(){
+		return getBoolean("login.controller.supported", true);
+	}
+	
+	//SimpleNotSSOServiceImpl
+	public boolean isSecurityServiceSimple(){
+		return getBoolean("security.service.simple", false);
+	}
+	
 	/***
 	 * 登录成功后跳转地址
 	 * @return

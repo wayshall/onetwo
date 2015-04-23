@@ -1,7 +1,5 @@
 package org.onetwo.common.web.server.tomcat;
 
-import java.util.Properties;
-
 import javax.servlet.ServletException;
 
 import org.apache.catalina.connector.Connector;
@@ -12,20 +10,11 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.plugin.PluginInfo;
-import org.onetwo.common.spring.plugin.SpringContextPluginManager;
-import org.onetwo.common.spring.utils.ResourceUtils;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.NoIndexIt;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.PropUtils;
 import org.onetwo.common.web.server.ServerConfig;
 import org.onetwo.common.web.server.WebappConfig;
+import org.onetwo.common.web.server.events.AfterWebappAddEvent;
 import org.onetwo.common.web.server.events.WebappAddEvent;
 import org.slf4j.Logger;
-import org.springframework.core.io.Resource;
 
 import com.google.common.eventbus.EventBus;
 
@@ -48,7 +37,7 @@ public class TomcatServer {
 		return tomcat;
 	}
 
-	public static final String PLUGIN_WEBAPP_BASE_PATH = "classpath:META-INF";
+//	public static final String PLUGIN_WEBAPP_BASE_PATH = "classpath:META-INF";
 	
 	private ServerConfig webConfig;
 	private Tomcat tomcat;
@@ -59,7 +48,7 @@ public class TomcatServer {
 		this.webConfig = webConfig;
 	}
 	
-	public void scanPluginWebapps(final Tomcat tomcat){
+	/*public void scanPluginWebapps(final Tomcat tomcat){
 		JFishList<Resource> pluginFiles =ResourceUtils.scanResources(SpringContextPluginManager.PLUGIN_PATH);
 		
 
@@ -95,7 +84,7 @@ public class TomcatServer {
 		PluginInfo info = new PluginInfo();
 		info.init(prop);
 		return info;
-	}
+	}*/
 
 	public void initialize() {
 		try {
@@ -187,11 +176,23 @@ public class TomcatServer {
 			logger.info("add webapp : {} ", webapp);
 			tomcat.addWebapp(webapp.getContextPath(), webapp.getWebappDir());
 		}
+//		tomcat.addWebapp("plugin-monitor", "D:/mydev/workspace/onetwo/core/plugins/monitor/bin/META-INF/plugin-monitor");
+//		tomcat.addWebapp("plugin-monitor", "D:/mydev/workspace/xianda/iccard-sso/trunk/src/main/webapp");
 
-		this.scanPluginWebapps(tomcat);
-		eventBus.post(new WebappAddEvent(tomcat));
+//		this.scanPluginWebapps(tomcat);
+		eventBus.post(new WebappAddEvent(this));
+		eventBus.post(new AfterWebappAddEvent(this));
 	}
 	
+	public TomcatServer registerListener(EmbeddedTomcatListener listener){
+		eventBus.register(listener);
+		return this;
+	}
+	
+	public Tomcat getTomcat() {
+		return tomcat;
+	}
+
 	protected void printConnectors(){
 		Connector[] cons = tomcat.getService().findConnectors();
 		for(Connector con : cons){

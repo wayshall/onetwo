@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import org.ajaxanywhere.AAFilter;
 import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
@@ -24,6 +25,10 @@ public class JFishWebFilterInitializer implements WebApplicationInitializer {
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		if(!BaseSiteConfig.getInstance().isStartupByInitializer()){
+			return ;
+		}
+		
 		//encodingFilter
 		Dynamic fr = servletContext.addFilter("encodingFilter", CharacterEncodingFilter.class);
 		fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");

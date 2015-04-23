@@ -48,7 +48,7 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {
 		if(isConfigExists()){
-			JFishProperties properties = ContextPluginUtils.loadPluginConfigs(new String[]{getConfigPath(), getEnvConfigPath(appEnv)});
+			JFishProperties properties = ContextPluginUtils.loadConfigs(new String[]{getConfigPath(), getEnvConfigPath(appEnv)});
 			config.load(properties);
 		}else{
 			if(failedIfConfigNotExist)
