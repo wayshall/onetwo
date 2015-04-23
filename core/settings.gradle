@@ -10,6 +10,7 @@ include "modules/poi"
 include "modules/orm"
 include "modules/jfish"
 include "modules/ejb"
+include "modules/tomcat"
 
 include "plugins/activemq"
 include "plugins/fmtag"

@@ -3,7 +3,7 @@ package org.onetwo.common.xml;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.utils.list.L;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.xml.jaxb.JaxbMapper;
 import org.onetwo.common.xml.JaxbMapperTest.TestXmlBeanList;
 
@@ -13,7 +13,7 @@ public class JaxbMapperUtilsTest {
 	final private static JaxbMapper mapper;
 	
 	static {
-		List<Class<?>> rootypes = L.aslist(
+		List<Class<?>> rootypes = CUtils.aslist(
 				TestXmlBeanList.class,
 					TestXmlBean.class
 				);

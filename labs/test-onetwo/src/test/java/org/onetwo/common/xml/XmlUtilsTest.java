@@ -2,11 +2,12 @@ package org.onetwo.common.xml;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.xml.XmlUtils;
 
 public class XmlUtilsTest {
@@ -71,12 +72,33 @@ public class XmlUtilsTest {
 		Collection<TestPerson> lists = CUtils.newHashSet();
 		lists.add(hh);
 		
-		String xmlStr = XmlUtils.toXML(lists);
+		String xmlStr = XmlUtils.toXML(lists, "personlist", Set.class, "person", TestPerson.class);
 		
 		System.out.println("testPersonList xml:\n " + xmlStr);
 		
-		Collection<TestPerson> list = XmlUtils.toBean(xmlStr, "person", List.class);
+		Collection<TestPerson> list = XmlUtils.toBean(xmlStr, "personlist", List.class, "person", TestPerson.class);
 		Assert.assertEquals(hh.getUserName(), list.iterator().next().getUserName());
 	}
 
+	
+	@Test
+	public void test2Bean(){
+		String path = this.getClass().getResource("test.xml").getFile();
+		System.out.println("path: " + path);
+		String xml = FileUtils.readAsString(path);
+		System.out.println("xml: " + xml);
+		TestPerson person = XmlUtils.toBean(xml, "person", TestPerson.class);
+//		System.out.println("person:" + LangUtils.toString(person));
+		Assert.assertEquals(30, person.getAge());
+		
+		
+		path = this.getClass().getResource("test_list.xml").getFile();
+		System.out.println("path: " + path);
+		xml = FileUtils.readAsString(path);
+		System.out.println("xml: " + xml);
+		
+		Collection<TestPerson> list = XmlUtils.toBean(xml, "personlist", List.class, "person", TestPerson.class);
+//		System.out.println("person:" + LangUtils.toString(person));
+		Assert.assertEquals(30, list.iterator().next().getAge());
+	}
 }
