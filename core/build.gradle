@@ -27,7 +27,7 @@ configure(allprojects){ project ->
 	}else{
 		group = "org.onetwo"
 	}
-	version = "3.2.4-SNAPSHOT"
+	version = "3.2.5-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -161,6 +161,7 @@ def projectPoi = "${projectPrefix}poi"
 def projectOrm = "${projectPrefix}orm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
+def projectTomcat = "${projectPrefix}tomcat"
 
 
 project("${projectCommon}"){
@@ -264,20 +265,21 @@ project("${projectWeb}"){
 		compile(project(":${projectCommon}"))
 		compile(project(":${projectSpring}"))
 		compile(project(":${projectAjaxanywhere}"))
+		compile(project(":${projectTomcat}"))
 		
 		compile("org.springframework:spring-webmvc:${springVersion}")
 		
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
 		compile("commons-net:commons-net:${commonsnetVersion}")
 		compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
 		compile("net.htmlparser.jericho:jericho-html:${jerichoVersion}")
 		compile("org.tuckey:urlrewritefilter:${urlrewriteVersion}")
-		compile("javax.servlet:jstl:${jstlVersion}")
 		
-		provided embedTomcat()
+//		provided embedTomcat()
 	}
 }
 	
@@ -374,6 +376,24 @@ project("$projectEjb"){
 		compile("org.apache.openjpa:openjpa:${openJpaVersion}")
 		
 		
+	}
+}
+
+
+project("${projectTomcat}"){
+	description = "onetwo tomcat"
+	
+	ext.jstlVersion = "1.2"
+	
+	dependencies {
+		compile(project(":${projectCommon}"))
+		
+		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
+		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
+		
+		provided embedTomcat()
 	}
 }
 
