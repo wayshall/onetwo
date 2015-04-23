@@ -2,11 +2,13 @@ package org.onetwo.common.fish.web;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.JFishDispatcher;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -17,6 +19,13 @@ import org.springframework.web.util.IntrospectorCleanupListener;
 @Order(JFishUtils.WEBAPP_INITIALIZER_ORDER)
 public class JFishSpringDispatcherServletInitializer extends AbstractDispatcherServletInitializer {
 
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		if(!BaseSiteConfig.getInstance().isStartupByInitializer()){
+			return ;
+		}
+		super.onStartup(servletContext);
+	}
+	
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
 		return null;
