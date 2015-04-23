@@ -2,15 +2,12 @@ package org.onetwo.plugins.security.client;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.sso.SSOService;
+import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.sso.SSOUserService;
 import org.onetwo.plugins.security.SecurityPlugin;
 import org.onetwo.plugins.security.sso.DefaultSSOServiceImpl;
-import org.onetwo.plugins.security.sso.SsoConfig;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +17,14 @@ import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 @Configuration
 public class SsoClientContext implements InitializingBean {
 
-	private static final String SSO_CLIENT_BASE = "/plugins/security/client-config";
+	public static final String SSO_CLIENT_BASE = "/plugins/security/client-config";
 	public static final String SSO_CLIENT_CONFIG_PATH = SSO_CLIENT_BASE + ".properties";
 
 	@Resource
 	private AppConfig appConfig;
 
-	@Resource
-	private SsoClientConfig ssoClientConfig;
+//	@Resource
+//	private SsoClientConfig ssoClientConfig;
 
 	@Resource
 	private ApplicationContext applicationContext;
@@ -36,18 +33,19 @@ public class SsoClientContext implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		SecurityPlugin.getInstance().setSecurityConfig(ssoClientConfig);
+//		SecurityPlugin.getInstance().setSecurityConfig(ssoClientConfig);
 	}
 
-	@Bean
+	/*@Bean
 	public PropertiesFactoryBean ssoClientConfig() {
 		String envLocation = SSO_CLIENT_BASE + "-" + appConfig.getAppEnvironment() + ".properties";
 		return SpringUtils.createPropertiesBySptring(new SsoClientConfig(), SSO_CLIENT_CONFIG_PATH, envLocation);
-	}
+	}*/
 	
 	@Bean
-	public SsoConfig getSsoConfig(){
-		return ssoClientConfig;
+	public SsoClientConfig ssoClientConfig(){
+//		return ssoClientConfig;
+		return (SsoClientConfig)SecurityPlugin.getInstance().getSsoConfig();
 	}
 
 	/****
@@ -59,7 +57,7 @@ public class SsoClientContext implements InitializingBean {
 	public HttpInvokerProxyFactoryBean ssoUserServiceProxy(){
 		HttpInvokerProxyFactoryBean fb = new HttpInvokerProxyFactoryBean();
 		fb.setServiceInterface(SSOUserService.class);
-		fb.setServiceUrl(ssoClientConfig.getSSOUserServiceUrl());
+		fb.setServiceUrl(ssoClientConfig().getSSOUserServiceUrl());
 		return fb;
 	}
 	
@@ -68,7 +66,7 @@ public class SsoClientContext implements InitializingBean {
 	 * @return
 	 */
 	@Bean
-	public SSOService ssoService(){
+	public SecurityService ssoService(){
 		DefaultSSOServiceImpl ssoservice = new DefaultSSOServiceImpl();
 		return ssoservice;
 	}

@@ -23,6 +23,10 @@ public class BaseSiteConfig extends AppConfig {
 
 	public static final String WEB_CONFIG_NAME = "webConfig";
 	public static final String CONFIG_NAME = "siteConfig";
+	/***
+	 * 是否通过servletInitializer启动
+	 */
+	public static final String STARTUP_BY_INITIALIZER = "startup.by.initializer";
 
 	public static final String BASEURL = "baseURL";
 	public static final String LANGUAGE_SUPPORT = "language.support";
@@ -461,6 +465,10 @@ public class BaseSiteConfig extends AppConfig {
 				return 10;
 			}
 		}
+	}
+	
+	public boolean isStartupByInitializer(){
+		return getBoolean(STARTUP_BY_INITIALIZER, false);
 	}
 
 }
