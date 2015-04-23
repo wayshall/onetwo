@@ -1,0 +1,10 @@
+ <personlist>
+  <person>
+    <userName>hanhan</userName>
+    <age>30</age>
+    <parent>
+      <userName>hanrenjun</userName>
+      <age>60</age>
+    </parent>
+  </person>
+</personlist>
