@@ -2,7 +2,6 @@ package org.onetwo.common.web.server.tomcat;
 
 import java.util.Properties;
 
-import org.apache.catalina.startup.Tomcat;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.spring.plugin.SpringContextPluginManager;
@@ -31,7 +30,7 @@ public class WebPluginScanListenerForTomcat implements EmbeddedTomcatListener{
 	
 	public void scanPluginWebapps(final WebappAddEvent event){
 		JFishList<Resource> pluginFiles =ResourceUtils.scanResources(SpringContextPluginManager.PLUGIN_PATH);
-		final Tomcat tomcat = event.getTomcatServer().getTomcat();
+//		final Tomcat tomcat = event.getTomcatServer().getTomcat();
 
 		pluginFiles.each(new NoIndexIt<Resource>(){
 
@@ -48,7 +47,7 @@ public class WebPluginScanListenerForTomcat implements EmbeddedTomcatListener{
 				String webappPath = PLUGIN_WEBAPP_BASE_PATH + plugin.getContextPath();
 				Resource res = ResourceUtils.getResource(webappPath);
 				logger.info("found web plugin["+plugin+"] : {}", res.getURI().getPath() );
-				tomcat.addWebapp(plugin.getContextPath(), res.getURI().getPath());
+				event.addWebapp(plugin.getContextPath(), res.getURI().getPath());
 				logger.info("load web plugin : {} ", res.getURI().getPath());
 				
 				String listener = plugin.getWebappPluginServerListener();
