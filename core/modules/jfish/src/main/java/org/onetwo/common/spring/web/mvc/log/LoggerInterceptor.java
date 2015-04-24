@@ -109,6 +109,8 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		}
 		info.setOperatorTime(new Date());
 		info.setDatas(contextHolder.getDataChangedContext());
+		HandlerMethod webHandler = (HandlerMethod)handler;
+		info.setWebHandler(webHandler.getBeanType().getCanonicalName()+"."+webHandler.getMethod().getName());
 		
 		accessLogger.logOperation(info);
 	}

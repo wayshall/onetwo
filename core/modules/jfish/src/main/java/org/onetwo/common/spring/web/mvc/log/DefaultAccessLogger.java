@@ -8,6 +8,7 @@ import org.onetwo.common.log.DataChangedContext.EntityState;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
 
@@ -16,7 +17,7 @@ public class DefaultAccessLogger implements AccessLogger {
 	public static final String LOGGER_KEY = "accessLogger";
 	private Logger accessLogger;
 	private String loggerName;
-	
+	private String seprator = "\n";
 	
 
 	public DefaultAccessLogger() {
@@ -24,6 +25,9 @@ public class DefaultAccessLogger implements AccessLogger {
 	public DefaultAccessLogger(String loggerName) {
 		super();
 		this.loggerName = loggerName;
+		if(BaseSiteConfig.getInstance().isProduct()){
+			seprator = "";
+		}
 	}
 
 	@Override
@@ -66,23 +70,23 @@ public class DefaultAccessLogger implements AccessLogger {
 		
 //		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
 		StringBuilder buf = new StringBuilder();
-		buf.append("{")
-			.append("executedTimeInMillis:"+data.getExecutedTimeInMillis()+", ")
-			.append("operatorId:"+data.getOperatorId()+", ")
-			.append("operatorName:"+data.getOperatorName()+", ")
-			.append("success:"+data.isSuccess()+", ")
-			.append("message:"+data.getMessage()+", ")
-			.append("url:"+data.getUrl()+", ")
-			.append("remoteAddr:"+data.getRemoteAddr()+", ")
-			.append("params:"+buildParametersString(data.getParameters())+", ")
-			.append("changedDatas:[")
-			.append("{inserts:["+inserts+"]},")
-			.append("{updates:["+updates+"]},")
-			.append("{deletes:["+deletes+"]}")
+		buf.append("{").append(seprator)
+			.append("webHandler:").append(data.getWebHandler()).append(", ").append(seprator)
+			.append("executedTimeInMillis:").append(data.getExecutedTimeInMillis()).append(", ").append(seprator)
+			.append("operatorId:").append(data.getOperatorId()).append(", ").append(seprator)
+			.append("operatorName:").append(data.getOperatorName()).append(", ").append(seprator)
+			.append("success:").append(data.isSuccess()).append(", ").append(seprator)
+			.append("message:").append(data.getMessage()).append(", ").append(seprator)
+			.append("url:").append(data.getUrl()).append(", ").append(seprator)
+			.append("remoteAddr:").append(data.getRemoteAddr()).append(", ").append(seprator)
+			.append("params:").append(buildParametersString(data.getParameters())).append(", ").append(seprator)
+			.append("changedDatas:[").append(seprator)
+			.append("{inserts:[").append(inserts).append("]},").append(seprator)
+			.append("{updates:[").append(updates).append("]},").append(seprator)
+			.append("{deletes:[").append(deletes).append("]}").append(seprator)
 			.append("]}");
 		
 		accessLogger.info(buf.toString());
-		
 	}
 	
 	private String buildParametersString(Map<String, String[]> parameters){
