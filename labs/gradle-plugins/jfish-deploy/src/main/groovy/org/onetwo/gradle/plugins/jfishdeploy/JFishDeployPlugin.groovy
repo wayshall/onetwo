@@ -31,17 +31,21 @@ class JFishDeployPlugin implements Plugin<Project> {
 		//project.extraProperties.set("jdeployConfig", config)
 
 		project.task("deployTomcat", type: DeployTomcatTask).dependsOn("war")
+		/***
 		def copyEnvConfig = project.task("copyEnvConfig", type: Copy){
 			//def config = JFishDeployPlugin.loadGroovyConfig(project.getRootProject(), profile, "config")
 			logger.lifecycle "copyEnvConfig loaded ${profile} config::"+config
 			if(config!=null){
-				logger.lifecycle "copy ${profile} config..."
+				logger.lifecycle "copy ${profile} config to ${project.buildDir}/resources/main ..."
 				from config.deploy.configDir
 				into "${project.buildDir}/resources/main"
 			}
 		}
-
 		project.tasks.war.dependsOn copyEnvConfig
+		**/
+		
+		project.task("copyEnvConfigToBuildResource", type: CopyEnvConfigTask)
+		project.tasks.war.dependsOn "copyEnvConfigToBuildResource"
 	}
 
 	public static loadGroovyConfig(project, profile, configName) {
