@@ -8,18 +8,20 @@ class CopyEnvConfigTask extends DefaultTask {
 	String profile;
 	
 	@TaskAction
-	public void copyEnvConfig222(){
-		logger.lifecycle "execute copyEnvConfig"
-			
+	public void copyEnvConfigToBuildResource(){
 		profile = project.extensions.findByName("profile")
-		//def config = JFishDeployPlugin.loadGroovyConfig(project.getRootProject(), profile, "config")
+		Project project = getProject();
+		
+		logger.lifecycle "execute copyEnvConfig"
+		
 		def config = project.extensions.findByName("jfishDeployer").config
-		logger.lifecycle "deployTomcat loaded ${profile} config::"+config
-		if(config!=null){
-			logger.lifecycle "copy ${profile} config..."
+		
+		project.copy {
+			logger.lifecycle "copy ${profile} config to ${project.buildDir}/resources/main ..."
 			from config.deploy.configDir
-			into "${buildDir}/resources/main"
+			into "${project.buildDir}/resources/main"
 		}
+		
 	}
 
 
