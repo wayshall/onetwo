@@ -24,3 +24,4 @@ work/Tomcat
 /labs/test-onetwo/.gradle
 /labs/test-onetwo/*.log
 /labs/gradle-plugins/jfish-deploy/.gradle
+/labs/dbtest/dbtest/.gradle
