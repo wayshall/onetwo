@@ -1,6 +1,5 @@
 package org.onetwo.test.dbtest.model.service;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -24,7 +23,7 @@ public class UserAutoidServiceImpl {
 			UserAutoidEntity user = new UserAutoidEntity();
 			user.setUserName("userName-batch-"+i);
 			user.setPassword("password-batch-"+i);
-			user.setCreateTime(new Date());
+//			user.setCreateTime(new Date());
 			user.setGender(i%2);
 			user.setNickName("nickName-batch-"+i);
 			user.setEmail("test@qq.com");

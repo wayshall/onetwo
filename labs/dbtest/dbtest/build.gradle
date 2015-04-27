@@ -1,0 +1,106 @@
+
+buildscript {
+	repositories {
+		maven { url 'http://repo.spring.io/plugins-release' }
+		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+		jcenter()
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.6")
+		classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.6")
+		classpath("org.onetwo.gradle.plugins:jfish-deploy:1.0.10-SNAPSHOT")
+		classpath "io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE"
+	}
+	
+}
+
+
+apply plugin: "propdeps"
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+apply plugin: "io.spring.dependency-management"
+
+
+eclipseJdt << {
+	File f = file('.settings/org.eclipse.core.resources.prefs')
+	f.write('eclipse.preferences.version=1\n')
+	f.append('encoding/<project>=utf-8')
+}
+
+	
+compileJava {
+	sourceCompatibility=1.8
+	targetCompatibility=1.8
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-parameters'   
+}
+buildDir = "target"
+
+
+eclipse {
+	classpath {
+		downloadJavadoc = true
+		downloadSources=true
+	}
+}
+
+repositories {
+	mavenLocal()
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
+	maven { url "http://repository.sonatype.org/content/groups/public/" }
+	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		 mavenBom 'org.onetwo:onetwo-bom:1.2-SNAPSHOT'
+	}
+}
+
+version = "1.0-SNAPSHOT"
+ext.onetwoVersion = "3.2.5-SNAPSHOT";
+
+
+//ext.jpaVersion = "2.0.0"
+ext.junitVersion = "4.10"
+//ext.hibernateValidatorVersion = "4.3.0.Final"
+//ext.tomcatjdbcVersion = "7.0.53"
+
+dependencies {
+	
+	compile("org.onetwo:onetwo-common:${onetwoVersion}")
+	compile("org.onetwo:onetwo-spring:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
+	compile("org.onetwo:onetwo-poi:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
+	
+	compile("org.onetwo.plugins:onetwo-plugin-fmtag:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-codegen:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-security:${onetwoVersion}")
+	compile("com.microsoft:sqljdbc4:1.0")
+//	compile("commons-io:commons-io:2.4")
+	compile("commons-io:commons-io")
+	
+	
+//	compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
+	compile("org.hibernate:hibernate-validator")
+//	compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
+	compile("javax.persistence:com.springsource.javax.persistence")
+//	compile("org.quartz-scheduler:quartz:2.1.6")
+	compile("org.quartz-scheduler:quartz")
+//	compile("javax.mail:mail:1.4.5")
+	compile("javax.mail:mail")
+	
+//	compile("org.apache.tomcat:tomcat-jdbc:${tomcatjdbcVersion}")
+	compile("org.apache.tomcat:tomcat-jdbc")
+	
+	compile("org.eclipse.xtend:org.eclipse.xtend.lib:2.7.3")
+	
+	
+}
+

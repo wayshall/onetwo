@@ -27,7 +27,7 @@ public class EmailPluginContext implements InitializingBean {
 //	@Resource
 //	private freemarker.template.Configuration mailFreemarkerConfiguration;
 	
-	private StringFtlTemplateLoader stringFtlTemplateLoader = new StringFtlTemplateLoader();
+//	private StringFtlTemplateLoader stringFtlTemplateLoader = new StringFtlTemplateLoader();
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -41,23 +41,23 @@ public class EmailPluginContext implements InitializingBean {
 		return emailConfig;
 	}
 	
-	@Bean
+	/*@Bean
 	public FreeMarkerConfigurationFactoryBean mailFreemarkerConfiguration(){
 		FreeMarkerConfigurationFactoryBean fcfb = new FreeMarkerConfigurationFactoryBean();
 		fcfb.setTemplateLoaderPath(FTL_DIR);
 		fcfb.setPreTemplateLoaders(stringFtlTemplateLoader);
 		return fcfb;
-	}
+	}*/
 	
-	@Bean
+	/*@Bean
 	public StringFtlTemplateLoader stringFtlTemplateLoader(){
 		return this.stringFtlTemplateLoader;
-	}
+	}*/
 	
-	@Bean
+/*	@Bean
 	public MailTextContextParser mailTextContextParser(){
 		MailTextContextParser parser = new MailTextContextParser();
 		return parser;
-	}
+	}*/
 
 }

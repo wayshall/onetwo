@@ -789,6 +789,7 @@ project("${pluginMelody}"){
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
 		compile(project(":$projectJfish"))
+		compile("javax.servlet:javax.servlet-api:${servletVersion}")
 		
 		compile("net.bull.javamelody:javamelody-core:1.55.0")
 		
