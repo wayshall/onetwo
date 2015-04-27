@@ -13,6 +13,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.springframework.core.io.InputStreamSource;
 
+@SuppressWarnings("serial")
 public class MailInfo implements Serializable{
 	
 	public static MailInfo create(String from, String...to){
@@ -45,7 +46,7 @@ public class MailInfo implements Serializable{
 
 	private String content;
 
-	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
+//	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
@@ -118,14 +119,14 @@ public class MailInfo implements Serializable{
 		return this;
 	}
 
-	public EmailTextType getEmailTextType() {
+	/*public EmailTextType getEmailTextType() {
 		return emailTextType;
 	}
 
 	public MailInfo emailTextType(EmailTextType contentType) {
 		this.emailTextType = contentType;
 		return this;
-	}
+	}*/
 
 	public File[] getAttachments() {
 		return attachments.toArray(new File[0]);

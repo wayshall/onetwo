@@ -8,7 +8,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
@@ -19,14 +19,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 public class JavaMailServiceImpl implements JavaMailService {
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	
 	@Resource
 	private JavaMailSender javaMailSender;
 
-	@Resource
-	private MailTextContextParser mailTextContextParser;
+//	@Resource
+//	private MailTextContextParser mailTextContextParser;
 	private String encoding = LangUtils.UTF8;
 
 	@Override
@@ -54,8 +54,8 @@ public class JavaMailServiceImpl implements JavaMailService {
 		helper.setBcc(mailInfo.getBcc());
 		helper.setCc(mailInfo.getCc());
 
-		String content = this.mailTextContextParser.parseContent(mailInfo);
-		helper.setText(content, true);
+//		String content = this.mailTextContextParser.parseContent(mailInfo);
+		helper.setText(mailInfo.getContent(), true);
 
 		if(mailInfo.getAttachments()!=null){
 			for(File attachment : mailInfo.getAttachments()){
@@ -80,8 +80,8 @@ public class JavaMailServiceImpl implements JavaMailService {
 		msg.setBcc(mailInfo.getBcc());
 		msg.setCc(mailInfo.getCc());
 
-		String content = this.mailTextContextParser.parseContent(mailInfo);
-		msg.setText(content);
+//		String content = this.mailTextContextParser.parseContent(mailInfo);
+		msg.setText(mailInfo.getContent());
 
 		javaMailSender.send(msg);
 		if (logger.isInfoEnabled()) {
@@ -138,8 +138,8 @@ public class JavaMailServiceImpl implements JavaMailService {
 		this.encoding = encoding;
 	}
 
-	public void setMailTextContextParser(MailTextContextParser mailTextContextParser) {
+	/*public void setMailTextContextParser(MailTextContextParser mailTextContextParser) {
 		this.mailTextContextParser = mailTextContextParser;
-	}
+	}*/
 
 }
