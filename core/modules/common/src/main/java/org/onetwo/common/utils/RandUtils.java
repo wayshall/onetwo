@@ -9,6 +9,11 @@ public abstract class RandUtils {
         randomGenerator = new Random();
     }
 	
+    /****
+     * 
+     * @param length 生成的长度
+     * @return
+     */
 	public static String randomString(Integer length){
 		if(length==null || length<1)
 			return LangUtils.EMPTY_STRING;
@@ -59,12 +64,6 @@ public abstract class RandUtils {
 		if(StringUtils.isNotBlank(padStr))
 			randStr = LangUtils.padLeft(randStr, strLength, padStr);
 		return randStr;
-	}
-	
-	public static void main(String[] args){
-		for(int i=0; i<100; i++){
-			System.out.println(i+":"+randomString(i));
-		}
 	}
     
 }
