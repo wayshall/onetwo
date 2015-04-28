@@ -25,6 +25,8 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String CONFIG_NAME = "siteConfig";
 	/***
 	 * 是否通过servletInitializer启动
+	 * 当类似messageserver那样，一个内嵌tomcat部署多个webapp时，
+	 * 同一个servletInitialzer有可能会被重复加载
 	 */
 	public static final String STARTUP_BY_INITIALIZER = "startup.by.initializer";
 
@@ -492,7 +494,7 @@ public class BaseSiteConfig extends AppConfig {
 	 * @return
 	 */
 	public int getViewExcelGeneratedFileThredshold(){
-		return getInt(VIEW_EXCEL_GENERATED_FILE_THREDSHOLD, 60000);
+		return getInt(VIEW_EXCEL_GENERATED_FILE_THREDSHOLD, -1);
 	}
 	public String getViewExcelGeneratedFileDir(){
 		String temp = getPath(VIEW_EXCEL_GENERATED_FILE_DIR, System.getenv("temp"));

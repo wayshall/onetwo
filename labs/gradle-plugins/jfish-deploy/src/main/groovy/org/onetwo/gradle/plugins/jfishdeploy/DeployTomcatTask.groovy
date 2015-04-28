@@ -29,6 +29,10 @@ class DeployTomcatTask extends DefaultTask {
 		}
 		
 		config.deploy.tomcats.eachWithIndex { tc, index ->
+			if(tc.terminator){
+				logger.lifecycle "stop the tomcat server with: ${tc.baseDir}/bin/${tc.terminator} "
+				"cmd /c start ${tc.baseDir}/bin/${tc.terminator}".execute()
+			}
 			def webappDir = "${tc.baseDir}/webapps"
 			project.copy {
 				logger.lifecycle "${project.name} deploy to ${webappDir}"
@@ -37,8 +41,11 @@ class DeployTomcatTask extends DefaultTask {
 				rename { it.replace "-${project.version}", ''}
 				into webappDir
 			}
-			logger.lifecycle "execute ${tc.baseDir}/bin/${tc.starter} "
-			"cmd /c start ${tc.baseDir}/bin/${tc.starter}".execute()
+			
+			if(tc.starter){
+				logger.lifecycle "execute ${tc.baseDir}/bin/${tc.starter} "
+				"cmd /c start ${tc.baseDir}/bin/${tc.starter}".execute()
+			}
 		}
 		
 	}
