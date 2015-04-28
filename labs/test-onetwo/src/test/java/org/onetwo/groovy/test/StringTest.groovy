@@ -6,6 +6,24 @@ import org.junit.Test
 class StringTest {
 	
 	@Test
+	def void test(){
+		def map = [aa:"bb"]
+		println "map: ${map.aa}"
+		println "map: ${map.cc}"
+		def cc = map.cc
+		if(cc){
+			println "cc is true"
+		}else{
+			println "cc is false"
+		}
+		println "".metaClass.methods*.name.sort().unique()
+		
+		println "echo %JAVA_HOME%".execute().text
+		def text = "cmd /c start D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\shutdown.bat".execute().text;
+		println "exe: " + text
+	}
+	
+	@Test
 	def void testReplace(){
 		String str = "plugins/activemq"
 		println str.replace("/", "-");

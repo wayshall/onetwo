@@ -292,9 +292,13 @@ public final class JFishWebUtils {
 		}
 		return mv;
 	}
-	
 
-	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) throws Exception{
+
+	public static String getDownloadFileName(boolean encode) {
+		return getDownloadFileName(request(), null, "default-filename", encode);
+	}
+
+	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) {
 		return getDownloadFileName(request(), model, defaultFileName, true);
 	}
 	
@@ -310,7 +314,7 @@ public final class JFishWebUtils {
 			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
 		}else{
 			if(encode){
-				LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
+				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
 			}
 			/*try {
 				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");

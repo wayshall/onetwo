@@ -1,14 +1,18 @@
 package org.onetwo;
 
+import org.onetwo.common.utils.RandUtils;
+
 import test.entity.UserEntity;
 
 
 
 public class Test {
 
-	public static void main(String[] args) throws Exception {
-		System.out.println("ev:"+System.getenv("temp"));
-		System.out.println("ev:"+System.getProperty("temp"));
+
+	public static void main(String[] args){
+		for(int i=0; i<100; i++){
+			System.out.println(i+":"+RandUtils.randomString(6));
+		}
 	}
 	
 	public static UserEntity createUser(){
