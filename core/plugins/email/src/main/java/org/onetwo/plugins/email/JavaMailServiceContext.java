@@ -8,7 +8,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -28,7 +28,7 @@ public class JavaMailServiceContext implements InitializingBean {
 	
 //	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Resource
 	private AppConfig appConfig;

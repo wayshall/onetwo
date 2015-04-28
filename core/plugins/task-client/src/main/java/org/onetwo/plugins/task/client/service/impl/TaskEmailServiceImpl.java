@@ -14,7 +14,6 @@ import org.onetwo.common.utils.RandUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.email.JavaMailService;
 import org.onetwo.plugins.email.MailInfo;
-import org.onetwo.plugins.email.MailTextContextParser;
 import org.onetwo.plugins.task.client.TaskClientConfig;
 import org.onetwo.plugins.task.client.TaskClientPlugin;
 import org.onetwo.plugins.task.entity.TaskQueue;
@@ -26,8 +25,8 @@ public class TaskEmailServiceImpl implements JavaMailService {
 	@Resource
 	private TaskClientServiceImpl taskClientServiceImpl;
 	
-	@Resource
-	private MailTextContextParser mailTextContextParser;
+//	@Resource
+//	private MailTextContextParser mailTextContextParser;
 
 	@Override
 	public void send(MailInfo mailInfo) throws MessagingException {
@@ -50,8 +49,8 @@ public class TaskEmailServiceImpl implements JavaMailService {
 		email.setToAddress(StringUtils.join(mailInfo.getTo(), TaskUtils.EMAIL_SPLITTER));
 		email.setHtml(mailInfo.isMimeMail());
 		
-		String content = this.mailTextContextParser.parseContent(mailInfo);
-		email.setContent(content);
+//		String content = this.mailTextContextParser.parseContent(mailInfo);
+		email.setContent(mailInfo.getContent());
 		
 //		String baseDir = EmailPlugin.getInstance().getConfig().getAttachmentDir();
 		for(File file : mailInfo.getAttachments()){
