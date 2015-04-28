@@ -61,6 +61,9 @@ public class BaseSiteConfig extends AppConfig {
 
 	public static final String JDBC_SQL_LOG = "jdbc.sql.log";
 	public static final String TIME_PROFILER = "time.profiler";
+	/***
+	 * 是否记录操作日志
+	 */
 	public static final String LOG_OPERATION = "log.operation";
 
 	public static final String SAFE_REQUEST = "safe.request";//csrf
@@ -76,6 +79,9 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String SECURITY_NOPERMISSION_VIEW = "security.nopermission.view";
 //	public static final String DATASOURCE_MASTER_SLAVE = "datasource.master.slave";
 
+	/****
+	 * 定义需要通知的异常
+	 */
 	public static final String ERROR_NOTIFY_THROWABLES = "error.notify.throwables";
 	
 
@@ -83,6 +89,9 @@ public class BaseSiteConfig extends AppConfig {
 	public static final String VIEW_FTL_SUPPORTED = "view.ftl.supported";
 	public static final String VIEW_EXCEL_SUPPORTED = "view.excel.supported";
 	public static final String VIEW_JSONXML_SUPPORTED = "view.jsonxml.supported";
+	
+	public static final String VIEW_EXCEL_GENERATED_FILE_THREDSHOLD = "view.excel.generated.file.thredshold";
+	public static final String VIEW_EXCEL_GENERATED_FILE_DIR = "view.excel.generated.file.dir";
 //	public static final String VIEW_JSP_SUPPORTED = "view.jsp.supported";
 //	public static final String VIEW_JSP_THEME = "view.jsp.theme";
 
@@ -92,6 +101,7 @@ public class BaseSiteConfig extends AppConfig {
 	private Object webAppConfigurator;
 	private ServletContext servletContext;
 	private String contextPath;
+	private String contextRealPath;
 	private String appUrlPostfix;
 	
 	/******************
@@ -172,8 +182,9 @@ public class BaseSiteConfig extends AppConfig {
 		servletContext = fconfig.getServletContext();
 		String cp = servletContext.getContextPath();
 		this.setContextPath(cp);
-		String realPath = fconfig.getServletContext().getRealPath("");
-		this.setProperty("contextRealPath", realPath);
+		this.contextRealPath = fconfig.getServletContext().getRealPath("");
+//		this.setProperty("contextRealPath", realPath);
+		
 		if(containsKey(APP_URL_POSTFIX)){
 			this.appUrlPostfix = getProperty(APP_URL_POSTFIX);
 		}/*else{
@@ -181,13 +192,17 @@ public class BaseSiteConfig extends AppConfig {
 		}*/
 		if(logger.isInfoEnabled()){
 			logger.info("set contextPath: " + cp );
-			logger.info("set ContextRealPath: " + realPath);
+			logger.info("set ContextRealPath: " + contextRealPath);
 			logger.info("set appUrlPostfix: " + appUrlPostfix );
 		}
 		
 		return this;
 	}
 	
+	public String getContextRealPath() {
+		return contextRealPath;
+	}
+
 	public static String getConfig(String key) {
 		return baseSiteConfig.getProperty(key, "");
 	}
@@ -469,6 +484,25 @@ public class BaseSiteConfig extends AppConfig {
 	
 	public boolean isStartupByInitializer(){
 		return getBoolean(STARTUP_BY_INITIALIZER, false);
+	}
+	
+	/****
+	 * 导出excel时，决定生成本地文件的阀值
+	 * 如果少于1，则不生成
+	 * @return
+	 */
+	public int getViewExcelGeneratedFileThredshold(){
+		return getInt(VIEW_EXCEL_GENERATED_FILE_THREDSHOLD, 60000);
+	}
+	public String getViewExcelGeneratedFileDir(){
+		String temp = getPath(VIEW_EXCEL_GENERATED_FILE_DIR, System.getenv("temp"));
+		if(StringUtils.isBlank(temp)){
+			temp = getContextRealPath()+"/temp";
+		}
+		return temp;
+	}
+	public boolean isViewExcelGeneratedFile(){
+		return getViewExcelGeneratedFileThredshold()<1;
 	}
 
 }

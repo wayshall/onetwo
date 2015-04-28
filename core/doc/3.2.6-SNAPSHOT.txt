@@ -1,0 +1,7 @@
+日期：2015-04-28
+修改：
+去掉email插件里的模板机制，若需要ftl模板，应直接使用ftl-template插件
+增加onetwo-bom
+增加excel导出view.excel.generated.file.thredshold配置，
+当生成的excel文件大于配置的阀值时，先生成本地文件，再写到出reponse输出流
+
