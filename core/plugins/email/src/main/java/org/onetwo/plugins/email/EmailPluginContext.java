@@ -2,13 +2,11 @@ package org.onetwo.plugins.email;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.spring.ftl.StringFtlTemplateLoader;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 @Configuration
 public class EmailPluginContext implements InitializingBean {
