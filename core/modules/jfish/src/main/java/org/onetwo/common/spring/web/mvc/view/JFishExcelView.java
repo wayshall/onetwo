@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.web.mvc.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
@@ -15,7 +16,9 @@ import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.config.BaseSiteConfig;
 
 /***
  * 为了避免与jasper冲突，foarmt为jfxls
@@ -28,6 +31,7 @@ public class JFishExcelView extends AbstractJFishExcelView {
 	public static final String TEMPLATE_SUFFIX = ".xml";
 	
 	private XmlTemplateGeneratorFactory xmlTemplateExcelFactory;
+	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
 
 	public JFishExcelView(){
 		this.setSuffix(TEMPLATE_SUFFIX);
@@ -65,8 +69,18 @@ public class JFishExcelView extends AbstractJFishExcelView {
 				this.setReponseHeader(downloadFileName, request, response);
 
 				out = response.getOutputStream();
-				generator.generateIt();
-				generator.write(out);
+				int size = generator.generateIt();
+				logger.info("excel generate size: {}", size);
+				if(siteConfig.isViewExcelGeneratedFile() || size<siteConfig.getViewExcelGeneratedFileThredshold()){
+					generator.write(out);
+				}else{
+					String dir = siteConfig.getViewExcelGeneratedFileDir();
+					FileUtils.makeDirs(dir);
+					String filePath = dir + "/" + getDownloadFileName(request, model, false);
+					logger.info("write excel to : {}", filePath);
+					File file = generator.write(filePath);
+					FileUtils.copyFileToOutputStream(out, file);
+				}
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
