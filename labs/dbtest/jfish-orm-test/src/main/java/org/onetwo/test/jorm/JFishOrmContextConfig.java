@@ -1,4 +1,4 @@
-package org.onetwo.test.dbtest;
+package org.onetwo.test.jorm;
 
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
@@ -10,11 +10,11 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @JFishProfile
 @ImportResource("classpath:applicationContext.xml")
-public class TimerContextConfig {
+public class JFishOrmContextConfig {
 	
 	@Bean
-	public TimerConfig tasksysConfig(){
-		return TimerConfig.getInstance();
+	public JFishOrmConfig tasksysConfig(){
+		return JFishOrmConfig.getInstance();
 	}
 	
 	@Bean

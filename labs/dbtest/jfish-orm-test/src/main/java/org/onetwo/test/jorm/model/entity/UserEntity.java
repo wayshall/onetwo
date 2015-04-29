@@ -1,4 +1,4 @@
-package org.onetwo.test.dbtest.model.entity;
+package org.onetwo.test.jorm.model.entity;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.hibernate.TimestampBaseEntity;
 import org.onetwo.common.spring.dozer.DozerMapping;
-import org.onetwo.test.dbtest.utils.Constant;
+import org.onetwo.test.jorm.utils.Constant;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
