@@ -534,8 +534,7 @@ project("${pluginDq}"){
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile(project(":$pluginHibernate"))
-		
+		testCompile(project(":$pluginHibernate"))
 		
 	}
 }
