@@ -21,30 +21,47 @@ class DeployTomcatTask extends DefaultTask {
 			return
 		}
 		def config = project.extensions.findByName("jfishDeployer").config
-		def mainDir = config.deploy.tomcats[0].baseDir + "/webapps/" + project.name
-		project.copy {
-			logger.lifecycle "${mainDir} bakup to ${config.deploy.bakDir}"
-			from mainDir
-			into "${config.deploy.bakDir}/${project.name}-${new Date().format('yyyyMMddHHmmss')}"
-		}
 		
 		config.deploy.tomcats.eachWithIndex { tc, index ->
+			//stop tomcat
 			if(tc.terminator){
-				logger.lifecycle "stop the tomcat server with: ${tc.baseDir}/bin/${tc.terminator} "
-				"cmd /c start ${tc.baseDir}/bin/${tc.terminator}".execute()
+				def cmd = tc.terminator
+				if(cmd.startsWith(":")){
+					cmd = "${tc.baseDir}/bin/${tc.terminator.substring(1)}"
+				}
+				logger.lifecycle "stop the tomcat server with: ${cmd} "
+				def proc = cmd.execute(System.getenv() as String[], new File(tc.baseDir))
+				logger.lifecycle "info===>>>\n ${proc.text}"
 			}
+			
+			//bak
+			def mainDir = "${tc.baseDir}/webapps/project.name"
+			project.copy {
+				logger.lifecycle "${mainDir} bakup to ${config.deploy.bakDir}"
+				from mainDir
+				into "${config.deploy.bakDir}/${project.name}-${new Date().format('yyyyMMddHHmmss')}"
+			}
+			
+			//deploy war
 			def webappDir = "${tc.baseDir}/webapps"
+			logger.lifecycle "delete app dir : ${webappDir}/${project.name}"
+			project.delete "${webappDir}/${project.name}"
 			project.copy {
 				logger.lifecycle "${project.name} deploy to ${webappDir}"
-				project.delete "${webappDir}/${project.name}"
 				from project.war
 				rename { it.replace "-${project.version}", ''}
 				into webappDir
 			}
 			
+			//start tomcat
 			if(tc.starter){
-				logger.lifecycle "execute ${tc.baseDir}/bin/${tc.starter} "
-				"cmd /c start ${tc.baseDir}/bin/${tc.starter}".execute()
+//				"cmd /c start ${tc.baseDir}/bin/${tc.starter}".execute()
+				def cmd = tc.starter
+				if(cmd.startsWith(":")){
+					cmd = "cmd /c start ${tc.baseDir}/bin/${tc.starter.substring(1)}"
+				}
+				logger.lifecycle "start the tomcat server with: ${cmd} "
+				cmd.execute(System.getenv() as String[], new File(tc.baseDir))
 			}
 		}
 		

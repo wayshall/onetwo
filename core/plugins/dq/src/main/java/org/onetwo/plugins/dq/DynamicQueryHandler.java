@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
@@ -78,9 +77,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		try {
 			return this.doInvoke(proxy, method, args);
-		} catch (HibernateException e) {
+		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
-		}catch (Throwable e) {
+		}*/catch (Throwable e) {
 			throw new BaseException("invoke query error : " + e.getMessage(), e);
 		}
 		

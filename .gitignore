@@ -25,3 +25,4 @@ work/Tomcat
 /labs/test-onetwo/*.log
 /labs/gradle-plugins/jfish-deploy/.gradle
 /labs/dbtest/dbtest/.gradle
+/labs/dbtest/jfish-orm-test/.gradle
