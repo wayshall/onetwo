@@ -1,8 +1,8 @@
-package org.onetwo.test.dbtest.model.dao;
+package org.onetwo.test.jorm.model.dao;
 
 import java.util.List;
 
-import org.onetwo.test.dbtest.model.entity.UserAutoidEntity;
+import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
 
 public interface UserAutoidDao {
 	

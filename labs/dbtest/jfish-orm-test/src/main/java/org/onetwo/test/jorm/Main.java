@@ -1,4 +1,4 @@
-package org.onetwo.test.dbtest;
+package org.onetwo.test.jorm;
 
 import org.onetwo.common.cmd.SpringCmdRunner;
 import org.onetwo.common.spring.context.SpringConfigApplicationContext;
@@ -19,8 +19,8 @@ public class Main {
 			}
 			
 			protected void initApplicationContext(SpringConfigApplicationContext context){
-				context.setAppEnvironment(TimerConfig.getInstance().getAppEnvironment());
-				context.register(TimerContextConfig.class);
+				context.setAppEnvironment(JFishOrmConfig.getInstance().getAppEnvironment());
+				context.register(JFishOrmContextConfig.class);
 			}
 			
 			

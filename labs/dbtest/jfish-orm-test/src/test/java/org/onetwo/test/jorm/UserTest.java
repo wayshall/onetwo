@@ -1,12 +1,10 @@
-package org.onetwo.app;
-
-import java.util.Date;
+package org.onetwo.test.jorm;
 
 import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.test.dbtest.model.entity.UserAutoidEntity;
+import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
 
 
 public class UserTest extends AppBaseTest {

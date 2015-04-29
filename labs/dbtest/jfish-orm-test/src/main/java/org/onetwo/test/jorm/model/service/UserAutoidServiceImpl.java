@@ -1,12 +1,12 @@
-package org.onetwo.test.dbtest.model.service;
+package org.onetwo.test.jorm.model.service;
 
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.test.dbtest.model.dao.UserAutoidDao;
-import org.onetwo.test.dbtest.model.entity.UserAutoidEntity;
+import org.onetwo.test.jorm.model.dao.UserAutoidDao;
+import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
