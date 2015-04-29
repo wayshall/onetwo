@@ -10,7 +10,7 @@ import org.onetwo.common.fish.orm.JFishMappedEntry;
 import org.onetwo.common.fish.orm.MappedEntryBuilder;
 import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.orm.MappedEntryManagerListener;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
@@ -35,7 +35,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 //		afterAllEntryHasBuilt
 //	}
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private Map<String, JFishMappedEntry> entryCache = new ConcurrentHashMap<String, JFishMappedEntry>();
 	private List<MappedEntryBuilder> mapedEntryBuilders;
