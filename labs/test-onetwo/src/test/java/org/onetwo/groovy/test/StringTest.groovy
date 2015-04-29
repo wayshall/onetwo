@@ -18,9 +18,13 @@ class StringTest {
 		}
 		println "".metaClass.methods*.name.sort().unique()
 		
-		println "echo %JAVA_HOME%".execute().text
-		def text = "cmd /c start D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\shutdown.bat".execute().text;
-		println "exe: " + text
+		String[] cmds = ["D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\shutdown.bat"] as String[]
+//		def proc = Runtime.getRuntime().exec(cmds, System.getenv() as String[], new File("D:\\mydev\\servers\\apache-tomcat-7.0.57\\"))
+//		println "set home: ${proc.text}"
+//		def proc1 = "cmd /c start set CATALINA_HOME=D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\;D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\shutdown.bat".execute();
+//		"cmd /c start D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\tomcat7.exe".execute();
+		def proc1 = "D:\\mydev\\servers\\apache-tomcat-7.0.57\\bin\\shutdown.bat".execute(System.getenv() as String[], new File("D:\\mydev\\servers\\apache-tomcat-7.0.57\\"))
+		println "set home2: ${proc1.text}"
 	}
 	
 	@Test
