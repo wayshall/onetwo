@@ -1,24 +1,9 @@
 package org.onetwo.plugins.dq;
 
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
-import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
-import org.onetwo.common.hibernate.sql.HibernateNamedSqlFileManager;
-import org.onetwo.common.jdbc.DataBase;
-import org.onetwo.common.jdbc.JdbcDao;
-import org.onetwo.common.jdbc.NamedJdbcTemplate;
-import org.onetwo.common.spring.sql.ParserContext;
-import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Page;
 
 public class DynamicQueryHandlerTest {
 
-	private HibernateNamedSqlFileManager fileManager;
+	/*private HibernateNamedSqlFileManager fileManager;
 	ParserContext parserContext;
 	private HibernateFileQueryManagerImpl mananger;
 	
@@ -76,6 +61,6 @@ public class DynamicQueryHandlerTest {
 		i.batchInsertWithNamed(datas);
 		Assert.assertEquals("insert admin_user(user_name, age) values (:userName, :age);", dqholder.getSql());
 		Assert.assertEquals("[{data.age=1, data.userName=userName1}, {data.age=2, data.userName=userName3}]", LangUtils.toString(dqholder.getBatchValues()));
-	}
+	}*/
 	
 }

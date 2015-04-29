@@ -1,22 +1,19 @@
-package org.onetwo.app;
+package org.onetwo.test.jorm;
 
 import org.onetwo.common.test.spring.SpringConfigApplicationContextLoader;
-
-import org.onetwo.test.dbtest.TimerConfig;
-import org.onetwo.test.dbtest.TimerContextConfig;
+import org.onetwo.test.jorm.JFishOrmConfig;
+import org.onetwo.test.jorm.JFishOrmContextConfig;
 
 public class DBTestLoader extends SpringConfigApplicationContextLoader {
 
 	@Override
 	protected Class<?>[] getClassArray() {
-		return new Class<?>[]{TimerContextConfig.class};
+		return new Class<?>[]{JFishOrmContextConfig.class};
 	}
 
 	@Override
 	protected String getAppEnvironment() {
-		return TimerConfig.getInstance().getAppEnvironment();
+		return JFishOrmConfig.getInstance().getAppEnvironment();
 	}
-	
-	
 
 }
