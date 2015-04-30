@@ -103,7 +103,7 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, 
 
 	@Override
 	public boolean isSystemRootUser() {
-		return false;
+		return getRoleIds()!=null && getRoleIds().contains(SYSTEM_ROOT_ROLE_ID);
 	}
 
 	@Override

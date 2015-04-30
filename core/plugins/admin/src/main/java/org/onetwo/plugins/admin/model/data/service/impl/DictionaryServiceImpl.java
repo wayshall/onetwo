@@ -30,8 +30,10 @@ import org.onetwo.plugins.admin.utils.AdminDataUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 @Transactional
 public class DictionaryServiceImpl implements DictionaryService  {
 	
