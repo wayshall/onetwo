@@ -12,6 +12,7 @@ import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.web.mvc.EmptySecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
@@ -101,10 +102,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		@Resource
 		private JFishMvcApplicationContext applicationContext;
 		
-		@Resource
-		private SecurityInterceptor securityInterceptor;
+//		@Resource
+//		private SecurityInterceptor securityInterceptor;
 		
-		JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
+		private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
 		/**@Bean
 		public SecurityInterceptor securityInterceptor(){
@@ -117,10 +118,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 		@Bean
 		public MappedInterceptor mappedInterceptor4Security() {
-//			SpringSecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SpringSecurityInterceptor.class);
-//			if(springSecurityInterceptor==null){
-//				springSecurityInterceptor = new SpringSecurityInterceptor();
-//			}
+			SecurityInterceptor securityInterceptor = SpringUtils.getHighestOrder(applicationContext, SecurityInterceptor.class);
+			if(securityInterceptor==null){
+				securityInterceptor = new EmptySecurityInterceptor();
+			}
 //			SpringSecurityInterceptor springSecurityInterceptor = new SpringSecurityInterceptor();
 			//return new MappedInterceptor(null, securityInterceptor());
 			return new MappedInterceptor(null, securityInterceptor);
