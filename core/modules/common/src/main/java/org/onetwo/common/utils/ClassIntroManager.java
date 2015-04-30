@@ -7,7 +7,8 @@ public class ClassIntroManager {
 	
 	private Map<Class<?>, Intro<?>> introMaps = new WeakHashMap<Class<?>, Intro<?>>(500);
 	private Object lock = new Object();
-	
+
+	@SuppressWarnings("unchecked")
 	public <T> Intro<T> getIntro(Class<T> clazz){
 		if(clazz==null)
 			return null;
