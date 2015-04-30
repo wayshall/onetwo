@@ -43,7 +43,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name="ADMIN_USER")
 //@ASequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
-@TableGenerator(table=WebConstant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=50000, name="UserEntityGenerator")
+@TableGenerator(table=WebConstant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, name="UserEntityGenerator")
 //@SelectBeforeUpdate
 //@DynamicUpdate
 @DozerMapping
@@ -285,7 +285,7 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 	/****
 	 * 是否需要绑定商户的角色
 	 * @return
-	 */
+	
 	@Transient
 	public boolean isMerchantBindedRole(){
 		if(LangUtils.isEmpty(getRoles()))
@@ -296,7 +296,7 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 		}
 		return false;
 	}
-	
+	 */
 	@Transient
 	public boolean isBindTheRole(AdminRoleEntity role){
 		for(AdminRoleEntity ur : getRoles()){
@@ -305,7 +305,16 @@ public class AdminUserEntity extends TimestampBaseEntity implements ILogicDelete
 		}
 		return false;
 	}
-	
+	@Transient
+	public boolean isSystemRoot(){
+		if(LangUtils.isEmpty(getRoles()))
+			return false;
+		for(AdminRoleEntity role : getRoles()){
+			if(role.isSystemRoot())
+				return true;
+		}
+		return false;
+	}
 
 	public static enum UserStatus {
 		NORMAL("正常"),
