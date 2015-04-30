@@ -1,4 +1,4 @@
-package org.onetwo.test.dbtest.utils;
+package org.onetwo.test.jorm.utils;
 
 
 /***

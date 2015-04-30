@@ -1,4 +1,4 @@
-package org.onetwo.test.dbtest.model.entity;
+package org.onetwo.test.jorm.model.entity;
 
 import java.util.Date;
 
