@@ -1,10 +1,10 @@
-package org.onetwo.app;
+package org.onetwo.test.jorm;
 
 import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.onetwo.common.profiling.TimeCounter;
-import org.onetwo.test.dbtest.model.service.UserAutoidServiceImpl;
+import org.onetwo.test.jorm.model.service.UserAutoidServiceImpl;
 
 //@TransactionConfiguration(defaultRollback=true)
 public class BatchInsertTest extends AppBaseTest {

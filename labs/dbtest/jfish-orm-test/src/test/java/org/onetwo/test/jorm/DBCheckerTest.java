@@ -1,11 +1,11 @@
-package org.onetwo.app;
+package org.onetwo.test.jorm;
 
 import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.test.dbtest.model.entity.UserAutoidEntity;
-import org.onetwo.test.dbtest.model.entity.UserEntity;
+import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
+import org.onetwo.test.jorm.model.entity.UserEntity;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.util.Assert;
 
@@ -26,6 +26,7 @@ public class DBCheckerTest extends AppBaseTest {
 		Assert.notNull(dbuser);
 		Assert.notNull(dbuser.getId());
 	}
+	
 	@Test
 	public void testSaveUserAutoid(){
 		UserAutoidEntity user = new UserAutoidEntity();
