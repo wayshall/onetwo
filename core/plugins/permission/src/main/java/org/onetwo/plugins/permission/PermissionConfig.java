@@ -1,5 +1,7 @@
 package org.onetwo.plugins.permission;
 
+import java.lang.reflect.Field;
+
 import org.onetwo.common.utils.ReflectUtils;
 
 
@@ -7,7 +9,13 @@ import org.onetwo.common.utils.ReflectUtils;
 public interface PermissionConfig {
 
 	default public String getAppCode(){
-		String appCode = (String)ReflectUtils.getStaticFieldValue(getRootMenuClass(), "appCode");
+		String appCode = "";
+		Field appCodeField = ReflectUtils.findField(getRootMenuClass(), "appCode");
+		if(appCodeField!=null){
+			appCode = (String)ReflectUtils.getFieldValue(appCodeField, getRootMenuClass(), false);
+		}else{
+			appCode = getRootMenuClass().getSimpleName();
+		}
 		return appCode;
 	}
 	

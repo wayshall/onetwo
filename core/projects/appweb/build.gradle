@@ -1,0 +1,93 @@
+buildscript {
+	repositories {
+		maven { url 'http://repo.spring.io/plugins-release' }
+	}
+	dependencies {
+		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.6")
+		classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.6")
+	}
+	
+}
+
+
+apply plugin: "propdeps"
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+apply plugin: 'war'
+
+
+compileJava {
+	sourceCompatibility=1.6
+	targetCompatibility=1.6
+}
+
+eclipseJdt << {
+	File f = file('.settings/org.eclipse.core.resources.prefs')
+	f.write('eclipse.preferences.version=1\n')
+	f.append('encoding/<project>=utf-8')
+}
+
+compileJava.options.encoding = 'UTF-8'
+buildDir = "target"
+
+
+eclipse {
+	classpath {
+		downloadJavadoc = true
+		downloadSources=true
+	}
+}
+
+repositories {
+	maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
+	maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
+	maven { url "http://192.168.104.217:8888/nexus/content/repositories/thirdparty" }
+	maven { url "http://repository.sonatype.org/content/groups/public/" }
+	mavenCentral()
+	mavenLocal()
+}
+
+
+version = "1.0.0-SNAPSHOT"
+ext.onetwoVersion = "3.2.9-SNAPSHOT";
+
+
+ext.junitVersion = "4.10"
+ext.onetwoVersion = "3.2.0-SNAPSHOT";
+ext.commonsioVersion = "2.4"
+ext.javaeeVersion = "6.0-3"
+ext.mysqlConnectorVersion = "5.1.35"
+
+dependencies {
+	
+	compile("org.onetwo:onetwo-jfish:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-fmtag:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-codegen:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
+	
+	compile("javax.persistence:com.springsource.javax.persistence:2.0.0")
+	compile("com.microsoft:sqljdbc4:1.0")
+	compile("commons-io:commons-io:${commonsioVersion}")
+	compile("mysql:mysql-connector-java:${mysqlConnectorVersion}")
+	provided("org.apache.openejb:javaee-api:${javaeeVersion}")
+	
+	compile("com.microsoft:sqljdbc4:1.0")
+//	compile("com.oracle:ojdbc5:11.1.0.6.0")
+	
+	testCompile("junit:junit:${junitVersion}")
+	embeddedTomcat()
+}
+
+
+def embeddedTomcat() {
+	def tomcatVersion = "7.0.59";
+	def jspVersion = "2.2.1-b03"
+	
+	["org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion",
+	 "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion",
+	 "javax.servlet.jsp:jsp-api:${jspVersion}"]
+}
