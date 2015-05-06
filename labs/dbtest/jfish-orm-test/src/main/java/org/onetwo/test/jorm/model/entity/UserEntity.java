@@ -17,7 +17,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.hibernate.TimestampBaseEntity;
 import org.onetwo.common.spring.dozer.DozerMapping;
 import org.onetwo.test.jorm.utils.Constant;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,13 +29,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @SuppressWarnings("serial")
 @Entity
 @Table(name="TEST_USER")
-//@ASequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
 @TableGenerator(table=Constant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1, name="UserEntityGenerator")
-//@SelectBeforeUpdate
-//@DynamicUpdate
 @DozerMapping
-//@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
-public class UserEntity extends TimestampBaseEntity {
+public class UserEntity {
 	
 	/*****
 	 * 

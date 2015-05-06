@@ -19,8 +19,8 @@ public class Main {
 			}
 			
 			protected void initApplicationContext(SpringConfigApplicationContext context){
-				context.setAppEnvironment(JFishOrmConfig.getInstance().getAppEnvironment());
-				context.register(JFishOrmContextConfig.class);
+				context.setAppEnvironment(JFishOrmTestConfig.getInstance().getAppEnvironment());
+				context.register(JFishOrmTestContextConfig.class);
 			}
 			
 			

@@ -1,11 +1,13 @@
 package org.onetwo.test.jorm;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.jfishdb.DaoFactory;
+import org.onetwo.common.jfishdb.spring.JFishDao;
 import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
-import org.onetwo.test.jorm.model.entity.UserEntity;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.util.Assert;
 
@@ -13,18 +15,13 @@ import org.springframework.util.Assert;
 public class DBCheckerTest extends AppBaseTest {
 	
 	@Resource
-	private BaseEntityManager baseEntityManager;
-
-	@Test
-	public void testSaveUser(){
-		UserEntity user = new UserEntity();
-		String userName = "test_user_name";
-		user.setUserName(userName);
-		user.setNickName("test_nickName");
-		baseEntityManager.save(user);
-		UserEntity dbuser = baseEntityManager.findOne(UserEntity.class, "userName", userName);
-		Assert.notNull(dbuser);
-		Assert.notNull(dbuser.getId());
+	private DataSource dataSource;
+	
+	private JFishDao jfishDao;
+	
+	@Before
+	public void setup(){
+		this.jfishDao = DaoFactory.getInstance().newDao(dataSource);
 	}
 	
 	@Test
@@ -33,10 +30,9 @@ public class DBCheckerTest extends AppBaseTest {
 		String userName = "test_user_name";
 		user.setUserName(userName);
 		user.setNickName("test_nickName");
-		baseEntityManager.save(user);
-		UserAutoidEntity dbuser = baseEntityManager.findOne(UserAutoidEntity.class, "userName", userName);
-		Assert.notNull(dbuser);
-		Assert.notNull(dbuser.getId());
+		this.jfishDao.save(user);
+		Assert.notNull(user);
+		Assert.notNull(user.getId());
 	}
 
 }

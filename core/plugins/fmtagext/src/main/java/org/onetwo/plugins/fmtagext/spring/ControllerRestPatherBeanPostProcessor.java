@@ -1,9 +1,9 @@
 package org.onetwo.plugins.fmtagext.spring;
 
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.MappedEntryManager;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.jfishdb.orm.JFishMappedEntry;
+import org.onetwo.common.jfishdb.orm.MappedEntryManager;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.rest.RestPather;
 import org.onetwo.common.spring.rest.RestPather.EntityPathInfo;

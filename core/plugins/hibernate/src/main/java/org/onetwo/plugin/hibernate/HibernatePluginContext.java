@@ -8,20 +8,29 @@ import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DataQueryFilterListener;
+import org.onetwo.common.db.FileNamedQueryFactory;
+import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.hibernate.HibernateEntityManagerImpl;
-import org.onetwo.common.hibernate.HibernateFileQueryManagerFactoryBean;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.hibernate.TableGeneratorService;
 import org.onetwo.common.hibernate.TableGeneratorServiceImpl;
 import org.onetwo.common.hibernate.listener.TimestampEventListener;
 import org.onetwo.common.hibernate.msf.JFishMultipleSessionFactory;
+import org.onetwo.common.hibernate.sql.HibernateFileQueryManagerImpl;
 import org.onetwo.common.hibernate.sql.HibernateSQLSymbolManagerImpl;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JdbcDao;
+import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
+import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +49,9 @@ public class HibernatePluginContext implements InitializingBean  {
 	
 	@Resource
 	private ApplicationContext applicationContext;
-	
+
+	@Autowired
+	private JFishPropertyPlaceholder configHolder;
 	
 	
 	@Override
@@ -87,11 +98,31 @@ public class HibernatePluginContext implements InitializingBean  {
 		return new DataQueryFilterListener();
 	}
 	
-	@Bean
+	/*@Bean
 	public HibernateFileQueryManagerFactoryBean fileQueryManagerFactoryBean(){
 		HibernateFileQueryManagerFactoryBean fb = new HibernateFileQueryManagerFactoryBean();
 		fb.setDataSource(dataSource);
 		return fb;
+	}*/
+	@Bean
+	public FileNamedQueryFactory<JFishNamedFileQueryInfo> fileNamedQueryFactory(){
+//		Assert.notNull(appConfig, "appConfig can not be null.");
+//		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
+//		DataBase db = JdbcUtils.getDataBase(dataSource);
+		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		FileNamedQueryFactory<JFishNamedFileQueryInfo> fq = new HibernateFileQueryManagerImpl(sqlFileManager(), listener);
+		fq.initQeuryFactory(baseEntityManager());
+		return fq;
+	}
+	
+	@Bean
+	public JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager() {
+		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
+		DataBase db = JdbcUtils.getDataBase(dataSource);
+//		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
+		JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlfileMgr = JFishNamedSqlFileManager.createDefaultJFishNamedSqlFileManager(db, watchSqlFile, listener);
+		return sqlfileMgr;
 	}
 
 	@Bean

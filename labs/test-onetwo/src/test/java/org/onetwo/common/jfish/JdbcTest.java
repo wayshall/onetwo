@@ -7,8 +7,8 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.fish.JFishQuery;
-import org.onetwo.common.fish.spring.JFishDaoImpl;
+import org.onetwo.common.jfishdb.JFishQuery;
+import org.onetwo.common.jfishdb.spring.JFishDaoImpl;
 import org.onetwo.common.test.spring.SpringTxJUnitTestCase;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;

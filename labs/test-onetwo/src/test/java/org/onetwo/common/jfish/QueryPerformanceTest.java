@@ -13,7 +13,7 @@ import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.QueryBuilder;
 import org.onetwo.common.db.QueryBuilderImpl;
-import org.onetwo.common.fish.spring.JFishDaoImpl;
+import org.onetwo.common.jfishdb.spring.JFishDaoImpl;
 import org.onetwo.common.nutz.NutzBaseDao;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.test.spring.SpringTxJUnitTestCase;
