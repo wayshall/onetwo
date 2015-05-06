@@ -7,7 +7,14 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.fish.jpa.JPARelatedMappedEntryBuilder;
+import org.onetwo.common.jfishdb.dialet.MySQLDialect;
+import org.onetwo.common.jfishdb.jpa.JPARelatedMappedEntryBuilder;
+import org.onetwo.common.jfishdb.orm.AbstractJFishMappedEntryImpl;
+import org.onetwo.common.jfishdb.orm.DefaultDataBaseConfig;
+import org.onetwo.common.jfishdb.orm.EntrySQLBuilder;
+import org.onetwo.common.jfishdb.orm.JFishMappedEntryBuilder;
+import org.onetwo.common.jfishdb.orm.JdbcStatementContext;
+import org.onetwo.common.jfishdb.orm.MappedEntryBuilderListenerManager;
 
 import test.entity.RoleEntity;
 import test.entity.UserEntity;

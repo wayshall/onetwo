@@ -2,7 +2,7 @@ package org.onetwo.plugins.fmtagext.service;
 
 import java.util.List;
 
-import org.onetwo.common.fish.orm.JFishMappedEntry;
+import org.onetwo.common.jfishdb.orm.JFishMappedEntry;
 import org.onetwo.common.utils.Page;
 
 public interface JFishDataDelegateService {
