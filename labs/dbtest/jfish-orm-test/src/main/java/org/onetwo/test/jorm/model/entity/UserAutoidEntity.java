@@ -16,7 +16,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.hibernate.TimestampBaseEntity;
 import org.onetwo.common.spring.dozer.DozerMapping;
 import org.springframework.format.annotation.DateTimeFormat;
 

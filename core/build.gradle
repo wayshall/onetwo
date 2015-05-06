@@ -81,8 +81,8 @@ configure(allprojects){ project ->
 	
 	repositories {
 		//if want ide download the sources, move to the top
-		mavenLocal()
 		mavenCentral()
+		mavenLocal()
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
@@ -336,7 +336,6 @@ project("$projectOrm"){
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
-		
 		
 	}
 }

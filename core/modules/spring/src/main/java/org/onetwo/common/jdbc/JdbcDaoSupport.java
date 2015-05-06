@@ -6,7 +6,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.support.DaoSupport;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -16,14 +18,35 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * @author weishao
  *
  */
-abstract public class JdbcDaoSupport extends DaoSupport {
+abstract public class JdbcDaoSupport {
 
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	protected JFishJdbcOperations jdbcTemplate;
 	protected NamedJdbcTemplate namedParameterJdbcTemplate;
 	
 	private RowMapperFactory rowMapperFactory;
 	
 
+	public final void initialize() {
+		// Let abstract subclasses check their configuration.
+		checkDaoConfig();
+
+		// Let concrete implementations initialize themselves.
+		try {
+			initDao();
+		}
+		catch (Exception ex) {
+			throw new BeanInitializationException("Initialization of DAO failed", ex);
+		}
+	}
+
+	protected void initDao() throws Exception {
+		if(this.rowMapperFactory==null){
+			this.rowMapperFactory = new SimpleRowMapperFactory();
+		}
+	}
+	
 	public <T> List<T> query(String sql, Class<T> entityClass, Object... args){
 		return this.jdbcTemplate.query(sql, getDefaultRowMapper(entityClass), args);
 	}
@@ -56,13 +79,6 @@ abstract public class JdbcDaoSupport extends DaoSupport {
 
 	public final JFishJdbcOperations getJdbcTemplate() {
 	  return this.jdbcTemplate;
-	}
-
-	@Override
-	protected void initDao() throws Exception {
-		if(this.rowMapperFactory==null){
-			this.rowMapperFactory = new SimpleRowMapperFactory();
-		}
 	}
 
 	protected void initTemplateConfig() {

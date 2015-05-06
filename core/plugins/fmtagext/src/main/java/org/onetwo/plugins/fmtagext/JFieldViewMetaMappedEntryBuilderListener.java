@@ -1,8 +1,8 @@
 package org.onetwo.plugins.fmtagext;
 
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.JFishMappedField;
-import org.onetwo.common.fish.orm.MappedEntryBuilderListener;
+import org.onetwo.common.jfishdb.orm.JFishMappedEntry;
+import org.onetwo.common.jfishdb.orm.JFishMappedField;
+import org.onetwo.common.jfishdb.orm.MappedEntryBuilderListener;
 
 public class JFieldViewMetaMappedEntryBuilderListener implements MappedEntryBuilderListener {
 

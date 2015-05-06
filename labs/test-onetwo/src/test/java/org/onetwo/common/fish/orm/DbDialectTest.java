@@ -2,7 +2,7 @@ package org.onetwo.common.fish.orm;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.fish.orm.AbstractDBDialect.DBMeta;
+import org.onetwo.common.jfishdb.orm.AbstractDBDialect.DBMeta;
 
 public class DbDialectTest {
 	
