@@ -5,6 +5,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishPluginManagerInitializer;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.support.StandardServletEnvironment;
@@ -26,10 +27,10 @@ public class JFishWebApplicationContext extends SpringProfilesWebApplicationCont
 		
 		String basePackage = BaseSiteConfig.getInstance().getJFishBasePackages();
 		if(StringUtils.isBlank(basePackage)){
-			basePackage = SpringUtils.loadAsJFishProperties("webconf/application.properties").getProperty(BaseSiteConfig.JFISH_BASE_PACKAGES);
+			basePackage = SpringUtils.loadAsJFishProperties("webconf/application.properties").getProperty(AppConfig.JFISH_BASE_PACKAGES);
 		}
 		if(StringUtils.isNotBlank(basePackage)){
-			System.setProperty(BaseSiteConfig.JFISH_BASE_PACKAGES, basePackage);
+			System.setProperty(AppConfig.JFISH_BASE_PACKAGES, basePackage);
 		}
 	}
 	
