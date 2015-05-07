@@ -3,7 +3,7 @@ package org.onetwo.test.jorm;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.jfishdb.spring.config.JFishOrmConfig;
+import org.onetwo.common.jfishdbm.spring.JFishdbmSpringConfiguration;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.springframework.cache.CacheManager;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @JFishProfile
 @ImportResource("classpath:applicationContext.xml")
-@Import(JFishOrmConfig.class)
+@Import(JFishdbmSpringConfiguration.class)
 public class JFishOrmTestContextConfig {
 
 	@Resource

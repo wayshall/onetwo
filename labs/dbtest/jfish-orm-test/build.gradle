@@ -77,7 +77,7 @@ dependencies {
 	
 	compile("org.onetwo:onetwo-common:${onetwoVersion}")
 	compile("org.onetwo:onetwo-spring:${onetwoVersion}")
-	compile("org.onetwo:onetwo-orm:${onetwoVersion}")
+	compile("org.onetwo:onetwo-dbm:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
 	
 	

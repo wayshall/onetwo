@@ -3,7 +3,7 @@ package org.onetwo.test.jorm.model.service;
 import java.util.Date;
 import java.util.List;
 
-import org.onetwo.common.jfishdb.spring.JFishDao;
+import org.onetwo.common.jfishdbm.support.JFishDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
