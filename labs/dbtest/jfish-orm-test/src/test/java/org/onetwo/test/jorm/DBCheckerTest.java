@@ -5,8 +5,8 @@ import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.jfishdb.DaoFactory;
-import org.onetwo.common.jfishdb.spring.JFishDao;
+import org.onetwo.common.jfishdbm.support.DaoFactory;
+import org.onetwo.common.jfishdbm.support.JFishDao;
 import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.util.Assert;

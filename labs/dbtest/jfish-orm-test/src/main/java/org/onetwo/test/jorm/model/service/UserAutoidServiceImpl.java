@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.jfishdb.spring.JFishDao;
+import org.onetwo.common.jfishdbm.support.JFishDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.test.jorm.model.dao.UserAutoidDao;
