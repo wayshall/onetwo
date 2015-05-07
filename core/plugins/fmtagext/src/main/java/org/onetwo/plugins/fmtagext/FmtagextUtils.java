@@ -1,6 +1,6 @@
 package org.onetwo.plugins.fmtagext;
 
-import org.onetwo.common.jfishdb.orm.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
 import org.onetwo.plugins.fmtag.directive.AbstractJFieldView;
 import org.onetwo.plugins.fmtagext.annotation.JFieldView;
 

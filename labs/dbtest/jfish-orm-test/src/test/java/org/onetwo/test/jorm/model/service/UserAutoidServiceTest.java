@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.onetwo.common.jfishdb.spring.JFishDaoImpl;
+import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.test.jorm.AppBaseTest;
 import org.onetwo.test.jorm.model.entity.UserAutoidEntity;

@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.onetwo.common.ftl.directive.DirectivesUtils;
-import org.onetwo.common.jfishdb.orm.AbstractMappedField;
-import org.onetwo.common.jfishdb.orm.JFishMappedEntry;
-import org.onetwo.common.jfishdb.orm.JFishMappedField;
-import org.onetwo.common.jfishdb.orm.JFishMappedFieldType;
+import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedFieldType;
 import org.onetwo.common.spring.web.BaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.ArrayUtils;

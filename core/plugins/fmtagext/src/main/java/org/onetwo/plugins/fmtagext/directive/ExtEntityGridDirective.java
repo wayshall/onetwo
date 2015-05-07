@@ -1,7 +1,7 @@
 package org.onetwo.plugins.fmtagext.directive;
 
-import org.onetwo.common.jfishdb.orm.JFishMappedEntry;
-import org.onetwo.common.jfishdb.orm.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
 import org.onetwo.plugins.fmtag.annotation.JEntryViewMeta;
 import org.onetwo.plugins.fmtag.directive.DataField;
 import org.onetwo.plugins.fmtag.directive.DataGrid;
