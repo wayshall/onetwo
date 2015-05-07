@@ -6,7 +6,6 @@ import java.util.Map;
 import org.onetwo.common.db.AbstractDataQuery;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Page;
 
 public class JFishDataQuery extends AbstractDataQuery {
 	

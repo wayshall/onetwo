@@ -3,7 +3,7 @@ package org.onetwo.common.hibernate.sql;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Query;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.HibernateQueryProvider;
@@ -20,7 +20,7 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<JFishNamedFileQ
 //	private FileSqlParser parser;
 	
 
-	public HibernateFileQueryImpl(QueryProvider baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
+	public HibernateFileQueryImpl(QueryProvideManager baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		super(baseEntityManager, info, count, parser);
 		Assert.notNull(baseEntityManager);
 //		this.baseEntityManager = baseEntityManager;

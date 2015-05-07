@@ -1,8 +1,6 @@
 package org.onetwo.common.jfishdb.spring;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,7 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
-import org.onetwo.common.jdbc.JdbcDaoSupport;
+import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdb.JFishDataQuery;
 import org.onetwo.common.jfishdb.JFishQuery;
@@ -25,6 +23,7 @@ import org.onetwo.common.jfishdb.JFishQueryImpl;
 import org.onetwo.common.jfishdb.JFishSQLSymbolManagerImpl;
 import org.onetwo.common.jfishdb.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdb.dialet.DBDialect;
+import org.onetwo.common.jfishdb.dialet.DbmetaFetcher;
 import org.onetwo.common.jfishdb.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.common.jfishdb.dialet.MySQLDialect;
 import org.onetwo.common.jfishdb.dialet.OracleDialect;
@@ -63,7 +62,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JFishDao {
+public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao {
 
 	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
@@ -115,7 +114,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		
 //		super.initDao();
 		if(this.dialect==null){
-			DBMeta dbmeta = getDBMeta();
+			DBMeta dbmeta = DbmetaFetcher.create(getDataSource()).getDBMeta();
 //			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
 			this.dialect = this.databaseDialetManager.getRegistered(dbmeta.getDbName());
 			if (this.dialect == null) {
@@ -126,7 +125,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		}
 		
 		if(mappedEntryManager==null){
-			this.mappedEntryManager = new MutilMappedEntryManager(this);
+			this.mappedEntryManager = new MutilMappedEntryManager(this.dialect);
 			this.mappedEntryManager.initialize();
 		}
 		//init sql symbol
@@ -146,6 +145,27 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 //		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
 	}
 	
+
+	public DefaultDatabaseDialetManager getDatabaseDialetManager() {
+		return databaseDialetManager;
+	}
+
+	public void setDatabaseDialetManager(
+			DefaultDatabaseDialetManager databaseDialetManager) {
+		this.databaseDialetManager = databaseDialetManager;
+	}
+
+	public void setMappedEntryManager(MappedEntryManager mappedEntryManager) {
+		this.mappedEntryManager = mappedEntryManager;
+	}
+
+	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {
+		this.sqlSymbolManager = sqlSymbolManager;
+	}
+
+	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
+		this.dataBaseConfig = dataBaseConfig;
+	}
 
 	public DataBaseConfig getDataBaseConfig() {
 		return dataBaseConfig;
@@ -590,7 +610,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 		this.dialect = dialect;
 	}
 
-	
+	/*
 	protected DBMeta getDBMeta(){
 		Connection dbcon = null;
 		DBMeta dbmeta = new DBMeta();
@@ -606,7 +626,7 @@ public class JFishDaoImpl extends JdbcDaoSupport implements JFishEventSource, JF
 			releaseConnection(dbcon);
 		}
 		return dbmeta;
-	}
+	}*/
 
 
 	public SQLSymbolManager getSqlSymbolManager() {
