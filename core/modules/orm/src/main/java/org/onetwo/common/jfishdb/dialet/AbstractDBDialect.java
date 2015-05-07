@@ -3,6 +3,8 @@ package org.onetwo.common.jfishdb.dialet;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jfishdb.event.JFishBatchInsertEventListener;
@@ -44,6 +46,7 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 //		this.dataBaseConfig = dataBaseConfig;
 	}
 
+	@PostConstruct
 	public void initialize() {
 		/*if(this.dataBaseConfig==null){
 			this.dataBaseConfig = SpringUtils.getHighestOrder(applicationContext, DataBaseConfig.class);
@@ -55,9 +58,10 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 		//优先使用自定义的 DbEventListenerManager
 		if(this.jfishdbEventListenerManager==null){
 //			DbEventListenerManager dbelm = this.findDbEventListenerManagerFromContext(applicationContext);
-			JFishdbEventListenerManager dbelm = new JFishdbEventListenerManager();
+			JFishdbEventListenerManager listMg = new JFishdbEventListenerManager();
 //			dbelm.registerDefaultEventListeners();
-			this.jfishdbEventListenerManager = dbelm;
+			this.onDefaultDbEventListenerManager(listMg);
+			this.jfishdbEventListenerManager = listMg;
 		}
 		
 		

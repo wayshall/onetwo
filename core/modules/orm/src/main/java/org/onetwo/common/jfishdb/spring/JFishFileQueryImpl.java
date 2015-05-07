@@ -1,7 +1,7 @@
 package org.onetwo.common.jfishdb.spring;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.jfishdb.JFishDataQuery;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
@@ -12,13 +12,13 @@ import org.springframework.jdbc.core.RowMapper;
 public class JFishFileQueryImpl extends DefaultFileQueryImpl<JFishNamedFileQueryInfo> {
 
 //	private JFishNamedFileQueryInfo info;
-	private QueryProvider baseEntityManager;
+//	private QueryProvideManager baseEntityManager;
 	
 
-	public JFishFileQueryImpl(QueryProvider jfishFishDao, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
+	public JFishFileQueryImpl(QueryProvideManager jfishFishDao, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		super(jfishFishDao, info, count, parser);
 		Assert.notNull(jfishFishDao);
-		this.baseEntityManager = jfishFishDao;
+//		this.baseEntityManager = jfishFishDao;
 		
 	}
 /*

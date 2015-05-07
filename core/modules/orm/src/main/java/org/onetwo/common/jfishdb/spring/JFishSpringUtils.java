@@ -1,12 +1,8 @@
 package org.onetwo.common.jfishdb.spring;
 
-import org.onetwo.common.db.ParamValues.PlaceHolder;
-import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.jfishdb.dialet.DBDialect;
 import org.onetwo.common.jfishdb.orm.MappedEntryManager;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.springframework.context.ApplicationContext;
 
 final public class JFishSpringUtils {
@@ -38,25 +34,4 @@ final public class JFishSpringUtils {
 		return mappedEntryManager;
 	}
 	
-	public static JFishFileQueryImpl castToFileQuery(DynamicQuery aq){
-		JFishFileQueryImpl jfq = null;
-		if(aq instanceof JFishFileQueryImpl){
-			jfq = (JFishFileQueryImpl) aq;
-		}else{
-			LangUtils.throwBaseException("it's not a file query : " + aq.getClass());
-		}
-		return jfq;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void setAnotherQueryValue(DynamicQuery aq, PlaceHolder type, Object...args){
-		if(LangUtils.isEmpty(args))
-			return ;
-		Assert.notNull(type);
-		if(type==PlaceHolder.POSITION){
-			aq.setParameters(LangUtils.asList(args));
-		}else{
-			aq.setParameters(LangUtils.asMap(args));
-		}
-	}
 }

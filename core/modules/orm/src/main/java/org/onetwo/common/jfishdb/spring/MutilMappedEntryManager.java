@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.onetwo.common.jfishdb.dialet.DBDialect;
 import org.onetwo.common.jfishdb.exception.JFishNoMappedEntryException;
 import org.onetwo.common.jfishdb.exception.JFishOrmException;
 import org.onetwo.common.jfishdb.jpa.JPAMappedEntryBuilder;
@@ -46,10 +47,11 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	
 	private Object entryCacheLock = new Object();
 	
-	private JFishDaoImplementor jfishDaoImplementor;
+//	private JFishDaoImplementor jfishDaoImplementor;
+	private DBDialect dialet;
 
-	public MutilMappedEntryManager(JFishDaoImplementor jfishDaoImplementor) {
-		this.jfishDaoImplementor = jfishDaoImplementor;
+	public MutilMappedEntryManager(DBDialect dialet) {
+		this.dialet = dialet;
 	}
 
 
@@ -57,11 +59,11 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	public void initialize() {
 		if(LangUtils.isEmpty(mappedEntryBuilders)){
 			List<MappedEntryBuilder> builders = LangUtils.newArrayList();
-			MappedEntryBuilder builder = new JFishMappedEntryBuilder(jfishDaoImplementor.getDialect());
+			MappedEntryBuilder builder = new JFishMappedEntryBuilder(dialet);
 			builder.initialize();
 			builders.add(builder);
 			
-			builder = new JPAMappedEntryBuilder(jfishDaoImplementor.getDialect());
+			builder = new JPAMappedEntryBuilder(dialet);
 			builder.initialize();
 			builders.add(builder);
 			this.mappedEntryBuilders = ImmutableList.copyOf(builders);
