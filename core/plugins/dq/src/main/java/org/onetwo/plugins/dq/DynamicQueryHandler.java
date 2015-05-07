@@ -12,7 +12,7 @@ import java.util.Map;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -39,7 +39,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private Cache methodCache;
-	private QueryProvider em;
+	private QueryProvideManager em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
 	private boolean debug = true;
@@ -52,7 +52,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
 	}*/
 	
-	public DynamicQueryHandler(QueryProvider em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvideManager em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
@@ -159,8 +159,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 		Map<Object, Object> params = dmethod.toMapByArgs(args, componentClass);
 		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
 		if(batchParameter==null){
-			if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
-				throw new BaseException("batch execute, the first parameter must a Collection : " + dmethod.getMethod().toGenericString());
+			if(LangUtils.size(args)!=1 || !Collection.class.isInstance(args[0])){
+				throw new BaseException("BatchObject not found, the batch method parameter only supported one parameter and must a Collection : " + dmethod.getMethod().toGenericString());
 			}
 			
 			//default is first arg

@@ -2,7 +2,6 @@ package org.onetwo.common.jfishdb;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,8 +9,6 @@ import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
-import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -20,10 +17,8 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdb.exception.JFishEntityNotFoundException;
 import org.onetwo.common.jfishdb.spring.JFishDao;
 import org.onetwo.common.jfishdb.spring.JFishDaoImplementor;
-import org.onetwo.common.jfishdb.spring.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -45,7 +40,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	private ApplicationContext applicationContext;
 	
 	private FileNamedQueryFactory fileNamedQueryFactory;
-	private boolean watchSqlFile = false;
+//	private boolean watchSqlFile = false;
 	
 	public JFishEntityManagerImpl(){
 	}
@@ -64,23 +59,13 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 
 	public void afterPropertiesSet() throws Exception{
-		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		/*FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDb(), watchSqlFile, listener);
-		this.fileNamedQueryFactory.initQeuryFactory(this);
+		this.fileNamedQueryFactory.initQeuryFactory(this);*/
 		
 //		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
-		
-		/*List<JFishEntityManagerLifeCycleListener> jlisteners = SpringUtils.getBeans(applicationContext, JFishEntityManagerLifeCycleListener.class);
-		this.emListeners = JFishList.wrapObject(jlisteners);
-		
-		this.emListeners.each(new NoIndexIt<JFishEntityManagerLifeCycleListener>() {
-
-			@Override
-			protected void doIt(JFishEntityManagerLifeCycleListener element) throws Exception {
-				element.onInit(JFishEntityManagerImpl.this);
-			}
-			
-		});*/
+		//不在set方法里设置，避免循环依赖
+		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 	}
 
 	@Override
@@ -222,8 +207,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		SQLSymbolManager = sQLSymbolManager;
 	}*/
 
-	public JFishNamedFileQueryManagerImpl getFileNamedQueryFactory() {
-		return (JFishNamedFileQueryManagerImpl)this.fileNamedQueryFactory;
+	public FileNamedQueryFactory getFileNamedQueryFactory() {
+		return this.fileNamedQueryFactory;
 	}
 
 
@@ -250,7 +235,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 			
 			SQLException se = (SQLException) e.getCause();
 			if ("42000".equals(se.getSQLState())) {
-				try {
+				this.createSequence(sequenceName);
+				/*try {
 					DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
 					dq.executeUpdate();
 					
@@ -261,7 +247,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 					throw new ServiceException("createSequences error: " + e.getMessage(), e);
 				}
 				if (id == null)
-					throw new ServiceException("createSequences error: " + e.getMessage(), e);
+					throw new ServiceException("createSequences error: " + e.getMessage(), e);*/
 			}
 		}
 		return id;
@@ -279,11 +265,11 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
-	public <T> void removeList(Collection<T> entities) {
+	/*public <T> void removeList(Collection<T> entities) {
 		if(LangUtils.isEmpty(entities))
 			return ;
 		getJfishDao().delete(entities);
-	}
+	}*/
 	
 	public <T> List<T> findList(JFishQueryValue queryValue) {
 		return getJfishDao().findList(queryValue);
@@ -310,9 +296,9 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}*/
 
 
-	public <T> T findUnique(Class<T> entityClass, Object... properties) {
+	/*public <T> T findUnique(Class<T> entityClass, Object... properties) {
 		return jfishDao.findUniqueByProperties(entityClass, CUtils.asLinkedMap(properties));
-	}
+	}*/
 
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findUniqueByProperties(entityClass, properties);
@@ -324,9 +310,9 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return (T) dq.getSingleResult();
 	}
 
-	public <T> T findUnique(String sql, Map<String, Object> values) {
+	/*public <T> T findUnique(String sql, Map<String, Object> values) {
 		return (T)jfishDao.createAsDataQuery(sql, values).getSingleResult();
-	}
+	}*/
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		return findByProperties(entityClass, CUtils.asLinkedMap(properties));
@@ -346,15 +332,11 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		this.findPage(entityClass, page, properties);
 	}
 
-	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
+	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties) {
 		return jfishDao.countByProperties(entityClass, properties);
 	}
 
-	public Number countRecord(Class entityClass, Object... params) {
-		return countRecord(entityClass, CUtils.asLinkedMap(params));
-	}
-
-	@Override
+	/*@Override
 	public void delete(ILogicDeleteEntity entity) {
 		entity.deleted();
 		getJfishDao().save(entity);
@@ -372,11 +354,11 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		logicDeleteEntity.deleted();
 		getJfishDao().save(logicDeleteEntity);
 		return logicDeleteEntity;
-	}
+	}*/
 
 	@Override
 	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		return getFileNamedQueryFactory().findPage(queryName, rowMapper, page, params);
+		return getFileNamedQueryFactory().findPage(queryName, page, params);
 	}
 
 
@@ -392,9 +374,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 
-	public void setWatchSqlFile(boolean watchSqlFile) {
-		this.watchSqlFile = watchSqlFile;
+	public void setFileNamedQueryFactory(FileNamedQueryFactory fileNamedQueryFactory) {
+		this.fileNamedQueryFactory = fileNamedQueryFactory;
 	}
-
 
 }
