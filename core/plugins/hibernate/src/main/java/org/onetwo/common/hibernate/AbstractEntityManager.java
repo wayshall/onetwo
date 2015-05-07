@@ -15,11 +15,9 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.exception.NotUniqueResultException;
-import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.ArrayUtils;
@@ -42,7 +40,6 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 	public AbstractEntityManager(){
 	}
 	
-	abstract public SequenceNameManager getSequenceNameManager();
 
 	/*public void setSequenceNameManager(SequenceNameManager sequenceNameManager) {
 		this.sequenceNameManager = sequenceNameManager;
@@ -74,7 +71,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		}
 		return id;
 	}
-	
+	/*
 	protected void createSequence(Class entityClass){
 		String seqName = getSequenceNameManager().getSequenceName(entityClass);
 		this.createSequence(seqName);
@@ -95,7 +92,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 			}
 			if (id == null)
 				throw new ServiceException("createSequences error. ");
-	}
+	}*/
 
 	
 	public DataQuery createQuery(String sql, Map<String, Object> values){
@@ -134,7 +131,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		if(!MyUtils.checkIdValid(id))
 			throw new ServiceException("invalid id on load: " + id);
 	}
-
+/*
 	public void delete(ILogicDeleteEntity entity){
 		entity.deleted();
 		this.save(entity);
@@ -151,7 +148,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		logicDeleteEntity.deleted();
 		this.save(logicDeleteEntity);
 		return logicDeleteEntity;
-	}
+	}*/
 	
 	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Object... properties) {
 		Map<Object, Object> params = null;
@@ -324,7 +321,7 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		return findByProperties(entityClass);
 	}
 
-	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
+	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties) {
 		SelectExtQuery extQuery = this.createSelectExtQuery(entityClass, properties);
 		extQuery.build();
 		Number count = (Number)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
@@ -333,10 +330,10 @@ abstract public class AbstractEntityManager extends BaseEntityManagerAdapter imp
 		return count;
 	}
 
-	public Number countRecord(Class entityClass, Object... params) {
+	/*public Number countRecord(Class<?> entityClass, Object... params) {
 		Map<Object, Object> properties = MyUtils.convertParamMap(params);
 		return this.countRecord(entityClass, properties);
-	}
+	}*/
 
 	public EntityManagerProvider getEntityManagerProvider(){
 		return EntityManagerProvider.JPA;

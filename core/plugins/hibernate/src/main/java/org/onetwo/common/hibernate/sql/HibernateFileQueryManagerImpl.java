@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.NonUniqueResultException;
-import org.onetwo.common.db.AbstractFileNamedQueryFactory;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
-import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.exception.NotUniqueResultException;
-import org.onetwo.common.spring.ftl.TemplateParser;
-import org.onetwo.common.spring.sql.DefaultFileNamedSqlGenerator;
+import org.onetwo.common.spring.sql.AbstractFileNamedQueryFactory;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.Assert;
@@ -26,33 +23,25 @@ import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
  */
 public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo> {
 	
-	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
-	private TemplateParser parser;
+//	private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
+//	private TemplateParser parser;
 	
 	public HibernateFileQueryManagerImpl(FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
 		this(null, fileNamedQueryFactoryListener);
 	}
 	public HibernateFileQueryManagerImpl(JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
-		super(fileNamedQueryFactoryListener);
+		super(sqlFileManager, fileNamedQueryFactoryListener);
 		//Class<HibernateNamedInfo> clazz = find(HibernateNamedInfo.class);
 //		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> p = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
 //		p.initParser();
-		if(sqlFileManager!=null){
+		/*if(sqlFileManager!=null){
 
 			this.parser = (TemplateParser)sqlFileManager.getListener();
 //			sqlFileManager = new HibernateNamedSqlFileManager(databaseType, watchSqlFile, JFishNamedFileQueryInfo.class, p);
 //			sqlFileManager = JFishNamedSqlFileManager.createDefaultJFishNamedSqlFileManager(databaseType, watchSqlFile, p);
 			this.sqlFileManager = sqlFileManager;
 //			this.baseEntityManager = baseEntityManager;
-		}
-	}
-
-	public JFishNamedFileQueryInfo getNamedQueryInfo(String name) {
-		return sqlFileManager.getNamedQueryInfo(name);
-	}
-	@Override
-	public void buildNamedQueryInfos() {
-		this.sqlFileManager.build();
+		}*/
 	}
 	
 	public HibernateFileQueryImpl createHibernateFileQuery(String queryName, Object... args){
@@ -99,12 +88,12 @@ public class HibernateFileQueryManagerImpl extends AbstractFileNamedQueryFactory
 		return createHibernateFileQuery( queryName, args);
 	}
 	
-	@Override
+	/*@Override
 	public FileNamedSqlGenerator<JFishNamedFileQueryInfo> createFileNamedSqlGenerator(String queryName, Map<Object, Object> params) {
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
 		FileNamedSqlGenerator<JFishNamedFileQueryInfo> g = new DefaultFileNamedSqlGenerator<JFishNamedFileQueryInfo>(nameInfo, false, parser, params);
 		return g;
-	}
+	}*/
 
 	@Override
 	public DataQuery createCountQuery(String queryName, Object... args) {

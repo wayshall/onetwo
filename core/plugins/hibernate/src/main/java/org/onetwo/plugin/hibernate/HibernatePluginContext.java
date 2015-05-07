@@ -34,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
@@ -76,11 +78,13 @@ public class HibernatePluginContext implements InitializingBean  {
 	}
 	
 	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public BaseEntityManager baseEntityManager(){
 		HibernateEntityManagerImpl em = new HibernateEntityManagerImpl();
 		em.setSessionFactory(sessionFactory);
 //		em.setDataSource(dataSource);
 		em.setSqlSymbolManager(sqlSymbolManager());
+		em.setFileNamedQueryFactory(fileNamedQueryFactory());
 		return em;
 	}
 	

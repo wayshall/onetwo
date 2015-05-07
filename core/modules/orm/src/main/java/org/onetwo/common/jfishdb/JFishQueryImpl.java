@@ -8,10 +8,9 @@ import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.jfishdb.dialet.DBDialect;
 import org.onetwo.common.jfishdb.spring.JFishDaoImplementor;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -23,7 +22,7 @@ public class JFishQueryImpl implements JFishQuery {
 	private static final String MAX_RESULT_NAME = "JFishQueryMaxResult";
 	
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private JFishDaoImplementor JFishDaoImplementor;
 	private DBDialect dbDialect;
@@ -45,6 +44,7 @@ public class JFishQueryImpl implements JFishQuery {
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
 		this.sqlString = sqlString;
 		this.resultClass = resultClass;
+		this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
 	}
 	
 	/**********
@@ -52,7 +52,8 @@ public class JFishQueryImpl implements JFishQuery {
 	 */
 	@Override
 	public JFishQuery setParameter(Integer index, Object value){
-		this.checkQueryType(PlaceHolder.POSITION);
+//		this.checkQueryType(PlaceHolder.POSITION);
+//		createParameterIfNull();
 		this.parameters.setValue(index, value);
 		return this;
 	}
@@ -62,13 +63,13 @@ public class JFishQueryImpl implements JFishQuery {
 	 */
 	@Override
 	public JFishQuery setParameter(String name, Object value){
-		this.checkQueryType(PlaceHolder.NAMED);
+//		createParameterIfNull();
 		this.parameters.setValue(name, value);
 		return this;
 	}
 	
 	public JFishQuery setParameters(Map<String, Object> params){
-		this.checkQueryType(PlaceHolder.NAMED);
+//		createParameterIfNull();
 		this.parameters.setValue(params);
 		return this;
 	}
@@ -125,20 +126,24 @@ public class JFishQueryImpl implements JFishQuery {
 		return result;
 	}
 	
-	protected void checkQueryType(PlaceHolder holder){
+	/*protected void createParameterIfNull(){
+		if(this.parameters==null){
+			this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
+		}
 		Assert.notNull(holder);
 		if(this.parameters==null){
 			this.parameters = JFishQueryValue.create(holder, null);
 		}else if(parameters.getHolder() != holder){
 			LangUtils.throwBaseException("the query["+this.parameters.getHolder()+"] cant not support : " + holder);
 		}
-	}
+	}*/
 
 	public String getSqlString() {
 		//check parameters
-		if(this.parameters==null){
+		/*if(this.parameters==null){
 			this.parameters = JFishQueryValue.create(PlaceHolder.POSITION, null);
-		}
+		}*/
+//		this.createParameterIfNull();
 		String sql = sqlString;
 		if(needSetRange()){
 			if(this.parameters.isNamed())

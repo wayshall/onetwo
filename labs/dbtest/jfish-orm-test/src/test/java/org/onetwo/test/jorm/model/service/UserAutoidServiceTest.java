@@ -4,22 +4,41 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.onetwo.common.jfishdb.spring.JFishDaoImpl;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.test.jorm.AppBaseTest;
 import org.onetwo.test.jorm.model.entity.UserAutoidEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UserAutoidServiceTest extends AppBaseTest {
 	
 	@Resource
-	private UserAutoidServiceImpl userAutoidServiceImpl;
+	private UserAutoidService userAutoidServiceImpl;
+	
+	@Resource
+	private DataSource dataSource;
 	
 	@Test
 	public void testCrud(){
-		this.userAutoidServiceImpl.deleteAll();
+		this._testCrud(userAutoidServiceImpl);
+	}
+
+	@Test
+	@Transactional
+	public void testCrudNoSpring(){
+		JFishDaoImpl jfishDao = new JFishDaoImpl(dataSource);
+		jfishDao.initialize();
+		UserAutoidService us = new UserAutoidServiceNoSpringImpl(jfishDao);
+		this._testCrud(us);
+	}
+	
+	public void _testCrud(UserAutoidService userAutoidServiceImpl){
+		userAutoidServiceImpl.deleteAll();
 		
 		String userNamePrefix = "userName";
 		Date now = new Date();
@@ -29,21 +48,21 @@ public class UserAutoidServiceTest extends AppBaseTest {
 		NiceDate niceNowSeconde = NiceDate.New(now).thisSec();
 		System.out.println("niceNowSeconde: " + niceNowSeconde.formatDateTimeMillis());
 		int count = 10;
-		int insertCount = this.userAutoidServiceImpl.saveList(userNamePrefix, niceNowSeconde.getTime(), count);
+		int insertCount = userAutoidServiceImpl.saveList(userNamePrefix, niceNowSeconde.getTime(), count);
 		Assert.assertEquals(10, insertCount);
 		
-		List<UserAutoidEntity> userlist = this.userAutoidServiceImpl.findUserAutoIdEntity(userNamePrefix, niceNowSeconde.getTime());
+		List<UserAutoidEntity> userlist = userAutoidServiceImpl.findUserAutoIdEntity(userNamePrefix, niceNowSeconde.getTime());
 		Assert.assertEquals(count, userlist.size());
 		
 		final String newUserNamePrefix = "update-user-name";
 		userlist.stream().forEach(e->( e.setUserName(newUserNamePrefix)));
-		count = this.userAutoidServiceImpl.update(userlist);
+		count = userAutoidServiceImpl.update(userlist);
 		Assert.assertEquals(count, userlist.size());
 		
-		userlist = this.userAutoidServiceImpl.findUserAutoIdEntity(newUserNamePrefix, niceNowSeconde.getTime());
+		userlist = userAutoidServiceImpl.findUserAutoIdEntity(newUserNamePrefix, niceNowSeconde.getTime());
 		Assert.assertEquals(count, userlist.size());
 		
-		count = this.userAutoidServiceImpl.delete(userlist);
+		count = userAutoidServiceImpl.delete(userlist);
 		Assert.assertEquals(count, userlist.size());
 	}
 

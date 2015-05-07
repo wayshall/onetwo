@@ -52,10 +52,10 @@ eclipse {
 }
 
 repositories {
+	mavenLocal()
 	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
 	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
 	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
-	mavenLocal()
 	maven { url "http://repository.sonatype.org/content/groups/public/" }
 	mavenCentral()
 }
@@ -67,7 +67,7 @@ dependencyManagement {
 }
 
 version = "1.0-SNAPSHOT"
-ext.onetwoVersion = "3.2.11-SNAPSHOT";
+ext.onetwoVersion = "3.3.0-SNAPSHOT";
 
 
 ext.junitVersion = "4.10"
@@ -78,6 +78,7 @@ dependencies {
 	compile("org.onetwo:onetwo-common:${onetwoVersion}")
 	compile("org.onetwo:onetwo-spring:${onetwoVersion}")
 	compile("org.onetwo:onetwo-orm:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
 	
 	
 	compile("org.slf4j:slf4j-api")
