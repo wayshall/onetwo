@@ -6,6 +6,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 
@@ -19,4 +20,14 @@ public class JoinerTest {
 		Assert.assertEquals(str, "key1;value1, key2;value2");
 	}
 
+	@Test
+	public void testRetain(){
+		String str = "test";
+		String actual = CharMatcher.anyOf("alex").retainFrom(str);
+		Assert.assertEquals("e", actual);
+		
+		str = "asxdlesdfxddfes";
+		actual = CharMatcher.anyOf("alex").retainFrom(str);
+		Assert.assertEquals("axlexe", actual);
+	}
 }
