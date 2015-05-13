@@ -1,6 +1,6 @@
 package test.entity;
 
-import org.onetwo.common.fish.event.JFishEntityListener;
+import org.onetwo.common.jfishdb.event.JFishEntityListener;
 
 public class TestEntityListener implements JFishEntityListener {
 
