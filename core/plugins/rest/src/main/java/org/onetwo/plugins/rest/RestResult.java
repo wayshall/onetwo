@@ -14,8 +14,5 @@ public class RestResult<T> extends BaseRestResult {
 		return data;
 	}
 
-	public void setData(T data) {
-		this.data = data;
-	}
 
 }

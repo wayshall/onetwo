@@ -99,8 +99,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}
 	
 	private DynamicMethod newDynamicMethod(Method method){
-//		return new DynamicMethod(method);
-		return new DynamicMethodJ8(method);
+		return new DynamicMethod(method);
+//		return new DynamicMethodJ8(method);
 	}
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
