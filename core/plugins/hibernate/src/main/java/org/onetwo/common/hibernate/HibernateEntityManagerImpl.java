@@ -29,8 +29,7 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.hibernate.sql.HibernateNamedInfo;
-import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.CopyConfig;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -52,7 +51,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 	private SequenceNameManager sequenceNameManager = new HibernateSequenceNameManager();
 	
 //	@Resource
-	private FileNamedQueryFactory<HibernateNamedInfo> fileNamedQueryFactory;
+	private FileNamedQueryFactory<JFishNamedFileQueryInfo> fileNamedQueryFactory;
 	
 //	@Resource
 //	private DataSource dataSource;
@@ -82,7 +81,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		fq.initQeuryFactory(this);
 		this.fileNamedQueryFactory = fq;*/
 		
-		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
+//		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 	}
 
 
@@ -94,6 +93,10 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		this.sessionFactory = sessionFactory;
 	}
 
+	public void setFileNamedQueryFactory(
+			FileNamedQueryFactory<JFishNamedFileQueryInfo> fileNamedQueryFactory) {
+		this.fileNamedQueryFactory = fileNamedQueryFactory;
+	}
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass){
 		/*SQLQuery query = getSession().createSQLQuery(sqlString);

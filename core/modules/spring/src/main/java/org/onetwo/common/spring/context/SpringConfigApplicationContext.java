@@ -1,8 +1,12 @@
 package org.onetwo.common.spring.context;
 
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
@@ -12,7 +16,6 @@ import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /****
  * 非web应用程序上下文
@@ -33,10 +36,10 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 //	private ContextPluginManager contextPluginManager;
 	
 	public SpringConfigApplicationContext(){
-		/*String basePackage = BaseSiteConfig.getInstance().getAppBasePackages();
+		String basePackage = SpringUtils.loadAsJFishProperties(JFishProfiles.APP_CONFIG_PATH).getProperty(AppConfig.JFISH_BASE_PACKAGES);
 		if(StringUtils.isNotBlank(basePackage)){
-			System.setProperty(BaseSiteConfig.APP_BASE_PACKAGES, basePackage);
-		}*/
+			System.setProperty(AppConfig.JFISH_BASE_PACKAGES, basePackage);
+		}
 	}
 	
 	@Override
@@ -85,7 +88,7 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 		if (!ObjectUtils.isEmpty(this.annotatedClasses)) {
 			if (logger.isInfoEnabled()) {
 				logger.info("Registering annotated classes: [" +
-						StringUtils.arrayToCommaDelimitedString(this.annotatedClasses) + "]");
+						org.springframework.util.StringUtils.arrayToCommaDelimitedString(this.annotatedClasses) + "]");
 			}
 			reader.register(this.annotatedClasses);
 		}
@@ -93,7 +96,7 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			if (logger.isInfoEnabled()) {
 				logger.info("Scanning base packages: [" +
-						StringUtils.arrayToCommaDelimitedString(this.basePackages) + "]");
+						org.springframework.util.StringUtils.arrayToCommaDelimitedString(this.basePackages) + "]");
 			}
 			scanner.scan(this.basePackages);
 		}

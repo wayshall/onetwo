@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.fish.spring.JFishDaoImpl;
+import org.onetwo.common.jfishdb.spring.JFishDaoImpl;
 import org.onetwo.common.nutz.NutzBaseDao;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.test.spring.SpringTxJUnitTestCase;

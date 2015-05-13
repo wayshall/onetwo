@@ -48,7 +48,7 @@ public class ContextPluginUtils {
 	 * @param configBaseDir
 	 * @param pluginName
 	 * @param env
-	 * @return /plugins/pluginName-config.properties
+	 * @return /plugins/{pluginName}/pluginName-config.properties
 	 */
 	public static String getEnvConfigPath(String configBaseDir, final String pluginName, String env){
 		if(StringUtils.isBlank(configBaseDir)){

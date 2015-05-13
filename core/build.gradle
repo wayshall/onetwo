@@ -27,7 +27,9 @@ configure(allprojects){ project ->
 	}else{
 		group = "org.onetwo"
 	}
-	version = "3.2.11-SNAPSHOT"
+	//from 3.2.11
+	//for orm 3.3.x
+	version = "3.3.1-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -81,8 +83,8 @@ configure(allprojects){ project ->
 	
 	repositories {
 		//if want ide download the sources, move to the top
-		mavenLocal()
 		mavenCentral()
+		mavenLocal()
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
@@ -158,7 +160,7 @@ def projectAjaxanywhere = "${projectPrefix}ajaxanywhere"
 def projectWeb = "${projectPrefix}web"
 def projectSecurity = "${projectPrefix}security"
 def projectPoi = "${projectPrefix}poi"
-def projectOrm = "${projectPrefix}orm"
+def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
 def projectTomcat = "${projectPrefix}tomcat"
@@ -329,14 +331,13 @@ project("${projectPoi}"){
 	}
 }
 
-project("$projectOrm"){
-	description = "onetwo orm"
+project("$projectDbm"){
+	description = "onetwo dbm"
 	
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
-		
 		
 	}
 }
@@ -450,7 +451,7 @@ project("${pluginFmtagext}"){
 	description = "${pluginFmtagext}"
 		
 	dependencies {
-		compile(project(":$projectOrm"))
+		compile(project(":$projectDbm"))
 		compile(project(":$pluginFmtag"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		

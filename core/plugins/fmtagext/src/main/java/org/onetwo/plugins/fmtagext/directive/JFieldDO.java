@@ -1,7 +1,7 @@
 package org.onetwo.plugins.fmtagext.directive;
 
-import org.onetwo.common.fish.orm.JFishMappedField;
 import org.onetwo.common.ftl.directive.DirectiveRender;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.fmtag.directive.AbstractJFieldView;
 import org.onetwo.plugins.fmtagext.FmtagextUtils;
