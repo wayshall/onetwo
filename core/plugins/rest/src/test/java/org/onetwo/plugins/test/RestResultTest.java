@@ -20,8 +20,6 @@ public class RestResultTest {
 	@Test
 	public void testRestResultFailed(){
 		RestResult rs = new RestResult();
-		rs.markSucceed();
-		rs.setError_code(ErrorCode.COM_ER_VALIDATION);
 		String json = JsonMapper.IGNORE_NULL.toJson(rs);
 		System.out.println("json: " + json);
 		Assert.assertEquals("{\"ret_flag\":0,\"error_code\":\"com_er_validation\"}", json);
@@ -30,7 +28,6 @@ public class RestResultTest {
 	@Test
 	public void testRestResultSucceed(){
 		RestResult rs = new RestResult();
-		rs.markSucceed();
 		TestData data = new TestData();
 		data.setDataId(2);
 		data.setName("testName");
