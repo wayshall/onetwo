@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.exception.NotUniqueResultException;
+import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
@@ -16,6 +19,58 @@ import org.slf4j.Logger;
 public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
+
+	abstract public SequenceNameManager getSequenceNameManager();
+		
+	protected void createSequence(Class<?> entityClass){
+		String seqName = getSequenceNameManager().getSequenceName(entityClass);
+		this.createSequence(seqName);
+	}
+	
+	/*****
+	 * 创建序列，for oracle
+	 * @param sequenceName
+	 */
+	protected void createSequence(String sequenceName){
+		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
+		Long id = null;
+			try {
+				DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+				dq.executeUpdate();
+				
+				dq = this.createSQLQuery(sql, null);
+				id = ((Number)dq.getSingleResult()).longValue();
+			} catch (Exception ne) {
+				ne.printStackTrace();
+				throw new ServiceException("createSequences error: " + ne.getMessage(), ne);
+			}
+			if (id == null)
+				throw new ServiceException("createSequences error. ");
+	}
+	
+	
+
+	public Number countRecord(Class<?> entityClass, Object... params) {
+		return countRecord(entityClass, CUtils.asLinkedMap(params));
+	}
+	public void delete(ILogicDeleteEntity entity){
+		entity.deleted();
+		this.save(entity);
+	}
+
+	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id){
+		Object entity = this.findById(entityClass, id);
+		if(entity==null)
+			return null;
+		if(!ILogicDeleteEntity.class.isAssignableFrom(entity.getClass())){
+			throw new ServiceException("实体不支持逻辑删除，请实现相关接口！");
+		}
+		T logicDeleteEntity = (T) entity;
+		logicDeleteEntity.deleted();
+		this.save(logicDeleteEntity);
+		return logicDeleteEntity;
+	}
 	
 	public <T> List<T> findByProperties(QueryBuilder squery) {
 		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());

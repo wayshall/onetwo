@@ -80,7 +80,6 @@ final public class JdbcUtils {
 			throw new IllegalArgumentException("Unknown Database config : " + jdbcUrl);
 		}
 	}
-
 	
 	private JdbcUtils(){}
 
