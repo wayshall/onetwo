@@ -42,12 +42,12 @@ eclipse {
 
 
 repositories {
-	mavenLocal()
-//	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
-//	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
-//	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
-	maven { url "http://repository.sonatype.org/content/groups/public/" }
 	mavenCentral()
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
+	maven { url "http://repository.sonatype.org/content/groups/public/" }
+	mavenLocal()
 	maven { url "http://clojars.org/repo" }
 	flatDir {
 		dirs "lib"
@@ -57,7 +57,7 @@ repositories {
 
 
 version = "1.0-SNAPSHOT"
-ext.onetwoVersion = "3.2.1-SNAPSHOT";
+ext.onetwoVersion = "3.2.11-SNAPSHOT";
 
 ext.jsfVersion = "2.1"
 ext.commonsioVersion = "2.4"
@@ -120,5 +120,6 @@ dependencies {
 //	compile(files("lib/SizeOf.jar"))
 //	compile fileTree(dir: 'lib', include: ['*.jar'])
 	compile name: "SizeOf"
+	testCompile("junit:junit:${junitVersion}")
 	
 }

@@ -104,5 +104,28 @@ public class StringUtilsTest {
 		rs = StringUtils.substring(str, 4, 12);
 		Assert.assertEquals("", rs);
 	}
+
 	
+	@Test
+	public void testBlank(){
+		String str = "";
+		Assert.assertTrue(StringUtils.isBlank(str));
+		Assert.assertTrue(org.apache.commons.lang3.StringUtils.isBlank(str));
+		
+		str = "   ";
+		Assert.assertTrue(StringUtils.isBlank(str));
+		Assert.assertTrue(org.apache.commons.lang3.StringUtils.isBlank(str));
+		
+		str = "  \r ";
+		Assert.assertTrue(StringUtils.isBlank(str));
+		Assert.assertTrue(org.apache.commons.lang3.StringUtils.isBlank(str));
+		
+		str = "  \t ";
+		Assert.assertTrue(StringUtils.isBlank(str));
+		Assert.assertTrue(org.apache.commons.lang3.StringUtils.isBlank(str));
+		
+		str = "  \u005Cn ";
+		Assert.assertTrue(StringUtils.isBlank(str));
+		Assert.assertTrue(org.apache.commons.lang3.StringUtils.isBlank(str));
+	}
 }
