@@ -84,7 +84,7 @@ public class HibernatePluginContext implements InitializingBean  {
 		em.setSessionFactory(sessionFactory);
 //		em.setDataSource(dataSource);
 		em.setSqlSymbolManager(sqlSymbolManager());
-		em.setFileNamedQueryFactory(fileNamedQueryFactory());
+//		em.setFileNamedQueryFactory(fileNamedQueryFactory());
 		return em;
 	}
 	

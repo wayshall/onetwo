@@ -29,6 +29,7 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.CopyConfig;
 import org.onetwo.common.utils.LangUtils;
@@ -81,7 +82,7 @@ public class HibernateEntityManagerImpl extends AbstractEntityManager implements
 		fq.initQeuryFactory(this);
 		this.fileNamedQueryFactory = fq;*/
 		
-//		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
+		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 	}
 
 
