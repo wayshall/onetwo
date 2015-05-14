@@ -9,17 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.javatuples.Pair;
+import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.proxy.AbstractMethodResolver;
+import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParsedSqlUtils;
 import org.onetwo.common.spring.sql.ParserContext;
 import org.onetwo.common.spring.sql.ParserContextFunctionSet;
-import org.onetwo.common.spring.utils.AbstractMethodParameter;
-import org.onetwo.common.spring.utils.AbstractMethodResolver;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Langs;
@@ -77,6 +78,8 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 			if(Page.class == rClass){
 				throw new BaseException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
 			}
+		}else if(DataQuery.class==rClass){
+			compClass = null;
 		}
 		
 		resultClass = rClass;
@@ -144,8 +147,8 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	}
 	
 
-	public Object[] toArrayByArgs(Object[] args, Class<?> componentClass){
-		Map<Object, Object> map = toMapByArgs(args, componentClass);
+	public Object[] toArrayByArgs(Object[] args){
+		Map<Object, Object> map = toMapByArgs(args);
 		return Langs.toArray(map);
 //		return toArrayByArgs2(args, componentClass);
 	}
@@ -294,7 +297,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		}
 	}
 
-	public Map<Object, Object> toMapByArgs(Object[] args, Class<?> componentClass){
+	public Map<Object, Object> toMapByArgs(Object[] args){
 		Map<Object, Object> values = LangUtils.newHashMap(parameters.size());
 		
 		Object pvalue = null;
@@ -343,7 +346,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return batchUpdate;//(executeUpdate!=null && executeUpdate.isBatch()) || );
 	}
 	
-	protected static class DynamicMethodParameter extends AbstractMethodParameter {
+	protected static class DynamicMethodParameter extends BaseMethodParameter {
 
 		final protected String[] condidateParameterNames;
 		final protected Name nameAnnotation;

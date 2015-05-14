@@ -351,7 +351,11 @@ public class ReflectUtils {
 		return (Class) params[index];
 	}
 
+
 	public static Class getGenricType(final Object obj, final int index) {
+		return getGenricType(obj, index, Object.class);
+	}
+	public static Class getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
 
 		Class clazz = getObjectClass(obj);
 		Type genType = null;
@@ -363,14 +367,16 @@ public class ReflectUtils {
 
 		if (!(genType instanceof ParameterizedType)) {
 //			logger.warn(clazz.getSimpleName() + "'s class not ParameterizedType");
-			return Object.class;
+//			return Object.class;
+			return defaultCLass;
 		}
 
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 
 		if (index >= params.length || index < 0) {
 //			logger.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: " + params.length);
-			return Object.class;
+//			return Object.class;
+			return defaultCLass;
 		}
 		/*if (!(params[index] instanceof Class)) {
 //			logger.warn(clazz.getSimpleName() + " not set the actual class on class generic parameter");
@@ -382,7 +388,8 @@ public class ReflectUtils {
 			ParameterizedType ptype = (ParameterizedType) params[index];
 			return (Class)ptype.getRawType();
 		}else{
-			return Object.class;
+//			return Object.class;
+			return defaultCLass;
 		}
 	}
 
