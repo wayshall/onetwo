@@ -109,7 +109,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 //		t.start();
 		DynamicMethod dmethod = getDynamicMethod(method);
 		Class<?> resultClass = dmethod.getResultClass();
-		Class<?> componentClass = dmethod.getComponentClass();
+//		Class<?> componentClass = dmethod.getComponentClass();
 		String queryName = dmethod.getQueryName();
 
 		if(debug)
@@ -121,22 +121,23 @@ public class DynamicQueryHandler implements InvocationHandler {
 			Page<?> page = (Page<?>)args[0];
 			
 //			Object[] trimPageArgs = ArrayUtils.remove(args, 0);
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 			result = em.getFileNamedQueryFactory().findPage(queryName, page, methodArgs);
 			
 		}else if(List.class.isAssignableFrom(resultClass)){
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 //			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			result = em.getFileNamedQueryFactory().findList(queryName, methodArgs);
 			
 		}else if(DataQuery.class.isAssignableFrom(resultClass)){
-			methodArgs = dmethod.toArrayByArgs(args, null);
+//			methodArgs = dmethod.toArrayByArgs(args, null);
+			methodArgs = dmethod.toArrayByArgs(args);
 //			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			return dq;
 			
 		}else if(dmethod.isExecuteUpdate()){
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			result = dq.executeUpdate();
 			
@@ -145,7 +146,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			result = handleBatch(dmethod, args);
 			
 		}else{
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 			result = em.getFileNamedQueryFactory().findOne(queryName, methodArgs);
 		}
 		
@@ -155,8 +156,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Object handleBatch(DynamicMethod dmethod, Object[] args){
 
 		Class<?> componentClass = dmethod.getComponentClass();
-//		methodArgs = dmethod.toArrayByArgs(args, componentClass);
-		Map<Object, Object> params = dmethod.toMapByArgs(args, componentClass);
+//		methodArgs = dmethod.toArrayByArgs(args);
+		Map<Object, Object> params = dmethod.toMapByArgs(args);
 		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
 		if(batchParameter==null){
 			if(LangUtils.size(args)!=1 || !Collection.class.isInstance(args[0])){
