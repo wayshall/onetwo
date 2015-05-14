@@ -1,7 +1,5 @@
 package org.onetwo;
 
-import org.onetwo.common.utils.RandUtils;
-
 import test.entity.UserEntity;
 
 
@@ -10,7 +8,12 @@ public class Test {
 
 
 	public static void main(String[] args){
-		System.out.println("teste:"+(null==Object.class));
+		String str = "";
+		System.out.println("1:"+(str!=""));
+		str = new String("");
+		System.out.println("2:"+(str!=""));
+		str = str.intern();
+		System.out.println("2:"+(str!=""));
 	}
 	
 	public static UserEntity createUser(){
