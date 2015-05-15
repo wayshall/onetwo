@@ -1,25 +1,49 @@
 package org.onetwo.plugins.rest;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
-import org.onetwo.common.proxy.JDKDynamicProxyHandler;
+import org.onetwo.common.proxy.BaseMethodParameter;
+import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
+import org.onetwo.common.spring.rest.JFishRestTemplate;
+import org.onetwo.common.utils.Langs;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+public class RestClientHandler extends CacheableDynamicProxyHandler<BaseMethodParameter, RestMethodResolver> {
 
-public class RestClientHandler extends JDKDynamicProxyHandler {
-
-	private final Cache<Method, RestMethodResolver> methodCaches;
+//	private final Cache<Method, RestMethodResolver> methodCaches;
+	
+	private JFishRestTemplate restTemplate;
 	
 	public RestClientHandler(Class<?>... proxiedInterfaces) {
-		super(Object.class, proxiedInterfaces);
-		this.methodCaches = CacheBuilder.newBuilder().weakKeys().softValues().build();
+		this(new JFishRestTemplate(), proxiedInterfaces);
+	}
+	
+	public RestClientHandler(JFishRestTemplate restTemplate, Class<?>... proxiedInterfaces) {
+		super(proxiedInterfaces);
+		this.restTemplate = restTemplate==null?new JFishRestTemplate():restTemplate;
 	}
 
 	@Override
-	protected Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
-		logger.info("test");
-		return null;
+	protected Object invokeMethod(Object proxy, RestMethodResolver method, Object[] args) throws Throwable {
+		RequestMethod reqMethod = method.getRequestMethod();
+		Map<Object, Object> paramMap = method.toMapByArgs(args);
+		Object result = null;
+		switch (reqMethod) {
+			case GET:
+				String reqUrl = method.getUrlWithQueryParams(paramMap);
+				result = restTemplate.get(reqUrl, method.getResponseType(), Langs.toArray(paramMap));
+				break;
+	
+			default:
+				throw new UnsupportedOperationException(reqMethod.toString());
+		}
+		return result;
+	}
+
+	@Override
+	protected RestMethodResolver createMethodResolver(Method method) {
+		return new RestMethodResolver(method);
 	}
 
 

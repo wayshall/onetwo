@@ -51,8 +51,8 @@ abstract public class JDKDynamicProxyHandler implements InvocationHandler {
 		
 	}
 
-	public Object getProxyObject() {
-		return proxyObject;
+	public <T> T getProxyObject() {
+		return (T)proxyObject;
 	}
 
 	abstract protected Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable;
