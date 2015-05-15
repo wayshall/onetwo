@@ -28,8 +28,9 @@ configure(allprojects){ project ->
 		group = "org.onetwo"
 	}
 	//from 3.2.11
-	//for orm 3.3.x
-	version = "3.3.1-SNAPSHOT"
+	//for orm 3.3.1
+	//for rest 3.4.x
+	version = "3.4.0-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -213,6 +214,9 @@ project("${projectSpring}"){
 	ext.freemarkerVersion = "2.3.19"
 	ext.ehcacheVersion = "2.6.0"
 	
+	ext.httpClientVersion = "4.3.5"
+	ext.httpcoreVersion = "4.3.2"
+	
 	dependencies {
 		compile(project(":${projectCommon}"))
 		compile(project(":${projectJackson}"))
@@ -236,6 +240,9 @@ project("${projectSpring}"){
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
 	
 		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
+		
+		compile("org.apache.httpcomponents:httpcore:${httpcoreVersion}")
+		compile("org.apache.httpcomponents:httpclient:${httpClientVersion}")
 		
 		compile("junit:junit:${junitVersion}")
 	}

@@ -5,20 +5,27 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.core.MethodParameter;
 
-public abstract class AbstractMethodResolver<T extends BaseMethodParameter> {
+public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	protected final Method method;
 	protected final List<T> parameters;
+	protected final Class<?> declaringClass;
 	
 	
 	public AbstractMethodResolver(Method method) {
 		super();
 		this.method = method;
 		this.parameters = createMethodParameters(method);
+		this.declaringClass = method.getDeclaringClass();
 	}
 
 	public Method getMethod() {
 		return method;
+	}
+
+	public Class<?> getDeclaringClass() {
+		return declaringClass;
 	}
 
 	final protected List<T> createMethodParameters(Method method){
