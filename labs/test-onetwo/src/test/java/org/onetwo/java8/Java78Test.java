@@ -210,6 +210,21 @@ public class Java78Test {
 	}
 	
 	@Test
+	public void testListAsMap(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = createUserList("aa", 1);
+		List<UserEntity> bb = createUserList("bb", 1);
+		List<UserEntity> cc = createUserList("cc", 1);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		Map<String, UserEntity> userMap = all.stream().sorted((u1, u2)-> -u1.getUserName().compareTo(u2.getUserName())).collect(Collectors.toMap(u->u.getUserName(), u->u));
+		System.out.println("list: " + userMap);
+		Assert.assertEquals("[aa, bb, cc]", userMap.keySet().toString());
+	}
+	
+	@Test
 	public void testMapMerge(){
 		Map<String, String> map = new HashMap<>();
 		String val = map.merge("test", "default", String::concat);

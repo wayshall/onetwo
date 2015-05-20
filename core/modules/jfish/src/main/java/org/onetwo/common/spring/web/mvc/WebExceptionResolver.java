@@ -262,7 +262,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 		return errorMsg;
 	}
 	public String getNoPermissionView(HttpServletRequest request, ModelMap model, ErrorMessage error){
-		model.addAttribute("noPermissionPath", request.getRequestURI());
+		if(model!=null){
+			model.addAttribute("noPermissionPath", request.getRequestURI());
+		}
 		return BaseSiteConfig.getInstance().getSecurityNopermissionView();
 	}
 	protected String getPreurl(HttpServletRequest request){
@@ -272,7 +274,9 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 	}
 	
 	protected String getLoginView(HttpServletRequest request, ModelMap model){
-		model.addAttribute(PRE_URL, getPreurl(request));
+		if(model!=null){
+			model.addAttribute(PRE_URL, getPreurl(request));
+		}
 		/*if(StringUtils.isBlank(defaultRedirect))
 			return JFishWebUtils.redirect(defaultRedirect);*/
 		return JFishWebUtils.redirect("/login");
