@@ -122,4 +122,6 @@ dependencies {
 	compile name: "SizeOf"
 	testCompile("junit:junit:${junitVersion}")
 	
+	compile("com.squareup.retrofit:retrofit:1.9.0")
+	
 }
