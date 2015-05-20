@@ -85,6 +85,9 @@ configure(allprojects){ project ->
 	repositories {
 		//if want ide download the sources, move to the top
 		mavenLocal()
+		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+		maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+		maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
 		mavenCentral()
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
@@ -747,7 +750,6 @@ project("${pluginRest}"){
 	dependencies {
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
-		
 		
 	}
 }

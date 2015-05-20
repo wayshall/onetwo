@@ -6,27 +6,31 @@ import java.util.concurrent.Callable;
 import org.springframework.core.MethodParameter;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 abstract public class CacheableDynamicProxyHandler<P extends MethodParameter, M extends AbstractMethodResolver<P>> extends JDKDynamicProxyHandler {
 
 	private final Cache<Method, M> methodCaches;
 
-	public CacheableDynamicProxyHandler(Class<?>... proxiedInterfaces) {
+	public CacheableDynamicProxyHandler(Cache<Method, M> methodCaches, Class<?>... proxiedInterfaces) {
 		super(Object.class, proxiedInterfaces);
-		this.methodCaches = CacheBuilder.newBuilder().weakKeys().softValues().build();
+		this.methodCaches = methodCaches;//CacheBuilder.newBuilder().weakKeys().softValues().build();
 	}
 
 	@Override
 	protected Object doInvoke(Object proxy, final Method method, Object[] args) throws Throwable {
-		M methodResolver = methodCaches.get(method, new Callable<M>() {
+		M methodResolver = null;
+		if(methodCaches==null){
+			methodResolver = createMethodResolver(method);
+		}else{
+			methodResolver = methodCaches.get(method, new Callable<M>() {
 
-			@Override
-			public M call() throws Exception {
-				return createMethodResolver(method);
-			}
-			
-		});
+				@Override
+				public M call() throws Exception {
+					return createMethodResolver(method);
+				}
+				
+			});
+		}
 		return invokeMethod(proxy, methodResolver, args);
 	}
 	
