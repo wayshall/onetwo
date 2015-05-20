@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 public class RestClientTest {
 	
-	@RestClient(value="http://localhost:8080/appweb-admin/test", method=RequestMethod.GET)
+	@RestClient(value="/test", method=RequestMethod.GET)
 	public static interface TestRestInterface {
 		String sayTo(String userName);
 		
@@ -21,14 +21,20 @@ public class RestClientTest {
 	
 	@Test
 	public void testRestStringWithSayTo(){
-		TestRestInterface client = RestClientFacotry.create(TestRestInterface.class);
+		TestRestInterface client = new RestClientFacotry.Builder()
+														.baseUrl("http://localhost:8080/appweb-admin")
+														.build()
+														.create(TestRestInterface.class);
 		String rs = client.sayTo("world");
 		Assert.assertEquals("Hello world", rs);
 	}
 	
 	@Test
 	public void testRestMapWithWork(){
-		TestRestInterface client = RestClientFacotry.create(TestRestInterface.class);
+		TestRestInterface client = new RestClientFacotry.Builder()
+														.baseUrl("http://localhost:8080/appweb-admin")
+														.build()
+														.create(TestRestInterface.class);
 		Map<?, ?> rsMap = client.work("test", "gz");
 		Assert.assertEquals("{workCity=gz, userName=test}", rsMap.toString());
 	}

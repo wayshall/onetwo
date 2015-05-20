@@ -56,6 +56,9 @@ eclipse {
 
 repositories {
 	mavenLocal()
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
 	mavenCentral()
 	maven { url "http://repository.sonatype.org/content/groups/public/" }
 }
