@@ -1,7 +1,5 @@
 package org.onetwo;
 
-import org.onetwo.common.utils.RandUtils;
-
 import test.entity.UserEntity;
 
 
@@ -10,9 +8,12 @@ public class Test {
 
 
 	public static void main(String[] args){
-		for(int i=0; i<100; i++){
-			System.out.println(i+":"+RandUtils.randomString(6));
-		}
+		String str = "";
+		System.out.println("1:"+(str!=""));
+		str = new String("");
+		System.out.println("2:"+(str!=""));
+		str = str.intern();
+		System.out.println("2:"+(str!=""));
 	}
 	
 	public static UserEntity createUser(){
