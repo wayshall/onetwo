@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.onetwo.common.db.QueryConfigData;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
@@ -37,6 +38,10 @@ final public class ParsedSqlUtils {
 		}
 		public Collection<SqlParamterMeta> getParameters() {
 			return parameterNames;
+		}
+		
+		public boolean hasNamedParameter(){
+			return LangUtils.isNotEmpty(parameterNames);
 		}
 		
 		public class SqlParamterMeta {

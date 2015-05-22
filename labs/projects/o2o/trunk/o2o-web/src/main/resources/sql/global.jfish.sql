@@ -1,2 +1,0 @@
-@findInTransactionTables=select table_name FROM user_tables where table_name like 'IN_TRANSACTION_%' order by table_name
-@findOutTransactionTables=select table_name FROM user_tables where table_name like 'OUT_TRANSACTION_%' order by table_name

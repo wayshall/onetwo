@@ -1,6 +1,7 @@
 package org.onetwo.common.fish.plugin;
 
 import org.onetwo.common.spring.plugin.PluginInfo;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 
 
@@ -25,24 +26,32 @@ public class DefaultPluginConfig implements PluginConfig {
 	public String getBaseURL(){
 		return siteConfig.getBaseURL()+pluginInfo.getContextPath();
 	}
+
+	public String getBasedURL(String path){
+		return getBaseURL()+StringUtils.appendStartWith(path, "/");
+	}
+
+	public String getContextBasedPath(String path){
+		return getContextPath() + StringUtils.appendStartWith(path, "/");
+	}
 	
 	public String getContextPath(){
 		return pluginInfo.getContextPath();
 	}
 	public String getStaticURL(){
-		return getBaseURL() + "/static/";
+		return getBaseURL() + "/static";
 	}
 
 	public String getJsPath(){
-		return getStaticURL() + "js";
+		return getStaticURL() + "/js";
 	}
 	
 	public String getCssPath(){
-		return getStaticURL()+ "css";
+		return getStaticURL()+ "/css";
 	}
 	
 	public String getImagePath(){
-		return getStaticURL()+"images";
+		return getStaticURL()+"/images";
 	}
 
 	public String getTemplateBasePath() {

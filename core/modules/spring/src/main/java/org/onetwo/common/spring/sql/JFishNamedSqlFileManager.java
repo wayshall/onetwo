@@ -25,6 +25,31 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @param <T>
  */
 public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends PropertiesNamespaceInfoManagerImpl<T> {
+	
+	public static JFishNamedSqlFileManager<JFishNamedFileQueryInfo> createDefaultJFishNamedSqlFileManager(
+			DataBase databaseType,
+			boolean watchSqlFile,
+			PropertiesNamespaceInfoListener<JFishNamedFileQueryInfo> listener){
+		return new DefaultJFishNamedSqlFileManager(databaseType, watchSqlFile, listener);
+	}
+	
+	private static class DefaultJFishNamedSqlFileManager extends JFishNamedSqlFileManager<JFishNamedFileQueryInfo> {
+
+		public DefaultJFishNamedSqlFileManager(
+				DataBase databaseType,
+				boolean watchSqlFile,
+				PropertiesNamespaceInfoListener<JFishNamedFileQueryInfo> listener) {
+			super(new DialetNamedSqlConf<JFishNamedFileQueryInfo>(){
+				{
+					setDatabaseType(databaseType);
+//					setPostfix(SQL_POSTFIX);
+					setWatchSqlFile(watchSqlFile);
+					setPropertyBeanClass(JFishNamedFileQueryInfo.class);
+				}
+			}, listener);
+		}
+		
+	}
 	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY;
 	public static final String SQL_POSTFIX = ".sql";
 	
@@ -53,7 +78,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	}*/
 	protected final DataBase databaseType;
 	
-	public JFishNamedSqlFileManager(final DataBase databaseType, final boolean watchSqlFile, final Class<T> propertyBeanClass, PropertiesNamespaceInfoListener<T> listener) {
+	/*public JFishNamedSqlFileManager(final DataBase databaseType, final boolean watchSqlFile, final Class<T> propertyBeanClass, PropertiesNamespaceInfoListener<T> listener) {
 		super(new DialetNamedSqlConf<T>(){
 			{
 				setDatabaseType(databaseType);
@@ -63,6 +88,10 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 			}
 		}, listener);
 		this.databaseType = databaseType;
+	}*/
+	public JFishNamedSqlFileManager(DialetNamedSqlConf<T> conf, PropertiesNamespaceInfoListener<T> listener) {
+		super(conf, listener);
+		this.databaseType = conf.getDatabaseType();
 	}
 
 	public DataBase getDatabaseType() {
@@ -94,7 +123,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	}
 	
 	@Override
-	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf conf){
+	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();

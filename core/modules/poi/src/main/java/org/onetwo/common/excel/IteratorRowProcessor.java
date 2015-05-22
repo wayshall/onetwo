@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.JFishLogger;
-import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -32,7 +31,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void processIterator(RowContextData rowContext) {
+	public int processIterator(RowContextData rowContext) {
 //		Sheet sheet = rowContext.getSheet();
 		RowModel iterator = rowContext.getRowModel();
 		
@@ -40,7 +39,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //		Object dataSourceValue = rowContext.getSheetDatas();
 		Iterator it = LangUtils.convertIterator(dataSourceValue);
 		if(it==null)
-			return ;
+			return 0;
 
 		int index = 0;
 		Map context = rowContext.getSelfContext();
@@ -88,5 +87,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 
 //			UtilTimerStack.pop(iterator.getName());
 		}
+		int size = LangUtils.size(dataSourceValue);
+		return size;
 	}
 }

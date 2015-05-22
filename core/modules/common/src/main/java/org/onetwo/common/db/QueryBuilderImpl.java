@@ -182,7 +182,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 		}
 		return leftJoinSql.toString();
 	}
-	
+
 	@Override
 	public QueryBuilder build(){
 		if(this.extQuery!=null){
@@ -190,6 +190,14 @@ public class QueryBuilderImpl implements QueryBuilder {
 		}
 		this.extQuery = this.buildAsExtQuery();
 		return this;
+	}
+	
+	public ParamValues getParamValues(){
+		return extQuery.getParamsValue();
+	}
+	
+	public String getSql(){
+		return extQuery.getSql();
 	}
 	
 	protected ExtQuery buildAsExtQuery(){

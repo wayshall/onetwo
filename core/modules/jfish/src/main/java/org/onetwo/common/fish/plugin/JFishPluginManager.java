@@ -1,9 +1,10 @@
 package org.onetwo.common.fish.plugin;
 
+import java.util.List;
+
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
-import org.onetwo.common.utils.list.JFishList;
 import org.springframework.web.context.WebApplicationContext;
 
 /****
@@ -14,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  */
 public interface JFishPluginManager {
+	PluginNameParser PLUGINNAME_PARSER = new PluginNameParser();
 
 	public String JFISH_PLUGIN_MANAGER_KEY = "org.onetwo.common.fish.plugin.JFishPluginManager";
 
@@ -32,9 +34,9 @@ public interface JFishPluginManager {
 	public JFishPluginMeta getJFishPluginMetaOf(Class<?> objClass);
 	
 	public JFishPluginMeta getJFishPluginMeta(String name);
-	public JFishList<JFishPluginMeta> getPluginMetas();
-	public JFishList<ContextPlugin> getContextPlugins();
-	public JFishList<JFishPlugin> getJFishPlugins();
+	public List<JFishPluginMeta> getPluginMetas();
+	public List<ContextPlugin> getContextPlugins();
+	public List<JFishPlugin> getJFishPlugins();
 	
 //	public List<Class<?>> getPluginContextClasses();
 
