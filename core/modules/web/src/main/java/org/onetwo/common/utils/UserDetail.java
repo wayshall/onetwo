@@ -8,6 +8,7 @@ package org.onetwo.common.utils;
 public interface UserDetail extends SsoTokenable {  
 	
 	public final static String USER_DETAIL_KEY = "loginUserInfo"; 
+//	final Long SYSTEM_ROOT_USER_ID = 1L;
 	
 
 	public String getUserName();

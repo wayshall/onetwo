@@ -21,7 +21,7 @@ public class AdminWebPlugin extends AbstractJFishPlugin<AdminWebPlugin> {
 	
 
 	public static String getTemplatePath(String template) {
-		return getInstance().getPluginMeta().getPluginConfig().getTemplatePath(template);
+		return getInstance().getPluginTemplatePath(template);
 	}
 
 	@Override

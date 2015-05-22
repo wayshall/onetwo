@@ -3,7 +3,7 @@ package org.onetwo.common.jackson;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
@@ -57,7 +57,7 @@ public class JsonMapper {
 		return jsonm;
 	}
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private SimpleFilterProvider filterProvider = new SimpleFilterProvider();

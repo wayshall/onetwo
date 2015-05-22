@@ -11,7 +11,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.plugins.permission.entity.IPermission;
 import org.onetwo.plugins.permission.entity.PermissionType;
 
@@ -23,13 +26,24 @@ import org.onetwo.plugins.permission.entity.PermissionType;
 public class AdminPermissionEntity implements Serializable, IPermission {
 
 //	private Long id;
+	@NotBlank
+	@Size(min=1, max=255)
 	private String code;
+	
+	@NotBlank
+	@Size(min=1, max=255)
 	private String name;
+	
 	private Integer sort;
+	@NotNull
 	private Boolean hidden;
+	
+	@NotNull
 	private PermissionType ptype;
 	
 	private Set<AdminRoleEntity> roles;
+	
+	@Size(max=20)
 	private String appCode;
 	
 	/*@Id

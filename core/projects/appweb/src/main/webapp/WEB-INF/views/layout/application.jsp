@@ -71,17 +71,19 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 		</div>
 		
 	    <div class="container-fluid">
+	    
+	    <aa:zone name="message">
 	    	<c:if test="${not empty t:web('message')}">
-			<div class="alert alert-${t:firstNotblank(messageType, t:web('messageType'), 'block')}  alert-dismissable">
-  				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  				<strong>提示!</strong>
-				${t:web('message')}
-			</div>
-			<c:if test="${not empty t:web('noPermissionPath')}">
-				<div style="margin: 8px auto auto; text-align: center;">受限地址：${t:web("noPermissionPath")}</div>
+				<div class="alert alert-${t:firstNotblank(messageType, t:web('messageType'), 'block')}  alert-dismissable">
+	  				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	  				<strong>提示!</strong>
+					${t:web('message')}
+				</div>
+				<c:if test="${not empty t:web('noPermissionPath')}">
+					<div style="margin: 8px auto auto; text-align: center;">受限地址：${t:web("noPermissionPath")}</div>
+				</c:if>
 			</c:if>
-			
-			</c:if>
+		</aa:zone>
 			
 			<layout:define name="main-content">
 			页面详细内容
@@ -91,6 +93,10 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
       <script type="text/javascript">
       $.jfish.initAfterPage();
       </script>
+      
+      <div>
+      	lucky number：${__requestinfo__.executedTimeInMillis }
+      </div>
 	</body>
 </html>
 

@@ -3,15 +3,16 @@ package org.onetwo.common.hibernate.sql;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Query;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.hibernate.HibernateQueryProvider;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
+import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.Assert;
 
-public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedInfo> {
+public class HibernateFileQueryImpl extends DefaultFileQueryImpl<JFishNamedFileQueryInfo> {
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;
@@ -19,7 +20,7 @@ public class HibernateFileQueryImpl extends DefaultFileQueryImpl<HibernateNamedI
 //	private FileSqlParser parser;
 	
 
-	public HibernateFileQueryImpl(QueryProvider baseEntityManager, HibernateNamedInfo info, boolean count, TemplateParser parser) {
+	public HibernateFileQueryImpl(QueryProvideManager baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		super(baseEntityManager, info, count, parser);
 		Assert.notNull(baseEntityManager);
 //		this.baseEntityManager = baseEntityManager;

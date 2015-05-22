@@ -66,7 +66,7 @@ public class AdminRoleServiceImpl extends HibernateCrudServiceImpl<AdminRoleEnti
 	}
 	public AdminRoleEntity saveBaseInfo(String appCode, AdminRoleEntity roleVo) {
 		AdminRoleEntity dbrole = null;
-		String areaCode = null;
+//		String areaCode = null;
 		if(roleVo.getId()!=null){//如果是更新
 			dbrole = load(roleVo.getId());
 			if(dbrole.isSystemRoot()){

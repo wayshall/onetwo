@@ -27,8 +27,10 @@ configure(allprojects){ project ->
 	}else{
 		group = "org.onetwo"
 	}
-	//upgrade to java8
-	version = "3.1.11-SNAPSHOT"
+	//from 3.2.11
+	//for orm 3.3.1
+	//for rest 3.4.x
+	version = "3.4.3-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -56,10 +58,11 @@ configure(allprojects){ project ->
 	
 	ext.logbackVersion = "0.9.29"
 	
-	sourceCompatibility = 1.8
 	compileJava {
 		sourceCompatibility=1.8
 		targetCompatibility=1.8
+		options.encoding = 'UTF-8'
+		options.compilerArgs << '-parameters'   
 	}
 	
 	eclipseJdt << {
@@ -68,7 +71,6 @@ configure(allprojects){ project ->
 		f.append('encoding/<project>=utf-8')
 	}
 	
-	compileJava.options.encoding = 'UTF-8'
 //	encoding = 'utf-8'
 //	test.stopAtFailuresOrErrors = false
 	buildDir = "build"
@@ -81,10 +83,13 @@ configure(allprojects){ project ->
 	}
 	
 	repositories {
-		mavenLocal()
 		//if want ide download the sources, move to the top
-		//embedeed-redis : http://clojars.org/repo
+		mavenLocal()
+		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+		maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+		maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
 		mavenCentral()
+		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
@@ -99,8 +104,8 @@ configure(subprojects){ subproject ->
 		/*
 		compile("org.slf4j:slf4j-api:1.6.2")
 		compile("org.slf4j:slf4j-log4j12:1.6.2")
-		compile("log4j:log4j:1.2.16")*/
-		compile("org.slf4j:slf4j-api:1.6.2")
+		compile("log4j:log4j:1.2.16")
+		compile("org.slf4j:slf4j-api:1.6.2")*/
 		compile("org.slf4j:jcl-over-slf4j:1.6.2")
 		compile("ch.qos.logback:logback-core:${logbackVersion}")
 		compile("ch.qos.logback:logback-classic:${logbackVersion}")
@@ -159,9 +164,10 @@ def projectAjaxanywhere = "${projectPrefix}ajaxanywhere"
 def projectWeb = "${projectPrefix}web"
 def projectSecurity = "${projectPrefix}security"
 def projectPoi = "${projectPrefix}poi"
-def projectOrm = "${projectPrefix}orm"
+def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
+def projectTomcat = "${projectPrefix}tomcat"
 
 
 project("${projectCommon}"){
@@ -174,9 +180,9 @@ project("${projectCommon}"){
 	dependencies {
 		compile("commons-codec:commons-codec:1.3")
 		compile("com.thoughtworks.xstream:xstream:1.3.1")
-		compile("net.sf.dozer:dozer:5.4.0"){
+		/*compile("net.sf.dozer:dozer:5.4.0"){
 			exclude group: "org.slf4j", module: "*"
-		}
+		}*/
 		compile("com.google.guava:guava:$guavaVersion")
 		compile("joda-time:joda-time:$jodatimeVersion")
 		compile("commons-lang:commons-lang:$commonsLangVersion")
@@ -209,6 +215,10 @@ project("${projectSpring}"){
 	ext.dozerVersion = "5.4.0"
 	ext.javatuplesVersion = "1.2"
 	ext.freemarkerVersion = "2.3.19"
+	ext.ehcacheVersion = "2.6.0"
+	
+	ext.httpClientVersion = "4.3.5"
+	ext.httpcoreVersion = "4.3.2"
 	
 	dependencies {
 		compile(project(":${projectCommon}"))
@@ -231,8 +241,17 @@ project("${projectSpring}"){
 		compile("net.sf.dozer:dozer:${dozerVersion}")
 		compile("org.javatuples:javatuples:${javatuplesVersion}")
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
+	
+		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
+		
+		compile("org.apache.httpcomponents:httpcore:${httpcoreVersion}")
+		compile("org.apache.httpcomponents:httpclient:${httpClientVersion}")
 		
 		compile("junit:junit:${junitVersion}")
+		
+		compile("net.sf.dozer:dozer:5.4.0"){
+			exclude group: "org.slf4j", module: "*"
+		}
 	}
 }
 
@@ -262,20 +281,21 @@ project("${projectWeb}"){
 		compile(project(":${projectCommon}"))
 		compile(project(":${projectSpring}"))
 		compile(project(":${projectAjaxanywhere}"))
+		compile(project(":${projectTomcat}"))
 		
 		compile("org.springframework:spring-webmvc:${springVersion}")
 		
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
 		compile("org.freemarker:freemarker:${freemarkerVersion}")
 		compile("commons-net:commons-net:${commonsnetVersion}")
 		compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
 		compile("net.htmlparser.jericho:jericho-html:${jerichoVersion}")
 		compile("org.tuckey:urlrewritefilter:${urlrewriteVersion}")
-		compile("javax.servlet:jstl:${jstlVersion}")
 		
-		provided embedTomcat()
+//		provided embedTomcat()
 	}
 }
 	
@@ -314,6 +334,7 @@ project("${projectPoi}"){
 		}
 		
 		compile("org.apache.poi:poi:${poiVersion}"){
+			exclude group: "log4j", module: "*"
 			exclude group: "commons-logging", module: "*"
 		}
 		compile("org.apache.poi:poi-ooxml:${poiVersion}")
@@ -325,17 +346,13 @@ project("${projectPoi}"){
 	}
 }
 
-project("$projectOrm"){
-	description = "onetwo orm"
-	
-	ext.ehcacheVersion = "2.6.0"
+project("$projectDbm"){
+	description = "onetwo dbm"
 	
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile("net.sf.ehcache:ehcache-core:${ehcacheVersion}")
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
-		
 		
 	}
 }
@@ -347,7 +364,6 @@ project("$projectJfish") {
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile(project(":$projectOrm"))
 		compile(project(":$projectWeb"))
 		compile(project(":$projectSecurity"))
 		compile(project(":$projectJackson"))
@@ -376,6 +392,24 @@ project("$projectEjb"){
 		compile("org.apache.openjpa:openjpa:${openJpaVersion}")
 		
 		
+	}
+}
+
+
+project("${projectTomcat}"){
+	description = "onetwo tomcat"
+	
+	ext.jstlVersion = "1.2"
+	
+	dependencies {
+		compile(project(":${projectCommon}"))
+		
+		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
+		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
+		
+		provided embedTomcat()
 	}
 }
 
@@ -432,7 +466,7 @@ project("${pluginFmtagext}"){
 	description = "${pluginFmtagext}"
 		
 	dependencies {
-		compile(project(":$projectOrm"))
+		compile(project(":$projectDbm"))
 		compile(project(":$pluginFmtag"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
@@ -516,8 +550,7 @@ project("${pluginDq}"){
 	dependencies {
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
-		compile(project(":$pluginHibernate"))
-		
+//		testCompile(project(":$pluginHibernate"))
 		
 	}
 }
@@ -549,6 +582,19 @@ project("${pluginPermission}"){
 
 project("${pluginAdmin}"){
 	description = "${pluginAdmin}"
+	
+	apply plugin: 'groovy'
+	
+	sourceSets {
+		main {
+			groovy {
+				srcDirs = ["src/main/java"]
+			}
+			java {
+				srcDirs = []// don't compile Java code twice 
+			}
+		}
+	}
 			
 	dependencies {
 		compile(project(":$projectJfish"))
@@ -558,6 +604,7 @@ project("${pluginAdmin}"){
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
+		compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
 		
 	}
 }
@@ -709,7 +756,6 @@ project("${pluginRest}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
-		
 	}
 }
 
@@ -771,6 +817,7 @@ project("${pluginMelody}"){
 		compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
 		compile(project(":$projectJfish"))
+		compile("javax.servlet:javax.servlet-api:${servletVersion}")
 		
 		compile("net.bull.javamelody:javamelody-core:1.55.0")
 		
@@ -779,5 +826,14 @@ project("${pluginMelody}"){
 }
 
 
+def pluginFtlTemplate = "${pluginPrefix}ftl-template"
+project("${pluginFtlTemplate}"){
+	description = "${pluginFtlTemplate}"
+		
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectSpring"))
+	}
+}
 
 

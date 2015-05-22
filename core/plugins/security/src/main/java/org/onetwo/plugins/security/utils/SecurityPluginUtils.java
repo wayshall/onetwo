@@ -1,6 +1,6 @@
 package org.onetwo.plugins.security.utils;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -16,8 +16,11 @@ import org.springframework.util.Assert;
 
 final public class SecurityPluginUtils {
 	
-	private static Logger logger = MyLoggerFactory.getLogger(SecurityPluginUtils.class);
+	private static Logger logger = JFishLoggerFactory.getLogger(SecurityPluginUtils.class);
 
+//	public static final String COMMON_LOGIN_URL = "redirect:/plugin-security/common/login";
+	public static final String SSO_CLIENT_LOGIN_URL = "redirect:/plugin-security/client/login";
+	
 	public static final String LOGIN_PARAM_CLIENT_CODE = "clientCode";
 	public static final String LOGIN_PARAM_ALL = "all";
 	public static final String DEFAULT_SSO_SIGN_KEY = "podsf^&pk&$@[ko@#$s0df]pips9";

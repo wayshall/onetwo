@@ -12,6 +12,10 @@ import org.onetwo.common.web.s2.security.Authenticator;
 
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+//若父类的注解定义在类上面，那么子类可以继承
+//若父类的注解定义在方法上面，那么子类可以继承 
+//若子类重写了父类中定义了注解的方法，那么子类无法继承该方法的注解 ，即子类在重写父类中被@Inherited标注的方法时，会将该方法连带它上面的注解一并覆盖掉  
+//接口的实现类无法继承接口中定义的被@Inherited标注的注解
 @Inherited
 public @interface Authentic {
 	public static final String DEFAULT_REDIRECT = "";//"redirect:/login";

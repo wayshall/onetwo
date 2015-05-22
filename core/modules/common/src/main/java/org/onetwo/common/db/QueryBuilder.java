@@ -42,5 +42,8 @@ public interface QueryBuilder {
 	
 	public Map<Object, Object> getParams();
 	
+	public ParamValues getParamValues();
+	public String getSql();
+	
 
 }
