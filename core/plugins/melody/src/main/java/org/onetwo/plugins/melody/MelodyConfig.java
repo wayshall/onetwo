@@ -23,6 +23,7 @@ public class MelodyConfig extends AbstractLoadingConfig {
 		}
 		
 //		this.monitoringLog = config.getProperty("monitoring.filter.log", "true");
+		//Parameter.URL_EXCLUDE_PATTERN 可配置排除下载的url，似乎会影响下载
 		monitoringInitParams = config.getPropertiesStartWith("filter.init.");
 //		System.out.println("load melody ocnfig!");
 	}

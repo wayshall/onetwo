@@ -1,6 +1,6 @@
 package org.onetwo.plugins.dq;
 
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.cache.Cache;
@@ -11,7 +11,7 @@ public class JDKDynamicProxyCreator implements QueryObjectFactory {
 	private Cache methodCache;
 	private ApplicationContext applicationContext;
 	
-	public Object createQueryObject(QueryProvider em, Class<?>... proxiedInterfaces){
+	public Object createQueryObject(QueryProvideManager em, Class<?>... proxiedInterfaces){
 		JdbcDao jdao = SpringUtils.getBean(applicationContext, JdbcDao.class);
 		return new DynamicQueryHandler(em, methodCache, jdao, proxiedInterfaces).getQueryObject();
 	}

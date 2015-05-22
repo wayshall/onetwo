@@ -1,0 +1,6 @@
+日期：2015-04-30
+修改：
+修改admin插件bug；
+增加appweb-admin模板项目
+admin项目增加groovy交叉编译支持
+

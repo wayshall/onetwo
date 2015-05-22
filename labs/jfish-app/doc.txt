@@ -1,8 +1,0 @@
-/users           => index()  
-/users/new       => create()  
-/users/{id}      => show()  
-/users/{id}/edit         => edit()  
-/users   POST        => create()  
-/users/{id}  PUT => update()  
-/users/{id}  DELETE  => delete()  
-/users   DELETE      => batchDelete()  

@@ -76,10 +76,12 @@ final public class AdminPluginConfig implements LoadableConfig {
 	}
 	
 	public String getServerLogoutUrl(){
-		if(SecurityPlugin.getInstance().isSsoEnable()){
-			return SecurityPlugin.getInstance().getSsoConfig().getServerLogoutUrl();
+		/*if(SecurityPlugin.getInstance().isSsoEnable()){
+			return SecurityPlugin.getInstance().getSecurityConfig().getServerLogoutUrl();
 		}else{
 			return BaseSiteConfig.getInstance().getBaseURL() + BaseSiteConfig.getInstance().getLogoutUrl();
-		}
+		}*/
+
+		return SecurityPlugin.getInstance().getSecurityConfig().getServerLogoutUrl();
 	}
 }
