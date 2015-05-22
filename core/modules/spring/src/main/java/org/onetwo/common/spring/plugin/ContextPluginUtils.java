@@ -13,17 +13,23 @@ public class ContextPluginUtils {
 	public static final String CONFIG_POSTFIX = ".properties";
 	public static final String CONFIG_NAME_POSTFIX = "-config";
 	
-	
+
 	public static JFishProperties loadPluginConfigs(String pluginName, String env){
-		return loadPluginConfigs(getEnvConfigPaths(pluginName, env));
+		return loadConfigs(getEnvConfigPaths(pluginName, env));
 	}
-	
-	public static JFishProperties loadPluginConfigs(String...classpaths){
-		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpaths);
+	public static JFishProperties loadPluginConfigs(JFishProperties properties, String pluginName, String env){
+		return loadConfigs(properties, getEnvConfigPaths(pluginName, env));
+	}
+
+	public static <T extends JFishProperties> T loadConfigs(String...classpaths){
+		return (T)loadConfigs(new JFishProperties(), classpaths);
+	}
+	public static <T extends JFishProperties> T loadConfigs(T properties, String...classpaths){
+		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(properties, classpaths);
 		try {
 			pfb.afterPropertiesSet();
-			JFishProperties properties = (JFishProperties)pfb.getObject();
-			return properties;
+			T rs = (T)pfb.getObject();
+			return rs;
 		} catch (IOException e) {
 			throw new BaseException("load config error: " + e.getMessage(), e);
 		}
@@ -42,7 +48,7 @@ public class ContextPluginUtils {
 	 * @param configBaseDir
 	 * @param pluginName
 	 * @param env
-	 * @return /plugins/pluginName-config.properties
+	 * @return /plugins/{pluginName}/pluginName-config.properties
 	 */
 	public static String getEnvConfigPath(String configBaseDir, final String pluginName, String env){
 		if(StringUtils.isBlank(configBaseDir)){

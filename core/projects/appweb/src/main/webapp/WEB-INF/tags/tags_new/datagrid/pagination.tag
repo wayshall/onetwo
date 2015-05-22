@@ -21,8 +21,18 @@
 	}
 %>
 <div class="pagination clearfix">
-	<span>共</span>${page.totalCount}<span>条记录</span>
+	
 	<div class="controls">
+	 每页显示 <input id="btnPageSize" name="pageSize" style="width: 30px;
+height: 22px;
+text-align: center;
+font-size: 14px;
+margin: 0;
+padding: 0;
+border-radius: 4px;
+border: 1px solid #ccc;
+text-align: center;
+font-weight: 700;" value="${page.pageSize}" action="${TagUtils.pageLink(action, 1)}" remote="${remote}" ajaxName="${ajaxName }"/> 条记录 
 	&nbsp;
 	<%
 	if(page.isHasPre()){ %>
@@ -46,7 +56,6 @@
 		<a href="<%=TagUtils.pageLink(action, page.getNextPage()) %>" <%=linkText %>><i class="fa fa-chevron-right"></i></a>
         <a href="<%=TagUtils.pageLink(action, page.getTotalPages()) %>" <%=linkText %>><i class="fa fa-fast-forward"></i></a>
 	<%} //end if%>
-
- </div>
-	<span class="stat"><strong>${page.pageNo}/${page.totalPages}页</strong></span>
+</div>
+	<span class="stat"><span>共</span>${page.totalCount}<span>条记录</span> <strong>${page.pageNo}/${page.totalPages}页</strong></span>
 </div>

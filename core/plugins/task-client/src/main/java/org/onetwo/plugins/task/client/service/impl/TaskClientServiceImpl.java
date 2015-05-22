@@ -8,7 +8,6 @@ import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.hibernate.HibernateUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.plugins.email.EmailTextType;
 import org.onetwo.plugins.task.TaskCoreConfig;
 import org.onetwo.plugins.task.entity.TaskBase;
 import org.onetwo.plugins.task.entity.TaskBizTag;
@@ -104,7 +103,7 @@ public class TaskClientServiceImpl {
 			}
 			
 			TaskEmail email = new TaskEmail();
-			email.setContentType(EmailTextType.STATIC_TEXT);
+//			email.setContentType(EmailTextType.STATIC_TEXT);
 			HibernateUtils.copyIgnoreRelationsAndFields(taskVo, email, "id");
 			email.setTag(tag);
 			email.setName(taskVo.getSubject());

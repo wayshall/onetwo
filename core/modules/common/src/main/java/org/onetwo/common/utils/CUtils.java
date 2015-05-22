@@ -201,7 +201,7 @@ final public class CUtils {
 		return properties;
 	}
 	
-	public static LinkedHashMap<Object, Object> asOrCreateLinkedHashMap(Object...params){
+	public static LinkedHashMap<Object, Object> asLinkedMap(Object...params){
 		return CUtils.arrayIntoMap(CUtils.newLinkedHashMap(), params);
 	}
 
@@ -277,6 +277,9 @@ final public class CUtils {
 		return new LinkedHashMap<K, V>();
 	}
 
+	public static List aslist(Object... array) {
+		return tolist(array, true);
+	}
 	public static List tolist(Object object, boolean trimNull) {
 		return tolist(object, trimNull, NULL_LIST);
 	}

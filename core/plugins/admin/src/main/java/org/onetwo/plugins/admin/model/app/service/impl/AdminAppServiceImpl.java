@@ -133,6 +133,8 @@ public class AdminAppServiceImpl extends HibernateCrudServiceImpl<AdminAppEntity
 	public AdminUserEntity saveUserRoles(long userId, long[] roleIds){
 		BaseEntityManager bm = getBaseEntityManager();
 		AdminUserEntity user = bm.load(AdminUserEntity.class, userId);
+		if(user.isSystemRoot())
+			throw new ServiceException("root用户无需修改角色！");
 		if(LangUtils.isEmpty(roleIds)){
 			user.setRoles(null);
 			bm.save(user);

@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.utils.Assert;
@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private DataSource dataSource;
 	

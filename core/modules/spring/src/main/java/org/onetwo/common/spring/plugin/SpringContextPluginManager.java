@@ -1,11 +1,14 @@
 package org.onetwo.common.spring.plugin;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.spring.plugin.PluginInfo.DependencyPluginInfo;
 import org.onetwo.common.spring.plugin.event.JFishContextEventBus;
 import org.onetwo.common.spring.utils.ResourceUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -23,7 +26,7 @@ import org.springframework.core.io.Resource;
 	public static final String PLUGIN_PATH = "classpath*:META-INF/jfish-plugin.properties";
 
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	protected JFishList<T> pluginMetas;
 	private String pluginPath = PLUGIN_PATH;
 	private final String appEnvironment;
@@ -69,6 +72,11 @@ import org.springframework.core.io.Resource;
 		} catch (IOException e1) {
 			throw new ContextPluginException("scan plugin error: " + e1.getMessage(), e1);
 		}*/
+		
+		logger.info("find {} plugin config file:", pluginFiles.size());
+		pluginFiles.forEach(e->{
+			logger.info(">: {}", e);
+		});
 		
 		pluginFiles.each(new NoIndexIt<Resource>(){
 
@@ -142,11 +150,17 @@ import org.springframework.core.io.Resource;
 			return ;
 		}
 		if(!plugin.getDependency().isEmpty()){
-			for(String dependency : plugin.getDependency()){
-				PluginInfo parentDependencyPlugin = pluginConfs.get(dependency);
-				if(parentDependencyPlugin==null)
-					throw new ContextPluginException("start plugin["+plugin.getName()+"] error: can not find the dependency plugin[" + dependency+"], please install it!");
-				logger.info("find plugin[{}]  dependency plugin: " + dependency, plugin.getName());
+			for(DependencyPluginInfo dependency : plugin.getDependency()){
+				PluginInfo parentDependencyPlugin = pluginConfs.get(dependency.getName());
+				if(parentDependencyPlugin==null){
+					if(dependency.isForce()){
+						throw new ContextPluginException("start plugin["+plugin.getName()+"] error: can not find the dependency plugin[" + dependency+"], please install it!");
+					}else{
+						logger.warn("start plugin["+plugin.getName()+"] error: can not find the dependency plugin[" + dependency+"]");
+						continue;
+					}
+				}
+				logger.info("find plugin[{}]  dependency plugin: {}", plugin.getName(), dependency);
 				initPlugin(pluginConfs, parentDependencyPlugin, plugin);
 			}
 		}
@@ -194,14 +208,14 @@ import org.springframework.core.io.Resource;
 		
 	}*/
 	//	@Override
-	public JFishList<T> getPluginMetas() {
+	public List<T> getPluginMetas() {
 		return pluginMetas;
 	}
 	
 
 	@Override
-	public JFishList<ContextPlugin> getContextPlugins() {
-		return getPluginMetas().map(new MapIt<T, ContextPlugin>(){
+	public List<ContextPlugin> getContextPlugins() {
+		return JFishList.wrap(getPluginMetas()).map(new MapIt<T, ContextPlugin>(){
 
 			@Override
 			public ContextPlugin map(ContextPluginMeta element, int index) {

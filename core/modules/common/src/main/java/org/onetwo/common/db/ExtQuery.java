@@ -13,7 +13,7 @@ public interface ExtQuery {
 		public static final String THROW_IF_NULL_MSG = "the case value can not be null!";
 	}
 	
-	public static class K {
+	final public static class K {
 		public static enum IfNull {
 			Calm,//not throw , not ignore
 			Throw,
@@ -92,6 +92,8 @@ public interface ExtQuery {
 			return val;
 		}
 		
+		private K(){}
+		
 	}
 	
 	public void initQuery();
@@ -104,7 +106,7 @@ public interface ExtQuery {
 
 //	public void setParams(Map params);
 	
-	public Map getParams();
+	public Map<Object, Object> getParams();
 	
 
 	public ParamValues getParamsValue();

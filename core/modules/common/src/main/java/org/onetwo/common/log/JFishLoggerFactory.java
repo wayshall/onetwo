@@ -1,8 +1,10 @@
 package org.onetwo.common.log;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -14,7 +16,8 @@ import ch.qos.logback.classic.LoggerContext;
 
 public class JFishLoggerFactory {
 	
-	private static final Logger logger = LoggerFactory.getLogger(JFishLoggerFactory.class);
+	private static final String MAIL_LOGGER = "mailLogger";
+//	private static final Logger logger = LoggerFactory.getLogger(JFishLoggerFactory.class);
 	
 	public static Logger logger(Class<?> clazz){
 		return instance.getLoggerInst(clazz);
@@ -37,11 +40,15 @@ public class JFishLoggerFactory {
 	}
 	
 	public static Logger findMailLogger(){
-		return findLogger("mailLogger");
+		return findLogger(MAIL_LOGGER);
 	}
 	
 	public static boolean mailLog(Collection<String> notifyThrowables, Throwable ex, String msg){
-		return instance.mailIfNecessary(notifyThrowables, msg, ex);
+		return instance.mailIfNecessary(msg, ex, notifyThrowables);
+	}
+
+	public static boolean mailLog(String msg, Throwable ex, Throwable... notifyThrowables){
+		return instance.mailIfNecessary(msg, ex, notifyThrowables);
 	}
 	
 	private final static JFishLoggerFactory instance = new JFishLoggerFactory();
@@ -84,17 +91,28 @@ public class JFishLoggerFactory {
 	}
 	
 	boolean mailIfNecessary(String msg, Throwable ex){
-		return mailIfNecessary(notifyThrowables, msg, ex);
+		return mailIfNecessary(msg, ex, notifyThrowables);
+	}
+
+
+	boolean mailIfNecessary(String msg, Throwable ex, String... notifyThrowables){
+		return mailIfNecessary(msg, ex, Arrays.asList(notifyThrowables));
+	}
+	boolean mailIfNecessary(String msg, Throwable ex, Throwable... notifyThrowables){
+		String[] names = (String[])Stream.of(notifyThrowables).map(e-> 
+																	Arrays.asList(e.getClass().getName(), e.getClass().getSimpleName()))
+																.flatMap(list -> list.stream()).toArray();
+		return mailIfNecessary(msg, ex, names);
 	}
 
 	/***
 	 * return ture if send log email
-	 * @param notifyThrowables
 	 * @param msg
 	 * @param ex
+	 * @param notifyThrowables
 	 * @return
 	 */
-	boolean mailIfNecessary(Collection<String> notifyThrowables, String msg, Throwable ex){
+	boolean mailIfNecessary(String msg, Throwable ex, Collection<String> notifyThrowables){
 		if(LangUtils.isEmpty(notifyThrowables))
 			return false;
 		Logger mailLogger = findMailLogger();

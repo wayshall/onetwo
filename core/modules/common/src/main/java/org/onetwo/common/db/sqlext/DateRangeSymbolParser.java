@@ -37,7 +37,7 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 		if(paramlist==null || paramlist.isEmpty())
 			return null;*/
 		
-		List paramlist = processValue(field, value, ifNull);
+		List paramlist = convertValues(field, value, ifNull);
 
 		if(paramlist.size()>2)
 			throw new ServiceException("the parameters of "+symbol+" can not greater than 2, acutal: " + paramlist.size());

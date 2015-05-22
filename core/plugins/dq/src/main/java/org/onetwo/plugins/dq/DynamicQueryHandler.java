@@ -9,11 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -40,7 +39,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private Cache methodCache;
-	private QueryProvider em;
+	private QueryProvideManager em;
 	private Object proxyObject;
 	private List<Method> excludeMethods = new ArrayList<Method>();
 	private boolean debug = true;
@@ -53,7 +52,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
 	}*/
 	
-	public DynamicQueryHandler(QueryProvider em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvideManager em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
@@ -78,9 +77,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		try {
 			return this.doInvoke(proxy, method, args);
-		} catch (HibernateException e) {
+		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
-		}catch (Throwable e) {
+		}*/catch (Throwable e) {
 			throw new BaseException("invoke query error : " + e.getMessage(), e);
 		}
 		
@@ -91,12 +90,17 @@ public class DynamicQueryHandler implements InvocationHandler {
 			ValueWrapper value = methodCache.get(method);
 			if(value!=null)
 				return (DynamicMethod) value.get();
-			DynamicMethod dm = new DynamicMethod(method);
+			DynamicMethod dm = newDynamicMethod(method);
 			methodCache.put(method, dm);
 			return dm;
 		}else{
-			return new DynamicMethod(method);
+			return newDynamicMethod(method);
 		}
+	}
+	
+	private DynamicMethod newDynamicMethod(Method method){
+		return new DynamicMethod(method);
+//		return new DynamicMethodJ8(method);
 	}
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -105,7 +109,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 //		t.start();
 		DynamicMethod dmethod = getDynamicMethod(method);
 		Class<?> resultClass = dmethod.getResultClass();
-		Class<?> componentClass = dmethod.getComponentClass();
+//		Class<?> componentClass = dmethod.getComponentClass();
 		String queryName = dmethod.getQueryName();
 
 		if(debug)
@@ -117,22 +121,23 @@ public class DynamicQueryHandler implements InvocationHandler {
 			Page<?> page = (Page<?>)args[0];
 			
 //			Object[] trimPageArgs = ArrayUtils.remove(args, 0);
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 			result = em.getFileNamedQueryFactory().findPage(queryName, page, methodArgs);
 			
 		}else if(List.class.isAssignableFrom(resultClass)){
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 //			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			result = em.getFileNamedQueryFactory().findList(queryName, methodArgs);
 			
 		}else if(DataQuery.class.isAssignableFrom(resultClass)){
-			methodArgs = dmethod.toArrayByArgs(args, null);
+//			methodArgs = dmethod.toArrayByArgs(args, null);
+			methodArgs = dmethod.toArrayByArgs(args);
 //			logger.info("dq args: {}", LangUtils.toString(methodArgs));
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			return dq;
 			
 		}else if(dmethod.isExecuteUpdate()){
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
+			methodArgs = dmethod.toArrayByArgs(args);
 			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
 			result = dq.executeUpdate();
 			
@@ -141,8 +146,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 			result = handleBatch(dmethod, args);
 			
 		}else{
-			methodArgs = dmethod.toArrayByArgs(args, componentClass);
-			result = em.getFileNamedQueryFactory().findUnique(queryName, methodArgs);
+			methodArgs = dmethod.toArrayByArgs(args);
+			result = em.getFileNamedQueryFactory().findOne(queryName, methodArgs);
 		}
 		
 		return result;
@@ -151,12 +156,12 @@ public class DynamicQueryHandler implements InvocationHandler {
 	protected Object handleBatch(DynamicMethod dmethod, Object[] args){
 
 		Class<?> componentClass = dmethod.getComponentClass();
-//		methodArgs = dmethod.toArrayByArgs(args, componentClass);
-		Map<Object, Object> params = dmethod.toMapByArgs(args, componentClass);
+//		methodArgs = dmethod.toArrayByArgs(args);
+		Map<Object, Object> params = dmethod.toMapByArgs(args);
 		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
 		if(batchParameter==null){
-			if(LangUtils.size(args)!=1 || !List.class.isInstance(args[0])){
-				throw new BaseException("batch execute, the first parameter must a Collection : " + dmethod.getMethod().toGenericString());
+			if(LangUtils.size(args)!=1 || !Collection.class.isInstance(args[0])){
+				throw new BaseException("BatchObject not found, the batch method parameter only supported one parameter and must a Collection : " + dmethod.getMethod().toGenericString());
 			}
 			
 			//default is first arg
