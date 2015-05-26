@@ -9,7 +9,7 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
@@ -25,7 +25,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;
-	protected QueryProvider baseEntityManager;
+	protected QueryProvideManager baseEntityManager;
 	private DataQuery dataQuery;
 	
 	protected boolean countQuery;
@@ -43,7 +43,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	private String[] ascFields;
 	private String[] desFields;
 
-	public DefaultFileQueryImpl(QueryProvider baseEntityManager, T info, boolean count, TemplateParser parser) {
+	public DefaultFileQueryImpl(QueryProvideManager baseEntityManager, T info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;

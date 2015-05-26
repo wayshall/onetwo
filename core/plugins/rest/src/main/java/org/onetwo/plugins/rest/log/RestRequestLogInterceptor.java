@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
-import org.onetwo.plugins.rest.RestResult;
+import org.onetwo.plugins.rest.utils.BaseRestResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,7 +28,7 @@ public class RestRequestLogInterceptor extends WebInterceptorAdapter {
 		info.setParams(request.getParameterMap());
 		
 		for(Map.Entry<String, Object> entry : modelAndView.getModel().entrySet()){
-			if(RestResult.class.isInstance(entry.getValue())){
+			if(BaseRestResult.class.isInstance(entry.getValue())){
 				info.setResult(entry.getValue());
 				break;
 			}

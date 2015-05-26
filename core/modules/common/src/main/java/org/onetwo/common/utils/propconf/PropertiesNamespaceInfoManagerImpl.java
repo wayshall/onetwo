@@ -121,7 +121,12 @@ public class PropertiesNamespaceInfoManagerImpl<T extends NamespaceProperty> ext
 		}
 		this.listener = listener;
 	}
+
 	
+	public PropertiesNamespaceInfoListener<T> getListener() {
+		return listener;
+	}
+
 	protected JFishPropertyConf<T> getConf() {
 		return conf;
 	}

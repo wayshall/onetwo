@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.LoginException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.AuthenticUtils;
@@ -25,7 +26,7 @@ public class SecurityExceptionResolver extends AbstractHandlerMethodExceptionRes
 
 
 	public static final String REDIRECT = "redirect:";
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	public SecurityExceptionResolver(){
 	}
