@@ -15,7 +15,8 @@ import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.QueryBuilder;
-import org.onetwo.common.db.QueryProvider;
+import org.onetwo.common.db.QueryProvideManager;
+import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
@@ -33,7 +34,13 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 		}
 
 		@Override
-		public void initQeuryFactory(QueryProvider em) {
+		public Object findOne(String queryName, Object... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void initQeuryFactory(QueryProvideManager em) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -142,7 +149,7 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 	}
 
 	@Override
-	public Number countRecord(Class entityClass, Map<Object, Object> properties) {
+	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -430,6 +437,12 @@ public class NullBaseEntityManager extends BaseEntityManagerAdapter implements B
 
 	@Override
 	public <T> Collection<T> removeByIds(Class<T> entityClass, Serializable[] id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SequenceNameManager getSequenceNameManager() {
 		// TODO Auto-generated method stub
 		return null;
 	}

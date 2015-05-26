@@ -1,12 +1,12 @@
 package org.onetwo.common.db;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 
 abstract public class AbstractDataQuery implements DataQuery{
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	public static final int PARAMETER_START_INDEX = 0;
 

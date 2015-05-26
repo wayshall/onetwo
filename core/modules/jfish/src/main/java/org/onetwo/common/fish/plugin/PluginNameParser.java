@@ -4,6 +4,11 @@ public class PluginNameParser {
 	private final String start;
 	private final String end;
 	private final int length;
+	
+
+	public PluginNameParser() {
+		this("[", "]");
+	}
 	public PluginNameParser(String start, String end) {
 		super();
 		this.start = start;
@@ -24,6 +29,12 @@ public class PluginNameParser {
 		String pname = name.substring(startIndex+1, endIndex);
 		return pname;
 	}
+	/***
+	 * [pluginName]viewpath1/viewpath2
+	 * @param name
+	 * @param viewName
+	 * @return
+	 */
 	public String wrapViewPath(String name, String viewName){
 		return start + name + end + viewName;
 	}

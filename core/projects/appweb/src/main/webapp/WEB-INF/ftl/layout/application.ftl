@@ -30,8 +30,10 @@
 			$(".datagrid .handle a").addClass("btn btn-small");
 		})
 		</script>
-		<link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/bootstrap/css/bootstrap.min.css?t=1382149063453">
+		<link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/bootstrap/css/bootstrap.min.css?t=${now.millis}">
 		<link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/bootstrap/css/bootstrap-responsive.min.css">
+		<link rel="stylesheet" type="text/css" href="${siteConfig.cssPath}/admin/assets/styles.css">
+		
 		<link rel="stylesheet" href="${siteConfig.cssPath}/style.css" />
 		<link rel="stylesheet" href="${siteConfig.cssPath}/font-awesome/4.1.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="${siteConfig.cssPath}/font-awesome/4.1.0/css/font-awesome-ie7.min.css">
@@ -67,6 +69,8 @@
 		  </div>
 		</div>
 
+
+	    <div class="container-fluid">
 	    	<#if message>
 	    	<div class="alert alert-block">
 			  <a class="close" data-dismiss="alert">×</a>
@@ -78,6 +82,8 @@
 			<@define name="main-content">
 			页面详细内容
 			</@define>
+		</div>
+		
 			<@define name="jsscript"/>
 			<script>
 				$(function() {

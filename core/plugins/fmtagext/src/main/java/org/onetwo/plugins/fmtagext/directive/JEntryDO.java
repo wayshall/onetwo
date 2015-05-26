@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.view.HtmlElement;
 import org.onetwo.plugins.fmtag.JFieldShowable;

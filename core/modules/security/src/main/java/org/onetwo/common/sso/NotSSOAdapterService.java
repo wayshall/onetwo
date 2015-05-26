@@ -3,7 +3,7 @@ package org.onetwo.common.sso;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 
-abstract public class NotSSOAdapterService implements UserLoginService, SSOService {
+abstract public class NotSSOAdapterService implements UserLoginService, SecurityService {
 
 	@Override
 	public boolean checkTimeout(SecurityTarget target, boolean updateLastLogTime) {

@@ -2,6 +2,7 @@ package org.onetwo.plugins.email;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.springframework.core.io.InputStreamSource;
 
+@SuppressWarnings("serial")
 public class MailInfo implements Serializable{
 	
 	public static MailInfo create(String from, String...to){
@@ -44,7 +46,7 @@ public class MailInfo implements Serializable{
 
 	private String content;
 
-	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
+//	private EmailTextType emailTextType = EmailTextType.STATIC_TEXT;
 	private boolean mimeMail;
 	
 	private JFishList<File> attachments = JFishList.create();
@@ -117,14 +119,14 @@ public class MailInfo implements Serializable{
 		return this;
 	}
 
-	public EmailTextType getEmailTextType() {
+	/*public EmailTextType getEmailTextType() {
 		return emailTextType;
 	}
 
 	public MailInfo emailTextType(EmailTextType contentType) {
 		this.emailTextType = contentType;
 		return this;
-	}
+	}*/
 
 	public File[] getAttachments() {
 		return attachments.toArray(new File[0]);
@@ -202,6 +204,13 @@ public class MailInfo implements Serializable{
 
 	public void setBizTag(String bizTag) {
 		this.bizTag = bizTag;
+	}
+
+	@Override
+	public String toString() {
+		return "MailInfo [from=" + from + ", to=" + Arrays.toString(to)
+				+ ", cc=" + Arrays.toString(cc) + ", bcc="
+				+ Arrays.toString(bcc) + ", sentDate=" + sentDate + "]";
 	}
 
 }
