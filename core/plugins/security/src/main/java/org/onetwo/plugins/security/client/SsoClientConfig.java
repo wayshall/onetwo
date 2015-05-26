@@ -3,18 +3,22 @@ package org.onetwo.plugins.security.client;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.view.jsp.TagUtils;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
 
 @SuppressWarnings("serial")
 public class SsoClientConfig extends SsoConfig {
 
 	@Override
-	public boolean isServerSide() {
+	public boolean isSso() {
+		return true;
+	}
+	@Override
+	public boolean isSsoServer() {
 		return false;
 	}
 	@Override
-	public boolean isClientSide() {
+	public boolean isSsoClient() {
 		return true;
 	}
 	public String getServerUrl(){
@@ -24,8 +28,11 @@ public class SsoClientConfig extends SsoConfig {
 	private boolean isCheckAll(){
 		return getBoolean("check.all", false);
 	}
+	/***
+	 * 服务器端登录地址
+	 */
 	public String getServerLoginUrl(){
-		String url = getProperty("server.login.url");
+		String url = getProperty(SERVER_LOGIN_URL);
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/login";
 			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());
@@ -34,7 +41,7 @@ public class SsoClientConfig extends SsoConfig {
 		return url;
 	}
 	public String getServerLogoutUrl(){
-		String url = getProperty("server.logout.url");
+		String url = getProperty(SERVER_LOGOUT_URL);
 		if(StringUtils.isBlank(url)){
 			url = getServerUrl()+"/logout";
 			url = TagUtils.appendParam(url, SecurityPluginUtils.LOGIN_PARAM_CLIENT_CODE, getClientCode());

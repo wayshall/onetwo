@@ -20,6 +20,7 @@ public class OperatorLogInfo implements Serializable {
 	private Map<String, String[]> parameters;
 	final private long startTime;
 	final private long endTime;
+	private String webHandler;
 	
 	public OperatorLogInfo(long startTime, long endTime) {
 		super();
@@ -95,5 +96,11 @@ public class OperatorLogInfo implements Serializable {
 	
 	public long getExecutedTimeInSeconds(){
 		return TimeUnit.MILLISECONDS.toSeconds(getExecutedTimeInMillis());
+	}
+	public String getWebHandler() {
+		return webHandler;
+	}
+	public void setWebHandler(String webHandler) {
+		this.webHandler = webHandler;
 	}
 }

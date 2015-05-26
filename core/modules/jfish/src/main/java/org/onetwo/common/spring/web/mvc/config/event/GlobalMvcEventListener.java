@@ -9,6 +9,7 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.It;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -50,12 +51,10 @@ public class GlobalMvcEventListener implements JFishMvcPluginListener {
 		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
 	}
 
-
-
 	@Override
 	public void listening(final FreeMarkerConfigurerBuildEvent event) {
 		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
-		event.getJfishPluginManager().getPluginMetas().each(new NoIndexIt<JFishPluginMeta>() {
+		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new NoIndexIt<JFishPluginMeta>() {
 
 			@Override
 			protected void doIt(JFishPluginMeta e) throws Exception {
@@ -79,7 +78,7 @@ public class GlobalMvcEventListener implements JFishMvcPluginListener {
 		final Map<String, String> urlMap = new ManagedMap<String, String>();
 
 		final JFishMvcApplicationContext applicationContext = event.getApplicationContext();
-		event.getJfishPluginManager().getPluginMetas().each(new It<JFishPluginMeta>() {
+		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new It<JFishPluginMeta>() {
 
 			@Override
 			public boolean doIt(JFishPluginMeta element, int index) {

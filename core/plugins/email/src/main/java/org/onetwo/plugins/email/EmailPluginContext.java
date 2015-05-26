@@ -2,13 +2,11 @@ package org.onetwo.plugins.email;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.spring.ftl.StringFtlTemplateLoader;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 @Configuration
 public class EmailPluginContext implements InitializingBean {
@@ -27,7 +25,7 @@ public class EmailPluginContext implements InitializingBean {
 //	@Resource
 //	private freemarker.template.Configuration mailFreemarkerConfiguration;
 	
-	private StringFtlTemplateLoader stringFtlTemplateLoader = new StringFtlTemplateLoader();
+//	private StringFtlTemplateLoader stringFtlTemplateLoader = new StringFtlTemplateLoader();
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -41,23 +39,23 @@ public class EmailPluginContext implements InitializingBean {
 		return emailConfig;
 	}
 	
-	@Bean
+	/*@Bean
 	public FreeMarkerConfigurationFactoryBean mailFreemarkerConfiguration(){
 		FreeMarkerConfigurationFactoryBean fcfb = new FreeMarkerConfigurationFactoryBean();
 		fcfb.setTemplateLoaderPath(FTL_DIR);
 		fcfb.setPreTemplateLoaders(stringFtlTemplateLoader);
 		return fcfb;
-	}
+	}*/
 	
-	@Bean
+	/*@Bean
 	public StringFtlTemplateLoader stringFtlTemplateLoader(){
 		return this.stringFtlTemplateLoader;
-	}
+	}*/
 	
-	@Bean
+/*	@Bean
 	public MailTextContextParser mailTextContextParser(){
 		MailTextContextParser parser = new MailTextContextParser();
 		return parser;
-	}
+	}*/
 
 }

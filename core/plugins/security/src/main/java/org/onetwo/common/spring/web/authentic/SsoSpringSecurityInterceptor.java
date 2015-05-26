@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.web.s2.security.AuthenticUtils;
 import org.onetwo.common.web.s2.security.SecurityTarget;
-import org.onetwo.plugins.security.common.SsoConfig;
+import org.onetwo.plugins.security.sso.SsoConfig;
 import org.springframework.web.method.HandlerMethod;
 
 public class SsoSpringSecurityInterceptor extends SpringSecurityInterceptor {
@@ -20,7 +20,7 @@ public class SsoSpringSecurityInterceptor extends SpringSecurityInterceptor {
 	protected SecurityTarget createSecurityTarget(HttpServletRequest request, HttpServletResponse response, Object handler){
 		SecurityTarget target = null;
 		if(handler instanceof HandlerMethod){
-			if(ssoConfig.isServerSide()){
+			if(ssoConfig.isSsoServer()){
 				target = new SpringSsoSecurityTarget(getSessionStorer(), request, response, (HandlerMethod)handler);
 			}else{
 				target = new SpringSecurityTarget(getSessionStorer(), request, response, (HandlerMethod)handler);

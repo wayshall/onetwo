@@ -14,6 +14,7 @@ public class AppConfig extends PropConfig {
 	public static final String APP_NAME = "app.name";
 	public static final String APP_CODE = "app.code";
 	public static final String APP_ENVIRONMENT = "app.environment";
+	public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
 	/*public static final String APP_ENVIRONMENT_DEV = "dev";
 	public static final String APP_ENVIRONMENT_TEST = "test";
 	public static final String APP_ENVIRONMENT_PRODUCT = "product";*/
@@ -115,6 +116,10 @@ public class AppConfig extends PropConfig {
 	
 	public boolean isTest(){
 		return getEnv()==Env.TEST;
+	}
+	
+	public String getJFishBasePackages(){
+		return getProperty(JFISH_BASE_PACKAGES);
 	}
 
 	public Map<String, PropConfig> getOuters() {

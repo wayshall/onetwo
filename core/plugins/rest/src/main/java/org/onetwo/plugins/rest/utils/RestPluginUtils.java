@@ -1,11 +1,9 @@
 package org.onetwo.plugins.rest.utils;
 
-import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.rest.RestResult;
 
 public class RestPluginUtils {
 
-	public static final <E> PageData<E> newPageData(){
+	/*public static final <E> PageData<E> newPageData(){
 		return newPageData(null);
 	}
 	
@@ -25,5 +23,5 @@ public class RestPluginUtils {
 		RestResult<PageData<E>> result = new RestResult<PageData<E>>();
 		result.setData(newPageData(p));
 		return result;
-	}
+	}*/
 }

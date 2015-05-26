@@ -9,7 +9,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 
 @SuppressWarnings("rawtypes")
-public interface BaseEntityManager extends QueryProvider {
+public interface BaseEntityManager extends QueryProvideManager {
 
 	public <T> T load(Class<T> entityClass, Serializable id);
 	
@@ -35,9 +35,9 @@ public interface BaseEntityManager extends QueryProvider {
 
 	public <T> List<T> findAll(Class<T> entityClass);
 
-	public Number countRecord(Class entityClass, Map<Object, Object> properties);
+	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties);
 
-	public Number countRecord(Class entityClass, Object... params);
+	public Number countRecord(Class<?> entityClass, Object... params);
 
 //	public <T> T findUnique(final String sql, final Object... values);
 //	public <T> T findUnique(QueryBuilder squery);

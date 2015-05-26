@@ -5,7 +5,11 @@ import org.onetwo.common.db.QueryField;
 
 public interface HqlSymbolParser {
 	
-	public String getSymbol();
+	/***
+	 * 操作符
+	 * @return
+	 */
+	public String getMappedOperator();
 	
 	public String parse(QueryField field);
 

@@ -9,10 +9,8 @@ import org.onetwo.plugins.admin.model.AdminModelContext;
 import org.onetwo.plugins.admin.model.app.entity.AdminAppEntity;
 import org.onetwo.plugins.admin.model.app.service.impl.AdminAppServiceImpl;
 import org.onetwo.plugins.admin.model.data.entity.DictionaryEntity;
-import org.onetwo.plugins.admin.model.data.service.DictionaryService;
 import org.onetwo.plugins.admin.model.data.service.impl.DictionaryServiceImpl;
 import org.onetwo.plugins.admin.utils.AdminPluginConfig;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -99,18 +97,18 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 
 	@Configuration
 	@ComponentScan(basePackageClasses=AdminAppServiceImpl.class)
-	public static class AdminAppModelContext {
+	public static class AdminAppModelContext{
 	}
 
 
 	@Configuration
-//	@ComponentScan(basePackageClasses=DictionaryServiceImpl.class)
+	@ComponentScan(basePackageClasses=DictionaryServiceImpl.class)
 	public static class DataModelContext {
 		
-		@Bean
+		/*@Bean
 		public DictionaryService dictionaryService(){
 			return new DictionaryServiceImpl();
-		}
+		}*/
 	}
 
 }

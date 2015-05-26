@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.fish.utils.ContextHolder;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -23,7 +23,7 @@ import org.springframework.web.method.HandlerMethod;
 public class LoggerInterceptor extends WebInterceptorAdapter implements InitializingBean {
 
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	private JsonMapper jsonMapper = JsonMapper.mapper(Inclusion.NON_NULL, true);
 	private ContextHolder contextHolder;
@@ -41,6 +41,12 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 			this.excludes = new String[]{"*password*"};
 		}
 		this.matcher = JFishMathcer.excludes(false, excludes);
+		if(isLogOperation() && accessLogger==null){
+			accessLogger = new DefaultAccessLogger();
+		}
+		if(accessLogger!=null){
+			accessLogger.initLogger();
+		}
 	}
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -63,6 +69,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		/*AuthenticationContext authen = AuthenticUtils.getContextFromRequest(request);
 		if(authen==null)
 			return ;*/
+
+		if(accessLogger==null)
+			return ;
+		
 		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
 		
@@ -99,9 +109,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		}
 		info.setOperatorTime(new Date());
 		info.setDatas(contextHolder.getDataChangedContext());
+		HandlerMethod webHandler = (HandlerMethod)handler;
+		info.setWebHandler(webHandler.getBeanType().getCanonicalName()+"."+webHandler.getMethod().getName());
 		
-		if(accessLogger!=null)
-			accessLogger.logOperation(info);
+		accessLogger.logOperation(info);
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class ParamValues {
 		else {
 			Map map = getValues();
 			if(value instanceof Collection){
-				Map m = CUtils.asMap(((Collection)value).toArray());
+				Map m = CUtils.asLinkedMap(((Collection)value).toArray());
 				if(m!=null && !m.isEmpty())
 					map.putAll(m);
 			}else if(value instanceof Map){

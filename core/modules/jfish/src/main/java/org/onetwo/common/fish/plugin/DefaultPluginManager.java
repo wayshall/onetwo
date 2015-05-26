@@ -1,10 +1,11 @@
 package org.onetwo.common.fish.plugin;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.EmptyContextPlugin;
 import org.onetwo.common.spring.plugin.PluginInfo;
@@ -21,8 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager {
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
-	private PluginNameParser pluginNameParser = new PluginNameParser("[", "]");
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private PluginNameParser pluginNameParser = PLUGINNAME_PARSER;
 	final private JFishMvcEventBus mvcEventBus = new JFishMvcEventBus(this);
 
 	public DefaultPluginManager(String appEnvironment) {
@@ -334,8 +335,8 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	}*/
 	
 	@Override
-	public JFishList<JFishPlugin> getJFishPlugins() {
-		return getPluginMetas().map(new MapIt<JFishPluginMeta, JFishPlugin>() {
+	public List<JFishPlugin> getJFishPlugins() {
+		return JFishList.wrap(getPluginMetas()).map(new MapIt<JFishPluginMeta, JFishPlugin>() {
 
 			@Override
 			public JFishPlugin map(JFishPluginMeta element, int index) {
