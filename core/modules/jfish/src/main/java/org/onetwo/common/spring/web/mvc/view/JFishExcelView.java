@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.web.mvc.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
@@ -15,7 +16,12 @@ import org.onetwo.common.interfaces.TemplateGenerator;
 import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.NiceDate;
+import org.onetwo.common.utils.RandUtils;
+import org.onetwo.common.web.config.BaseSiteConfig;
+import org.springframework.util.Assert;
 
 /***
  * 为了避免与jasper冲突，foarmt为jfxls
@@ -28,6 +34,7 @@ public class JFishExcelView extends AbstractJFishExcelView {
 	public static final String TEMPLATE_SUFFIX = ".xml";
 	
 	private XmlTemplateGeneratorFactory xmlTemplateExcelFactory;
+	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
 
 	public JFishExcelView(){
 		this.setSuffix(TEMPLATE_SUFFIX);
@@ -38,36 +45,23 @@ public class JFishExcelView extends AbstractJFishExcelView {
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if(xmlTemplateExcelFactory==null){
 			xmlTemplateExcelFactory = SpringApplication.getInstance().getBean(XmlTemplateGeneratorFactory.class);
-			if(xmlTemplateExcelFactory==null){
-				throw new JFishException("there is not excel xml template factory config.");
-			}
+			Assert.notNull(xmlTemplateExcelFactory, "there is not excel xml template factory config.");
 		}
+		
+		String downloadFileName = getDownloadFileName(request, model);
+		TemplateGenerator generator = createTemplateGenerator(model);//this.xmlTemplateExcelFactory.create(template.toString(), model);
+		String format = "."+generator.getFormat();//.xlsx
+		String saveFileName = (downloadFileName.endsWith(".xls") || downloadFileName.endsWith(".xlsx"))?downloadFileName:(downloadFileName+format);
+		
+//		response.setContentType(RESPONSE_CONTENT_TYPE); 
+//		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
+		this.setReponseHeader(saveFileName, request, response);
 
 		OutputStream out = null;
-		
-		boolean browse = "true".equals(JFishWebUtils.req("browse"));
-		String downloadFileName = getDownloadFileName(request, model);
-		
 		try {
-//			Object template = model.get(TEMPLATE_KEY);
-//			String template = getTemplatePath();
-			TemplateGenerator generator = createTemplateGenerator(model);//this.xmlTemplateExcelFactory.create(template.toString(), model);
-			if(browse){
-				//TODO
-			}else{
-//				String requestUri = JFishWebUtils.requestUri();
-				//WebUtils.extractFullFilenameFromUrlPath(requestUri)
-				
-				String format = "."+generator.getFormat();//.xlsx
-				downloadFileName = (downloadFileName.endsWith(".xls") || downloadFileName.endsWith(".xlsx"))?downloadFileName:(downloadFileName+format);
-//				response.setContentType(RESPONSE_CONTENT_TYPE); 
-//				response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
-				this.setReponseHeader(downloadFileName, request, response);
-
-				out = response.getOutputStream();
-				generator.generateIt();
-				generator.write(out);
-			}
+			out = response.getOutputStream();
+			this.writeFileToResponse(generator, saveFileName, format, out);
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if(LangUtils.isError(e, ServiceErrorCode.RESOURCE_NOT_FOUND)){
@@ -86,6 +80,29 @@ public class JFishExcelView extends AbstractJFishExcelView {
 					throw new ServiceException("export excel error!", e);
 				}
 			}
+		}
+	}
+	
+	protected void writeFileToResponse(TemplateGenerator generator, String downloadFileName, String format, OutputStream out) throws IOException{
+		int size = generator.generateIt();
+		logger.info("excel generate size: {}", size);
+		
+		if(siteConfig.isViewExcelGeneratedFile() || size<siteConfig.getViewExcelGeneratedFileThredshold()){
+			generator.write(out);
+		}else{
+			String dir = siteConfig.getViewExcelGeneratedFileDir();
+			FileUtils.makeDirs(dir);
+			String filePath = dir + "/" + downloadFileName + "-" + NiceDate.New().format("yyyyMMddHHmmssSSS") + "-" + RandUtils.randomString(5) + format;
+			logger.info("write excel to : {}", dir + "/" + JFishWebUtils.getDownloadFileName(false));
+			
+			/*TimeCounter t = TimeCounter.create("write excel");
+			t.start();*/
+			File file = generator.write(filePath);
+//			t.stop();
+			
+//			t.restart("copy to repsonse");
+			FileUtils.copyFileToOutputStream(out, file);
+//			t.stop();
 		}
 	}
 	

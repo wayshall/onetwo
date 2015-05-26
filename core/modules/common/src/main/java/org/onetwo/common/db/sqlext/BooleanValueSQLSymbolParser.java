@@ -17,7 +17,7 @@ public class BooleanValueSQLSymbolParser extends AbstractSupportedSubQuerySQLSym
 	
 
 	@Override
-	public String getSymbol(QueryField context) {
+	public String getActualDbOperator(QueryField context) {
 		Object value = context.getValue();
 		if(LangUtils.isMultiple(value)){
 			LangUtils.throwBaseException("symbol[${0}] is unsupport mutil value : " + LangUtils.toString(value));

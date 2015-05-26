@@ -14,6 +14,7 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Result;
 import org.onetwo.common.utils.list.Predicate;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.Module;
@@ -110,6 +111,8 @@ public class JsonView extends MappingJackson2JsonView {
 			Map<String, Object> map = (Map<String, Object>) result;
 			DataResult dataResult = DataResult.createSucceed("");
 			for(Entry<String, Object> entry : map.entrySet()){
+				if(BindingResult.class.isInstance(entry.getValue()))
+					continue;
 				dataResult.putData(entry.getKey(), entry.getValue());
 			}
 			return dataResult;

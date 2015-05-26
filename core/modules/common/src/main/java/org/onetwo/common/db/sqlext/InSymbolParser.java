@@ -34,7 +34,7 @@ public class InSymbolParser extends CommonSQLSymbolParser implements HqlSymbolPa
 			return null;
 		}*/
 
-		List paramlist = processValue(field, value, ifNull);
+		List paramlist = convertValues(field, value, ifNull);
 
 		field = this.getFieldName(field);
 		StringBuilder hql = new StringBuilder();

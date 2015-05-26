@@ -1,7 +1,18 @@
+<<<<<<< HEAD
 ## å£°æ˜Ž
 
 è¿™ä¸ªä¸æ˜¯ä¸€ä¸ªå¼€æºé¡¹ç›®ï¼Œå› ä¸ºæˆ‘è§‰å¾—ä¸€ä¸ªå¼€æºé¡¹ç›®çš„è¦æ±‚å¤ªé«˜äº†ï¼Œ
 åŒ…æ‹¬è‰¯å¥½çš„ä»£ç ã€åˆç†çš„ä»£ç ç»“æž„ã€å•å…ƒæµ‹è¯•ã€æ‰¿è¯ºå’Œä¹‰åŠ¡ã€licenseâ€¦â€¦
+=======
+## ÉùÃ÷
+
+Õâ¸ö²»ÊÇÒ»¸ö¿ªÔ´ÏîÄ¿£¬ÒòÎªÕâ¸öÏîÄ¿»¹´ï²»µ½¿ªÔ´ÏîÄ¿µÄÒªÇó£¬
+°üÀ¨Á¼ºÃµÄ´úÂë¡¢ºÏÀíµÄ´úÂë½á¹¹¡¢µ¥Ôª²âÊÔ¡¢³ÐÅµºÍÒåÎñ¡¢license¡­¡­
+
+ÕâÖ»ÊÇÎÒ´Ó¹¤×÷ÖÐ³éÈ¡µÄ´úÂë£¬·Åµ½ÍøÉÏ´æÅÌ£¬ËùÒÔÔÚ´ËÉùÃ÷£º
+²»¶ÔÏîÄ¿µÄÎ¬»¤×öÈÎºÎ³ÐÅµ£¬¿ÉÄÜ»áËæÊ±ÖØ¹¹ÏîÄ¿µÄÈÎºÎ¶«Î÷£¬°üÀ¨°ü¡¢Àà¼°ÈÎºÎ¹«¿ªµÄ½Ó¿Ú¡£
+
+>>>>>>> 2139339dfd23ab2e55dbf11d789168b07bf73f2e
 
 è¿™åªæ˜¯æˆ‘ä»Žå·¥ä½œä¸­æŠ½å–çš„ä»£ç ï¼Œæ”¾åˆ°ç½‘ä¸Šå­˜ç›˜ï¼Œæ‰€ä»¥åœ¨æ­¤å£°æ˜Žï¼š
 ä¸å¯¹é¡¹ç›®çš„ç»´æŠ¤åšä»»ä½•æ‰¿è¯ºï¼Œå¯èƒ½ä¼šéšæ—¶é‡æž„é¡¹ç›®ï¼ŒåŒ…æ‹¬åŒ…ã€ç±»åŠä»»ä½•å…¬å¼€çš„æŽ¥å£ã€‚
@@ -17,6 +28,7 @@ modulesçš„ajaxanywhereæ˜¯ç›´æŽ¥æŠŠå¼€æºé¡¹ç›®ajaxanywhereçš„æºç forkäº†è¿›æ¥
 
 
 
+<<<<<<< HEAD
 ## æž„å»º
 æœ¬é¡¹ç›®åŸºäºŽgradleæž„å»º
 
@@ -53,3 +65,35 @@ plugins/dqï¼Œæ˜¯åŸºäºŽhibernateå’Œjdbcçš„ä¸€ä¸ªsqlæŸ¥è¯¢æ’ä»¶ï¼Œ
 ### projectï¼š
 è¯¥ç›®å½•ä¸‹æ˜¯åŸºäºŽæ¡†æž¶çš„ä¸€äº›ç¤ºä¾‹é¡¹ç›®ã€‚ 
 
+=======
+### modules£º
+modulesÄ¿Â¼ÊÇ»ù±¾Ä£¿é£¬Ò»°ãÊ½Õë¶ÔÄ³Ð©¿ò¼Ü»òÕßÄ³Ð©ÁìÓòµÄ½ºË®´úÂëºÍÔÚ´ËÖ®ÉÏµÄÀ©Õ¹¡£ 
+±ÈÈç£º 
+commonÊÇÒ»Ð©³£ÓÃutilsÀà£¬ÅäÖÃ¶ÁÈ¡£¬¹«¹²½Ó¿ÚµÄ³éÈ¡¡£
+
+ormÊÇ»ùÓÚspring jdbcÖ®ÉÏµÄÒ»¸ö¼òµ¥ormÊµÏÖ£¬Õâ¸öÄ£¿éµÄ´úÂëÒÑÓÐÒ»¶ÎÊ±¼äÃ»ÓÐ¸üÐÂÎ¬»¤¡£
+
+securityÊÇ»ùÓÚspringÖ®ÉÏÉ½Õ¯µÄÒ»¸öÑéÖ¤ºÍÊÚÈ¨Ä£¿é£¬ºÍspring securityÏîÄ¿Ã»ÓÐÈÎºÎ¹ØÏµ¡£
+
+springÊÇÕë¶Ôspring¿ò¼ÜÈÕ³£Ê¹ÓÃµÄÒ»Ð©·â×°ºÍ»ùÓÚspringÖ®ÉÏµÄÀ©Õ¹£¬°üº¬ÁËÒ»¸ö²å¼þ»úÖÆ¡£ 
+
+jfishÊÇ»ùÓÚspring mvc°ü×°µÄÒ»²ã¿ò¼Ü£¬ÀïÃæ°üº¬ºËÐÄÆô¶¯ÀàºÍÒ»Ì×web²å¼þ»úÖÆ¡£ 
+
+µÈµÈ¡£ 
+
+### plugins£º
+²å¼þÄ¿Â¼£¬Õâ¸öÄ¿Â¼ÏÂµÄËùÓÐÏîÄ¿¶¼ÊÇ»ùÓÚspringºÍjfish²å¼þ»úÖÆÏÂÐ´µÄ²å¼þÏîÄ¿¡£ 
+
+±ÈÈç£º 
+
+plugins/hibernate£¬ÊÇ°Ñhibernate¼¯³Éµ½jfish¿ò¼ÜÀïµÄ²å¼þ¡£ 
+
+plugins/dq£¬ÊÇ»ùÓÚhibernateºÍjdbcµÄÒ»¸ösql²éÑ¯²å¼þ£¬ 
+ÒòÎªÎÒ²»Ï²»¶mybatisÕâÖÖÐ´xmlÀïÐ´sql£¬ÓÖÔÚsqlÇ¶Èë´óÆ¬xmlµÄ³óÂª·½Ê½£¬ËùÒÔÖ±½ÓÐ´ÁËÒ»¸ö·ÖÀësqlºÍ´úÂëµÄ²å¼þÄ£¿é¡£ 
+
+µÈµÈ 
+
+### project£º
+¸ÃÄ¿Â¼ÏÂÊÇ»ùÓÚ¿ò¼ÜµÄÒ»Ð©Ê¾ÀýÏîÄ¿¡£ 
+
+>>>>>>> 2139339dfd23ab2e55dbf11d789168b07bf73f2e
