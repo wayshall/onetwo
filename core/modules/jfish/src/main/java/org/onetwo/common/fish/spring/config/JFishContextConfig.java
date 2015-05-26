@@ -8,10 +8,10 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
-import org.onetwo.common.spring.ftl.DirFreemarkerConfig;
-import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
+import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.spring.web.reqvalidator.JFishUploadFileTypesChecker;
@@ -28,11 +28,14 @@ import org.onetwo.common.web.view.ThemeSetting;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
@@ -50,15 +53,22 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @Configuration
 @ImportResource({ "classpath*:jfish-spring.xml", "classpath:applicationContext.xml" })
-@Import({JFishProfiles.class, DirFreemarkerConfig.class})
+//@Import({JFishProfiles.class, DirFreemarkerConfig.class})
+@Import({JFishProfiles.class})
 public class JFishContextConfig extends BaseApplicationContextSupport {
+	public static class ContextBeanNames {
+		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
+	}
 	
 	public static final String MVC_CONFIG = "mvcConfig";
+	
+	@javax.annotation.Resource
+	private ApplicationContext applicationContext;
 
 //	@Value("${jfish.base.packages}")
 //	private String jfishBasePackages;
 
-	private ContextPluginManager contextPluginManager;
+//	private ContextPluginManager contextPluginManager;
 
 	public JFishContextConfig() {
 		// this.jfAppConfigurator =
@@ -70,7 +80,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 //		AppConfig appConfig = SpringUtils.getBean(applicationContex, AppConfig.class);
 		return BaseSiteConfig.getInstance();
 	}
-	
+	/*
 	@Bean
 	public ThemeSetting themeSetting(){
 		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
@@ -86,7 +96,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 	@Bean
 	public ThemeSettingWebFilter themeSettingWebFilter(){
 		return new ThemeSettingWebFilter();
-	}
+	}*/
 	
 	@Bean
 	public JFishAppConfigrator jfishAppConfigurator() {
@@ -179,6 +189,21 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 		return new WebRequestHolder();
 	}
 
+	@Bean
+	public ThemeSetting themeSetting(){
+		String tagSetting = BaseSiteConfig.getInstance().getThemeSetting();
+		if(SessionTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new SessionTagThemeSettting();
+		}else if(CookiesTagThemeSettting.CONFIG_KEY.equals(tagSetting)){
+			return new CookiesTagThemeSettting();
+		}else{
+			return new DefaultTagThemeSetting();
+		}
+	}
+	@Bean
+	public ThemeSettingWebFilter themeSettingWebFilter(){
+		return new ThemeSettingWebFilter();
+	}
 
 	@Configuration
 	@Profile(Environment.TEST)
@@ -189,6 +214,25 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 			RequestMappingHandlerAdapter ha = new RequestMappingHandlerAdapter();
 			return ha;
 		}
+	}
+	
+
+	@Bean
+	public CodeMessager codeMessager(){
+		CodeMessager messager = SpringUtils.getBean(applicationContext, CodeMessager.class);;
+		if(messager==null){
+			messager = new DefaultCodeMessager();
+		}
+		return messager;
+	}
+	
+
+	@Bean(name=ContextBeanNames.EXCEPTION_MESSAGE)
+	public MessageSource exceptionMessageSource(){
+		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
+		ms.setCacheSeconds(BaseSiteConfig.getInstance().getMessageCacheSecond());
+		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
+		return ms;
 	}
 
 }

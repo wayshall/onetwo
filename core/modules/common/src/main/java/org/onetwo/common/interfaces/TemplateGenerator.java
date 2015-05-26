@@ -6,10 +6,12 @@ import java.io.OutputStream;
 public interface TemplateGenerator {
 	
 	public String getFormat();
+	
 	/****
-	 * 生成excel
+	 * 返回参考的datasource的数量
+	 * @return
 	 */
-	public void generateIt();
+	public int generateIt();
 	/***
 	 * 生产到指定路径
 	 * @param path

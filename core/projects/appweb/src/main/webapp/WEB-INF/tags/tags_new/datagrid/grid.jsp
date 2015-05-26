@@ -8,13 +8,19 @@
 
 <aa:zone name="${_gridBean.ajaxZoneNameFull}">
 <c:if test="${_gridBean.searchForm}">
-
 	<widget:form id="${_gridBean.name}Search" name="${_gridBean.name }" action="${_gridBean.action}" title="搜索" method="get">
 		<widget:formField name="submitTag" type="hidden" value="1"/>
 	<c:forEach items="${_gridBean.searchFormBean.fields }" var="sf">
-		<widget:formField name="${sf.searchFieldName }" label="${sf.label }" type="${sf.searchFieldType }" emptyOptionLabel="请选择……" items="${sf.searchItems }" itemLabel="${sf.searchItemLabel }" itemValue="${sf.searchItemValue }"/>
+		<widget:formField name="${sf.searchFieldName }" label="${sf.label }" type="${sf.searchFieldType }" emptyOptionLabel="请选择……" items="${sf.searchItems }" itemLabel="${sf.searchItemLabel }" itemValue="${sf.searchItemValue }" dataFormat="${sf.dataFormat}"/>
 	</c:forEach>
-		<widget:formField name="" type="submit" label="提交"  />
+		<c:choose>
+			<c:when  test="${_gridBean.ajaxSupported}">
+				<widget:formField name="" showLoadingText="false" type="submit" label="提交" cssClass="form-button" data-confirm="false" remote="true" ajaxName="${_gridBean.ajaxZoneName}" />
+			</c:when>
+			<c:otherwise>
+				<widget:formField name="" showLoadingText="false" type="submit" label="提交" cssClass="form-button" data-confirm="false"/>
+			</c:otherwise>
+		</c:choose>		
 		
 	</widget:form>
 	<script>
@@ -23,7 +29,6 @@
 		$('.jfish-toggle-body').hide();
 	</c:if>
 	</script>
-	
 </c:if>
 <!-- 大表格那样的搜索控件插入点 -->
 <layout:define name="grid_search"/>
@@ -46,17 +51,18 @@
 		<aa:zone name="${_gridBean.ajaxZoneName}">
 		<c:set var="formId" value="${_gridBean.formId}"></c:set>
 		<c:if test="${_gridBean.generatedForm }">
-		<form id="${formId }" name="${formId}" action="${_gridBean.action}" method="post" class="${_gridBean.cssClass} form-horizontal datagrid" style="margin-bottom: 3px">
+		<form id="${formId }" name="${formId}" action="${_gridBean.action}" method="post" class="${_gridBean.cssClass} form-horizontal datagrid" style="width: 100%; border: none; box-shadow: none;">
 			<input name="_method" value="post" type="hidden"/>
 			<widget:formToken/>
 			<div class="toolbar">
+			<layout:define name="grid_insert"/>
 		</c:if>
 			<layout:define name="${_gridBean.custombar }"/>
 			<!-- aa -->
 			<c:if test="${_gridBean.toolbar }">
 				<layout:define name="grid_toolbar"/>
 				<c:if test="${_gridBean.exportable }">
-				<a href="${_gridBean.xlsFormatAction }">导出</a>
+				<a href="${_gridBean.xlsFormatAction }" show-tips="此操作可能需要时间比较长，请耐心等候……">导出</a>
 				</c:if>
 			</c:if>
 		</div>

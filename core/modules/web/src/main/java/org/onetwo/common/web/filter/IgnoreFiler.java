@@ -19,6 +19,7 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 
 
@@ -32,7 +33,7 @@ public abstract class IgnoreFiler implements Filter{
 
 	private static final String[] DEFAULT_EXCLUDE_SUFFIXS = { ".js", ".css", ".jpg", ".jpeg", ".gif", ".png",".htm" };
 
-	private static final String[] DEFAULT_INCLUDE_SUFFIXS = { ".html", ".jsp", ".do", ".action", ".json", ".xml" };
+	private static final String[] DEFAULT_INCLUDE_SUFFIXS = { ".html", ".jsp", ".do", ".action", ".json", ".xml", ".jfxls" };
 
 	protected Collection<String> excludeSuffixs = new ArrayList<String>();
 
@@ -157,6 +158,7 @@ public abstract class IgnoreFiler implements Filter{
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest request = wrapRequest(servletRequest);
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		WebContextUtils.initRequestInfo(request);
 
 		/*if(!filterSuffix){
 			filterChain.doFilter(request, response);

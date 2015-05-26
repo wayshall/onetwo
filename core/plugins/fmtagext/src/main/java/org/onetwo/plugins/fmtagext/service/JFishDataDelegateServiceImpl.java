@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.fish.JFishEntityManager;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.MappedEntryManager;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
+import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.utils.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

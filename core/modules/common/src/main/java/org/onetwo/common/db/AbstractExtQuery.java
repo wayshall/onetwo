@@ -11,7 +11,7 @@ import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -20,14 +20,15 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
 abstract public class AbstractExtQuery implements ExtQueryInner{
-	protected final Logger logger = MyLoggerFactory.getLogger(SelectExtQueryImpl.class);
+	protected final Logger logger = JFishLoggerFactory.getLogger(SelectExtQueryImpl.class);
 
 
 	public static final String[] SQL_KEY_WORKDS = new String[]{" ", ";", ",", "(", ")", "'", "\"\"", "/", "+", "-"};
 
 	protected Class<?> entityClass;
 	protected String alias;
-	protected Map params;
+	protected boolean aliasMainTableName=true;
+	protected Map<Object, Object> params;
 	protected ParamValues paramsValue;
 	// private Map<String, Object> paramsValue = new LinkedHashMap<String,
 	// Object>();
@@ -45,12 +46,12 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	private List<ExtQueryListener> listeners;
 	private boolean fireListeners = true;
 
-	private final Map sourceParams;
+	private final Map<?, ?> sourceParams;
 	
-	public AbstractExtQuery(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
+	public AbstractExtQuery(Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
 		this(entityClass, alias, params, symbolManager, null);
 	}
-	public AbstractExtQuery(Class<?> entityClass, String alias, Map sourceParams, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+	public AbstractExtQuery(Class<?> entityClass, String alias, Map<?, ?> sourceParams, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		this.entityClass = entityClass;
 		if(StringUtils.isBlank(alias)){
 			alias = StringUtils.uncapitalize(entityClass.getSimpleName());
@@ -121,7 +122,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		this.alias = StringUtils.uncapitalize(entityClass.getSimpleName());
 	}
 	
-	public Map getParams() {
+	public Map<Object, Object> getParams() {
 		return params;
 	}
 
@@ -304,20 +305,23 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		if(f.startsWith(K.NO_PREFIX)){
 			newf = f.substring(K.NO_PREFIX.length());
 		}else{
-			if(!f.startsWith(this.alias + "."))
-				f = this.alias + "." + f;
+			if(aliasMainTableName){
+				if(!f.startsWith(this.alias + "."))
+					f = this.alias + "." + f;
+			}
 			
 			newf = f;
 		}
 		return newf;
 	}
 	
-	protected void checkFieldNameValid(String field){
+	protected String checkFieldNameValid(String field){
 		Assert.hasText(field);
 		for(String str : SQL_KEY_WORKDS){
 			if(field.indexOf(str)!=-1)
 				LangUtils.throwBaseException("the field is inValid : " + field);
 		}
+		return field;
 	}
 	
 	public String getFieldName(String f) {

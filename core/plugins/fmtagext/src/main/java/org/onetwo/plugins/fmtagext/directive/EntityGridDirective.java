@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.orm.AbstractMappedField;
-import org.onetwo.common.fish.orm.JFishMappedEntry;
-import org.onetwo.common.fish.orm.JFishMappedField;
-import org.onetwo.common.fish.orm.JFishMappedFieldType;
 import org.onetwo.common.ftl.directive.DirectivesUtils;
+import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedFieldType;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.fmtag.directive.DataField;

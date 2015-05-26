@@ -2,14 +2,14 @@ package org.onetwo.common.spring.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
 import org.slf4j.Logger;
 
 abstract public class AbstractContextPlugin<T> implements ContextPlugin{
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	protected ContextPluginMeta pluginMeta;
 	protected String appEnvironment;
@@ -18,6 +18,9 @@ abstract public class AbstractContextPlugin<T> implements ContextPlugin{
 		this.pluginMeta = pluginMeta;
 	}*/
 	
+	public String getPluginName(){
+		return getPluginMeta().getPluginInfo().getName();
+	}
 	
 	
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {

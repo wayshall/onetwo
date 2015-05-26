@@ -1,0 +1,7 @@
+日期：2015-05-08
+修改：
+重构jfish orm模块：
+修改名字为jfishdbm，即jfish database mapper
+修改包名
+去掉级联保存和删除，保持简单性
+

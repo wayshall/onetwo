@@ -13,7 +13,7 @@ import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.excel.data.SheetData;
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
  */
 public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implements PoiExcelGenerator{
 	
-	private Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	protected TemplateModel tempalte;
 	// protected Object root;
@@ -121,7 +121,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 
 	@Override
-	public void generateIt() {
+	public int generateIt() {
 //		this.initWorkbookData();
 		
 		boolean createSheet = true;
@@ -130,7 +130,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}
 		if(!createSheet){
 			logger.info("condition[ {} = {} ], ignore create sheet.", tempalte.getCondition(), createSheet);
-			return ;
+			return 0;
 		}
 		SheetDatasource<?> ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
@@ -146,6 +146,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}
 		
 
+		int dataSourceSize = 0;
 		SheetData sdata = createSheetData(getWorkbookData());
 		sdata.setTotalSheet(1);
 		if(tempalte.isMultiSheet()){
@@ -165,22 +166,28 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 				}
 				logger.info("{} sheet, data size: {}", i, datalist.size());
 				sdata.setDatasource(datalist);
-				this.generateSheet(ds.getSheetLabel(i), sdata);
+				Sheet sheet = this.generateSheet(ds.getSheetLabel(i), sdata);
+				
 				i++;
+				dataSourceSize += sheet.getLastRowNum();
 			}
 			//如果一个sheet也没有，创建一个空的
 			if(i==0){
 				sdata.setDatasource(Collections.EMPTY_LIST);
-				this.generateSheet(ds.getSheetLabel(i), sdata);
+				Sheet sheet = this.generateSheet(ds.getSheetLabel(i), sdata);
+				dataSourceSize = sheet.getLastRowNum();
 			}
 		}else{
 			sdata.setDatasource(ds.getSheetDataList(0));
-			this.generateSheet(ds.getSheetLabel(0), sdata);
+			Sheet sheet = this.generateSheet(ds.getSheetLabel(0), sdata);
+			
+			dataSourceSize = sheet.getLastRowNum();
 		}
 		
+		return dataSourceSize;
 	}
 	
-	private void generateSheet(String sheetname, SheetData sdata){
+	private Sheet generateSheet(String sheetname, SheetData sdata){
 		//the maximum sheet name is 30 character in xssfworkbook 
 		if(sheetname.length()>30)
 			sheetname = sheetname.substring(0, 30);
@@ -202,6 +209,8 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		this.buildColumnWidth(sdata);
 		this.generateSheet(sdata);
 		this.buildAutoColumnSize(sdata);
+		
+		return sheet;
 	}
 	
 	private void buildColumnWidth(SheetData sdata){
