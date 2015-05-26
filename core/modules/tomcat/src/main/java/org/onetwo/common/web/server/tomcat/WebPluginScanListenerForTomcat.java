@@ -12,23 +12,24 @@ import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
-import org.onetwo.common.web.server.events.WebappAddEvent;
+import org.onetwo.common.web.server.event.WebappAddEvent;
+import org.onetwo.common.web.server.listener.EmbeddedServerListener;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 
 import com.google.common.eventbus.Subscribe;
 
-public class WebPluginScanListenerForTomcat implements EmbeddedTomcatListener{
+public class WebPluginScanListenerForTomcat implements EmbeddedServerListener{
 	public static final String PLUGIN_WEBAPP_BASE_PATH = "classpath:META-INF";
 
 	private Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 	@Subscribe
-	public void listen(WebappAddEvent event){
+	public void listen(WebappAddEvent<TomcatServer> event){
 		scanPluginWebapps(event);
 	}
 	
-	public void scanPluginWebapps(final WebappAddEvent event){
+	public void scanPluginWebapps(final WebappAddEvent<TomcatServer> event){
 		JFishList<Resource> pluginFiles =ResourceUtils.scanResources(SpringContextPluginManager.PLUGIN_PATH);
 //		final Tomcat tomcat = event.getTomcatServer().getTomcat();
 
@@ -52,8 +53,8 @@ public class WebPluginScanListenerForTomcat implements EmbeddedTomcatListener{
 				
 				String listener = plugin.getWebappPluginServerListener();
 				if(StringUtils.isNotBlank(listener)){
-					EmbeddedTomcatListener lisnter = ReflectUtils.newInstance(listener);
-					event.getTomcatServer().registerListener(lisnter);
+					EmbeddedServerListener lisnter = ReflectUtils.newInstance(listener);
+					event.getEventSource().registerListener(lisnter);
 				}
 			}
 			
