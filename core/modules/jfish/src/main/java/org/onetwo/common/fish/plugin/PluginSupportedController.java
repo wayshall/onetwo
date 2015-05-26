@@ -14,7 +14,7 @@ abstract public class PluginSupportedController extends AbstractBaseController {
 	private JFishPluginMeta pluginMeta;
 	
 	@PostConstruct
-	final public void initController(){
+	public void initController(){
 		this.pluginMeta = jfishPluginManager.getJFishPluginMetaOf(getClass());
 	}
 	

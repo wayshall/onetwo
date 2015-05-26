@@ -12,7 +12,7 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SessionTimeoutException;
 import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
-import org.onetwo.common.sso.SSOService;
+import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.PermissionDetail;
 import org.onetwo.common.utils.StringUtils;
@@ -27,7 +27,7 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 	protected final Logger logger = Logger.getLogger(this.getClass());
 
 
-	abstract public SSOService getSSOService();
+	abstract public SecurityService getSecurityService();
 	
 
 	@Override
@@ -40,7 +40,7 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 	}
 	
 	protected boolean checkSessionTimeout(SecurityTarget target){
-		boolean timeout = getSSOService().checkTimeout(target, true);
+		boolean timeout = getSecurityService().checkTimeout(target, true);
 		if(timeout){
 			throw new SessionTimeoutException();
 			/*if(config.isThrowIfTimeout())
@@ -86,7 +86,7 @@ abstract public class AbstractAuthenticationInvocation implements Authentication
 		
 		//要先检查单点登陆，然后才去验证
 		if(config.isCheckLogin()){
-			authoritable = this.getSSOService().checkLogin(target);
+			authoritable = this.getSecurityService().checkLogin(target);
 		}
 		
 		//首先判断被请求的方法的安全配置是否需要验证，如果不需要，直接调用action被请求的方法

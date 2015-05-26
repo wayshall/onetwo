@@ -6,10 +6,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.fish.JFishUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SuppressWarnings("unchecked")
 public final class JFishWebUtils {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(JFishWebUtils.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(JFishWebUtils.class);
 	
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
 	public static final String REQUEST_HELPER_KEY = WebHelper.WEB_HELPER_KEY;
@@ -41,7 +41,6 @@ public final class JFishWebUtils {
 	@Deprecated
 	public static final String DEFAULT_TOKEN_FIELD_NAME = SameInSessionCsrfPreventor.DEFAULT_CSRF_TOKEN_FIELD;
 	
-	public static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
 
 	public static final String REDIRECT_KEY = "redirect:";
@@ -57,9 +56,9 @@ public final class JFishWebUtils {
 			if(request!=null)
 				local = request().getLocale();
 			else
-				local = DEFAULT_LOCAL;
+				local = JFishUtils.getDefaultLocale();
 		} catch (Exception e) {
-			local = DEFAULT_LOCAL;
+			local = JFishUtils.getDefaultLocale();
 		}
 		return local;
 	}
@@ -270,20 +269,7 @@ public final class JFishWebUtils {
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 	
-	public static Locale getDefaultLocale(){
-		return JFishWebUtils.DEFAULT_LOCAL;
-	}
-
-	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args) {
-		if(exceptionMessage==null)
-			return "";
-		try {
-			return exceptionMessage.getMessage(code, args, getDefaultLocale());
-		} catch (Exception e) {
-			logger.error("getMessage ["+code+"] error :" + e.getMessage(), e);
-		}
-		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-	}
+	
 	
 	public static ModelAndView mv(String viewName, Object... models){
 		ModelAndView mv = new ModelAndView(viewName);
@@ -306,23 +292,35 @@ public final class JFishWebUtils {
 		}
 		return mv;
 	}
-	
 
-	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) throws Exception{
-		return getDownloadFileName(request(), model, defaultFileName);
+
+	public static String getDownloadFileName(boolean encode) {
+		return getDownloadFileName(request(), null, "default-filename", encode);
+	}
+
+	public static String getDownloadFileName(Map<String, Object> model, String defaultFileName) {
+		return getDownloadFileName(request(), model, defaultFileName, true);
 	}
 	
+
 	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName){
+		return getDownloadFileName(request, model, defaultFileName, true);
+	}
+	
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName, boolean encode){
 		String downloadFileName = request.getParameter("fileName");
 		if(StringUtils.isBlank(downloadFileName)){
 			//在model里的，由用户自己转码
 			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
 		}else{
-			try {
+			if(encode){
+				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
+			}
+			/*try {
 				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 			} catch (Exception e) {
 				throw new BaseException("get down file name error: " +e.getMessage());
-			}
+			}*/
 		}
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;

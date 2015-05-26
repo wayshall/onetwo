@@ -8,6 +8,7 @@ import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.web.context.WebApplicationContext;
@@ -57,7 +58,7 @@ public class JFishMvcEventBus {
 	}
 	
 	final public void registerListenerByPluginManager(JFishPluginManager jfishPluginManager){
-		jfishPluginManager.getJFishPlugins().each(new NoIndexIt<JFishPlugin>() {
+		JFishList.wrap(jfishPluginManager.getJFishPlugins()).each(new NoIndexIt<JFishPlugin>() {
 
 			@Override
 			protected void doIt(JFishPlugin element) throws Exception {

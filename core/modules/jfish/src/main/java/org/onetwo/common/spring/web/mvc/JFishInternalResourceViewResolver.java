@@ -9,6 +9,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 public class JFishInternalResourceViewResolver extends InternalResourceViewResolver {
+	
+//	private boolean themeSupported = true;
 
 	@Resource
 	private ThemeSetting themeSetting;
@@ -25,5 +27,6 @@ public class JFishInternalResourceViewResolver extends InternalResourceViewResol
 		String themeViewName = themeSetting.getViewPage(viewName);
 		return super.resolveViewName(themeViewName, locale);
 	}
+
 
 }

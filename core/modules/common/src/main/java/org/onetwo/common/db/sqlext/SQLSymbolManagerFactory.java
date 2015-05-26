@@ -22,12 +22,12 @@ public class SQLSymbolManagerFactory {
 	private Map<EntityManagerProvider, SQLSymbolManager> providers;
 	
 	{
-		 SQLSymbolManager jpa = new DefaultSQLSymbolManagerImpl(new JPQLDialetImpl());
+//		 SQLSymbolManager jpa = new DefaultSQLSymbolManagerImpl(new JPQLDialetImpl());
 		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
 		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl(), PlaceHolder.POSITION);
 		 
 		 Map<EntityManagerProvider, SQLSymbolManager> temp = new HashMap<EntityManagerProvider, SQLSymbolManager>();
-		 temp.put(EntityManagerProvider.JPA, jpa);
+//		 temp.put(EntityManagerProvider.JPA, jpa);
 		 temp.put(EntityManagerProvider.Hibernate, hibernate);
 		 temp.put(EntityManagerProvider.JDBC, jdbc);
 		 

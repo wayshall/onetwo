@@ -1,6 +1,6 @@
 package org.onetwo.common.profiling;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 
@@ -13,7 +13,7 @@ public class Log4jTimeLogger implements JFishLogger {
 
 	public Log4jTimeLogger() {
 //		this.logger = null;
-		logger = MyLoggerFactory.getLogger(Log4jTimeLogger.class);
+		logger = JFishLoggerFactory.getLogger(Log4jTimeLogger.class);
 	}
 	
 	public Log4jTimeLogger(Logger logger) {
@@ -32,7 +32,7 @@ public class Log4jTimeLogger implements JFishLogger {
 
 	@Override
 	public void log(Object logSource, String msg){
-		Logger logger = MyLoggerFactory.getLogger(logSource.getClass());
+		Logger logger = JFishLoggerFactory.getLogger(logSource.getClass());
 		if(logger!=null){
 			logger.info(msg);
 		}else{

@@ -20,11 +20,21 @@ public class JFishDispatcher extends DispatcherServlet {
 	public JFishDispatcher(){
 		setDetectAllViewResolvers(false);
 	}
+	
+	
+
+	public JFishDispatcher(WebApplicationContext webApplicationContext) {
+		super(webApplicationContext);
+		setDetectAllViewResolvers(false);
+	}
+
+
 
 	protected WebApplicationContext initWebApplicationContext() {
 
 //		jfishPluginManager = SpringApplication.getInstance().getBean(JFishPluginManager.class);
 		this.setContextClass(JFishMvcApplicationContext.class);
+		
 		WebApplicationContext appContext = super.initWebApplicationContext();
 //				SpringApplication.initApplication(appContext);
 		SpringApplication.getInstance().printBeanNames();

@@ -38,17 +38,20 @@ public class DictionaryEntity extends TimestampBaseEntity {
 	 * 
 	 */
 	@NotBlank
+	@Size(min=1, max=50)
 	protected String code;
   
 	/*****
 	 * 
 	 */
 	@NotBlank
+	@Size(min=1, max=20)
 	protected String name;
   
 	/*****
 	 * 
 	 */
+	@Size(max=20)
 	protected String value;
   
 	/*****

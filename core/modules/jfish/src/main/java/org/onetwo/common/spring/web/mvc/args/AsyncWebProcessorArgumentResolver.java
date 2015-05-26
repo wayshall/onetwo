@@ -3,7 +3,7 @@ package org.onetwo.common.spring.web.mvc.args;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.mvc.annotation.AsyncProcessor;
 import org.onetwo.common.web.asyn.AsyncWebProcessor;
 import org.onetwo.common.web.asyn.AsyncWebProcessorBuilder;
@@ -16,7 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class AsyncWebProcessorArgumentResolver implements HandlerMethodArgumentResolver {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {

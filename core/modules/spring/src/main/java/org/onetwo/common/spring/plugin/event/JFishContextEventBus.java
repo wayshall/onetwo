@@ -5,6 +5,7 @@ import java.util.List;
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.plugin.ContextPluginMeta;
+import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.NoIndexIt;
 
 import com.google.common.eventbus.EventBus;
@@ -25,7 +26,7 @@ public class JFishContextEventBus {
 	}
 	
 	final public <T extends ContextPluginMeta> void registerListenerByPluginManager(ContextPluginManager<?> contextPluginManager){
-		contextPluginManager.getContextPlugins().each(new NoIndexIt<ContextPlugin>() {
+		JFishList.wrap(contextPluginManager.getContextPlugins()).each(new NoIndexIt<ContextPlugin>() {
 
 			@Override
 			protected void doIt(ContextPlugin element) throws Exception {
