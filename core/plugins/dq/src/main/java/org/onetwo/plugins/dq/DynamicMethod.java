@@ -1,6 +1,7 @@
 package org.onetwo.plugins.dq;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -8,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.javatuples.Pair;
+import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ExtQuery.K.IfNull;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.proxy.AbstractMethodResolver;
+import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
 import org.onetwo.common.spring.sql.ParsedSqlUtils;
 import org.onetwo.common.spring.sql.ParserContext;
@@ -23,20 +27,21 @@ import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.plugins.dq.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.plugins.dq.annotations.BatchObject;
 import org.onetwo.plugins.dq.annotations.ExecuteUpdate;
 import org.onetwo.plugins.dq.annotations.Name;
 import org.onetwo.plugins.dq.annotations.QueryConfig;
 import org.springframework.core.MethodParameter;
 
-public class DynamicMethod {
+public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter>{
 
-	private static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
-	private static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
-	private static final String FIELD_NAME_SPERATOR = "By";
+	public static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
+	public static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
+//	public static final String FIELD_NAME_SPERATOR = "By";
 	
-	private final Method method;
-	private final List<DynamicMethodParameter> parameters;
+//	private final Method method;
+//	private final List<DynamicMethodParameter> parameters;
 	private final Class<?> resultClass;
 	private final Class<?> componentClass;
 	private final String queryName;
@@ -46,40 +51,11 @@ public class DynamicMethod {
 //	private List<String> parameterNames;
 	
 	public DynamicMethod(Method method){
-		this.method = method;
-		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
-		if(executeUpdate!=null){
-			this.update = true;
-			this.batchUpdate = executeUpdate.isBatch();
-		}else{
-			update = EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
-			batchUpdate = BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
-		}
+		super(method);
 		
-		int psize = method.getParameterTypes().length;
-		parameters = LangUtils.newArrayList(psize+2);
-//		this.parameterNames = LangUtils.newArrayList(psize);
-		DynamicMethodParameter mp = null;
+		this.setupExecuteType();
 		
-		String methodName = method.getName();
-		int byIndex = methodName.indexOf(FIELD_NAME_SPERATOR);
-		String[] pnames = LangUtils.EMPTY_STRING_ARRAY;
-		//是否通过byUserNameByAge的命名方式
-		if(byIndex!=-1){
-			pnames = StringUtils.split(methodName.substring(byIndex), FIELD_NAME_SPERATOR);
-		}
-		
-		for(int index=0; index<psize; index++){
-			mp = new DynamicMethodParameter(method, index, pnames);
-			parameters.add(mp);
-
-			if(!batchUpdate){
-				this.batchUpdate = mp.hasParameterAnnotation(BatchObject.class);
-			}
-		}
-
-		
-		queryName = method.getDeclaringClass().getName()+"."+methodName;
+		queryName = method.getDeclaringClass().getName()+"."+method.getName();
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
@@ -102,6 +78,8 @@ public class DynamicMethod {
 			if(Page.class == rClass){
 				throw new BaseException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
 			}
+		}else if(DataQuery.class==rClass){
+			compClass = null;
 		}
 		
 		resultClass = rClass;
@@ -110,6 +88,35 @@ public class DynamicMethod {
 		this.componentClass = compClass;
 		
 		LangUtils.println("resultClass: ${0}, componentClass:${1}", resultClass, compClass);
+	}
+	
+	@Override
+	protected DynamicMethodParameter createMethodParameter(Method method, int parameterIndex, Parameter parameter) {
+		return new DynamicMethodParameterJ8(method, parameterIndex, parameter);
+	}
+
+	
+	protected boolean judgeBatchUpdateFromParameterObjects(List<DynamicMethodParameter> mparameters){
+		for(DynamicMethodParameter mp : mparameters){
+			if(mp.hasParameterAnnotation(BatchObject.class)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	final protected void setupExecuteType(){
+		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
+		if(executeUpdate!=null){
+			this.update = true;
+			this.batchUpdate = executeUpdate.isBatch();
+		}else{
+			this.update = EXECUTE_UPDATE_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+			this.batchUpdate = BATCH_PREFIX.contains(StringUtils.getFirstWord(this.method.getName()));
+		}
+		if(!batchUpdate){
+			this.batchUpdate = judgeBatchUpdateFromParameterObjects(parameters);
+		}
 	}
 	
 	public MethodParameter remove(int index){
@@ -140,8 +147,8 @@ public class DynamicMethod {
 	}
 	
 
-	public Object[] toArrayByArgs(Object[] args, Class<?> componentClass){
-		Map<Object, Object> map = toMapByArgs(args, componentClass);
+	public Object[] toArrayByArgs(Object[] args){
+		Map<Object, Object> map = toMapByArgs(args);
 		return Langs.toArray(map);
 //		return toArrayByArgs2(args, componentClass);
 	}
@@ -290,7 +297,7 @@ public class DynamicMethod {
 		}
 	}
 
-	public Map<Object, Object> toMapByArgs(Object[] args, Class<?> componentClass){
+	public Map<Object, Object> toMapByArgs(Object[] args){
 		Map<Object, Object> values = LangUtils.newHashMap(parameters.size());
 		
 		Object pvalue = null;
@@ -339,14 +346,20 @@ public class DynamicMethod {
 		return batchUpdate;//(executeUpdate!=null && executeUpdate.isBatch()) || );
 	}
 	
-	private static class DynamicMethodParameter extends MethodParameter {
+	protected static class DynamicMethodParameter extends BaseMethodParameter {
 
-		private String[] condidateParameterNames;
-		private String parameterName;
+		final protected String[] condidateParameterNames;
+		final protected Name nameAnnotation;
+		
+
+		public DynamicMethodParameter(Method method, int parameterIndex) {
+			this(method, parameterIndex, LangUtils.EMPTY_STRING_ARRAY);
+		}
 		
 		public DynamicMethodParameter(Method method, int parameterIndex, String[] parameterNamesByMethodName) {
 			super(method, parameterIndex);
 			this.condidateParameterNames = parameterNamesByMethodName;
+			nameAnnotation = getParameterAnnotation(Name.class);
 		}
 
 		/****
@@ -356,19 +369,39 @@ public class DynamicMethod {
 		 * 以上皆否，则通过参数位置作为名称
 		 */
 		public String getParameterName() {
-			if(StringUtils.isNotBlank(parameterName))
-				return parameterName;
-			
 			Name name = getParameterAnnotation(Name.class);
 			if(name!=null){
-				parameterName = name.value();
+				return name.value();
 			}else if(condidateParameterNames.length>getParameterIndex()){
-				parameterName = StringUtils.uncapitalize(condidateParameterNames[getParameterIndex()]);
+				return StringUtils.uncapitalize(condidateParameterNames[getParameterIndex()]);
 			}else{
-				parameterName = String.valueOf(getParameterIndex());
+				return String.valueOf(getParameterIndex());
 			}
-			return parameterName;
 		}
 		
+	}
+	
+	/***
+	 * for java8
+	 * @author wayshall
+	 *
+	 */
+	protected static class DynamicMethodParameterJ8 extends DynamicMethodParameter {
+
+		public DynamicMethodParameterJ8(Method method, int parameterIndex, Parameter parameter) {
+			super(method, parameterIndex, LangUtils.EMPTY_STRING_ARRAY);
+		}
+
+		@Override
+		public String getParameterName() {
+			Name name = getParameterAnnotation(Name.class);
+			if(name!=null){
+				return name.value();
+			}else if(parameter!=null && parameter.isNamePresent()){
+				return parameter.getName();
+			}else{
+				return String.valueOf(getParameterIndex());
+			}
+		}
 	}
 }

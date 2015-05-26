@@ -8,6 +8,13 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.springframework.core.io.Resource;
 
+/****
+ * 有配置文件的插件基类
+ * @author wayshall
+ *
+ * @param <T>
+ * @param <C>
+ */
 abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> extends AbstractContextPlugin<T> {
 	
 	public static interface LoadableConfig {
@@ -48,14 +55,16 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 
 	protected void initWithEnv(ContextPluginMeta pluginMeta, String appEnv) {
 		if(isConfigExists()){
-			JFishProperties properties = ContextPluginUtils.loadPluginConfigs(new String[]{getConfigPath(), getEnvConfigPath(appEnv)});
+			JFishProperties properties = ContextPluginUtils.loadConfigs(new String[]{getConfigPath(), getEnvConfigPath(appEnv)});
 			config.load(properties);
 		}else{
 			if(failedIfConfigNotExist)
 				throw new BaseException("the plugin["+this.getClass().getName()+"] must be config at: " + configBaseDir+configName);
 			//load with empty while config is not exist
-			JFishProperties props = new JFishProperties();
-			config.load(props);
+			if(config!=null){
+				JFishProperties props = new JFishProperties();
+				config.load(props);
+			}
 		}
 	}
 

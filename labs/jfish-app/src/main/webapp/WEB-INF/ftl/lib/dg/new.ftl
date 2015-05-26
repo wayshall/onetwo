@@ -1,1 +1,0 @@
-&nbsp;<input value=" 自定义新建 " type="button" onclick="location.href='${siteConfig.baseURL+urlHelper.newAction}'"/>

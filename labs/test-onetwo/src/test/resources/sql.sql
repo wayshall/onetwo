@@ -1,1 +1,0 @@
-test=select * from test

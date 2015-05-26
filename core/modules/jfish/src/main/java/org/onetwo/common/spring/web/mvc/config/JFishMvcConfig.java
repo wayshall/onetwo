@@ -1,31 +1,19 @@
 package org.onetwo.common.spring.web.mvc.config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.excel.ExcelTemplateExcelViewResolver;
-import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
-import org.onetwo.common.excel.view.jsp.DatagridExcelModelBuilder;
 import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
-import org.onetwo.common.fish.spring.config.JFishAppConfigrator;
-import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.ftl.FtlUtils;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
-import org.onetwo.common.spring.ftl.JFishFreeMarkerView;
-import org.onetwo.common.spring.web.mvc.CodeMessager;
-import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.EmptySecurityInterceptor;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
-import org.onetwo.common.spring.web.mvc.JFishInternalResourceViewResolver;
-import org.onetwo.common.spring.web.mvc.JFishJaxb2Marshaller;
 import org.onetwo.common.spring.web.mvc.ModelAndViewPostProcessInterceptor;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.mvc.SecurityInterceptor;
@@ -37,12 +25,8 @@ import org.onetwo.common.spring.web.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.UserDetailArgumentResolver;
 import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.spring.web.mvc.log.LoggerInterceptor;
-import org.onetwo.common.spring.web.mvc.view.JFishExcelTemplateView;
-import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
-import org.onetwo.common.spring.web.mvc.view.JsonView;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
@@ -54,13 +38,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.MediaType;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
@@ -76,9 +57,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.MappedInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-import org.springframework.web.servlet.view.xml.MarshallingView;
 
 /*******
  * 扩展mvc配置
@@ -88,11 +66,11 @@ import org.springframework.web.servlet.view.xml.MarshallingView;
 @Configuration
 @JFishMvc
 //@ComponentScan(basePackageClasses = { JFishMvcConfig.class, SpringAuthenticationInvocation.class })
-@ComponentScan(basePackageClasses = { JFishMvcConfig.class })
+//@ComponentScan(basePackageClasses = { JFishMvcConfig.class })
 @ImportResource("classpath:mvc/spring-mvc.xml")
 public class JFishMvcConfig extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	
 	@Autowired
@@ -104,11 +82,14 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	
 	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 
-	@Autowired
-	private JFishAppConfigrator jfishAppConfigurator;
+//	@Autowired
+//	private JFishAppConfigrator jfishAppConfigurator;
 	
 	@Resource
 	private MvcSetting mvcSetting;
+
+	@Resource(name=ContextBeanNames.EXCEPTION_MESSAGE)
+	private MessageSource exceptionMessages;
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
@@ -121,25 +102,29 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		@Resource
 		private JFishMvcApplicationContext applicationContext;
 		
-		JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
+//		@Resource
+//		private SecurityInterceptor securityInterceptor;
+		
+		private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
-		@Bean
+		/**@Bean
 		public SecurityInterceptor securityInterceptor(){
 			SecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SecurityInterceptor.class);
 			if(springSecurityInterceptor==null){
 				springSecurityInterceptor = new EmptySecurityInterceptor();
 			}
 			return springSecurityInterceptor;
-		}
+		}**/
 
 		@Bean
 		public MappedInterceptor mappedInterceptor4Security() {
-//			SpringSecurityInterceptor springSecurityInterceptor = SpringUtils.getHighestOrder(applicationContext, SpringSecurityInterceptor.class);
-//			if(springSecurityInterceptor==null){
-//				springSecurityInterceptor = new SpringSecurityInterceptor();
-//			}
+			SecurityInterceptor securityInterceptor = SpringUtils.getHighestOrder(applicationContext, SecurityInterceptor.class);
+			if(securityInterceptor==null){
+				securityInterceptor = new EmptySecurityInterceptor();
+			}
 //			SpringSecurityInterceptor springSecurityInterceptor = new SpringSecurityInterceptor();
-			return new MappedInterceptor(null, securityInterceptor());
+			//return new MappedInterceptor(null, securityInterceptor());
+			return new MappedInterceptor(null, securityInterceptor);
 		}
 
 		/************
@@ -233,7 +218,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 	}
-
+/*
 	@Bean
 	public JFishFreeMarkerConfigurer freeMarkerConfigurer() {
 		final JFishFreeMarkerConfigurer freeMarker = new JFishFreeMarkerConfigurer(this.jfishPluginManager.getMvcEventBus());
@@ -257,14 +242,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		}
 		return prop;
 	}
-
-	@Bean(name = "mediaType")
-	public Properties mediaType() {
-		Properties prop = SpringUtils.createProperties("/mvc/media-type.properties", true);
-		return prop;
-	}
-
-
+	
+	
 	@Bean
 	public FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver fmResolver = new FreeMarkerViewResolver();
@@ -279,50 +258,15 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return fmResolver;
 	}
 	
-	@Bean
-	public InternalResourceViewResolver jspResolver(){
-		JFishInternalResourceViewResolver jspResoler = new JFishInternalResourceViewResolver();
-		jspResoler.setSuffix(".jsp");
-//		jspResoler.setPrefix("/WEB-INF/views/");
-		jspResoler.setPrefix("/WEB-INF");
-//		jspResoler.setThemeSetting(themeSetting());
-		return jspResoler;
-	}
-	
-	@Bean
-	public XmlTemplateExcelViewResolver excelResolver(){
-		XmlTemplateExcelViewResolver resolver = new XmlTemplateExcelViewResolver();
-		resolver.setViewClass(JsonExcelView.class);
-		return resolver;
-	}
-	
-	@Bean
-	public ExcelTemplateExcelViewResolver excelTemplateResolver(){
-		ExcelTemplateExcelViewResolver resolver = new ExcelTemplateExcelViewResolver();
-		resolver.setViewClass(JFishExcelTemplateView.class);
-		return resolver;
-	}
+	*/
 
-	@Bean
-	public DatagridExcelModelBuilder datagridExcelModelBuilder(){
-		return new DatagridExcelModelBuilder();
+	@Bean(name = "mediaType")
+	public Properties mediaType() {
+		Properties prop = SpringUtils.createProperties("/mvc/media-type.properties", true);
+		return prop;
 	}
 	
-	@Bean
-	public View jsonView() {
-		JsonView jview = SpringUtils.getHighestOrder(applicationContext, JsonView.class);
-		if(jview==null){
-			jview = new JsonView();
-		}
-		return jview;
-	}
-
-	@Bean
-	public View xmlView() {
-		MarshallingView view = new MarshallingView();
-		view.setMarshaller(jaxb2Marshaller());
-		return view;
-	}
+	
 	
 	/*@Bean
 	public View excelView(){
@@ -337,19 +281,6 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return view;
 	}*/
 
-	@Bean
-	public Jaxb2Marshaller jaxb2Marshaller() {
-		JFishJaxb2Marshaller marshaller = new JFishJaxb2Marshaller();
-		
-		if(jfishAppConfigurator!=null && !LangUtils.isEmpty(jfishAppConfigurator.getXmlBasePackages())){
-			marshaller.setClassesToBeBoundByBasePackages(jfishAppConfigurator.getXmlBasePackages());
-		}else{
-			String xmlBasePackage = this.mvcSetting.getMvcSetting().getProperty("xml.base.packages");
-			Assert.hasText(xmlBasePackage, "xmlBasePackage in mvc.properties must has text");
-			marshaller.setXmlBasePackage(xmlBasePackage);
-		}
-		return marshaller;
-	}
 
 	@Bean
 	//dispecher
@@ -423,26 +354,19 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 			webexception = new WebExceptionResolver();
 		}*/
 		WebExceptionResolver webexception = new WebExceptionResolver();
-		webexception.setExceptionMessage(exceptionMessageSource());
+//		webexception.setExceptionMessage(exceptionMessageSource());
+		webexception.setExceptionMessage(exceptionMessages);
 		webexception.setMvcSetting(mvcSetting);
 		return webexception;
 	}
 
-	@Bean(name=MvcBeanNames.EXCEPTION_MESSAGE)
+	/*@Bean(name=MvcBeanNames.EXCEPTION_MESSAGE)
 	public MessageSource exceptionMessageSource(){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setBasenames("classpath:messages/ExceptionMessages", "classpath:messages/DefaultExceptionMessages");
 		return ms;
-	}
+	}*/
 	
-	@Bean
-	public CodeMessager codeMessager(){
-		CodeMessager messager = SpringUtils.getBean(applicationContext, CodeMessager.class);;
-		if(messager==null){
-			messager = new DefaultCodeMessager();
-		}
-		return messager;
-	}
 
 	public void afterPropertiesSet() throws Exception{
 //		this.jfishAppConfigurator = SpringUtils.getBean(applicationContext, JFishAppConfigrator.class);
@@ -470,24 +394,10 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		return validator;
 	}
 	
-	@Bean
-	public XmlTemplateGeneratorFactory xmlTemplateGeneratorFactory(){
-		/*String className = "org.onetwo.common.excel.POIExcelGeneratorImpl";
-		DefaultXmlTemplateExcelFacotory factory = null;
-		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
-			factory = new DefaultXmlTemplateExcelFacotory();
-//			factory.setCacheTemplate(true);
-		}else{
-			logger.warn("there is not bean implements [" + className + "]");
-		}
-		return factory;*/
-		return excelResolver().getXmlTemplateGeneratorFactory();
-	}
-	
 
-	public static class MvcBeanNames {
+	/*public static class MvcBeanNames {
 		public static final String EXCEPTION_MESSAGE = "exceptionMessages";
-	}
+	}*/
 	
 	/*@Bean
 	public DatagridExcelModelBuilder datagridExcelModelBuilder(){

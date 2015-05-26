@@ -3,9 +3,9 @@ package org.onetwo.common.db.sqlext;
 import java.util.List;
 
 import org.onetwo.common.db.ExtQuery;
-import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.ExtQuery.K;
 import org.onetwo.common.db.ParamValues;
+import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -24,6 +24,11 @@ abstract public class AbstractSupportedSubQuerySQLSymbolParser extends AbstractS
 	
 	AbstractSupportedSubQuerySQLSymbolParser(SQLSymbolManager sqlSymbolManager, String symbol){
 		super(symbol);
+		this.sqlSymbolManager = sqlSymbolManager;
+	}
+	
+	AbstractSupportedSubQuerySQLSymbolParser(SQLSymbolManager sqlSymbolManager, String mappedOperator, String actualOperator){
+		super(mappedOperator, actualOperator);
 		this.sqlSymbolManager = sqlSymbolManager;
 	}
 

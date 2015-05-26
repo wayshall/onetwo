@@ -2,14 +2,13 @@ package org.onetwo.common.fish.plugin;
 
 import java.util.List;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.slf4j.Logger;
-import org.springframework.web.context.WebApplicationContext;
 
 public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private JFishPluginMeta pluginMeta;
 	private PluginConfig pluginConfig = new DefaultPluginConfig();
@@ -75,5 +74,8 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 		return false;
 	}
 
+	public String getPluginTemplatePath(String template) {
+		return getPluginMeta().getPluginConfig().getTemplatePath(template);
+	}
 
 }

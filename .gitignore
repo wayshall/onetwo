@@ -23,3 +23,8 @@ work/Tomcat
 /core/modules/.gradle
 /labs/test-onetwo/.gradle
 /labs/test-onetwo/*.log
+/labs/gradle-plugins/jfish-deploy/.gradle
+/labs/dbtest/dbtest/.gradle
+/labs/dbtest/jfish-orm-test/.gradle
+/core/projects/appweb/.gradle
+/core/projects/appweb-admin/.gradle

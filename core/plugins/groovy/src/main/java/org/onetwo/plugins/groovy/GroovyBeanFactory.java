@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.utils.FileUtils;
@@ -26,7 +26,7 @@ public class GroovyBeanFactory implements InitializingBean {
 	protected static final int CHECK_DELAY = 1000;
 	protected static final String DEFAULT_RESOURCE_PATTERN = "**/*.groovy";
 	
-	private final Logger logger = MyLoggerFactory.getLogger(GroovyBeanFactory.class);
+	private final Logger logger = JFishLoggerFactory.getLogger(GroovyBeanFactory.class);
 
 //	@javax.annotation.Resource
 //	private GroovyPluginConfig groovyPluginConfig;
