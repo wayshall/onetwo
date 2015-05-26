@@ -21,8 +21,7 @@ import org.hibernate.validator.constraints.Length;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.fish.exception.JFishServiceException;
 import org.onetwo.common.hibernate.TimestampBaseEntity;
-import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.DefaultUserDetail;
+import org.onetwo.common.utils.RoleIdDetail;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.utils.AdminErrorCodes.SystemErrors;
 import org.onetwo.plugins.admin.utils.WebConstant;
@@ -36,7 +35,7 @@ import org.onetwo.plugins.admin.utils.WebConstant;
 @Entity
 @Table(name="ADMIN_ROLE")
 @TableGenerator(pkColumnValue="SEQ_ADMIN_ROLE", table=WebConstant.SEQ_TABLE_NAME, 
-			pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", allocationSize=50, initialValue=50000, name="RoleEntityGenerator")
+			pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", allocationSize=50, name="RoleEntityGenerator")
 //@DataQueryFilter(fields={K.JOIN, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
 public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDeleteEntity {
 	
@@ -51,17 +50,19 @@ public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDelete
 	@Length(min=1, max=50)
 	private String name;
 
-//	@Length(min=1, max=50)
+	@Length(max=255)
 	private String roleCode;
 	private RoleStatus status;
   
 
+	@Length(max=20)
 	private String appCode;
 //	private List<AppEntity> apps;
 	
 	/*****
 	 * 
 	 */
+	@Length(max=255)
 	private String remark;
   
 	
@@ -198,14 +199,14 @@ public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDelete
 			getPermissions().clear();
 	}
 
-	@Transient
+	/*@Transient
 	public boolean isMerchantBindedRole(){
 		return getCode() == RoleCode.MERCHANT || getCode() == RoleCode.OPERATOR;
-	}
+	}*/
 
 	@Transient
 	public boolean isSystemRoot(){
-		return SYSTEM_ROOT_ROLE_ID==getId();
+		return RoleIdDetail.SYSTEM_ROOT_ROLE_ID.longValue()==getId();
 	}
 	
 
@@ -228,20 +229,17 @@ public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDelete
 	}
 
 
-	public static boolean isSystemRootRole(Long... roleIds){
+	/*public static boolean isSystemRootRole(Long... roleIds){
 		return ArrayUtils.contains(roleIds, SYSTEM_ROOT_ROLE_ID);
-	}
-	public static boolean isSystemRootRole(List<Long> roleIds){
+	}*/
+	/*public static boolean isSystemRootRole(List<Long> roleIds){
 		return roleIds!=null && roleIds.contains(SYSTEM_ROOT_ROLE_ID);
-	}
-	private static final Long SYSTEM_ROOT_ROLE_ID = DefaultUserDetail.SYSTEM_ROOT_ROLE_ID;
+	}*/
+//	private static final Long SYSTEM_ROOT_ROLE_ID = DefaultUserDetail.SYSTEM_ROOT_ROLE_ID;
 	
 	public static enum RoleCode {
-		COMMON("运营"),
-		MERCHANT("商户"),
-		OPERATOR("充值"),
-//		PSAM("PSAM卡制卡员"),
-		ISSUE("制卡操作员");
+		ROOT("超级管理员"),
+		COMMON("普通");
 		
 		final private String name;
 
@@ -258,9 +256,9 @@ public class AdminRoleEntity extends TimestampBaseEntity implements ILogicDelete
 			return toString();
 		}
 		
-		public static boolean isSystemRootRole(List<Long> roleIds){
+		/*public static boolean isSystemRootRole(List<Long> roleIds){
 			return roleIds!=null && roleIds.contains(SYSTEM_ROOT_ROLE_ID);
-		}
+		}*/
 		
 		public static RoleCode valueBy(String name){
 			if(StringUtils.isBlank(name))

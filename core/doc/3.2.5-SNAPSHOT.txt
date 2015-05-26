@@ -1,0 +1,5 @@
+日期：2015-04-23
+修改：
+把内嵌tomcat从web模块分离出去，重构tomcat启动代码
+在siteconfig配置里增加startup.by.initializer配置，控制是否使用servlet3的servletInitializer启动web
+

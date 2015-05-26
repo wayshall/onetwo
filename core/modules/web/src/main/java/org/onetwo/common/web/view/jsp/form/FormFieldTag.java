@@ -38,8 +38,8 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 	private String emptyOptionLabel;
 
 	private boolean readOnly;
-	private boolean disabled;
-	private boolean explicitSetDisabled;
+	private Boolean disabled;
+//	private boolean explicitSetDisabled;
 	
 
 //	private String permission;
@@ -97,11 +97,11 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 		component.setValue(value);
 		component.setDataFormat(dataFormat);
 		component.setReadOnly(readOnly);
-		if(explicitSetDisabled){
+		/*if(explicitSetDisabled){
 			//如果显式设置了disabled，则不再通过权限判断
 		}else if(!disabled){
 			this.disabled = getFormTagBean().isDisabled();
-		}
+		}*/
 		component.setDisabled(disabled);
 		component.setModelAttribute(modelAttribute);
 		component.setShowLoadingText(showLoadingText);
@@ -247,7 +247,7 @@ public class FormFieldTag extends BaseHtmlTag<FormFieldTagBean>{
 			this.disabled = !checkPermission(code);
 		}else{
 			this.disabled = Types.convertValue(disabled, boolean.class);
-			this.explicitSetDisabled = true; 
+//			this.explicitSetDisabled = true; 
 		}
 	}
 

@@ -35,6 +35,7 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	
 	final private Map<String, String> attrs = LangUtils.newHashMap();
 
+	private boolean hql;
 
 	public String getSql() {
 		return getValue();
@@ -108,12 +109,17 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 		this.parser = FileSqlParserType.valueOf(parser.trim().toUpperCase());
 	}
 	
-	
 /*
 	public boolean isNeedParseSql(){
 		return isIgnoreNull();
 	}*/
 
+	public boolean isHql() {
+		return hql;
+	}
+	public void setHql(boolean hql) {
+		this.hql = hql;
+	}
 	public Map<String, String> getAttrs() {
 		return attrs;
 	}

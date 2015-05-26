@@ -22,7 +22,7 @@ public class FormFieldTagBean extends HtmlElement {
 	
 
 	private boolean readOnly;
-	private boolean disabled;
+	private Boolean disabled;
 	
 	private boolean modelAttribute = true;
 	private boolean showLoadingText = true;
@@ -115,14 +115,17 @@ public class FormFieldTagBean extends HtmlElement {
 	}
 
 	public boolean isDisabled() {
-		return this.formBean.isShowOnly() || disabled;
+		if(disabled!=null){
+			return disabled;
+		}
+		return this.formBean.isShowOnly();
 	}
 
 	public boolean isHidden() {
 		return FormFieldType.hidden==type;
 	}
 
-	public void setDisabled(boolean disabled) {
+	public void setDisabled(Boolean disabled) {
 		this.disabled = disabled;
 	}
 

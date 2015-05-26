@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.sso.SSOLastActivityStatus;
-import org.onetwo.common.sso.SSOService;
+import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.sso.UserActivityTimeHandler;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
@@ -17,7 +17,7 @@ import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 
 
-abstract public class AbstractSSOServiceImpl implements SSOService {
+abstract public class AbstractSSOServiceImpl implements SecurityService {
 	
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	

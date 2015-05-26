@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.slf4j.Logger;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
@@ -24,7 +24,7 @@ abstract public class AbstractJFishExcelView extends AbstractUrlBasedView {
 	public static final String DEFAULT_CONTENT_TYPE = "application/jfxls";//
 
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private String fileName;
 	private String suffix;
@@ -34,6 +34,10 @@ abstract public class AbstractJFishExcelView extends AbstractUrlBasedView {
 	
 	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model){
 		return JFishWebUtils.getDownloadFileName(request, model, fileName);
+	}
+	
+	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode){
+		return JFishWebUtils.getDownloadFileName(request, model, fileName, encode);
 	}
 
 	protected void setReponseHeader(String downloadFileName, HttpServletRequest request, HttpServletResponse response){

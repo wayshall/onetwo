@@ -19,7 +19,9 @@ public interface SQLSymbolManager {
 	
 	public static class FieldOP {
 		public static final String like = "like";
+		public static final String like2 = "=~";
 		public static final String not_like = "not like";
+		public static final String not_like2 = "!=~";
 		public static final String eq = "=";
 		public static final String gt = ">";
 		public static final String ge = ">=";

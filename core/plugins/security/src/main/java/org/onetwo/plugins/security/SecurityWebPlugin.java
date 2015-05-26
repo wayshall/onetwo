@@ -9,8 +9,12 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 import org.onetwo.common.spring.web.mvc.config.event.ArgumentResolverEvent;
 import org.onetwo.plugins.security.client.SsoClientWebContext;
 import org.onetwo.plugins.security.common.SecurityWebContext;
+import org.onetwo.plugins.security.common.controller.CommonLoginController;
+import org.onetwo.plugins.security.common.controller.CommonLogoutController;
 import org.onetwo.plugins.security.server.SsoServerWebContext;
 import org.onetwo.plugins.security.utils.SecurityPluginUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 
 public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
@@ -34,6 +38,9 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 			annoClasses.add(SsoServerWebContext.class);
 		}else if(SecurityPluginUtils.existClientConfig()){
 			annoClasses.add(SsoClientWebContext.class);
+		}else{
+			if(SecurityPlugin.getInstance().getSecurityConfig().isLoginControllerSupported())
+				annoClasses.add(CommonWebContext.class);
 		}
 	}
 
@@ -61,4 +68,17 @@ public class SecurityWebPlugin extends AbstractJFishPlugin<SecurityWebPlugin> {
 		return true;
 	}
 
+	@Configuration
+	public static class CommonWebContext {
+
+		@Bean
+		public CommonLoginController commonLoginController(){
+			return new CommonLoginController();
+		}
+		
+		@Bean
+		public CommonLogoutController commonLogoutController(){
+			return new CommonLogoutController();
+		}
+	}
 }
