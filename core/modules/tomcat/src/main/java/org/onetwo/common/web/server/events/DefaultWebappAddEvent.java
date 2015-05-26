@@ -3,13 +3,14 @@ package org.onetwo.common.web.server.events;
 import javax.servlet.ServletException;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.web.server.event.WebappAddEvent;
 import org.onetwo.common.web.server.tomcat.TomcatServer;
 
-public class WebappAddEvent {
+public class DefaultWebappAddEvent implements WebappAddEvent<TomcatServer> {
 	
 	private final TomcatServer tomcatServer;
 
-	public WebappAddEvent(TomcatServer tomcatServer) {
+	public DefaultWebappAddEvent(TomcatServer tomcatServer) {
 		super();
 		this.tomcatServer = tomcatServer;
 	}
@@ -18,11 +19,13 @@ public class WebappAddEvent {
 		return tomcatServer;
 	}
 
+	@Override
 	public TomcatServer getEventSource() {
 		return tomcatServer;
 	}
 	
-	public WebappAddEvent addWebapp(String contextPath, String baseDir){
+	@Override
+	public WebappAddEvent<TomcatServer> addWebapp(String contextPath, String baseDir){
 		try {
 			tomcatServer.getTomcat().addWebapp(contextPath, baseDir);
 		} catch (ServletException e) {

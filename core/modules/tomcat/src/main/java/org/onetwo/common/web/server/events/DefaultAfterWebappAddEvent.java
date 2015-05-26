@@ -1,12 +1,13 @@
 package org.onetwo.common.web.server.events;
 
+import org.onetwo.common.web.server.event.AfterWebappAddEvent;
 import org.onetwo.common.web.server.tomcat.TomcatServer;
 
-public class AfterWebappAddEvent {
+public class DefaultAfterWebappAddEvent implements AfterWebappAddEvent<TomcatServer> {
 	
 	private final TomcatServer tomcatServer;
 
-	public AfterWebappAddEvent(TomcatServer tomcatServer) {
+	public DefaultAfterWebappAddEvent(TomcatServer tomcatServer) {
 		super();
 		this.tomcatServer = tomcatServer;
 	}
@@ -15,6 +16,7 @@ public class AfterWebappAddEvent {
 		return tomcatServer;
 	}
 
+	@Override
 	public TomcatServer getEventSource() {
 		return tomcatServer;
 	}

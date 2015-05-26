@@ -281,7 +281,6 @@ project("${projectWeb}"){
 		compile(project(":${projectCommon}"))
 		compile(project(":${projectSpring}"))
 		compile(project(":${projectAjaxanywhere}"))
-		compile(project(":${projectTomcat}"))
 		
 		compile("org.springframework:spring-webmvc:${springVersion}")
 		
@@ -368,6 +367,7 @@ project("$projectJfish") {
 		compile(project(":$projectSecurity"))
 		compile(project(":$projectJackson"))
 		compile(project(":$projectPoi"))
+		compile(project(":${projectTomcat}"))
 		
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		compile("org.springframework:spring-webmvc:${springVersion}")
@@ -403,6 +403,7 @@ project("${projectTomcat}"){
 	
 	dependencies {
 		compile(project(":${projectCommon}"))
+		compile(project(":${projectWeb}"))
 		
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -413,12 +414,38 @@ project("${projectTomcat}"){
 	}
 }
 
+
 def embedTomcat() {
 	def tomcatVersion = "7.0.59";
 	["org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
 	 "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion",
 	 "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion",
 	 "javax.servlet.jsp:jsp-api:${jsfVersion}"]
+}
+
+
+
+def projectJetty = "${projectPrefix}jetty"
+project("${projectJetty}"){
+	description = "onetwo jetty"
+	
+	ext.jstlVersion = "1.2"
+	ext.jettyVersion = "8.1.9.v20130131"
+	
+	dependencies {
+		compile(project(":${projectCommon}"))
+		compile(project(":${projectWeb}"))
+		
+		/*provided("javax.servlet.jsp:jsp-api:${jspVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
+		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")*/
+		
+		provided("org.eclipse.jetty:jetty-server:${jettyVersion}")
+		provided("org.eclipse.jetty:jetty-jsp:${jettyVersion}")
+		
+		
+	}
 }
 
 
