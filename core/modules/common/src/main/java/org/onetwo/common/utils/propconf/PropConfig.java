@@ -79,6 +79,11 @@ public class PropConfig implements VariableSupporter {
 			this.loadFirstConfig();
 			this.load();
 		}
+		this.afterInitAppConfig(config);
+	}
+	
+
+	protected void afterInitAppConfig(JFishProperties config){
 	}
 
 	protected void loadFirstConfig(){
