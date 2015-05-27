@@ -6,8 +6,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.onetwo.common.utils.Freezer;
+import org.onetwo.common.utils.ReflectUtils;
 
 public class AppConfig extends PropConfig {
 
@@ -15,6 +17,7 @@ public class AppConfig extends PropConfig {
 	public static final String APP_CODE = "app.code";
 	public static final String APP_ENVIRONMENT = "app.environment";
 	public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
+	public static final String CONFIG_LOADER = "config.loader";
 	/*public static final String APP_ENVIRONMENT_DEV = "dev";
 	public static final String APP_ENVIRONMENT_TEST = "test";
 	public static final String APP_ENVIRONMENT_PRODUCT = "product";*/
@@ -29,10 +32,22 @@ public class AppConfig extends PropConfig {
 	private Map<String, PropConfig> outers = new HashMap<String, PropConfig>();
 	
 	private Freezer freezer = Freezer.create(this.getClass());
+	private ConfigLoader configLoader;
 	
 	protected AppConfig(String configName) {
 		super(configName);
 		this.initAppConfig(true);
+	}
+
+	@Override
+	protected void afterInitAppConfig(JFishProperties loadedConfig){
+		Class<ConfigLoader> loaderClass = loadedConfig.getClass(CONFIG_LOADER, null);
+		if(loaderClass!=null){
+			logger.info("load config again by loader: " + loaderClass);
+			configLoader = ReflectUtils.newInstance(loaderClass);
+			Properties properties = configLoader.load(loadedConfig);
+			loadedConfig.putAll(properties);
+		}
 	}
 	
 	public Freezer getFreezer() {
