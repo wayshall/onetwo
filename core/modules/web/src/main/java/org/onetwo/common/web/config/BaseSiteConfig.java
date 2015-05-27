@@ -98,36 +98,16 @@ public class BaseSiteConfig extends AppConfig {
 //	public static final String VIEW_JSP_THEME = "view.jsp.theme";
 
 	protected static final String CONFIG_FILE = "siteConfig.properties";
-	private static BaseSiteConfig baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
+	final private static BaseSiteConfig baseSiteConfig;
+	static {
+		baseSiteConfig = new BaseSiteConfig(CONFIG_FILE);
+	}
 	
 	private Object webAppConfigurator;
 	private ServletContext servletContext;
 	private String contextPath;
 	private String contextRealPath;
 	private String appUrlPostfix;
-	
-	/******************
-	 * fuck ugly
-	 * **********************/
-	/*static {
-		try {
-			VariableConfig config = new VariablePropConifg();
-			config.load(CONFIG_FILE);
-			String clsName = config.getOriginalProperty(CONFIG_CLASS, "").trim();
-			if(StringUtils.isBlank(clsName)){
-				clsName = BaseSiteConfig.class.getPackage().getName()+"." + StringUtils.capitalize(CONFIG_NAME);
-			}
-			Class<?> configClass = ReflectUtils.loadClass(clsName);
-			Method staticFactoryMethod = ReflectUtils.findMethod(configClass, "getInstance");
-			siteConfig = (BaseSiteConfig)ReflectUtils.invokeMethod(staticFactoryMethod, configClass);
-//			ReflectUtils.findMethod(objClass, name, paramTypes)
-		} catch (Exception e) {
-			logger.error("load config.class error, use default config class.");
-		}
-		if(siteConfig==null){
-			siteConfig = new BaseSiteConfig(CONFIG_FILE);
-		}
-	}*/
  
 	protected BaseSiteConfig(String configName) {
 		super(configName);
