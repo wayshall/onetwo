@@ -28,3 +28,4 @@ work/Tomcat
 /labs/dbtest/jfish-orm-test/.gradle
 /core/projects/appweb/.gradle
 /core/projects/appweb-admin/.gradle
+/core/projects/appweb-admin/.externalToolBuilders
