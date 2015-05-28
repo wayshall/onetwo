@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
@@ -20,6 +20,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -46,7 +47,7 @@ import org.springframework.core.io.Resource;
 @SuppressWarnings({"unchecked"})
 final public class SpringUtils {
 
-	protected static Logger logger = Logger.getLogger(SpringUtils.class);
+	protected static Logger logger = JFishLoggerFactory.getLogger(SpringUtils.class);
 	private static String ACTIVE_PROFILES = "spring.profiles.active";
 //	private static String CLASSPATH = "classpath:";
 	
