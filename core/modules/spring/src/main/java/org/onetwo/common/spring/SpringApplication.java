@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.utils.ContextHolder;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +27,7 @@ import org.springframework.core.OrderComparator;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SpringApplication {
 
-	protected static Logger logger = Logger.getLogger(SpringApplication.class);
+	protected static Logger logger = JFishLoggerFactory.getLogger(SpringApplication.class);
 
 	private static SpringApplication instance = new SpringApplication();
 
