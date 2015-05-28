@@ -13,7 +13,7 @@
   <properties> 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<tomcat.version>7.0.59</tomcat.version>
-	<onetwo.version>3.2.11-SNAPSHOT</onetwo.version>
+	<onetwo.version>3.4.4-SNAPSHOT</onetwo.version>
 	<jpa.version>2.0.0</jpa.version>
     <junit.version>4.10</junit.version>
   </properties>
@@ -24,6 +24,16 @@
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-jfish</artifactId>
 	  <version>${onetwo.version}</version>
+	  <exclusions>
+	  	<exclusion>
+	  		<groupId>org.slf4j</groupId>
+	  		<artifactId>slf4j-log4j12</artifactId>
+	  	</exclusion>
+	  	<exclusion>
+	  		<groupId>log4j</groupId>
+	  		<artifactId>log4j</artifactId>
+	  	</exclusion>
+	  </exclusions>
 	</dependency>
   
 	<dependency>
@@ -110,6 +120,7 @@
 		<artifactId>javaee-api</artifactId>
 		<version>6.0-3</version>
 	</dependency>
+	
 
 	<!-- embed tomcat -->
 	<dependency>
@@ -180,6 +191,38 @@
   			<env>product</env>
   		</properties>
   	</profile>
+  	<!--打包可执行war包,基于Tomcat -->
+	<profile>
+		<id>tomcatexec</id>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
+        			<version>2.1</version>
+					<executions>
+						<execution>
+							<id>tomcat-run</id>
+							<goals>
+								<goal>exec-war-only</goal>
+							</goals>
+							<phase>package</phase>
+							<configuration>
+								<attachArtifactClassifier>standalone-tomcat</attachArtifactClassifier>
+								<extraDependencies>
+									<extraDependency>
+										<groupId>mysql</groupId>
+										<artifactId>mysql-connector-java</artifactId>
+										<version>5.1.35</version>
+									</extraDependency>
+								</extraDependencies>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
   </profiles>
   
   <build>
