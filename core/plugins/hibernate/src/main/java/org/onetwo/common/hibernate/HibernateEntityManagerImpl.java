@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -29,6 +28,7 @@ import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.CopyConfig;
@@ -36,6 +36,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.ReflectUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -45,7 +46,7 @@ import org.springframework.util.Assert;
 public class HibernateEntityManagerImpl extends AbstractEntityManager implements HibernateQueryProvider, InitializingBean {
 
 	
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private SessionFactory sessionFactory; 
 	

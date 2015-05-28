@@ -10,9 +10,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.web.filter.IgnoreFiler;
+import org.slf4j.Logger;
 
 
 /***
@@ -22,7 +23,7 @@ import org.onetwo.common.web.filter.IgnoreFiler;
  */
 public class SubDomainFilter extends IgnoreFiler{
 	
-	protected Logger logger = Logger.getLogger(SubDomainFilter.class);
+	protected Logger logger = JFishLoggerFactory.getLogger(SubDomainFilter.class);
 	public static final String CURRENT_SUB_DOMAIN = "currentSubDomain";
 	
 	private SubdomainProcessor processor;

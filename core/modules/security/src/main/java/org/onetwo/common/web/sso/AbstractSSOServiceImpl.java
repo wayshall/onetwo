@@ -2,9 +2,9 @@ package org.onetwo.common.web.sso;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.sso.SSOLastActivityStatus;
 import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.sso.UserActivityTimeHandler;
@@ -15,11 +15,12 @@ import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.SecurityTarget;
+import org.slf4j.Logger;
 
 
 abstract public class AbstractSSOServiceImpl implements SecurityService {
 	
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	/****
 	 * 更新最后登录时间，这个和{@link org.onetwo.common.web.s2.security.config.annotation.Authentic authentic}注解的checkTimeout属性有关
