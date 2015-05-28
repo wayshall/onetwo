@@ -2,7 +2,6 @@ package org.onetwo.common.web.s2.security;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ErrorRoleException;
@@ -12,19 +11,21 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SessionTimeoutException;
 import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.PermissionDetail;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.config.AuthenticConfig;
+import org.slf4j.Logger;
 
 
 abstract public class AbstractAuthenticationInvocation implements AuthenticationInvocation {
 
 	private static final String EL_PREFIX = "EL:";
 	
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 
 	abstract public SecurityService getSecurityService();
