@@ -3,16 +3,16 @@ package org.onetwo.common.web.subdomain;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
 
 
-@SuppressWarnings( { "unchecked", "serial" })
 abstract public class AbstractSubdomainMapping implements SubdomainMapping {
 
 	public static final String HTTP_START_KEY = "http://";
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	protected Map<String, Map<String, SubdomainInfo>> mapping;
 
