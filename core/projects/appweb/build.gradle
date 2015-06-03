@@ -40,12 +40,12 @@ eclipse {
 }
 
 repositories {
-	maven { url "http://192.168.104.217:8888/nexus/content/repositories/snapshots" }
-	maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
-	maven { url "http://192.168.104.217:8888/nexus/content/repositories/thirdparty" }
-	maven { url "http://repository.sonatype.org/content/groups/public/" }
+	//if want ide download the sources, move to the top
 	mavenCentral()
 	mavenLocal()
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
+	maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
+	maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
 }
 
 

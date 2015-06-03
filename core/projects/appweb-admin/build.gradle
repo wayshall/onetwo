@@ -93,6 +93,7 @@ dependencies {
 	compile("org.onetwo.plugins:onetwo-plugin-permission:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-zkclient:${onetwoVersion}")
 	
 	compile("javax.persistence:com.springsource.javax.persistence:2.0.0")
 	compile("com.microsoft:sqljdbc4:1.0")
