@@ -84,11 +84,11 @@ configure(allprojects){ project ->
 	
 	repositories {
 		//if want ide download the sources, move to the top
+		mavenCentral()
 		mavenLocal()
 		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
 		maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
 		maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
-		mavenCentral()
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
@@ -782,6 +782,8 @@ project("${pluginRest}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
+		compile("javax.ws.rs:javax.ws.rs-api:2.0")
+		
 	}
 }
 
@@ -862,4 +864,41 @@ project("${pluginFtlTemplate}"){
 	}
 }
 
+def pluginZkclient = "${pluginPrefix}zkclient"
+project("${pluginZkclient}"){
+	description = "${pluginZkclient}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectJfish"))
+		
+		compile("org.apache.zookeeper:zookeeper:3.4.6")
+		
+	}
+	
+}
+
+def pluginJsonrpc = "${pluginPrefix}jsonrpc"
+project("${pluginJsonrpc}"){
+	description = "${pluginJsonrpc}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectJfish"))
+		
+	}
+	
+}
+
+def pluginJsonrpcClient = "${pluginPrefix}jsonrpc-client"
+project("${pluginJsonrpcClient}"){
+	description = "${pluginJsonrpcClient}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectJfish"))
+		
+	}
+	
+}
 

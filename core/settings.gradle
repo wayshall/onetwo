@@ -36,6 +36,9 @@ include "plugins/task-webclient"
 
 include "plugins/melody"
 include "plugins/ftl-template"
+include "plugins/zkclient"
+include "plugins/jsonrpc"
+include "plugins/jsonrpc-client"
 
 rootProject.getChildren().each {
 	if(it.name.startsWith("modules/")){
