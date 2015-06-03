@@ -296,12 +296,19 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		putInCache(key, listValue);
 		return listValue;*/
 	}
-	
 
-	public List<? extends Enum<?>> getEnums(String key, Class<? extends Enum<?>> clazz){
+
+	public <T extends Enum> List<T> getEnums(String key, Class<T> clazz){
 		List<String> strs = getPropertyWithSplit(key, ",");
-		List<? extends Enum<?>> enumObj = (List<? extends Enum<?>>)EnumUtils.asEnumList(clazz, strs.toArray(new String[0]));
+		List<T> enumObj = EnumUtils.asEnumList(clazz, strs.toArray(new String[0]));
 		return enumObj;
+	}
+
+	public <T extends Enum> T getEnum(String key, Class<T> clazz){
+		String enumStr = getProperty(key);
+		if(StringUtils.isBlank(enumStr))
+			return null;
+		return (T)Enum.valueOf(clazz, enumStr);
 	}
 
 	public String getProperty(String key, String defaultValue) {

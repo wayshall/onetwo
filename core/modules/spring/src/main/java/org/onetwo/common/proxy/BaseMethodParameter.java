@@ -23,6 +23,10 @@ public class BaseMethodParameter extends MethodParameter {
 		return parameter;
 	}
 
+	public boolean isNamePresent() {
+		return parameter.isNamePresent();
+	}
+
 	@Override
 	public String getParameterName() {
 		String name = super.getParameterName();

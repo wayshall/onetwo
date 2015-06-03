@@ -746,6 +746,11 @@ public abstract class StringUtils {
 			path = EMPTY;
 		return appendEndWith(appendStartWith(path, prefix), prefix);
 	}
+	
+
+	public static String appendStartWithSlash(String path) {
+		return appendStartWith(path, FileUtils.SLASH);
+	}
 
 	public static String appendStartWith(String path, String prefix) {
 		if (path == null)
