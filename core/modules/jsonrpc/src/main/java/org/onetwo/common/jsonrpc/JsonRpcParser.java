@@ -1,38 +1,60 @@
-package org.onetwo.plugins.jsonrpc.client.test;
+package org.onetwo.common.jsonrpc;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.jsonrpc.exception.JsonRpcException;
 import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.convert.Types;
-import org.onetwo.plugins.jsonrpc.client.proxy.RpcMethodResolver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonRpcParser {
 	
-	private RpcMethodResolver rpcMethod;
+//	private RpcMethodResolver rpcMethod;
 	private JsonMapper mapper = JsonMapper.DEFAULT_MAPPER;
+	private JsonRpcParamsRequest request;
+	private JsonNode rootNode;
 	
 	
-	public JsonRpcParser(Method rpcMethod) {
+	public JsonRpcParser(String jsonstr) {
 		super();
-		this.rpcMethod = new RpcMethodResolver(rpcMethod);
+//		this.rpcMethod = new RpcMethodResolver(rpcMethod);
+		request = new JsonRpcParamsRequest();
+		rootNode = mapper.readTree(jsonstr);
 	}
 
+	public JsonRpcParamsRequest parseHeader(){
+		request.setJsonrpc(path(rootNode, "jsonrpc").asText());
+		long id = path(rootNode, "id").asLong();
+		request.setId(id==0?null:id);
+		request.setMethod(path(rootNode, "method").asText());
+		return request;
+	}
 
-	public JsonRpcParamsRequest parseAsMethodArgs(String jsonstr) throws Exception {
-		JsonRpcParamsRequest req = new JsonRpcParamsRequest();
+	public JsonRpcParamsRequest parseParams(Method method)  {
+		RpcMethodResolver rpcMethod = new RpcMethodResolver(method);
+		try {
+			List<Object> params = parseAsMethodArgs(rpcMethod);
+			this.request.setParams(params);
+			return request;
+		} catch (Exception e) {
+			throw new JsonRpcException("parse params error: " + e.getMessage(), e);
+		}
+	}
+
+	protected List<Object> parseAsMethodArgs(RpcMethodResolver rpcMethod) throws Exception {
+		/*JsonRpcParamsRequest req = new JsonRpcParamsRequest();
 		JsonNode rootNode = mapper.readTree(jsonstr);
 		req.setJsonrpc(path(rootNode, "jsonrpc").asText());
 		req.setId(path(rootNode, "id").asLong());
-		req.setMethod(path(rootNode, "method").asText());
+		req.setMethod(path(rootNode, "method").asText());*/
 		
 		JsonNode paramsNode = rootNode.path("params");
 		List<Object> paramList  = LangUtils.newArrayList();
@@ -58,9 +80,8 @@ public class JsonRpcParser {
 			throw new BaseException("error params : " + paramsNode);
 		}
 		
-		req.setParams(paramList);
-		
-		return req;
+//		req.setParams(paramList);
+		return paramList;
 	}
 	
 	protected Object parseNode(JsonNode node, Class<?> valueClass) throws Exception{
@@ -104,6 +125,10 @@ public class JsonRpcParser {
 		JsonNode pathNode = node.path(index);
 		Assert.notNull(pathNode);
 		return pathNode;
+	}
+
+	public JsonRpcParamsRequest getRequest() {
+		return request;
 	}
 
 }
