@@ -18,22 +18,22 @@ public class DefaultTypeConvertors implements Convertor {
 	
 	public DefaultTypeConvertors(){
 		register(new ToStringConvertor(), String.class);
-		register(new ToLongConvertor(null), Long.class);
-		register(new ToLongConvertor(0L), Long.TYPE);
-		register(new ToIntegerConvertor(null), Integer.class);
-		register(new ToIntegerConvertor(0), Integer.TYPE);
-		register(new ToShortConvertor(null), Short.class);
-		register(new ToShortConvertor((short)0), Short.TYPE);
+		register(new ToLongConvertor(), Long.class);
+		register(new ToLongConvertor(), Long.TYPE);
+		register(new ToIntegerConvertor(), Integer.class);
+		register(new ToIntegerConvertor(), Integer.TYPE);
+		register(new ToShortConvertor(), Short.class);
+		register(new ToShortConvertor(), Short.TYPE);
 		register(new ToDoubleConvertor(), Double.class);
-		register(new ToDoubleConvertor(0.0D), Double.TYPE);
-		register(new ToFloatConvertor(null), Float.class);
-		register(new ToFloatConvertor(0.0f), Float.TYPE);
-		register(new ToBooleanConvertor(null), Boolean.class);
-		register(new ToBooleanConvertor(false), Boolean.TYPE);
-		register(new ToByteConvertor(null), Byte.class);
-		register(new ToByteConvertor((byte)0), Byte.TYPE);
-		register(new ToCharConvertor(null), Character.class);
-		register(new ToCharConvertor('\u0000'), Character.TYPE);
+		register(new ToDoubleConvertor(), Double.TYPE);
+		register(new ToFloatConvertor(), Float.class);
+		register(new ToFloatConvertor(), Float.TYPE);
+		register(new ToBooleanConvertor(), Boolean.class);
+		register(new ToBooleanConvertor(), Boolean.TYPE);
+		register(new ToByteConvertor(), Byte.class);
+		register(new ToByteConvertor(), Byte.TYPE);
+		register(new ToCharConvertor(), Character.class);
+		register(new ToCharConvertor(), Character.TYPE);
 		register(new ToDateConvertor(), Date.class);
 		
 		register(new ToBigDecemalConvertor(), BigDecimal.class);

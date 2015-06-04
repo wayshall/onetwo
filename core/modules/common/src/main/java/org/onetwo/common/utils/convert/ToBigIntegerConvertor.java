@@ -5,6 +5,10 @@ import java.math.BigInteger;
 
 public class ToBigIntegerConvertor extends AbstractTypeConvert<BigInteger> {
 
+	protected ToBigIntegerConvertor() {
+		super(BigInteger.valueOf(0));
+	}
+
 	@Override
 	public BigInteger doConvert(Object value, Class<?> componentType) {
 //		if (value == null)

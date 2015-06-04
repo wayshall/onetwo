@@ -7,8 +7,8 @@ public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 	public static final String NO_VALUE = "no";
 
 	
-	public ToBooleanConvertor(Boolean defValue) {
-		super(defValue);
+	public ToBooleanConvertor() {
+		super(false);
 	}
 
 

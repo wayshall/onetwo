@@ -45,6 +45,10 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	public List<T> getParameters() {
 		return parameters;
 	}
+	
+	public T getParameter(String name) {
+		return parameters.stream().filter( m->( m.getParameterName().equals(name))).findFirst().get();
+	}
 
 	abstract protected T createMethodParameter(Method method, int parameterIndex, Parameter parameter);
 }

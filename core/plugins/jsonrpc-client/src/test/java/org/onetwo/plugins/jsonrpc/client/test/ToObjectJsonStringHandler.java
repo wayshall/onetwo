@@ -1,28 +1,30 @@
-package org.onetwo.plugins.jsonrpc.client.proxy;
+package org.onetwo.plugins.jsonrpc.client.test;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jsonrpc.protocol.NamedParamsRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
+import org.onetwo.plugins.jsonrpc.client.proxy.RpcMethodResolver;
 
-public class ToJsonStringHandler extends CacheableDynamicProxyHandler<BaseMethodParameter, RpcMethodResolver> {
+public class ToObjectJsonStringHandler extends CacheableDynamicProxyHandler<BaseMethodParameter, RpcMethodResolver> {
 
-	public ToJsonStringHandler(Class<?>... proxiedInterfaces) {
+	private boolean namedParam;
+	
+	public ToObjectJsonStringHandler(boolean namedParam, Class<?>... proxiedInterfaces) {
 		super(null, proxiedInterfaces);
+		this.namedParam = namedParam;
 	}
 
 	@Override
 	protected Object invokeMethod(Object proxy, RpcMethodResolver method, Object[] args) throws Throwable {
-		NamedParamsRequest request = new NamedParamsRequest();
+		JsonRpcParamsRequest request = new JsonRpcParamsRequest();
 		String methodName = method.getDeclaringClass().getName()+"."+method.getMethod().getName();
 		request.setMethod(methodName);
-//		request.setId(System.nanoTime());
-		if(method.isNamedParam()){
+		if(namedParam){
 			request.setParams(method.toMapByArgs(args));
 		}else{
-			throw new BaseException("error");
+			request.setParams(method.toListByArgs(args));
 		}
 		return request;
 	}

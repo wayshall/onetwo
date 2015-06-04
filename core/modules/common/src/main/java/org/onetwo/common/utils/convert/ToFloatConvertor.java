@@ -4,9 +4,9 @@ public class ToFloatConvertor extends AbstractTypeConvert<Float> {
 
 	private ToDoubleConvertor doubleDelegate;
 
-	public ToFloatConvertor(Float defValue) {
-		super(defValue);
-		doubleDelegate = new ToDoubleConvertor(defValue==null?null:defValue.doubleValue());
+	public ToFloatConvertor() {
+		super(0.0f);
+		doubleDelegate = new ToDoubleConvertor();
 	}
 	
 	@Override

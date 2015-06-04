@@ -6,6 +6,10 @@ import org.onetwo.common.utils.StringUtils;
 @SuppressWarnings("rawtypes")
 public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 
+	protected ToEnumConvertor() {
+		super(false, null);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Enum<?> doConvert(Object value, Class<?> componentType) {
