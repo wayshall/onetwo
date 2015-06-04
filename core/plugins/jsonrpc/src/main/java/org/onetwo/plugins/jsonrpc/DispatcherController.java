@@ -1,13 +1,15 @@
 package org.onetwo.plugins.jsonrpc;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
+import org.onetwo.common.jsonrpc.protocol.NamedParamsRequest;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 public class DispatcherController extends PluginSupportedController {
 	
 	@RequestMapping(value="", method=RequestMethod.POST)
-	public Object dipatcher(){
+	public Object dipatcher(@RequestBody NamedParamsRequest request){
 		return null;
 	}
 

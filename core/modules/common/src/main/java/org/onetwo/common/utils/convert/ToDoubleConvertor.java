@@ -3,11 +3,7 @@ package org.onetwo.common.utils.convert;
 public class ToDoubleConvertor extends AbstractTypeConvert<Double> {
 
 	public ToDoubleConvertor() {
-		super();
-	}
-
-	public ToDoubleConvertor(Double defValue) {
-		super(defValue);
+		super(0.0);
 	}
 
 	@Override

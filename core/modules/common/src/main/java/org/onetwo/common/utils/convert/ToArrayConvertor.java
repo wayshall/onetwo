@@ -8,7 +8,7 @@ import org.onetwo.common.utils.StringUtils;
 public class ToArrayConvertor extends AbstractWithConvertorTypeConvert<Object>{
 
 	public ToArrayConvertor(Convertor convertor) {
-		super(convertor);
+		super(LangUtils.EMPTY_ARRAY, convertor);
 	}
 
 	@Override
