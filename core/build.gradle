@@ -168,6 +168,7 @@ def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
 def projectTomcat = "${projectPrefix}tomcat"
+def projectJsonrpc = "${projectPrefix}jsonrpc"
 
 
 project("${projectCommon}"){
@@ -413,6 +414,16 @@ project("${projectTomcat}"){
 	}
 }
 
+
+project("${projectJsonrpc}"){
+	description = "${projectJsonrpc}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectSpring"))
+	}
+	
+}
 
 def embedTomcat() {
 	def tomcatVersion = "7.0.59";
@@ -878,14 +889,14 @@ project("${pluginZkclient}"){
 	
 }
 
-def pluginJsonrpc = "${pluginPrefix}jsonrpc"
-project("${pluginJsonrpc}"){
-	description = "${pluginJsonrpc}"
+
+def pluginJsonrpcServer = "${pluginPrefix}jsonrpc-server"
+project("${pluginJsonrpcServer}"){
+	description = "${pluginJsonrpcServer}"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
+		compile(project(":$projectJsonrpc"))
 		compile(project(":$projectJfish"))
-		
 	}
 	
 }
@@ -895,7 +906,7 @@ project("${pluginJsonrpcClient}"){
 	description = "${pluginJsonrpcClient}"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
+		compile(project(":$projectJsonrpc"))
 		compile(project(":$projectJfish"))
 		
 	}
