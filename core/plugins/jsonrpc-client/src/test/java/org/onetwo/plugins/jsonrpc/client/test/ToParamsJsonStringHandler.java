@@ -3,10 +3,10 @@ package org.onetwo.plugins.jsonrpc.client.test;
 import java.lang.reflect.Method;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jsonrpc.RpcMethodResolver;
 import org.onetwo.common.jsonrpc.protocol.NamedParamsRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
-import org.onetwo.plugins.jsonrpc.client.proxy.RpcMethodResolver;
 
 public class ToParamsJsonStringHandler extends CacheableDynamicProxyHandler<BaseMethodParameter, RpcMethodResolver> {
 

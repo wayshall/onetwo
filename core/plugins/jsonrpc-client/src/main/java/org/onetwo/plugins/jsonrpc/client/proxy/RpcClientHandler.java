@@ -3,6 +3,7 @@ package org.onetwo.plugins.jsonrpc.client.proxy;
 import java.lang.reflect.Method;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jsonrpc.RpcMethodResolver;
 import org.onetwo.common.jsonrpc.protocol.NamedParamsRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;

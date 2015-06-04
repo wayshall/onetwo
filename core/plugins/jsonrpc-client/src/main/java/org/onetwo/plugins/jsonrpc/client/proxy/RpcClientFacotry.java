@@ -2,6 +2,7 @@ package org.onetwo.plugins.jsonrpc.client.proxy;
 
 import java.lang.reflect.Method;
 
+import org.onetwo.common.jsonrpc.RpcMethodResolver;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.Cache;

@@ -1,4 +1,4 @@
-package org.onetwo.plugins.jsonrpc.client.proxy;
+package org.onetwo.common.jsonrpc;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
