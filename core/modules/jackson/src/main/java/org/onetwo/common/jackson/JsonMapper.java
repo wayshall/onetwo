@@ -1,8 +1,10 @@
 package org.onetwo.common.jackson;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
@@ -122,6 +125,24 @@ public class JsonMapper {
 		return json;
 	}
 	
+	public JsonNode readTree(String content){
+		try {
+			JsonNode rootNode = objectMapper.readTree(content);
+			return rootNode;
+		} catch (Exception e) {
+			throw new BaseException("parse to json error : " + e.getMessage(), e);
+		}
+	}
+	
+	public JsonNode readTree(InputStream in){
+		try {
+			JsonNode rootNode = objectMapper.readTree(in);
+			return rootNode;
+		} catch (Exception e) {
+			throw new BaseException("parse to json error : " + e.getMessage(), e);
+		}
+	}
+	
 	public String toJsonPadding(String function, Object object){
 		return toJson(new JSONPObject(function, object));
 	}
@@ -143,6 +164,19 @@ public class JsonMapper {
 		return obj;
 	}
 	
+	public <T> T fromJson(InputStream in, Class<T> objClass){
+		if(in==null)
+			return null;
+		Assert.notNull(objClass);
+		T obj = null;
+		try {
+			obj = this.objectMapper.readValue(in, objClass);
+		} catch (Exception e) {
+			LangUtils.throwBaseException("parse json to object error : " + objClass + " => " + e.getMessage(), e);
+		}
+		return obj;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fromJsonAsList(String json, Class<T[]> objClass){
 		if(StringUtils.isBlank(json))
@@ -158,6 +192,20 @@ public class JsonMapper {
 			LangUtils.throwBaseException("parse json to object error : " + objClass + " => " + json, e);
 		}
 		return obj;
+	}
+	
+	public <T> T[] fromJsonAsArray(String json, Class<T[]> objClass){
+		if(StringUtils.isBlank(json))
+			return null;
+		Assert.notNull(objClass);
+		if(!objClass.isArray())
+			LangUtils.throwBaseException("mapped class must be a array class");
+		try {
+			T[] array = this.objectMapper.readValue(json, objClass);
+			return array;
+		} catch (Exception e) {
+			throw new BaseException("parse json to object error : " + objClass + " => " + json, e);
+		}
 	}
 	
 	public <T> List<T> fromJsonAsList(String json){

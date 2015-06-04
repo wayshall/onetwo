@@ -1,25 +1,49 @@
 package org.onetwo.common.utils.convert;
 
+import org.onetwo.common.utils.Assert;
+
 abstract public class AbstractTypeConvert<T> implements TypeConvert<T>{
 	
 	private T defValue;
+	private boolean supportedNotNull = true;
 	
-	protected AbstractTypeConvert(){
+	/*protected AbstractTypeConvert(){
 		this.defValue = null;
+	}*/
+	
+
+	protected AbstractTypeConvert(T defValue){
+		this(true, defValue);
 	}
 	
-	protected AbstractTypeConvert(T defValue){
+	protected AbstractTypeConvert(boolean supportedNotNull, T defValue){
 		this.defValue = defValue;
+		this.supportedNotNull = supportedNotNull;
+		if(supportedNotNull){
+			Assert.notNull(defValue);
+		}
 	}
 	
 
+	public T convertNotNull(Object source, Class<?> componentType){
+		if(source==null){
+			if(!supportedNotNull)
+				throw new UnsupportedOperationException("class: " + componentType);
+			return getDefaultValue(componentType);
+		}
+		return doConvert(source, componentType);
+	}
+
 	public T convert(Object source, Class<?> componentType){
-		if(source==null)
-			return getDefaultValue();
+		if(source==null){
+			if(componentType.isPrimitive())
+				return getDefaultValue(componentType);
+			return null;
+		}
 		return doConvert(source, componentType);
 	}
 	
-	protected T getDefaultValue(){
+	protected T getDefaultValue(Class<?> componentType){
 		return defValue;
 	}
 

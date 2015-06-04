@@ -5,6 +5,10 @@ import java.math.BigInteger;
 
 public class ToBigDecemalConvertor extends AbstractTypeConvert<BigDecimal> {
 
+	protected ToBigDecemalConvertor() {
+		super(BigDecimal.valueOf(0));
+	}
+
 	@Override
 	public BigDecimal doConvert(Object value, Class<?> componentType) {
 //		if (value == null)
