@@ -4,8 +4,8 @@ abstract public class AbstractWithConvertorTypeConvert<T> extends AbstractTypeCo
 
 	protected Convertor convertor;
 
-	public AbstractWithConvertorTypeConvert(Convertor convertor) {
-		super();
+	public AbstractWithConvertorTypeConvert(T defValue, Convertor convertor) {
+		super(defValue);
 		this.convertor = convertor;
 	}
 

@@ -1,9 +1,12 @@
 package org.onetwo.common.utils.convert;
 
+import org.onetwo.common.utils.LangUtils;
+
 
 public class ToStringConvertor extends AbstractTypeConvert<String>{
 
 	public ToStringConvertor() {
+		super(LangUtils.EMPTY_STRING);
 	}
 	
 	@Override

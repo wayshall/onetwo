@@ -2,13 +2,13 @@ package org.onetwo.common.utils.convert;
 
 import java.util.List;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 public class Types {
 
 	private static final Convertor instance = new DefaultTypeConvertors();
-	private static final Logger logger = MyLoggerFactory.getLogger(Types.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(Types.class);
 
 	public static <T> T convertValue(Object source, Class<T> clazz) {
 //		return convertValue(source, clazz, null);
