@@ -2,10 +2,12 @@ package org.onetwo.plugins.jsonrpc.client.proxy;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.jsonrpc.ClientResponseParser;
 import org.onetwo.common.jsonrpc.RpcMethodResolver;
-import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
+import org.onetwo.common.jsonrpc.exception.JsonRpcError;
+import org.onetwo.common.jsonrpc.exception.JsonRpcException;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcResponse;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
@@ -19,7 +21,6 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 	final private String baseUrl;
 	private RestTemplate restTemplate;
-	private JsonMapper mapper = JsonMapper.DEFAULT_MAPPER;
 	
 	public RpcClientHandler(String baseUrl, Cache<Method, RpcMethodResolver> methodCaches, Class<?>... proxiedInterfaces) {
 		this(baseUrl, null, methodCaches, proxiedInterfaces);
@@ -33,7 +34,7 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 	@Override
 	protected Object invokeMethod(Object proxy, RpcMethodResolver method, Object[] args) throws Throwable {
-		JsonRpcParamsRequest request = new JsonRpcParamsRequest();
+		JsonRpcRequest request = new JsonRpcRequest();
 		String methodName = method.getDeclaringClass().getName()+"."+method.getMethod().getName();
 		request.setMethod(methodName);
 		if(method.isNamedParam()){
@@ -43,6 +44,11 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		}
 		String jsonstr = this.restTemplate.postForObject(baseUrl, request, String.class);
 		ClientResponseParser parser = new ClientResponseParser(jsonstr);
+		JsonRpcResponse baseResponse = parser.parseBase().getResponse();
+		if(baseResponse.getError()!=null){
+			throw new JsonRpcException(JsonRpcError.valueOf(baseResponse.getError()));
+		}
+		Object result = parser.parseResult(method).getResponse().getResult();
 //		this.restTemplate.postForEntity(baseUrl, request, method.getResponseType());
 		return result;
 	}

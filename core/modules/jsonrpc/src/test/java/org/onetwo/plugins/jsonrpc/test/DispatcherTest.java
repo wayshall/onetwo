@@ -33,7 +33,7 @@ public class DispatcherTest {
 		System.out.println("testOneParameter4Object: " + jsonstr);
 
 		ServerRequestParser jp = new ServerRequestParser(jsonstr);
-		JsonRpcRequest parsedReq = jp.parseBase();
+		JsonRpcRequest parsedReq = jp.parseBase().getRequest();
 		DispatchableMethod dreq = new DispatchableMethod(parsedReq.getMethod());
 		System.out.println("class: " + dreq.getServiceClassName());
 		System.out.println("method: " + dreq.getServiceMethodName());

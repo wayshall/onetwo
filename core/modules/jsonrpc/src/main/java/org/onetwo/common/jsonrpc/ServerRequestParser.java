@@ -4,23 +4,18 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.jsonrpc.exception.JsonRpcError;
 import org.onetwo.common.jsonrpc.exception.JsonRpcException;
 import org.onetwo.common.jsonrpc.protocol.JsonRpcBase.KeyWords;
 import org.onetwo.common.jsonrpc.protocol.JsonRpcRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.convert.Types;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ServerRequestParser {
+public class ServerRequestParser extends AbstractJsonParser {
 	
 //	private RpcMethodResolver rpcMethod;
-	private JsonMapper mapper = JsonMapper.DEFAULT_MAPPER;
 	private JsonRpcRequest request;
 	private JsonNode rootNode;
 	
@@ -31,12 +26,12 @@ public class ServerRequestParser {
 		rootNode = mapper.readTree(jsonstr);
 	}
 
-	public JsonRpcRequest parseBase(){
+	public ServerRequestParser parseBase(){
 		request.setJsonrpc(parseRequiredNode(KeyWords.JSONRPC).asText());
 		Optional.ofNullable(rootNode.path(KeyWords.ID)).ifPresent(node->request.setId(node.asLong()==0?null:node.asLong()));
 		request.setMethod(parseRequiredNode(KeyWords.METHOD).asText());
 		
-		return request;
+		return this;
 	}
 	
 	protected JsonNode parseRequiredNode(String path){
@@ -44,12 +39,12 @@ public class ServerRequestParser {
 						.orElseThrow(()->new JsonRpcException(JsonRpcError.INVALID_REQUEST));
 	}
 
-	public JsonRpcRequest parseParams(Method method)  {
+	public ServerRequestParser parseParams(Method method)  {
 		RpcMethodResolver rpcMethod = new RpcMethodResolver(method);
 		try {
 			List<Object> params = parseAsMethodArgs(rpcMethod);
 			this.request.setParams(params);
-			return request;
+			return this;
 		} catch (JsonRpcException e) {
 			throw e;
 		} catch (Exception e) {
@@ -87,43 +82,11 @@ public class ServerRequestParser {
 //		req.setParams(paramList);
 		return paramList;
 	}
-	
+
 	protected Object parseNode(JsonNode node, BaseMethodParameter parameter) throws Exception{
-		Assert.notNull(node);
-		Class<?> valueClass = parameter.getParameterType();
-		Object value = null;
-//		Class<?> valueClass = (Class<?>) valueType;
-		if(node.isArray()){
-//			List<Object> list = LangUtils.newArrayList();
-			if(valueClass.isArray()){
-//				value = (Object[])mapper.fromJsonAsArray(node.toString(), valueType);
-				/*for (int i = 0; i < node.size(); i++) {
-					Object val = parseNode(node, valueClass.getComponentType());
-					list.add(val);
-				}
-				value = list.toArray();*/
-				value = mapper.fromJsonAsElementArray(node.toString(), valueClass.getComponentType());
-			}else{
-				/*valueClass = ReflectUtils.getGenricType(valueClass, 0);
-				for (int i = 0; i < node.size(); i++) {
-					Object val = parseNode(node, valueClass.getComponentType());
-					list.add(val);
-				}
-				value = list;*/
-				Class<?> elementClass = ReflectUtils.getGenricType(parameter.getGenericParameterType(), 0);
-				value = mapper.fromJsonAsList(node.toString(), elementClass);
-			}
-		}else if(node.isObject()){
-			value = mapper.fromJson(node.toString(), valueClass);
-		}else if(node.isBinary()){
-			value = node.binaryValue();
-		}else if(node.isNull()){
-			value = null;
-		}else{
-			value = Types.convertValue(node.asText(), valueClass);
-		}
-		return value;
+		return parseNode(node, parameter.getParameterType());
 	}
+	
 
 	/*protected Optional<JsonNode> path(JsonNode node, String path){
 		return Optional.ofNullable(node.path(path));
