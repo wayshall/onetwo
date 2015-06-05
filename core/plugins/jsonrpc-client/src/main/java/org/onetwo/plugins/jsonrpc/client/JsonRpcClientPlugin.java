@@ -20,7 +20,7 @@ public class JsonRpcClientPlugin extends ConfigurableContextPlugin<JsonRpcClient
 	
 
 	public JsonRpcClientPlugin() {
-		super("jsonrpc-client-config", false);
+		super("/plugins/jsonrpc/", "client-config", false);
 	}
 
 	public void setPluginInstance(JsonRpcClientPlugin plugin){

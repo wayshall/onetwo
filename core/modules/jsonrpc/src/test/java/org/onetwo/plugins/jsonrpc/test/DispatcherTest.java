@@ -1,4 +1,4 @@
-package org.onetwo.plugins.jsonrpc.client.test;
+package org.onetwo.plugins.jsonrpc.test;
 
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -9,9 +9,10 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.jsonrpc.JsonRpcParser;
+import org.onetwo.common.jsonrpc.ServerRequestParser;
 import org.onetwo.common.jsonrpc.protocol.DispatchableMethod;
-import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcRequest;
+import org.onetwo.common.jsonrpc.test.ToObjectJsonStringHandler;
 import org.onetwo.common.utils.ReflectUtils;
 
 public class DispatcherTest {
@@ -27,12 +28,12 @@ public class DispatcherTest {
 		user.setUserName("way2");
 		user.setAge(30);
 		user.setBirthday(new Date());
-		JsonRpcParamsRequest req = userService.save4Object("way", user);
+		JsonRpcRequest req = userService.save4Object("way", user);
 		String jsonstr = JsonMapper.DEFAULT_MAPPER.toJson(req);
 		System.out.println("testOneParameter4Object: " + jsonstr);
 
-		JsonRpcParser jp = new JsonRpcParser(jsonstr);
-		JsonRpcParamsRequest parsedReq = jp.parseHeader();
+		ServerRequestParser jp = new ServerRequestParser(jsonstr);
+		JsonRpcRequest parsedReq = jp.parseBase();
 		DispatchableMethod dreq = new DispatchableMethod(parsedReq.getMethod());
 		System.out.println("class: " + dreq.getServiceClassName());
 		System.out.println("method: " + dreq.getServiceMethodName());

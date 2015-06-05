@@ -3,6 +3,7 @@ package org.onetwo.plugins.admin;
 import org.onetwo.common.hibernate.event.EntityPackageRegisterEvent;
 import org.onetwo.common.hibernate.event.HibernatePluginEventListenerAdapter;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
+import org.onetwo.common.spring.plugin.ContextPluginMeta;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.plugins.admin.model.AdminModelContext;
@@ -32,7 +33,7 @@ public class AdminPlugin extends ConfigurableContextPlugin<AdminPlugin, AdminPlu
 	public void setPluginInstance(AdminPlugin plugin){
 		instance = plugin;
 	}
-
+	
 	/*@Override
 	public void onJFishContextClasses(List<Class<?>> annoClasses) {
 		if(!isConfigExists()){

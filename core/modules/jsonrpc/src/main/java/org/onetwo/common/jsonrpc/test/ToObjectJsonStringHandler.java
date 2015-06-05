@@ -1,9 +1,9 @@
-package org.onetwo.plugins.jsonrpc.client.test;
+package org.onetwo.common.jsonrpc.test;
 
 import java.lang.reflect.Method;
 
 import org.onetwo.common.jsonrpc.RpcMethodResolver;
-import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
 
@@ -18,7 +18,7 @@ public class ToObjectJsonStringHandler extends CacheableDynamicProxyHandler<Base
 
 	@Override
 	protected Object invokeMethod(Object proxy, RpcMethodResolver method, Object[] args) throws Throwable {
-		JsonRpcParamsRequest request = new JsonRpcParamsRequest();
+		JsonRpcRequest request = new JsonRpcRequest();
 		String methodName = method.getDeclaringClass().getName()+"."+method.getMethod().getName();
 		request.setMethod(methodName);
 		if(namedParam){
