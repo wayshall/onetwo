@@ -1,6 +1,6 @@
-package org.onetwo.plugins.jsonrpc.client.test;
+package org.onetwo.plugins.jsonrpc.test;
 
-import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcRequest;
 
 public interface RpcUserServiceTest {
 	
@@ -13,7 +13,7 @@ public interface RpcUserServiceTest {
 	public ListParamsRequest findByUserNameAndAge4List(String userName, int age);
 	*/
 
-	public JsonRpcParamsRequest findById4Object(Long id);
-	public JsonRpcParamsRequest save4Object(String userName, RpcUserVo user);
+	public JsonRpcRequest findById4Object(Long id);
+	public JsonRpcRequest save4Object(String userName, RpcUserVo user);
 
 }

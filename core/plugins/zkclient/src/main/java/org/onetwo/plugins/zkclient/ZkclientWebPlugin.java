@@ -25,7 +25,9 @@ public class ZkclientWebPlugin extends AbstractJFishPlugin<ZkclientWebPlugin> {
 
 			@Override
 			public void listening(final MvcContextConfigRegisterEvent event){
-				event.registerConfigClasses(ZkclientWebContext.class);
+				if(ZkclientPlugin.getInstance().isConfigExists()){
+					event.registerConfigClasses(ZkclientWebContext.class);
+				}
 			}
 		};
 	}

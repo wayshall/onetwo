@@ -2,9 +2,10 @@ package org.onetwo.plugins.jsonrpc.client.proxy;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.jsonrpc.ClientResponseParser;
 import org.onetwo.common.jsonrpc.RpcMethodResolver;
-import org.onetwo.common.jsonrpc.protocol.NamedParamsRequest;
+import org.onetwo.common.jsonrpc.protocol.JsonRpcParamsRequest;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
@@ -18,6 +19,7 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 	final private String baseUrl;
 	private RestTemplate restTemplate;
+	private JsonMapper mapper = JsonMapper.DEFAULT_MAPPER;
 	
 	public RpcClientHandler(String baseUrl, Cache<Method, RpcMethodResolver> methodCaches, Class<?>... proxiedInterfaces) {
 		this(baseUrl, null, methodCaches, proxiedInterfaces);
@@ -31,13 +33,18 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 	@Override
 	protected Object invokeMethod(Object proxy, RpcMethodResolver method, Object[] args) throws Throwable {
-		NamedParamsRequest request = new NamedParamsRequest();
+		JsonRpcParamsRequest request = new JsonRpcParamsRequest();
+		String methodName = method.getDeclaringClass().getName()+"."+method.getMethod().getName();
+		request.setMethod(methodName);
 		if(method.isNamedParam()){
 			request.setParams(method.toMapByArgs(args));
 		}else{
-			throw new BaseException("error");
+			request.setParams(method.toListByArgs(args));
 		}
-		return request;
+		String jsonstr = this.restTemplate.postForObject(baseUrl, request, String.class);
+		ClientResponseParser parser = new ClientResponseParser(jsonstr);
+//		this.restTemplate.postForEntity(baseUrl, request, method.getResponseType());
+		return result;
 	}
 
 	@Override

@@ -6,29 +6,32 @@ import org.onetwo.common.exception.BaseException;
 public class JsonRpcException extends BaseException{
 	
 	public static final String JSONRPC_ERROR = "JSONRPC_ERROR";
+	
+	private JsonRpcError jsonRpcError;
 
-	public JsonRpcException() {
-		super();
+	public JsonRpcException(JsonRpcError jsonRpcError) {
+		super(jsonRpcError.getMeaning());
+		this.jsonRpcError = jsonRpcError;
 	}
 
-	public JsonRpcException(String msg, Throwable cause, String code) {
-		super(msg, cause, code);
+	public JsonRpcException(JsonRpcError jsonRpcError, Throwable cause) {
+		super(jsonRpcError.getMeaning(), cause);
+	}
+	
+	public JsonRpcException(JsonRpcError jsonRpcError, String msg) {
+		this(jsonRpcError, msg, null);
 	}
 
-	public JsonRpcException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
-	public JsonRpcException(String msg) {
-		super(msg);
-	}
-
-	public JsonRpcException(Throwable cause) {
-		super(cause);
+	public JsonRpcException(JsonRpcError jsonRpcError, String msg, Throwable cause) {
+		super(jsonRpcError.getMeaning()+":"+msg, cause, String.valueOf(jsonRpcError.getCode()));
 	}
 	
 	protected String getDefaultCode(){
-		return JSONRPC_ERROR;
+		return jsonRpcError==null?JSONRPC_ERROR:String.valueOf(jsonRpcError.getCode());
+	}
+
+	public JsonRpcError getJsonRpcError() {
+		return jsonRpcError;
 	}
 
 }

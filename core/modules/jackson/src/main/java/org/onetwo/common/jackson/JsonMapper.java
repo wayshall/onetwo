@@ -4,11 +4,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
 public class JsonMapper {
@@ -64,6 +64,7 @@ public class JsonMapper {
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+	private TypeFactory typeFactory;
 	
 
 	public JsonMapper(Include include){
@@ -80,6 +81,7 @@ public class JsonMapper {
 		if(fieldVisibility)
 			objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		this.objectMapper.setFilters(filterProvider);
+		this.typeFactory = this.objectMapper.getTypeFactory();
 	}
 	
 	/*public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
@@ -118,7 +120,7 @@ public class JsonMapper {
 		} catch (Exception e) {
 //			e.printStackTrace();
 			if(throwIfError)
-				LangUtils.throwBaseException("parse to json error : " + object, e);
+				throw new JsonException("parse to json error : " + object, e);
 			else
 				logger.warn("parse to json error : " + object);
 		}
@@ -130,7 +132,7 @@ public class JsonMapper {
 			JsonNode rootNode = objectMapper.readTree(content);
 			return rootNode;
 		} catch (Exception e) {
-			throw new BaseException("parse to json error : " + e.getMessage(), e);
+			throw new JsonException("parse to json error : " + e.getMessage(), e);
 		}
 	}
 	
@@ -139,7 +141,7 @@ public class JsonMapper {
 			JsonNode rootNode = objectMapper.readTree(in);
 			return rootNode;
 		} catch (Exception e) {
-			throw new BaseException("parse to json error : " + e.getMessage(), e);
+			throw new JsonException("parse to json error : " + e.getMessage(), e);
 		}
 	}
 	
@@ -159,7 +161,7 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(json, objClass);
 		} catch (Exception e) {
-			LangUtils.throwBaseException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
 		}
 		return obj;
 	}
@@ -172,39 +174,43 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(in, objClass);
 		} catch (Exception e) {
-			LangUtils.throwBaseException("parse json to object error : " + objClass + " => " + e.getMessage(), e);
+			throw new JsonException("parse json to object error : " + objClass + " => " + e.getMessage(), e);
 		}
 		return obj;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> fromJsonAsList(String json, Class<T[]> objClass){
+	public <T> List<T> fromJsonAsList(String json, Class<T> objClass){
+		Assert.notNull(objClass);
 		if(StringUtils.isBlank(json))
 			return null;
-		Assert.notNull(objClass);
-		if(!objClass.isArray())
-			LangUtils.throwBaseException("mapped class must be a array class");
-		List<T> obj = null;
 		try {
-			T[] array = this.objectMapper.readValue(json, objClass);
-			obj = (List<T>)LangUtils.asList(array);
+			return this.objectMapper.readValue(json, typeFactory.constructParametricType(List.class, objClass));
 		} catch (Exception e) {
-			LangUtils.throwBaseException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
 		}
-		return obj;
 	}
 	
 	public <T> T[] fromJsonAsArray(String json, Class<T[]> objClass){
+		Assert.notNull(objClass);
 		if(StringUtils.isBlank(json))
 			return null;
-		Assert.notNull(objClass);
 		if(!objClass.isArray())
-			LangUtils.throwBaseException("mapped class must be a array class");
+			throw new JsonException("mapped class must be a array class");
 		try {
-			T[] array = this.objectMapper.readValue(json, objClass);
-			return array;
+			return this.objectMapper.readValue(json, objClass);
 		} catch (Exception e) {
-			throw new BaseException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
+		}
+	}
+	
+	public <T> T[] fromJsonAsElementArray(String json, Class<T> objClass){
+		Assert.notNull(objClass);
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
+		} catch (Exception e) {
+			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
 		}
 	}
 	
@@ -215,7 +221,7 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(json, new TypeReference<List<T>>(){});
 		} catch (Exception e) {
-			LangUtils.throwBaseException("parse json to List error : " + json, e);
+			throw new JsonException("parse json to List error : " + json, e);
 		}
 		return obj;
 	}

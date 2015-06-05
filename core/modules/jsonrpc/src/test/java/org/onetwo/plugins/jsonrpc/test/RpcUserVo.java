@@ -1,4 +1,4 @@
-package org.onetwo.plugins.jsonrpc.client.test;
+package org.onetwo.plugins.jsonrpc.test;
 
 import java.util.Date;
 
