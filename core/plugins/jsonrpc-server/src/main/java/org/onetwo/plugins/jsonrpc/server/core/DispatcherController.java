@@ -36,12 +36,13 @@ public class DispatcherController extends PluginSupportedController {
 		ServerRequestParser jp = null;
 		try {
 			jp = createJsonRpcParser(jsonString);
-			JsonRpcRequest parsedReq = jp.parseBase();
+			JsonRpcRequest parsedReq = jp.parseBase().getRequest();
 			
 			DispatchableMethod dispatchableMethod = new DispatchableMethod(parsedReq.getMethod());
 			Object result = dispathcerAndInvokeMethod(jp, dispatchableMethod);
 			response.setResult(result);
 			response.setId(jp.getRequest().getId());
+			//成功时，必须不包含error对象，mapper注意忽略null值
 		} catch (JsonRpcException e) {
 			logger.error("jsonrpc error.", e);
 			JsonRpcResponseError error = JsonRpcResponseError.create(e.getJsonRpcError());
@@ -87,7 +88,8 @@ public class DispatcherController extends PluginSupportedController {
 		}
 		Method method = methods.get(0);
 		logger.info("dispatchableMethod: {}", dispatchableMethod);
-		JsonRpcRequest req = jp.parseParams(method);
+		jp.parseParams(method);
+		JsonRpcRequest req = jp.getRequest();
 		
 		Object result = null;
 		try {

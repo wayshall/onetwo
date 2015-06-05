@@ -1,5 +1,7 @@
 package appweb.admin.model.service;
 
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.plugins.jsonrpc.client.proxy.RpcClientFacotry;
 
@@ -12,6 +14,7 @@ public class JsonRpcTest {
 							.build();
 		String result = rf.create(JsonRpcServiceTest.class).say("jfish-jsonrpc");
 		System.out.println("result: " + result);
+		Assert.assertEquals("helllo jfish-jsonrpc", result);
 	}
 
 }
