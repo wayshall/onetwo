@@ -1,13 +1,20 @@
 package org.onetwo.common.jackson;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -17,12 +24,14 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
@@ -153,28 +162,71 @@ public class JsonMapper {
 		return toJson(new JSONPObject(DEFAULT_JSONP_NAME, object));
 	}
 	
-	public <T> T fromJson(String json, Class<T> objClass){
+	/*public static interface ReadValuePolicy {
+		Object readValue(Class<?> objClass);
+	}
+	private Map<Class<?>, ReadValuePolicy> policies = new HashMap<Class<?>, ReadValuePolicy>(){
+		{
+			policies.put(key, value)
+		}
+	};*/
+	
+	public <T> T fromJsonWith(String json, Class<?> type, Object...params){
 		if(StringUtils.isBlank(json))
 			return null;
-		Assert.notNull(objClass);
+		Assert.notNull(type);
+		try {
+			TypeBindings bindings = new TypeBindings(typeFactory, type);
+			Map<String, Class<?>> attrsMap = CUtils.asMap(params);
+			attrsMap.forEach((k, v)->bindings.addBinding(k, typeFactory.constructType(v)));
+			return objectMapper.readValue(json, typeFactory.constructType(type, bindings));
+		} catch (Exception e) {
+			throw new JsonException("parse json to object error : " + type + " => " + json, e);
+		}
+	}
+	
+	public <T> T fromJson(String json, Type objType){
+		if(StringUtils.isBlank(json))
+			return null;
+		Assert.notNull(objType);
 		T obj = null;
 		try {
-			obj = this.objectMapper.readValue(json, objClass);
+			obj = this.objectMapper.readValue(json, constructJavaType(objType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to object error : " + objType + " => " + json, e);
 		}
 		return obj;
 	}
 	
-	public <T> T fromJson(InputStream in, Class<T> objClass){
+	public JavaType constructJavaType(Type objType){
+		JavaType javaType = null;
+		if(objType instanceof ParameterizedType){
+			ParameterizedType ptype = (ParameterizedType) objType;
+			Class<?> objClass = ReflectUtils.loadClass(ptype.getRawType().getTypeName());
+			List<Class<?>> classes = Stream.of(ptype.getActualTypeArguments()).map(type->(Class<?>)type).collect(Collectors.toList());
+			javaType = typeFactory.constructParametricType(objClass, classes.toArray(new Class[classes.size()]));
+			
+		}else{
+			Class<?> objClass = (Class<?>) objType;
+			if(objClass.isArray()){
+				javaType = typeFactory.constructArrayType(objClass.getComponentType());
+				
+			}else {
+				javaType = typeFactory.constructType(objType);
+			}
+		}
+		return javaType;
+	}
+	
+	public <T> T fromJson(InputStream in, Type objType){
 		if(in==null)
 			return null;
-		Assert.notNull(objClass);
+		Assert.notNull(objType);
 		T obj = null;
 		try {
-			obj = this.objectMapper.readValue(in, objClass);
+			obj = this.objectMapper.readValue(in, constructJavaType(objType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objClass + " => " + e.getMessage(), e);
+			throw new JsonException("parse json to object error : " + objType + " => " + e.getMessage(), e);
 		}
 		return obj;
 	}
