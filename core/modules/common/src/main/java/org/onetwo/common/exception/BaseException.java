@@ -9,6 +9,8 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	protected static final String DefaultMsg = "occur error";
 	public static final String Prefix = "[ERROR]:";
 
+	protected String code;
+
 //	protected List<Throwable> list = null;
 
 	public BaseException() {
@@ -31,6 +33,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	public BaseException(String msg, Throwable cause, String code) {
 		this(msg, cause);
+		this.code = code;
 	}
 
 }

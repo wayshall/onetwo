@@ -59,7 +59,7 @@ abstract public class ConfigurableContextPlugin<T, C extends LoadableConfig> ext
 			config.load(properties);
 		}else{
 			if(failedIfConfigNotExist)
-				throw new BaseException("the plugin["+this.getClass().getName()+"] must be config at: " + configBaseDir+configName);
+				throw new BaseException("the plugin["+this.getClass().getName()+"] must be config at: " + getConfigPath());
 			//load with empty while config is not exist
 			if(config!=null){
 				JFishProperties props = new JFishProperties();
