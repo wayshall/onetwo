@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.jsonrpc.exception.JsonRpcError;
 import org.onetwo.common.jsonrpc.exception.JsonRpcException;
 import org.onetwo.common.jsonrpc.protocol.JsonRpcBase.KeyWords;
@@ -21,7 +22,7 @@ public class ServerRequestParser extends AbstractJsonParser {
 	
 	
 	public ServerRequestParser(String jsonstr) {
-		super();
+		super(JsonMapper.IGNORE_NULL);
 		request = new JsonRpcRequest();
 		rootNode = mapper.readTree(jsonstr);
 	}

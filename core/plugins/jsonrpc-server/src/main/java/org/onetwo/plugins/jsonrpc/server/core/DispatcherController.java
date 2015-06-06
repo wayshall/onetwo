@@ -40,6 +40,10 @@ public class DispatcherController extends PluginSupportedController {
 			
 			DispatchableMethod dispatchableMethod = new DispatchableMethod(parsedReq.getMethod());
 			Object result = dispathcerAndInvokeMethod(jp, dispatchableMethod);
+			if(parsedReq.getId()==null){
+				//id=null为通知，无需返回响应对象
+				return null;
+			}
 			response.setResult(result);
 			response.setId(jp.getRequest().getId());
 			//成功时，必须不包含error对象，mapper注意忽略null值

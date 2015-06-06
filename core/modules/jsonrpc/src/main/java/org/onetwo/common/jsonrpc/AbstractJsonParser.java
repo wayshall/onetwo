@@ -10,8 +10,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class AbstractJsonParser {
 
-	protected JsonMapper mapper = JsonMapper.DEFAULT_MAPPER;
+	protected JsonMapper mapper;
 	
+	public AbstractJsonParser(JsonMapper mapper) {
+		super();
+		this.mapper = mapper;
+	}
+
 	protected Object parseNode(JsonNode node, Type valueClass) throws Exception{
 		Assert.notNull(node);
 		Assert.notNull(valueClass);
