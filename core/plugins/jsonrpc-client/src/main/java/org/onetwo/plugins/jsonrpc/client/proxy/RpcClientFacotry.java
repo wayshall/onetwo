@@ -9,38 +9,50 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class RpcClientFacotry {
-	final private String baseUrl;
-	final private RestTemplate restTemplate;
-	final private Cache<Method, RpcMethodResolver> methodCaches = CacheBuilder.newBuilder().weakKeys().softValues().build();
+	private String baseUrl;
+	private RestTemplate restTemplate;
+	private Cache<Method, RpcMethodResolver> methodCaches = CacheBuilder.newBuilder().weakKeys().softValues().build();
+	private RequestIdGenerator requestIdGenerator = new SeqIdGenerator();
 	
-	public RpcClientFacotry(String baseUrl, RestTemplate restTemplate) {
-		super();
-		this.baseUrl = baseUrl;
-		this.restTemplate = restTemplate;
+	private RpcClientFacotry() {
 	}
 
 	public <T> T create(Class<T> clazz){
-		RpcClientHandler handler = new RpcClientHandler(baseUrl, restTemplate, methodCaches, clazz);
+		RpcClientHandler handler = new RpcClientHandler(baseUrl, restTemplate, methodCaches, requestIdGenerator, clazz);
 		return handler.getProxyObject();
 	}
 
-	
+
+
 	public static class Builder {
-		private String baseUrl;
-		private RestTemplate restTemplate;
+		private RpcClientFacotry rpcClientFacotry = new RpcClientFacotry();
+		
+		public Builder(){
+			
+		}
 
 		public Builder baseUrl(String baseUrl) {
-			this.baseUrl = baseUrl;
+			rpcClientFacotry.baseUrl = baseUrl;
 			return this;
 		}
 		
 		public Builder restTemplate(RestTemplate restTemplate) {
-			this.restTemplate = restTemplate;
+			rpcClientFacotry.restTemplate = restTemplate;
+			return this;
+		}
+		
+		public Builder methodCaches(Cache<Method, RpcMethodResolver> methodCaches) {
+			rpcClientFacotry.methodCaches = methodCaches;
+			return this;
+		}
+
+		public Builder requestIdGenerator(RequestIdGenerator requestIdGenerator) {
+			rpcClientFacotry.requestIdGenerator = requestIdGenerator;
 			return this;
 		}
 
 		public RpcClientFacotry build(){
-			return new RpcClientFacotry(baseUrl, restTemplate);
+			return rpcClientFacotry;
 		}
 	}
 }
