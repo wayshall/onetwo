@@ -123,6 +123,8 @@ public class Page<T> implements Serializable {
 	}
 
 	public void setOrder(final String order) {
+		if(StringUtils.isBlank(order))
+			return ;
 		if (!StringUtils.equals(DESC, order) && !StringUtils.equals(ASC, order))
 			throw new IllegalArgumentException("错误的排序：" + order);
 

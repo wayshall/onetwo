@@ -11,6 +11,7 @@ import org.onetwo.common.jsonrpc.protocol.JsonRpcResponse;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.Cache;
@@ -19,22 +20,26 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 //	private final Cache<Method, RestMethodResolver> methodCaches;
 
-	final private String baseUrl;
+	private String baseUrl;
 	private RestTemplate restTemplate;
+	private RequestIdGenerator requestIdGenerator;
 	
-	public RpcClientHandler(String baseUrl, Cache<Method, RpcMethodResolver> methodCaches, Class<?>... proxiedInterfaces) {
-		this(baseUrl, null, methodCaches, proxiedInterfaces);
+	public RpcClientHandler(){
+		super(null);
 	}
 	
-	public RpcClientHandler(String baseUrl, RestTemplate restTemplate, Cache<Method, RpcMethodResolver> methodCaches, Class<?>... proxiedInterfaces) {
+	public RpcClientHandler(String baseUrl, RestTemplate restTemplate, Cache<Method, RpcMethodResolver> methodCaches, 
+							RequestIdGenerator requestIdGenerator, Class<?>... proxiedInterfaces) {
 		super(methodCaches, proxiedInterfaces);
 		this.restTemplate = restTemplate==null?new JFishRestTemplate():restTemplate;
 		this.baseUrl = baseUrl;
+		this.requestIdGenerator = requestIdGenerator;
 	}
 
 	@Override
 	protected Object invokeMethod(Object proxy, RpcMethodResolver method, Object[] args) throws Throwable {
 		JsonRpcRequest request = new JsonRpcRequest();
+		request.setId(requestIdGenerator.generateId());
 		String methodName = method.getDeclaringClass().getName()+"."+method.getMethod().getName();
 		request.setMethod(methodName);
 		if(method.isNamedParam()){
@@ -43,6 +48,9 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 			request.setParams(method.toListByArgs(args));
 		}
 		String jsonstr = this.restTemplate.postForObject(baseUrl, request, String.class);
+		if(StringUtils.isBlank(jsonstr)){
+			throw new JsonRpcException(JsonRpcError.INVALID_RESPONSE, "empty response from server.");
+		}
 		ClientResponseParser parser = new ClientResponseParser(jsonstr);
 		JsonRpcResponse baseResponse = parser.parseBase().getResponse();
 		if(baseResponse.getError()!=null){
@@ -56,6 +64,30 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 	@Override
 	protected RpcMethodResolver createMethodResolver(Method method) {
 		return new RpcMethodResolver(method);
+	}
+
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	public RequestIdGenerator getRequestIdGenerator() {
+		return requestIdGenerator;
+	}
+
+	public void setRequestIdGenerator(RequestIdGenerator requestIdGenerator) {
+		this.requestIdGenerator = requestIdGenerator;
 	}
 
 
