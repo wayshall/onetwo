@@ -7,8 +7,8 @@ import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.Page;
 import org.springframework.stereotype.Service;
 
-import appweb.admin.model.service.JsonRpcServiceTest;
-import appweb.admin.model.vo.UserVo;
+import appweb.rpc.service.JsonRpcServiceTest;
+import appweb.rpc.vo.UserVo;
 
 @Service
 public class JsonRpcServiceTestImpl implements JsonRpcServiceTest {
