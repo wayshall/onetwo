@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
@@ -75,6 +76,9 @@ public class JFishResourcesScanner implements ResourcesScanner {
 	@Override
 	public <T> List<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan) {
 		Assert.notNull(filter);
+		if(LangUtils.isEmpty(packagesToScan))
+			return Collections.EMPTY_LIST;
+		
 		List<T> classesToBound = new ArrayList<T>();
 		try {
 			int count = 0;

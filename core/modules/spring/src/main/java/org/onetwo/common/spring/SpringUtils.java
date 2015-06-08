@@ -232,10 +232,10 @@ final public class SpringUtils {
 	}
 	
 
-	public static <T> T registerBean(ApplicationContext context, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
-	public static <T> T registerBean(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
 		if(bean==null)
@@ -244,20 +244,22 @@ final public class SpringUtils {
 	}
 	
 
-	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
 	}
 	
 
-	public static BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context, boolean throwIfNull){
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(BeanFactory context, boolean throwIfNull){
 		BeanDefinitionRegistry bdr = null;
-		if(!BeanDefinitionRegistry.class.isInstance(context)){
-			BeanFactory bf = context.getAutowireCapableBeanFactory();
+		if(ApplicationContext.class.isInstance(context)){
+			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
 			if(BeanDefinitionRegistry.class.isInstance(bf))
 				bdr = (BeanDefinitionRegistry) bf;
-		}else{
+		}else if(BeanDefinitionRegistry.class.isInstance(context)){
 			bdr = (BeanDefinitionRegistry) context;
+		}else{
+			//
 		}
 
 		if(bdr==null && throwIfNull)
@@ -287,20 +289,19 @@ final public class SpringUtils {
 	 * @param applicationContext
 	 * @return
 	 */
-	public static SingletonBeanRegistry getSingletonBeanRegistry(ApplicationContext applicationContext){
-		BeanFactory bf = null;
+	public static SingletonBeanRegistry getSingletonBeanRegistry(Object applicationContext){
+		Object bf = applicationContext;
 		if(applicationContext instanceof AbstractApplicationContext){
 			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
 		if(bf==null || !SingletonBeanRegistry.class.isInstance(bf)){
 			return null;
 		}
-		
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		return sbr;
 	}
 	
-	public static void registerSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
 	}
 	
