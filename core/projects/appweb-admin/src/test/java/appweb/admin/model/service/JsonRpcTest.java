@@ -7,26 +7,28 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.utils.Page;
-import org.onetwo.plugins.jsonrpc.client.proxy.RpcClientFacotry;
+import org.onetwo.plugins.jsonrpc.client.core.RpcClientFacotry;
 
-import appweb.admin.model.vo.UserVo;
+import appweb.rpc.service.JsonRpcServiceTest;
+import appweb.rpc.vo.UserVo;
 
 public class JsonRpcTest {
 	
 	@Test
-	public void test(){
+	public void testCommonInvoke(){
 		RpcClientFacotry rf = new RpcClientFacotry.Builder()
-							.baseUrl("http://localhost:8080/appweb-admin/jsonrpc/")
+							.serverEndpoint("http://localhost:8080/appweb-admin/jsonrpc/")
 							.build();
+		
 		JsonRpcServiceTest service = rf.create(JsonRpcServiceTest.class);
-		String result = service.say("jfish-jsonrpc");
+		String result = service.say("jsonrpc");
 		System.out.println("result: " + result);
-		Assert.assertEquals("helllo jfish-jsonrpc", result);
+		Assert.assertEquals("helllo jsonrpc", result);
 		
 		Long rs = service.sum(102, 102000);
 		Assert.assertEquals(102102L, rs.longValue());
 		
-		String userName = "way";
+		String userName = "jsonrpc";
 		int limited = 20;
 		List<UserVo> userlist = service.findUsersByUserNameLike(userName, limited);
 		System.out.println("userlist: " + JsonMapper.DEFAULT_MAPPER.toJson(userlist));
