@@ -18,8 +18,10 @@ apply plugin: 'war'
 
 
 compileJava {
-	sourceCompatibility=1.6
-	targetCompatibility=1.6
+	sourceCompatibility=1.8
+	targetCompatibility=1.8
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-parameters'   
 }
 
 eclipseJdt << {
@@ -50,35 +52,34 @@ repositories {
 
 
 version = "1.0.0-SNAPSHOT"
-ext.onetwoVersion = "3.2.9-SNAPSHOT";
 
-
-ext.junitVersion = "4.10"
-ext.onetwoVersion = "3.2.0-SNAPSHOT";
+ext.onetwoVersion = "3.5.0-SNAPSHOT";
 ext.commonsioVersion = "2.4"
 ext.javaeeVersion = "6.0-3"
 ext.mysqlConnectorVersion = "5.1.35"
-
+ext.mailVersion = "1.4.5"
+// In this section you declare the dependencies for your production and test code
 dependencies {
-	
-	compile("org.onetwo:onetwo-jfish:${onetwoVersion}")
+	compile("org.onetwo:onetwo-jfish:${onetwoVersion}"){
+		exclude group: "log4j", module: "*"
+	}
 	compile("org.onetwo.plugins:onetwo-plugin-hibernate:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-fmtag:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-codegen:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-security:${onetwoVersion}")
 	compile("org.onetwo.plugins:onetwo-plugin-dq:${onetwoVersion}")
-	compile("org.onetwo.plugins:onetwo-plugin-email:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-zkclient:${onetwoVersion}")
+	compile("org.onetwo.plugins:onetwo-plugin-jsonrpc-client:${onetwoVersion}")
 	
+	compile("javax.mail:mail:${mailVersion}")
 	compile("javax.persistence:com.springsource.javax.persistence:2.0.0")
 	compile("com.microsoft:sqljdbc4:1.0")
 	compile("commons-io:commons-io:${commonsioVersion}")
 	compile("mysql:mysql-connector-java:${mysqlConnectorVersion}")
 	provided("org.apache.openejb:javaee-api:${javaeeVersion}")
-	
-	compile("com.microsoft:sqljdbc4:1.0")
-//	compile("com.oracle:ojdbc5:11.1.0.6.0")
-	
-	testCompile("junit:junit:${junitVersion}")
-	embeddedTomcat()
+	provided embeddedTomcat()
+
+    testCompile 'junit:junit:4.11'
 }
 
 

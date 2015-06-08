@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.javatuples.Pair;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jsonrpc.annotation.JsonRpcService;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.jsonrpc.server.annotation.JsonRpcService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -51,6 +51,9 @@ public class JsonRpcServiceScanner implements InitializingBean {
 					return null;
 				}
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
+				if(!cls.isInterface()){
+					return null;
+				}
 				return cls;
 			}
 		}, packagesToScan);

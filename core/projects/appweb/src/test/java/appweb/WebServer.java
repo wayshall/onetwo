@@ -1,10 +1,10 @@
-package appweb.admin;
+package appweb;
 
 
 import org.onetwo.common.web.server.ServerConfig;
 import org.onetwo.common.web.server.tomcat.TomcatServer;
 
-public class WebappAdminServer {
+public class WebServer {
 
 	/**
 	 * @param args 
@@ -12,7 +12,7 @@ public class WebappAdminServer {
 	public static void main(String[] args) {
 		ServerConfig config = new ServerConfig();
 		config.setServerBaseDir("bin");
-		config.setPort(9080);
+		config.setContextPath("/appweb");
 		TomcatServer.create(config).start();
 	}
 

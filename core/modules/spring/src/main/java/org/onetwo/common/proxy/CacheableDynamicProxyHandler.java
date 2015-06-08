@@ -12,7 +12,7 @@ abstract public class CacheableDynamicProxyHandler<P extends MethodParameter, M 
 	private final Cache<Method, M> methodCaches;
 
 	public CacheableDynamicProxyHandler(Cache<Method, M> methodCaches, Class<?>... proxiedInterfaces) {
-		super(Object.class, proxiedInterfaces);
+		super(proxiedInterfaces);
 		this.methodCaches = methodCaches;//CacheBuilder.newBuilder().weakKeys().softValues().build();
 	}
 
