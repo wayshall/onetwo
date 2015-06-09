@@ -62,7 +62,13 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			scaner.setPackagesToScan(rpcServerPluginConfig.getRpcSerivcePackages());
 			return scaner;
 		}
-		
+
+		/*@Bean
+		@Order(0)
+		public View jsonView() {
+			JsonView jview = new JsonRpcView();
+			return jview;
+		}*/
 	}
 
 }

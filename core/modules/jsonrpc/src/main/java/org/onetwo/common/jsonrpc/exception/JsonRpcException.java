@@ -24,6 +24,7 @@ public class JsonRpcException extends BaseException{
 
 	public JsonRpcException(JsonRpcError jsonRpcError, String msg, Throwable cause) {
 		super(jsonRpcError.getMeaning()+":"+msg, cause, String.valueOf(jsonRpcError.getCode()));
+		this.jsonRpcError = jsonRpcError;
 	}
 	
 	protected String getDefaultCode(){

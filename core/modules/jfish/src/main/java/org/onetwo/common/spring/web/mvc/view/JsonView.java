@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonView extends MappingJackson2JsonView {
+	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 
 	public static final String FILTER_KEYS = ":filterKeys";
 	public static final String JSON_DATAS = ":jsonDatas";
@@ -37,7 +38,7 @@ public class JsonView extends MappingJackson2JsonView {
 	}
 
 	protected void configJson(){
-		this.setContentType("application/json;charset=utf-8");
+		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
 		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
 		Module module = SpringApplication.getInstance().getBean(Module.class);
@@ -67,26 +68,13 @@ public class JsonView extends MappingJackson2JsonView {
 				
 			});
 		}else{
-//			SingleReturnWrapper singleModelWrapper = null;
-//			String key = null;
 			for(Map.Entry<String, Object> entry : model.entrySet()){
 				if(Result.class.isInstance(entry.getValue())){
 					return entry.getValue();
 				}else if(SingleReturnWrapper.class.isInstance(entry.getValue())){
-					/*singleModelWrapper = (SingleReturnWrapper) entry.getValue();
-//					key = entry.getKey();
-					return singleModelWrapper;*/
 					return ((SingleReturnWrapper)entry.getValue()).getValue();
-//					break;
 				}
 			}
-			/*if(singleModelWrapper!=null){
-//				model.clear();
-//				model.put(key, singleModelWrapper.getValue());
-				return singleModelWrapper.getValue();
-			}else{
-	//			model.remove(UrlHelper.MODEL_KEY);
-			}*/
 		}
 
 //		setExtractValueFromSingleKeyModel(false);
@@ -96,14 +84,14 @@ public class JsonView extends MappingJackson2JsonView {
 		return wrapAsDataResultIfNeed(result);
 	}
 	
-	protected void filterModelByCallback(Map<String, Object> model){
+	private void filterModelByCallback(Map<String, Object> model){
 		Object controller = JFishWebUtils.currentController();
 		if(ControllerJsonFilter.class.isInstance(controller)){
 			((ControllerJsonFilter)controller).filterModel(model);
 		}
 	}
 	
-	protected Object wrapAsDataResultIfNeed(Object result){
+	private Object wrapAsDataResultIfNeed(Object result){
 		if(!wrapModelAsDataResult)
 			return result;
 		
