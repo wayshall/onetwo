@@ -1,4 +1,4 @@
-package org.onetwo.plugins.zkclient;
+package org.onetwo.plugins.zkclient.core;
 
 import org.apache.zookeeper.WatchedEvent;
 
