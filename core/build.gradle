@@ -920,6 +920,8 @@ project("${pluginJsonrpcServer}"){
 	dependencies {
 		compile(project(":$projectJsonrpc"))
 		compile(project(":$projectJfish"))
+		
+		compile(project(":${pluginZkclient}"))
 	}
 	
 }
@@ -932,6 +934,7 @@ project("${pluginJsonrpcClient}"){
 		compile(project(":$projectJsonrpc"))
 		compile(project(":$projectJfish"))
 		
+//		compile(project(":${pluginZkclient}"))
 	}
 	
 }

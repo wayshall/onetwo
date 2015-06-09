@@ -29,6 +29,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 	private List<ACL> acl = Ids.OPEN_ACL_UNSAFE;
 
 	private EventBus zkeventBus = new EventBus("zkeventBus");
+	private volatile boolean connected;
 //	private Zkclienter zkclienter;
 	
 	@Override
@@ -40,6 +41,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 	public void process(WatchedEvent event) {
 //		logger.info("zk event[{}] has trigged!", event.getType());
 		if(event.getState()==KeeperState.SyncConnected){
+			connected = true;
 			logger.info("zkclient has connected!");
 		}
 		zkeventBus.post(new ZkclientEvent(event, this));
@@ -91,6 +93,10 @@ public class Zkclienter implements InitializingBean, Watcher{
 	public Zkclienter register(ZkEventListener zkEventListener){
 		this.zkeventBus.register(zkEventListener);
 		return this;
+	}
+
+	public boolean isConnected() {
+		return connected;
 	}
 
 	public ZooKeeper getZooKeeper() {
