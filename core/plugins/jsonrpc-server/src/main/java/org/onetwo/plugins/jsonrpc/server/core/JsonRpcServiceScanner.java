@@ -66,7 +66,8 @@ public class JsonRpcServiceScanner implements InitializingBean {
 					throw new BaseException("one more rpc service implementor found for interface: " + cls);
 				return new Pair<Class<?>, Object>(cls, beans.get(0));
 			})
-			.forEach((Pair<Class<?>, Object> serviceMap)->jsonRpcServiceRepository.registerService(serviceMap.getValue0().getName(), serviceMap.getValue1()));
+			.forEach((Pair<Class<?>, Object> serviceMap)->
+									jsonRpcServiceRepository.registerService(serviceMap.getValue0().getName(), serviceMap.getValue1()));
 	}
 
 	public void setJsonRpcSerivceRepository(JsonRpcSerivceRepository jsonRpcSerivceRepository) {
