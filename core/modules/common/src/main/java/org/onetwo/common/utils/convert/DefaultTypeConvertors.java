@@ -66,7 +66,7 @@ public class DefaultTypeConvertors implements Convertor {
 	 * @see org.onetwo.common.utils.convert.TypeConvertor#convert(java.lang.Object, java.lang.Class)
 	 */
 	@Override
-	public <T> T convert(Object value, Class<T> targetClass){
+	public <T> T convert(Object value, Class<?> targetClass){
 		if(targetClass==null)
 			throw new BaseException("targetClass can not be null, value: " + value);
 		if(targetClass.isInstance(value))
@@ -75,7 +75,7 @@ public class DefaultTypeConvertors implements Convertor {
 		if(targetClass.isEnum()){
 			val = (T)getTypeConvertor(targetClass.getSuperclass()).convert(value, targetClass);
 		}else{
-			val = getTypeConvertor(targetClass).convert(value, targetClass);
+			val = (T)getTypeConvertor(targetClass).convert(value, targetClass);
 		}
 		return val;
 	}
@@ -86,5 +86,24 @@ public class DefaultTypeConvertors implements Convertor {
 	@Override
 	public <T> T convert(Object value, Class<?> targetClass, Class<?> componentType){
 		return (T)getTypeConvertor(targetClass).convert(value, componentType);
+	}
+	
+	@Override
+	public <T> T convertNotNull(Object value, Class<?> targetClass, Class<?> componentType){
+		return (T)getTypeConvertor(targetClass).convertNotNull(value, componentType);
+	}
+	@Override
+	public <T> T convertNotNull(Object value, Class<?> targetClass) {
+		if(targetClass==null)
+			throw new BaseException("targetClass can not be null, value: " + value);
+		if(targetClass.isInstance(value))
+			return (T) value;
+		T val = null;
+		if(targetClass.isEnum()){
+			val = (T)getTypeConvertor(targetClass.getSuperclass()).convertNotNull(value, targetClass);
+		}else{
+			val = (T)getTypeConvertor(targetClass).convertNotNull(value, targetClass);
+		}
+		return val;
 	}
 }

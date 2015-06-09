@@ -10,7 +10,7 @@ import org.onetwo.plugins.zkclient.ZkclientEvent;
 import org.onetwo.plugins.zkclient.ZkclientPluginConfig;
 import org.slf4j.Logger;
 
-public class ModuleRegister implements ZkEventListener {
+public class BaseNodeRegister implements ZkEventListener {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -20,7 +20,7 @@ public class ModuleRegister implements ZkEventListener {
 	public void onWatchedEvent(ZkclientEvent event) {
 		if(event.getWatchedEvent().getState()==KeeperState.SyncConnected){
 			logger.info("zkclient has connected!");
-			Pair<String, Code> result = event.getZkWrapper().createPersistentSeq(zkclientPluginConfig.getBaseNode());
+			Pair<String, Code> result = event.getSource().createPersistentSeq(zkclientPluginConfig.getBaseNode());
 			if(Code.NODEEXISTS!=result.getValue1()){
 				throw new BaseException("create node["+zkclientPluginConfig.getBaseNode()+"] error : " + result.getValue1());
 			}
