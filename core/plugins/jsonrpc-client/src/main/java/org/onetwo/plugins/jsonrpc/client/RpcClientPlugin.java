@@ -38,6 +38,9 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 			@Override
 			public void listening(ContextConfigRegisterEvent event) {
 				event.registerConfigClasses(RpcClientContext.class);
+				if(getConfig().isRpcClientScanable()){
+					event.registerConfigClasses(RpcClientScannableContext.class);
+				}
 			}
 			
 		};
@@ -51,9 +54,15 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 			return RpcClientPlugin.getInstance().getConfig();
 		}
 		
+	}
+
+	@Configuration
+	public static class RpcClientScannableContext {
+		
+		
 		@Bean
 		public JsonRpcClientScanner jsonRpcClientScanner(){
-			RpcClientPluginConfig config = rpcClientPluginConfig();
+			RpcClientPluginConfig config = RpcClientPlugin.getInstance().getConfig();
 			return new JsonRpcClientScanner(config.getRpcServerEndpoint(), config.getRpcClientPackages());
 		}
 		

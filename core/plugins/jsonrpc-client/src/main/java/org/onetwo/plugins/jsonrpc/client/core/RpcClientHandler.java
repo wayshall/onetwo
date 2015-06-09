@@ -12,6 +12,8 @@ import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.proxy.CacheableDynamicProxyHandler;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,7 +36,7 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		super(methodCaches, proxiedInterfaces);
 		Assert.hasText(baseUrl, "no jsonrpc server endpoint must be config!");
 		this.restTemplate = restTemplate==null?new JFishRestTemplate():restTemplate;
-		this.serverEndpoint = baseUrl;
+		this.serverEndpoint = StringUtils.appendEndWith(baseUrl, "/");
 		this.requestIdGenerator = requestIdGenerator;
 	}
 
@@ -49,7 +51,12 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		}else{
 			request.setParams(method.toListByArgs(args));
 		}
-		String jsonstr = this.restTemplate.postForObject(serverEndpoint, request, String.class);
+//		String jsonstr = this.restTemplate.postForObject(serverEndpoint, request, String.class);
+		logger.info("req:{}", serverEndpoint);
+		ResponseEntity<String> response = this.restTemplate.postForEntity(serverEndpoint, request, String.class);
+		handleHttpStatus(response.getStatusCode());
+		String jsonstr = response.getBody();
+		logger.info("response from server : {}", jsonstr);
 		if(StringUtils.isBlank(jsonstr)){
 			throw new JsonRpcException(JsonRpcError.INVALID_RESPONSE, "empty response from server.");
 		}
@@ -61,6 +68,23 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		Object result = parser.parseResult(method).getResponse().getResult();
 //		this.restTemplate.postForEntity(baseUrl, request, method.getResponseType());
 		return result;
+	}
+	
+	protected void handleHttpStatus(HttpStatus status){
+		String errorMsg = "";
+		switch (status) {
+			case OK:
+				return;
+				
+			case NOT_FOUND:
+				errorMsg = "serverEndpoint may be config error, check it please!";
+				break;
+	
+			default:
+				errorMsg = "unhandle error: code["+status.value()+"], reason[" + status.getReasonPhrase() + "]";
+				break;
+		}
+		throw new JsonRpcException(JsonRpcError.HTTP_ERROR, errorMsg);
 	}
 
 	@Override

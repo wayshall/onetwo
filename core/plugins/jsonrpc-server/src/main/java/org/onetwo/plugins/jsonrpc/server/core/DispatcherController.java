@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 //@Controller
-@RequestMapping(value="/*", method=RequestMethod.POST)
+@RequestMapping(value="*", method=RequestMethod.POST)
 public class DispatcherController extends PluginSupportedController {
 	
 	@Resource
 	private JsonRpcSerivceRepository jsonRpcSerivceRepository;
 	
 	@CsrfValid(false)
-	@RequestMapping(value="", method=RequestMethod.POST)
+	@RequestMapping(method=RequestMethod.POST)
 	@ResponseBody
 	public Object dispatcher(@RequestBody String jsonString){
 		logger.info("req json:\n{}", jsonString);
@@ -49,14 +49,15 @@ public class DispatcherController extends PluginSupportedController {
 			//成功时，必须不包含error对象，mapper注意忽略null值
 		} catch (JsonRpcException e) {
 			logger.error("jsonrpc error.", e);
-			JsonRpcResponseError error = JsonRpcResponseError.create(e.getJsonRpcError());
+			JsonRpcResponseError error = JsonRpcResponseError.create(e.getJsonRpcError(), e.getMessage());
 			response.setError(error);
 			
 		} catch (Exception e) {
 			logger.error("system error.", e);
-			JsonRpcResponseError error = JsonRpcResponseError.create(JsonRpcError.SERVER_ERROR);
+			JsonRpcResponseError error = JsonRpcResponseError.create(JsonRpcError.SERVER_ERROR, e.getMessage());
 			response.setError(error);
 		}
+//		return mv("", SingleReturnWrapper.wrap(response));
 		return response;
 	}
 
