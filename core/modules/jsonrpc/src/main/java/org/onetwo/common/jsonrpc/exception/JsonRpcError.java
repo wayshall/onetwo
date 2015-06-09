@@ -12,7 +12,8 @@ public enum JsonRpcError {
 	INTERNAL_ERROR(-32603, "Internal error", "服务端错误"),
 	//-32000 to -32099
 	SERVER_ERROR(-32099, "Server error", "JSON-RPC内部错误"),
-	INVALID_RESPONSE(-32000, "Invalid Response", "服务器返回的json不是一个有效的响应对象");
+	INVALID_RESPONSE(-32000, "Invalid Response", "服务器返回的json不是一个有效的响应对象"),
+	HTTP_ERROR(-32001, "http error", "传输协议错误.");
 	
 	private final int code;
 	private final String message;
