@@ -9,6 +9,7 @@ import org.onetwo.common.spring.web.mvc.config.event.MvcContextConfigRegisterEve
 import org.onetwo.plugins.jsonrpc.server.core.DispatcherController;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcSerivceRepository;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcServiceScanner;
+import org.onetwo.plugins.jsonrpc.server.zk.ZkRegisterListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +53,9 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 		
 		@Bean
 		public JsonRpcSerivceRepository jsonRpcSerivceRepository(){
-			return new JsonRpcSerivceRepository();
+			JsonRpcSerivceRepository jsonRpcSerivceRepository = new JsonRpcSerivceRepository();
+			jsonRpcSerivceRepository.registerListener(zkRegisterListener());
+			return jsonRpcSerivceRepository;
 		}
 		
 		@Bean
@@ -62,6 +65,12 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			scaner.setPackagesToScan(rpcServerPluginConfig.getRpcSerivcePackages());
 			return scaner;
 		}
+		
+		@Bean
+		public ZkRegisterListener zkRegisterListener(){
+			return new ZkRegisterListener();
+		}
+		
 
 		/*@Bean
 		@Order(0)
