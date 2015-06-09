@@ -7,11 +7,11 @@ import org.onetwo.common.jsonrpc.exception.JsonRpcError;
 @SuppressWarnings("serial")
 public class JsonRpcResponseError implements Serializable {
 	
-	public static JsonRpcResponseError create(JsonRpcError rpcError){
+	public static JsonRpcResponseError create(JsonRpcError rpcError, String detailMsg){
 		JsonRpcResponseError error = new JsonRpcResponseError();
 		error.setCode(rpcError.getCode());
 		error.setMessage(rpcError.getMessage());
-		error.setData(rpcError.getMeaning());
+		error.setData(rpcError.getMeaning()+" "+detailMsg);
 		return error;
 	}
 	
