@@ -67,7 +67,7 @@ public class JsonRpcServiceScanner implements InitializingBean {
 				return new Pair<Class<?>, Object>(cls, beans.get(0));
 			})
 			.forEach((Pair<Class<?>, Object> serviceMap)->
-									jsonRpcServiceRepository.registerService(serviceMap.getValue0().getName(), serviceMap.getValue1()));
+									jsonRpcServiceRepository.registerService(serviceMap.getValue0(), serviceMap.getValue1()));
 	}
 
 	public void setJsonRpcSerivceRepository(JsonRpcSerivceRepository jsonRpcSerivceRepository) {
