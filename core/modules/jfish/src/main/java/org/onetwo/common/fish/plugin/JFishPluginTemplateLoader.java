@@ -27,9 +27,9 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 	private final Map lastLoaderForName = Collections.synchronizedMap(new HashMap());
 
 	private Map<String, TemplateLoader> pluginLoaders = new HashMap<String, TemplateLoader>();
-	private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
+	private JFishWebMvcPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
-	public JFishPluginTemplateLoader(TemplateLoader[] loaders, JFishPluginManager jfishPluginManager) {
+	public JFishPluginTemplateLoader(TemplateLoader[] loaders, JFishWebMvcPluginManager jfishPluginManager) {
 		this.loaders = (TemplateLoader[]) loaders.clone();
 		this.newPnameParser = jfishPluginManager.getPluginNameParser();
 	}
@@ -76,7 +76,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 		return key;
 	}*/
 
-	public Object findPluginTemplateSource(JFishPluginMeta meta, String name) throws IOException {
+	public Object findPluginTemplateSource(JFishWebMvcPluginMeta meta, String name) throws IOException {
 		if(meta==null)
 			return null;
 		TemplateLoader loader = pluginLoaders.get(meta.getPluginInfo().getName());
@@ -88,9 +88,9 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 		return null;
 	}
 
-	private JFishPluginMeta getJFishPluginMeta(String name){
+	private JFishWebMvcPluginMeta getJFishPluginMeta(String name){
 		try {
-			JFishPluginMeta meta = pluginManager.getJFishPluginMeta(name);
+			JFishWebMvcPluginMeta meta = pluginManager.getJFishPluginMeta(name);
 			return meta;
 		} catch (Exception e) {
 			return null;
@@ -107,7 +107,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 		if(newPnameParser.isPluginAccess(actualName)){
 			String pname = newPnameParser.getPluginName(actualName);
 			if(pname!=null){
-				JFishPluginMeta meta = getJFishPluginMeta(pname);
+				JFishWebMvcPluginMeta meta = getJFishPluginMeta(pname);
 				actualName = actualName.substring(pname.length()+newPnameParser.getLength());
 				actualName = StringUtils.trimStartWith(actualName, "/");
 				source = findPluginTemplateSource(meta, actualName);
@@ -115,7 +115,7 @@ public class JFishPluginTemplateLoader implements StatefulTemplateLoader {
 		}else if(pnameParser.isPluginAccess(actualName)){
 			String pname = pnameParser.getPluginName(actualName);
 			if(pname!=null){
-				JFishPluginMeta meta = getJFishPluginMeta(pname);
+				JFishWebMvcPluginMeta meta = getJFishPluginMeta(pname);
 				actualName = actualName.substring(pname.length()+pnameParser.getLength());
 				actualName = StringUtils.trimStartWith(actualName, "/");
 				source = findPluginTemplateSource(meta, actualName);

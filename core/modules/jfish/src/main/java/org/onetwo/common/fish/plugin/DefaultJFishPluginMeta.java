@@ -4,7 +4,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.plugin.ContextPlugin;
 import org.onetwo.common.spring.plugin.DefaultContextPluginMeta;
 
-public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements JFishPluginMeta {
+public class DefaultJFishPluginMeta extends DefaultContextPluginMeta implements JFishWebMvcPluginMeta {
 
 	private final PluginNameParser pluginNameParser;
 	private PluginWebResourceMeta webResourceMeta;

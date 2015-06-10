@@ -2,13 +2,13 @@ package org.onetwo.common.spring.web.mvc.config.event;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 
 public class MvcContextConfigRegisterEvent {
 
-	final private JFishPluginManager jFishPluginManager;
+	final private JFishWebMvcPluginManager jFishPluginManager;
 	final private List<Class<?>> configClasses;
-	public MvcContextConfigRegisterEvent(JFishPluginManager jFishPluginManager,
+	public MvcContextConfigRegisterEvent(JFishWebMvcPluginManager jFishPluginManager,
 			List<Class<?>> configClasses) {
 		super();
 		this.jFishPluginManager = jFishPluginManager;
@@ -22,7 +22,7 @@ public class MvcContextConfigRegisterEvent {
 		return this;
 	}
 	
-	public JFishPluginManager getjFishPluginManager() {
+	public JFishWebMvcPluginManager getjFishPluginManager() {
 		return jFishPluginManager;
 	}
 	public List<Class<?>> getConfigClasses() {

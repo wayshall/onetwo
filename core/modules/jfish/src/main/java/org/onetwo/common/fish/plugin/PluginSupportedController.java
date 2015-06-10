@@ -9,16 +9,16 @@ import org.springframework.web.servlet.ModelAndView;
 abstract public class PluginSupportedController extends AbstractBaseController {
 	
 	@Resource
-	private JFishPluginManager jfishPluginManager;
+	private JFishWebMvcPluginManager jfishPluginManager;
 	
-	private JFishPluginMeta pluginMeta;
+	private JFishWebMvcPluginMeta pluginMeta;
 	
 	@PostConstruct
 	public void initController(){
 		this.pluginMeta = jfishPluginManager.getJFishPluginMetaOf(getClass());
 	}
 	
-	public JFishPluginMeta getPluginMeta(){
+	public JFishWebMvcPluginMeta getPluginMeta(){
 		return pluginMeta;
 	}
 	protected String pluginView(String viewName){

@@ -4,17 +4,17 @@ package org.onetwo.common.fish.plugin;
 
 public final class JFishPluginManagerFactory {
 
-	private static JFishPluginManager jfishPluginManager;
+	private static JFishWebMvcPluginManager jfishPluginManager;
 	
 	private JFishPluginManagerFactory(){
 	}
 	
 
-	public static void initPluginManager(JFishPluginManager jpm){
+	public static void initPluginManager(JFishWebMvcPluginManager jpm){
 		jfishPluginManager = jpm;
 	}
 	
-	public static JFishPluginManager getPluginManager(){
+	public static JFishWebMvcPluginManager getPluginManager(){
 		return jfishPluginManager;
 	}
 

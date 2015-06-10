@@ -9,7 +9,7 @@ import org.onetwo.plugins.jsonrpc.server.core.JsonRpcSerivceListener;
 import org.onetwo.plugins.zkclient.core.Zkclienter;
 import org.slf4j.Logger;
 
-public class ZkRegisterListener implements JsonRpcSerivceListener {
+public class ZkServiceNodeRegisterListener implements JsonRpcSerivceListener {
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Resource
@@ -21,7 +21,8 @@ public class ZkRegisterListener implements JsonRpcSerivceListener {
 		String path = event.getName();
 		Stat stat = zkclienter.exists(path, true);
 		if(stat==null){
-			zkclienter.createEphemeral(path);
+			path = zkclienter.createEphemeral(path);
+			logger.info("create service node: {}", path);
 		}
 	}
 	

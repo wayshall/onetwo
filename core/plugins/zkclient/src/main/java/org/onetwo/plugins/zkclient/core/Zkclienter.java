@@ -19,6 +19,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.zkclient.ZkclientPluginConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,9 +40,12 @@ public class Zkclienter implements InitializingBean, Watcher{
 	@Resource
 	private ApplicationContext applicationContext;
 //	private Zkclienter zkclienter;
+	private String rootNode;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.rootNode = zkclientPluginConfig.getRootNode();
+		
 		Map<String, ZkEventListener> listeners = SpringUtils.getBeansAsMap(applicationContext, ZkEventListener.class);
 		listeners.forEach((k, v)->{
 			register(v);
@@ -64,7 +68,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 	
 	public Stat exists(String path, boolean watch){
 		try {
-			return zooKeeper.exists(path, watch);
+			return zooKeeper.exists(StringUtils.appendStartWithSlash(path), watch);
 		} catch (Exception e) {
 			handleException(path, e);
 		} 
@@ -92,16 +96,13 @@ public class Zkclienter implements InitializingBean, Watcher{
 	}
 	
 	public String create(final String path, byte data[], List<ACL> acl, CreateMode createMode){
-		String nodePath = null;
-		Code errorCode = null;
+		String nodePath = rootNode + StringUtils.appendStartWithSlash(path);
 		try {
-			nodePath = zooKeeper.create(path, data, acl, createMode);
-		}/*catch (KeeperException.InvalidACLException e) {
-			errorCode = e.code();
-			logger.warn("invalid acl : " + e.getMessage(), e);
-		} */
+			nodePath = zooKeeper.create(nodePath, data, acl, createMode);
+		}
 		catch (Exception e) {
 			handleException(path, e);
+			nodePath = null;
 		}
 		return nodePath;
 	}
@@ -112,7 +113,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 			Code errorCode = ke.code();
 			logger.warn("create node error with code : " + errorCode, ke);
 			if(errorCode!=Code.NODEEXISTS){
-				throw new BaseException("create node["+zkclientPluginConfig.getBaseNode()+"] error : " + errorCode);
+				throw new BaseException("create node["+path+"] error : " + errorCode);
 			}
 		}else{
 
@@ -136,6 +137,10 @@ public class Zkclienter implements InitializingBean, Watcher{
 
 	public void setZkclientPluginConfig(ZkclientPluginConfig zkclientPluginConfig) {
 		this.zkclientPluginConfig = zkclientPluginConfig;
+	}
+
+	public String getRootNode() {
+		return rootNode;
 	}
 
 
