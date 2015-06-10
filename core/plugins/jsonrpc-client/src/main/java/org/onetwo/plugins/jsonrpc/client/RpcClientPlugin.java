@@ -5,7 +5,11 @@ import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
+import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientListener;
+import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientRepository;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientScanner;
+import org.onetwo.plugins.jsonrpc.client.core.impl.DirectServerEndpointRegister;
+import org.onetwo.plugins.jsonrpc.client.core.impl.ZkServerEndpointRegister;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,6 +44,16 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 				event.registerConfigClasses(RpcClientContext.class);
 				if(getConfig().isRpcClientScanable()){
 					event.registerConfigClasses(RpcClientScannableContext.class);
+					logger.info("auto scan and build rpc client!");
+				}else{
+					logger.info("manual build rpc client!");
+				}
+				
+				if(getConfig().isFindServerEndpointFromZk()){
+					event.registerConfigClasses(ZkServerEndpointRegister.class);
+					
+				}else{
+					event.registerConfigClasses(DirectRegisterContext.class);
 				}
 			}
 			
@@ -59,12 +73,40 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 	@Configuration
 	public static class RpcClientScannableContext {
 		
+		private RpcClientPluginConfig rpcClientPluginConfig = RpcClientPlugin.getInstance().getConfig();
+		
 		
 		@Bean
 		public JsonRpcClientScanner jsonRpcClientScanner(){
-			RpcClientPluginConfig config = RpcClientPlugin.getInstance().getConfig();
-			return new JsonRpcClientScanner(config.getRpcServerEndpoint(), config.getRpcClientPackages());
+			JsonRpcClientScanner scaner = new JsonRpcClientScanner(rpcClientPluginConfig.getRpcClientPackages());
+			return scaner;
 		}
 		
+		@Bean
+		public JsonRpcClientRepository jsonRpcClientRepository(){
+			JsonRpcClientRepository repository = new JsonRpcClientRepository();
+			return repository;
+		}
+	}
+
+
+	@Configuration
+	public static class DirectRegisterContext {
+
+		@Bean
+		public JsonRpcClientListener directServerEndpointRegister(){
+			DirectServerEndpointRegister directServerEndpointRegister = new DirectServerEndpointRegister();
+			return directServerEndpointRegister;
+		}
+	}
+
+	@Configuration
+	public static class ZkRegisterContext {
+
+		@Bean
+		public JsonRpcClientListener zkServerEndpointRegister(){
+			ZkServerEndpointRegister zkServerEndpointRegister = new ZkServerEndpointRegister();
+			return zkServerEndpointRegister;
+		}
 	}
 }
