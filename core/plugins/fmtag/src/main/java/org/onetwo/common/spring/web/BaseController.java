@@ -1,9 +1,9 @@
 package org.onetwo.common.spring.web;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginMeta;
 import org.onetwo.common.fish.plugin.PluginConfig;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ReflectUtils;
@@ -200,13 +200,13 @@ abstract public class BaseController<E> extends AbstractBaseController implement
 	public static final String MESSAGE = "message";
 
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private UrlHelper urlMeta;
 	protected Class<E> entityClass;
 	
 	@Autowired
-	private JFishPluginManager pluginManager;
+	private JFishWebMvcPluginManager pluginManager;
 	
 	protected BaseController(){
 		this.entityClass = ReflectUtils.getSuperClassGenricType(this.getClass());
@@ -216,7 +216,7 @@ abstract public class BaseController<E> extends AbstractBaseController implement
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(pluginManager);
-		JFishPluginMeta meta = pluginManager.getJFishPluginMetaOf(this.getClass());
+		JFishWebMvcPluginMeta meta = pluginManager.getJFishPluginMetaOf(this.getClass());
 		this.urlMeta = new UrlHelper(this.getClass(), meta!=null?meta.getPluginConfig():null);
 	}
 

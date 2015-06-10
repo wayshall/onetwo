@@ -3,8 +3,8 @@ package org.onetwo.common.spring.web.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginMeta;
 import org.onetwo.common.fish.plugin.DefaultPluginConfig;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
@@ -16,12 +16,12 @@ public class ModelAndViewPostProcessInterceptor extends WebInterceptorAdapter  {
 
 	public static String PLUGIN_KEY = DefaultPluginConfig.PLUGIN_KEY;
 	
-	protected JFishPluginManager pluginManager;
+	protected JFishWebMvcPluginManager pluginManager;
 	
 	public ModelAndViewPostProcessInterceptor(){
 	}
 	
-	public ModelAndViewPostProcessInterceptor(JFishPluginManager pluginManager) {
+	public ModelAndViewPostProcessInterceptor(JFishWebMvcPluginManager pluginManager) {
 		super();
 		this.pluginManager = pluginManager;
 	}
@@ -34,7 +34,7 @@ public class ModelAndViewPostProcessInterceptor extends WebInterceptorAdapter  {
 
 		
 		HandlerMethod handlerMethod = (HandlerMethod) handler;
-		JFishPluginMeta meta = pluginManager.getJFishPluginMetaOf(handlerMethod.getBean().getClass());
+		JFishWebMvcPluginMeta meta = pluginManager.getJFishPluginMetaOf(handlerMethod.getBean().getClass());
 		if(meta!=null){
 			mv.getModel().put(PLUGIN_KEY, meta.getPluginConfig());
 			/*if(JFishWebUtils.isRedirect(mv) && mv.isReference()){
@@ -71,7 +71,7 @@ public class ModelAndViewPostProcessInterceptor extends WebInterceptorAdapter  {
 		return InterceptorOrder.MODEL_AND_VIEW_POST_PROCESS;
 	}
 
-	public void setPluginManager(JFishPluginManager pluginManager) {
+	public void setPluginManager(JFishWebMvcPluginManager pluginManager) {
 		this.pluginManager = pluginManager;
 	}
 }

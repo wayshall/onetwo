@@ -2,6 +2,7 @@ package org.onetwo.common.spring.context;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
+import org.onetwo.common.spring.plugin.ContextPluginManagerFactory;
 import org.onetwo.common.spring.plugin.ContextPluginManagerInitializer;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.utils.StringUtils;
@@ -33,7 +34,7 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 	private String[] basePackages;
 	private BeanNameGenerator beanNameGenerator;
 	private ScopeMetadataResolver scopeMetadataResolver;
-//	private ContextPluginManager contextPluginManager;
+//	private ContextPluginManager<?> contextPluginManager;
 	
 	public SpringConfigApplicationContext(){
 		String basePackage = SpringUtils.loadAsJFishProperties(JFishProfiles.APP_CONFIG_PATH).getProperty(AppConfig.JFISH_BASE_PACKAGES);
@@ -50,7 +51,7 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 			if(pluginManagerInitializer==null){
 				pluginManagerInitializer = new ContextPluginManagerInitializer();
 			}
-			this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+			pluginManagerInitializer.initPluginContext(getAppEnvironment(), configClasseList);
 		}
 		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
@@ -62,7 +63,12 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
 		this.annotatedClasses = annotatedClasses;
 	}
-	
+
+	@Override
+	protected void finishRefresh() {
+		super.finishRefresh();
+		ContextPluginManagerFactory.getContextPluginManager().getEventBus().postContextRefreshFinished();
+	}
 	
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
@@ -130,14 +136,13 @@ public class SpringConfigApplicationContext extends AbstractRefreshableConfigApp
 		}
 	}
 
-	public PluginManagerInitializer getPluginManagerInitializer() {
+	/*public PluginManagerInitializer getPluginManagerInitializer() {
 		return pluginManagerInitializer;
 	}
 
-	public void setPluginManagerInitializer(
-			PluginManagerInitializer pluginManagerInitializer) {
+	public void setPluginManagerInitializer(PluginManagerInitializer pluginManagerInitializer) {
 		this.pluginManagerInitializer = pluginManagerInitializer;
-	}
+	}*/
 
 	public Class<?>[] getAnnotatedClasses() {
 		return annotatedClasses;

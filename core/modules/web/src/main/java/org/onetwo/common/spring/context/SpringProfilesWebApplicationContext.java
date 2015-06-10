@@ -53,16 +53,17 @@ public class SpringProfilesWebApplicationContext extends AnnotationConfigWebAppl
 
 	protected void prepareRefresh() {
 		JFishList<Class<?>> configClasseList = JFishList.create();
-		this.getPluginManagerInitializer().initPluginContext(getAppEnvironment(), configClasseList);
+		this.pluginManagerInitializer.initPluginContext(getAppEnvironment(), configClasseList);
 		configClasseList.addArray(annotatedClasses);
 		if(configClasseList.isNotEmpty())
 			register(configClasseList.toArray(new Class<?>[0]));
 		super.prepareRefresh();
 	}
-	
 
+	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
+		getPluginManagerInitializer().finishedInitPluginContext();
 	}
 	
 	public PluginManagerInitializer getPluginManagerInitializer() {

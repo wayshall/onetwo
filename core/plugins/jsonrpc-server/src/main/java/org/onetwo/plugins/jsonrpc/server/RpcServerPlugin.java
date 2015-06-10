@@ -7,6 +7,7 @@ import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.ContextPluginMeta;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
+import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,7 @@ public class RpcServerPlugin extends ConfigurableContextPlugin<RpcServerPlugin, 
 	}
 	@Override
 	public JFishContextPluginListener getJFishContextPluginListener() {
-		return new JFishContextPluginListener() {
+		return new JFishContextPluginListenerAdapter(this) {
 
 			@Override
 			public void listening(ContextConfigRegisterEvent event) {

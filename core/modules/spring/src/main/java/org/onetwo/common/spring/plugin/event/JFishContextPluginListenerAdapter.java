@@ -21,4 +21,10 @@ public class JFishContextPluginListenerAdapter implements JFishContextPluginList
 	public void listening(ContextConfigRegisterEvent event) {
 		contextPlugin.onJFishContextClasses(event.getConfigClasses());
 	}
+
+	@Override
+	public void listening(ContextRefreshFinishedEvent event) {
+	}
+	
+	
 }
