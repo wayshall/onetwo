@@ -44,7 +44,8 @@ configure(allprojects){ project ->
 	ext.jpaVersion = "2.0.0"
 	ext.servletVersion = "3.0.1"
 	ext.tomcatjdbcVersion = "7.0.53"
-	ext.guavaVersion = "14.0.1"
+//	ext.guavaVersion = "14.0.1"
+	ext.guavaVersion = "16.0.1"
 	ext.jodatimeVersion = "2.1"
 	
 	ext.hibernateValidatorVersion = "4.3.0.Final"
@@ -906,7 +907,8 @@ project("${pluginZkclient}"){
 		compile(project(":$projectCommon"))
 		compile(project(":$projectJfish"))
 		
-		compile("org.apache.zookeeper:zookeeper:3.4.6")
+//		compile("org.apache.zookeeper:zookeeper:3.4.6")
+		compile("org.apache.curator:curator-framework:2.8.0")
 		
 	}
 	
@@ -934,7 +936,7 @@ project("${pluginJsonrpcClient}"){
 		compile(project(":$projectJsonrpc"))
 		compile(project(":$projectJfish"))
 		
-//		compile(project(":${pluginZkclient}"))
+		compile(project(":${pluginZkclient}"))
 	}
 	
 }
