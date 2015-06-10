@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.PluginConfig;
 import org.onetwo.common.spring.web.mvc.view.JsonExcelView;
 import org.onetwo.common.utils.LangUtils;
@@ -133,7 +133,7 @@ public class WebHelper {
 	}
 	
 	public PluginConfig getPluginConfig(String name){
-		JFishPluginManager jpm = (JFishPluginManager)this.request.getSession().getServletContext().getAttribute(JFishPluginManager.JFISH_PLUGIN_MANAGER_KEY);
+		JFishWebMvcPluginManager jpm = (JFishWebMvcPluginManager)this.request.getSession().getServletContext().getAttribute(JFishWebMvcPluginManager.JFISH_PLUGIN_MANAGER_KEY);
 		return jpm.getJFishPluginMeta(name).getPluginConfig();
 	}
 

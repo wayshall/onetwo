@@ -8,6 +8,9 @@ public interface JFishContextPluginListener {
 	@Subscribe
 	void listening(ContextConfigRegisterEvent event);
 
+	@Subscribe
+	void listening(ContextRefreshFinishedEvent event);
+
 //	@Subscribe
 //	void listening(EntityPackageRegisterEvent event);
 }

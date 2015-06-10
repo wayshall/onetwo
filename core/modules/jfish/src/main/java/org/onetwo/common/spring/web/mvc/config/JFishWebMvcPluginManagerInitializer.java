@@ -2,8 +2,8 @@ package org.onetwo.common.spring.web.mvc.config;
 
 import java.util.List;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.spring.plugin.ContextPluginManagerFactory;
 import org.onetwo.common.spring.plugin.PluginManagerInitializer;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -13,14 +13,15 @@ import org.onetwo.common.web.config.BaseSiteConfig;
  * @author weishao
  *
  */
-public class JFishWebPluginManagerInitializer implements PluginManagerInitializer {
+public class JFishWebMvcPluginManagerInitializer implements PluginManagerInitializer {
 
 //	static private Logger logger = JFishLoggerFactory.getLogger(JFishWebPluginManagerInitializer.class);
+	private JFishWebMvcPluginManager jfishPluginManager;
 	
 	@Override
 	public void initPluginContext(String appEnvironment, List<Class<?>> contextClasses) {
 		BaseSiteConfig siteconfig = BaseSiteConfig.getInstance();
-		JFishPluginManager jfishPluginManager = (JFishPluginManager)ContextPluginManagerFactory.getContextPluginManager();
+		jfishPluginManager = (JFishWebMvcPluginManager)ContextPluginManagerFactory.getContextPluginManager();
 //		final List<Class<?>> annoClasses = new ArrayList<Class<?>>();
 		contextClasses.add(JFishMvcConfig.class);
 		contextClasses.add(JspViewConfig.class);
@@ -44,4 +45,8 @@ public class JFishWebPluginManagerInitializer implements PluginManagerInitialize
 //		return annoClasses;
 	}
 
+	@Override
+	public void finishedInitPluginContext() {
+		jfishPluginManager.onWebApplicationContextStartupCompleted();
+	}
 }

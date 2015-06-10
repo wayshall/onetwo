@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.xml.transform.Source;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
 import org.onetwo.common.jackson.JsonMapper;
@@ -94,7 +94,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	private JFishMvcApplicationContext applicationContext;
 	
 	
-	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
+	protected JFishWebMvcPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 
 //	@Autowired
 //	private JFishAppConfigrator jfishAppConfigurator;
@@ -121,7 +121,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //		@Resource
 //		private SecurityInterceptor securityInterceptor;
 		
-		private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
+		private JFishWebMvcPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
 		/**@Bean
 		public SecurityInterceptor securityInterceptor(){
@@ -188,7 +188,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean
-	public JFishPluginManager jfishPluginManager(){
+	public JFishWebMvcPluginManager jfishPluginManager(){
 		return this.jfishPluginManager;
 	}
 	

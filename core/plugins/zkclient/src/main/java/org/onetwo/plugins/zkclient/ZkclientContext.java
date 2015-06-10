@@ -1,6 +1,6 @@
 package org.onetwo.plugins.zkclient;
 
-import org.onetwo.plugins.zkclient.core.BaseNodeRegister;
+import org.onetwo.plugins.zkclient.core.RootNodeRegister;
 import org.onetwo.plugins.zkclient.core.Zkclienter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +26,8 @@ public class ZkclientContext {
 	}*/
 	
 	@Bean
-	public BaseNodeRegister baseNodeRegister(){
-		BaseNodeRegister module = new BaseNodeRegister();
+	public RootNodeRegister baseNodeRegister(){
+		RootNodeRegister module = new RootNodeRegister();
 		module.setZkclientPluginConfig(zkclientPluginConfig());
 		return module;
 	}

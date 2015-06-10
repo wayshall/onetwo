@@ -37,15 +37,11 @@ public class JFishContextEventBus {
 	}
 
 	public <T extends ContextPluginMeta>  void postRegisterJFishContextClasses(final List<Class<?>> annoClasses){
-		/*pluginManager.getPluginMetas().each(new NoIndexIt<T>() {
-
-			@Override
-			protected void doIt(T element) {
-				element.getContextPlugin().onJFishContextClasses(annoClasses);
-			}
-			
-		});*/
 		contextEventBus.post(new ContextConfigRegisterEvent(contextPluginManager, annoClasses));
+	}
+
+	public <T extends ContextPluginMeta>  void postContextRefreshFinished(){
+		contextEventBus.post(new ContextRefreshFinishedEvent(contextPluginManager));
 	}
 	
 	public void postEvent(Object event){
