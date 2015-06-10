@@ -7,7 +7,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.plugins.zkclient.ZkclientPluginConfig;
 import org.slf4j.Logger;
 
-public class BaseNodeRegister implements ZkEventListener {
+public class RootNodeRegister implements ZkEventListener {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -16,14 +16,14 @@ public class BaseNodeRegister implements ZkEventListener {
 	
 	@Override
 	public String getWatchedPath() {
-		return zkclientPluginConfig.getBaseNode();
+		return zkclientPluginConfig.getRootNode();
 	}
 
 	@Override
 	public void doInNotMatchPath(ZkclientEvent event) {
 		if(event.getWatchedEvent().getState()==KeeperState.SyncConnected){
 			logger.info("zkclient has connected!");
-			String basePath = zkclientPluginConfig.getBaseNode();
+			String basePath = zkclientPluginConfig.getRootNode();
 			Stat stat = event.getSource().exists(basePath, true);
 //			Pair<String, Code> result = event.getSource().createPersistentSeq(basePath);
 			if(stat==null){

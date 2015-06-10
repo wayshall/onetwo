@@ -18,6 +18,7 @@ import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.onetwo.common.ds.JFishMultipleDatasource;
 import org.onetwo.common.hibernate.event.EntityPackageRegisterEvent;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
@@ -36,7 +37,7 @@ public class ExtLocalSessionFactoryBean extends LocalSessionFactoryBean implemen
 	private static final String DEFAULT_HIBERNATE_CONFIG_PREFIX = "hibernate.";
 	private static final String EXT_HIBERNATE_CONFIG_PREFIX = "hib.";
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private ApplicationContext applicationContext;
 	private PreInsertEventListener[] preInsertEventListeners;
