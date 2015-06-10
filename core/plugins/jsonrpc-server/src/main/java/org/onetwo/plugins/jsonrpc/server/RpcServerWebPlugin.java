@@ -35,6 +35,10 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			@Override
 			public void listening(final MvcContextConfigRegisterEvent event){
 				event.registerConfigClasses(JsonRpcWebContext.class);
+				if(RpcServerPlugin.getInstance().getConfig().isRegisterToZk()){
+					event.registerConfigClasses(ZkContext.class);
+					logger.info("registered ZkContext.");
+				}
 			}
 		};
 	}
@@ -54,7 +58,6 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 		@Bean
 		public JsonRpcSerivceRepository jsonRpcSerivceRepository(){
 			JsonRpcSerivceRepository jsonRpcSerivceRepository = new JsonRpcSerivceRepository();
-			jsonRpcSerivceRepository.registerListener(zkRegisterListener());
 			return jsonRpcSerivceRepository;
 		}
 		
@@ -66,11 +69,6 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			return scaner;
 		}
 		
-		@Bean
-		public ZkServiceNodeRegisterListener zkRegisterListener(){
-			return new ZkServiceNodeRegisterListener();
-		}
-		
 
 		/*@Bean
 		@Order(0)
@@ -78,6 +76,15 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			JsonView jview = new JsonRpcView();
 			return jview;
 		}*/
+	}
+
+	@Configuration
+	public static class ZkContext {
+
+		@Bean
+		public ZkServiceNodeRegisterListener zkRegisterListener(){
+			return new ZkServiceNodeRegisterListener();
+		}
 	}
 
 }

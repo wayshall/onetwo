@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
+import com.google.common.base.Function;
 import com.google.common.eventbus.EventBus;
 
 public class Zkclienter implements InitializingBean, Watcher{
@@ -62,13 +63,28 @@ public class Zkclienter implements InitializingBean, Watcher{
 			connected = true;
 			logger.info("zkclient has connected!");
 		}
-		logger.info("zkclient receive event[{} -> {}] from server, and zkeventBus has post it!", event.getPath(), event.getType());
+		logger.info("========> zkclient receive event[{} -> {}] from server, and zkeventBus has post it!", event.getPath(), event.getType());
 		zkeventBus.post(new ZkclientEvent(event, this));
 	}
-	
+
 	public Stat exists(String path, boolean watch){
 		try {
-			return zooKeeper.exists(StringUtils.appendStartWithSlash(path), watch);
+			String nodePath = getActualNodePath(path);
+			return zooKeeper.exists(nodePath, watch);
+		} catch (Exception e) {
+			handleException(path, e);
+		} 
+		return null;
+	}
+
+	public Stat existsOrCreate(String path, boolean watch, Function<String, String> action){
+		try {
+			String nodePath = getActualNodePath(path);
+			Stat stat = zooKeeper.exists(nodePath, watch);
+			if(stat==null){
+				String createPath = action.apply(path);
+				return exists(createPath, true);
+			}
 		} catch (Exception e) {
 			handleException(path, e);
 		} 
@@ -95,13 +111,24 @@ public class Zkclienter implements InitializingBean, Watcher{
 		return create(path, LangUtils.EMPTY_STRING.getBytes(), acl, createMode);
 	}
 	
+	protected String getActualNodePath(final String path){
+		String nodePath = StringUtils.appendStartWithSlash(path);
+		nodePath = StringUtils.appendStartWith(nodePath, rootNode);
+		return nodePath;
+	}
+	
+	public String create(final String path, byte data[], CreateMode createMode){
+		return create(path, data, acl, createMode);
+	}
 	public String create(final String path, byte data[], List<ACL> acl, CreateMode createMode){
-		String nodePath = rootNode + StringUtils.appendStartWithSlash(path);
+		String nodePath = getActualNodePath(path);
+		
 		try {
 			nodePath = zooKeeper.create(nodePath, data, acl, createMode);
+			logger.info("node[{}] has created!", path);
 		}
 		catch (Exception e) {
-			handleException(path, e);
+			handleException(nodePath, e);
 			nodePath = null;
 		}
 		return nodePath;
@@ -111,7 +138,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 		if(KeeperException.class.isInstance(e)){
 			KeeperException ke = (KeeperException)e;
 			Code errorCode = ke.code();
-			logger.warn("create node error with code : " + errorCode, ke);
+			logger.warn("create node[{"+path+"}] error with code : " + errorCode);
 			if(errorCode!=Code.NODEEXISTS){
 				throw new BaseException("create node["+path+"] error : " + errorCode);
 			}
