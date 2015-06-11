@@ -32,13 +32,13 @@ public class JsonRpcClientRepository implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(applicationContext!=null){
+		/*if(applicationContext!=null){
 			SpringUtils.getBeans(applicationContext, JsonRpcClientListener.class)
 						.forEach(listener->{
 							registerListener(listener);
 							logger.info("registered JsonRpcClientListener : {}", listener);
 						});
-		}
+		}*/
 	}
 
 

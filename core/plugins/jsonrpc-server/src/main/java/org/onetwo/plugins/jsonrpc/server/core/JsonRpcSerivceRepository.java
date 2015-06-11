@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Resource;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -29,13 +28,13 @@ public class JsonRpcSerivceRepository implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(applicationContext!=null){
+		/*if(applicationContext!=null){
 			SpringUtils.getBeans(applicationContext, JsonRpcSerivceListener.class)
 						.forEach(listener->{
 							registerListener(listener);
 							logger.info("registered JsonRpcSerivceListener : {}", listener);
 						});
-		}
+		}*/
 	}
 
 

@@ -1,7 +1,7 @@
 package org.onetwo.plugins.zkclient;
 
 import org.onetwo.plugins.zkclient.core.RootNodeRegister;
-import org.onetwo.plugins.zkclient.core.Zkclienter;
+import org.onetwo.plugins.zkclient.curator.CuratorClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,13 +12,19 @@ public class ZkclientContext {
 	public ZkclientPluginConfig zkclientPluginConfig(){
 		return ZkclientPlugin.getInstance().getConfig();
 	}
-
+	
 	@Bean
+	public CuratorClient curatorClient(){
+		CuratorClient curator = new CuratorClient(zkclientPluginConfig());
+		return curator;
+	}
+
+	/*@Bean
 	public Zkclienter zkclienter(){
 		Zkclienter zk = new Zkclienter();
 		zk.setZkclientPluginConfig(zkclientPluginConfig());
 		return zk;
-	}
+	}*/
 	
 	/*@Bean
 	public ZkEventListenerRegister zkEventListenerRegister(){
