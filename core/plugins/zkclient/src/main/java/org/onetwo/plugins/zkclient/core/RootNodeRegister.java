@@ -16,14 +16,14 @@ public class RootNodeRegister implements ZkEventListener {
 	
 	@Override
 	public String getWatchedPath() {
-		return zkclientPluginConfig.getRootNode();
+		return zkclientPluginConfig.getRootPath();
 	}
 
 	@Override
 	public void doInNotMatchPath(ZkclientEvent event) {
 		if(event.getWatchedEvent().getState()==KeeperState.SyncConnected){
 			logger.info("zkclient has connected!");
-			String basePath = zkclientPluginConfig.getRootNode();
+			String basePath = zkclientPluginConfig.getRootPath();
 			Stat stat = event.getSource().exists(basePath, true);
 //			Pair<String, Code> result = event.getSource().createPersistentSeq(basePath);
 			if(stat==null){

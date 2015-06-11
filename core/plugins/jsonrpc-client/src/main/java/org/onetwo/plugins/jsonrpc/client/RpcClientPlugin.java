@@ -1,6 +1,9 @@
 package org.onetwo.plugins.jsonrpc.client;
 
 
+import javax.annotation.Resource;
+
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
 import org.onetwo.common.spring.plugin.event.JFishContextPluginListener;
@@ -8,8 +11,13 @@ import org.onetwo.common.spring.plugin.event.JFishContextPluginListenerAdapter;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientListener;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientRepository;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientScanner;
-import org.onetwo.plugins.jsonrpc.client.core.impl.DirectServerEndpointRegister;
-import org.onetwo.plugins.jsonrpc.client.core.impl.ZkServerEndpointRegister;
+import org.onetwo.plugins.jsonrpc.client.core.impl.DirectServerEndpointClientRegister;
+import org.onetwo.plugins.jsonrpc.client.core.impl.ZkServerEndpointRpcClientRegister;
+import org.onetwo.plugins.zkclient.curator.CuratorClient;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,7 +58,7 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 				}
 				
 				if(getConfig().isFindServerEndpointFromZk()){
-					event.registerConfigClasses(ZkServerEndpointRegister.class);
+					event.registerConfigClasses(ZkRegisterContext.class);
 					
 				}else{
 					event.registerConfigClasses(DirectRegisterContext.class);
@@ -71,14 +79,16 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 	}
 
 	@Configuration
-	public static class RpcClientScannableContext {
+	public static class RpcClientScannableContext implements ApplicationContextAware {
 		
 		private RpcClientPluginConfig rpcClientPluginConfig = RpcClientPlugin.getInstance().getConfig();
 		
+		private ApplicationContext applicationContext;
 		
 		@Bean
 		public JsonRpcClientScanner jsonRpcClientScanner(){
-			JsonRpcClientScanner scaner = new JsonRpcClientScanner(rpcClientPluginConfig.getRpcClientPackages());
+			JsonRpcClientScanner scaner = new JsonRpcClientScanner(applicationContext, rpcClientPluginConfig.getRpcClientPackages());
+			scaner.setJsonRpcClientRepository(jsonRpcClientRepository());
 			return scaner;
 		}
 		
@@ -87,6 +97,14 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 			JsonRpcClientRepository repository = new JsonRpcClientRepository();
 			return repository;
 		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext)
+				throws BeansException {
+			this.applicationContext = applicationContext;
+		}
+		
+		
 	}
 
 
@@ -95,18 +113,38 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 
 		@Bean
 		public JsonRpcClientListener directServerEndpointRegister(){
-			DirectServerEndpointRegister directServerEndpointRegister = new DirectServerEndpointRegister();
+			DirectServerEndpointClientRegister directServerEndpointRegister = new DirectServerEndpointClientRegister();
 			return directServerEndpointRegister;
 		}
 	}
 
 	@Configuration
-	public static class ZkRegisterContext {
+	public static class ZkRegisterContext implements ApplicationContextAware, InitializingBean {
+		private CuratorClient curatorClient;
+		private ApplicationContext applicationContext;
+		
+		private RpcClientPluginConfig rpcClientPluginConfig = RpcClientPlugin.getInstance().getConfig();
+
+		
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.curatorClient = SpringUtils.getBean(applicationContext, CuratorClient.class);
+		}
 
 		@Bean
 		public JsonRpcClientListener zkServerEndpointRegister(){
-			ZkServerEndpointRegister zkServerEndpointRegister = new ZkServerEndpointRegister();
+			ZkServerEndpointRpcClientRegister zkServerEndpointRegister = new ZkServerEndpointRpcClientRegister();
+			zkServerEndpointRegister.setCuratorClient(curatorClient);
+			zkServerEndpointRegister.setRpcClientPluginConfig(rpcClientPluginConfig);
 			return zkServerEndpointRegister;
 		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext)
+				throws BeansException {
+			this.applicationContext = applicationContext;
+		}
+		
+		
 	}
 }

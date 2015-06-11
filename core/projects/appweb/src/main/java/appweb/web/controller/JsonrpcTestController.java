@@ -21,5 +21,17 @@ public class JsonrpcTestController extends WebBaseController{
 		return jsonRpcServiceTest.say(something);
 	}
 
+	@RequestMapping("/findUsers")
+	@ResponseBody
+	public Object findUsersByUserNameLike(String userName, int limited){
+		return jsonRpcServiceTest.findUsersByUserNameLike(userName, limited);
+	}
+
+	@RequestMapping("/findUserPage")
+	@ResponseBody
+	public Object findUserPage(String userName, int limited){
+		return jsonRpcServiceTest.findUsersPageByUserNameLike(userName, limited);
+	}
+
 
 }
