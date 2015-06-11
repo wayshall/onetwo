@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.onetwo.common.jsonrpc.annotation.JsonRpcService;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.plugins.jsonrpc.client.RpcClientPluginConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.util.Assert;
@@ -23,7 +24,7 @@ public class JsonRpcClientScanner implements BeanDefinitionRegistryPostProcessor
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-//	private final ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 	
 	private JFishResourcesScanner scanner = new JFishResourcesScanner();
 	private JsonRpcClientRepository jsonRpcClientRepository;
@@ -31,7 +32,7 @@ public class JsonRpcClientScanner implements BeanDefinitionRegistryPostProcessor
 //	private String serverEndpoint;
 //	private RpcClientPluginConfig rpcClientPluginConfig;
 
-	public JsonRpcClientScanner(String... packagesToScan) {
+	public JsonRpcClientScanner(ApplicationContext applicationContext, String... packagesToScan) {
 		super();
 //		Assert.notNull(applicationContext);
 //		this.applicationContext = applicationContext;
@@ -39,12 +40,18 @@ public class JsonRpcClientScanner implements BeanDefinitionRegistryPostProcessor
 		this.serverEndpoint = serverEndpoint;
 		this.jsonRpcClientRepository = jsonRpcClientRepository;*/
 		this.packagesToScan = packagesToScan;
+		this.applicationContext = applicationContext;
 	}
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
+		Assert.notNull(applicationContext);
+		SpringUtils.getBeans(applicationContext, JsonRpcClientListener.class)
+					.forEach(listener->{
+						jsonRpcClientRepository.registerListener(listener);
+						logger.info("registered JsonRpcClientListener : {}", listener);
+					});
 	}
 
 

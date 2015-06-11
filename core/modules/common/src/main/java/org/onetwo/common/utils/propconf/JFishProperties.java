@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -309,6 +310,12 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		if(StringUtils.isBlank(enumStr))
 			return null;
 		return (T)Enum.valueOf(clazz, enumStr);
+	}
+	public <T extends Enum> Optional<T> getOptionalEnum(String key, Class<T> clazz){
+		String enumStr = getProperty(key);
+		if(StringUtils.isBlank(enumStr))
+			return Optional.empty();
+		return Optional.of(Enum.valueOf(clazz, enumStr));
 	}
 
 	public String getProperty(String key, String defaultValue) {

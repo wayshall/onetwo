@@ -1,33 +1,32 @@
 package org.onetwo.plugins.jsonrpc.server;
 
-import org.onetwo.common.jsonrpc.utils.ZkUtils.ConfigValue;
-import org.onetwo.common.spring.plugin.AbstractLoadingConfig;
-import org.onetwo.common.utils.NetUtils;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jsonrpc.plugin.AbstractRpcPluginConfig;
+import org.onetwo.common.jsonrpc.utils.RpcUtils.ConfigValue;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
+import org.onetwo.plugins.zkclient.utils.ZkUtils;
 import org.springframework.util.Assert;
 
-public class RpcServerPluginConfig extends AbstractLoadingConfig {
+public class RpcServerPluginConfig extends AbstractRpcPluginConfig {
 	
 	public static final String RPC_PROVIDER_ADDRESS = "rpc.provider.address";
 	
 	private String[] rpcSerivcePackages;
 	private String providerAddress;
-	private boolean registerToZk;
 	
 	@Override
 	protected void initConfig(JFishProperties config) {
+		super.initConfig(config);
 		this.rpcSerivcePackages = config.getStringArray("rpc.serivce.packages", ",");
-//		Assert.notEmpty(this.rpcSerivcePackages, "no [rpc.serivce.packages] config!");
 		String address = config.getProperty(RPC_PROVIDER_ADDRESS, "");
-		if(address.startsWith(":")){
-			//只写端口
-			this.providerAddress = NetUtils.getLocalAddress() + address;
-		}else{
-			this.providerAddress = address;
+		providerAddress = parseAddress(address);
+		
+		//如果是发布到zkserver，需要配置发布到zkserver的发布地址providerAddress
+//		this.rpcProvider = StringUtils.isBlank(providerAddress)?RpcProvider.DIRECT:RpcProvider.ZK;
+		if(isRegisterToZk() && StringUtils.isBlank(providerAddress)){
+			throw new BaseException("config ["+RPC_PROVIDER_ADDRESS+"] which will register to the zkserver can not be blank.");
 		}
-		//如果有配置RPC_PROVIDER_ADDRESS，则注册到zkserver
-		this.registerToZk = StringUtils.isNotBlank(providerAddress);
 	}
 
 	public String[] getRpcSerivcePackages() {
@@ -40,7 +39,8 @@ public class RpcServerPluginConfig extends AbstractLoadingConfig {
 
 	public String getZkProviderAddressNode(String providerPath) {
 		Assert.hasText(providerAddress, "config["+RPC_PROVIDER_ADDRESS+"] can't be empty!");
-		return providerPath + StringUtils.appendStartWithSlash(providerAddress);
+		String path = providerPath + StringUtils.appendStartWithSlash(providerAddress);
+		return path;
 	}
 	
 	public String getRpcServiceProviderNode(String servicePath){
@@ -52,7 +52,7 @@ public class RpcServerPluginConfig extends AbstractLoadingConfig {
 	}
 
 	public boolean isRegisterToZk() {
-		return registerToZk;
+		return rpcProvider==RpcProvider.ZK;
 	}
-
+	
 }

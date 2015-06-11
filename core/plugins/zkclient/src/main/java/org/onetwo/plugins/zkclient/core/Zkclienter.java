@@ -45,7 +45,7 @@ public class Zkclienter implements InitializingBean, Watcher{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.rootNode = zkclientPluginConfig.getRootNode();
+		this.rootNode = zkclientPluginConfig.getRootPath();
 		
 		Map<String, ZkEventListener> listeners = SpringUtils.getBeansAsMap(applicationContext, ZkEventListener.class);
 		listeners.forEach((k, v)->{

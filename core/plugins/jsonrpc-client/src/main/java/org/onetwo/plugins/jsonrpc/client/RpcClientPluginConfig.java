@@ -1,30 +1,30 @@
 package org.onetwo.plugins.jsonrpc.client;
 
-import org.onetwo.common.jsonrpc.utils.ZkUtils.ConfigValue;
-import org.onetwo.common.spring.plugin.AbstractLoadingConfig;
+import org.onetwo.common.jsonrpc.plugin.AbstractRpcPluginConfig;
+import org.onetwo.common.jsonrpc.utils.RpcUtils.ConfigValue;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.NetUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 
-public class RpcClientPluginConfig extends AbstractLoadingConfig {
+public class RpcClientPluginConfig extends AbstractRpcPluginConfig {
 	public static final String RPC_CONSUMER_ADDRESS = "rpc.consumer.address";
 	
 	private String[] rpcClientPackages;
 	private String rpcServerEndpoint;
 	private boolean rpcClientScanable;
-	private boolean findServerEndpointFromZk;
 	private String rpcConsumerAddress;
 	
 	@Override
 	protected void initConfig(JFishProperties config) {
+		super.initConfig(config);
+		
 		rpcClientPackages = config.getStringArray("rpc.client.packages", ",");
 		rpcClientScanable = !LangUtils.isEmpty(rpcClientPackages);
 		rpcServerEndpoint = config.getProperty("rpc.server.endpoint");
-		this.findServerEndpointFromZk = ConfigValue.ZK.equalsIgnoreCase(rpcServerEndpoint);
-		
 
-		rpcConsumerAddress = config.getProperty(RPC_CONSUMER_ADDRESS, NetUtils.getLocalAddress());
+		String address = config.getProperty(RPC_CONSUMER_ADDRESS, NetUtils.getLocalAddress());
+		rpcConsumerAddress = parseAddress(address);
 //		System.out.println("rpcServerEndpoint:"+rpcServerEndpoint);
 	}
 
@@ -41,7 +41,7 @@ public class RpcClientPluginConfig extends AbstractLoadingConfig {
 	}
 
 	public boolean isFindServerEndpointFromZk() {
-		return findServerEndpointFromZk;
+		return rpcProvider==RpcProvider.ZK;
 	}
 	
 	public String getRpcServiceConsumerNode(String servicePath){
