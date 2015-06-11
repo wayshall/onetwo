@@ -10,7 +10,7 @@ public class ZkclientPluginConfig extends AbstractLoadingConfig {
 	private Optional<ZkclientType> clientType;
 	private String servers;
 	private int sessionTimeout;
-	private String rootNode;
+	private String rootPath;
 	private String serverNode;
 	
 	@Override
@@ -22,7 +22,7 @@ public class ZkclientPluginConfig extends AbstractLoadingConfig {
 		servers = config.getProperty("servers", "127.0.0.1:2181");
 		sessionTimeout = config.getInt("session.timeout", 5000);
 
-		this.rootNode =  config.getPath("rootNode", "/jfish");
+		this.rootPath =  config.getPath("rootPath", "/jfish");
 		
 		
 		logger.info("=========== zkclient config start ===========");
@@ -31,8 +31,8 @@ public class ZkclientPluginConfig extends AbstractLoadingConfig {
 	}
 	
 	
-	public String getRootNode() {
-		return rootNode;
+	public String getRootPath() {
+		return rootPath;
 	}
 
 

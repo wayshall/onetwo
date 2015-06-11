@@ -4,7 +4,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientCreatedEvent;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientListener;
 
-public class DirectServerEndpointRegister implements JsonRpcClientListener{
+public class DirectServerEndpointClientRegister implements JsonRpcClientListener{
 
 	@Override
 	public void onCreated(JsonRpcClientCreatedEvent event) {
