@@ -5,7 +5,6 @@ import org.onetwo.common.jsonrpc.plugin.AbstractRpcPluginConfig;
 import org.onetwo.common.jsonrpc.utils.RpcUtils.ConfigValue;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.plugins.zkclient.utils.ZkUtils;
 import org.springframework.util.Assert;
 
 public class RpcServerPluginConfig extends AbstractRpcPluginConfig {
@@ -37,9 +36,14 @@ public class RpcServerPluginConfig extends AbstractRpcPluginConfig {
 		return providerAddress;
 	}
 
-	public String getZkProviderAddressNode(String providerPath) {
+	/****
+	 * 以jsonrpc server的地址作为节点名称
+	 * @param providerPath
+	 * @return
+	 */
+	public String getZkProviderAddressPath(String providerPath) {
 		Assert.hasText(providerAddress, "config["+RPC_PROVIDER_ADDRESS+"] can't be empty!");
-		String path = providerPath + StringUtils.appendStartWithSlash(providerAddress);
+		String path = providerPath + StringUtils.appendStartWithSlash(encodePath(providerAddress));
 		return path;
 	}
 	
