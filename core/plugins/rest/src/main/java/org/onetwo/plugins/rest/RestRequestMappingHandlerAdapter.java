@@ -8,6 +8,7 @@ import javax.servlet.ServletRequest;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.validation.AbstractPropertyBindingResult;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -36,6 +37,19 @@ public class RestRequestMappingHandlerAdapter extends RequestMappingHandlerAdapt
 			}
 			return newPath;
 		}*/
+		
+
+		/****
+		 * 自定义AbstractPropertyBindingResult
+		 * 从而自定义PropertyAccessorFactory
+		 */
+		protected AbstractPropertyBindingResult getInternalBindingResult() {
+			/*if (this.bindingResult == null) {
+				initBeanPropertyAccess();
+			}
+			return this.bindingResult;*/
+			return super.getInternalBindingResult();
+		}
 
 		@Override
 		protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) {

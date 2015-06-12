@@ -1,8 +1,6 @@
 package org.onetwo.plugins.jsonrpc.client;
 
 
-import javax.annotation.Resource;
-
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.plugin.ConfigurableContextPlugin;
 import org.onetwo.common.spring.plugin.event.ContextConfigRegisterEvent;
@@ -13,6 +11,7 @@ import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientRepository;
 import org.onetwo.plugins.jsonrpc.client.core.JsonRpcClientScanner;
 import org.onetwo.plugins.jsonrpc.client.core.impl.DirectServerEndpointClientRegister;
 import org.onetwo.plugins.jsonrpc.client.core.impl.ZkServerEndpointRpcClientRegister;
+import org.onetwo.plugins.zkclient.ZkclientContext;
 import org.onetwo.plugins.zkclient.curator.CuratorClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -58,8 +57,8 @@ public class RpcClientPlugin extends ConfigurableContextPlugin<RpcClientPlugin, 
 				}
 				
 				if(getConfig().isFindServerEndpointFromZk()){
-					event.registerConfigClasses(ZkRegisterContext.class);
-					
+					event.registerConfigClasses(ZkclientContext.class, ZkRegisterContext.class);
+					logger.info("build rpc client with zk mode!");
 				}else{
 					event.registerConfigClasses(DirectRegisterContext.class);
 				}
