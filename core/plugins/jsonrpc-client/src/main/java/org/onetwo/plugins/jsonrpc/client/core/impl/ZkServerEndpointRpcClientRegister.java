@@ -42,16 +42,18 @@ public class ZkServerEndpointRpcClientRegister implements JsonRpcClientListener{
 
 		
 		String consumerAddressPath = rpcClientPluginConfig.getZkConsumerAddressNode(consumerPath);
-		String serverEndpoint = curatorClient.findFirstChild(providerPath);
+		final String serverEndpoint = curatorClient.findFirstChild(providerPath);
 		
-		serverEndpoint = getActualServerEndpoint(serverEndpoint);
+		String actualServerEndpoint = getActualServerEndpoint(serverEndpoint);
 
-		Object clientObj = event.getRpcCactory().create(serverEndpoint, interfaceClass);
+		Object clientObj = event.getRpcCactory().create(actualServerEndpoint, interfaceClass);
 		String beanName = StringUtils.uncapitalize(interfaceClass.getSimpleName());
 		event.registerClientBean(beanName, clientObj);
 		
 		curatorClient.creatingParentsIfNeeded(consumerAddressPath, serverEndpoint.getBytes(), CreateMode.EPHEMERAL, false);
-		logger.info("build client[{}] with server endpoint : {}", interfaceClass, serverEndpoint);
+
+		String serverEndPointFullPath = providerPath + StringUtils.appendStartWithSlash(serverEndpoint);
+		logger.info("build client[{}] with server endpoint : {}", interfaceClass, actualServerEndpoint);
 		
 	}
 	

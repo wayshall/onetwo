@@ -1,7 +1,9 @@
 package org.onetwo.common.jsonrpc.plugin;
 
+import org.onetwo.common.jsonrpc.utils.RpcUtils.ServerEndpointConstant;
 import org.onetwo.common.spring.plugin.AbstractLoadingConfig;
 import org.onetwo.common.utils.NetUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 
 import com.google.common.base.CharMatcher;
@@ -35,7 +37,19 @@ public class AbstractRpcPluginConfig extends AbstractLoadingConfig {
 			//只写端口
 			realAddress = NetUtils.getLocalAddress() + address;
 		}
-		return encodePath(realAddress);
+//		return encodePath(realAddress);
+		realAddress = getHttpAddress(realAddress);
+		return realAddress;
+	}
+	
+
+	final protected String getHttpAddress(String address){
+		String acutalPath = address;
+		if(!acutalPath.startsWith(ServerEndpointConstant.HTTP_KEY) && !acutalPath.startsWith(ServerEndpointConstant.HTTPS_KEY)){
+			acutalPath = ServerEndpointConstant.HTTP_KEY + acutalPath;
+		}
+		acutalPath = StringUtils.appendEndWith(acutalPath, "/");;
+		return acutalPath;
 	}
 
 	static public String decodePath(String path){

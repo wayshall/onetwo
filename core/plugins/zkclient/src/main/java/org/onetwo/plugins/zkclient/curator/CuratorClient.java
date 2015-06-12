@@ -28,6 +28,8 @@ public class CuratorClient implements InitializingBean {
 	final private String rootPath;
 	private CreateMode defaultMode = CreateMode.PERSISTENT;
 	
+	private DataSerializer dataSerializer;
+	
 
 	public CuratorClient(ZkclientPluginConfig zkclientPluginConfig) {
 		this.connectString = zkclientPluginConfig.getServers();
@@ -86,10 +88,10 @@ public class CuratorClient implements InitializingBean {
 	}
 	
 
-	public String creatingParentsIfNeeded(String path, byte[] data){
+	public String creatingParentsIfNeeded(String path, Object data){
 		return creatingParentsIfNeeded(path, data, defaultMode, false);
 	}
-	public String creatingParentsIfNeeded(String path, byte[] data, CreateMode mode, boolean checkBeforeCreate){
+	public String creatingParentsIfNeeded(String path, Object data, CreateMode mode, boolean checkBeforeCreate){
 		String fullPath = getActualNodePath(path);
 		if(checkBeforeCreate && checkExists(fullPath)!=null){
 			return fullPath;
@@ -97,11 +99,12 @@ public class CuratorClient implements InitializingBean {
 		if(mode==null){
 			mode = defaultMode;
 		}
+		byte[] seriaData = dataSerializer.serialize(data);
 		try {
 			String result = curator.create()
 							.creatingParentsIfNeeded()
 							.withMode(mode)
-							.forPath(fullPath, data);
+							.forPath(fullPath, seriaData);
 			logger.info("create path success : {}", result);
 			return result;
 		} catch (Exception e) {
@@ -110,7 +113,7 @@ public class CuratorClient implements InitializingBean {
 	}
 	
 
-	public String creating(String path, byte[] data, CreateMode mode, boolean checkBeforeCreate){
+	public String creating(String path, Object data, CreateMode mode, boolean checkBeforeCreate){
 		String fullPath = getActualNodePath(path);
 		if(checkBeforeCreate && checkExists(fullPath)!=null){
 			return fullPath;
@@ -118,10 +121,12 @@ public class CuratorClient implements InitializingBean {
 		if(mode==null){
 			mode = defaultMode;
 		}
+
+		byte[] seriaData = dataSerializer.serialize(data);
 		try {
 			String result = curator.create()
 							.withMode(mode)
-							.forPath(fullPath, data);
+							.forPath(fullPath, seriaData);
 			logger.info("create path success : {}", result);
 			return result;
 		} catch (Exception e) {
@@ -137,8 +142,17 @@ public class CuratorClient implements InitializingBean {
 			throw new BaseException("occur error with curator object: " + e.getMessage(), e);
 		}
 	}
-	
 
+	
+	public <T> T getData(String path, Class<T> dataClass){
+		try {
+			byte[] data = curator.getData().forPath(path);
+			return dataSerializer.deserialize(data, dataClass);
+		} catch (Exception e) {
+			throw new BaseException("get node error for path: " + path, e);
+		}
+	}
+	
 	public List<String> getChildren(String path){
 		try {
 			String fullPath = getActualNodePath(path);
@@ -155,6 +169,10 @@ public class CuratorClient implements InitializingBean {
 	
 	public CuratorFramework getCurator() {
 		return curator;
+	}
+
+	public void setDataSerializer(DataSerializer dataSerializer) {
+		this.dataSerializer = dataSerializer;
 	}
 
 }
