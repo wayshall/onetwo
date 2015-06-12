@@ -26,28 +26,15 @@ public class ZkServiceNodeRegisterListener implements JsonRpcSerivceListener {
 		String providerPath = rpcServerPluginConfig.getRpcServiceProviderNode(servicePath);
 		String consumerPath = rpcServerPluginConfig.getRpcServiceConsumerNode(servicePath);
 		
-		/*Stat stat = zkclienter.exists(servicePath, true);
-		if(stat==null){
-			servicePath = zkclienter.createPersistent(servicePath);
-			providerPath = zkclienter.createPersistent(providerPath);
-			consumerPath = zkclienter.createPersistent(consumerPath);
-		}else{
-			stat = zkclienter.existsOrCreate(providerPath, true, (createPath)->zkclienter.createPersistent(createPath));
-			if(stat==null){
-				providerPath = zkclienter.createPersistent(providerPath);
-			}
-			stat = zkclienter.existsOrCreate(consumerPath, true, (createPath)->zkclienter.createPersistent(createPath));
-		}
-		String addressNode = rpcServerPluginConfig.getZkProviderAddressNode(providerPath);
-		addressNode = zkclienter.createEphemeral(addressNode);
-		logger.info("service provider address [{}] has register!", addressNode);*/
-//		rpcServerZkClienter.creatingParentsIfNeeded(providerPath);
-		
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(consumerPath, "".getBytes(), CreateMode.PERSISTENT, true);
+		//创建service节点
 		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(servicePath, "".getBytes(), CreateMode.PERSISTENT, true);
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(consumerPath, "".getBytes(), CreateMode.PERSISTENT, true);
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(providerPath, "".getBytes(), CreateMode.PERSISTENT, true);
 		
-		String serverAddressNode = rpcServerPluginConfig.getZkProviderAddressNode(providerPath);
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(serverAddressNode, "".getBytes(), CreateMode.EPHEMERAL, false);
+		//以jsonrpc server的地址作为节点名称
+		String serverAddressNode = rpcServerPluginConfig.getZkProviderAddressPath(providerPath);
+		String data = rpcServerPluginConfig.getProviderAddress();
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(serverAddressNode, data, CreateMode.EPHEMERAL, false);
 		logger.info("register to zkserver for service node: {} ", serverAddressNode);
 	}
 	
