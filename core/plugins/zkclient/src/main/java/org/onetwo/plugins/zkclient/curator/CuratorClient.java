@@ -1,6 +1,7 @@
 package org.onetwo.plugins.zkclient.curator;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -105,6 +106,35 @@ public class CuratorClient implements InitializingBean {
 			return result;
 		} catch (Exception e) {
 			throw new BaseException("create node error for path: " + path, e);
+		}
+	}
+	
+
+	public String creating(String path, byte[] data, CreateMode mode, boolean checkBeforeCreate){
+		String fullPath = getActualNodePath(path);
+		if(checkBeforeCreate && checkExists(fullPath)!=null){
+			return fullPath;
+		}
+		if(mode==null){
+			mode = defaultMode;
+		}
+		try {
+			String result = curator.create()
+							.withMode(mode)
+							.forPath(fullPath, data);
+			logger.info("create path success : {}", result);
+			return result;
+		} catch (Exception e) {
+			throw new BaseException("create node error for path: " + path, e);
+		}
+	}
+	
+
+	public <R> R doWith(Function<CuratorFramework, R> action){
+		try {
+			return action.apply(curator);
+		} catch (Exception e) {
+			throw new BaseException("occur error with curator object: " + e.getMessage(), e);
 		}
 	}
 	

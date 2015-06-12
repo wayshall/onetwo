@@ -10,6 +10,7 @@ import org.onetwo.plugins.jsonrpc.server.core.DispatcherController;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcSerivceRepository;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcServiceScanner;
 import org.onetwo.plugins.jsonrpc.server.zk.ZkContext;
+import org.onetwo.plugins.zkclient.ZkclientContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,7 @@ public class RpcServerWebPlugin extends AbstractJFishPlugin<RpcServerWebPlugin> 
 			public void listening(final MvcContextConfigRegisterEvent event){
 				event.registerConfigClasses(JsonRpcWebContext.class);
 				if(RpcServerPlugin.getInstance().getConfig().isRegisterToZk()){
-					event.registerConfigClasses(ZkContext.class);
+					event.registerConfigClasses(ZkclientContext.class, ZkContext.class);
 					logger.info("publish service with zk mode!");
 				}else{
 					logger.info("publish service with direct mode!");
