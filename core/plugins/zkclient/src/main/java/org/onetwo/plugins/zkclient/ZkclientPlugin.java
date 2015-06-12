@@ -34,7 +34,7 @@ public class ZkclientPlugin extends ConfigurableContextPlugin<ZkclientPlugin, Zk
 
 			@Override
 			public void listening(ContextConfigRegisterEvent event) {
-				event.registerConfigClasses(ZkclientContext.class);
+//				event.registerConfigClasses(ZkclientContext.class);
 			}
 			
 		};
