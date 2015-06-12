@@ -3,9 +3,17 @@ package org.onetwo.common.spring.underline;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
+import java.util.NavigableSet;
+import java.util.Queue;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
@@ -43,6 +51,24 @@ public class CopyUtils {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T extends Collection<?>> T newCollections(Class<T> clazz){
+		if(!Collection.class.isAssignableFrom(clazz))
+			throw new RuntimeException("class must be a Collection type: " + clazz);
+		
+		if(clazz==List.class){
+			return (T)new ArrayList();
+		}else if(clazz==Set.class){
+			return (T) new HashSet();
+		}else if(clazz==SortedSet.class || clazz==NavigableSet.class){
+			return (T) new TreeSet();
+		}else if(clazz==Queue.class || clazz==Deque.class){
+			return (T) new ArrayDeque();
+		}else{
+			return newInstance(clazz);
+		}
+	}
+	
     public static <T> T copy(Class<T> targetClass, Object src){
     	return copy(newInstance(targetClass), src, UNDERLINE_CONVERTOR);
     }
@@ -60,23 +86,7 @@ public class CopyUtils {
      * @return
      */
     public static <T> T copy(T target, Object src, PropertyNameConvertor convertor){
-    	BeanWrapper srcBean = newBeanWrapper(src);
-    	BeanWrapper targetBean = newBeanWrapper(target);
-    	Collection<String> desribPropertyNames = desribPropertyNames(target.getClass());
-    	for(String targetPropertyName : desribPropertyNames){
-    		Object srcValue = null;
-    		if(convertor!=null){
-    			if(srcBean.isReadableProperty(targetPropertyName)){
-        			srcValue = srcBean.getPropertyValue(targetPropertyName);
-    			}else{
-        			srcValue = srcBean.getPropertyValue(convertor.convert(targetPropertyName));
-    			}
-    		}else{
-    			srcValue = srcBean.getPropertyValue(targetPropertyName);
-    		}
-    		targetBean.setPropertyValue(targetPropertyName, srcValue);
-    	}
-    	return target;
+    	return new BeanCopier<T>(target, convertor).fromObject(src);
     }
 
 	public static Collection<String> desribPropertyNames(Class<?> clazz){
