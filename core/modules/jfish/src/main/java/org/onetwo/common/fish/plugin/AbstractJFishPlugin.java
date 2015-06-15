@@ -10,7 +10,7 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private JFishPluginMeta pluginMeta;
+	private JFishWebMvcPluginMeta pluginMeta;
 	private PluginConfig pluginConfig = new DefaultPluginConfig();
 
 	/*@Override
@@ -19,7 +19,7 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 	
 
 	@Override
-	public void init(JFishPluginMeta pluginMeta) {
+	public void init(JFishWebMvcPluginMeta pluginMeta) {
 		this.pluginMeta = pluginMeta;
 		this.setPluginInstance((T)this);
 	}
@@ -64,7 +64,7 @@ public abstract class AbstractJFishPlugin<T> implements JFishPlugin{
 	}
 
 
-	public JFishPluginMeta getPluginMeta() {
+	public JFishWebMvcPluginMeta getPluginMeta() {
 		return pluginMeta;
 	}
 

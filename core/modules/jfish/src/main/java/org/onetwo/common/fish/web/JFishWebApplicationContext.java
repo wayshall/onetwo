@@ -37,6 +37,7 @@ public class JFishWebApplicationContext extends SpringProfilesWebApplicationCont
 	public JFishWebApplicationContext(){
 		this(BaseSiteConfig.getInstance().getAppEnvironment(), JFishContextConfig.class);
 	}
+
 	
 	protected ConfigurableEnvironment createEnvironment() {
 		return new StandardServletEnvironment();

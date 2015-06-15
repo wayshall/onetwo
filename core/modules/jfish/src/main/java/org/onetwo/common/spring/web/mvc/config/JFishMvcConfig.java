@@ -5,10 +5,12 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
+import javax.xml.transform.Source;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
@@ -29,6 +31,7 @@ import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrar;
@@ -42,6 +45,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
@@ -57,6 +68,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.MappedInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*******
  * 扩展mvc配置
@@ -80,7 +94,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	private JFishMvcApplicationContext applicationContext;
 	
 	
-	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
+	protected JFishWebMvcPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 
 //	@Autowired
 //	private JFishAppConfigrator jfishAppConfigurator;
@@ -90,6 +104,8 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 
 	@Resource(name=ContextBeanNames.EXCEPTION_MESSAGE)
 	private MessageSource exceptionMessages;
+	
+	private BaseSiteConfig siteConfig = BaseSiteConfig.getInstance();
 	
 	public JFishMvcConfig() {
 //		jfishAppConfigurator = BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);
@@ -105,7 +121,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 //		@Resource
 //		private SecurityInterceptor securityInterceptor;
 		
-		private JFishPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
+		private JFishWebMvcPluginManager pluginManager = JFishPluginManagerFactory.getPluginManager();
 
 		/**@Bean
 		public SecurityInterceptor securityInterceptor(){
@@ -172,7 +188,7 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 	}
 
 	@Bean
-	public JFishPluginManager jfishPluginManager(){
+	public JFishWebMvcPluginManager jfishPluginManager(){
 		return this.jfishPluginManager;
 	}
 	
@@ -392,6 +408,46 @@ public class JFishMvcConfig extends WebMvcConfigurerAdapter implements Initializ
 		Validator validator = SpringApplication.getInstance().getBean(Validator.class);
 		Assert.notNull(validator, "validator can not be null");
 		return validator;
+	}
+
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+		StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
+		stringConverter.setWriteAcceptCharset(false);
+
+		messageConverters.add(new ByteArrayHttpMessageConverter());
+		messageConverters.add(stringConverter);
+		messageConverters.add(new ResourceHttpMessageConverter());
+		messageConverters.add(new SourceHttpMessageConverter<Source>());
+		messageConverters.add(new AllEncompassingFormHttpMessageConverter());
+
+		/*if (romePresent) {
+			messageConverters.add(new AtomFeedHttpMessageConverter());
+			messageConverters.add(new RssChannelHttpMessageConverter());
+		}
+		if (jaxb2Present) {
+			messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
+		}
+		if (jackson2Present) {
+			messageConverters.add(new MappingJackson2HttpMessageConverter());
+		}
+		else if (jacksonPresent) {
+			messageConverters.add(new MappingJacksonHttpMessageConverter());
+		}*/
+		if (siteConfig.isViewJsonXmlSupported()) {
+			messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
+			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+			
+			ObjectMapper mapper = JsonMapper.ignoreNull().getObjectMapper();
+			Module module = SpringApplication.getInstance().getBean(Module.class);
+//			h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+//			h4m.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+			if(module!=null)
+				mapper.registerModule(module);
+			converter.setObjectMapper(mapper);
+			
+			messageConverters.add(converter);
+		}
 	}
 	
 

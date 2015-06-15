@@ -11,7 +11,7 @@ import org.onetwo.common.spring.web.mvc.config.JFishMvcPluginListener;
 public interface JFishPlugin {
 //	JFishPlugin EMPTY_JFISH_PLUGIN = new JFishPluginAdapter();
 	
-	void init(JFishPluginMeta pluginMeta);
+	void init(JFishWebMvcPluginMeta pluginMeta);
 
 //	void onMvcContextClasses(List<Class<?>> annoClasses);
 	
@@ -19,7 +19,7 @@ public interface JFishPlugin {
 	
 //	JFishContextConfigurerListener getJFishContextConfigurerListener();
 	
-	public JFishPluginMeta getPluginMeta();
+	public JFishWebMvcPluginMeta getPluginMeta();
 	
 	public boolean registerMvcResources();
 	

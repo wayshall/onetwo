@@ -4,9 +4,9 @@ public class ToIntegerConvertor extends AbstractTypeConvert<Integer> {
 
 	private ToLongConvertor longConvertor;
 	
-	public ToIntegerConvertor(Integer defValue) {
-		super(defValue);
-		this.longConvertor = new ToLongConvertor(defValue==null?null:defValue.longValue());
+	public ToIntegerConvertor() {
+		super(0);
+		this.longConvertor = new ToLongConvertor();
 	}
 
 

@@ -70,14 +70,14 @@ public class ContextPluginUtils {
 	}
 	
 	public static String getConfigBaseDir(String pluginName){
-		//trim  -config, just for compatibility
+		//trim "-config" , just for compatibility
 		String configBaseDir = StringUtils.trimEndWith(pluginName, CONFIG_NAME_POSTFIX);
 		configBaseDir = BASE_DIR + StringUtils.appendEndWith(configBaseDir, "/");
 		return configBaseDir;
 	}
 	
 	public static String getConfigFileName(String pluginName){
-		//add  -config, just for compatibility
+		//add  "-config", just for compatibility
 		String configName = StringUtils.appendEndWith(pluginName, CONFIG_NAME_POSTFIX);
 		return configName;
 	}

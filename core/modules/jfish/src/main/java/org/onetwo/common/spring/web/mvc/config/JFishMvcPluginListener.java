@@ -5,6 +5,7 @@ import org.onetwo.common.spring.web.mvc.config.event.FreeMarkerConfigurerBuildEv
 import org.onetwo.common.spring.web.mvc.config.event.MvcContextConfigRegisterEvent;
 import org.onetwo.common.spring.web.mvc.config.event.MvcContextInitEvent;
 import org.onetwo.common.spring.web.mvc.config.event.PropertyEditorRegisterEvent;
+import org.onetwo.common.spring.web.mvc.config.event.WebApplicationStartupCompletedEvent;
 import org.onetwo.common.spring.web.mvc.config.event.WebApplicationStartupEvent;
 import org.onetwo.common.spring.web.mvc.config.event.WebApplicationStopEvent;
 
@@ -37,4 +38,8 @@ public interface JFishMvcPluginListener {
 	
 	@Subscribe
 	void listening(MvcContextConfigRegisterEvent event);
+	
+
+	@Subscribe
+	void listening(WebApplicationStartupCompletedEvent event);
 }

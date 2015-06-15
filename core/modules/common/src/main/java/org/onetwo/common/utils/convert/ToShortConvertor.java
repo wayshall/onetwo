@@ -4,9 +4,9 @@ public class ToShortConvertor extends AbstractTypeConvert<Short> {
 
 private ToLongConvertor longConvertor;
 	
-	public ToShortConvertor(Short defValue) {
-		super(defValue);
-		this.longConvertor = new ToLongConvertor(defValue==null?null:defValue.longValue());
+	public ToShortConvertor() {
+		super((short)0);
+		this.longConvertor = new ToLongConvertor();
 	}
 	
 	@Override
