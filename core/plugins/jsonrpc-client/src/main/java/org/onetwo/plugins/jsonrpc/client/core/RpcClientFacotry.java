@@ -3,6 +3,7 @@ package org.onetwo.plugins.jsonrpc.client.core;
 import java.lang.reflect.Method;
 
 import org.onetwo.common.jsonrpc.RpcMethodResolver;
+import org.onetwo.plugins.jsonrpc.client.core.impl.SimpleServerEndpointProvider;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,7 +11,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class RpcClientFacotry {
-	private String serverEndpoint;
+	private ServerEndpointProvider serverEndpointProvider;
 	private RestTemplate restTemplate;
 	private Cache<Method, RpcMethodResolver> methodCaches = CacheBuilder.newBuilder().weakKeys().softValues().build();
 	private RequestIdGenerator requestIdGenerator = new SeqIdGenerator();
@@ -19,17 +20,20 @@ public class RpcClientFacotry {
 	}
 
 	public <T> T create(Class<T> clazz){
-		Assert.hasText(serverEndpoint);
-		RpcClientHandler handler = new RpcClientHandler(serverEndpoint, restTemplate, methodCaches, requestIdGenerator, clazz);
+		Assert.notNull(serverEndpointProvider);
+		RpcClientHandler handler = new RpcClientHandler(serverEndpointProvider, restTemplate, methodCaches, requestIdGenerator, clazz);
 		return handler.getProxyObject();
 	}
 
 	public <T> T create(String serverEndpoint, Class<T> clazz){
-		RpcClientHandler handler = new RpcClientHandler(serverEndpoint, restTemplate, methodCaches, requestIdGenerator, clazz);
+		RpcClientHandler handler = new RpcClientHandler(new SimpleServerEndpointProvider(serverEndpoint), restTemplate, methodCaches, requestIdGenerator, clazz);
 		return handler.getProxyObject();
 	}
 
-
+	public <T> T create(ServerEndpointProvider serverEndpointProvider, Class<T> clazz){
+		RpcClientHandler handler = new RpcClientHandler(serverEndpointProvider, restTemplate, methodCaches, requestIdGenerator, clazz);
+		return handler.getProxyObject();
+	}
 
 	public static class Builder {
 		private RpcClientFacotry rpcClientFacotry = new RpcClientFacotry();
@@ -39,7 +43,12 @@ public class RpcClientFacotry {
 		}
 
 		public Builder serverEndpoint(String serverEndpoint) {
-			rpcClientFacotry.serverEndpoint = serverEndpoint;
+			rpcClientFacotry.serverEndpointProvider = new SimpleServerEndpointProvider(serverEndpoint);
+			return this;
+		}
+
+		public Builder serverEndpointProvider(ServerEndpointProvider serverEndpointProvider) {
+			rpcClientFacotry.serverEndpointProvider = serverEndpointProvider;
 			return this;
 		}
 		
