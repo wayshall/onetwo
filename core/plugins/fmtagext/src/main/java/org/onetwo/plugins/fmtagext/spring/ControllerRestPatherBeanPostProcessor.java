@@ -1,10 +1,10 @@
 package org.onetwo.plugins.fmtagext.spring;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginMeta;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.rest.RestPather;
 import org.onetwo.common.spring.rest.RestPather.EntityPathInfo;
 import org.onetwo.common.utils.StringUtils;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class ControllerRestPatherBeanPostProcessor implements BeanPostProcessor {
 	
-	private final static Logger logger = MyLoggerFactory.getLogger(ControllerRestPatherBeanPostProcessor.class);
+	private final static Logger logger = JFishLoggerFactory.getLogger(ControllerRestPatherBeanPostProcessor.class);
 
 	@Autowired
 	private RestPather restPather;
@@ -26,7 +26,7 @@ public class ControllerRestPatherBeanPostProcessor implements BeanPostProcessor 
 	private MappedEntryManager mappedEntryManager;
 	
 	@Autowired
-	private JFishPluginManager jfishPluginManager;
+	private JFishWebMvcPluginManager jfishPluginManager;
 	
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -41,7 +41,7 @@ public class ControllerRestPatherBeanPostProcessor implements BeanPostProcessor 
 			if(rm!=null){
 				packageUrlMapping = rm.value()[0];
 			}
-			JFishPluginMeta plugin = jfishPluginManager.getJFishPluginMetaOf(rc.getClass());
+			JFishWebMvcPluginMeta plugin = jfishPluginManager.getJFishPluginMetaOf(rc.getClass());
 			if(plugin!=null){
 				entityPath = plugin.getPluginInfo().getContextPath() + packageUrlMapping;
 //				logger.info("plugin entityPath: " + entityPath);

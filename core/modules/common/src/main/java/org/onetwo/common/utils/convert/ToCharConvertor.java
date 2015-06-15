@@ -4,9 +4,9 @@ public class ToCharConvertor extends AbstractTypeConvert<Character> {
 
 	private ToLongConvertor longDelegate;
 
-	public ToCharConvertor(Character defValue) {
-		super(defValue);
-		this.longDelegate = new ToLongConvertor(null);
+	public ToCharConvertor() {
+		super('\u0000');
+		this.longDelegate = new ToLongConvertor();
 	}
 	
 	@Override

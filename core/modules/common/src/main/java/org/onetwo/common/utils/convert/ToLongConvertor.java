@@ -2,8 +2,8 @@ package org.onetwo.common.utils.convert;
 
 public class ToLongConvertor extends AbstractTypeConvert<Long> {
 	
-	public ToLongConvertor(Long defValue) {
-		super(defValue);
+	public ToLongConvertor() {
+		super(0L);
 	}
 
 	@Override

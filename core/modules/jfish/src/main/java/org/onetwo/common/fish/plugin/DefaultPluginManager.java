@@ -20,7 +20,7 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 import org.slf4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
 
-public class DefaultPluginManager extends SpringContextPluginManager<JFishPluginMeta> implements JFishPluginManager {
+public class DefaultPluginManager extends SpringContextPluginManager<JFishWebMvcPluginMeta> implements JFishWebMvcPluginManager {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	private PluginNameParser pluginNameParser = PLUGINNAME_PARSER;
@@ -76,7 +76,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	}
 	
 	protected void doInitSinglePlugin(PluginInfo plugin){
-		JFishPluginMeta meta = createPluginMeta(plugin);
+		JFishWebMvcPluginMeta meta = createPluginMeta(plugin);
 		plugin.setInitialized();
 		pluginMetas.add(meta);
 		logger.info("init plugin["+plugin+"]..." );
@@ -87,7 +87,7 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	}
 	
 	@Override
-	protected JFishPluginMeta createPluginMeta(PluginInfo pluginInfo) {
+	protected JFishWebMvcPluginMeta createPluginMeta(PluginInfo pluginInfo) {
 		JFishPluginInfo jfishPluginInfo = (JFishPluginInfo) pluginInfo;
 		
 		if(StringUtils.isBlank(jfishPluginInfo.getPluginClass()) && StringUtils.isBlank(jfishPluginInfo.getWebPluginClass())){
@@ -113,18 +113,15 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	}
 
 	@Override
-	public void onInitWebApplicationContext(final WebApplicationContext appContext){
+	public void onWebApplicationContextStartup(final WebApplicationContext appContext){
 		getMvcEventBus().postWebApplicationStartupEvent(appContext);
-		/*pluginMetas.each(new NoIndexIt<JFishPluginMeta>(){
-
-			@Override
-			public void doIt(JFishPluginMeta meta) {
-				JFishPluginUtils.getJFishPlugin(meta).onStartWebAppConext(appContext);
-			}
-			
-		});*/
 	}
 	
+	@Override
+	public void onWebApplicationContextStartupCompleted() {
+		getMvcEventBus().postWebApplicationStartupCompletedEvent();
+	}
+
 	@Override
 	public void destroy(final WebApplicationContext webApplicationContext){
 		getMvcEventBus().postWebApplicationStopEvent(webApplicationContext);
@@ -155,16 +152,16 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	}*/
 
 	@Override
-	public JFishList<JFishPluginMeta> getPluginMetas() {
+	public JFishList<JFishWebMvcPluginMeta> getPluginMetas() {
 		return pluginMetas;
 	}
 	
 	@Override
-	public JFishPluginMeta getJFishPluginMetaOf(Class<?> objClass){
+	public JFishWebMvcPluginMeta getJFishPluginMetaOf(Class<?> objClass){
 		if(LangUtils.isEmpty(pluginMetas))
 			return null;
-		JFishList<JFishPluginMeta> list = JFishList.newList(5);
-		for(JFishPluginMeta plugin : pluginMetas){
+		JFishList<JFishWebMvcPluginMeta> list = JFishList.newList(5);
+		for(JFishWebMvcPluginMeta plugin : pluginMetas){
 			if(plugin.isClassOfThisPlugin(objClass))
 				list.add(plugin);
 		}
@@ -174,10 +171,10 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 			return list.get(0);
 		}
 		else{
-			list.sort(new Comparator<JFishPluginMeta>() {
+			list.sort(new Comparator<JFishWebMvcPluginMeta>() {
 	
 				@Override
-				public int compare(JFishPluginMeta o1, JFishPluginMeta o2) {
+				public int compare(JFishWebMvcPluginMeta o1, JFishWebMvcPluginMeta o2) {
 					return o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length();
 				}
 				
@@ -191,8 +188,8 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 		return JFishPluginUtils.getJFishPlugin(getJFishPluginMeta(name));
 	}
 
-	public JFishPluginMeta getJFishPluginMeta(String name){
-		for(JFishPluginMeta plugin : pluginMetas){
+	public JFishWebMvcPluginMeta getJFishPluginMeta(String name){
+		for(JFishWebMvcPluginMeta plugin : pluginMetas){
 			if(plugin.getPluginInfo().getName().equals(name))
 				return plugin;
 		}
@@ -336,10 +333,10 @@ public class DefaultPluginManager extends SpringContextPluginManager<JFishPlugin
 	
 	@Override
 	public List<JFishPlugin> getJFishPlugins() {
-		return JFishList.wrap(getPluginMetas()).map(new MapIt<JFishPluginMeta, JFishPlugin>() {
+		return JFishList.wrap(getPluginMetas()).map(new MapIt<JFishWebMvcPluginMeta, JFishPlugin>() {
 
 			@Override
-			public JFishPlugin map(JFishPluginMeta element, int index) {
+			public JFishPlugin map(JFishWebMvcPluginMeta element, int index) {
 				return JFishPluginUtils.getJFishPlugin(element);
 			}
 			

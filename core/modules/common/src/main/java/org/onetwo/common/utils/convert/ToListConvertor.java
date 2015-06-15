@@ -1,5 +1,6 @@
 package org.onetwo.common.utils.convert;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
@@ -8,7 +9,7 @@ public class ToListConvertor extends AbstractWithConvertorTypeConvert<List<?>>{
 
 	private ToArrayConvertor arrayDelegate;
 	public ToListConvertor(Convertor convertor) {
-		super(convertor);
+		super(Collections.EMPTY_LIST, convertor);
 		this.arrayDelegate = new ToArrayConvertor(convertor);
 	}
 
