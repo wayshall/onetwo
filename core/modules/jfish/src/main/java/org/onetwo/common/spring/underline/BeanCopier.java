@@ -2,6 +2,7 @@ package org.onetwo.common.spring.underline;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -11,9 +12,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.onetwo.common.utils.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 public class BeanCopier<T> {
 
@@ -39,10 +40,11 @@ public class BeanCopier<T> {
 		cls.add(float.class);
 		cls.add(Double.class);
 		cls.add(double.class);
+		cls.add(String.class);
 		BASE_CLASS = Collections.unmodifiableList(cls);
 		
 		List<Class<?>> simples = new ArrayList<Class<?>>(cls);
-		simples.add(String.class);
+//		simples.add(String.class);
 		simples.add(Date.class);
 		simples.add(Calendar.class);
 		simples.add(Number.class);
@@ -76,6 +78,11 @@ public class BeanCopier<T> {
 		return SIMPLE_CLASS.contains(clazz);
 	}
 	
+	/***
+	 * deep copy
+	 * @param src
+	 * @return
+	 */
 	public T fromObject(Object src){
     	BeanWrapper srcBean = CopyUtils.newBeanWrapper(src);
     	PropertyDescriptor[] properties = targetBeanWrapper.getPropertyDescriptors();
@@ -86,6 +93,17 @@ public class BeanCopier<T> {
 			setPropertyValue(property, srcValue);
     	}
 		return target;
+	}
+	
+	public Cloneable getCloneableAnnotation(PropertyDescriptor property){
+		Cloneable cloneable = property.getReadMethod().getAnnotation(Cloneable.class);
+		if(cloneable==null){
+			Field field = ReflectionUtils.findField(target.getClass(), property.getName());
+			if(field!=null){
+				cloneable = field.getAnnotation(Cloneable.class);
+			}
+		}
+		return cloneable;
 	}
 
 	private void setPropertyValue(PropertyDescriptor property, Object srcValue){
@@ -100,16 +118,20 @@ public class BeanCopier<T> {
 //		Object targetValue = null;
 		Type type = property.getPropertyType();
 		Class<?> propertyType = (Class<?>) type;
-		if(isSimpleType(propertyType)){
+		if(isSimpleType(propertyType) || getCloneableAnnotation(property)==null){
 			targetBeanWrapper.setPropertyValue(propertyName, srcValue);
 			
 		}else if(propertyType.isArray()){
 			Assert.isTrue(propertyType==srcValue.getClass());
+			int length = Array.getLength(srcValue);
+			Object array = Array.newInstance(propertyType.getComponentType(), length);
+			
 			if(isSimpleType(propertyType.getComponentType())){
-				targetBeanWrapper.setPropertyValue(propertyName, srcValue);
+				for (int i = 0; i < length; i++) {
+					Array.set(array, i, Array.get(srcValue, i));
+				}
+				targetBeanWrapper.setPropertyValue(propertyName, array);
 			}else{
-				int length = Array.getLength(srcValue);
-				Object array = Array.newInstance(propertyType.getComponentType(), length);
 				for (int i = 0; i < length; i++) {
 					Object targetElement = newBeanCopier(propertyType.getComponentType(), propertyNameConvertor).fromObject(Array.get(array, i));
 					Array.set(array, i, targetElement);
@@ -132,9 +154,10 @@ public class BeanCopier<T> {
 					cols.add(targetElement);
 				}
 			}
-			ReflectUtils.invokeMethod(property.getWriteMethod(), target, cols);
+			ReflectionUtils.invokeMethod(property.getWriteMethod(), target, cols);
 		}else{
-			targetBeanWrapper.setPropertyValue(propertyName, srcValue);
+			Object targetValue = newBeanCopier(property.getPropertyType(), propertyNameConvertor).fromObject(srcValue);
+			targetBeanWrapper.setPropertyValue(propertyName, targetValue);
 		}
 		
 	}
