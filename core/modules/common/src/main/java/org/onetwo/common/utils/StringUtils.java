@@ -769,6 +769,14 @@ public abstract class StringUtils {
 		}
 		return path + postfix;
 	}
+	public static String appendArroundWith(final String str, String appendString) {
+		String newString = null;
+		if (str == null)
+			newString = EMPTY;
+		newString = appendStartWith(str, appendString);
+		newString = appendEndWith(newString, appendString);
+		return newString;
+	}
 
 	public static String trimEndWith(String path, String postfix) {
 		if (path == null)

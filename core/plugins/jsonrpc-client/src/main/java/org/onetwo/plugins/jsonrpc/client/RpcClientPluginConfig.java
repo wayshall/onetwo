@@ -1,11 +1,12 @@
 package org.onetwo.plugins.jsonrpc.client;
 
+import org.apache.curator.utils.ZKPaths;
 import org.onetwo.common.jsonrpc.plugin.AbstractRpcPluginConfig;
 import org.onetwo.common.jsonrpc.utils.RpcUtils.ConfigValue;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.NetUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
+import org.onetwo.plugins.zkclient.utils.ZkUtils;
 
 public class RpcClientPluginConfig extends AbstractRpcPluginConfig {
 	public static final String RPC_CONSUMER_ADDRESS = "rpc.consumer.address";
@@ -52,7 +53,9 @@ public class RpcClientPluginConfig extends AbstractRpcPluginConfig {
 	}
 	
 	public String getZkConsumerAddressNode(String consumerPath){
-		return consumerPath + StringUtils.appendStartWithSlash(rpcConsumerAddress);
+		String address = ZkUtils.encodePath(rpcConsumerAddress);
+		address = ZKPaths.makePath(consumerPath, address);
+		return address;
 	}
 
 

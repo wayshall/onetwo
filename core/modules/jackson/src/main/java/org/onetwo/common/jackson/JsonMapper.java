@@ -85,6 +85,7 @@ public class JsonMapper {
 		setDateFormat(DateUtil.Date_Time);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
+//		objectMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		if(fieldVisibility)
@@ -181,7 +182,7 @@ public class JsonMapper {
 			attrsMap.forEach((k, v)->bindings.addBinding(k, typeFactory.constructType(v)));
 			return objectMapper.readValue(json, typeFactory.constructType(type, bindings));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + type + " => " + json, e);
+			throw new JsonException("parse json to "+type+" error : " + json, e);
 		}
 	}
 	
@@ -193,7 +194,7 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(json, constructJavaType(objType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objType + " => " + json, e);
+			throw new JsonException("parse json to "+objType+" error : " + json, e);
 		}
 		return obj;
 	}
