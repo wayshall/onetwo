@@ -3,7 +3,9 @@ package org.onetwo.plugins.jsonrpc.server.zk;
 import javax.annotation.Resource;
 
 import org.apache.zookeeper.CreateMode;
+import org.onetwo.common.jsonrpc.zk.ServerPathData;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.plugins.jsonrpc.server.RpcServerPluginConfig;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcSerivceFoundEvent;
 import org.onetwo.plugins.jsonrpc.server.core.JsonRpcSerivceListener;
@@ -27,14 +29,16 @@ public class ZkServiceNodeRegisterListener implements JsonRpcSerivceListener {
 		String consumerPath = rpcServerPluginConfig.getRpcServiceConsumerNode(servicePath);
 		
 		//创建service节点
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(servicePath, "".getBytes(), CreateMode.PERSISTENT, true);
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(consumerPath, "".getBytes(), CreateMode.PERSISTENT, true);
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(providerPath, "".getBytes(), CreateMode.PERSISTENT, true);
+		String emtpy  = LangUtils.EMPTY_STRING;
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(servicePath, emtpy, CreateMode.PERSISTENT, true);
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(consumerPath, emtpy, CreateMode.PERSISTENT, true);
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(providerPath, emtpy, CreateMode.PERSISTENT, true);
 		
 		//以jsonrpc server的地址作为节点名称
 		String serverAddressNode = rpcServerPluginConfig.getZkProviderAddressPath(providerPath);
-		String data = rpcServerPluginConfig.getProviderAddress();
-		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(serverAddressNode, data, CreateMode.EPHEMERAL, false);
+		String serverUrl = rpcServerPluginConfig.getProviderAddress();
+		ServerPathData serverData = new ServerPathData(serverUrl);
+		rpcServerZkClienter.getCuratorClient().creatingParentsIfNeeded(serverAddressNode, serverData, CreateMode.EPHEMERAL, false);
 		logger.info("register to zkserver for service node: {} ", serverAddressNode);
 	}
 	

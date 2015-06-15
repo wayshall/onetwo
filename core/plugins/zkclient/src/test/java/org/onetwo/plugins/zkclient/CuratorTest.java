@@ -21,9 +21,10 @@ public class CuratorTest {
 	@BeforeClass
 	static public void setup() throws Exception{
 		String connectString = "127.0.0.1:2181";
-		client = new CuratorClient("/jfish", connectString);
+		client = new CuratorClient("", connectString);
 		client.afterPropertiesSet();
 	}
+	
 	
 	@Test
 	public void testNodeCache() throws Exception{
@@ -65,9 +66,10 @@ public class CuratorTest {
 				//pathChildren current event: CHILD_ADDED
 				//pathChildren current event: CHILD_REMOVED
 				System.out.println("pathChildren current event: " + event.getType());
-				pathChildrenNode.getCurrentData().forEach((child)->{
+				System.out.println("pathChildren current getPath: " + event.getData().getPath());
+				/*pathChildrenNode.getCurrentData().forEach((child)->{
 					System.out.println("child path : " + child.getPath() + ", data: " + new String(child.getData()));
-				});
+				});*/
 			}
 
 		});

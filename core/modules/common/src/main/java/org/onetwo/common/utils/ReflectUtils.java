@@ -985,7 +985,7 @@ public class ReflectUtils {
 		return fieldNames;
 	}
 	
-	public static <T extends Collection> T newCollections(Class<T> clazz){
+	public static <T extends Collection> T newCollections(Class<?> clazz){
 		if(!Collection.class.isAssignableFrom(clazz))
 			throw new BaseException("class must be a Collection type: " + clazz);
 		
@@ -998,7 +998,7 @@ public class ReflectUtils {
 		}else if(clazz==Queue.class || clazz==Deque.class){
 			return (T) new ArrayDeque();
 		}else{
-			return newInstance(clazz);
+			return (T)newInstance(clazz);
 		}
 	}
 	

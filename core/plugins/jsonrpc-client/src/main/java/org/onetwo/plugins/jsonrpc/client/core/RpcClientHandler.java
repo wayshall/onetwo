@@ -23,7 +23,7 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 //	private final Cache<Method, RestMethodResolver> methodCaches;
 
-	private String serverEndpoint;
+	private ServerEndpointProvider serverEndpointProvider;
 	private RestTemplate restTemplate;
 	private RequestIdGenerator requestIdGenerator;
 	
@@ -31,12 +31,13 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		super(null);
 	}
 	
-	public RpcClientHandler(String baseUrl, RestTemplate restTemplate, Cache<Method, RpcMethodResolver> methodCaches, 
+	public RpcClientHandler(ServerEndpointProvider serverEndpointProvider, RestTemplate restTemplate, Cache<Method, RpcMethodResolver> methodCaches, 
 							RequestIdGenerator requestIdGenerator, Class<?>... proxiedInterfaces) {
 		super(methodCaches, proxiedInterfaces);
-		Assert.hasText(baseUrl, "no jsonrpc server endpoint must be config!");
+		Assert.notNull(serverEndpointProvider, "no jsonrpc server endpoint must be config!");
 		this.restTemplate = restTemplate==null?new JFishRestTemplate():restTemplate;
-		this.serverEndpoint = StringUtils.appendEndWith(baseUrl, "/");
+//		this.serverEndpoint = StringUtils.appendEndWith(baseUrl, "/");
+		this.serverEndpointProvider = serverEndpointProvider;
 		this.requestIdGenerator = requestIdGenerator;
 	}
 
@@ -52,6 +53,7 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 			request.setParams(method.toListByArgs(args));
 		}
 //		String jsonstr = this.restTemplate.postForObject(serverEndpoint, request, String.class);
+		String serverEndpoint = serverEndpointProvider.getServerEndpoint();
 		logger.info("req:{}", serverEndpoint);
 		ResponseEntity<String> response = this.restTemplate.postForEntity(serverEndpoint, request, String.class);
 		handleHttpStatus(response.getStatusCode());
@@ -92,15 +94,6 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 		return new RpcMethodResolver(method);
 	}
 
-
-	public String getServerEndpoint() {
-		return serverEndpoint;
-	}
-
-	public void setServerEndpoint(String serverEndpoint) {
-		this.serverEndpoint = serverEndpoint;
-	}
-
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
@@ -115,6 +108,15 @@ public class RpcClientHandler extends CacheableDynamicProxyHandler<BaseMethodPar
 
 	public void setRequestIdGenerator(RequestIdGenerator requestIdGenerator) {
 		this.requestIdGenerator = requestIdGenerator;
+	}
+
+	public ServerEndpointProvider getServerEndpointProvider() {
+		return serverEndpointProvider;
+	}
+
+	public void setServerEndpointProvider(
+			ServerEndpointProvider serverEndpointProvider) {
+		this.serverEndpointProvider = serverEndpointProvider;
 	}
 
 

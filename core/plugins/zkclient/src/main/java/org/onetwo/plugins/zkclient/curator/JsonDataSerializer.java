@@ -3,6 +3,7 @@ package org.onetwo.plugins.zkclient.curator;
 import org.apache.commons.lang3.SerializationException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.zkclient.utils.ZkUtils;
 
 public class JsonDataSerializer implements DataSerializer {
@@ -30,6 +31,7 @@ public class JsonDataSerializer implements DataSerializer {
 		try {
 			Assert.notNull(objectClass);
 			String json = new String(bytes);
+//			json = StringUtils.appendArroundWith(json, "\"");
 			return mapper.fromJson(json, objectClass);
 		} catch (Exception ex) {
 			throw new SerializationException("Cannot deserialize", ex);
