@@ -1,10 +1,11 @@
 package org.onetwo.common.spring.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -23,7 +24,7 @@ public class JFishResourcesScanner implements ResourcesScanner {
 
 	protected static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 	private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
@@ -75,6 +76,9 @@ public class JFishResourcesScanner implements ResourcesScanner {
 	@Override
 	public <T> List<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan) {
 		Assert.notNull(filter);
+		if(LangUtils.isEmpty(packagesToScan))
+			return Collections.EMPTY_LIST;
+		
 		List<T> classesToBound = new ArrayList<T>();
 		try {
 			int count = 0;

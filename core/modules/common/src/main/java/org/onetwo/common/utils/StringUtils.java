@@ -746,6 +746,11 @@ public abstract class StringUtils {
 			path = EMPTY;
 		return appendEndWith(appendStartWith(path, prefix), prefix);
 	}
+	
+
+	public static String appendStartWithSlash(String path) {
+		return appendStartWith(path, FileUtils.SLASH);
+	}
 
 	public static String appendStartWith(String path, String prefix) {
 		if (path == null)
@@ -763,6 +768,14 @@ public abstract class StringUtils {
 			return path;
 		}
 		return path + postfix;
+	}
+	public static String appendArroundWith(final String str, String appendString) {
+		String newString = null;
+		if (str == null)
+			newString = EMPTY;
+		newString = appendStartWith(str, appendString);
+		newString = appendEndWith(newString, appendString);
+		return newString;
 	}
 
 	public static String trimEndWith(String path, String postfix) {

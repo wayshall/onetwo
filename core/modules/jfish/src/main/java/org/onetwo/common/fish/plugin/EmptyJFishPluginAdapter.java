@@ -20,7 +20,7 @@ public class EmptyJFishPluginAdapter extends AbstractJFishPlugin<Object> {
 
 
 	@Override
-	public void init(JFishPluginMeta pluginMeta) {
+	public void init(JFishWebMvcPluginMeta pluginMeta) {
 		// TODO Auto-generated method stub
 		
 	}

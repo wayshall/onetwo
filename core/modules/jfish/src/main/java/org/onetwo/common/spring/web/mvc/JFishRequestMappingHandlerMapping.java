@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginMeta;
 import org.onetwo.common.fish.plugin.anno.PluginControllerConf;
 import org.onetwo.common.spring.plugin.PluginInfo;
 import org.onetwo.common.utils.CUtils;
@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
-	private JFishPluginManager pluginManager;
+	private JFishWebMvcPluginManager pluginManager;
 	
 	private List<HandlerMappingListener> listeners;
 
@@ -39,7 +39,7 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 			e.printStackTrace();
 		}*/
 		RequestMappingInfo info = super.getMappingForMethod(method, handlerType);
-		JFishPluginMeta plugin = pluginManager.getJFishPluginMetaOf(handlerType);
+		JFishWebMvcPluginMeta plugin = pluginManager.getJFishPluginMetaOf(handlerType);
 		if(info!=null && plugin!=null){
 			info = createPluginRequestMappingInfo(plugin.getPluginInfo(), method, handlerType).combine(info);
 		}
@@ -66,7 +66,7 @@ public class JFishRequestMappingHandlerMapping extends RequestMappingHandlerMapp
 				null);
 	}
 
-	public void setPluginManager(JFishPluginManager pluginManager) {
+	public void setPluginManager(JFishWebMvcPluginManager pluginManager) {
 		this.pluginManager = pluginManager;
 	}
 	

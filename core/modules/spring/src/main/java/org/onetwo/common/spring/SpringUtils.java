@@ -1,8 +1,10 @@
 package org.onetwo.common.spring;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,9 +24,12 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.PropUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -227,10 +232,10 @@ final public class SpringUtils {
 	}
 	
 
-	public static <T> T registerBean(ApplicationContext context, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
-	public static <T> T registerBean(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
 		if(bean==null)
@@ -239,20 +244,22 @@ final public class SpringUtils {
 	}
 	
 
-	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
 	}
 	
 
-	public static BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context, boolean throwIfNull){
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(BeanFactory context, boolean throwIfNull){
 		BeanDefinitionRegistry bdr = null;
-		if(!BeanDefinitionRegistry.class.isInstance(context)){
-			BeanFactory bf = context.getAutowireCapableBeanFactory();
+		if(ApplicationContext.class.isInstance(context)){
+			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
 			if(BeanDefinitionRegistry.class.isInstance(bf))
 				bdr = (BeanDefinitionRegistry) bf;
-		}else{
+		}else if(BeanDefinitionRegistry.class.isInstance(context)){
 			bdr = (BeanDefinitionRegistry) context;
+		}else{
+			//
 		}
 
 		if(bdr==null && throwIfNull)
@@ -282,20 +289,19 @@ final public class SpringUtils {
 	 * @param applicationContext
 	 * @return
 	 */
-	public static SingletonBeanRegistry getSingletonBeanRegistry(ApplicationContext applicationContext){
-		BeanFactory bf = null;
+	public static SingletonBeanRegistry getSingletonBeanRegistry(Object applicationContext){
+		Object bf = applicationContext;
 		if(applicationContext instanceof AbstractApplicationContext){
 			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
 		if(bf==null || !SingletonBeanRegistry.class.isInstance(bf)){
 			return null;
 		}
-		
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		return sbr;
 	}
 	
-	public static void registerSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
 	}
 	
@@ -335,5 +341,28 @@ final public class SpringUtils {
 		BeanMapWrapper bw = new BeanMapWrapper(obj);
 		return bw;
 	}*/
+	
+
+	public static Map<String, Object> beansOfAnnotationIncludingAncestors(ListableBeanFactory lbf, Class<? extends Annotation> annotationType)
+			throws BeansException {
+
+		Assert.notNull(lbf, "ListableBeanFactory must not be null");
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		result.putAll(lbf.getBeansWithAnnotation(annotationType));
+		if (lbf instanceof HierarchicalBeanFactory) {
+			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
+			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
+				Map<String, Object> parentResult = beansOfAnnotationIncludingAncestors(
+						(ListableBeanFactory) hbf.getParentBeanFactory(), annotationType);
+				for (Map.Entry<String, Object> entry : parentResult.entrySet()) {
+					String beanName = entry.getKey();
+					if (!result.containsKey(beanName) && !hbf.containsLocalBean(beanName)) {
+						result.put(beanName, entry.getValue());
+					}
+				}
+			}
+		}
+		return result;
+	}
 	
 }

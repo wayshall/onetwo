@@ -5,6 +5,11 @@ import java.util.List;
 import org.onetwo.common.spring.plugin.ContextPluginManager;
 import org.onetwo.common.spring.plugin.ContextPluginMeta;
 
+/***
+ * on SpringProfilesWebApplicationContext.prepareRefresh
+ * @author way
+ *
+ */
 public class ContextConfigRegisterEvent {
 	
 	final private ContextPluginManager<? extends ContextPluginMeta> contextPluginManager;

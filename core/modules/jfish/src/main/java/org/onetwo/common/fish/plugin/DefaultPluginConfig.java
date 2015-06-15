@@ -17,7 +17,7 @@ public class DefaultPluginConfig implements PluginConfig {
 	}
 
 	@Override
-	public void init(JFishPluginMeta jfishPluginMeta) {
+	public void init(JFishWebMvcPluginMeta jfishPluginMeta) {
 		this.pluginInfo = jfishPluginMeta.getPluginInfo();
 		this.siteConfig = BaseSiteConfig.getInstance();
 		this.templateBasePath = jfishPluginMeta.getPluginNameParser().getPluginBasePath(pluginInfo.getName());

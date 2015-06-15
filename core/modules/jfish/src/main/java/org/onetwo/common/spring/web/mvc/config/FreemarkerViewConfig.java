@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginManagerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.ftl.FtlUtils;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @Configuration
 public class FreemarkerViewConfig {
 
-	protected JFishPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
+	protected JFishWebMvcPluginManager jfishPluginManager = JFishPluginManagerFactory.getPluginManager();
 	
 	@Bean
 	public JFishFreeMarkerConfigurer freeMarkerConfigurer() {

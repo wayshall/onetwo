@@ -2,7 +2,7 @@ package org.onetwo.common.spring.web.mvc.config.event;
 
 import java.util.Map;
 
-import org.onetwo.common.fish.plugin.JFishPluginMeta;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginMeta;
 import org.onetwo.common.fish.plugin.JFishPluginUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
@@ -54,10 +54,10 @@ public class GlobalMvcEventListener implements JFishMvcPluginListener {
 	@Override
 	public void listening(final FreeMarkerConfigurerBuildEvent event) {
 		logger.info("{} : {}", stepIndex++, event.getClass().getSimpleName());
-		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new NoIndexIt<JFishPluginMeta>() {
+		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new NoIndexIt<JFishWebMvcPluginMeta>() {
 
 			@Override
-			protected void doIt(JFishPluginMeta e) throws Exception {
+			protected void doIt(JFishWebMvcPluginMeta e) throws Exception {
 				if(event.isHasBuilt()){
 					String rspath = e.getWebResourceMeta().getTemplatePath();
 					rspath = StringUtils.appendEndWith(rspath, "/");
@@ -78,10 +78,10 @@ public class GlobalMvcEventListener implements JFishMvcPluginListener {
 		final Map<String, String> urlMap = new ManagedMap<String, String>();
 
 		final JFishMvcApplicationContext applicationContext = event.getApplicationContext();
-		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new It<JFishPluginMeta>() {
+		JFishList.wrap(event.getJfishPluginManager().getPluginMetas()).each(new It<JFishWebMvcPluginMeta>() {
 
 			@Override
-			public boolean doIt(JFishPluginMeta element, int index) {
+			public boolean doIt(JFishWebMvcPluginMeta element, int index) {
 				if(!JFishPluginUtils.getJFishPlugin(element).registerMvcResources()){
 					return true;
 				}
@@ -103,6 +103,11 @@ public class GlobalMvcEventListener implements JFishMvcPluginListener {
 		}
 		applicationContext.registerAndGetBean(SimpleUrlHandlerMapping.class.getSimpleName()+"#jfishPlugin", SimpleUrlHandlerMapping.class, "urlMap", urlMap, "order", Ordered.LOWEST_PRECEDENCE - 1);
 		
+	}
+
+
+	@Override
+	public void listening(WebApplicationStartupCompletedEvent event) {
 	}
 	
 }

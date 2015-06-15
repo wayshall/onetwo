@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginTemplateLoader;
 import org.onetwo.common.ftl.directive.AbstractDirective;
 import org.onetwo.common.ftl.directive.DefineDirective;
@@ -29,7 +29,7 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	private JFishMvcEventBus jfishMvcEventBus;
 	private boolean freezing;
 	
-	private JFishPluginManager jfishPluginManager;
+	private JFishWebMvcPluginManager jfishPluginManager;
 
 
 	public JFishFreeMarkerConfigurer(JFishMvcEventBus listenerManager) {
@@ -37,7 +37,7 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 		this.jfishMvcEventBus = listenerManager;
 	}
 
-	public void setJfishPluginManager(JFishPluginManager jfishPluginManager) {
+	public void setJfishPluginManager(JFishWebMvcPluginManager jfishPluginManager) {
 		this.jfishPluginManager = jfishPluginManager;
 	}
 
