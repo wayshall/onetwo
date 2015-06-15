@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
 
 import org.onetwo.common.exception.BaseException;
@@ -1691,5 +1692,14 @@ public class LangUtils {
 	
 	public static <T> T[] makeGenericArray(Class<T> cls, int length){
 		return (T[])Array.newInstance(cls, length);
+	}
+	
+	public static void lockAction(Lock lock, Runnable action){
+		lock.lock();
+		try {
+			action.run();
+		} finally{
+			lock.unlock();
+		}
 	}
 }
