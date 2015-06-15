@@ -12,6 +12,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.xml.MarshallingView;
@@ -29,6 +31,7 @@ public class JsonXmlViewConfig {
 	private MvcSetting mvcSetting;
 	
 	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE)
 	public View jsonView() {
 		JsonView jview = SpringUtils.getHighestOrder(applicationContext, JsonView.class);
 		if(jview==null){

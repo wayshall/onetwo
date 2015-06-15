@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -296,12 +297,25 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		putInCache(key, listValue);
 		return listValue;*/
 	}
-	
 
-	public List<? extends Enum<?>> getEnums(String key, Class<? extends Enum<?>> clazz){
+
+	public <T extends Enum> List<T> getEnums(String key, Class<T> clazz){
 		List<String> strs = getPropertyWithSplit(key, ",");
-		List<? extends Enum<?>> enumObj = (List<? extends Enum<?>>)EnumUtils.asEnumList(clazz, strs.toArray(new String[0]));
+		List<T> enumObj = EnumUtils.asEnumList(clazz, strs.toArray(new String[0]));
 		return enumObj;
+	}
+
+	public <T extends Enum> T getEnum(String key, Class<T> clazz){
+		String enumStr = getProperty(key);
+		if(StringUtils.isBlank(enumStr))
+			return null;
+		return (T)Enum.valueOf(clazz, enumStr);
+	}
+	public <T extends Enum> Optional<T> getOptionalEnum(String key, Class<T> clazz){
+		String enumStr = getProperty(key);
+		if(StringUtils.isBlank(enumStr))
+			return Optional.empty();
+		return Optional.of(Enum.valueOf(clazz, enumStr));
 	}
 
 	public String getProperty(String key, String defaultValue) {

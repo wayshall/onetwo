@@ -30,7 +30,8 @@ configure(allprojects){ project ->
 	//from 3.2.11
 	//for orm 3.3.1
 	//for rest 3.4.x
-	version = "3.4.4-SNAPSHOT"
+	//add json rpc 3.5.x
+	version = "3.5.0-SNAPSHOT"
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
@@ -43,7 +44,8 @@ configure(allprojects){ project ->
 	ext.jpaVersion = "2.0.0"
 	ext.servletVersion = "3.0.1"
 	ext.tomcatjdbcVersion = "7.0.53"
-	ext.guavaVersion = "14.0.1"
+//	ext.guavaVersion = "14.0.1"
+	ext.guavaVersion = "16.0.1"
 	ext.jodatimeVersion = "2.1"
 	
 	ext.hibernateValidatorVersion = "4.3.0.Final"
@@ -84,11 +86,11 @@ configure(allprojects){ project ->
 	
 	repositories {
 		//if want ide download the sources, move to the top
+		mavenCentral()
 		mavenLocal()
 		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
 		maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
 		maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
-		mavenCentral()
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
@@ -168,8 +170,31 @@ def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
 def projectTomcat = "${projectPrefix}tomcat"
+def projectJsonrpc = "${projectPrefix}jsonrpc"
 
 
+project("${projectCommon}"){
+	description = "onetwo common"
+	
+	ext.commonsCollectionsVersion = "3.2.1"
+	ext.commonsBeanutilsVersion = "1.8.3"
+	ext.antVersion = "1.9.3"
+	ext.sambaVersion = "1.2.19"
+	dependencies {
+		compile("commons-codec:commons-codec:1.3")
+		compile("com.thoughtworks.xstream:xstream:1.3.1")
+		/*compile("net.sf.dozer:dozer:5.4.0"){
+			exclude group: "org.slf4j", module: "*"
+		}*/
+		compile("com.google.guava:guava:$guavaVersion")
+		compile("joda-time:joda-time:$jodatimeVersion")
+		compile("commons-lang:commons-lang:$commonsLangVersion")
+		compile("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
+		compile("commons-collections:commons-collections:$commonsCollectionsVersion")
+		compile("org.apache.ant:ant:$antVersion")
+		compile("org.samba.jcifs:jcifs:$sambaVersion")
+	}
+}
 project("${projectCommon}"){
 	description = "onetwo common"
 	
@@ -413,6 +438,16 @@ project("${projectTomcat}"){
 	}
 }
 
+
+project("${projectJsonrpc}"){
+	description = "${projectJsonrpc}"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectSpring"))
+	}
+	
+}
 
 def embedTomcat() {
 	def tomcatVersion = "7.0.59";
@@ -782,6 +817,8 @@ project("${pluginRest}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
+		compile("javax.ws.rs:javax.ws.rs-api:2.0")
+		
 	}
 }
 
@@ -862,4 +899,49 @@ project("${pluginFtlTemplate}"){
 	}
 }
 
+def pluginZkclient = "${pluginPrefix}zkclient"
+project("${pluginZkclient}"){
+	description = "${pluginZkclient}"
+	
+	ext.curatorVersion = "2.8.0"
+	
+	dependencies {
+		compile(project(":$projectCommon"))
+		compile(project(":$projectJfish"))
+		
+//		compile("org.apache.zookeeper:zookeeper:3.4.6")
+		compile("org.apache.curator:curator-framework:${curatorVersion}")
+		compile("org.apache.curator:curator-recipes:${curatorVersion}")
+		testCompile("org.apache.curator:curator-test:2.8.0")
+		
+	}
+	
+}
+
+
+def pluginJsonrpcServer = "${pluginPrefix}jsonrpc-server"
+project("${pluginJsonrpcServer}"){
+	description = "${pluginJsonrpcServer}"
+	
+	dependencies {
+		compile(project(":$projectJsonrpc"))
+		compile(project(":$projectJfish"))
+		
+		compile(project(":${pluginZkclient}"))
+	}
+	
+}
+
+def pluginJsonrpcClient = "${pluginPrefix}jsonrpc-client"
+project("${pluginJsonrpcClient}"){
+	description = "${pluginJsonrpcClient}"
+	
+	dependencies {
+		compile(project(":$projectJsonrpc"))
+		compile(project(":$projectJfish"))
+		
+		compile(project(":${pluginZkclient}"))
+	}
+	
+}
 

@@ -4,9 +4,9 @@ public class ToByteConvertor extends AbstractTypeConvert<Byte> {
 
 	private ToLongConvertor longDelegate;
 
-	public ToByteConvertor(Byte defValue) {
-		super(defValue);
-		this.longDelegate = new ToLongConvertor(defValue==null?null:defValue.longValue());
+	public ToByteConvertor() {
+		super((byte)0);
+		this.longDelegate = new ToLongConvertor();
 	}
 	
 	@Override

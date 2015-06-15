@@ -6,6 +6,10 @@ import org.onetwo.common.utils.NiceDate;
 
 public class ToNiceDateConvertor extends AbstractTypeConvert<NiceDate> {
 	
+	protected ToNiceDateConvertor() {
+		super(NiceDate.New(new Date(0)));
+	}
+
 	@Override
 	public NiceDate doConvert(Object value, Class<?> componentType) {
 //		if(value==null)

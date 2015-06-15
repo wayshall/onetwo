@@ -118,7 +118,7 @@ public class AppConfig extends PropConfig {
 	}
 	
 	public String getAppCode(){
-		return getAndThrowIfEmpty(APP_CODE);
+		return getProperty(APP_CODE, getAppName());
 	}
 	
 	public boolean isDev(){

@@ -3,7 +3,7 @@ package org.onetwo.common.spring.web.mvc.config.event;
 import java.util.List;
 
 import org.onetwo.common.fish.plugin.JFishPlugin;
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcApplicationContext;
 import org.onetwo.common.spring.web.mvc.config.JFishMvcConfig;
@@ -20,27 +20,30 @@ import com.google.common.eventbus.EventBus;
 public class JFishMvcEventBus {
 	
 	private EventBus mvcEventBus = new EventBus(this.getClass().getSimpleName());
-	final private JFishPluginManager jfishPluginManager;
+	final private JFishWebMvcPluginManager jfishPluginManager;
 //	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 
-	public JFishMvcEventBus(JFishPluginManager jfishPluginManager) {
+	public JFishMvcEventBus(JFishWebMvcPluginManager jfishPluginManager) {
 		this.jfishPluginManager = jfishPluginManager;
 		registerListener(new GlobalMvcEventListener());
 	}
-	
+
 	public void postWebApplicationStartupEvent(WebApplicationContext webApplicationContext){
 		mvcEventBus.post(new WebApplicationStartupEvent(jfishPluginManager, webApplicationContext));
+	}
+	public void postWebApplicationStartupCompletedEvent(){
+		mvcEventBus.post(new WebApplicationStartupCompletedEvent(jfishPluginManager));
 	}
 	public void postWebApplicationStopEvent(WebApplicationContext webApplicationContext){
 		mvcEventBus.post(new WebApplicationStopEvent(jfishPluginManager, webApplicationContext));
 	}
 
-	public void postAfterMvcConfig(final JFishMvcApplicationContext applicationContext, JFishPluginManager jfishPluginManager, final JFishMvcConfig mvcConfig, final List<PropertyEditorRegistrar> peRegisttrarList){
+	public void postAfterMvcConfig(final JFishMvcApplicationContext applicationContext, JFishWebMvcPluginManager jfishPluginManager, final JFishMvcConfig mvcConfig, final List<PropertyEditorRegistrar> peRegisttrarList){
 		this.mvcEventBus.post(new PropertyEditorRegisterEvent(peRegisttrarList));
 		this.mvcEventBus.post(new MvcContextInitEvent(applicationContext, jfishPluginManager, mvcConfig));
 	}
 	
-	public void postFreeMarkerConfigurer(JFishPluginManager jfishPluginManager, final JFishFreeMarkerConfigurer configurer, final boolean hasBuilt){
+	public void postFreeMarkerConfigurer(JFishWebMvcPluginManager jfishPluginManager, final JFishFreeMarkerConfigurer configurer, final boolean hasBuilt){
 		this.mvcEventBus.post(new FreeMarkerConfigurerBuildEvent(jfishPluginManager, configurer, hasBuilt));
 	}
 	
@@ -57,7 +60,7 @@ public class JFishMvcEventBus {
 		mvcEventBus.register(listener);
 	}
 	
-	final public void registerListenerByPluginManager(JFishPluginManager jfishPluginManager){
+	final public void registerListenerByPluginManager(JFishWebMvcPluginManager jfishPluginManager){
 		JFishList.wrap(jfishPluginManager.getJFishPlugins()).each(new NoIndexIt<JFishPlugin>() {
 
 			@Override

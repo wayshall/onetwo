@@ -6,6 +6,10 @@ import org.onetwo.common.utils.DateUtil;
 
 public class ToDateConvertor extends AbstractTypeConvert<Date> {
 	
+	protected ToDateConvertor() {
+		super(new Date(0));
+	}
+
 	@Override
 	public Date doConvert(Object value, Class<?> componentType) {
 //		if(value==null)

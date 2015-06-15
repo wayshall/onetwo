@@ -12,7 +12,7 @@ import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 public class JFishMvcApplicationContext extends SpringProfilesWebApplicationContext {
 	
 	public JFishMvcApplicationContext(){
-		this.setPluginManagerInitializer(new JFishWebPluginManagerInitializer());
+		this.setPluginManagerInitializer(new JFishWebMvcPluginManagerInitializer());
 	}
 	
 }

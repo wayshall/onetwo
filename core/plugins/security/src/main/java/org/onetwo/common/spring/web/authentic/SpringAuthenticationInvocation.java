@@ -2,7 +2,7 @@ package org.onetwo.common.spring.web.authentic;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.sso.SecurityService;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.web.login.EmptyUserLoginService;
 import org.onetwo.common.web.s2.security.AbstractAuthenticationInvocation;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,8 +22,14 @@ public class SpringAuthenticationInvocation extends AbstractAuthenticationInvoca
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.ssoService = SpringUtils.getHighestOrder(applicationContext, SecurityService.class);
-		Assert.notNull(ssoService, "you must implements a ssoservice, or extends AbstractUserLoginServiceImpl if the app is not a sso login.");
+		SecurityService ssoService = SpringUtils.getHighestOrder(applicationContext, SecurityService.class);
+		if(ssoService==null){
+//			ssoService = new EmptyUserLoginService();
+//			SpringUtils.registerSingleton(applicationContext, "emptyUserLoginService", ssoService);
+			ssoService = SpringUtils.registerBean(applicationContext, EmptyUserLoginService.class);
+		}
+		this.ssoService = ssoService;
+//		Assert.notNull(ssoService, "you must implements a SecurityService, or extends AbstractUserLoginServiceImpl if the app is not a sso login.");
 	}
 
 	@Override

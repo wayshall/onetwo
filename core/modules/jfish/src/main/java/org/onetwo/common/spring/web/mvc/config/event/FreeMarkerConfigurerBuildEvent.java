@@ -1,14 +1,14 @@
 package org.onetwo.common.spring.web.mvc.config.event;
 
-import org.onetwo.common.fish.plugin.JFishPluginManager;
+import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.ftl.directive.AbstractDirective;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
 
 public class FreeMarkerConfigurerBuildEvent {
-	private final JFishPluginManager jfishPluginManager;
+	private final JFishWebMvcPluginManager jfishPluginManager;
 	private final JFishFreeMarkerConfigurer freemarkerConfigurer;
 	private final boolean hasBuilt;
-	public FreeMarkerConfigurerBuildEvent(JFishPluginManager jfishPluginManager, JFishFreeMarkerConfigurer config,
+	public FreeMarkerConfigurerBuildEvent(JFishWebMvcPluginManager jfishPluginManager, JFishFreeMarkerConfigurer config,
 			boolean hasBuilt) {
 		super();
 		this.jfishPluginManager = jfishPluginManager;
@@ -26,7 +26,7 @@ public class FreeMarkerConfigurerBuildEvent {
 	public boolean isHasBuilt() {
 		return hasBuilt;
 	}
-	public JFishPluginManager getJfishPluginManager() {
+	public JFishWebMvcPluginManager getJfishPluginManager() {
 		return jfishPluginManager;
 	}
 	public JFishFreeMarkerConfigurer getFreemarkerConfigurer() {

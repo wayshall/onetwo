@@ -3,6 +3,7 @@ rootProject.name = "onetwo-core"
 include "modules/common"
 include "modules/jackson"
 include "modules/spring"
+include "modules/jsonrpc"
 include "modules/ajaxanywhere"
 include "modules/web"
 include "modules/security"
@@ -36,6 +37,9 @@ include "plugins/task-webclient"
 
 include "plugins/melody"
 include "plugins/ftl-template"
+include "plugins/zkclient"
+include "plugins/jsonrpc-server"
+include "plugins/jsonrpc-client"
 
 rootProject.getChildren().each {
 	if(it.name.startsWith("modules/")){

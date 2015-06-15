@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.onetwo.common.fish.plugin.AbstractJFishPlugin;
 
-
-
 public class SessionWebPlugin extends AbstractJFishPlugin<SessionWebPlugin> {
 
 	private static SessionWebPlugin instance;
