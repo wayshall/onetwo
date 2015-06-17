@@ -52,7 +52,7 @@ public class CopyUtils {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T extends Collection<?>> T newCollections(Class<T> clazz){
+	public static <T extends Collection<?>> T newCollections(Class<?> clazz){
 		if(!Collection.class.isAssignableFrom(clazz))
 			throw new RuntimeException("class must be a Collection type: " + clazz);
 		
@@ -65,7 +65,7 @@ public class CopyUtils {
 		}else if(clazz==Queue.class || clazz==Deque.class){
 			return (T) new ArrayDeque();
 		}else{
-			return newInstance(clazz);
+			return (T)newInstance(clazz);
 		}
 	}
 	

@@ -3,7 +3,6 @@ package org.onetwo.common.fish;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
-import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.exception.JFishInvokeRestException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -16,6 +15,7 @@ import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 final public class JFishUtils {
@@ -23,8 +23,14 @@ final public class JFishUtils {
 	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
 	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
+	
+	public static final String SPRING_BOOT_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
 	private JFishUtils(){
+	}
+	
+	public static boolean isSpringBoot(){
+		return ClassUtils.isPresent(SPRING_BOOT_APPLICATION_CLASS, ClassUtils.getDefaultClassLoader());
 	}
 
 	public static JFishException asJFishException(Exception e){
