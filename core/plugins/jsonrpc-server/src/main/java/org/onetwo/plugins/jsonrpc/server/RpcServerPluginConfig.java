@@ -20,6 +20,7 @@ public class RpcServerPluginConfig extends AbstractRpcPluginConfig {
 		this.rpcSerivcePackages = config.getStringArray("rpc.serivce.packages", ",");
 		String address = config.getProperty(RPC_PROVIDER_ADDRESS, "");
 		providerAddress = parseAddress(address);
+		providerAddress = StringUtils.appendEndWith(providerAddress, "/jsonrpc/");
 		
 		//如果是发布到zkserver，需要配置发布到zkserver的发布地址providerAddress
 //		this.rpcProvider = StringUtils.isBlank(providerAddress)?RpcProvider.DIRECT:RpcProvider.ZK;
