@@ -20,6 +20,10 @@ import org.springframework.web.util.IntrospectorCleanupListener;
 public class JFishSpringDispatcherServletInitializer extends AbstractDispatcherServletInitializer {
 
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		if(JFishUtils.isSpringBoot()){
+			return ;
+		}
+		
 		if(!BaseSiteConfig.getInstance().isStartupByInitializer()){
 			return ;
 		}
@@ -32,6 +36,9 @@ public class JFishSpringDispatcherServletInitializer extends AbstractDispatcherS
 	}
 
 	protected void registerDispatcherServlet(ServletContext servletContext) {
+		if(JFishUtils.isSpringBoot()){
+			return ;
+		}
 		servletContext.addListener(IntrospectorCleanupListener.class);
 		
 		String servletName = getServletName();
@@ -64,6 +71,9 @@ public class JFishSpringDispatcherServletInitializer extends AbstractDispatcherS
 
 	@Override
 	protected WebApplicationContext createRootApplicationContext() {
+		if(JFishUtils.isSpringBoot()){
+			return null;
+		}
 		WebApplicationContext webapp = new JFishWebApplicationContext();
 		SpringApplication.initApplication(webapp);
 		return webapp;
