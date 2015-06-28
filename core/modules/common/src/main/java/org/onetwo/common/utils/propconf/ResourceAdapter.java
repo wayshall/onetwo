@@ -2,10 +2,10 @@ package org.onetwo.common.utils.propconf;
 
 import java.io.File;
 
-public interface ResourceAdapter {
+public interface ResourceAdapter<T> {
 	public String getName();
 //	public String getPath();
-	public Object getResource();
+	public T getResource();
 	
 	public File getFile();
 	

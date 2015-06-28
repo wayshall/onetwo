@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Properties;
 
 import org.onetwo.common.fish.utils.ContextHolder;
+import org.onetwo.common.outer.CodeMessager;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishProfiles;
 import org.onetwo.common.spring.context.BaseApplicationContextSupport;
 import org.onetwo.common.spring.context.SpringProfilesWebApplicationContext;
 import org.onetwo.common.spring.rest.JFishRestTemplate;
 import org.onetwo.common.spring.web.WebRequestHolder;
-import org.onetwo.common.spring.web.mvc.CodeMessager;
 import org.onetwo.common.spring.web.mvc.DefaultCodeMessager;
 import org.onetwo.common.spring.web.mvc.MvcSetting;
 import org.onetwo.common.spring.web.reqvalidator.JFishRequestValidator;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import org.onetwo.common.ftl.directive.AbstractDirective;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

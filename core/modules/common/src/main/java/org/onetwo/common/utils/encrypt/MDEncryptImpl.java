@@ -111,6 +111,14 @@ public class MDEncryptImpl implements MDEncrypt {
 		String encryptStr = encrypt(getBytes(source), randomSalt(saltLength));
 		return appendLabel(encryptStr, true);
 	}
+	public String encryptWithSalt(String source, byte[] salt){
+		byte[] digest = _encryptBytesOnly(getBytes(source), salt);
+		String encryptString = encode(digest);
+		return appendLabel(encryptString, true);
+	}
+	public String encryptWithSalt(String source, String salt){
+		return encryptWithSalt(source, getBytes(salt));
+	}
 	
 	public String encryptWithSalt(String source){
 		String encryptStr = encrypt(getBytes(source), randomSalt());
@@ -119,6 +127,7 @@ public class MDEncryptImpl implements MDEncrypt {
 	
 	public String encrypt(byte[] source, byte[] salt){
 		byte[] digest = encryptBytes(source, salt);
+//		byte[] digest = _encryptBytesOnly(source, salt);
 //		System.out.println("encrypt:" + encode(digest));
 //		digest = mergeSalt(digest, salt);
 		String encryptString = encode(digest);
@@ -191,6 +200,28 @@ public class MDEncryptImpl implements MDEncrypt {
 //		LangUtils.println(isDev, "checkEncrypt end=============================>>>");
 		
 		return valid;
+	}
+	
+
+	public boolean checkEncrypt(String source, String saltStr, String encrypt){
+		Assert.hasText(source);
+		if(StringUtils.isBlank(encrypt))
+			return false;
+		byte[] hash;
+		
+		String trimLable = encrypt;
+		String label = MDEncryptUtils.getLabel(encrypt);
+		if(StringUtils.isBlank(label) && LangUtils.isHexString(encrypt)){
+			hash = LangUtils.hex2Bytes(trimLable);
+		}else{
+			trimLable = MDEncryptUtils.trimLabel(encrypt);
+			hash = decode(trimLable);
+		}
+		if(hash==null)
+			return false;
+		
+		byte[] sourceEncoded = _encryptBytesOnly(getBytes(source), getBytes(saltStr));
+		return MessageDigest.isEqual(hash, sourceEncoded);
 	}
 	
 	protected byte[] mergeSalt(byte[] source, byte[] salt){

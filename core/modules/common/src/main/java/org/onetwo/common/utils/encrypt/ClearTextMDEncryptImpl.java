@@ -42,5 +42,17 @@ public class ClearTextMDEncryptImpl implements MDEncrypt{
 	public byte[] encryptBytes(byte[] source, byte[] salt) {
 		throw new UnsupportedOperationException();
 	}
+	@Override
+    public boolean checkEncrypt(String source, String saltStr, String encrypt) {
+		throw new UnsupportedOperationException();
+    }
+	@Override
+    public String encryptWithSalt(String source, byte[] salt) {
+		throw new UnsupportedOperationException();
+    }
+	@Override
+    public String encryptWithSalt(String source, String salt) {
+		throw new UnsupportedOperationException();
+    }
 
 }

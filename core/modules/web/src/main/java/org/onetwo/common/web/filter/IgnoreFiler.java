@@ -14,7 +14,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -48,7 +48,7 @@ public abstract class IgnoreFiler implements Filter{
 	protected List<WebFilter> webFilters;
 	
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	final public void init(FilterConfig config) throws ServletException {
 //		logger = this.initLogger(config);

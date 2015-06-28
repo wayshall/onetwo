@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.onetwo.common.utils.FileUtils;
 
-public class ResourceAdapterImpl<T> implements ResourceAdapter {
+public class ResourceAdapterImpl<T> implements ResourceAdapter<T> {
 
 	protected final T resource;
 	
@@ -14,7 +14,7 @@ public class ResourceAdapterImpl<T> implements ResourceAdapter {
 	}
 	
 
-	public Object getResource() {
+	public T getResource() {
 		return resource;
 	}
 
