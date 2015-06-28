@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
-import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.plugins.security.client.vo.SsoLogoutParams;
@@ -37,6 +38,6 @@ public class SsoLogoutController extends PluginSupportedController {
 	}
 	
 	protected void processCookies(SsoLogoutParams logout, HttpServletRequest request, HttpServletResponse response){
-		ResponseUtils.removeHttpOnlyCookie(response, UserDetail.TOKEN_KEY);
+		JFishWebUtils.removeHttpOnlyCookie(response, UserDetail.TOKEN_KEY);
 	}
 }

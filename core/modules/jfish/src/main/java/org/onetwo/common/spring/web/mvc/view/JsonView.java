@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.spring.web.mvc.DataResult;
 import org.onetwo.common.spring.web.mvc.JFishFirstInterceptor;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Result;
 import org.onetwo.common.utils.list.Predicate;

@@ -1,7 +1,6 @@
 package org.onetwo.common.web.utils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
@@ -83,14 +82,6 @@ final public class WebContextUtils {
 		UserDetail user = getAttr(session, UserDetail.USER_DETAIL_KEY);
 		remove(session, UserDetail.USER_DETAIL_KEY);
 		return user;
-	}
-	
-	public static void removeCookieToken(HttpServletResponse response){
-		ResponseUtils.removeHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY);
-	}
-	
-	public static void setCookieToken(HttpServletResponse response, String token){
-		ResponseUtils.setHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY, token);
 	}
 	
 	public static String getCookieToken(HttpServletRequest request){

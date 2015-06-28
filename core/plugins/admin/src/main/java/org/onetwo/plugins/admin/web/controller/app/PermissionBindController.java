@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.RoleIdDetail;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.utils.list.JFishList;

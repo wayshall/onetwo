@@ -14,15 +14,15 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.excel.XmlTemplateExcelViewResolver;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.outer.CodeMessager;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.onetwo.common.spring.web.mvc.CodeMessager;
-import org.onetwo.common.spring.web.mvc.DataResult;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.spring.web.mvc.view.JFishExcelView;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
@@ -45,7 +45,7 @@ abstract public class AbstractBaseController {
 	public static final String MESSAGE_TYPE_ERROR = "error";
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private SimpleBlock<Object, String> TO_STRING = new SimpleBlock<Object, String>() {
 		@Override
@@ -57,8 +57,9 @@ abstract public class AbstractBaseController {
 	@Resource
 	private CodeMessager codeMessager;
 	
-	@Resource
-	private XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver;
+//	@Autowired(required=false)
+//	@Resource
+//	private XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver;
 	
 	protected AbstractBaseController(){
 	}
@@ -142,12 +143,13 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView exportExcel(String template, String fileName, Object... models){
+		XmlTemplateExcelViewResolver resolver = SpringApplication.getInstance().getBean(XmlTemplateExcelViewResolver.class);
 		ModelAndView mv = mv(template, models);
 		JFishExcelView view = new JFishExcelView();
-		String path = this.xmlTemplateExcelViewResolver.getPrefix()+template;
+		String path = resolver.getPrefix()+template;
 		view.setUrl(path);
 		view.setFileName(fileName);
-		view.setSuffix(this.xmlTemplateExcelViewResolver.getSuffix());
+		view.setSuffix(resolver.getSuffix());
 		mv.setView(view);
 		return mv;
 	}

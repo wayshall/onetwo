@@ -1,19 +1,13 @@
 package org.onetwo.common.web.sso;
 
-import java.util.Date;
-
 import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.sso.SSOLastActivityStatus;
 import org.onetwo.common.sso.SecurityService;
 import org.onetwo.common.sso.UserActivityTimeHandler;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.UserActivityCheckable;
 import org.onetwo.common.utils.UserDetail;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.slf4j.Logger;
 
@@ -37,16 +31,17 @@ abstract public class AbstractSSOServiceImpl implements SecurityService {
 	 * @return
 	 */
 //	abstract protected UserDetail createUserDetail(SecurityTarget target);
-	
+	public boolean checkTimeout(SecurityTarget target, boolean updateLastLogTime){
+		return target.getAuthoritable()==null;
+	}
 	/***
 	 * 验证登陆是否超时
 	 * 逻辑比较复杂
 	 * @param authoritable
 	 * @param cookietoken
 	 * @param updateLastLogTime
-	 */
-//	public boolean checkTimeout(UserDetail authoritable, String cookietoken, boolean updateLastLogTime){
-	public boolean checkTimeout(SecurityTarget target, boolean updateLastLogTime){
+		public boolean checkTimeout(UserDetail authoritable, String cookietoken, boolean updateLastLogTime){
+	/*public boolean checkTimeout(SecurityTarget target, boolean updateLastLogTime){
 		if(!UserActivityCheckable.class.isInstance(target.getAuthoritable())){
 			return false;
 		}
@@ -85,15 +80,15 @@ abstract public class AbstractSSOServiceImpl implements SecurityService {
 		}
 		
 		//主要针对a机太久没活动，活动的b机可能超过了checkouttime的情况
-		/*if(!isTimeoutCheckTime(lastLog, now))
-			return false;*/
+		if(!isTimeoutCheckTime(lastLog, now))
+			return false;
 		
 		if(isTimeout(lastLog, now)){//超时
-			/*UserDetail user = (UserDetail) authoritable;
+			UserDetail user = (UserDetail) authoritable;
 			if(user==null){
 				user = this.createUserDetail(target);
 			}
-			logout((UserDetail)user, false);*/
+			logout((UserDetail)user, false);
 			
 //			StrutsUtils.removeCurrentLoginUser();
 //			CookieUtil.removeAllCookies();
@@ -103,9 +98,9 @@ abstract public class AbstractSSOServiceImpl implements SecurityService {
 		if(updateLastLogTime)
 			this.getUserActivityTimeHandler().updateUserLastActivityTime(token, now);
 		return false;
-	}
+	}*/
 	
-	protected boolean isTimeoutCheckTime(Date lastLog, Date now){
+	/*protected boolean isTimeoutCheckTime(Date lastLog, Date now){
 		Date checkTimeout = DateUtil.addMinutes(lastLog, BaseSiteConfig.getInstance().getTokenTimeoutChecktime());
 		return checkTimeout.getTime()<now.getTime();
 	}
@@ -113,7 +108,7 @@ abstract public class AbstractSSOServiceImpl implements SecurityService {
 	protected boolean isTimeout(Date lastLog, Date now){
 		Date timeout = DateUtil.addMinutes(lastLog, BaseSiteConfig.getInstance().getTokenTimeout());
 		return timeout.getTime()<now.getTime();
-	}
+	}*/
 
 	public UserDetail checkLogin(SecurityTarget target) {
 //		target.removeCurrentLoginUser();
@@ -161,11 +156,7 @@ abstract public class AbstractSSOServiceImpl implements SecurityService {
 	}
 	
 	public void handleLoginException(Exception e, String msg){
-		if(BaseSiteConfig.getInstance().isDev()){
-			logger.error("sso login error : " + e.getMessage(), e);
-		}else{
-			logger.error("sso login error : " + e.getMessage());
-		}
+		logger.error("sso login error : " + e.getMessage());
 		if(e instanceof LoginException){
 			throw (LoginException)e;
 		}

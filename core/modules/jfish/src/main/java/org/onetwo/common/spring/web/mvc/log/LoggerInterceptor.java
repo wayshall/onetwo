@@ -10,6 +10,7 @@ import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter;
+import org.onetwo.common.spring.web.mvc.WebInterceptorAdapter.InterceptorOrder;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserDetail;

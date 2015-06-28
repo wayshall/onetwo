@@ -3,8 +3,6 @@ package org.onetwo.common.web.exception;
 import java.lang.reflect.Method;
 
 import org.onetwo.common.utils.AnnotationUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.config.BaseSiteConfig;
 
 final public class ExceptionUtils {
 	
@@ -46,7 +44,7 @@ final public class ExceptionUtils {
 		return wm;
 	}
 
-	public static String findInSiteConfig(Exception e){
+	/*public static String findInSiteConfig(Exception e){
 		Class<?> eclass = e.getClass();
 		String viewName = null;
 		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
@@ -58,5 +56,5 @@ final public class ExceptionUtils {
 			}
 		} 
 		return viewName;
-	}
+	}*/
 }
