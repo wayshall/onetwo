@@ -3,8 +3,8 @@ package org.onetwo.plugins.fmtag.directive;
 import java.io.IOException;
 import java.util.Map;
 
-import org.onetwo.common.ftl.directive.AbstractDirective;
-import org.onetwo.common.ftl.directive.DirectivesUtils;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

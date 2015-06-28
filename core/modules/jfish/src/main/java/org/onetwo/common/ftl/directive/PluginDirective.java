@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.onetwo.common.fish.plugin.JFishPlugin;
 import org.onetwo.common.fish.plugin.PluginConfig;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

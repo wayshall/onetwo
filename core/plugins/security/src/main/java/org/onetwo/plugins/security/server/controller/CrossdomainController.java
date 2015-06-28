@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.spring.web.AbstractBaseController;
-import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.view.jsp.TagUtils;

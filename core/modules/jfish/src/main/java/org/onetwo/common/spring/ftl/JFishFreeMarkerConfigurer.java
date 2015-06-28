@@ -8,12 +8,12 @@ import java.util.Map;
 import org.onetwo.common.fish.exception.JFishException;
 import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
 import org.onetwo.common.fish.plugin.JFishPluginTemplateLoader;
-import org.onetwo.common.ftl.directive.AbstractDirective;
-import org.onetwo.common.ftl.directive.DefineDirective;
-import org.onetwo.common.ftl.directive.ExtendsDirective;
-import org.onetwo.common.ftl.directive.OverrideDirective;
-import org.onetwo.common.ftl.directive.ProfileDirective;
 import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DefineDirective;
+import org.onetwo.common.web.view.ftl.ExtendsDirective;
+import org.onetwo.common.web.view.ftl.OverrideDirective;
+import org.onetwo.common.web.view.ftl.ProfileDirective;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import freemarker.cache.StatefulTemplateLoader;

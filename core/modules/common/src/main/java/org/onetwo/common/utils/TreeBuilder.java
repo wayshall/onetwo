@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
 public class TreeBuilder<TM extends TreeModel<TM>> {
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private final Comparator<TM> comparator = new Comparator<TM>() {
 		@Override

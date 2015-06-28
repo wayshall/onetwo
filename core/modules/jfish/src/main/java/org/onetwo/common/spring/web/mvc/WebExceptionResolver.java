@@ -21,10 +21,10 @@ import org.onetwo.common.fish.exception.JFishErrorCode.MvcError;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.AbstractBaseController;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
-import org.onetwo.common.web.exception.ExceptionUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
 import org.onetwo.common.web.utils.RequestTypeUtils;
 import org.onetwo.common.web.utils.RequestTypeUtils.AjaxKeys;
@@ -324,7 +324,17 @@ public class WebExceptionResolver extends AbstractHandlerMethodExceptionResolver
 //	}
 	
 	public static String findInSiteConfig(Exception ex){
-		return ExceptionUtils.findInSiteConfig(ex);
+		Class<?> eclass = ex.getClass();
+		String viewName = null;
+		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
+			viewName = BaseSiteConfig.getInstance().getProperty(eclass.getName());
+			if(StringUtils.isNotBlank(viewName))
+				return viewName;
+			if(eclass.getSuperclass()!=null){
+				eclass = eclass.getSuperclass();
+			}
+		} 
+		return viewName;
 	}
 
 	protected String getMessage(String code, Object[] args, String defaultMessage, Locale locale){

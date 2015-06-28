@@ -8,12 +8,11 @@ import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.web.server.ServerConfig;
 import org.onetwo.common.web.server.WebappConfig;
-import org.onetwo.common.web.server.events.DefaultAfterWebappAddEvent;
-import org.onetwo.common.web.server.events.DefaultWebappAddEvent;
+import org.onetwo.common.web.server.event.impl.DefaultAfterWebappAddEvent;
+import org.onetwo.common.web.server.event.impl.DefaultWebappAddEvent;
 import org.onetwo.common.web.server.listener.EmbeddedServerListener;
 import org.slf4j.Logger;
 
@@ -84,7 +83,7 @@ public class TomcatServer {
 			tomcat.addRole("adminuser", "admin");
 			tomcat.addRole("adminuser", "admin");*/
 		} catch (Exception e) {
-			throw new BaseException("web server initialize error , check it. " + e.getMessage(), e);
+			throw new RuntimeException("web server initialize error , check it. " + e.getMessage(), e);
 		}
 	}
 
@@ -97,7 +96,7 @@ public class TomcatServer {
 			tomcat.getServer().await();
 		} catch (Exception e) {
 //			logger.error("web server start error , check it. ", e);
-			throw new BaseException("web server start error , check it. " + e.getMessage(), e);
+			throw new RuntimeException("web server start error , check it. " + e.getMessage(), e);
 		}
 	}
 	

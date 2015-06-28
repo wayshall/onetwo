@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.fish.JFishUtils;
 import org.onetwo.common.fish.spring.config.JFishContextConfig.ContextBeanNames;
+import org.onetwo.common.outer.CodeMessager;
 import org.springframework.context.MessageSource;
 
 public class DefaultCodeMessager implements CodeMessager {

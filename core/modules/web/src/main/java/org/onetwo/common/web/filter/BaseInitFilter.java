@@ -1,6 +1,7 @@
 package org.onetwo.common.web.filter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.FilterChain;
@@ -17,11 +18,13 @@ import javax.servlet.http.HttpSession;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.onetwo.common.web.xss.XssPreventRequestWrapper;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -32,6 +35,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @SuppressWarnings("unused")
 public class BaseInitFilter extends IgnoreFiler {
+	public static final String SITE_CONFIG_NAME = "siteConfig";
+	public static final String WEB_CONFIG_NAME = "webConfig";
+	
+	public static final String PREVENT_XSS_REQUEST = "prevent.xss.request";//xss
+	public static final String COOKIE_P3P = "cookie.p3p";
+	public static final String TIME_PROFILER = "time.profiler";
 
 //	public static final String START_TIME_KEY = "org.onetwo.logger.request.startTime";
 //	public static final String END_TIME_KEY = "org.onetwo.logger.request.endTime";
@@ -45,11 +54,10 @@ public class BaseInitFilter extends IgnoreFiler {
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = RequestUtils.REQUEST_URI;
-	private final boolean timeProfiler = BaseSiteConfig.getInstance().isTimeProfiler();
+	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
 	
-	private WebConfigProvider webConfigProvider;
-	private boolean preventXssRequest;
-
+	private boolean preventXssRequest = false;
+	private AppConfig siteConfig;
 
 	protected void initApplication(FilterConfig config) {
 		
@@ -64,35 +72,39 @@ public class BaseInitFilter extends IgnoreFiler {
 //		SpringApplication.initApplication(app);
 		SpringApplication.initApplicationIfNotInitialized(app);
 		
-		webConfigProvider = SpringApplication.getInstance().getBean(WebConfigProvider.class);
+		AppConfigProvider webConfigProvider = SpringUtils.getBean(app, AppConfigProvider.class);
 		if(webConfigProvider!=null){
+			siteConfig = webConfigProvider.createAppConfig(config);
+			Assert.notNull(siteConfig);
+			context.setAttribute(SITE_CONFIG_NAME, siteConfig);
+//			context.setAttribute(WEB_CONFIG_NAME, webConfigProvider.createWebConfig(config));
 			logger.info("find webConfigProvider : {}", webConfigProvider);
+			
+			this.initOnAppConfig(siteConfig);
 		}else{
+			siteConfig = AppConfig.create(true);
 			logger.info("no webConfigProvider found.");
 		}
-
-
-		BaseSiteConfig siteConfig = getBaseSiteConfig().initWeb(config);
-		Object webconfig = getWebConfig(siteConfig);
-		//webconfig
-		siteConfig.setWebAppConfigurator(webconfig);
-		siteConfig.getFreezer().freezing();
-		context.setAttribute(BaseSiteConfig.CONFIG_NAME, siteConfig);
-		context.setAttribute(BaseSiteConfig.WEB_CONFIG_NAME, webconfig);
 		
+		List<WebContextConfigProvider> configs = SpringUtils.getBeans(app, WebContextConfigProvider.class);
+		configs.stream().forEach(cnf->{
+			context.setAttribute(cnf.getConfigName(), cnf.getWebConfig(config));
+		});
+		
+		this.initWithWebApplicationContext(config, app);
+	}
+	
+	protected void setPreventXssRequest(boolean preventXssRequest) {
+		this.preventXssRequest = preventXssRequest;
+	}
+
+	protected void initWithWebApplicationContext(FilterConfig config, WebApplicationContext app){
+	}
+	
+	protected void initOnAppConfig(AppConfig appConfig){
 		//xss
-		this.preventXssRequest = BaseSiteConfig.getInstance().isPreventXssRequest();
-		
-		UtilTimerStack.active(timeProfiler);
-		
-	}
-	
-	protected BaseSiteConfig getBaseSiteConfig(){
-		return BaseSiteConfig.getInstance();
-	}
-	
-	protected Object getWebConfig(BaseSiteConfig siteConfig){
-		return webConfigProvider==null?null:webConfigProvider.createWebConfig(siteConfig);
+		this.preventXssRequest = appConfig.getBoolean(PREVENT_XSS_REQUEST, false);
+		UtilTimerStack.active(appConfig.getBoolean(TIME_PROFILER, appConfig.isDev()));
 	}
 
 	/*public String[] getWebFilters(FilterConfig config){
@@ -119,9 +131,10 @@ public class BaseInitFilter extends IgnoreFiler {
 	}
 	
 	protected void reloadConfigIfNecessary(HttpServletRequest request){
-		boolean reloadSiteConfig = RELOAD.equals(request.getParameter(BaseSiteConfig.CONFIG_NAME));
+		boolean reloadSiteConfig = RELOAD.equals(request.getParameter(SITE_CONFIG_NAME));
 		if(reloadSiteConfig){
-			BaseSiteConfig.getInstance().reload();
+			siteConfig.reload();
+			this.initOnAppConfig(siteConfig);
 		}
 	}
 
@@ -137,7 +150,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 		try {
 			this.reloadConfigIfNecessary(request);
-			if(BaseSiteConfig.getInstance().isCookieP3p())
+			if(siteConfig.getBoolean(COOKIE_P3P, false))
 				addP3P(response);
 			processLocale(request, response);
 			
@@ -149,7 +162,7 @@ public class BaseInitFilter extends IgnoreFiler {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
 //			handleException(request, response, e);
 			throw e;
-		}catch (IOException e) {
+		}catch (Exception e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
 			throw e;
 //			handleException(request, response, e);

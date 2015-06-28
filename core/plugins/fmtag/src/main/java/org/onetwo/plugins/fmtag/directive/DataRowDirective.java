@@ -3,8 +3,8 @@ package org.onetwo.plugins.fmtag.directive;
 import java.io.IOException;
 import java.util.Map;
 
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 import org.onetwo.plugins.fmtag.directive.DataRow.RowType;
 
 import freemarker.core.Environment;

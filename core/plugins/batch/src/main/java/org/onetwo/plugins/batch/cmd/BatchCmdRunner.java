@@ -5,9 +5,11 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.cmd.SpringCmdRunner;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.context.SpringConfigApplicationContext;
 import org.onetwo.common.utils.commandline.Command;
 import org.onetwo.common.utils.commandline.CommandManager;
 import org.springframework.batch.core.Job;
+import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 
 public class BatchCmdRunner extends SpringCmdRunner {
 	
@@ -22,5 +24,10 @@ public class BatchCmdRunner extends SpringCmdRunner {
 	protected Command createJobCommand(String jobBeanName, Job job){
 		return new JobCommand(jobBeanName);
 	}
+
+	@Override
+    protected AbstractRefreshableConfigApplicationContext createApplicationContext() {
+	    return new SpringConfigApplicationContext();
+    }
 
 }

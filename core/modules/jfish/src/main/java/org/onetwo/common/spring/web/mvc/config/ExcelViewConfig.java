@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class ExcelViewConfig {
 
 	@Bean
-	public XmlTemplateExcelViewResolver excelResolver(){
+	public XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver(){
 		XmlTemplateExcelViewResolver resolver = new XmlTemplateExcelViewResolver();
 		resolver.setViewClass(JsonExcelView.class);
 		return resolver;
@@ -37,6 +37,6 @@ public class ExcelViewConfig {
 			logger.warn("there is not bean implements [" + className + "]");
 		}
 		return factory;*/
-		return excelResolver().getXmlTemplateGeneratorFactory();
+		return xmlTemplateExcelViewResolver().getXmlTemplateGeneratorFactory();
 	}
 }
