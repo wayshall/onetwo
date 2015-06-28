@@ -90,7 +90,7 @@ public abstract class PropUtils {
 		return config;
 	}
 
-	public static PropConfig loadPropConfig(String configName, boolean throwException) {
+/*	public static PropConfig loadPropConfig(String configName, boolean throwException) {
 		PropConfig config = new PropConfig(configName);
 		if (throwException)
 			config.initAppConfig(true);
@@ -104,9 +104,9 @@ public abstract class PropUtils {
 		}
 		return config;
 	}
-
+*/
 	public static PropConfig loadPropConfig(String configName) {
-		return loadPropConfig(configName, true);
+		return new PropConfig(configName);
 	}
 	
 

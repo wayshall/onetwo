@@ -2,14 +2,14 @@ package org.onetwo.common.spring.utils;
 
 import java.io.File;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 
 public class SpringResourceAdapterImpl extends ResourceAdapterImpl<Resource> {
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 			
 	public SpringResourceAdapterImpl(Resource resource) {
 		super(resource);

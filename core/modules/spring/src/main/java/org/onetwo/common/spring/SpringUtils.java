@@ -162,8 +162,8 @@ final public class SpringUtils {
 		return prop;
 	}
 	
-	public static JFishProperties loadAsJFishProperties(String classpath){
-		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpath);
+	public static JFishProperties loadAsJFishProperties(String... classpaths){
+		PropertiesFactoryBean pfb = createPropertiesBySptring(classpaths);
     	try {
 			pfb.afterPropertiesSet();
 			JFishProperties properties = (JFishProperties)pfb.getObject();

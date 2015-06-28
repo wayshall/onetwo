@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperations {
 	
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private boolean debug;
 	protected NamedJdbcTemplate namedTemplate;

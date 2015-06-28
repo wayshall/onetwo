@@ -52,7 +52,7 @@ public class PropConfig implements VariableSupporter {
 	protected PropConfig(String configName, boolean cacheable) {
 		config = new JFishProperties(cacheable);
 		this.configName = configName;
-		addConfigFile(configName, false);
+		addConfigFile(configName, true);
 	}
 
 /*	protected PropConfig(String configName, VariableExpositor expositor) {
@@ -64,35 +64,12 @@ public class PropConfig implements VariableSupporter {
 	protected PropConfig(String name, File configFile, boolean cacheable) {
 		config = new JFishProperties(cacheable);
 		this.configName = name;
-		addConfigFile(configFile.getPath());
-	}
-
-	protected void initAppConfig(){
-		this.loadFirstConfig();
-		this.loadSilent();
-	}
-
-	public void initAppConfig(boolean loadSient){
-		if(loadSient){
-			this.initAppConfig();
-		}else{
-			this.loadFirstConfig();
-			this.load();
-		}
-		this.afterInitAppConfig(config);
+		addConfigFile(configFile.getPath(), true);
 	}
 	
-
-	protected void afterInitAppConfig(JFishProperties config){
-	}
-
-	protected void loadFirstConfig(){
-		this.config.load(files.get(0));
-	}
-	
-	protected void addConfigFile(String fileName){
+	/*protected void addConfigFile(String fileName){
 		addConfigFile(fileName, false);
-	}
+	}*/
 	
 	protected void addConfigFile(String fileName, boolean load){
 //		if(fileName!=null && fileName.indexOf(".")!=-1){
@@ -113,27 +90,8 @@ public class PropConfig implements VariableSupporter {
 			throw new BaseException("save config error!", e);
 		}
 	}*/
-
-	public void loadSilent(){
-		/*try {
-			load();
-		} catch (Exception e) {
-			logger.error("loadSilent config error", e);
-		}*/
-		if(this.files==null || this.files.isEmpty())
-			return ;
-		for(String f : this.files){
-			if(StringUtils.isBlank(f) || f.equals(configName))
-				continue;
-			try {
-				this.config.load(f);
-			} catch (Exception e) {
-				logger.error("loadSilent config error, ignore config file : " + f);
-			}
-		}
-	}
 	
-	protected void load(){
+	/*protected void load(){
 		if(this.files==null || this.files.isEmpty())
 			return ;
 		for(String f : this.files){
@@ -141,11 +99,11 @@ public class PropConfig implements VariableSupporter {
 				continue;
 			this.config.load(f);
 		}
-	}
+	}*/
 
 	public void reload(){
 		config.clear();
-		this.initAppConfig(true);
+//		this.initAppConfig(true);
 	}
 	
 	public void remove(String key){
@@ -304,7 +262,7 @@ public class PropConfig implements VariableSupporter {
 
 	public static void main(String[] args) throws Exception {
 		PropConfig p = new PropConfig("siteConfig-base.properties");
-		p.loadSilent();
+//		p.loadSilent();
 		System.out.println(p.getProperty("app.environment"));
 	}
 }

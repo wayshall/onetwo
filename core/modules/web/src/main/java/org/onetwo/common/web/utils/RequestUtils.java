@@ -212,4 +212,23 @@ public abstract class RequestUtils {
 	public static String getRefereURL(HttpServletRequest request){
 		return request.getHeader("referer");
 	}
+	public static String appendParam(String action, String name, String value){
+		String result = action;
+		if (action.indexOf("?")!=-1){
+			result += "&"+name+"="+value;
+		}else{
+			result += "?"+name+"="+value;
+		}
+		return result;
+	}
+	
+	public static String appendParamString(String action, String paramstr){
+		String result = action;
+		if (action.indexOf("?")!=-1){
+			result += "&"+paramstr;
+		}else{
+			result += "?"+paramstr;
+		}
+		return result;
+	}
 }

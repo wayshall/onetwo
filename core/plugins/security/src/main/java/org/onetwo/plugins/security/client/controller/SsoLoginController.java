@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.fish.plugin.PluginSupportedController;
-import org.onetwo.common.spring.web.mvc.DataResult;
+import org.onetwo.common.spring.web.utils.JFishWebUtils;
+import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.config.BaseSiteConfig;
@@ -62,7 +63,7 @@ public class SsoLoginController extends PluginSupportedController {
 	}
 	
 	protected void processCookies(SsoLoginParams login, HttpServletRequest request, HttpServletResponse response){
-		ResponseUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
+		JFishWebUtils.setHttpOnlyCookie(response, UserDetail.TOKEN_KEY, login.getTk());
 	}
 	
 	private boolean checkSign(SsoLoginParams login){

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
@@ -15,10 +17,14 @@ import org.onetwo.common.spring.web.WebHelper;
 import org.onetwo.common.spring.web.mvc.SingleReturnWrapper;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.csrf.SameInSessionCsrfPreventor;
+import org.onetwo.common.web.utils.Escape;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
@@ -45,6 +51,23 @@ public final class JFishWebUtils {
 
 	public static final String REDIRECT_KEY = "redirect:";
 	public static final String GRID_SEARCH_FORM_SUBMIT = "submitTag";
+
+	public static final String COOKIE_PATH;
+	public static final String COOKIE_DOMAIN;
+	
+	static {
+		String domain = "";
+		String path = "";
+		try {
+			domain = BaseSiteConfig.getInstance().getCookieDomain();
+			path = BaseSiteConfig.getInstance().getCookiePath();
+			path = StringUtils.appendEndWith(path, "/");
+		} catch (Exception e) {
+			logger.error("use default domain,  because read domain path error : "+e.getMessage());
+		}
+		COOKIE_DOMAIN = domain;
+		COOKIE_PATH = path;
+	}
 	
 	private JFishWebUtils(){
 	}
@@ -332,6 +355,61 @@ public final class JFishWebUtils {
 		} catch (IOException e) {
 			throw new ServiceException("write upload file error: " +e.getMessage(), e);
 		}
+	}
+
+
+	public static void setCookie(HttpServletResponse response, String name, String value, String path, int maxage, String domain, boolean escape) {
+		if (escape)
+			value = Escape.escape(value);
+		Cookie cookie = new Cookie(name, value);
+		if (StringUtils.isBlank(path))
+			cookie.setPath(COOKIE_PATH);
+		else
+			cookie.setPath(path);
+		if (maxage > 0)
+			cookie.setMaxAge(maxage);
+		if (StringUtils.isNotBlank(domain)) {
+			cookie.setDomain(domain);
+		}
+		response.addCookie(cookie);
+	}
+
+	public static void setCookie(HttpServletResponse response, String name, String value) {
+		setCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN, false);
+	}
+	/**********
+	 * path = / domain siteconfig['cookie.domain']
+	 * 
+	 * @param response
+	 * @param name
+	 * @param value
+	 */
+	public static void setHttpOnlyCookie(HttpServletResponse response, String name, String value) {
+		ResponseUtils.setHttpOnlyCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN);
+	}
+
+	/**********
+	 * 
+	 * path = / domain siteconfig['cookie.domain']
+	 * 
+	 * @param response
+	 * @param name
+	 */
+	public static void removeHttpOnlyCookie(HttpServletResponse response, String name) {
+		ResponseUtils.setHttpOnlyCookie(response, name, "", COOKIE_PATH, 0, COOKIE_DOMAIN);//删除不能传-1，否则删除不了
+	}
+
+
+	public static void removeCookie(HttpServletResponse response, String name) {
+		ResponseUtils.removeCookie(response, name, COOKIE_PATH, COOKIE_DOMAIN);
+	}
+
+	public static void removeCookieToken(HttpServletResponse response){
+		removeHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY);
+	}
+	
+	public static void setCookieToken(HttpServletResponse response, String token){
+		setHttpOnlyCookie(response, SsoTokenable.TOKEN_KEY, token);
 	}
 	
 }

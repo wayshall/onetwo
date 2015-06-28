@@ -12,6 +12,7 @@ include "modules/dbm"
 include "modules/jfish"
 include "modules/ejb"
 include "modules/tomcat"
+include "modules/tomcat-mini"
 include "modules/jetty"
 
 include "plugins/activemq"

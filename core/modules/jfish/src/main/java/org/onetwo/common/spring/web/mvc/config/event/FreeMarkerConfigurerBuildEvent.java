@@ -1,8 +1,8 @@
 package org.onetwo.common.spring.web.mvc.config.event;
 
 import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
-import org.onetwo.common.ftl.directive.AbstractDirective;
 import org.onetwo.common.spring.ftl.JFishFreeMarkerConfigurer;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
 
 public class FreeMarkerConfigurerBuildEvent {
 	private final JFishWebMvcPluginManager jfishPluginManager;

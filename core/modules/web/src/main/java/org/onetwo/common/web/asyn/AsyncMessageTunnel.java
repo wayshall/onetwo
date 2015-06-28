@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
+@SuppressWarnings("serial")
 abstract public class AsyncMessageTunnel<T> implements Serializable {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 
 	abstract protected Collection<T> getMessages();

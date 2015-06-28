@@ -71,7 +71,7 @@ public class CookiesTagThemeSettting extends DefaultTagThemeSetting {
 	}
 	
 	public void setJsui(boolean viewJsui){
-		ResponseUtils.setCookie(WebHolder.getResponse(), JSUI, Boolean.toString(viewJsui));
+		JFishWebUtils.setCookie(WebHolder.getResponse(), JSUI, Boolean.toString(viewJsui));
 		initIfNecessity().setJsui(viewJsui);
 	}
 
@@ -93,22 +93,22 @@ public class CookiesTagThemeSettting extends DefaultTagThemeSetting {
 	}
 
 	public void setThemeTag(String theme) {
-		ResponseUtils.setCookie(WebHolder.getResponse(), THEME_TAG, theme);
+		JFishWebUtils.setCookie(WebHolder.getResponse(), THEME_TAG, theme);
 		initIfNecessity().setThemeTag(theme);
 	}
 
 	public void setLayout(String layout) {
-		ResponseUtils.setCookie(WebHolder.getResponse(), LAYOUT, layout);
+		JFishWebUtils.setCookie(WebHolder.getResponse(), LAYOUT, layout);
 		initIfNecessity().setLayout(layout);
 	}
 
 	public void setThemeView(String view) {
-		ResponseUtils.setCookie(WebHolder.getResponse(), THEME_VIEW, view);
+		JFishWebUtils.setCookie(WebHolder.getResponse(), THEME_VIEW, view);
 		initIfNecessity().setThemeView(view);
 	}
 	
 	public void setExtTheme(String extTheme){
-		ResponseUtils.setCookie(WebHolder.getResponse(), EXT_THEME, extTheme);
+		JFishWebUtils.setCookie(WebHolder.getResponse(), EXT_THEME, extTheme);
 		initIfNecessity().setExtTheme(extTheme);
 	}
 
