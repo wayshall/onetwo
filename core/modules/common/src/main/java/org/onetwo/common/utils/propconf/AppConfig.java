@@ -43,7 +43,7 @@ public class AppConfig extends PropConfig {
 	
 	public AppConfig(JFishProperties config) {
 	    super(config);
-		printConfigs();
+//		printConfigs();
     }
 
 	protected AppConfig(String configName) {
@@ -131,7 +131,7 @@ public class AppConfig extends PropConfig {
 	}
 	
 	
-	final protected void printConfigs(){
+	final public void printConfigs(){
 		if(logger.isInfoEnabled()){
 			logger.info("==================================== siteconfig start ====================================");
 			Enumeration<String> keys = config.configNames();
