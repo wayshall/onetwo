@@ -14,7 +14,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
 
 public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {

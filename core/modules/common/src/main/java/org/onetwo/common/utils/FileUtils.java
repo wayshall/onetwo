@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,14 +30,10 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
-import jcifs.smb.SmbFileOutputStream;
-
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
@@ -47,7 +42,7 @@ import org.slf4j.Logger;
 @SuppressWarnings("unchecked")
 public class FileUtils {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(FileUtils.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(FileUtils.class);
 
 	public static final String UTF8 = "utf-8";
 	public static final String DEFAULT_CHARSET = UTF8;
@@ -114,35 +109,11 @@ public class FileUtils {
 		return path.toLowerCase().startsWith(SMB_PREFIX);
 	}
 
-
-	public static SmbFile newSmbFile(String fpath){
-		SmbFile smbf;
-		try {
-			smbf = new SmbFile(fpath);
-		} catch (MalformedURLException e) {
-			throw new BaseException("create smbfile error: " + e.getMessage(), e);
-		}
-		return smbf;
-	}
-
-
-	public static SmbFileInputStream newSmbInputStream(String fpath){
-		return newSmbInputStream(newSmbFile(fpath));
-	}
-	public static SmbFileInputStream newSmbInputStream(SmbFile smbf){
-		try {
-			SmbFileInputStream in = new SmbFileInputStream(smbf);
-			return in;
-		} catch (Exception e) {
-			throw new BaseException("create SmbFileInputStream error: " + e.getMessage(), e);
-		}
-	}
-
 	
 	public static InputStream newInputStream(String fpath){
 		InputStream in = null;
 		String path = replaceBackSlashToSlash(fpath);
-		if(isSmbPath(path)){
+		/*if(isSmbPath(path)){
 			in = newSmbInputStream(fpath);
 		}else{
 			File f = newFile(path);
@@ -151,6 +122,12 @@ public class FileUtils {
 			} catch (FileNotFoundException e) {
 				throw new BaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
 			}
+		}*/
+		File f = newFile(path);
+		try {
+			in = new FileInputStream(f);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("create inputstream["+fpath+"] error : " + e.getMessage(), e);
 		}
 		return in;
 	}
@@ -161,21 +138,11 @@ public class FileUtils {
 		return newOutputStream(path);
 	}
 	
-	public static void mkdirs(SmbFile smbf){
-		try {
-			SmbFile parent = new SmbFile(smbf.getParent());
-			if(!parent.exists())
-				parent.mkdirs();
-		} catch (Exception e) {
-			throw new BaseException("make smb direcotry error: " + smbf.getParent());
-		}
-	}
-	
 	public static OutputStream newOutputStream(String fpath){
 		OutputStream out = null;
 		try {
 			String path = replaceBackSlashToSlash(fpath);
-			if(isSmbPath(path)){
+			/*if(isSmbPath(path)){
 				SmbFile smbf = new SmbFile(path);
 				mkdirs(smbf);
 				out = new SmbFileOutputStream(smbf);
@@ -183,7 +150,10 @@ public class FileUtils {
 				File f = newFile(path);
 				makeDirs(f, true);
 				out = new FileOutputStream(f);
-			}
+			}*/
+			File f = newFile(path);
+			makeDirs(f, true);
+			out = new FileOutputStream(f);
 		} catch (Exception e) {
 			throw LangUtils.asBaseException("create OutputStream error : " + e.getMessage(), e);
 		}
@@ -387,10 +357,9 @@ public class FileUtils {
 	}
 	
 	public static BufferedReader asBufferedReader(String path, String charset){
-		if(isSmbPath(path)){
+		/*if(isSmbPath(path)){
 			return asBufferedReader(newSmbInputStream(path), charset);
-		}
-		
+		}*/
 		String classpath = null;
 		BufferedReader br = null;
 		try {
@@ -646,18 +615,6 @@ public class FileUtils {
 		destFile = new File(destFile.getParentFile(), newFileName);
 		
 		copyFile(srcFile, destFile);
-		return destFile;
-	}
-
-	public static File copyFileToDir(SmbFile srcFile, String targetDir) {
-		SmbFileInputStream in = newSmbInputStream(srcFile);
-		
-		String fname = getFileName(srcFile.getName());
-		File destFile = new File(targetDir + File.separator + fname);
-		String newFileName = newFileNameAppendRepeatCount(destFile);
-		destFile = new File(destFile.getParentFile(), newFileName);
-		
-		writeInputStreamTo(in, targetDir, newFileName);
 		return destFile;
 	}
 	
