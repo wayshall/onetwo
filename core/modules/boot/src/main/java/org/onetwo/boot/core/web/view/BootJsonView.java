@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.web.mvc.JsonWrapper;
@@ -92,9 +93,23 @@ public class BootJsonView extends MappingJackson2JsonView {
 			Map<String, Object> map = (Map<String, Object>) result;
 			DataResult dataResult = DataResult.createSucceed("");
 			for(Entry<String, Object> entry : map.entrySet()){
-				if(BindingResult.class.isInstance(entry.getValue()))
-					continue;
-				dataResult.putData(entry.getKey(), entry.getValue());
+				if(BindingResult.class.isInstance(entry.getValue())){
+					BindingResult br = (BindingResult) entry.getValue();
+					if(br.hasErrors()){
+						dataResult.setCode(DataResult.FAILED);
+					}
+					
+				}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
+					dataResult.setCode(DataResult.SUCCEED);
+					dataResult.setMessage(entry.getValue().toString());
+					
+				}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
+					dataResult.setCode(DataResult.FAILED);
+					dataResult.setMessage(entry.getValue().toString());
+					
+				}else{
+					dataResult.putData(entry.getKey(), entry.getValue());
+				}
 			}
 			return dataResult;
 		}else{

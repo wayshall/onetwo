@@ -70,6 +70,7 @@ public class JFishContextConfig extends BaseApplicationContextSupport {
 
 //	private ContextPluginManager contextPluginManager;
 
+
 	public JFishContextConfig() {
 		// this.jfAppConfigurator =
 		// BaseSiteConfig.getInstance().getWebAppConfigurator(JFishAppConfigurator.class);

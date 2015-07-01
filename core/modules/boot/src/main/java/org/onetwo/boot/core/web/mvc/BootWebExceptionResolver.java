@@ -105,8 +105,8 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		}
 		
 		String msg = errorMessage.getMesage();
-		if(!model.containsKey(AbstractBaseController.MESSAGE)){
-			model.put(AbstractBaseController.MESSAGE, msg);
+		if(!model.containsKey(AbstractBaseController.ERROR)){
+			model.put(AbstractBaseController.ERROR, msg);
 			model.put(AbstractBaseController.MESSAGE_TYPE, AbstractBaseController.MESSAGE_TYPE_ERROR);
 		}
 		if(BootWebUtils.isRedirect(errorMessage.getViewName())){

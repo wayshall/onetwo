@@ -1,34 +1,30 @@
-package org.onetwo.boot.core;
+package org.onetwo.boot.core.web;
 
 import java.util.List;
 
+import org.onetwo.boot.core.BootContextConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.JFishBootConfig;
-import org.onetwo.boot.core.config.SpringBootConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
-import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 @Configuration
-@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@Import({FreemarkerViewContextConfig.class})
-public class JFishBootContextConfig {
+//@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
+@Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
+public class BootWebContextConfig {
 	
 
 	@Autowired
