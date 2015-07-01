@@ -61,7 +61,7 @@ public class SpringApplication {
 	public static void initApplication(ApplicationContext webappContext) {
 		instance.appContext = webappContext;
 		instance.initialized = true;
-//		instance.printBeanNames();
+		instance.printBeanNames();
 		try {
 			if(ConfigurableApplicationContext.class.isInstance(webappContext))
 				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
