@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ValidationException;
@@ -15,6 +14,8 @@ import javax.validation.ValidationException;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.core.web.utils.BootWebUtils.RequestExt;
+import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -25,6 +26,7 @@ import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.utils.WebContextUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
@@ -37,7 +39,8 @@ abstract public class AbstractBaseController {
 	public static final String DEFAULT_CONTENT_TYPE = "application/download; charset=GBK";
 	
 	public static final String REDIRECT = "redirect:";
-	public static final String MESSAGE = "message";
+	public static final String MESSAGE = ModelAttr.MESSAGE;
+	public static final String ERROR = ModelAttr.ERROR_MESSAGE;
 	public static final String MESSAGE_TYPE = "messageType";
 	public static final String MESSAGE_TYPE_ERROR = "error";
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
@@ -130,13 +133,27 @@ abstract public class AbstractBaseController {
 	protected ModelAndView mv(String viewName, Object... models){
 		return BootWebUtils.mv(viewName, models);
 	}
+	protected ModelAndView redirectMv(String viewName, Object... models){
+		return BootWebUtils.mv(redirect(viewName), models);
+	}
 	
 	protected ModelAndView messageMv(String message){
 		return mv(MESSAGE, MESSAGE, message, MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 	
-	public ModelAndView doInModelAndView(HttpServletRequest request, ModelAndView mv){
-		return mv;
+	protected ModelAndView errorMv(String message){
+		return mv(ERROR, ERROR, message, MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
+	}
+
+	protected ModelAttr messageAttr(String message){
+		return new ModelAttr(MESSAGE, message);
+	}
+	protected ModelAttr errorAttr(String message){
+		return new ModelAttr(ModelAttr.ERROR_MESSAGE, message);
+	}
+	
+	protected ModelAttr atrr(String name, Object value){
+		return new ModelAttr(name, value);
 	}
 	
 	/*********
@@ -235,6 +252,15 @@ abstract public class AbstractBaseController {
 
 	public BootSiteConfig getBootSiteConfig() {
 		return bootSiteConfig;
+	}
+	
+	protected RequestExt getRequestExt(){
+		String ext = BootWebUtils.getRequestExtension(WebHolder.getRequest());
+		return RequestExt.of(ext);
+	}
+	
+	protected boolean isJsonView(){
+		return getRequestExt()==RequestExt.JSON;
 	}
 	
 	

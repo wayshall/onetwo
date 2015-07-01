@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -288,9 +289,17 @@ public final class BootWebUtils {
 		if(models.length==1){
 			if(Map.class.isInstance(models[0])){
 				mv.addAllObjects((Map<String, ?>)models[0]);
+				
+			}else if(JsonWrapper.class.isInstance(models[0])){
+				mv.addObject(models[0]);
+				
+			}else if(ModelAttr.class.isInstance(models[0])){
+				ModelAttr attr = (ModelAttr) models[0];
+				mv.addObject(attr.getName(), attr.getValue());
+				
 			}else{
-//				mv.addObject(models[0]);
-				mv.addObject(JsonWrapper.wrap(models[0]));
+				mv.addObject(models[0]);
+//				mv.addObject(JsonWrapper.wrap(models[0]));
 //				mv.addObject(SINGLE_MODEL_FLAG_KEY, true);
 			}
 		}else{
@@ -300,6 +309,11 @@ public final class BootWebUtils {
 			for (int i = 0; i < models.length; i++) {
 				if(JsonWrapper.class.isInstance(models[i])){
 					mv.addObject(models[i]);
+					
+				}else if(ModelAttr.class.isInstance(models[i])){
+					ModelAttr attr = (ModelAttr) models[i];
+					mv.addObject(attr.getName(), attr.getValue());
+					
 				}else{
 					Object name = models[i];
 					if(!String.class.isInstance(name)){
@@ -387,8 +401,21 @@ public final class BootWebUtils {
 		String extension = FileUtils.getExtendName(reqUri);
 		return extension;
 	}
+	
 
 	public static UrlPathHelper getUrlPathHelper() {
 		return URL_PATH_HELPER;
+	}
+	
+	public static enum RequestExt {
+		DO,
+		JSON,
+		XML;
+		
+		public static RequestExt of(String ext){
+			return Stream.of(values()).filter(e->e.name().equalsIgnoreCase(ext))
+								.findAny()
+								.orElse(DO);
+		}
 	}
 }
