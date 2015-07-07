@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.boot.plugins.permission.annotation.MenuMapping;
+import org.onetwo.boot.plugins.permission.entity.DataFrom;
 import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.boot.plugins.permission.entity.PermissionType;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
@@ -189,6 +190,7 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 		}
 		String name = parser.getName();
 		P perm = (P)ReflectUtils.newInstance(this.permissionConfig.getIPermissionClass());
+		perm.setDataFrom(DataFrom.SYNC);
 		perm.setPermissionType(parser.getPermissionType());
 		if(parser.getPermissionType()==PermissionType.MENU){
 			P menu = perm;

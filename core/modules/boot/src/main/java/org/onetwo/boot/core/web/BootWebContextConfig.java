@@ -34,7 +34,7 @@ public class BootWebContextConfig {
 	public BootSiteConfig bootSiteConfig(){
 		return BootSiteConfig.getInstance();
 	}
-	
+
 	@Bean
 	public BootServletContextInitializer bootServletContextInitializer(){
 		return new BootServletContextInitializer();

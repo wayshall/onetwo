@@ -1,4 +1,4 @@
-package org.onetwo.boot.security;
+package org.onetwo.boot.plugins.security;
 
 import javax.servlet.http.HttpServletRequest;
 

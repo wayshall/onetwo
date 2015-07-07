@@ -1,4 +1,4 @@
-package org.onetwo.boot.security;
+package org.onetwo.boot.plugins.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
