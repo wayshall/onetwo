@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import org.onetwo.boot.core.matcher.MatcherUtils;
 import org.onetwo.boot.core.matcher.MutipleRequestMatcher;
-import org.onetwo.boot.security.CommonReadMethodMatcher;
+import org.onetwo.boot.plugins.security.CommonReadMethodMatcher;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;

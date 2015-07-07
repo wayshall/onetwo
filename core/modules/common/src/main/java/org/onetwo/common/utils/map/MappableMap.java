@@ -46,7 +46,7 @@ public class MappableMap extends HashMap<String, Object>{
 //	        this.sourceObjects = sourceObjects;//List<T> sourceObjects
         }
 		
-		public StaticMappingBuilder<T> mapping(String jsonFieldName, String objectFieldName){
+		public StaticMappingBuilder<T> addMapping(String jsonFieldName, String objectFieldName){
 			this.mappingInfos.add(new MappingInfo<T>(jsonFieldName, objectFieldName));
 			return this;
 		}
