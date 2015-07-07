@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.convert.Types;
 
 @SuppressWarnings("serial")
 public class BaseMap<K, V> extends LinkedHashMap<K, V> {
@@ -71,7 +71,8 @@ public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	}
 	
 	protected <T> T convert(Object val, Class<T> toType, T def){
-		return MyUtils.simpleConvert(val, toType, def);
+//		return MyUtils.simpleConvert(val, toType, def);
+		return Types.convertValue(val, toType, def);
 	}
 	
 	public Integer getInteger(String key){

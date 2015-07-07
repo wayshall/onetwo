@@ -57,6 +57,12 @@ public interface IPermission<T extends IPermission<T>> {
 	public List<T> getChildrenMenu();
 	public List<T> getChildrenWithouMenu();
 	
+	public String getResourcesPattern();
+	public void setResourcesPattern(String resources);
+	
+	public DataFrom getDataFrom();
+	public void setDataFrom(DataFrom dataFrom);
+	
 
 	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();
@@ -70,6 +76,7 @@ public interface IPermission<T extends IPermission<T>> {
 				}else{
 					str.append(obj.getName()).append("(").append(obj.getCode()).append(")");
 				}
+				str.append(" -> ").append(obj.getResourcesPattern()==null?"":obj.getResourcesPattern() );
 				str.append(spliter);
 			}
 		});

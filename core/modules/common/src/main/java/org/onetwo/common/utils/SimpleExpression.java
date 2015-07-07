@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public class SimpleExpression implements Expression {
 	
 	private final String nullValue;
 	
-	SimpleExpression(String start, String end, Object valueProvider, String nullValue) {
+	public SimpleExpression(String start, String end, Object valueProvider, String nullValue) {
 		this.start = start;
 		this.end = end;
 		this.valueProvider = valueProvider;
@@ -56,11 +57,11 @@ public class SimpleExpression implements Expression {
 	}
 	
 
-	SimpleExpression(String start, String end, Object valueProvider) {
+	public SimpleExpression(String start, String end, Object valueProvider) {
 		this(start, end, valueProvider, NULL_VALUE);
 	}
 
-	SimpleExpression(String start, String end) {
+	public SimpleExpression(String start, String end) {
 		this(start, end, null, NULL_VALUE);
 	}
 
@@ -113,9 +114,9 @@ public class SimpleExpression implements Expression {
 		return parseWithContextByProvider(text, provider).result;
 	}
 	
-	public Context parseWithContextByProvider(String text, Object provider) {
+	public Context parseWithContextByProvider(String text, Object values) {
 //		Assert.notNull(provider, "provider can not be null!");
-		if(provider==null)
+		if(values==null)
 			return Context.createWithEmptyVarIndex(text);
 		
 		if (StringUtils.isBlank(text))
@@ -123,10 +124,12 @@ public class SimpleExpression implements Expression {
 
 		int beginIndex = text.indexOf(start);
 		if (beginIndex == -1)
-			return Context.createWithEmptyVarIndex("");
+			return Context.createWithEmptyVarIndex(text);
 
 //		varIndexMap.clear();
 		Context context = Context.create("");
+		
+		ValueProvider provider = getValueProvider(values);
 		
 		String var = null;
 		int varIndex = 1;
@@ -162,11 +165,11 @@ public class SimpleExpression implements Expression {
 		return context;
 	}
 	
-	protected String getValueByVar(Object provider, String var){
+	protected String getValueByVar(ValueProvider provider, String var){
 		Assert.notNull(provider, "provider can not be null!");
 		
-		String result = null;
-		if(provider instanceof ValueProvider)
+		String result = provider.findString(var);
+		/*if(provider instanceof ValueProvider)
 			result = ((ValueProvider) provider).findString(var);
 		else if(provider instanceof Map){
 			Object val = ((Map)provider).get(var);
@@ -194,12 +197,75 @@ public class SimpleExpression implements Expression {
 			result = (obj==null?"":obj.toString());
 		}else{
 			throw new IllegalArgumentException("provider must be a ValueProvider type : " + provider.getClass());
-		}
+		}*/
 		
 		if(result==null)
 			return throwVarNotfoundOrNullString(var);
 		else
 			return result;
+	}
+
+	static class MapValueProvider implements ValueProvider {
+		final private Map<String, Object> context;
+		public MapValueProvider(Map<String, Object> context) {
+			super();
+			this.context = context;
+		}
+		@Override
+		public String findString(String var) {
+			String result = LangUtils.toString(context.get(var));
+			return result;
+		}
+	}
+
+	static class ListValueProvider implements ValueProvider {
+		final private List<?> list;
+		public ListValueProvider(List<?> list) {
+			super();
+			this.list = list;
+		}
+		@Override
+		public String findString(String var) {
+			String result = "";
+			try {
+				int index = Integer.parseInt(var);
+				if(index<list.size())
+					result = LangUtils.toString(list.get(index));
+			} catch (Exception e) {
+				//ignore
+			}
+			return result;
+		}
+	}
+	
+	protected ValueProvider getValueProvider(Object provider){
+		Assert.notNull(provider, "provider can not be null!");
+		
+		if(provider instanceof ValueProvider)
+			return (ValueProvider) provider;
+		
+		else if(provider instanceof Map){
+			return new MapValueProvider((Map<String, Object>)provider);
+			
+		}else if(provider instanceof List){
+			return new ListValueProvider((List)provider);
+			
+		}else if(provider.getClass().isArray()){
+			return new ListValueProvider(Arrays.asList((Object[])provider));
+			
+		}else if(!LangUtils.isBaseTypeObject(provider)){
+			return new ValueProvider() {
+				@Override
+				public String findString(String var) {
+					Object obj = ReflectUtils.getExpr(provider, var);
+					String result = (obj==null?"":obj.toString());
+					return result;
+				}
+			};
+		}else{
+			throw new IllegalArgumentException("provider must be a ValueProvider type : " + provider.getClass());
+		}
+		
 	}
 	
 	protected String throwVarNotfoundOrNullString(String var){

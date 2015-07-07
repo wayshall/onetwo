@@ -5,6 +5,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Locale;
 
+import org.onetwo.common.utils.FileUtils;
+
 import freemarker.cache.TemplateLoader;
 
 public class DynamicTemplateLoader implements TemplateLoader {
@@ -19,7 +21,8 @@ public class DynamicTemplateLoader implements TemplateLoader {
 	}
 
 	public Object findTemplateSource(String name) throws IOException {
-		if(name.endsWith(Locale.CHINA.toString()) || name.endsWith(Locale.CHINESE.toString())){
+		String noPostfix = FileUtils.getFileNameWithoutExt(name);
+		if(noPostfix.endsWith(Locale.CHINA.toString()) || noPostfix.endsWith(Locale.CHINESE.toString())){
 			return null;
 		}
 		return templateProvidor.getTemplateContent(name);
