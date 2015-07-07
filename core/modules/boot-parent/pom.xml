@@ -40,6 +40,9 @@
 	<dozer.version>5.4.0</dozer.version>
 	<lombok.version>1.16.4</lombok.version>
 	<mail.version>1.4.5</mail.version>
+	
+	<shiro.version>1.2.3</shiro.version>
+	<groovy.version>2.3.10</groovy.version>
   </properties> 
 	
 <dependencyManagement>
@@ -212,6 +215,55 @@
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>${mail.version}</version>
+    </dependency>
+    
+    <dependency>
+	    <groupId>org.springframework.security</groupId>
+	    <artifactId>spring-security-cas</artifactId>
+	    <version>${spring-security.version}</version>
+	</dependency>
+    
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-core</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-web</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-aspectj</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-cas</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-ehcache</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-spring</artifactId>
+      <version>${shiro.version}</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>${groovy.version}</version>
     </dependency>
 	
 	<!-- <dependency>

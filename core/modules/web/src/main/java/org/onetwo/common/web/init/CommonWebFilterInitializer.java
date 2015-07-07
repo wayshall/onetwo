@@ -91,9 +91,10 @@ public class CommonWebFilterInitializer {
 		Optional.ofNullable(hiddenFilterClass).ifPresent(cls->{
 			Dynamic fr = servletContext.addFilter("hiddenHttpMethodFilter", hiddenFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
-				fr.setAsyncSupported(true);
 	//			fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-				fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, AbstractDispatcherServletInitializer.DEFAULT_SERVLET_NAME);
+//				fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, AbstractDispatcherServletInitializer.DEFAULT_SERVLET_NAME);
+				fr.setAsyncSupported(true);
+				fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
 	//							.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 			});
 			
