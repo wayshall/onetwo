@@ -6,9 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 
 public class TableMeta {
@@ -36,6 +38,10 @@ public class TableMeta {
 
 	public String getName() {
 		return this.name;
+	}
+	
+	public String tableNameStripStart(String stripChars){
+		return StringUtils.stripStart(name, stripChars);
 	}
 
 	public Map<String, ColumnMeta> getColumnMap() {
@@ -81,6 +87,10 @@ public class TableMeta {
 
 	public void setPrimaryKey(ColumnMeta primaryKey) {
 		this.primaryKey = primaryKey;
+	}
+	
+	public List<String> getComments() {
+		return Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(comment);
 	}
 
 

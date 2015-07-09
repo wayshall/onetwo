@@ -259,8 +259,32 @@ abstract public class AbstractBaseController {
 		return RequestExt.of(ext);
 	}
 	
+	/***
+	 * 如果请求的url是.json后缀
+	 * @return
+	 */
 	protected boolean isJsonView(){
 		return getRequestExt()==RequestExt.JSON;
+	}
+	
+	/***
+	 * 如果请求的url是.xml后缀
+	 * @return
+	 */
+	protected boolean isXmlView(){
+		return getRequestExt()==RequestExt.XML;
+	}
+	
+	/***
+	 * 如果请求的url没有添加后缀，返回true
+	 * @return
+	 */
+	protected boolean isNoneRequestExt(){
+		return getRequestExt()==RequestExt.NONE;
+	}
+	
+	protected boolean isRequestExt(RequestExt ext){
+		return getRequestExt()==ext;
 	}
 	
 	

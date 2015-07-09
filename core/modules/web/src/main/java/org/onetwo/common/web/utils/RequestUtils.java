@@ -10,6 +10,7 @@ import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
+import org.springframework.util.ClassUtils;
 
 @SuppressWarnings("rawtypes")
 public abstract class RequestUtils {
@@ -230,5 +231,9 @@ public abstract class RequestUtils {
 			result += "?"+paramstr;
 		}
 		return result;
+	}
+	
+	public static boolean isServlet3(){
+		return ClassUtils.isPresent("javax.servlet.SessionCookieConfig", ClassUtils.getDefaultClassLoader());
 	}
 }

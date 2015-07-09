@@ -6,7 +6,6 @@ import java.io.StringWriter;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.db.generator.GenerateContext;
 import org.onetwo.common.db.generator.TemplateEngine;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplateConfigurer;
@@ -34,7 +33,7 @@ public class FtlEngine extends DynamicFreemarkerTemplateConfigurer implements In
 	 * @see org.onetwo.common.db.generator.ftl.TemplateGenerator#generateString(org.onetwo.common.db.generator.GenerateContext, java.lang.String)
 	 */
 	@Override
-	public String generateString(GenerateContext context, String templatePath){
+	public String generateString(Object context, String templatePath){
 		if(context==null){
 			throw new BaseException("context can not be null, igonre generated file.");
 		}
@@ -52,7 +51,7 @@ public class FtlEngine extends DynamicFreemarkerTemplateConfigurer implements In
 	 * @see org.onetwo.common.db.generator.ftl.TemplateGenerator#generateFile(org.onetwo.common.db.generator.GenerateContext, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public File generateFile(GenerateContext context, String templatePath, String targetPath){
+	public File generateFile(Object context, String templatePath, String targetPath){
 		if(context==null){
 			throw new BaseException("context can not be null, igonre generated file.");
 		}
