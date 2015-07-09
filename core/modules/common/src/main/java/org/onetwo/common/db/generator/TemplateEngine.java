@@ -6,9 +6,9 @@ public interface TemplateEngine {
 
 	public void afterPropertiesSet();
 
-	public String generateString(GenerateContext context, String templatePath);
+	public String generateString(Object context, String templatePath);
 
-	public File generateFile(GenerateContext context, String templatePath,
+	public File generateFile(Object context, String templatePath,
 			String targetPath);
 
 }

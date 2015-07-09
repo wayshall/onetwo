@@ -17,6 +17,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -486,6 +487,13 @@ public class DBUtils {
 	 */
 	public static Map<String, Object> toMap(ResultSet rs, String...names) {
 		return toMap(rs, true, names);
+	}
+	public static Map<String, Object> nextRowToMap(ResultSet rs, String...names) throws SQLException {
+		if(rs.next()){
+			return toMap(rs, true, names);
+		}else{
+			return Collections.EMPTY_MAP;
+		}
 	}
 	
 	public static Map<String, Object> toMap(ResultSet rs, boolean autoClose, String...names) {

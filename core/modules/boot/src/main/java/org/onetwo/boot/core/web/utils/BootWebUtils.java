@@ -408,6 +408,7 @@ public final class BootWebUtils {
 	}
 	
 	public static enum RequestExt {
+		NONE,
 		DO,
 		JSON,
 		XML;
@@ -415,7 +416,7 @@ public final class BootWebUtils {
 		public static RequestExt of(String ext){
 			return Stream.of(values()).filter(e->e.name().equalsIgnoreCase(ext))
 								.findAny()
-								.orElse(DO);
+								.orElse(NONE);
 		}
 	}
 }

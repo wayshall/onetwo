@@ -51,7 +51,7 @@ public class MappableMap extends HashMap<String, Object>{
 			return this;
 		}
 		
-		public StaticMappingBuilder<T> addMapping(String jsonFieldName, MappingValueFunc<T> valueFunc){
+		public StaticMappingBuilder<T> addMapping(String jsonFieldName, MappingValueFunc<T, ?> valueFunc){
 			this.mappingInfos.add(new MappingInfo<T>(jsonFieldName, valueFunc));
 			return this;
 		}
@@ -82,9 +82,9 @@ public class MappableMap extends HashMap<String, Object>{
 		}
 		
 	}
-	
-	public static interface MappingValueFunc<T> {
-		Object mapping(T sourceObject, MappingInfo<T> mapping);
+
+	public static interface MappingValueFunc<T, R> {
+		R mapping(T sourceObject, MappingInfo<T> mapping);
 	}
 	
 	class MappingBuilder<T> {
@@ -116,14 +116,14 @@ public class MappableMap extends HashMap<String, Object>{
 	public static final class MappingInfo<T> {
 		final private String jsonFieldName;
 		final private String objectFieldName;
-		final private MappingValueFunc<T> addMappingValueFunc;
+		final private MappingValueFunc<T, ?> addMappingValueFunc;
 		public MappingInfo(String jsonFieldName, String objectFieldName) {
 	        super();
 	        this.jsonFieldName = jsonFieldName;
 	        this.objectFieldName = objectFieldName;
 	        this.addMappingValueFunc = null;
         }
-		public MappingInfo(String sourceName, MappingValueFunc<T> addMappingValueFunc) {
+		public MappingInfo(String sourceName, MappingValueFunc<T, ?> addMappingValueFunc) {
 	        super();
 	        this.jsonFieldName = sourceName;
 	        this.objectFieldName = null;
@@ -139,7 +139,7 @@ public class MappableMap extends HashMap<String, Object>{
 		public String getObjectFieldName() {
 			return objectFieldName;
 		}
-		public MappingValueFunc<T> getAddMappingValueFunc() {
+		public MappingValueFunc<T, ?> getAddMappingValueFunc() {
 			return addMappingValueFunc;
 		}
 		

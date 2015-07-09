@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.permission.web;
+package org.onetwo.boot.plugins.permission.web.controller;
 
 import java.util.Collection;
 

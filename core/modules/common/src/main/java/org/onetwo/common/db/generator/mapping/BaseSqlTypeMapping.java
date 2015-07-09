@@ -1,5 +1,6 @@
 package org.onetwo.common.db.generator.mapping;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,11 @@ public class BaseSqlTypeMapping implements MetaMapping {
 	public ColumnMapping getColumnMapping(int sqlType){
 		ColumnMapping mapping = sqlToJavaTypeMappings.get(sqlType);
 		return mapping;
+	}
+	
+	@Override
+	public Collection<ColumnMapping> getColumnMappings(){
+		return sqlToJavaTypeMappings.values();
 	}
 	public ColumnMapping getRequiredColumnMapping(int sqlType){
 		ColumnMapping mapping = sqlToJavaTypeMappings.get(sqlType);

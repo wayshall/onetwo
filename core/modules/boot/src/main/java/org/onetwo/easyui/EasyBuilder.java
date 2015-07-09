@@ -10,7 +10,7 @@ import org.onetwo.common.utils.map.MappableMap.StaticMappingBuilder;
 public class EasyBuilder<S, D> {
 	protected StaticMappingBuilder<D> builder = MappableMap.newMappingBuilder();
 	
-	public S addMapping(String fieldName, MappingValueFunc<D> valueFunc){
+	public S addMapping(String fieldName, MappingValueFunc<D, ?> valueFunc){
 		builder.addMapping(fieldName, valueFunc);
 		return (S)this;
 	}
