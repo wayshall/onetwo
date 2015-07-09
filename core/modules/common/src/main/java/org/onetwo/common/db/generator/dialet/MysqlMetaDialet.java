@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.generator.DBConnecton;
 import org.onetwo.common.db.generator.DBUtils;
 import org.onetwo.common.db.generator.meta.TableMeta;
+import org.onetwo.common.utils.StringUtils;
 
 public class MysqlMetaDialet extends BaseMetaDialet implements DatabaseMetaDialet {
 	
@@ -30,6 +31,11 @@ public class MysqlMetaDialet extends BaseMetaDialet implements DatabaseMetaDiale
 
 			String tname = (String)rowMap.get("TABLE_NAME");
 			String comment = (String)rowMap.get("REMARKS");
+			if(StringUtils.isBlank(comment)){
+				rs = dbcon.query("SHOW TABLE STATUS LIKE '"+tableName+"'");
+				rowMap = DBUtils.nextRowToMap(rs, "comment");
+				comment = (String)rowMap.get("comment");
+			}
 			table = new TableMeta(tname, comment);
 			createFieldMeta(dbcon, table, tableName);
 			createPrimaryKey(dbcon, table);;

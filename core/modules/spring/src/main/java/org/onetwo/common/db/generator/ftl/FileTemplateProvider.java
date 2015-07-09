@@ -8,6 +8,7 @@ public class FileTemplateProvider implements StringTemplateProvider {
 
 	@Override
 	public String getTemplateContent(String name) {
+		name = FileUtils.replaceBackSlashToSlash(name);
 		String content = StringUtils.join(FileUtils.readAsList(name, "utf-8"), "\n");
 		return content;
 	}
