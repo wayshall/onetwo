@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.permission.web;
+package org.onetwo.boot.plugins.permission.web.controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;

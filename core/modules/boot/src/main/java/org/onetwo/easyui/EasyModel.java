@@ -23,8 +23,20 @@ final public class EasyModel {
 			return this;
 		}
 		
-		public EasyTreeBuilder<R> state(MappingValueFunc<R> valueFunc){
-			addMapping("state", valueFunc);
+		public EasyTreeBuilder<R> text(String fieldName){
+			addMapping("text", fieldName);
+			return this;
+		}
+		
+		/***
+		 * true: open
+		 * false: closed
+		 * @param stateFunc
+		 * @return
+		 */
+		public EasyTreeBuilder<R> isStateOpen(MappingValueFunc<R, Boolean> stateFunc){
+			addMapping("state", (src, mapping)->stateFunc.mapping(src, mapping)?"open":"closed");
+//			addMapping("state", new StateMappingValueFunc(stateFunc));
 			return this;
 		}
 
