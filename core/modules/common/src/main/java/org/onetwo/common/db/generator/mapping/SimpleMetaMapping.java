@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.onetwo.common.db.generator.DBUtils;
+import org.onetwo.common.db.generator.utils.DBUtils;
 
 
 public final class SimpleMetaMapping extends BaseSqlTypeMapping {
@@ -24,7 +24,7 @@ public final class SimpleMetaMapping extends BaseSqlTypeMapping {
 		types.put(Types.INTEGER, Integer.class);
 		types.put(Types.BIGINT, Long.class);
 		types.put(Types.CHAR, String.class);
-		types.put(Types.DECIMAL, Long.class);
+		types.put(Types.DECIMAL, BigDecimal.class);
 		types.put(Types.NUMERIC, Number.class);
 		types.put(Types.VARCHAR, String.class);
 		types.put(Types.LONGVARCHAR, String.class);

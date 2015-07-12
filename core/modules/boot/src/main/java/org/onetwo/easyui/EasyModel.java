@@ -10,6 +10,9 @@ final public class EasyModel {
 	public static <T> EasyTreeBuilder<T> newTreeBuilder(Class<T> clazz){
 		return new EasyTreeBuilder<T>();
 	}
+	public static <T> EasyComboBoxBuilder<T> newComboBoxBuilder(Class<T> clazz){
+		return new EasyComboBoxBuilder<T>();
+	}
 	
 	public static class EasyTreeBuilder<R> extends EasyBuilder<EasyTreeBuilder<R>, R>{
 		
@@ -35,11 +38,24 @@ final public class EasyModel {
 		 * @return
 		 */
 		public EasyTreeBuilder<R> isStateOpen(MappingValueFunc<R, Boolean> stateFunc){
-			addMapping("state", (src, mapping)->stateFunc.mapping(src, mapping)?"open":"closed");
+			addMapping("state", src->stateFunc.mapping(src)?"open":"closed");
 //			addMapping("state", new StateMappingValueFunc(stateFunc));
 			return this;
 		}
 
+	}
+	
+	
+	public static class EasyComboBoxBuilder<R> extends EasyBuilder<EasyComboBoxBuilder<R>, R>{
+		public EasyComboBoxBuilder<R> value(String fieldName){
+			addMapping("value", fieldName);
+			return this;
+		}
+		
+		public EasyComboBoxBuilder<R> text(String fieldName){
+			addMapping("text", fieldName);
+			return this;
+		}
 	}
 	
 	private EasyModel(){}

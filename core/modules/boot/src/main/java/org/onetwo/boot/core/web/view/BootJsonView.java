@@ -8,7 +8,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.spring.web.mvc.JsonWrapper;
+import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.LangUtils;
@@ -71,8 +71,8 @@ public class BootJsonView extends MappingJackson2JsonView {
 			for(Map.Entry<String, Object> entry : model.entrySet()){
 				if(Result.class.isInstance(entry.getValue())){
 					return entry.getValue();
-				}else if(JsonWrapper.class.isInstance(entry.getValue())){
-					return ((JsonWrapper)entry.getValue()).getValue();
+				}else if(DataWrapper.class.isInstance(entry.getValue())){
+					return ((DataWrapper)entry.getValue()).getValue();
 				}
 			}
 		}

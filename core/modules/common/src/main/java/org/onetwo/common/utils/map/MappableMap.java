@@ -9,7 +9,11 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.utils.ReflectUtils;
 
-
+/***
+ * 把对象映射为map
+ * @author way
+ *
+ */
 @SuppressWarnings("serial")
 public class MappableMap extends HashMap<String, Object>{
 	
@@ -66,13 +70,17 @@ public class MappableMap extends HashMap<String, Object>{
 										    .collect(Collectors.toList());
 		}
 		
+		public MappableMap bindValue(T sourceObject){
+			return bindMappings(true, new MappableMap(), sourceObject);
+		}
 		private MappableMap bindMappings(boolean putObjFieldsToMap, MappableMap mappingObject, T sourceObject){
 			if(putObjFieldsToMap){
 				mappingObject.from(sourceObject);
 			}
 		    mappingInfos.stream().forEach(maping->{
-		    	if(maping.isAddMapping()){
-			    	mappingObject.put(maping.jsonFieldName, maping.addMappingValueFunc.mapping(sourceObject, maping));
+		    	if(maping.isMappingValueFunc()){
+//			    	mappingObject.put(maping.jsonFieldName, maping.addMappingValueFunc.mapping(sourceObject, maping));
+			    	mappingObject.put(maping.jsonFieldName, maping.addMappingValueFunc.mapping(sourceObject));
 		    	}else{
 			    	Object value = ReflectUtils.getProperty(sourceObject, maping.objectFieldName);
 			    	mappingObject.put(maping.jsonFieldName, value);
@@ -84,7 +92,8 @@ public class MappableMap extends HashMap<String, Object>{
 	}
 
 	public static interface MappingValueFunc<T, R> {
-		R mapping(T sourceObject, MappingInfo<T> mapping);
+//		R mapping(T sourceObject, MappingInfo<T> mapping);
+		R mapping(T sourceObject);
 	}
 	
 	class MappingBuilder<T> {
@@ -130,7 +139,7 @@ public class MappableMap extends HashMap<String, Object>{
 	        this.addMappingValueFunc = addMappingValueFunc;
         }
 		
-		public boolean isAddMapping(){
+		public boolean isMappingValueFunc(){
 			return this.addMappingValueFunc!=null;
 		}
 		public String getJsonFieldName() {
