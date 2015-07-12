@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.generator.DBConnecton;
-import org.onetwo.common.db.generator.DBUtils;
 import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.common.db.generator.meta.TableMeta;
+import org.onetwo.common.db.generator.utils.DBUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
@@ -24,6 +24,10 @@ public class OracleMetaDialet extends BaseMetaDialet implements DatabaseMetaDial
 		super(dataSource);
 	}
 	
+	public OracleMetaDialet(DataSource dataSource, String catalog, String schema) {
+		super(dataSource, catalog, schema);
+	}
+
 	@Override
 	public List<String> getTableNames() {
 		if(!tableNames.isEmpty()){

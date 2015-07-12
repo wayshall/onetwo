@@ -1,12 +1,11 @@
 package org.onetwo.common.db.generator.meta;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import org.onetwo.common.db.generator.DBUtils;
 import org.onetwo.common.db.generator.mapping.ColumnMapping;
+import org.onetwo.common.db.generator.utils.DbGeneratorUtills;
 import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.base.Splitter;
@@ -15,12 +14,15 @@ public class ColumnMeta {
 
 	protected TableMeta table;
 	private String name;
-	protected int sqlType = DBUtils.TYPE_UNKNOW;
+//	protected int sqlType = DBUtils.TYPE_UNKNOW;
 
 	protected boolean primaryKey;
 	protected boolean referencedKey;
 	
+	protected boolean nullable;
 	private String comment;
+	private Map<String, String> commentsInfo = Collections.EMPTY_MAP;
+	protected int columnSize;
 	
 
 	protected String javaName;
@@ -28,9 +30,9 @@ public class ColumnMeta {
 	
 	protected ColumnMapping mapping;
 	
-	public ColumnMeta(TableMeta tableInfo, String name, int sqlType, ColumnMapping mapping) {
+	public ColumnMeta(TableMeta tableInfo, String name, ColumnMapping mapping) {
 		setName(name);
-		setSqlType(sqlType);
+//		setSqlType(sqlType);
 //		setJavaType(javaType);
 		this.mapping = mapping;
 	}
@@ -51,9 +53,23 @@ public class ColumnMeta {
 	public List<String> getComments() {
 		return Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(comment);
 	}
+	
+	public Map<String, String> getCommentsInfo() {
+		return commentsInfo;
+	}
+
+	public String getIndexComment(int index) {
+		List<String> comments = getComments();
+		if(comments.size()<index){
+			return comments.get(index);
+		}else{
+			return "";
+		}
+	}
 
 	public void setComment(String comment) {
 		this.comment = comment;
+		this.commentsInfo = DbGeneratorUtills.parse(comment);
 	}
 
 	public boolean isPrimaryKey() {
@@ -73,7 +89,7 @@ public class ColumnMeta {
 	}
 	
 	public boolean isDateType(){
-		return getJavaType()==Date.class || getJavaType()==Time.class || getJavaType()==Timestamp.class;
+		return this.mapping.isDateType();
 	}
 
 	public TableMeta getTable() {
@@ -85,11 +101,7 @@ public class ColumnMeta {
 	}
 
 	public int getSqlType() {
-		return sqlType;
-	}
-
-	public void setSqlType(int sqlType) {
-		this.sqlType = sqlType;
+		return mapping.getSqlType();
 	}
 
 	public String getJavaName() {
@@ -133,6 +145,22 @@ public class ColumnMeta {
 
 	public void setMapping(ColumnMapping mapping) {
 		this.mapping = mapping;
+	}
+
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
+
+	public int getColumnSize() {
+		return columnSize;
+	}
+
+	public void setColumnSize(int columnSize) {
+		this.columnSize = columnSize;
 	}
 
 }
