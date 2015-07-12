@@ -4,17 +4,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.generator.DBConnecton;
-import org.onetwo.common.db.generator.DBUtils;
 import org.onetwo.common.db.generator.mapping.ColumnMapping;
 import org.onetwo.common.db.generator.mapping.MetaMapping;
 import org.onetwo.common.db.generator.mapping.ResultSetMapper;
 import org.onetwo.common.db.generator.mapping.SimpleMetaMapping;
 import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.common.db.generator.meta.TableMeta;
+import org.onetwo.common.db.generator.utils.DBUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
@@ -34,6 +35,13 @@ abstract public class BaseMetaDialet implements DatabaseMetaDialet {
 		this.dataSource = dataSource;
 	}
 	
+	public BaseMetaDialet(DataSource dataSource, String catalog, String schema) {
+		super();
+		this.dataSource = dataSource;
+		this.catalog = catalog;
+		this.schema = schema;
+	}
+
 	@Override
 	public List<String> getTableNames() {
 		if(!tableNames.isEmpty()){
@@ -96,14 +104,21 @@ abstract public class BaseMetaDialet implements DatabaseMetaDialet {
 
 			@Override
 			public ColumnMeta map(ResultSet rs) throws SQLException {
+				Map<String, Object> rsMap = DBUtils.toMap(rs, false);
 				String colName = rs.getString("COLUMN_NAME");
 				int sqlType = rs.getInt("DATA_TYPE");
 				String remark = rs.getString("REMARKS");
-//				Class<?> javaType = getMetaMapping().getJavaType(sqlType);
+				/*if("SELL_STATUS".equalsIgnoreCase(colName)){
+					System.out.println("test");
+				}*/
+				String isNullable  = rs.getString("IS_NULLABLE");
+				int columnSize = rs.getInt("COLUMN_SIZE");
 				ColumnMapping mapping = getMetaMapping().getRequiredColumnMapping(sqlType);
 				logger.info("mapping -> colunm: {}, sqltype: {}", colName, mapping);
-				ColumnMeta meta = new ColumnMeta(table, colName, sqlType, mapping);
+				ColumnMeta meta = new ColumnMeta(table, colName, mapping);
 				meta.setComment(remark);
+				meta.setNullable("yes".equalsIgnoreCase(isNullable));
+				meta.setColumnSize(columnSize);
 				
 				table.addColumn(meta);
 				return meta;

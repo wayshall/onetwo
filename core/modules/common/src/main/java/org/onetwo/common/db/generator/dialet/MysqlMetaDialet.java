@@ -7,8 +7,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.generator.DBConnecton;
-import org.onetwo.common.db.generator.DBUtils;
 import org.onetwo.common.db.generator.meta.TableMeta;
+import org.onetwo.common.db.generator.utils.DBUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class MysqlMetaDialet extends BaseMetaDialet implements DatabaseMetaDialet {

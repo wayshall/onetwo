@@ -24,6 +24,11 @@ public class EasyBuilder<S, D> {
 		List<MappableMap> treeDatas = builder.bindValues(sourceObjects);
 		return treeDatas;
 	}
+
+	public MappableMap build(D sourceObjects){
+		MappableMap mappableMap = builder.bindValue(sourceObjects);
+		return mappableMap;
+	}
 	
 	public static class SimpleEasyBuilder<T> extends EasyBuilder<SimpleEasyBuilder<T>, T> {
 	}

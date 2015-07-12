@@ -1,4 +1,4 @@
-package org.onetwo.common.db.generator;
+package org.onetwo.common.db.generator.utils;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
