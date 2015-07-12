@@ -14,13 +14,16 @@ import javax.validation.ValidationException;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.core.web.utils.BootWebUtils.RequestExt;
 import org.onetwo.boot.core.web.utils.ModelAttr;
+import org.onetwo.boot.core.web.utils.ResponseType;
+import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.spring.web.mvc.DataWrapper;
+import org.onetwo.common.spring.web.mvc.DataWrapper.LazyValue;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
@@ -253,38 +256,59 @@ abstract public class AbstractBaseController {
 	public BootSiteConfig getBootSiteConfig() {
 		return bootSiteConfig;
 	}
-	
-	protected RequestExt getRequestExt(){
-		String ext = BootWebUtils.getRequestExtension(WebHolder.getRequest());
-		return RequestExt.of(ext);
+
+	protected ModelAndView responseData(Object value){
+		return mv("", DataWrapper.wrap(value));
+	}
+	protected ModelAndView responseData(LazyValue value){
+		return mv("", DataWrapper.wrap(value));
 	}
 	
+	protected ResponseType getResponseType(){
+		String ext = BootWebUtils.getRequestExtension(WebHolder.getRequest());
+		return ResponseType.of(ext);
+	}
+	
+	protected ResponseFlow<ModelAndView> responseFlow(){
+		return new ResponseFlow<>(getResponseType());
+	}
+
+	/***
+	 * 如果正常请求，会返回viewName对应页面；
+	 * 如果是json后缀请求，会以json的形式返回value执行的结果
+	 * @param viewName
+	 * @param value
+	 * @return
+	 */
+	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
+		return BootWebUtils.mv(viewName, DataWrapper.wrap(value));
+	}
 	/***
 	 * 如果请求的url是.json后缀
 	 * @return
 	 */
-	protected boolean isJsonView(){
-		return getRequestExt()==RequestExt.JSON;
+	protected boolean isResponseJson(){
+		return getResponseType()==ResponseType.JSON;
 	}
 	
 	/***
 	 * 如果请求的url是.xml后缀
 	 * @return
 	 */
-	protected boolean isXmlView(){
-		return getRequestExt()==RequestExt.XML;
+	protected boolean isResponseXml(){
+		return getResponseType()==ResponseType.XML;
 	}
 	
 	/***
 	 * 如果请求的url没有添加后缀，返回true
 	 * @return
 	 */
-	protected boolean isNoneRequestExt(){
-		return getRequestExt()==RequestExt.NONE;
+	protected boolean isResponsePage(){
+		return getResponseType()==ResponseType.PAGE;
 	}
 	
-	protected boolean isRequestExt(RequestExt ext){
-		return getRequestExt()==ext;
+	protected boolean isResponseType(ResponseType ResponseType){
+		return getResponseType()==ResponseType;
 	}
 	
 	

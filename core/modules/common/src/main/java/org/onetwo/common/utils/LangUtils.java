@@ -1702,4 +1702,11 @@ public class LangUtils {
 			lock.unlock();
 		}
 	}
+	
+	public static boolean isNumberType(Class<?> clazz){
+		if(clazz.isPrimitive()){
+			return int.class==clazz || long.class==clazz || short.class==clazz || float.class==clazz || double.class==clazz;
+		}
+		return Number.class.isAssignableFrom(clazz);
+	}
 }

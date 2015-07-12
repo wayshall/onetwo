@@ -12,6 +12,7 @@ import org.onetwo.common.db.generator.GlobalConfig.OutfilePathFunc;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.MysqlMetaDialet;
 import org.onetwo.common.db.generator.mapping.ColumnMapping;
+import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
@@ -63,6 +64,11 @@ public class DbGenerator {
 	}
 	
 	public DbGenerator allColumnMappingAttr(String name, Object value){
+		this.dialet.getMetaMapping().getColumnMappings().forEach(map->map.attr(name, value));
+		return this;
+	}
+	
+	public DbGenerator allColumnMappingAttr(String name, ColumnAttrValueFunc value){
 		this.dialet.getMetaMapping().getColumnMappings().forEach(map->map.attr(name, value));
 		return this;
 	}
@@ -183,7 +189,7 @@ public class DbGenerator {
 			return config;
 		}
 		
-		public DbGenerator pageTemplate(String templatePath){
+		public DbTableGenerator pageTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
 										String filePath = c.globalGeneratedConfig().getPageFileBaseDir()+
@@ -194,7 +200,7 @@ public class DbGenerator {
 									}
 								);
 			generatedConfigs.add(config);
-			return DbGenerator.this;
+			return this;
 		}
 		
 		public DbGenerator end(){

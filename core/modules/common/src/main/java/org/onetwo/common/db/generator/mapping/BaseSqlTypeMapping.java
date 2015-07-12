@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.onetwo.common.db.generator.DBUtils;
+import org.onetwo.common.db.generator.utils.DBUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 

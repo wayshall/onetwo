@@ -1,4 +1,6 @@
+<#assign dataFormName="dataForm"/>
 <#assign datagridName="dataGrid"/>
+
 <#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
 
 <${'@'}extends parent="application.html">
@@ -8,7 +10,7 @@
     </${'@'}override>
     
     <${'@'}override name="title">
-               字典数据管理
+       ${(table.comments[0])!''}
     </${'@'}override>
     <${'@'}override name="main-content">
        
@@ -48,8 +50,8 @@
                 }
                 
                 var url = '${'$'}{siteConfig.baseURL}${modulePath}.json';
-                $('#dataForm').attr('action', url);
-                $('#dataForm').find('input[name="_method"]').val('');
+                $('#${dataFormName}').attr('action', url);
+                $('#${dataFormName}').find('input[name="_method"]').val('');
            }
         },
 
@@ -63,7 +65,7 @@
                    return ;
                 }
                 
-                var dataForm = $('#dataForm');
+                var dataForm = $('#${dataFormName}');
                 var selected = $('#${datagridName}').datagrid('getSelected');
                 
                 $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
@@ -84,13 +86,13 @@
                     $.messager.alert('警告','请先选择数据！','warning');
                    return ;
                 }
-                var ${table.primaryKey.javaName} function(e){
+                var ${table.primaryKey.javaName} = $.map(selectedNodes, function(e){
                     return e.${table.primaryKey.javaName};
                 });
                 helper.deleteHandler({
                     datagrid: '#${datagridName}',
                     url: '${'$'}{siteConfig.baseURL}${modulePath}.json',
-                    params: {'${table.primaryKey.javaName}': ${table.primaryKey.javaName}}
+                    params: {'${table.primaryKey.javaName}s': ${table.primaryKey.javaName}}
                 });
            }
         }

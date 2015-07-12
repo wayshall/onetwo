@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +13,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.web.mvc.JsonWrapper;
+import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -290,7 +289,7 @@ public final class BootWebUtils {
 			if(Map.class.isInstance(models[0])){
 				mv.addAllObjects((Map<String, ?>)models[0]);
 				
-			}else if(JsonWrapper.class.isInstance(models[0])){
+			}else if(DataWrapper.class.isInstance(models[0])){
 				mv.addObject(models[0]);
 				
 			}else if(ModelAttr.class.isInstance(models[0])){
@@ -307,7 +306,7 @@ public final class BootWebUtils {
 			mv.addAllObjects(modelMap);*/
 			
 			for (int i = 0; i < models.length; i++) {
-				if(JsonWrapper.class.isInstance(models[i])){
+				if(DataWrapper.class.isInstance(models[i])){
 					mv.addObject(models[i]);
 					
 				}else if(ModelAttr.class.isInstance(models[i])){
@@ -407,16 +406,4 @@ public final class BootWebUtils {
 		return URL_PATH_HELPER;
 	}
 	
-	public static enum RequestExt {
-		NONE,
-		DO,
-		JSON,
-		XML;
-		
-		public static RequestExt of(String ext){
-			return Stream.of(values()).filter(e->e.name().equalsIgnoreCase(ext))
-								.findAny()
-								.orElse(NONE);
-		}
-	}
 }
