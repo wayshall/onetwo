@@ -69,15 +69,18 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 														.globalConfig()
 															.pageFileBaseDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\resources\templates/$)
 															.javaSrcDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\java/$)
-															.moduleName("resourcemgr")
+															.javaBasePackage("com.yooyo.zhiyetong")
+															.moduleName("account")
 															.defaultTableContexts()
 																.stripTablePrefix("zyt_")
 															.end()
 														.end()
-														.table("zyt_estate")
+														.table("zyt_account")
 //														.table("")
 															.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
 															.pageTemplate("${basePath}/db/generator/datagrid/edit-form.html.ftl")
+															.controllerTemplate("${basePath}/db/generator/datagrid/Controller.java.ftl")
+															.serviceImplTemplate("${basePath}/db/generator/datagrid/ServiceImpl.java.ftl")
 															/*.outfilePathFunc({TableGeneratedConfig config->
 																									config.globalGeneratedConfig().pageFileBaseDir+
 																									"/"+config.globalGeneratedConfig().moduleName+"/"

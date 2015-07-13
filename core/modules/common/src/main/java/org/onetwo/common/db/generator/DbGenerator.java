@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.generator.GlobalConfig.OutfilePathFunc;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.MysqlMetaDialet;
@@ -16,6 +15,7 @@ import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.collect.Lists;
 
@@ -189,6 +189,13 @@ public class DbGenerator {
 			return config;
 		}
 		
+		public TableGeneratedConfig template(String templatePath, OutfilePathFunc outFileNameFunc){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(outFileNameFunc);
+			generatedConfigs.add(config);
+			return config;
+		}
+		
 		public DbTableGenerator pageTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
@@ -199,6 +206,34 @@ public class DbGenerator {
 										return filePath;
 									}
 								);
+			generatedConfigs.add(config);
+			return this;
+		}
+		
+		public DbTableGenerator controllerTemplate(String templatePath){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(c->{
+									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
+									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/web/"+
+									StringUtils.toClassName(tableShortName)+
+									FileUtils.getFileNameWithoutExt(templatePath);
+									return filePath;
+								}
+							);
+			generatedConfigs.add(config);
+			return this;
+		}
+		
+		public DbTableGenerator serviceImplTemplate(String templatePath){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(c->{
+									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
+									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/service/"+
+									StringUtils.toClassName(tableShortName)+
+									FileUtils.getFileNameWithoutExt(templatePath);
+									return filePath;
+								}
+							);
 			generatedConfigs.add(config);
 			return this;
 		}
@@ -308,7 +343,7 @@ public class DbGenerator {
 			}
 
 			public String tableNameStripStart(String stripChars) {
-				return StringUtils.stripStart(tableName, stripChars);
+				return org.apache.commons.lang3.StringUtils.stripStart(tableName, stripChars);
 			}
 			
 			public GlobalConfig globalGeneratedConfig(){

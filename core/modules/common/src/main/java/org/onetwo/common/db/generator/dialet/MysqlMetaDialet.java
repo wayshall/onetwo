@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.generator.DBConnecton;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.db.generator.utils.DBUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 
 public class MysqlMetaDialet extends BaseMetaDialet implements DatabaseMetaDialet {
@@ -26,8 +27,11 @@ public class MysqlMetaDialet extends BaseMetaDialet implements DatabaseMetaDiale
 		TableMeta table = null;
 		try {
 			rs = dbcon.getMetaData().getTables(catalog, schema, tableName.trim(), null);
-			if(rs.next())
+			if(rs.next()){
 				rowMap = DBUtils.toMap(rs);
+			}else{
+				throw new BaseException("not table found: " + tableName);
+			}
 
 			String tname = (String)rowMap.get("TABLE_NAME");
 			String comment = (String)rowMap.get("REMARKS");
