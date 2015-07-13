@@ -6,6 +6,10 @@ public class CopyConfig {
 	public static CopyConfig create() {
 		return new CopyConfig();
 	};
+	
+	public static CopyConfig createIgnoreBlank(String...ignoreFields) {
+		return CopyConfig.create().ignoreIfNoSetMethod().ignoreNull().ignoreBlank().ignoreFields(ignoreFields);
+	};
 
 	private boolean ignoreNull = false;
 	private boolean ignoreBlank = false;

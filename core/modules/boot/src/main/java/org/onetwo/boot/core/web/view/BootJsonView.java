@@ -12,8 +12,10 @@ import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DataResult;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.Result;
 import org.onetwo.common.utils.list.Predicate;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
@@ -43,7 +45,17 @@ public class BootJsonView extends MappingJackson2JsonView {
 		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
 		Module module = SpringApplication.getInstance().getBean(Module.class);
 //		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-//		h4m.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+		String clsName = "com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module";
+		if(ClassUtils.isPresent(clsName, ClassUtils.getDefaultClassLoader())){
+			Object h4m = ReflectUtils.newInstance(clsName);
+			
+			Class<?> featureCls = ReflectUtils.loadClass(clsName+"$Feature");
+			Object field = ReflectUtils.getStaticFieldValue(featureCls, "SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS");
+			ReflectUtils.invokeMethod("enable", h4m, field);
+
+			field = ReflectUtils.getStaticFieldValue(featureCls, "FORCE_LAZY_LOADING");
+			ReflectUtils.invokeMethod("disable", h4m, field);
+		}
 		if(module!=null)
 			mapper.registerModule(module);
 		this.setObjectMapper(mapper);

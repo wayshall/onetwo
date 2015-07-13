@@ -37,7 +37,9 @@ public final class SimpleMetaMapping extends BaseSqlTypeMapping {
 		types.put(Types.TINYINT, Byte.class);
 		types.put(Types.DATE, Date.class); 
 		types.put(Types.TIME, Date.class);
+		types.put(Types.TIME_WITH_TIMEZONE, Date.class);
 		types.put(Types.TIMESTAMP, Date.class);
+		types.put(Types.TIMESTAMP_WITH_TIMEZONE, Date.class);
 		types.put(Types.BIT, boolean.class);
 		SQL_TYPE_TO_JAVA_TYPE = Collections.unmodifiableMap(types);
 		

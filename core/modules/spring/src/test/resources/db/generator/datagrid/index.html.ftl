@@ -42,13 +42,6 @@
             handler:function(){
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
 
-
-                var selected = $('#${datagridName}').datagrid('getSelected');
-                if(selected){
-                    $('#parentCode').textbox('setText', selected.code);
-                    $('#parentCode').textbox('setValue', selected.code);
-                }
-                
                 var url = '${'$'}{siteConfig.baseURL}${modulePath}.json';
                 $('#${dataFormName}').attr('action', url);
                 $('#${dataFormName}').find('input[name="_method"]').val('');
@@ -69,8 +62,8 @@
                 var selected = $('#${datagridName}').datagrid('getSelected');
                 
                 $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
-                $('#code').textbox('disable');
-                var url = '${'$'}{siteConfig.baseURL}${modulePath}/'+selected.code+'.json';
+                
+                var url = '${'$'}{siteConfig.baseURL}${modulePath}/'+selected.${table.primaryKey.javaName}+'.json';
                 dataForm.attr('action', url);
                 dataForm.find('input[name="_method"]').val('put');
                 dataForm.form('load', url);
@@ -109,17 +102,8 @@
         singleSelect: false,
         url: loadUrl,
         method: 'get',
-        idField: 'code',
-        toolbar: toolbar,
-        treeField: 'name',
-        onClickRow: function(row){
-            if(selectedRow && selectedRow==row){
-                $('#${datagridName}').datagrid('unselect', selectedRow.id);
-                selectedRow = null;
-            }else{
-                selectedRow = row;
-            }
-        }
+        //idField: '${table.primaryKey.javaName}',
+        toolbar: toolbar
     }); 
  </script>
     </${'@'}override>

@@ -18,7 +18,7 @@ import org.springframework.util.ReflectionUtils;
 
 public class BeanCopier<T> {
 
-	private static final List<Class<?>> BASE_CLASS;
+//	private static final List<Class<?>> BASE_CLASS;
 	private static final List<Class<?>> SIMPLE_CLASS;
 
 	static {
@@ -41,7 +41,6 @@ public class BeanCopier<T> {
 		cls.add(Double.class);
 		cls.add(double.class);
 		cls.add(String.class);
-		BASE_CLASS = Collections.unmodifiableList(cls);
 		
 		List<Class<?>> simples = new ArrayList<Class<?>>(cls);
 //		simples.add(String.class);
@@ -52,15 +51,18 @@ public class BeanCopier<T> {
 		SIMPLE_CLASS = Collections.unmodifiableList(simples);
 	}
 	
-	public static final <R> BeanCopier<R> newBeanCopier(Class<R> targetClass, PropertyNameConvertor propertyNameConvertor){
+	public final <R> BeanCopier<R> newBeanCopier(Class<R> targetClass){
 		BeanCopier<R> copier = new BeanCopier<R>(CopyUtils.newInstance(targetClass), propertyNameConvertor);
+		copier.propertyFilter = this.propertyFilter;
+		copier.propertyNameConvertor = this.propertyNameConvertor;
 		return copier;
 	}
 	
 	private BeanWrapper targetBeanWrapper;
 	private PropertyNameConvertor propertyNameConvertor;
 	private final T target;
-	private boolean ignoreNull;
+//	private boolean ignoreNull;
+	private PropertyFilter propertyFilter = new SimplePropertyFilter();
 	
 
 	public BeanCopier(T target) {
@@ -87,15 +89,26 @@ public class BeanCopier<T> {
     	BeanWrapper srcBean = CopyUtils.newBeanWrapper(src);
     	PropertyDescriptor[] properties = targetBeanWrapper.getPropertyDescriptors();
 		for(PropertyDescriptor property : properties){
-			if(property.getWriteMethod()==null)
-				continue ;
+			/*if(property.getWriteMethod()==null)
+				continue ;*/
+			if(!propertyFilter.isCopiable(property)){
+				continue;
+			}
 			Object srcValue = getPropertyValue(srcBean, property);
+
+			if(!propertyFilter.isCopiable(srcValue)){
+				continue;
+			}
 			setPropertyValue(property, srcValue);
     	}
 		return target;
 	}
 	
-	public Cloneable getCloneableAnnotation(PropertyDescriptor property){
+	protected boolean isCopyValueOrRef(PropertyDescriptor property){
+		return isSimpleType(property.getPropertyType()) || getCloneableAnnotation(property)==null;
+	}
+	
+	protected Cloneable getCloneableAnnotation(PropertyDescriptor property){
 		Cloneable cloneable = property.getReadMethod().getAnnotation(Cloneable.class);
 		if(cloneable==null){
 			Field field = ReflectionUtils.findField(target.getClass(), property.getName());
@@ -106,19 +119,17 @@ public class BeanCopier<T> {
 		return cloneable;
 	}
 
-	private void setPropertyValue(PropertyDescriptor property, Object srcValue){
+	protected void setPropertyValue(PropertyDescriptor property, Object srcValue){
 		String propertyName = property.getName();
 		if(srcValue==null){
-			if(!ignoreNull){
-				targetBeanWrapper.setPropertyValue(propertyName, null);
-			}
+			targetBeanWrapper.setPropertyValue(propertyName, null);
 			return ;
 		}
 
 //		Object targetValue = null;
 		Type type = property.getPropertyType();
 		Class<?> propertyType = (Class<?>) type;
-		if(isSimpleType(propertyType) || getCloneableAnnotation(property)==null){
+		if(isCopyValueOrRef(property)){
 			targetBeanWrapper.setPropertyValue(propertyName, srcValue);
 			
 		}else if(propertyType.isArray()){
@@ -133,7 +144,7 @@ public class BeanCopier<T> {
 				targetBeanWrapper.setPropertyValue(propertyName, array);
 			}else{
 				for (int i = 0; i < length; i++) {
-					Object targetElement = newBeanCopier(propertyType.getComponentType(), propertyNameConvertor).fromObject(Array.get(array, i));
+					Object targetElement = newBeanCopier(propertyType.getComponentType()).fromObject(Array.get(array, i));
 					Array.set(array, i, targetElement);
 				}
 				targetBeanWrapper.setPropertyValue(propertyName, array);
@@ -145,18 +156,18 @@ public class BeanCopier<T> {
 				ParameterizedType ptype = (ParameterizedType)property.getReadMethod().getGenericReturnType();
 				Type elementType = ptype.getActualTypeArguments()[0];
 				for(Object element : (Collection<?>)srcValue){
-					Object targetElement = newBeanCopier((Class<?>)elementType, propertyNameConvertor).fromObject(element);
+					Object targetElement = newBeanCopier((Class<?>)elementType).fromObject(element);
 					cols.add(targetElement);
 				}
 			}else{
 				for(Object element : (Collection<?>)srcValue){
-					Object targetElement = newBeanCopier(element.getClass(), propertyNameConvertor).fromObject(element);
+					Object targetElement = newBeanCopier(element.getClass()).fromObject(element);
 					cols.add(targetElement);
 				}
 			}
 			ReflectionUtils.invokeMethod(property.getWriteMethod(), target, cols);
 		}else{
-			Object targetValue = newBeanCopier(property.getPropertyType(), propertyNameConvertor).fromObject(srcValue);
+			Object targetValue = newBeanCopier(property.getPropertyType()).fromObject(srcValue);
 			targetBeanWrapper.setPropertyValue(propertyName, targetValue);
 		}
 		
@@ -166,20 +177,35 @@ public class BeanCopier<T> {
 		String targetPropertyName = property.getName();
 		Object srcValue = null;
 		if(propertyNameConvertor!=null){
-			if(srcBean.isReadableProperty(targetPropertyName)){
-    			srcValue = srcBean.getPropertyValue(targetPropertyName);
-			}else{
-    			srcValue = srcBean.getPropertyValue(propertyNameConvertor.convert(targetPropertyName));
+			srcValue = getPropertyValue(srcBean, targetPropertyName);
+			if(srcValue==null){
+    			srcValue = getPropertyValue(srcBean, propertyNameConvertor.convert(targetPropertyName));
 			}
 		}else{
+			srcValue = getPropertyValue(srcBean, targetPropertyName);
+		}
+		return srcValue;
+	}
+
+	private Object getPropertyValue(BeanWrapper srcBean, String targetPropertyName){
+		Object srcValue = null;
+		if(srcBean.isReadableProperty(targetPropertyName)){
 			srcValue = srcBean.getPropertyValue(targetPropertyName);
 		}
 		return srcValue;
 	}
 
-	public BeanCopier<T> ignoreNull() {
+	public void setPropertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
+		this.propertyNameConvertor = propertyNameConvertor;
+	}
+
+	public void setPropertyFilter(PropertyFilter propertyFilter) {
+		this.propertyFilter = propertyFilter;
+	}
+
+	/*public BeanCopier<T> ignoreNull() {
 		this.ignoreNull = true;
 		return this;
-	}
+	}*/
 	
 }

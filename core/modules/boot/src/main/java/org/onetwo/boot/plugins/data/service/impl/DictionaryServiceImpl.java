@@ -17,10 +17,9 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+//@Service
 @Transactional
 abstract public class DictionaryServiceImpl implements DictionaryService {
 	
@@ -128,6 +127,7 @@ abstract public class DictionaryServiceImpl implements DictionaryService {
 			if(type==null){
 				DictInfo newTyep = newDictInstance();
 				ReflectUtils.copyIgnoreBlank(dictType, newTyep);
+//				newTyep.setDictType(dictty);
 				type = saveDictType(newTyep, true);
 			}else{
 				ReflectUtils.copyIgnoreBlank(dictType, type);

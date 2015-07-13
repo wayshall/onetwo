@@ -1,13 +1,23 @@
-<#assign datagridName="dataGrid"/>
-<#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
+<#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.className}"/>
+<#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
 
-package com.yooyo.zhiyetong.web.resourcemgr;
+<#assign servicePackage="com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service"/>
+<#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
+<#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>
+<#assign mapperClassName="${_tableContext.className}Mapper"/>
+<#assign mapperPropertyName="${_tableContext.propertyName}Mapper"/>
+<#assign idName="${table.primaryKey.javaName}"/>
+<#assign idType="${table.primaryKey.javaType.simpleName}"/>
+
+
+package com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.web;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.controller.DateInitBinder;
 import org.onetwo.boot.plugins.permission.annotation.ByFunctionClass;
 import org.onetwo.boot.plugins.permission.annotation.ByMenuClass;
-import org.onetwo.common.spring.web.mvc.JsonWrapper;
+import org.onetwo.common.utils.map.MappableMap;
+import org.onetwo.easyui.EasyModel;
 import org.onetwo.easyui.EasyPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,56 +26,52 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.yooyo.zhiyetong.entity.Estate;
-import com.yooyo.zhiyetong.entity.EstateExtEntity;
-import com.yooyo.zhiyetong.service.impl.EstateServiceImpl;
-import com.yooyo.zhiyetong.utils.Zhiyetong.ConfigMgr.DictMgr;
-import com.yooyo.zhiyetong.utils.Zhiyetong.ResourceMgr.EstateMgr;
+import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
+import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service.${serviceImplClassName};
 
 @Controller
-@RequestMapping("/resourcemgr/estate")
-public class EstateController extends AbstractBaseController implements DateInitBinder {
+@RequestMapping("${requestPath}")
+public class ${_tableContext.className}Controller extends AbstractBaseController implements DateInitBinder {
 
     @Autowired
-    private EstateServiceImpl estateServiceImpl;
+    private ${serviceImplClassName} ${serviceImplPropertyName};
     
     
-    @ByMenuClass(EstateMgr.class)
+    @ByMenuClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.GET)
-    public ModelAndView index(EasyPage<EstateExtEntity> page){
-        if(isPageOnleyRequest()){
-            return mv("/resourcemgr/estate-index");
-        }
-        estateServiceImpl.findPage(page);
-        return mv("/resourcemgr/estate-index", "estatePage", page, JsonWrapper.wrap(page));
+    public ModelAndView index(EasyPage<${_tableContext.className}> page){
+        return responsePageOrData("${pagePath}-index", ()->{
+                    ${serviceImplPropertyName}.findPage(page);
+                    return page;
+                });
     }
     
-    @ByFunctionClass(DictMgr.class)
+    @ByFunctionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView create(Estate estate){
-        estateServiceImpl.save(estate);
+    public ModelAndView create(${_tableContext.className} ${_tableContext.propertyName}){
+        ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return messageMv("保存成功！");
     }
-    @ByFunctionClass(DictMgr.class)
-    @RequestMapping(value="{code}", method=RequestMethod.GET)
-    public ModelAndView show(@PathVariable("code") Long id){
-        Estate estate = estateServiceImpl.findByPrimaryKey(id);
-        return mv("/configmgr/dictionary-edit", "estate", estate, JsonWrapper.wrap(estate));
+    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @RequestMapping(value="{${idName}}", method=RequestMethod.GET)
+    public ModelAndView show(@PathVariable("${idName}") Long ${idName}){
+        ${_tableContext.className} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findByPrimaryKey(${idName});
+        return responseData(${_tableContext.propertyName});
     }
     
-    @ByFunctionClass(DictMgr.class)
-    @RequestMapping(value="{id}", method=RequestMethod.PUT)
-    public ModelAndView update(@PathVariable("id") Long id, Estate estate){
-        estate.setId(id);
-        estateServiceImpl.update(estate);
+    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @RequestMapping(value="{${idName}}", method=RequestMethod.PUT)
+    public ModelAndView update(@PathVariable("${idName}") Long ${idName}, ${_tableContext.className} ${_tableContext.propertyName}){
+        ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
+        ${serviceImplPropertyName}.update(${_tableContext.propertyName});
         return messageMv("更新成功！");
     }
     
     
-    @ByFunctionClass(DictMgr.class)
+    @ByFunctionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.DELETE)
-    public ModelAndView deleteBatch(Long[] ids){
-        estateServiceImpl.deleteByPrimaryKeys(ids);
+    public ModelAndView deleteBatch(Long[] ${idName}s){
+        ${serviceImplPropertyName}.deleteByPrimaryKeys(${idName}s);
         return messageMv("删除成功！");
     }
 }
