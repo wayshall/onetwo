@@ -34,7 +34,7 @@ final public class DataUtils {
 	public static XStream registerDictModel(){
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("dictionary", DictionaryList.class);
-		xstream.alias("dictType", DictTypeInfo.class);
+//		xstream.alias("dictType", DictTypeInfo.class);
 		xstream.alias("dicts", List.class);
 		xstream.alias("dict", DictInfo.class);
 		xstream.useAttributeFor(String.class);

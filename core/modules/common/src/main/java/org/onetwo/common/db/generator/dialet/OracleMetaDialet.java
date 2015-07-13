@@ -58,6 +58,8 @@ public class OracleMetaDialet extends BaseMetaDialet implements DatabaseMetaDial
 			rs = dbcon.query(SELECT_TABLE_COMMENTS, "tableName", tableName);
 			if(rs.next()){
 				rowMap = DBUtils.toMap(rs);
+			}else{
+				throw new BaseException("not table found: " + tableName);
 			}
 
 			String tname = (String)rowMap.get("TABLE_NAME");

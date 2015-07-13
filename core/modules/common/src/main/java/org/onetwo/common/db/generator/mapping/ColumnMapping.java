@@ -1,6 +1,6 @@
 package org.onetwo.common.db.generator.mapping;
 
-import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,12 +60,32 @@ public class ColumnMapping {
 		return Date.class.isInstance(getJavaType());
 	}
 
-	public boolean isTimestampType(){
-		return Timestamp.class.isInstance(getJavaType());
+	public boolean isSqlTimestamp(){
+		return getSqlType()==Types.TIMESTAMP || getSqlType()==Types.TIMESTAMP_WITH_TIMEZONE;
+	}
+
+	public boolean isSqlTime(){
+		return getSqlType()==Types.TIME || getSqlType()==Types.TIME_WITH_TIMEZONE;
+	}
+
+	public boolean isSqlDate(){
+		return getSqlType()==Types.DATE;
 	}
 	
 	public boolean isNumberType(){
 		return LangUtils.isNumberType(getJavaType());
+	}
+	
+	public boolean isSqlFloat(){
+		return isSqlType(Types.FLOAT);
+	}
+	
+	public boolean isSqlInteger(){
+		return getSqlType()==Types.INTEGER || getSqlType()==Types.BIGINT || getSqlType()==Types.SMALLINT;
+	}
+	
+	public boolean isSqlType(int sqlType){
+		return this.sqlType == sqlType;
 	}
 	
 	public boolean isBooleanType(){

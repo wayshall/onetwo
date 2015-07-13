@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.onetwo.common.db.generator.DbGenerator.DbTableGenerator.TableGeneratedConfig;
+import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.collect.Maps;
 
@@ -78,8 +79,9 @@ public class GlobalConfig {
 		return javaBasePackage;
 	}
 
-	public void setJavaBasePackage(String javaBasePackage) {
+	public GlobalConfig javaBasePackage(String javaBasePackage) {
 		this.javaBasePackage = javaBasePackage;
+		return this;
 	}
 
 	public String getPageFileBaseDir() {
@@ -124,6 +126,17 @@ public class GlobalConfig {
 	public GlobalConfig moduleName(String moduleName) {
 		this.moduleName = moduleName;
 		return this;
+	}
+
+	public String getFullModulePackageName() {
+		return getJavaBasePackage()+StringUtils.appendStartWith(getModuleName(), ".");
+	}
+
+	public String getFullModulePackagePath() {
+		String packagePath = StringUtils.replaceEach(getFullModulePackageName(), ".", "/");
+		String path = StringUtils.trimEndWith(getJavaSrcDir(), "/");
+		path = path + "/" + packagePath;
+		return path;
 	}
 	
 }

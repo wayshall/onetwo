@@ -20,8 +20,12 @@ public class DictionaryImportController extends PluginBaseController {
 	 
 	@Autowired
 	private DictionaryService dictionaryService;
-	private String dataXmlPath;
+	private String dataXmlPath = "/plugins/data/dict.xml";
 	
+	public DictionaryImportController() {
+		super();
+	}
+
 	public DictionaryImportController(String dataXmlPath) {
 		super();
 		this.dataXmlPath = dataXmlPath;
