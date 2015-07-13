@@ -8,6 +8,7 @@
     closed="true" buttons="#dlg-buttons">
            填写[${(table.comments[0])!''}]信息<hr/>
        <form id="${dataFormName}" class="easyui-form" action="${'$'}{siteConfig.baseURL}${modulePath}.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
            <input name="${table.primaryKey.javaName}" type="hidden"/>
            <table cellpadding="5">
             <#list table.columns as column>
@@ -17,15 +18,23 @@
                     <td>
                       <#if column.mapping.isNumberType()==true>
                         <input class="easyui-numberbox formFieldClass" type="text" name="${column.javaName}" 
-                               data-options="required:${column.nullable?string('false', 'true')}"/>
+                               data-options="required:${column.nullable?string('false', 'true')}
+                                             <#if column.mapping.isSqlFloat()==true>, precision:2</#if> "/>
                                
-                      <#elseif column.mapping.isTimestampType()==true>
+                      <#elseif column.mapping.isSqlTimestamp()==true>
                         <input class="easyui-datetimebox formFieldClass" type="text" name="${column.javaName}" 
-                               data-options="required:${column.nullable?string('false', 'true')}"/>
+                               data-options="required:${column.nullable?string('false', 'true')},
+                                             editable:false "/>
 
-                      <#elseif column.mapping.isDateType()==true>
-                        <input class="easyui-datebox" type="text" name="${column.javaName}" 
-                               data-options="required:${column.nullable?string('false', 'true')}"/>
+                      <#elseif column.mapping.isSqlTime()==true>
+                        <input class="easyui-timespinner formFieldClass" type="text" name="${column.javaName}" 
+                               data-options="required:${column.nullable?string('false', 'true')},
+                                             editable:false "/>
+
+                      <#elseif column.mapping.isSqlDate()==true>
+                        <input class="easyui-datebox formFieldClass" type="text" name="${column.javaName}" 
+                               data-options="required:${column.nullable?string('false', 'true')},
+                                             editable:false "/>
                                
                       <#elseif column.mapping.isBooleanType()==true>
                         <input class="easyui-combobox formFieldClass" type="text" name="${column.javaName}" 

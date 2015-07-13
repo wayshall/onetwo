@@ -25,9 +25,11 @@ public class DefaultTableContexts implements TableContexts {
 		Map<String, Object> context = Maps.newHashMap();
 		
 		String tableNameWithoutPrefix = tableConfig.tableNameStripStart(stripTablePrefix);
+		String className = StringUtils.toClassName(tableNameWithoutPrefix);
+		String propertyName = StringUtils.toPropertyName(tableNameWithoutPrefix);
 		context.put("tableNameWithoutPrefix", tableNameWithoutPrefix);
-		context.put("className", StringUtils.toClassName(tableNameWithoutPrefix));
-		context.put("propertyName", StringUtils.toPropertyName(tableNameWithoutPrefix));
+		context.put("className", className);
+		context.put("propertyName", propertyName);
 		if(tableContexts!=null){
 			Map<String, Object> other = tableContexts.getContexts(tableConfig);
 			if(other!=null){
