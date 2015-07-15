@@ -16,6 +16,8 @@ import org.springframework.web.util.WebUtils;
 
 public class BootFirstInterceptor extends WebInterceptorAdapter {
 	
+	public static final int INTERCEPTOR_ORDER = Ordered.HIGHEST_PRECEDENCE;
+	
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private static final String CONTROLLER_TIME_KEY = "mvc execute";
 	public static final String NOW_KEY = "now";
@@ -72,6 +74,6 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
+		return INTERCEPTOR_ORDER;
 	}
 }

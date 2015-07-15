@@ -45,11 +45,20 @@ public class MappableMap extends HashMap<String, Object>{
 	
 	public static class StaticMappingBuilder<T> {
 		final private List<MappingInfo<T>> mappingInfos = new ArrayList<>();
+		private boolean mapAllFields = true;
 //		final private List<T> sourceObjects;
 		public StaticMappingBuilder() {
 //	        this.sourceObjects = sourceObjects;//List<T> sourceObjects
         }
-		
+
+		public StaticMappingBuilder<T> mapAllFields(){
+			this.mapAllFields = true;
+			return this;
+		}
+		public StaticMappingBuilder<T> specifyMappedFields(){
+			this.mapAllFields = false;
+			return this;
+		}
 		public StaticMappingBuilder<T> addMapping(String jsonFieldName, String objectFieldName){
 			this.mappingInfos.add(new MappingInfo<T>(jsonFieldName, objectFieldName));
 			return this;
@@ -59,22 +68,19 @@ public class MappableMap extends HashMap<String, Object>{
 			this.mappingInfos.add(new MappingInfo<T>(jsonFieldName, valueFunc));
 			return this;
 		}
-
+		
 		
 		public List<MappableMap> bindValues(List<T> sourceObjects){
-		    return bindValues(true, sourceObjects);
-		}
-		
-		public List<MappableMap> bindValues(boolean putObjFieldsToMap, List<T> sourceObjects){
-		    return sourceObjects.stream().map(obj->bindMappings(putObjFieldsToMap, new MappableMap(), obj))
+		    return sourceObjects.stream().map(obj->bindMappings(new MappableMap(), obj))
 										    .collect(Collectors.toList());
 		}
 		
 		public MappableMap bindValue(T sourceObject){
-			return bindMappings(true, new MappableMap(), sourceObject);
+			return bindMappings(new MappableMap(), sourceObject);
 		}
-		private MappableMap bindMappings(boolean putObjFieldsToMap, MappableMap mappingObject, T sourceObject){
-			if(putObjFieldsToMap){
+		
+		private MappableMap bindMappings(MappableMap mappingObject, T sourceObject){
+			if(mapAllFields){
 				mappingObject.from(sourceObject);
 			}
 		    mappingInfos.stream().forEach(maping->{

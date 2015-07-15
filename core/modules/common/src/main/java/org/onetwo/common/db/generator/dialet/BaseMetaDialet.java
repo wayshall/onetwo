@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -104,11 +103,11 @@ abstract public class BaseMetaDialet implements DatabaseMetaDialet {
 
 			@Override
 			public ColumnMeta map(ResultSet rs) throws SQLException {
-				Map<String, Object> rsMap = DBUtils.toMap(rs, false);
+//				Map<String, Object> rsMap = DBUtils.toMap(rs, false);
 				String colName = rs.getString("COLUMN_NAME");
 				int sqlType = rs.getInt("DATA_TYPE");
 				String remark = rs.getString("REMARKS");
-				/*if("SELL_STATUS".equalsIgnoreCase(colName)){
+				/*if("estate_Id".equalsIgnoreCase(colName)){
 					System.out.println("test");
 				}*/
 				String isNullable  = rs.getString("IS_NULLABLE");
@@ -122,6 +121,26 @@ abstract public class BaseMetaDialet implements DatabaseMetaDialet {
 				
 				table.addColumn(meta);
 				return meta;
+			}
+			
+		});
+		
+		//{pktable_cat=zhiyetong, pktable_schem=null, pktable_name=zyt_estate, pkcolumn_name=ID, fktable_cat=zhiyetong, fktable_schem=null, fktable_name=zyt_estate_unit, fkcolumn_name=ESTATE_ID, key_seq=1, update_rule=3, delete_rule=3, fk_name=FK_Reference_5, pk_name=null, deferrability=7}
+		rs = dbcon.getMetaData().getImportedKeys(catalog, schema, table.getName());
+		DBUtils.toList(rs, true, new ResultSetMapper<ColumnMeta>(){
+
+			@Override
+			public ColumnMeta map(ResultSet rs) throws SQLException {
+//				Map<String, Object> rsMap = DBUtils.toMap(rs, false);
+				String fkColumnName = rs.getString("fkcolumn_name");
+				ColumnMeta fkColumn = table.getColumn(fkColumnName);
+				if(fkColumn==null){
+					throw new BaseException("找不到外键列：" + fkColumnName);
+				}
+				/*if("estate_Id".equalsIgnoreCase(colName)){
+					System.out.println("test");
+				}*/
+				return fkColumn;
 			}
 			
 		});

@@ -20,7 +20,7 @@ public class DataWrapper implements Serializable{
 		return new DataWrapper(value);
 	}
 	
-	public static DataWrapper wrap(LazyValue value){
+	public static DataWrapper lazy(LazyValue value){
 		return new DataWrapper(value);
 	}
 	

@@ -199,10 +199,11 @@ public class DbGenerator {
 		public DbTableGenerator pageTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
+										String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
 										String filePath = c.globalGeneratedConfig().getPageFileBaseDir()+
 										"/"+c.globalGeneratedConfig().getModuleName()+"/"+
-										c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix())
-										+"-"+FileUtils.getFileNameWithoutExt(templatePath);
+										tableShortName.replace('_', '-')+
+										"-"+FileUtils.getFileNameWithoutExt(templatePath);
 										return filePath;
 									}
 								);
@@ -343,7 +344,9 @@ public class DbGenerator {
 			}
 
 			public String tableNameStripStart(String stripChars) {
-				return org.apache.commons.lang3.StringUtils.stripStart(tableName, stripChars);
+				if(StringUtils.isBlank(stripChars))
+					return tableName;
+				return org.apache.commons.lang3.StringUtils.stripStart(tableName.toLowerCase(), stripChars.toLowerCase());
 			}
 			
 			public GlobalConfig globalGeneratedConfig(){
