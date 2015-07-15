@@ -17,7 +17,7 @@ public class ColumnMeta {
 //	protected int sqlType = DBUtils.TYPE_UNKNOW;
 
 	protected boolean primaryKey;
-	protected boolean referencedKey;
+//	protected boolean referencedKey;
 	
 	protected boolean nullable;
 	private String comment;
@@ -80,13 +80,13 @@ public class ColumnMeta {
 		this.primaryKey = primaryKey;
 	}
 
-	public boolean isReferencedKey() {
+	/*public boolean isReferencedKey() {
 		return referencedKey;
 	}
 
 	public void setReferencedKey(boolean referencedKey) {
 		this.referencedKey = referencedKey;
-	}
+	}*/
 	
 	public boolean isDateType(){
 		return this.mapping.isDateType();

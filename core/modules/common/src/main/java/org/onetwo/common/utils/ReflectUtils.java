@@ -912,8 +912,8 @@ public class ReflectUtils {
 		copy(source, target, CopyConfig.create().throwIfError().ignoreIfNoSetMethod().ignoreFields(excludeNames));
 	}
 	
-	public static void copyIgnoreBlank(Object source, Object target) {
-		copy(source, target, IGNORE_BLANK);
+	public static void copyIgnoreBlank(Object source, Object target, String...ignoreFields) {
+		copy(source, target, CopyConfig.createIgnoreBlank(ignoreFields));
 	}
 	
 	public static void copy(Object source, Object target, CopyConfig conf) {

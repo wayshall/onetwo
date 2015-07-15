@@ -28,6 +28,7 @@ public class DefaultTableContexts implements TableContexts {
 		String className = StringUtils.toClassName(tableNameWithoutPrefix);
 		String propertyName = StringUtils.toPropertyName(tableNameWithoutPrefix);
 		context.put("tableNameWithoutPrefix", tableNameWithoutPrefix);
+		context.put("shortTableName", tableNameWithoutPrefix);
 		context.put("className", className);
 		context.put("propertyName", propertyName);
 		if(tableContexts!=null){

@@ -41,6 +41,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionRes
 
 /************
  * 异常处理
+ * instead of BasicErrorController
  * @author wayshall
  *
  */
@@ -216,7 +217,8 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			}else{
 				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
 			}
-			defaultViewName = ExceptionView.CODE_EXCEPTON;
+//			defaultViewName = ExceptionView.CODE_EXCEPTON;
+			defaultViewName = ExceptionView.UNDEFINE;
 		}
 		
 		if(StringUtils.isBlank(errorMsg)){
