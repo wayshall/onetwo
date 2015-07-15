@@ -1,5 +1,5 @@
-<#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.className}"/>
-<#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
+<#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.propertyName}"/>
+<#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
 
 <#assign servicePackage="com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>

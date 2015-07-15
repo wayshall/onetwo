@@ -15,8 +15,8 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
-import org.onetwo.boot.core.web.utils.ResponseType;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
+import org.onetwo.boot.core.web.utils.ResponseType;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
@@ -261,7 +261,7 @@ abstract public class AbstractBaseController {
 		return mv("", DataWrapper.wrap(value));
 	}
 	protected ModelAndView responseData(LazyValue value){
-		return mv("", DataWrapper.wrap(value));
+		return mv("", DataWrapper.lazy(value));
 	}
 	
 	protected ResponseType getResponseType(){
@@ -281,7 +281,14 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.mv(viewName, DataWrapper.wrap(value));
+		return BootWebUtils.mv(viewName, DataWrapper.lazy(value));
+	}
+	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
+		if(mv==null){
+			return BootWebUtils.mv("", DataWrapper.lazy(value));
+		}
+		mv.addObject(value);
+		return mv;
 	}
 	/***
 	 * 如果请求的url是.json后缀

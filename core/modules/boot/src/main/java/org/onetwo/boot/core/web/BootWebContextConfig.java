@@ -9,8 +9,11 @@ import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
+import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -57,11 +60,25 @@ public class BootWebContextConfig {
 	}
 	
 	@Bean
+	public BootFirstInterceptor bootFirstInterceptor(){
+		return new BootFirstInterceptor();
+	}
+	
+	@Bean
+	public LoggerInterceptor loggerInterceptor(){
+		return new LoggerInterceptor();
+	}
+	
+	@Bean
 	public BootJsonView bootJsonView(){
 		return new BootJsonView();
 	}
 	
-
+	@Bean
+	public WebHolderManager webHolderManager() {
+		WebHolderManager webHolderManager = new WebHolderManager();
+		return webHolderManager;
+	}
 
 	@Bean
 	@Autowired

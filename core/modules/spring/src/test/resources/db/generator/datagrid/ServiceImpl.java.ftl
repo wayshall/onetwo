@@ -12,13 +12,16 @@
 package ${servicePackage};
 
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.ReflectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -37,13 +40,12 @@ public class ${serviceImplClassName} {
     private ${mapperClassName} ${mapperPropertyName};
 
     
-    public Page<${_tableContext.className}> findPage(EasyPage<${_tableContext.className}> page){
+    public void findPage(EasyPage<${_tableContext.className}> page){
         PageHelper.startPage(page.getPage(), page.getPageSize());   
         ${_tableContext.className}Example example = new ${_tableContext.className}Example();
-        Criteria crieria = example.createCriteria();
-        Page<${_tableContext.className}> rows = (Page<${_tableContext.className}>)${mapperPropertyName}.selectByExample(example);
-        page.setTotal(rows.getTotal());
-        return rows;
+//        Criteria crieria = example.createCriteria();
+        List<${_tableContext.className}> rows = ${mapperPropertyName}.selectByExample(example);
+        page.setRows(rows);
     }
     
     public int save(${_tableContext.className} ${_tableContext.propertyName}){
@@ -58,8 +60,14 @@ public class ${serviceImplClassName} {
     }
     
     public int update(${_tableContext.className} ${_tableContext.propertyName}){
-        ${_tableContext.propertyName}.setUpdateAt(new Date());
-        return ${mapperPropertyName}.updateByPrimaryKey(${_tableContext.propertyName});
+        Assert.notNull(${_tableContext.propertyName}.get${idName?cap_first}(), "参数不能为null");
+        ${_tableContext.className} db${_tableContext.className} = ${mapperPropertyName}.selectByPrimaryKey(${_tableContext.propertyName}.get${idName?cap_first}());
+        if(db${_tableContext.className}==null){
+            throw new ServiceException("找不到数据：" + ${_tableContext.propertyName}.get${idName?cap_first}());
+        }
+        ReflectUtils.copyIgnoreBlank(${_tableContext.propertyName}, db${_tableContext.className});
+        db${_tableContext.className}.setUpdateAt(new Date());
+        return ${mapperPropertyName}.updateByPrimaryKey(db${_tableContext.className});
     }
     
     public void deleteByPrimaryKeys(${idType}...${idName}s){
