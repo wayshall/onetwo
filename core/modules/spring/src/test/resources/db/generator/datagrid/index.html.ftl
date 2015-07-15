@@ -1,7 +1,11 @@
+<#import "helper.ftl" as helper>
+
 <#assign dataFormName="dataForm"/>
 <#assign datagridName="dataGrid"/>
 
-<#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
+<#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.propertyName}"/>
+<#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
+
 
 <${'@'}extends parent="application.html">
     
@@ -14,9 +18,26 @@
     </${'@'}override>
     <${'@'}override name="main-content">
        
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+                <@helper.generatedFormField table=table/>
+                <tr>
+                   <td>&nbsp;</td>
+                    <td rowspan="5">
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%"> 
        <table id="${datagridName}"
               title="${(table.comments[0])!''}" 
-              style="height:100%;width:100%;">
+              style="height:100%;">
         <thead>
             <tr>
                 <th field="${table.primaryKey.javaName}" checkbox="true">${(table.primaryKey.comments[0])!''}</th>
@@ -28,11 +49,21 @@
             </tr>
         </thead>
       </table>
+    </div>
+    
+  </div>
         
-	<${'#'}include "${modulePath}-edit-form.html">
+	<${'#'}include "${pagePath}-edit-form.html">
        
                  
     <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${'$'}{siteConfig.baseURL}${modulePath}.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
     
     var editingId;
     var toolbar = [
@@ -102,6 +133,8 @@
         singleSelect: false,
         url: loadUrl,
         method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
         //idField: '${table.primaryKey.javaName}',
         toolbar: toolbar
     }); 

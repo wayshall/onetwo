@@ -7,25 +7,34 @@ import org.onetwo.common.utils.map.MappableMap.MappingValueFunc;
 import org.onetwo.common.utils.map.MappableMap.StaticMappingBuilder;
 
 @SuppressWarnings("unchecked")
-public class EasyBuilder<S, D> {
-	protected StaticMappingBuilder<D> builder = MappableMap.newMappingBuilder();
-	
-	public S addMapping(String fieldName, MappingValueFunc<D, ?> valueFunc){
-		builder.addMapping(fieldName, valueFunc);
-		return (S)this;
+public class EasyBuilder<B, E> {
+	protected StaticMappingBuilder<E> builder = MappableMap.newMappingBuilder();
+
+	public B mapAllFields(){
+		this.builder.mapAllFields();
+		return (B)this;
+	}
+	public B specifyMappedFields(){
+		this.builder.specifyMappedFields();
+		return (B)this;
 	}
 	
-	public S addMapping(String fieldName, String objectFieldName){
+	public B addMapping(String fieldName, MappingValueFunc<E, ?> valueFunc){
+		builder.addMapping(fieldName, valueFunc);
+		return (B)this;
+	}
+	
+	public B addMapping(String fieldName, String objectFieldName){
 		builder.addMapping(fieldName, objectFieldName);
-		return (S)this;
+		return (B)this;
 	}
 
-	public List<MappableMap> build(List<D> sourceObjects){
+	public List<MappableMap> build(List<E> sourceObjects){
 		List<MappableMap> treeDatas = builder.bindValues(sourceObjects);
 		return treeDatas;
 	}
 
-	public MappableMap build(D sourceObjects){
+	public MappableMap build(E sourceObjects){
 		MappableMap mappableMap = builder.bindValue(sourceObjects);
 		return mappableMap;
 	}

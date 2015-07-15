@@ -3,6 +3,7 @@ package org.onetwo.boot.core.web;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.onetwo.boot.core.config.JFishBootConfig;
@@ -13,9 +14,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -32,11 +33,14 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private JFishBootConfig jfishBootConfig;
-	
+
+	@Autowired
+	private List<HandlerInterceptor> interceptorList;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
+		System.out.println("test");
     }
 
 	@Override
@@ -52,7 +56,10 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new BootFirstInterceptor());
+		Optional.ofNullable(interceptorList).ifPresent(list->{
+			list.stream().forEach(inter->registry.addInterceptor(inter));
+		});
+//		registry.addInterceptor(new BootFirstInterceptor());
 	}
 
 	@Override
