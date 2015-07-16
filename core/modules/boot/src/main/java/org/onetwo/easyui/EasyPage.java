@@ -6,6 +6,8 @@ import java.util.List;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.convert.Types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class EasyPage<T> {
 	private static final String MYBAITS_PAGE_SUPPORT = "com.github.pagehelper.Page";
 	
@@ -20,6 +22,7 @@ public class EasyPage<T> {
 	protected long total = -1;
 	protected List<T> rows = new ArrayList<T>();
 	
+	protected boolean pagination = true;
 	
 	public EasyPage() {
 		super();
@@ -73,6 +76,15 @@ public class EasyPage<T> {
 		}else{
 			this.total = rows.size();
 		}
+	}
+
+	@JsonIgnore
+	public boolean isPagination() {
+		return pagination;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
 	}
 	
 }

@@ -141,6 +141,23 @@
 	        <artifactId>spring-security-cas</artifactId>
             <scope>provided</scope>
 	    </dependency>
+	    
+	    <!-- mybatis -->
+	    <dependency>
+	      <groupId>org.mybatis</groupId>
+	      <artifactId>mybatis</artifactId>
+          <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	        <groupId>com.github.pagehelper</groupId>
+	        <artifactId>pagehelper</artifactId>
+            <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.mybatis</groupId>
+	      <artifactId>mybatis-spring</artifactId>
+          <scope>provided</scope>
+	    </dependency>
 	        
         
         <dependency>
