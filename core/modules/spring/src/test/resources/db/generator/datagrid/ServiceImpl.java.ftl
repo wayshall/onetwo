@@ -13,11 +13,13 @@ package ${servicePackage};
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.boot.mybatis.MyBatisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,10 +43,23 @@ public class ${serviceImplClassName} {
     private ${mapperClassName} ${mapperPropertyName};
 
     
-    public void findPage(EasyPage<${_tableContext.className}> page){
+    public void findPage(EasyPage<${_tableContext.className}> page, ${_tableContext.className} ${_tableContext.propertyName}){
         MyBatisUtils.setCurrentQueryPage(page);
         ${_tableContext.className}Example example = new ${_tableContext.className}Example();
-//        Criteria crieria = example.createCriteria();
+        Criteria crieria = example.createCriteria();
+        
+    <#list table.columns as column>
+      <#if !column.primaryKey>
+        <#if column.mapping.isStringType()==true>
+        Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
+                .ifPresent(field->crieria.and${column.javaName?cap_first}Like(StringUtils.getSqlLikeString(${_tableContext.propertyName}.${column.getReadMethodName(false)}())));
+        <#else>  
+        Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
+            .ifPresent(field->crieria.and${column.javaName?cap_first}EqualTo(${_tableContext.propertyName}.${column.getReadMethodName(false)}()));
+        </#if>
+      </#if>
+    </#list>
+
         List<${_tableContext.className}> rows = ${mapperPropertyName}.selectByExample(example);
         page.setRows(rows);
     }

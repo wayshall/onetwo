@@ -9,7 +9,7 @@ import org.onetwo.common.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 public class DefaultTableContexts implements TableContexts {
-	private String stripTablePrefix;
+//	private String stripTablePrefix;
 	
 	final private GlobalConfig globalGeneratedConfig;
 	private TableContexts tableContexts;
@@ -24,7 +24,7 @@ public class DefaultTableContexts implements TableContexts {
 	public Map<String, Object> getContexts(TableGeneratedConfig tableConfig) {
 		Map<String, Object> context = Maps.newHashMap();
 		
-		String tableNameWithoutPrefix = tableConfig.tableNameStripStart(stripTablePrefix);
+		String tableNameWithoutPrefix = tableConfig.tableNameStripStart(globalGeneratedConfig.getStripTablePrefix());
 		String className = StringUtils.toClassName(tableNameWithoutPrefix);
 		String propertyName = StringUtils.toPropertyName(tableNameWithoutPrefix);
 		context.put("tableNameWithoutPrefix", tableNameWithoutPrefix);
@@ -40,7 +40,7 @@ public class DefaultTableContexts implements TableContexts {
 		return context;
 	}
 
-	
+	/*
 	public DefaultTableContexts stripTablePrefix(String stripTablePrefix) {
 		this.stripTablePrefix = stripTablePrefix;
 		return this;
@@ -48,7 +48,7 @@ public class DefaultTableContexts implements TableContexts {
 
 	public String getStripTablePrefix() {
 		return stripTablePrefix;
-	}
+	}*/
 
 	public GlobalConfig end(){
 		return globalGeneratedConfig;
