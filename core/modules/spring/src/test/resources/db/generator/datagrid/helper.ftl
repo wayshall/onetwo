@@ -1,5 +1,5 @@
 
-<#macro generatedFormField table>
+<#macro generatedFormField table isComboboxAddEmptyOption=false>
     <#list table.columns as column>
         <#if !column.primaryKey>
         <tr>
@@ -36,12 +36,16 @@
                 <input class="easyui-combobox formFieldClass" name="${column.javaName}" 
                        data-options="required:${column.nullable?string('false', 'true')},
                                       method: 'get',
+                                      editable: false,
+        <#if isComboboxAddEmptyOption==true>loadFilter: helper.addEmptyOptionForComboboxFilter</#if>
                                       url: '${'$'}{siteConfig.baseURL}/configmgr/dictionary/combobox/${column.commentsInfo['字典类型']}.json'
                                     "/>
                        
               <#else>
                 <input class="easyui-textbox formFieldClass" type="text" name="${column.javaName}" 
+     <#if column.columnSize gte 500 >style="width:185px;height:200px"</#if>
                        data-options="required:${column.nullable?string('false', 'true')},
+     <#if column.columnSize gte 500 >multiline:true</#if>
                                      validType:'length[0,${column.columnSize}]'
                                     "/>
               </#if>

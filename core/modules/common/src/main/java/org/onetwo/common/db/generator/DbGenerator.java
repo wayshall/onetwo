@@ -88,7 +88,8 @@ public class DbGenerator {
 	}
 
 	public DbGenerator stripTablePrefix(String stripTablePrefix){
-		globalConfig.defaultTableContexts().stripTablePrefix(stripTablePrefix);
+//		globalConfig.defaultTableContexts().stripTablePrefix(stripTablePrefix);
+		globalConfig.stripTablePrefix(stripTablePrefix);
 		return this;
 	}
 
@@ -199,7 +200,7 @@ public class DbGenerator {
 		public DbTableGenerator pageTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
-										String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
+										String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
 										String filePath = c.globalGeneratedConfig().getPageFileBaseDir()+
 										"/"+c.globalGeneratedConfig().getModuleName()+"/"+
 										tableShortName.replace('_', '-')+
@@ -214,7 +215,7 @@ public class DbGenerator {
 		public DbTableGenerator controllerTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
-									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
+									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
 									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/web/"+
 									StringUtils.toClassName(tableShortName)+
 									FileUtils.getFileNameWithoutExt(templatePath);
@@ -228,7 +229,7 @@ public class DbGenerator {
 		public DbTableGenerator serviceImplTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
-									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().defaultTableContexts().getStripTablePrefix());
+									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
 									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/service/"+
 									StringUtils.toClassName(tableShortName)+
 									FileUtils.getFileNameWithoutExt(templatePath);
@@ -252,6 +253,7 @@ public class DbGenerator {
 				globalConfig.putAll(outContext);
 			
 			TableMeta tableMeta = dialet.getTableMeta(tableName);
+			tableMeta.setStripPrefix(globalConfig.getStripTablePrefix());
 			globalConfig.put(TABLE_KEY, tableMeta);
 			
 			List<File> files = Lists.newArrayList();

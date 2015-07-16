@@ -217,6 +217,12 @@ public abstract class StringUtils {
 		Class<?> cls = ReflectUtils.getObjectClass(obj);
 		return uncapitalize(cls.getSimpleName());
 	}
+	
+	/*
+	 * from apache common org.apache.commons.lang3.StringUtils 
+	 * 
+	 * 
+	 */
 
 	public static String[] split(String str, char separatorChar) {
 		return splitWorker(str, separatorChar, false);
@@ -777,6 +783,9 @@ public abstract class StringUtils {
 		newString = appendEndWith(newString, appendString);
 		return newString;
 	}
+	public static String getSqlLikeString(final String str) {
+		return StringUtils.appendArroundWith(str, "%");
+	}
 
 	public static String trimEndWith(String path, String postfix) {
 		if (path == null)
@@ -972,6 +981,49 @@ public abstract class StringUtils {
         }
 
         return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
+    }
+	
+
+    public static final int INDEX_NOT_FOUND = -1;
+    public static String stripStart(final String str, final String stripChars) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+        int start = 0;
+        if (stripChars == null) {
+            while (start != strLen && Character.isWhitespace(str.charAt(start))) {
+                start++;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
+                start++;
+            }
+        }
+        return str.substring(start);
+    }
+    
+
+    public static String stripEnd(final String str, final String stripChars) {
+        int end;
+        if (str == null || (end = str.length()) == 0) {
+            return str;
+        }
+
+        if (stripChars == null) {
+            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
     }
 
 	public static void main(String[] args) {

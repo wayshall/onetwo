@@ -37,6 +37,8 @@ public class GlobalConfig {
 	private DefaultTableContexts defaultTableContexts = new DefaultTableContexts(this);
 	
 	private final DbGenerator dbGenerator;
+	
+	private String stripTablePrefix;
 
 	public GlobalConfig(DbGenerator dbGenerator) {
 		super();
@@ -138,5 +140,12 @@ public class GlobalConfig {
 		path = path + "/" + packagePath;
 		return path;
 	}
-	
+
+	public void stripTablePrefix(String stripTablePrefix) {
+		this.stripTablePrefix = stripTablePrefix;
+	}
+
+	public String getStripTablePrefix() {
+		return stripTablePrefix;
+	}
 }
