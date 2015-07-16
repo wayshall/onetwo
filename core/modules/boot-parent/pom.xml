@@ -43,6 +43,10 @@
 	
 	<shiro.version>1.2.3</shiro.version>
 	<groovy.version>2.3.10</groovy.version>
+	
+	<mybatis.version>3.2.8</mybatis.version>
+	<mybatis.pagehelper.version>3.6.3</mybatis.pagehelper.version>
+	<mybatis.spring.version>1.1.0</mybatis.spring.version>
   </properties> 
 	
 <dependencyManagement>
@@ -264,6 +268,22 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
         <version>${groovy.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>${mybatis.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.pagehelper</groupId>
+        <artifactId>pagehelper</artifactId>
+        <version>${mybatis.pagehelper.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis-spring</artifactId>
+      <version>${mybatis.spring.version}</version>
     </dependency>
 	
 	<!-- <dependency>
