@@ -60,6 +60,10 @@ public class ColumnMapping {
 		return Date.class.isInstance(getJavaType());
 	}
 
+	public boolean isStringType(){
+		return String.class.isInstance(getJavaType());
+	}
+
 	public boolean isSqlTimestamp(){
 		return getSqlType()==Types.TIMESTAMP || getSqlType()==Types.TIMESTAMP_WITH_TIMEZONE;
 	}

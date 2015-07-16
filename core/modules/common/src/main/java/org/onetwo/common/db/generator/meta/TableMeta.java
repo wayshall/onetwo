@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
@@ -21,6 +21,8 @@ public class TableMeta {
 	private Map<String, ColumnMeta> columnMap = new LinkedHashMap<String, ColumnMeta>();
 	
 	private String comment;
+	
+	private String stripPrefix;
 
 	
 	public TableMeta(String name, String comment){
@@ -28,6 +30,18 @@ public class TableMeta {
 		Assert.hasText(name, "table name must has text");
 		this.name = name;
 		this.comment = comment;
+	}
+	
+	public String getShortName(){
+		return tableNameStripStart(stripPrefix);
+	}
+	
+	public String getTableName(){
+		return StringUtils.toClassName(getShortName());
+	}
+	
+	public String getPropertyName(){
+		return StringUtils.toPropertyName(getShortName());
 	}
 
 	
@@ -41,7 +55,9 @@ public class TableMeta {
 	}
 	
 	public String tableNameStripStart(String stripChars){
-		return StringUtils.stripStart(name, stripChars);
+		if(StringUtils.isBlank(stripChars))
+			return name;
+		return StringUtils.stripStart(name.toLowerCase(), stripChars.toLowerCase());
 	}
 
 	public Map<String, ColumnMeta> getColumnMap() {
@@ -93,6 +109,13 @@ public class TableMeta {
 		return Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(comment);
 	}
 
+	public String getStripPrefix() {
+		return stripPrefix;
+	}
+
+	public void setStripPrefix(String stripPrefix) {
+		this.stripPrefix = stripPrefix;
+	}
 
 	@Override
 	public String toString() {

@@ -115,11 +115,23 @@ public class ColumnMeta {
 	public void setJavaName(String javaName) {
 		this.javaName = javaName;
 	}
+	
+	public String getPropertyName(){
+		return getJavaName();
+	}
+	
+	public String getCapitalizePropertyName(){
+		return StringUtils.capitalize(getPropertyName());
+	}
 
 	public String getReadMethodName() {
+		return getReadMethodName(true);
+	}
+
+	public String getReadMethodName(boolean convertBooleanMethod) {
 		String prefix = "get";
 		String name = this.getJavaName();
-		if(getJavaType()==Boolean.class){
+		if(getJavaType()==Boolean.class && convertBooleanMethod){
 			prefix = "is";
 			if(name.startsWith(prefix))
 				name = name.substring(prefix.length());
