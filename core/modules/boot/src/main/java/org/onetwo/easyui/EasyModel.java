@@ -16,17 +16,17 @@ final public class EasyModel {
 	
 	public static class EasyTreeBuilder<E> extends EasyBuilder<EasyTreeBuilder<E>, E>{
 		
-		public EasyTreeBuilder<E> id(String fieldName){
+		public EasyTreeBuilder<E> mapId(String fieldName){
 			addMapping("id", fieldName);
 			return this;
 		}
 		
-		public EasyTreeBuilder<E> state(String fieldName){
+		public EasyTreeBuilder<E> mapState(String fieldName){
 			addMapping("state", fieldName);
 			return this;
 		}
 		
-		public EasyTreeBuilder<E> text(String fieldName){
+		public EasyTreeBuilder<E> mapText(String fieldName){
 			addMapping("text", fieldName);
 			return this;
 		}
@@ -37,7 +37,7 @@ final public class EasyModel {
 		 * @param stateFunc
 		 * @return
 		 */
-		public EasyTreeBuilder<E> isStateOpen(MappingValueFunc<E, Boolean> stateFunc){
+		public EasyTreeBuilder<E> mapIsStateOpen(MappingValueFunc<E, Boolean> stateFunc){
 			addMapping("state", src->stateFunc.mapping(src)?"open":"closed");
 //			addMapping("state", new StateMappingValueFunc(stateFunc));
 			return this;
@@ -47,16 +47,16 @@ final public class EasyModel {
 	
 	
 	public static class EasyComboBoxBuilder<E> extends EasyBuilder<EasyComboBoxBuilder<E>, E>{
-		public EasyComboBoxBuilder<E> value(String fieldName){
+		public EasyComboBoxBuilder<E> mapValue(String fieldName){
 			addMapping("value", fieldName);
 			return this;
 		}
 
-		public EasyComboBoxBuilder<E> text(String fieldName){
+		public EasyComboBoxBuilder<E> mapText(String fieldName){
 			addMapping("text", fieldName);
 			return this;
 		}
-		public EasyComboBoxBuilder<E> selected(MappingValueFunc<E, Boolean> selected){
+		public EasyComboBoxBuilder<E> mapSelected(MappingValueFunc<E, Boolean> selected){
 			addMapping("selected", selected);
 			return this;
 		}

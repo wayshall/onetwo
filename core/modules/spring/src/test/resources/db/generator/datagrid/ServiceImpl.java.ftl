@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.boot.mybatis.MyBatisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class ${serviceImplClassName} {
 
     
     public void findPage(EasyPage<${_tableContext.className}> page){
-        PageHelper.startPage(page.getPage(), page.getPageSize());   
+        MyBatisUtils.setCurrentQueryPage(page);
         ${_tableContext.className}Example example = new ${_tableContext.className}Example();
 //        Criteria crieria = example.createCriteria();
         List<${_tableContext.className}> rows = ${mapperPropertyName}.selectByExample(example);
