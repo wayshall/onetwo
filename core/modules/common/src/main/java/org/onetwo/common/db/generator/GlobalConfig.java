@@ -29,7 +29,8 @@ public class GlobalConfig {
 	private String javaBasePackage;
 	private String moduleName;
 	private String javaSrcDir;
-	
+	private String resourceDir;
+
 	private String pageFileBaseDir;
 	
 	private OutfilePathFunc outFileNameFunc;
@@ -134,6 +135,11 @@ public class GlobalConfig {
 		return getJavaBasePackage()+StringUtils.appendStartWith(getModuleName(), ".");
 	}
 
+	public String getFullModulePackageNameAsPath() {
+		String packagePath = StringUtils.replaceEach(getFullModulePackageName(), ".", "/");
+		return packagePath;
+	}
+
 	public String getFullModulePackagePath() {
 		String packagePath = StringUtils.replaceEach(getFullModulePackageName(), ".", "/");
 		String path = StringUtils.trimEndWith(getJavaSrcDir(), "/");
@@ -147,5 +153,14 @@ public class GlobalConfig {
 
 	public String getStripTablePrefix() {
 		return stripTablePrefix;
+	}
+
+	public String getResourceDir() {
+		return resourceDir;
+	}
+
+	public GlobalConfig resourceDir(String resourceDir) {
+		this.resourceDir = resourceDir;
+		return this;
 	}
 }

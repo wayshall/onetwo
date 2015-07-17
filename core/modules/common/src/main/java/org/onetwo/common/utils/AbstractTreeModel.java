@@ -138,6 +138,9 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 
 	public void setParent(T parent) {
 		this.parent = parent;
+		if(parent!=null){
+			this.parentId = parent.getId();
+		}
 	}
 	
 	public boolean hasChildren(){

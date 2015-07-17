@@ -43,6 +43,12 @@ public class MappableMap extends HashMap<String, Object>{
 	    return new MappingBuilder<E>(this, sourceObject);
 	}
 	
+	/***
+	 * 
+	 * @author way
+	 *
+	 * @param <T> sourceObject
+	 */
 	public static class StaticMappingBuilder<T> {
 		final private List<MappingInfo<T>> mappingInfos = new ArrayList<>();
 		private boolean mapAllFields = true;
@@ -102,7 +108,7 @@ public class MappableMap extends HashMap<String, Object>{
 		R mapping(T sourceObject);
 	}
 	
-	class MappingBuilder<T> {
+	public static class MappingBuilder<T> {
 		final private Object sourceObject;
 		final private List<MappingInfo<T>> mappingInfos = new ArrayList<>();
 		final private MappableMap mappingObject;
@@ -128,6 +134,12 @@ public class MappableMap extends HashMap<String, Object>{
 		
 	}
 	
+	/***
+	 * 
+	 * @author way
+	 *
+	 * @param <T> sourceObject
+	 */
 	public static final class MappingInfo<T> {
 		final private String jsonFieldName;
 		final private String objectFieldName;

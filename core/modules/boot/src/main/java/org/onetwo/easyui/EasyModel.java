@@ -1,6 +1,10 @@
 package org.onetwo.easyui;
 
+import java.util.List;
+
+import org.onetwo.common.utils.TreeBuilder;
 import org.onetwo.common.utils.map.MappableMap.MappingValueFunc;
+import org.onetwo.common.utils.map.ObjectMappingBuilder;
 import org.onetwo.easyui.EasyBuilder.SimpleEasyBuilder;
 
 final public class EasyModel {
@@ -10,10 +14,46 @@ final public class EasyModel {
 	public static <T> EasyTreeBuilder<T> newTreeBuilder(Class<T> clazz){
 		return new EasyTreeBuilder<T>();
 	}
+	public static <T> EasyChildrenTreeModelBuilder<T> newChildrenTreeBuilder(Class<T> clazz){
+		return new EasyChildrenTreeModelBuilder<T>(ObjectMappingBuilder.newBuilder(clazz, EasyChildrenTreeModel.class));
+	}
 	public static <T> EasyComboBoxBuilder<T> newComboBoxBuilder(Class<T> clazz){
 		return new EasyComboBoxBuilder<T>();
 	}
 	
+	public static class EasyChildrenTreeModelBuilder<E> {
+		private ObjectMappingBuilder<E, EasyChildrenTreeModel> builder;
+
+		public EasyChildrenTreeModelBuilder(
+				ObjectMappingBuilder<E, EasyChildrenTreeModel> builder) {
+			super();
+			this.builder = builder;
+		}
+
+		public EasyChildrenTreeModelBuilder<E> mapId(String fieldName){
+			builder.addMapping("id", fieldName);
+			return this;
+		}
+
+		public EasyChildrenTreeModelBuilder<E> mapText(String fieldName){
+			builder.addMapping("text", fieldName);
+			return this;
+		}
+
+		public EasyChildrenTreeModelBuilder<E> mapParentId(String fieldName){
+			builder.addMapping("parentId", fieldName);
+			return this;
+		}
+		
+		public List<EasyChildrenTreeModel> build(List<E> sourceObjects, String rootNode){
+			List<EasyChildrenTreeModel> modelList = builder.bindValues(sourceObjects);
+			TreeBuilder<EasyChildrenTreeModel> builder = new TreeBuilder<>(modelList);
+			builder.setRootIds(rootNode);
+			List<EasyChildrenTreeModel> rootTree = builder.buidTree();
+		    return rootTree.get(0).getChildren();
+		}
+		
+	}
 	public static class EasyTreeBuilder<E> extends EasyBuilder<EasyTreeBuilder<E>, E>{
 		
 		public EasyTreeBuilder<E> mapId(String fieldName){
