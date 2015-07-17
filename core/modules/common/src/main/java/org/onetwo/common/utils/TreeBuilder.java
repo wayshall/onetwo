@@ -23,7 +23,15 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		public int compare(TM o1, TM o2) {
 			Comparable<Object> s1 = (Comparable<Object>)o1.getSort();
 			Comparable<Object> s2 = (Comparable<Object>)o2.getSort();
-			return s1.compareTo(s2);
+			if(s1==null && s2==null){
+				return 0;
+			}else if(s1==null){
+				return -1;
+			}else if(s2==null){
+				return 1;
+			}else{
+				return s1.compareTo(s2);
+			}
 		}
 	};
 	
