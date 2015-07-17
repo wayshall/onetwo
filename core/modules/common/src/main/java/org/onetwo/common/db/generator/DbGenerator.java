@@ -212,6 +212,26 @@ public class DbGenerator {
 			return this;
 		}
 		
+		public DbTableGenerator mybatisDaoXmlTemplate(String templatePath){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(c->{
+										String filePath = c.globalGeneratedConfig().getFullModulePackageNameAsPath();
+										filePath =  "/mybatis/dao/" + filePath + "/dao";
+										filePath = this.getResourceDirOutfilePathByModule(c, filePath, templatePath);
+										return filePath;
+									}
+								);
+			generatedConfigs.add(config);
+			return this;
+		}
+		
+		private String getResourceDirOutfilePathByModule(TableGeneratedConfig c, String typePath, String templatePath){
+			String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
+			String filePath = c.globalGeneratedConfig().getResourceDir()+typePath+ "/" + 
+			StringUtils.toClassName(tableShortName) + FileUtils.getFileNameWithoutExt(templatePath);
+			return filePath;
+		}
+		
 		public DbTableGenerator controllerTemplate(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
@@ -238,6 +258,28 @@ public class DbGenerator {
 							);
 			generatedConfigs.add(config);
 			return this;
+		}
+		
+		public DbTableGenerator daoTemplate(String templatePath){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/dao", templatePath));
+			generatedConfigs.add(config);
+			return this;
+		}
+		
+		public DbTableGenerator entityTemplate(String templatePath){
+			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
+			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/entity", templatePath));
+			generatedConfigs.add(config);
+			return this;
+		}
+		
+		private String getJavaSrcOutfilePathByType(TableGeneratedConfig c, String typePath, String templatePath){
+			String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
+			String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+ typePath+ "/" + 
+			StringUtils.toClassName(tableShortName)+
+			FileUtils.getFileNameWithoutExt(templatePath);
+			return filePath;
 		}
 		
 		public DbGenerator end(){
