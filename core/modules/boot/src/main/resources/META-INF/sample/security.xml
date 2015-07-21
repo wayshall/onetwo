@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+
+    <http pattern="/css/**" security="none"/>
+    <http pattern="/js/**" security="none"/>
+    <http pattern="/images/**" security="none"/>
+    <http pattern="/**/favicon.ico" security="none"/>
+    
+    <http use-expressions="true">
+        <headers>
+            <frame-options policy="SAMEORIGIN"/>
+        </headers>
+        
+        <intercept-url pattern="/login*" access="permitAll"/>
+        <intercept-url pattern="/**" access="authenticated"/>
+        
+        <form-login login-page="/login" 
+                    password-parameter="password"
+                    username-parameter="username"
+                    login-processing-url="/dologin"
+                    authentication-failure-handler-ref="ajaxAuthenticationHandler"
+                    authentication-success-handler-ref="ajaxAuthenticationHandler"/>
+                    
+        <logout logout-url="/logout" logout-success-url="/login" delete-cookies="JSESSIONID" invalidate-session="true"/>
+        <session-management >
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+        </session-management>
+    </http>
+    
+    <authentication-manager>
+        <authentication-provider user-service-ref="zytUserDetailServiceImpl">
+        </authentication-provider>
+    </authentication-manager>
+    
+    <beans:bean id="ajaxAuthenticationHandler" class="org.onetwo.boot.plugins.security.AjaxAuthenticationHandler">
+        <beans:property name="authenticationFailureUrl" value="/login"/>
+        <beans:property name="defaultTargetUrl" value="/plugins/permission/admin"/>
+    </beans:bean>
+    
+    <beans:bean id="rbacSecurityXmlContextConfigSupport" class="org.onetwo.boot.plugins.security.support.RbacSecurityXmlContextConfigSupport">
+    </beans:bean>
+    
+    <!-- cas -->
+    <beans:bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+	  <beans:property name="service"
+	      value="http://localhost:8080/dologin"/>
+	  <beans:property name="sendRenew" value="false"/>
+	</beans:bean>
+    
+</beans:beans>

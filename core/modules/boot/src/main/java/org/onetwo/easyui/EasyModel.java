@@ -45,12 +45,12 @@ final public class EasyModel {
 			return this;
 		}
 		
-		public List<EasyChildrenTreeModel> build(List<E> sourceObjects, String rootNode){
+		public EasyChildrenTreeModel build(List<E> sourceObjects, String rootNode){
 			List<EasyChildrenTreeModel> modelList = builder.bindValues(sourceObjects);
-			TreeBuilder<EasyChildrenTreeModel> builder = new TreeBuilder<>(modelList);
-			builder.setRootIds(rootNode);
-			List<EasyChildrenTreeModel> rootTree = builder.buidTree();
-		    return rootTree.get(0).getChildren();
+			List<EasyChildrenTreeModel> rootTree = new TreeBuilder<>(modelList)
+														.rootIds(rootNode)
+														.buidTree();
+		    return rootTree.get(0);
 		}
 		
 	}

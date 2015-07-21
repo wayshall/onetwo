@@ -7,14 +7,17 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -67,6 +70,11 @@ public class CopyUtils {
 		}else{
 			return (T)newInstance(clazz);
 		}
+	}
+	public static <K, V> Map<K, V> newMap(Class<? extends Map> mapClass){
+		if(mapClass==Map.class)
+			return new HashMap<K, V>();
+		return (Map<K, V>)ReflectUtils.newInstance(mapClass);
 	}
 	
     public static <T> T copy(Class<T> targetClass, Object src){

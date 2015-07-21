@@ -10,7 +10,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public final class MatcherUtils {
 
-	public static RequestMatcher matchAntPaths(String...paths){
+	public static MutipleRequestMatcher matchAntPaths(String...paths){
 		List<RequestMatcher> matchers = Stream.of(paths).map(path->new AntPathRequestMatcher(path))
 						.collect(Collectors.toList());
 		MutipleRequestMatcher m = new MutipleRequestMatcher(matchers);

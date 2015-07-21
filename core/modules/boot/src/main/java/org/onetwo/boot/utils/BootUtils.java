@@ -43,7 +43,7 @@ final public class BootUtils {
 	public static PropertySource<?> loadYaml(String classpath){
 		YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 		try {
-	        PropertySource<?> props = loader.load("test", SpringUtils.newClassPathResource(classpath), null);
+	        PropertySource<?> props = loader.load(classpath, SpringUtils.newClassPathResource(classpath), null);
 	        return props;
         } catch (IOException e) {
 	        throw new BaseException("load yaml file error: " + classpath);
@@ -52,8 +52,8 @@ final public class BootUtils {
 
 	
 	public static RequestMatcher csrfNotMatch(String...paths){
-		RequestMatcher m = new CommonReadMethodMatcher();
-		MutipleRequestMatcher mutiple = new MutipleRequestMatcher(m);
+		MutipleRequestMatcher mutiple = MatcherUtils.matchAntPaths(paths);
+		mutiple.addMatchers(new CommonReadMethodMatcher());
 		return MatcherUtils.notMatcher(mutiple);
 	}
 }
