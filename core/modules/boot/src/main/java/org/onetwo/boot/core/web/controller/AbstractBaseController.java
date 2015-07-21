@@ -54,19 +54,6 @@ abstract public class AbstractBaseController {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private SimpleBlock<Object, String> TO_STRING = new SimpleBlock<Object, String>() {
-		@Override
-		public String execute(Object object) {
-			return object.toString();
-		}
-	};
-
-	/*@Resource
-	private CodeMessager codeMessager;*/
-	
-	/*@Resource
-	private XmlTemplateExcelViewResolver xmlTemplateExcelViewResolver;*/
-	
 
 	@Resource
 	private BootSiteConfig bootSiteConfig;
@@ -226,7 +213,7 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
-		exportText(response, datas, filename, TO_STRING);
+		exportText(response, datas, filename, obj->obj.toString());
 	}
 	
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename, SimpleBlock<Object, String> block){
