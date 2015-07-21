@@ -15,6 +15,26 @@ import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
 public class TreeBuilder<TM extends TreeModel<TM>> {
+
+	public static interface RootNodeFunc<T extends TreeModel<T>> {
+		
+		public boolean isRootNode(T node);
+	}
+	
+	public static class RootIdsFunc<T extends TreeModel<T>> implements RootNodeFunc<T> {
+		final private List<Object> rootIds;
+		
+		public RootIdsFunc(Object... rootIds) {
+			super();
+			this.rootIds = Arrays.asList(rootIds);
+		}
+
+		@Override
+		public boolean isRootNode(T node) {
+			return rootIds.contains(node.getId()) || node.getParentId()==null;
+		}
+		
+	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -36,9 +56,10 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	};
 	
 	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
-	private List<TM> tree = new ArrayList<TM>();
+	private List<TM> rootNodes = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
-	private List<?> rootIds;
+//	private List<?> rootIds;
+	private RootNodeFunc<TM> rootNodeFunc;
 
 	public TreeBuilder(List<TM> datas) {
 		Collections.sort(datas, comparator);
@@ -77,12 +98,19 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		}
 	}
 
-	public List<?> getRootIds() {
+	/*public List<?> getRootIds() {
 		return rootIds;
-	}
+	}*/
 
-	public void setRootIds(Object...objects) {
-		this.rootIds = Arrays.asList(objects);
+	public TreeBuilder<TM> rootIds(Object...objects) {
+//		this.rootIds = Arrays.asList(objects);
+		this.rootNodeFunc = new RootIdsFunc<TM>(objects);
+		return this;
+	}
+	
+	public TreeBuilder<TM> rootNodeFunc(RootNodeFunc<TM> rootNodeFunc) {
+		this.rootNodeFunc = rootNodeFunc;
+		return this;
 	}
 	
 	public List<TM> buidTree() {
@@ -96,17 +124,19 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		Collection<TM> treeModels = (Collection<TM>) leafages.values();
 
 		for (TM node : treeModels) {
-			if (getRootIds() != null) {
-				if(getRootIds().contains(node.getId())){
-					addRoot(node);
-					continue;
-				}
-			}
-			if (node.getParentId() == null || ((node.getParentId() instanceof Number) && ((Number) node.getParentId()).longValue() <= 0)) {
+			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node)) {
+				addRoot(node);
+				continue;
+			}else if(node.getParentId() == null){
 				addRoot(node);
 				continue;
 			}
-			if (isRoot(node))
+//			if (node.getParentId() == null || ((node.getParentId() instanceof Number) && ((Number) node.getParentId()).longValue() <= 0)) {
+			/*if (node.getParentId() == null) {
+				addRoot(node);
+				continue;
+			}*/
+			if (isExistsRootNode(node))
 				continue;
 			TM p = leafages.get(node.getParentId());
 			if (p == null) {
@@ -121,20 +151,20 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		}
 
 //		Collections.sort(tree, this.comparator);
-		return tree;
+		return rootNodes;
 	}
 	
 	protected void addRoot(TM node){
-		tree.add(node);
+		rootNodes.add(node);
 //		this.tree.put(node.getId()!=null?node.getId():node.getName(), node);
 	}
 	
-	protected boolean isRoot(TreeModel<?> node){
-		return tree.contains(node);
+	protected boolean isExistsRootNode(TreeModel<?> node){
+		return rootNodes.contains(node);
 	}
 	
 	public TreeModel<?> getBranch(Object rootId){
-		for(TreeModel<?> node : this.tree){
+		for(TreeModel<?> node : this.rootNodes){
 			if(rootId.equals(node.getId()))
 				return node;
 		}
@@ -155,7 +185,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		List<DefaultTreeModel> list = Arrays.asList(t1, t2, t3, t4, t5);
 
 		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new SimpleTreeModelCreator());
-		tb.setRootIds(1, 4);
+		tb.rootIds(1, 4);
 		List<DefaultTreeModel> t = tb.buidTree(true);
 		System.out.println(t.get(0));
 		System.out.println(tb.getBranch(4));

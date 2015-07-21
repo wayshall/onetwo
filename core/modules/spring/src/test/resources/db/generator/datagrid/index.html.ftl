@@ -6,7 +6,6 @@
 <#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.propertyName}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
 
-
 <${'@'}extends parent="application.html">
     
     <${'@'}override name="charset">
@@ -23,7 +22,7 @@
      <div class="easyui-panel" style="height:15%">
         <form id="searchForm" class="easyui-form" >
            <table style="padding: 5px;" cellpadding="5px">
-                <@helper.generatedFormField table=table/>
+                <@helper.generatedFormField table=table isComboboxAddEmptyOption=true fieldClass="searchFieldClass"/>
                 <tr>
                    <td>&nbsp;</td>
                     <td rowspan="5">
@@ -34,10 +33,9 @@
        </form>
     </div>
      
-    <div class="easyui-panel" style="height:85%"> 
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
        <table id="${datagridName}"
-              title="${(table.comments[0])!''}" 
-              style="height:100%;">
+              title="${(table.comments[0])!''}" >
         <thead>
             <tr>
                 <th field="${table.primaryKey.javaName}" checkbox="true">${(table.primaryKey.comments[0])!''}</th>
