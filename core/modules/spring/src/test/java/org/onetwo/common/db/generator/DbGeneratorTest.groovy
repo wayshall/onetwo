@@ -66,7 +66,7 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 															}
 														} as ColumnAttrValueFunc)*/
 														.stripTablePrefix("zyt_")
-														.stripTablePrefix("zyt_estate_")
+														//.stripTablePrefix("zyt_estate_")
 														.globalConfig()
 															.pageFileBaseDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\resources\templates/$)
 															.resourceDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\resources/$)
@@ -78,12 +78,12 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 															.end()
 														.end()
 //														.table("zyt_estate_rental_house")
-														.table("zyt_estate_rental_house")
+//														.table("zyt_demand_buy")
 //														.table("")
-															/*.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
+															.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
 															.pageTemplate("${basePath}/db/generator/datagrid/edit-form.html.ftl")
 															.controllerTemplate("${basePath}/db/generator/datagrid/Controller.java.ftl")
-															.serviceImplTemplate("${basePath}/db/generator/datagrid/ServiceImpl.java.ftl")*/
+															.serviceImplTemplate("${basePath}/db/generator/datagrid/ServiceImpl.java.ftl")
 															.daoTemplate("${basePath}/db/generator/datagrid/Dao.java.ftl")
 															.entityTemplate("${basePath}/db/generator/datagrid/ExtEntity.java.ftl")
 															.mybatisDaoXmlTemplate("${basePath}/db/generator/datagrid/Dao.xml.ftl")
