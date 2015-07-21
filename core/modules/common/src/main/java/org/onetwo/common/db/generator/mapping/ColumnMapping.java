@@ -57,11 +57,11 @@ public class ColumnMapping {
 	}
 
 	public boolean isDateType(){
-		return Date.class.isInstance(getJavaType());
+		return Date.class.isAssignableFrom(getJavaType());
 	}
 
 	public boolean isStringType(){
-		return String.class.isInstance(getJavaType());
+		return String.class.isAssignableFrom(getJavaType());
 	}
 
 	public boolean isSqlTimestamp(){

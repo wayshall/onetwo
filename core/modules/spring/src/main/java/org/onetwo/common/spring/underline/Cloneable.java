@@ -10,4 +10,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cloneable {
 	
+	boolean keyCloneable() default true;
+	/***
+	 * 如果集合容器
+	 * @return
+	 */
+	boolean valueCloneable() default true;
 }

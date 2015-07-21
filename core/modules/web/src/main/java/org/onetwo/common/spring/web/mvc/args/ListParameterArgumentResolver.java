@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.annotation.ListParameter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -21,7 +19,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class ListParameterArgumentResolver implements HandlerMethodArgumentResolver {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+//	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {

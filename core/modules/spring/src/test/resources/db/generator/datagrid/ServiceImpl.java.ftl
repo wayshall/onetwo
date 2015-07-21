@@ -1,7 +1,7 @@
 <#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.className}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
 
-<#assign servicePackage="com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service"/>
+<#assign servicePackage="${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
@@ -30,10 +30,10 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 import org.onetwo.easyui.EasyPage;
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.mapper.${mapperClassName};
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.entity.${_tableContext.className}Example;
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.entity.${_tableContext.className}Example.Criteria;
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.mapper.${mapperClassName};
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className}Example;
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className}Example.Criteria;
 
 @Service
 @Transactional
@@ -52,10 +52,10 @@ public class ${serviceImplClassName} {
       <#if !column.primaryKey>
         <#if column.mapping.isStringType()==true>
         Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
-                .ifPresent(field->crieria.and${column.javaName?cap_first}Like(StringUtils.getSqlLikeString(${_tableContext.propertyName}.${column.getReadMethodName(false)}())));
+                .ifPresent(field->crieria.and${column.javaName?cap_first}Like(StringUtils.getSqlLikeString(field)));
         <#else>  
         Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
-            .ifPresent(field->crieria.and${column.javaName?cap_first}EqualTo(${_tableContext.propertyName}.${column.getReadMethodName(false)}()));
+                .ifPresent(field->crieria.and${column.javaName?cap_first}EqualTo(field));
         </#if>
       </#if>
     </#list>
