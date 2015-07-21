@@ -1,7 +1,7 @@
 <#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.propertyName}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
 
-<#assign servicePackage="com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service"/>
+<#assign servicePackage="${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
-import com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.service.${serviceImplClassName};
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service.${serviceImplClassName};
 
 @Controller
 @RequestMapping("${requestPath}")
@@ -39,9 +39,9 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     
     @ByMenuClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.GET)
-    public ModelAndView index(EasyPage<${_tableContext.className}> page){
+    public ModelAndView index(EasyPage<${_tableContext.className}> page, ${_tableContext.className} ${_tableContext.propertyName}){
         return responsePageOrData("${pagePath}-index", ()->{
-                    ${serviceImplPropertyName}.findPage(page);
+                    ${serviceImplPropertyName}.findPage(page, ${_tableContext.propertyName});
                     return page;
                 });
     }

@@ -4,13 +4,16 @@ import javax.sql.DataSource;
 
 import org.onetwo.boot.core.init.FixSecurityFilterBugServletContextInitializer;
 import org.onetwo.boot.plugins.security.DatabaseSecurityMetadataSource;
+import org.onetwo.boot.plugins.security.config.SecurityCommonContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
+@Import(SecurityCommonContextConfig.class)
 public class RbacSecurityXmlContextConfigSupport {
 
 	@Bean

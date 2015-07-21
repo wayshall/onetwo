@@ -1,9 +1,7 @@
 package org.onetwo.common.spring.web.mvc.args;
 
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.mvc.annotation.WebAttribute;
 import org.onetwo.common.utils.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -13,7 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class WebAttributeArgumentResolver implements HandlerMethodArgumentResolver {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+//	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {

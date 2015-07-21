@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.spring.web.WebHelper;
-import org.onetwo.common.spring.web.mvc.annotation.WebAttribute;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.slf4j.Logger;

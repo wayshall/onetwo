@@ -78,7 +78,7 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 															.end()
 														.end()
 //														.table("zyt_estate_rental_house")
-														.table("zyt_estate_new_house")
+														.table("zyt_estate_rental_house")
 //														.table("")
 															/*.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
 															.pageTemplate("${basePath}/db/generator/datagrid/edit-form.html.ftl")

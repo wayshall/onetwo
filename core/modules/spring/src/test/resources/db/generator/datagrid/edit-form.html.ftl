@@ -13,7 +13,7 @@
             <input id="_method" name="_method" type="hidden" />
            <input name="${table.primaryKey.javaName}" type="hidden"/>
            <table cellpadding="5">
-                <@helper.generatedFormField table=table isComboboxAddEmptyOption=true/>
+                <@helper.generatedFormField table=table/>
            </table>
            <${'@'}security.csrfInput/>
        </form>

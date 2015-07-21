@@ -8,13 +8,16 @@ import java.util.Properties;
 
 import org.onetwo.boot.core.config.JFishBootConfig;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
-import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.common.spring.converter.JFishStringToEnumConverterFactory;
+import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
+import org.onetwo.common.spring.web.mvc.args.ListParameterArgumentResolver;
+import org.onetwo.common.spring.web.mvc.args.WebAttributeArgumentResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -36,12 +39,28 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerInterceptor> interceptorList;
+
+	@Autowired
+	private List<HandlerMethodArgumentResolver> argumentResolverList;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
 		System.out.println("test");
     }
+
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(new WebAttributeArgumentResolver());
+		argumentResolvers.add(new ListParameterArgumentResolver());
+		if(this.argumentResolverList!=null){
+			argumentResolverList.forEach(arg->{
+				if(arg.getClass().getAnnotation(BootMvcArgs.class)!=null){
+					argumentResolvers.add(arg);
+				}
+			});
+		}
+	}
 
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
