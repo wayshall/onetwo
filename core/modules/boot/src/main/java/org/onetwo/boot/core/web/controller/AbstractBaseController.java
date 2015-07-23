@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
@@ -16,8 +17,11 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
-import org.onetwo.boot.core.web.utils.ResponseType;
 import org.onetwo.boot.core.web.view.BootJsonView;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.fs.FileStoredMeta;
+import org.onetwo.common.fs.FileStorer;
+import org.onetwo.common.fs.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
@@ -28,11 +32,15 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -58,12 +66,26 @@ abstract public class AbstractBaseController {
 	@Resource
 	private BootSiteConfig bootSiteConfig;
 	
+	@Autowired
+	private FileStorer<?> fileStorer;
+	
 	protected AbstractBaseController(){
 	}
 	
 	/*public String getMessage(String code, Object...args){
 		return codeMessager.getMessage(code, args);
 	}*/
+	
+	protected FileStoredMeta uploadFile(MultipartFile file){
+		Assert.notNull(fileStorer);
+		StoringFileContext context;
+		try {
+			context = StoringFileContext.create(file.getInputStream(), file.getOriginalFilename());
+			return fileStorer.write(context);
+		} catch (IOException e) {
+			throw new BaseException("upload file error!", e);
+		}
+	}
 
 	protected String redirect(String path){
 		return REDIRECT + path;
@@ -121,10 +143,10 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView mv(String viewName, Object... models){
-		return BootWebUtils.mv(viewName, models);
+		return BootWebUtils.createModelAndView(viewName, models);
 	}
 	protected ModelAndView redirectMv(String viewName, Object... models){
-		return BootWebUtils.mv(redirect(viewName), models);
+		return BootWebUtils.createModelAndView(redirect(viewName), models);
 	}
 	
 	protected ModelAndView messageMv(String message){
@@ -252,8 +274,7 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected ResponseType getResponseType(){
-		String ext = BootWebUtils.getRequestExtension(WebHolder.getRequest());
-		return ResponseType.of(ext);
+		return RequestUtils.getResponseType(WebHolder.getRequest());
 	}
 	
 	protected ResponseFlow<ModelAndView> responseFlow(){
@@ -268,13 +289,11 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.mv(viewName, DataWrapper.lazy(value));
+		return BootWebUtils.createModelAndView(viewName, DataWrapper.lazy(value));
 	}
 	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
-		if(mv==null){
-			return BootWebUtils.mv("", DataWrapper.lazy(value));
-		}
-		mv.addObject(value);
+		Assert.notNull(mv);
+		mv.addObject(DataWrapper.lazy(value));
 		return mv;
 	}
 	/***

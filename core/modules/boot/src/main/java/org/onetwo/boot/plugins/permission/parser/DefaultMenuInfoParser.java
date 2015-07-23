@@ -146,13 +146,18 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
 		}
 		
+		
+		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 		//如果是function类型，忽略解释children
 //		if(perm instanceof IFunction)
-		if(!PermissionUtils.isMenu(perm))
+		if(!PermissionUtils.isMenu(perm)){
+			if(childClasses.length>0){
+				throw new BaseException("the node with children must be a menu class: " + parser.getPermissionClass());
+			}
 			return perm;
-		
+		}
+
 		P menu = perm;
-		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
 //		Arrays.sort(childClasses);
 		for(Class<?> childCls : childClasses){
 			/*if(childCls.getName().startsWith("org.onetwo.plugins.admin.DataModule")){
@@ -203,6 +208,9 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 		}
 		perm.setName(name);
 		String code = parseCode(parser);
+		/*if(code.endsWith("EstateUnitMgr")){
+			System.out.println("test");
+		}*/
 		perm.setCode(code);
 		perm.setSort(sort.intValue());
 		perm.setHidden(parser.isHidden());

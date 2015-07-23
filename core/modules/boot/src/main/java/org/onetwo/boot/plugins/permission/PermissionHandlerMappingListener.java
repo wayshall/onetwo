@@ -70,6 +70,9 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 		}
 		
 		IPermission<?> perm = this.permissionManager.getPermission(codeClass);
+		if(perm==null){
+			throw new BaseException("can not found IPermission for code class: " + codeClass);
+		}
 		List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
 		Set<String> urlPattterns = entry.getKey().getPatternsCondition().getPatterns();
 		

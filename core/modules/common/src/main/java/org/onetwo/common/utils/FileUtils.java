@@ -58,7 +58,7 @@ public class FileUtils {
 	public static final String COLON_DB_SLASH_HEAD = "://";
 	public static final String DB_SLASH_HEAD = "//";
 
-	public static ResourceAdapter[] EMPTY_RESOURCES = new ResourceAdapter[0];
+	public static ResourceAdapter<?>[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
 
 	private FileUtils() {
@@ -487,7 +487,10 @@ public class FileUtils {
 	public static String getFileName(String fileName) {
 		fileName = replaceBackSlashToSlash(fileName);
 		int start = fileName.lastIndexOf(SLASH_CHAR);
-		return fileName.substring(start+1);
+		if(start!=-1){
+			return fileName.substring(start+1);
+		}
+		return fileName;
 	}
 	
 	public static String convertDir(String path){
@@ -509,7 +512,8 @@ public class FileUtils {
 	}
 	
 	public static String replaceBackSlashToSlash(String path){
-		return path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
+		path = path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
+		return path;
 	}
 
 	public static String getExtendName(String fileName, boolean hasDot) {
@@ -577,6 +581,18 @@ public class FileUtils {
 		OutputStream out = null;
 		try{
 			out = newOutputStream(targetDir, targetFileName);
+			return IOUtils.copy(in, out);
+		}catch(Exception e){
+			throw new BaseException("write inputstream error: " + e.getMessage(), e);
+		}finally{
+			close(out);
+		}
+	}
+	
+	public static int writeInputStreamTo(InputStream in, String destFilePath){
+		OutputStream out = null;
+		try{
+			out = newOutputStream(destFilePath);
 			return IOUtils.copy(in, out);
 		}catch(Exception e){
 			throw new BaseException("write inputstream error: " + e.getMessage(), e);

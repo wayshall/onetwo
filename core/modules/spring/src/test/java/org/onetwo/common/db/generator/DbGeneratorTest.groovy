@@ -51,20 +51,6 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 		List<GeneratedResult<String>> gr = FtlDbGenerator.newGenerator(dataSource)
 				//										.templateEngine(new FtlEngine())
 														.mysql()
-														/*.allColumnMappingAttr("cssClass", {ColumnMapping mapping->
-															if(mapping.isDateType()){
-																if(Types.TIMESTAMP==mapping.getSqlType()){
-																	return "datetimebox"
-																}
-																return "datebox"
-															}else if(mapping.isNumberType()){
-																return "numberbox"
-															}else if(mapping.isBooleanType()){
-																return "combobox"
-															}else{
-																return "textbox"
-															}
-														} as ColumnAttrValueFunc)*/
 														.stripTablePrefix("zyt_")
 														//.stripTablePrefix("zyt_estate_")
 														.globalConfig()
@@ -72,27 +58,21 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 															.resourceDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\resources/$)
 															.javaSrcDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\java/$)
 															.javaBasePackage("com.yooyo.zhiyetong")
-															.moduleName("resource")
+															.moduleName("configmgr")
 															.defaultTableContexts()
 //																.stripTablePrefix("zyt_estate_")
 															.end()
 														.end()
 //														.table("zyt_estate_rental_house")
-//														.table("zyt_demand_buy")
+														.table("ZYT_ESTATE_PHOTO")
 //														.table("")
-															.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
+															/*.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
 															.pageTemplate("${basePath}/db/generator/datagrid/edit-form.html.ftl")
 															.controllerTemplate("${basePath}/db/generator/datagrid/Controller.java.ftl")
 															.serviceImplTemplate("${basePath}/db/generator/datagrid/ServiceImpl.java.ftl")
-															.daoTemplate("${basePath}/db/generator/datagrid/Dao.java.ftl")
+															.daoTemplate("${basePath}/db/generator/datagrid/Dao.java.ftl")*/
 															.entityTemplate("${basePath}/db/generator/datagrid/ExtEntity.java.ftl")
 															.mybatisDaoXmlTemplate("${basePath}/db/generator/datagrid/Dao.xml.ftl")
-															/*.outfilePathFunc({TableGeneratedConfig config->
-																									config.globalGeneratedConfig().pageFileBaseDir+
-																									"/"+config.globalGeneratedConfig().moduleName+"/"
-																									config.tableNameStripStart("zyt_")+"-index2.html"} 
-																				as OutfilePathFunc)*/
-//															.outfilePath(config->config.baseDir+".html")
 														.end()
 														.generate(LangUtils.asMap());
 		println "gr:${gr}"

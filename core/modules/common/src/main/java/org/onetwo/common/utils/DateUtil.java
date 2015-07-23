@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 /**
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 @SuppressWarnings({ "serial"})
 abstract public class DateUtil {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(DateUtil.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(DateUtil.class);
 	public static enum DateType {
 
 		year(Calendar.YEAR), month(Calendar.MONTH), 

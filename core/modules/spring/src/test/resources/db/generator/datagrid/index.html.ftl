@@ -63,6 +63,7 @@
         $('#dataGrid').datagrid('reload');
     });
     
+    var reqUrl = '${'$'}{siteConfig.baseURL}${modulePath}.json';
     var editingId;
     var toolbar = [
         {
@@ -81,8 +82,7 @@
             text:'编辑',
             iconCls:'icon-edit',
             handler:function(){
-                var selectedNodes = $('#${datagridName}').datagrid('getSelections');
-                if(!selectedNodes || selectedNodes.length>1){
+                if(!$('#${datagridName}').isSelectedOne()){
                     $.messager.alert('警告','请选择一条数据！','warning');
                    return ;
                 }
@@ -102,34 +102,24 @@
         {
             text:'删除',
             iconCls:'icon-remove',
-            handler:function(){
-                var selectedNodes = $('#${datagridName}').datagrid('getSelections');
-                if(!selectedNodes){
-                    $.messager.alert('警告','请先选择数据！','warning');
-                   return ;
-                }
-                var ${table.primaryKey.javaName} = $.map(selectedNodes, function(e){
-                    return e.${table.primaryKey.javaName};
-                });
-                helper.deleteHandler({
-                    datagrid: '#${datagridName}',
-                    url: '${'$'}{siteConfig.baseURL}${modulePath}.json',
-                    params: {'${table.primaryKey.javaName}s': ${table.primaryKey.javaName}}
-                });
-           }
+            handler:helper.deleteHandler({
+                        datagrid: '#${datagridName}',
+                        url: '${'$'}{siteConfig.baseURL}${modulePath}.json',
+                        idField: '${table.primaryKey.javaName}',
+                        paramIdName: '${table.primaryKey.javaName}s'
+                    })
         }
         
     ];
     
     var selectedRow = null;
-    var loadUrl = '${'$'}{siteConfig.baseURL}${modulePath}.json';
     $("#${datagridName}").datagrid({
         iconCls: 'icon-ok',
         rownumbers: true,
         fitColumns: true,
         pagination: true,
         singleSelect: false,
-        url: loadUrl,
+        url: reqUrl,
         method: 'get',
         pageSize: 20,
         pageList: [20, 40, 60, 100],
