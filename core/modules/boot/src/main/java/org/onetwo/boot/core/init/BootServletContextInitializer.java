@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.init;
 
+import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -13,4 +14,7 @@ public class BootServletContextInitializer extends CommonWebFilterInitializer im
 		this.onServletContextStartup(servletContext);
     }
 
+	protected void registeredHiddenMethodFilter(ServletContext servletContext, Class<? extends Filter> initFilterClass){
+		//boot会自动注册
+	}
 }

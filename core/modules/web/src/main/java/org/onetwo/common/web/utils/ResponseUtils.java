@@ -37,6 +37,8 @@ abstract public class ResponseUtils {
 	// "";//BaseSiteConfig.getInstance().getCookieDomain();
 
 	public static final DateFormat COOKIE_DATA_FORMAT;
+	private static final JsonMapper JSON_MAPPER = JsonMapper.IGNORE_NULL;
+	
 	static {
 		DateFormat df = new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US);
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -212,7 +214,7 @@ abstract public class ResponseUtils {
 	}
 	
 	public static void renderObjectAsJson(HttpServletResponse response, Object data){
-		String text = JsonMapper.IGNORE_NULL.toJson(data);
+		String text = JSON_MAPPER.toJson(data);
 		render(response, text, JSON_TYPE, true);
 	}
 	

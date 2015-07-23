@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.onetwo</groupId>
-		<artifactId>onetwo-boot-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-		<relativePath>../boot-parent</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 	
   <artifactId>onetwo-spring</artifactId>
   <packaging>jar</packaging>
@@ -102,6 +102,18 @@
 	  <groupId>joda-time</groupId>
 	  <artifactId>joda-time</artifactId>
 	</dependency>
+	
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <scope>provided</scope>
+    </dependency>
 	
 	<dependency>
 		<groupId>junit</groupId>

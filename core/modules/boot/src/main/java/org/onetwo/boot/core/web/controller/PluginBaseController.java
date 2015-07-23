@@ -21,6 +21,6 @@ abstract public class PluginBaseController extends AbstractBaseController {
 
 	protected ModelAndView pluginMv(String viewName, Object... models){
 		String moduleMv = PLUGIN_PREFIX + StringUtils.appendStartWithSlash(viewName);
-		return BootWebUtils.mv(moduleMv, models);
+		return BootWebUtils.createModelAndView(moduleMv, models);
 	}
 }

@@ -20,8 +20,6 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.utils.map.CasualMap;
-import org.onetwo.common.web.utils.RequestTypeUtils;
-import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
@@ -33,8 +31,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UrlPathHelper;
-import org.springframework.web.util.WebUtils;
 
 
 @SuppressWarnings("unchecked")
@@ -49,7 +45,7 @@ public final class BootWebUtils {
 	public static final String REDIRECT_KEY = "redirect:";
 	public static final String GRID_SEARCH_FORM_SUBMIT = "submitTag";
 	
-	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
+//	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	private BootWebUtils(){
 	}
@@ -278,7 +274,7 @@ public final class BootWebUtils {
 	
 	
 	
-	public static ModelAndView mv(String viewName, Object... models){
+	public static ModelAndView createModelAndView(String viewName, Object... models){
 		ModelAndView mv = new ModelAndView(viewName);
 //		mv.getModel().put(UrlHelper.MODEL_KEY, getUrlMeta());
 		if(LangUtils.isEmpty(models)){
@@ -384,26 +380,8 @@ public final class BootWebUtils {
 		return null;
 	}
 	
-
 	public static boolean isAjaxRequest(HttpServletRequest request){
-//		String extension = webHelper(request).getRequestExtension();
-		String extension = getRequestExtension(request);
-		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
-		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
-		
-		return "json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
-	}
-
-	public static String getRequestExtension(HttpServletRequest request) {
-		String requestUri = getUrlPathHelper().getLookupPathForRequest(request);
-		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
-		String extension = FileUtils.getExtendName(reqUri);
-		return extension;
-	}
-	
-
-	public static UrlPathHelper getUrlPathHelper() {
-		return URL_PATH_HELPER;
+		return RequestUtils.isAjaxRequest(request);
 	}
 	
 }

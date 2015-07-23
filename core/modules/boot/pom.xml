@@ -3,12 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.onetwo</groupId>
-		<artifactId>onetwo-boot-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-		<relativePath>../boot-parent</relativePath>
-	</parent>
+	<!-- <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.2.4.RELEASE</version>
+        <relativePath/> 
+    </parent> -->
+    <parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 
 	<artifactId>onetwo-boot</artifactId>
 	<packaging>jar</packaging>
@@ -18,6 +24,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <onetwo.version>4.1.0-SNAPSHOT</onetwo.version>
 	</properties>
 
 	<dependencies>
@@ -61,6 +69,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		
+	    <dependency>
+	        <groupId>commons-fileupload</groupId>
+	        <artifactId>commons-fileupload</artifactId>
+	    </dependency>
         
         <dependency>
             <groupId>javax.mail</groupId>
@@ -166,11 +179,6 @@
         </dependency>
 	</dependencies>
 	
-	<dependencyManagement>
-		<dependencies>
-		</dependencies>
-	</dependencyManagement>
-	
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
@@ -207,5 +215,31 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+        </plugin>
+        
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <compilerVersion>${java.version}</compilerVersion>
+                <showWarnings>true</showWarnings>
+                <encoding>utf-8</encoding>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+            </configuration>
+        </plugin>
+        
+    </plugins>
+  </build>
 	
 </project>
