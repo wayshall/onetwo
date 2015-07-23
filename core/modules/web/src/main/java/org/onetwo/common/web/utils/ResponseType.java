@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.utils;
+package org.onetwo.common.web.utils;
 
 import java.util.stream.Stream;
 

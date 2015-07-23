@@ -4,9 +4,9 @@
 
 	<parent>
 		<groupId>org.onetwo</groupId>
-		<artifactId>onetwo-boot-parent</artifactId>
+		<artifactId>onetwo-parent</artifactId>
 		<version>4.1.0-SNAPSHOT</version>
-		<relativePath>../boot-parent</relativePath>
+		<relativePath>../parent</relativePath>
 	</parent>
 	
   <artifactId>onetwo-jackson</artifactId>
