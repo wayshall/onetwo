@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
+
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.jackson.JsonMapper;
@@ -31,7 +33,7 @@ public class BootJsonView extends MappingJackson2JsonView {
 	private boolean wrapModelAsDataResult = true;
 	
 	public BootJsonView(){
-		this.configJson();
+//		this.configJson();
 	}
 	
 	
@@ -39,7 +41,8 @@ public class BootJsonView extends MappingJackson2JsonView {
 		this.wrapModelAsDataResult = wrapModelAsDataResult;
 	}
 
-	final protected void configJson(){
+	@PostConstruct
+	final public void initJsonConfig(){
 		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
 		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();

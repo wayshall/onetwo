@@ -8,17 +8,23 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.util.UrlPathHelper;
+import org.springframework.web.util.WebUtils;
 
 @SuppressWarnings("rawtypes")
-public abstract class RequestUtils {
+public final class RequestUtils {
 	
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
-	public static final String AAGRID_KEY = "aagrid";
+	
+    public static final String CONTENT_LENGTH = "Content-length";
+	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
@@ -235,5 +241,44 @@ public abstract class RequestUtils {
 	
 	public static boolean isServlet3(){
 		return ClassUtils.isPresent("javax.servlet.SessionCookieConfig", ClassUtils.getDefaultClassLoader());
+	}
+	
+
+	public static boolean isAjaxRequest(HttpServletRequest request){
+//		String extension = webHelper(request).getRequestExtension();
+		String extension = getRequestExtension(request);
+		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
+		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
+		
+		return "json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+	}
+
+	public static String getRequestExtension(HttpServletRequest request) {
+		String requestUri = getUrlPathHelper().getLookupPathForRequest(request);
+		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
+		String extension = FileUtils.getExtendName(reqUri);
+		return extension;
+	}
+
+	public static ResponseType getResponseType(HttpServletRequest request){
+		String ext = getRequestExtension(request);
+		return ResponseType.of(ext);
+	}
+
+	public static UrlPathHelper getUrlPathHelper() {
+		return URL_PATH_HELPER;
+	}
+	
+	public static long getContentLength(HttpServletRequest request) {
+        long size;
+        try {
+            size = Long.parseLong(request.getHeader(CONTENT_LENGTH));
+        } catch (NumberFormatException e) {
+            size = request.getContentLength();
+        }
+        return size;
+    }
+	
+	private RequestUtils(){
 	}
 }

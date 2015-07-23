@@ -2,21 +2,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.4.RELEASE</version>
-		<relativePath/> 
-	</parent>
-	
   	<groupId>org.onetwo</groupId>
-	<artifactId>onetwo-boot-parent</artifactId>
+	<artifactId>onetwo-bom</artifactId>
 	<!-- 4.1.x for boot -->
 	<version>4.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>onetwo-boot-parent</name>
-	<description>onetwo-boot-parent</description>
+	<name>onetwo-bom</name>
+	<description>onetwo-boot-bom</description>
 
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,6 +20,8 @@
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.3</common-codec.version>
 	<commons-beanutils.version>1.8.3</commons-beanutils.version>
+	<commons-fileupload.version>1.3.1</commons-fileupload.version>
+	<commons-net.version>3.3</commons-net.version>
 	
 	<xstream.version>1.3.1</xstream.version>
 	<guava.version>16.0.1</guava.version>
@@ -47,6 +42,8 @@
 	<mybatis.version>3.2.8</mybatis.version>
 	<mybatis.pagehelper.version>3.6.3</mybatis.pagehelper.version>
 	<mybatis.spring.version>1.1.0</mybatis.spring.version>
+	
+	<spring-security.version>3.2.7.RELEASE</spring-security.version>
   </properties> 
 	
 <dependencyManagement>
@@ -137,6 +134,18 @@
 		<groupId>commons-beanutils</groupId>
 		<artifactId>commons-beanutils</artifactId>
 		<version>${commons-beanutils.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>commons-fileupload</groupId>
+	    <artifactId>commons-fileupload</artifactId>
+	    <version>${commons-fileupload.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>commons-net</groupId>
+	    <artifactId>commons-net</artifactId>
+	    <version>${commons-net.version}</version>
 	</dependency>
 	
 	<dependency>
@@ -286,36 +295,17 @@
       <version>${mybatis.spring.version}</version>
     </dependency>
 	
-	<!-- <dependency>
-         Import dependency management from Spring Boot
+	<!-- Import dependency management from Spring Boot -->
+	<dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-dependencies</artifactId>
-         <version>1.3.0.BUILD-SNAPSHOT</version>
+         <version>1.2.4.RELEASE</version>
          <type>pom</type>
          <scope>import</scope>
-     </dependency> -->
+     </dependency>
 	
   </dependencies>
 </dependencyManagement>
 
-
-	<build>
-	  <plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<configuration>
-				<source>${java.version}</source>
-				<target>${java.version}</target>
-				<compilerVersion>${java.version}</compilerVersion>
-				<showWarnings>true</showWarnings>
-				<encoding>utf-8</encoding>
-				<compilerArgs>
-					<arg>-parameters</arg>
-				</compilerArgs>
-			</configuration>
-		</plugin>
-	  </plugins>
-	</build>
   
 </project>

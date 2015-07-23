@@ -6,13 +6,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.profiling.UtilTimerStack;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.NiceDate;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.core.Ordered;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UrlPathHelper;
-import org.springframework.web.util.WebUtils;
 
 public class BootFirstInterceptor extends WebInterceptorAdapter {
 	
@@ -34,9 +33,7 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 		UtilTimerStack.push(CONTROLLER_TIME_KEY);
 		
 		BootWebHelper helper = BootWebUtils.webHelper(request);
-		String requestUri = urlPathHelper.getLookupPathForRequest(request);
-		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
-		String extension = FileUtils.getExtendName(reqUri);
+		String extension = RequestUtils.getRequestExtension(request);// 
 		helper.setRequestExtension(extension);
 		helper.setControllerHandler(handlerMethod);
 		
