@@ -37,6 +37,7 @@ public class JFishBootConfig {
 		private int ftpPort = 21;
 		private String ftpUser;
 		private String ftpPassword;
+		private String ftpBaseDir;
 	}
 	
 	public static enum StoreType {
