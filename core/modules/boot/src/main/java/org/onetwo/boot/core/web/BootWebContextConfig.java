@@ -66,7 +66,7 @@ public class BootWebContextConfig {
 			
 			FtpFileStorer fs = new FtpFileStorer(ftpConfig);
 			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
-			fs.setStoreDir(config.getFileStorePath());
+			fs.setStoreDir(config.getFtpBaseDir());
 			return fs;
 		}
 		throw new IllegalArgumentException("type: " + type);
