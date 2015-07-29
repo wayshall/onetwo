@@ -22,7 +22,7 @@
      <div class="easyui-panel" style="height:15%">
         <form id="searchForm" class="easyui-form" >
            <table style="padding: 5px;" cellpadding="5px">
-                <@helper.generatedFormField table=table isComboboxAddEmptyOption=true fieldClass="searchFieldClass"/>
+                <@helper.generatedFormField table=table isSearchFormField=true fieldClass="searchFieldClass"/>
                 <tr>
                    <td>&nbsp;</td>
                     <td rowspan="5">

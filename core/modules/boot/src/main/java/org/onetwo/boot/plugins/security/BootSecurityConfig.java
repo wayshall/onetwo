@@ -1,7 +1,6 @@
 package org.onetwo.boot.plugins.security;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -11,15 +10,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  */
 @ConfigurationProperties(prefix="jfish.security")
+@Data
 public class BootSecurityConfig {
 
-	@Getter @Setter
-	private ServiceProperties serviceProperties;
+	private CasConfig cas = new CasConfig();
 
-	public class ServiceProperties {
-		@Getter @Setter
+
+	@Data
+	public class CasConfig {
+		private String loginUrl;
 		private String service;
-		@Getter @Setter
-		private boolean sendRenew;
+		private boolean sendRenew = true;
+		private String casServerUrl;
+		private String key = CasConfig.class.getName();
 	}
 }

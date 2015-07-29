@@ -2,7 +2,6 @@ package org.onetwo.boot.plugins.permission.service.impl;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -11,7 +10,9 @@ import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.boot.plugins.permission.parser.PermissionConfig;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
+import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
 import org.onetwo.common.utils.TreeBuilder;
+import org.onetwo.common.utils.UserDetail;
 
 public class DefaultMenuItemRepository implements MenuItemRepository<PermisstionTreeModel> {
 	
@@ -24,16 +25,18 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	@Override
     public Collection<PermisstionTreeModel> findAllMenus() {
 		List<? extends IPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
-		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
-			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
-			pm.setUrl(p.getUrl());
-			return pm;
-		}).collect(Collectors.toList());
-		
-		TreeBuilder<PermisstionTreeModel> builder = new TreeBuilder<>(pmlist);
-		List<PermisstionTreeModel> rootTree = builder.buidTree();
-	    return rootTree.get(0).getChildren();
+	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
     }
+	
+	protected TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission<?>> permissions){
+	    return PermissionUtils.createMenuTreeBuilder(permissions);
+	}
+
+	@Override
+	public Collection<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
+		List<? extends IPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
+	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
+	}
 
 
 }

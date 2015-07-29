@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.utils.BootUtils;
+import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.AppConfig;
@@ -29,6 +30,7 @@ import com.google.common.collect.ImmutableList;
  * @author way
  *
  */
+@SuppressWarnings("unchecked")
 public class BootSiteConfig extends AppConfig implements AppConfigProvider {
 
 	private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
@@ -51,6 +53,7 @@ public class BootSiteConfig extends AppConfig implements AppConfigProvider {
 		
 		String[] strs = StringUtils.split(env.toString(), ",");
 		instance = new BootSiteConfig(loadApplications(strs), ImmutableList.copyOf(strs));
+		UtilTimerStack.active(instance.isDev());
 		instance.printConfigs();
 	}
 	

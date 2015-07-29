@@ -7,7 +7,9 @@ import javax.annotation.Resource;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.PluginBaseController;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.utils.TreeModel;
+import org.onetwo.common.utils.UserDetail;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,19 +27,20 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 	
 //	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.GET)
-	public ModelAndView index(){
+	public ModelAndView index(UserDetail userDetail){
 		Collection<T> menus = null;
-		/*if(userDetail==null){
-			if(bootSiteConfig.isDev())
+		if(userDetail==null){
+			/*if(bootSiteConfig.isDev())
 				menus = menuItemRepository.findAllMenus();
 			else
-				throw new NotLoginException();
-		}else{
-			throw new UnsupportedOperationException("not implements yet!");
-//			menus = menuItemRepository.findUserMenus(userDetail);
-		}*/
-		if(bootSiteConfig.isDev())
+				throw new NotLoginException();*/
+			throw new NotLoginException();
+		}else if(userDetail.isSystemRootUser()){
 			menus = menuItemRepository.findAllMenus();
+//			throw new UnsupportedOperationException("not implements yet!");
+		}else{
+			menus = menuItemRepository.findUserMenus(userDetail);
+		}
 		
 		return pluginMv("/permission/admin", "menus", menus, "adminTitle", bootSiteConfig.getAppName());
 	}

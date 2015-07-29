@@ -48,6 +48,8 @@ public interface IPermission<T extends IPermission<T>> {
 	void setHidden(boolean hidden);
 	public List<T> getChildrenPermissions();
 
+	void setChildrenSize(int childrenSize);
+	int getChildrenSize();
 //	public void setChildrenPermissions(List<? extends IPermission> childrenPermissions);
 
 	public void addChild(T permission);
