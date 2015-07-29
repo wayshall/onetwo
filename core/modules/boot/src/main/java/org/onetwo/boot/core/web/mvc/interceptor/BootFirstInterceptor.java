@@ -11,13 +11,12 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.core.Ordered;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UrlPathHelper;
 
 public class BootFirstInterceptor extends WebInterceptorAdapter {
 	
 	public static final int INTERCEPTOR_ORDER = Ordered.HIGHEST_PRECEDENCE;
 	
-	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
+//	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private static final String CONTROLLER_TIME_KEY = "mvc execute";
 	public static final String NOW_KEY = "now";
 	

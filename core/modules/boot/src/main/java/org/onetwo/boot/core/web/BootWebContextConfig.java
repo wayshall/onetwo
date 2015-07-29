@@ -2,6 +2,8 @@ package org.onetwo.boot.core.web;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.onetwo.boot.core.BootContextConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.JFishBootConfig;
@@ -13,12 +15,12 @@ import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,16 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 public class BootWebContextConfig {
 	
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private JFishBootConfig jfishBootConfig;
+	
+	@PostConstruct
+	public void init(){
+		SpringApplication.initApplicationIfNotInitialized(applicationContext);
+	}
 	
 	@Bean
 	public BootSiteConfig bootSiteConfig(){
@@ -93,6 +102,7 @@ public class BootWebContextConfig {
 	 * @return
 	 */
 	@Bean
+	@ConditionalOnMissingBean(BootWebExceptionResolver.class)
 	public BootWebExceptionResolver bootWebExceptionResolver(){
 		return new BootWebExceptionResolver();
 	}
@@ -104,11 +114,6 @@ public class BootWebContextConfig {
 	@Bean
 	public BootFirstInterceptor bootFirstInterceptor(){
 		return new BootFirstInterceptor();
-	}
-	
-	@Bean
-	public LoggerInterceptor loggerInterceptor(){
-		return new LoggerInterceptor();
 	}
 	
 	@Bean

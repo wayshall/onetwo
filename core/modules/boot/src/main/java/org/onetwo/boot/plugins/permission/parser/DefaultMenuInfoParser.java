@@ -148,6 +148,7 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 		
 		
 		Class<?>[] childClasses = parser.getChildrenClasses();//menuClass.getDeclaredClasses();
+		perm.setChildrenSize(childClasses.length);
 		//如果是function类型，忽略解释children
 //		if(perm instanceof IFunction)
 		if(!PermissionUtils.isMenu(perm)){

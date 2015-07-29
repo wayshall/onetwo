@@ -1,10 +1,13 @@
 package org.onetwo.boot.plugins.permission.utils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.boot.plugins.permission.entity.PermissionType;
+import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.common.utils.Closure;
+import org.onetwo.common.utils.TreeBuilder;
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
@@ -54,6 +57,18 @@ final public class PermissionUtils {
 				buildString(str, cnode, newsp, block);
 			}
 		}
+	}
+	
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission<?>> permissions){
+		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
+			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
+			pm.setSort(p.getSort());
+			pm.setUrl(p.getUrl());
+			return pm;
+		}).collect(Collectors.toList());
+		
+		TreeBuilder<PermisstionTreeModel> builder = new TreeBuilder<>(pmlist);
+	    return builder;
 	}
 	
 	private PermissionUtils(){}

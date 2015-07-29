@@ -81,7 +81,7 @@ public class CommonWebFilterInitializer {
 	protected void registeredInitFilter(ServletContext servletContext, Class<? extends Filter> initFilterClass){
 		Optional.ofNullable(initFilterClass).ifPresent(cls->{
 			Dynamic initfr = servletContext.addFilter("systemFilter", cls);
-			initfr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+			initfr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC), true, "/*");
 			initfr.setAsyncSupported(true);
 			initfr.setInitParameter("filterSuffix", "true");
 		});

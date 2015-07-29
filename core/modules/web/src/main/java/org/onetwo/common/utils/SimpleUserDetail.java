@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 
 @SuppressWarnings("serial")
-public class SimpleUserDetail implements UserDetail, Serializable {
+public class SimpleUserDetail implements SsoTokenable, UserDetail, Serializable {
 	
 	private long userId;
 	private String userName;
@@ -13,6 +13,15 @@ public class SimpleUserDetail implements UserDetail, Serializable {
 	public SimpleUserDetail(){ 
 	}
 	
+	public SimpleUserDetail(long userId, String userName, String token) {
+		super();
+		this.userId = userId;
+		this.userName = userName;
+		this.token = token;
+	}
+
+
+
 	public String getToken() {
 		return token;
 	}

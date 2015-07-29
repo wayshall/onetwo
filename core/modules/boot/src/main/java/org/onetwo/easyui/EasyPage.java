@@ -10,7 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EasyPage<T> {
 	private static final String MYBAITS_PAGE_SUPPORT = "com.github.pagehelper.Page";
-	
+
+	public static <E> EasyPage<E> create(){
+		EasyPage<E> page = new EasyPage<>();
+		return page;
+	}
 	public static <E> EasyPage<E> create(List<E> rows){
 		EasyPage<E> page = new EasyPage<>(rows);
 		return page;

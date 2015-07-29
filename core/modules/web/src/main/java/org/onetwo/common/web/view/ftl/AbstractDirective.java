@@ -77,10 +77,9 @@ abstract public class AbstractDirective implements TemplateDirectiveModel {
 	
 	@Override
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
-		boolean isActiveOld = UtilTimerStack.isActive();
 		if(params.containsKey(PARAMS_PROFILE)){
 			boolean profile = DirectivesUtils.getParameterByBoolean(params, PARAMS_PROFILE, false);
-			UtilTimerStack.setActive(profile);
+			UtilTimerStack.active(profile);
 		}
 		String name = DirectivesUtils.getParameterByString(params, "name", getDirectiveName());
 		UtilTimerStack.push(name);
@@ -88,7 +87,6 @@ abstract public class AbstractDirective implements TemplateDirectiveModel {
 		this.render(env, params, loopVars, body);
 		
 		UtilTimerStack.pop(name);
-		UtilTimerStack.setActive(isActiveOld);
 	}
 
 	abstract public void render(Environment env, Map<?, ?> params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException ;

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class DefaultUserDetail implements UserDetail, RoleDetail, RoleIdDetail, PermissionDetail, Serializable {
+public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, RoleIdDetail, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
