@@ -32,9 +32,6 @@
         }
     })
     
-    function saveData(){
-        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', treegrid: '#dataGrid'});
-    }
     
     function saveData(){
         helper.submitEasyForm({dataForm: '#${dataFormName}',dataDialog: '#addDataDialog', datagrid: '#${datagridName}'});

@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"parent", "level", "index", "name", "leafage", "first", "last"})
 public class EasyChildrenTreeModel extends AbstractTreeModel<EasyChildrenTreeModel>{
 
+	private String state;
+	private Boolean checked;
+	
 	public EasyChildrenTreeModel(){
 	}
 	
@@ -42,4 +45,21 @@ public class EasyChildrenTreeModel extends AbstractTreeModel<EasyChildrenTreeMod
 	public void setText(String name){
 		this.name = name;
 	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public Boolean getChecked() {
+		return checked;
+	}
+
+	public void setChecked(Boolean checked) {
+		this.checked = checked;
+	}
+	
 }

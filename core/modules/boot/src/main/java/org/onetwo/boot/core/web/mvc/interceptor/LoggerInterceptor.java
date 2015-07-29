@@ -14,6 +14,7 @@ import org.onetwo.common.spring.web.mvc.log.DefaultAccessLogger;
 import org.onetwo.common.spring.web.mvc.log.OperatorLogInfo;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.filter.RequestInfo;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,9 @@ import org.springframework.web.method.HandlerMethod;
 public class LoggerInterceptor extends WebInterceptorAdapter implements InitializingBean {
 	public static final int INTERCEPTOR_ORDER = BootFirstInterceptor.INTERCEPTOR_ORDER+100;
 
+	public static interface UserDetailRetriever {
+		UserDetail getUserDetail();
+	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -34,6 +38,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	private final boolean logOperation = true;
 	private JFishMathcer matcher ;
 	private String[] excludes;
+	private UserDetailRetriever userDetailRetriever;
 	
 	public LoggerInterceptor(){
 	}
@@ -67,6 +72,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		}
 	}
 	
+	
 	public void log(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		/*AuthenticationContext authen = AuthenticUtils.getContextFromRequest(request);
 		if(authen==null)
@@ -77,11 +83,15 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		
 		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
-		
-		long start = WebContextUtils.requestInfo(request).getStartTime();
+
+		RequestInfo reqInfo = WebContextUtils.requestInfo(request);
+		if(reqInfo==null)
+			return ;
+
+		String url = request.getMethod() + "|" + request.getRequestURL();
+		long start = reqInfo.getStartTime();
 		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
 		
-		String url = request.getMethod() + "|" + request.getRequestURL();
 		info.setUrl(url);
 		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
 //		info.setParameters(request.getParameterMap());
@@ -100,7 +110,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 			}
 		}
 		
-		UserDetail userdetail = null;//JFishWebUtils.getUserDetail();
+
+//		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		UserDetail userdetail = userDetailRetriever!=null?userDetailRetriever.getUserDetail():null;//JFishWebUtils.getUserDetail();
 		if(userdetail!=null){
 			info.setOperatorId(userdetail.getUserId());
 			info.setOperatorName(userdetail.getUserName());
@@ -132,6 +145,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	}
 	public boolean isLogOperation() {
 		return logOperation;
+	}
+
+	public void setUserDetailRetriever(UserDetailRetriever userDetailRetriever) {
+		this.userDetailRetriever = userDetailRetriever;
 	}
 	
 	

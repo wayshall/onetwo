@@ -86,12 +86,17 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 	private boolean isAjaxRequest(HttpServletRequest request){
 		return BootWebUtils.isAjaxRequest(request);
 	}
+	
+	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex){
+	}
 
 	@Override
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
+		
+		this.processAfterLog(request, response, handlerMethod, ex);
 		
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(isAjaxRequest(request)){

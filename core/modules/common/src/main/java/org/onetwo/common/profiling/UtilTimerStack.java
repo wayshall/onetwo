@@ -163,9 +163,8 @@ public class UtilTimerStack
      * @see #active()
      * @param active
      */
-    @Deprecated
     public static void setActive(boolean active) {
-    	//ignore
+    	active(active);
     }
     /**
      * Turn profiling on or off.
