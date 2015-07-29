@@ -45,6 +45,24 @@ final public class EasyModel {
 			return this;
 		}
 		
+		public EasyChildrenTreeModelBuilder<E> mapState(String fieldName){
+			builder.addMapping("state", fieldName);
+			return this;
+		}
+		public EasyChildrenTreeModelBuilder<E> mapIsStateOpen(MappingValueFunc<E, Boolean> stateFunc){
+			builder.addMapping("state", src->stateFunc.mapping(src)?"open":"closed");
+			return this;
+		}
+		
+		public EasyChildrenTreeModelBuilder<E> mapChecked(String fieldName){
+			builder.addMapping("checked", fieldName);
+			return this;
+		}
+		public EasyChildrenTreeModelBuilder<E> mapChecked(MappingValueFunc<E, Boolean> stateFunc){
+			builder.addMapping("checked", stateFunc);
+			return this;
+		}
+		
 		public EasyChildrenTreeModel build(List<E> sourceObjects, String rootNode){
 			List<EasyChildrenTreeModel> modelList = builder.bindValues(sourceObjects);
 			List<EasyChildrenTreeModel> rootTree = new TreeBuilder<>(modelList)

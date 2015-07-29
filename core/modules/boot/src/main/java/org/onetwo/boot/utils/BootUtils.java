@@ -3,9 +3,6 @@ package org.onetwo.boot.utils;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.onetwo.boot.core.matcher.MatcherUtils;
-import org.onetwo.boot.core.matcher.MutipleRequestMatcher;
-import org.onetwo.boot.plugins.security.CommonReadMethodMatcher;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -13,7 +10,6 @@ import org.slf4j.Logger;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 final public class BootUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootUtils.class);
@@ -48,12 +44,5 @@ final public class BootUtils {
         } catch (IOException e) {
 	        throw new BaseException("load yaml file error: " + classpath);
         }
-	}
-
-	
-	public static RequestMatcher csrfNotMatch(String...paths){
-		MutipleRequestMatcher mutiple = MatcherUtils.matchAntPaths(paths);
-		mutiple.addMatchers(new CommonReadMethodMatcher());
-		return MatcherUtils.notMatcher(mutiple);
 	}
 }

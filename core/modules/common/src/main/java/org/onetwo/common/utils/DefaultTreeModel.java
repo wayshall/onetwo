@@ -24,5 +24,9 @@ public class DefaultTreeModel extends AbstractTreeModel<DefaultTreeModel> {
 	public DefaultTreeModel(Object id, String name) {
 	    super(id, name);
     }
+	
+	public void setSort(Comparable<?> sort){
+		this.sort = sort;
+	}
  
 }

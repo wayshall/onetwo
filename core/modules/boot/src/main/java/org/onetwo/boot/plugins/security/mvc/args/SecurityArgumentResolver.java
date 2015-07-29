@@ -1,6 +1,7 @@
 package org.onetwo.boot.plugins.security.mvc.args;
 
 import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
+import org.onetwo.common.utils.UserDetail;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,8 @@ public class SecurityArgumentResolver implements HandlerMethodArgumentResolver {
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return Authentication.class.isAssignableFrom(parameter.getParameterType()) || 
-				User.class.isAssignableFrom(parameter.getParameterType());
+				User.class.isAssignableFrom(parameter.getParameterType()) || 
+				UserDetail.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 	@Override
@@ -29,6 +31,8 @@ public class SecurityArgumentResolver implements HandlerMethodArgumentResolver {
 			result = auth;
 		}else if(User.class.isAssignableFrom(parameter.getParameterType())){
 			result = auth.getPrincipal();
+		}else if(UserDetail.class.isAssignableFrom(parameter.getParameterType()) && UserDetail.class.isInstance(auth.getPrincipal())){
+			result = (UserDetail)auth.getPrincipal();
 		}
 		return result;
 	}

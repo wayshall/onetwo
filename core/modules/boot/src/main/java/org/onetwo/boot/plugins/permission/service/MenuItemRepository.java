@@ -2,12 +2,12 @@ package org.onetwo.boot.plugins.permission.service;
 
 import java.util.Collection;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.onetwo.common.utils.UserDetail;
 
 public interface MenuItemRepository<T> {
 
-	@PreAuthorize("hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('ADMIN')")
 	public Collection<T> findAllMenus();
-//	public Collection<T> findUserMenus(UserDetail loginUser);
+	public Collection<T> findUserMenus(UserDetail loginUser);
 
 }

@@ -45,4 +45,8 @@ public class PermisstionTreeModel extends AbstractTreeModel<PermisstionTreeModel
 		this.url = url;
 	}
 	
+	public void setSort(Comparable<?> sort){
+		this.sort = sort;
+	}
+	
 }

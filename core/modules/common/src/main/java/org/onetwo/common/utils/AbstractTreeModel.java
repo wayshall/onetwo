@@ -26,7 +26,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 
 	protected T parent;
 	
-	protected Comparable<Object> sort;
+	protected Comparable<?> sort;
 	
 	protected int level = -1;
 	protected int index;

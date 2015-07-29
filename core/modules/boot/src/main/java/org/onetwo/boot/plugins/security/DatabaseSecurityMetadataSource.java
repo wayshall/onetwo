@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +19,6 @@ import org.onetwo.boot.plugins.permission.utils.UrlResourceInfoParser;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -29,14 +27,11 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -110,11 +105,11 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	}
 	
 	public ExpressionBasedFilterInvocationSecurityMetadataSource convertTo(FilterInvocationSecurityMetadataSource source){
-		if(DefaultFilterInvocationSecurityMetadataSource.class.isInstance(source)){
+		/*if(DefaultFilterInvocationSecurityMetadataSource.class.isInstance(source)){
 			LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> existRequestMap = (LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>)ReflectUtils.getFieldValue(source, "requestMap");
-			/*requestMap.putAll(existRequestMap);
+			requestMap.putAll(existRequestMap);
 			existRequestMap.clear();
-			existRequestMap.putAll(requestMap);*/
+			existRequestMap.putAll(requestMap);
 			for(Entry<RequestMatcher, Collection<ConfigAttribute>> entry : existRequestMap.entrySet()){
 				Collection<ConfigAttribute> configs = Collections2.transform(entry.getValue(), new Function<ConfigAttribute, ConfigAttribute>() {
 
@@ -130,7 +125,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 			
 		}else{
 			return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
-		}
+		}*/
+		return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
 	}
 	
 	/*@Override

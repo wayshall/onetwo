@@ -26,9 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-
 import org.onetwo.easyui.EasyPage;
 import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
 import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.mapper.${mapperClassName};
@@ -52,6 +49,7 @@ public class ${serviceImplClassName} {
       <#if !column.primaryKey>
         <#if column.mapping.isStringType()==true>
         Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
+                .filter(field->StringUtils.isNotBlank(field))
                 .ifPresent(field->crieria.and${column.javaName?cap_first}Like(StringUtils.getSqlLikeString(field)));
         <#else>  
         Optional.ofNullable(${_tableContext.propertyName}.${column.getReadMethodName(false)}())
