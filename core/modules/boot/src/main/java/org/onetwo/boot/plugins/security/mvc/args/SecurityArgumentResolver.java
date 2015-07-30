@@ -1,7 +1,7 @@
 package org.onetwo.boot.plugins.security.mvc.args;
 
 import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -26,7 +26,7 @@ import com.google.common.collect.ImmutableList;
 /*@Component
 @ConfigurationProperties(prefix="jfish")*/
 /***
- * 过度配置
+ * 过度配置 siteConfig
  * @author way
  *
  */

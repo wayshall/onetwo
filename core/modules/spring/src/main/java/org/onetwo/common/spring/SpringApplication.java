@@ -11,6 +11,7 @@ import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
+import org.springframework.util.ClassUtils;
 
 /****
  * 可通过这个类手动获取spring容器里注册的bean
@@ -120,6 +122,18 @@ public class SpringApplication {
 
 	public <T> T getBeanByDefaultName(Class<T> clazz) {
 		return (T)getBean(StringUtils.uncapitalize(clazz.getSimpleName()));
+	}
+
+
+	public Object getBeanByClassName(String className) {
+		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
+			return getBean(ReflectUtils.loadClass(className), false);
+		}
+		return null;
+	}
+
+	public boolean containsClassBean(String className) {
+		return getBeanByClassName(className)!=null;
 	}
 
 
