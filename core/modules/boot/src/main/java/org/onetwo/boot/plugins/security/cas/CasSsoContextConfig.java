@@ -4,7 +4,7 @@ import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.boot.plugins.security.support.RbacSecurityXmlContextConfigSupport;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  */
 @Configuration
-@EnableConfigurationProperties({BootSecurityConfig.class})
 @Import(RbacSecurityXmlContextConfigSupport.class)
 public class CasSsoContextConfig {
 	
@@ -34,6 +33,7 @@ public class CasSsoContextConfig {
 	private AuthenticationManager authenticationManager;
 
 	@Bean
+	@ConditionalOnMissingBean(ServiceProperties.class)
 	public ServiceProperties serviceProperties(){
 		ServiceProperties serviceProps = new ServiceProperties();
 		serviceProps.setService(bootSecurityConfig.getCas().getService());
@@ -42,6 +42,7 @@ public class CasSsoContextConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(CasAuthenticationEntryPoint.class)
 	public CasAuthenticationEntryPoint casEntryPoint(){
 		CasAuthenticationEntryPoint casEntryPoint = new CasAuthenticationEntryPoint();
 		casEntryPoint.setServiceProperties(serviceProperties());
@@ -50,6 +51,7 @@ public class CasSsoContextConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(CasAuthenticationProvider.class)
 	public CasAuthenticationProvider casAuthenticationProvider(){
 		CasAuthenticationProvider casProvider = new CasAuthenticationProvider();
 		casProvider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<>(userDetailsService));
@@ -60,6 +62,7 @@ public class CasSsoContextConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(CasAuthenticationFilter.class)
 	public CasAuthenticationFilter casFilter(){
 		CasAuthenticationFilter casFilter = new CasAuthenticationFilter();
 		casFilter.setAuthenticationManager(authenticationManager);

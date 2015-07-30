@@ -1,4 +1,4 @@
-package org.onetwo.common.utils;
+package org.onetwo.common.web.userdetails;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,10 +1,12 @@
-package org.onetwo.common.utils;
+package org.onetwo.common.web.userdetails;
 
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.onetwo.common.utils.LangUtils;
 
 
 public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, RoleIdDetail, PermissionDetail, Serializable {

@@ -9,7 +9,7 @@ import org.onetwo.boot.core.web.controller.PluginBaseController;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.utils.TreeModel;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

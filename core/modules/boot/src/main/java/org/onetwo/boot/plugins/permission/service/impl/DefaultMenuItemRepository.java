@@ -12,7 +12,7 @@ import org.onetwo.boot.plugins.permission.parser.PermissionConfig;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
 import org.onetwo.common.utils.TreeBuilder;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 
 public class DefaultMenuItemRepository implements MenuItemRepository<PermisstionTreeModel> {
 	

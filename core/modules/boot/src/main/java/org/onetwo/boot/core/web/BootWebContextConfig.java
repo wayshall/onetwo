@@ -15,6 +15,7 @@ import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.SimpleFileStorer;
@@ -22,6 +23,7 @@ import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -156,6 +158,11 @@ public class BootWebContextConfig {
 		return resolver;
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(SessionUserManager.class)
+	public SessionUserManager sessionUserManager(){
+		return new BootSessionUserManager();
+	}
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	public CommonsMultipartResolver filterMultipartResolver(){
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
