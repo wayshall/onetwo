@@ -2,7 +2,6 @@ package org.onetwo.boot.plugins.security.cas;
 
 import org.onetwo.boot.plugins.security.DatabaseSecurityMetadataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;

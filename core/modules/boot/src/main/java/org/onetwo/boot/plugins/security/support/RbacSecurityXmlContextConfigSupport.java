@@ -29,6 +29,10 @@ public class RbacSecurityXmlContextConfigSupport {
 		return new SecurityBeanPostProcessor();
 	}
 	
+	/****
+	 * boot 不启动security的autoconfig时，有bug，会自动注册不受控的filter
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(SecurityAutoConfiguration.class)
 	public FixSecurityFilterBugServletContextInitializer fixSecurityFilterBugServletContextInitializer(){

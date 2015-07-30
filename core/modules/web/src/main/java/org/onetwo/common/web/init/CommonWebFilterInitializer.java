@@ -14,7 +14,7 @@ import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
-import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
+import org.springframework.web.multipart.support.MultipartFilter;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -70,7 +70,7 @@ public class CommonWebFilterInitializer {
 	
 	protected void registeredMultipartFilter(ServletContext servletContext, Class<? extends Filter> multipartFilterClass){
 		Optional.ofNullable(multipartFilterClass).ifPresent(cls->{
-			Dynamic fr = servletContext.addFilter("multipartFilter", multipartFilterClass);
+			Dynamic fr = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
 				frconfig.setAsyncSupported(true);
 				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
@@ -81,7 +81,7 @@ public class CommonWebFilterInitializer {
 	protected void registeredInitFilter(ServletContext servletContext, Class<? extends Filter> initFilterClass){
 		Optional.ofNullable(initFilterClass).ifPresent(cls->{
 			Dynamic initfr = servletContext.addFilter("systemFilter", cls);
-			initfr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC), true, "/*");
+			initfr.addMappingForUrlPatterns(this.getAllDispatcherTypes(), true, "/*");
 			initfr.setAsyncSupported(true);
 			initfr.setInitParameter("filterSuffix", "true");
 		});
@@ -89,7 +89,7 @@ public class CommonWebFilterInitializer {
 	
 	protected void registeredHiddenMethodFilter(ServletContext servletContext, Class<? extends Filter> hiddenFilterClass){
 		Optional.ofNullable(hiddenFilterClass).ifPresent(cls->{
-			Dynamic fr = servletContext.addFilter("hiddenHttpMethodFilter", hiddenFilterClass);
+			Dynamic fr = servletContext.addFilter(hiddenFilterClass.getSimpleName(), hiddenFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
 	//			fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 //				fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, AbstractDispatcherServletInitializer.DEFAULT_SERVLET_NAME);
@@ -107,6 +107,10 @@ public class CommonWebFilterInitializer {
 			fr.setAsyncSupported(true);
 			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 		});
+	}
+	
+	protected EnumSet<DispatcherType> getAllDispatcherTypes(){
+		return EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
 	}
 
 

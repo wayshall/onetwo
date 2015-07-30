@@ -8,6 +8,7 @@ import org.onetwo.boot.plugins.permission.PermissionManager;
 import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.web.csrf.CsrfValid;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,15 +25,15 @@ public class PermissionController extends PluginBaseController {
 //	@Resource
 //	private SpringBootConfig springBootConfig;
 	
-	private void checkAvailable() throws ModelAndViewDefiningException{
+	private void checkAvailable(UserDetail userDetail) throws ModelAndViewDefiningException{
 		if(!getBootSiteConfig().isProduct())
 			return ;
-		if(getCurrentLoginUser()==null || !getCurrentLoginUser().isSystemRootUser())
+		if(userDetail==null || !userDetail.isSystemRootUser())
 			throw new NoAuthorizationException("无权访问！");
 	}
 	@RequestMapping(value="index")
-	public ModelAndView index(HttpServletResponse response) throws ModelAndViewDefiningException{
-		this.checkAvailable();
+	public ModelAndView index(UserDetail userDetail) throws ModelAndViewDefiningException{
+		this.checkAvailable(userDetail);
 		IPermission<?> menu = this.permissionManager.getMemoryRootMenu();
 		logger.info("menu:\n {}", menu.toTreeString("\n"));
 		return pluginMv("/permission/index", "menu", menu, "menuHtml", menu.toTreeString("<br/>"));
@@ -40,8 +41,8 @@ public class PermissionController extends PluginBaseController {
 	
 	@CsrfValid(false)
 	@RequestMapping(value="syncmenus", method=RequestMethod.POST)
-	public ModelAndView synMenus() throws ModelAndViewDefiningException{
-		this.checkAvailable();
+	public ModelAndView synMenus(UserDetail userDetail) throws ModelAndViewDefiningException{
+		this.checkAvailable(userDetail);
 //		permissionManager.build();
 		this.permissionManager.syncMenuToDatabase();
 		IPermission<?> menu = this.permissionManager.getMemoryRootMenu();
