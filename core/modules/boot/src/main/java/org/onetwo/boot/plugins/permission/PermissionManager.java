@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission;
 import java.util.List;
 
 import org.onetwo.boot.plugins.permission.entity.IPermission;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 
 public interface PermissionManager<P extends IPermission<P>> {
 

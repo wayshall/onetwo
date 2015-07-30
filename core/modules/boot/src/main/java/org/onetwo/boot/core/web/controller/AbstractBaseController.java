@@ -31,7 +31,8 @@ import org.onetwo.common.spring.web.mvc.DataWrapper.LazyValue;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.SessionUserManager;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -68,6 +69,9 @@ abstract public class AbstractBaseController {
 	
 	@Autowired
 	private FileStorer<?> fileStorer;
+	
+	@Autowired
+	private SessionUserManager<UserDetail> sessionUserManager;
 	
 	protected AbstractBaseController(){
 	}
@@ -259,7 +263,8 @@ abstract public class AbstractBaseController {
 	
 
 	protected UserDetail getCurrentLoginUser(){
-		return BootWebUtils.getUserDetail();
+//		return BootWebUtils.getUserDetail();a
+		return sessionUserManager.getCurrentUser();
 	}
 
 	public BootSiteConfig getBootSiteConfig() {

@@ -89,6 +89,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		List<WebContextConfigProvider> configs = SpringUtils.getBeans(app, WebContextConfigProvider.class);
 		configs.stream().forEach(cnf->{
 			context.setAttribute(cnf.getConfigName(), cnf.getWebConfig(config));
+			logger.info("find WebContextConfigProvider : {} -> {}", cnf.getConfigName(), cnf);
 		});
 		
 		this.initWithWebApplicationContext(config, app);

@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.SsoTokenable;
-import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.filter.RequestInfo;
+import org.onetwo.common.web.userdetails.SsoTokenable;
+import org.onetwo.common.web.userdetails.UserDetail;
 
 @SuppressWarnings("unchecked")
 final public class WebContextUtils {

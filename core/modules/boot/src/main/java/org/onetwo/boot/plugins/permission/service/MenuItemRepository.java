@@ -2,7 +2,7 @@ package org.onetwo.boot.plugins.permission.service;
 
 import java.util.Collection;
 
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 
 public interface MenuItemRepository<T> {
 

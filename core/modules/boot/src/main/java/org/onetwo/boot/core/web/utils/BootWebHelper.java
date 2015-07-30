@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.UserDetail;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebHolder;
