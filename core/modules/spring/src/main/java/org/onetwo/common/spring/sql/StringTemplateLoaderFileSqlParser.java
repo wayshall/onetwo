@@ -9,14 +9,14 @@ import org.onetwo.common.spring.ftl.DefaultTemplateParser;
 import org.onetwo.common.spring.ftl.ForeachDirective;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.propconf.PropertiesNamespaceInfo;
-import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoListener;
+import org.onetwo.common.utils.propconf.NamespacePropertiesFileListener;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
-public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements TemplateParser, PropertiesNamespaceInfoListener<T> {
+public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements TemplateParser, NamespacePropertiesFileListener<T> {
 
 //	public static final String QUERY_POSTFIX = ".query";//for ftl
 	
@@ -46,7 +46,7 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 
 
 	@Override
-	public void afterBuild(ResourceAdapter[] sqlfileArray, Map<String, PropertiesNamespaceInfo<T>> namespaceInfos) {
+	public void afterBuild(ResourceAdapter<?>[] sqlfileArray, Map<String, PropertiesNamespaceInfo<T>> namespaceInfos) {
 		this.initialize();
 		for(PropertiesNamespaceInfo<T> namespace : namespaceInfos.values()){
 			this.putTemplateByNamespaceInfo(namespace);
@@ -57,7 +57,7 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 
 
 	@Override
-	public void afterReload(ResourceAdapter file, PropertiesNamespaceInfo<T> namepsaceInfo) {
+	public void afterReload(ResourceAdapter<?> file, PropertiesNamespaceInfo<T> namepsaceInfo) {
 		this.putTemplateByNamespaceInfo(namepsaceInfo);
 	}
 

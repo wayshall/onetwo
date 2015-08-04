@@ -3,12 +3,11 @@ package org.onetwo.common.spring.sql;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQueryUtils;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
+import org.onetwo.common.utils.propconf.NamespaceProperty;
 
 public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	public static final String COUNT_POSTFIX = "-count";

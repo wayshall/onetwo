@@ -40,8 +40,9 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 //	private boolean printSql = false;
 	
 	
-	public AbstractDBDialect() {
+	public AbstractDBDialect(DBMeta dbmeta) {
 		super();
+		this.dbmeta = dbmeta;
 //		this.dataBaseConfig = dataBaseConfig;
 	}
 
@@ -187,10 +188,26 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 	}
 	
 	public static class DBMeta {
-		private DataBase db;
+		
+		public static DBMeta create(DataBase db){
+			return new DBMeta(db);
+		}
+		
+		final private DataBase db;
 		private String dbName;
 		private String version;
-
+		
+		public DBMeta(String dbName) {
+			super();
+			this.db = DataBase.of(dbName);
+			this.dbName = dbName;
+		}
+		
+		public DBMeta(DataBase db) {
+			super();
+			this.db = db;
+			this.dbName = db.getName();
+		}
 		public boolean isMySQL(){
 			return DataBase.MySQL==db;
 		}
@@ -211,7 +228,6 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 
 		public void setDbName(String dbName) {
 			this.dbName = dbName.toLowerCase();
-			this.db = DataBase.of(this.dbName);
 		}
 
 		public void setVersion(String version) {
