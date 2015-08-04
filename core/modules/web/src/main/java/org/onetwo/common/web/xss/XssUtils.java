@@ -15,18 +15,17 @@ public final class XssUtils {
 		return HtmlUtils.htmlUnescape(content);
 	}
 
-	public static Object escapeIfNeccessary(Object value){
+	public static String escapeIfNeccessary(String value){
 		return escapeIfNeccessary(value, null);
 	}
 	
-	public static Object escapeIfNeccessary(Object value, Object def){
+	public static String escapeIfNeccessary(String value, String def){
 		if(value==null){
 			return def;
-		}else if(CharSequence.class.isInstance(value)){
-			return escape(value.toString());
+		}else{
+			return escape(value);
 //			return ToolEl.escapeHtml(ToolEl.escapeJs(value.toString()));
 		}
-		return value;
 	}
 	
 	public static String[] escapeArray(String[] values){

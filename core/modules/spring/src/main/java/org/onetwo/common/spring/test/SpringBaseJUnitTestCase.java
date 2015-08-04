@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  */
-package org.onetwo.common.test.spring;
+package org.onetwo.common.spring.test;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;

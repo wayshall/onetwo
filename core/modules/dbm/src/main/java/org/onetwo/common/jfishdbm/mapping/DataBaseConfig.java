@@ -1,7 +1,6 @@
 package org.onetwo.common.jfishdbm.mapping;
 
 public interface DataBaseConfig {
-	public String JFISHDB_LOG_SQL = "jfishdb.log.sql";
 
 
 	/******
