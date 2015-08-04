@@ -1,6 +1,7 @@
 package org.onetwo.common.db;
 
-import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
+import org.onetwo.common.utils.propconf.NamespaceProperty;
+
 
 
 public interface FileNamedQueryFactoryListener {

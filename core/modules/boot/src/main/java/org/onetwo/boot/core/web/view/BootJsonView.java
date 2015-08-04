@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DataResult;
@@ -17,6 +17,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.Result;
 import org.onetwo.common.utils.list.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -32,6 +34,9 @@ public class BootJsonView extends MappingJackson2JsonView {
 	
 	private boolean wrapModelAsDataResult = true;
 	
+	@Autowired
+	private ApplicationContext applicationContext;
+	
 	public BootJsonView(){
 //		this.configJson();
 	}
@@ -45,8 +50,13 @@ public class BootJsonView extends MappingJackson2JsonView {
 	final public void initJsonConfig(){
 		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
-		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
-		Module module = SpringApplication.getInstance().getBean(Module.class);
+		ObjectMapper mapper = SpringUtils.getBean(applicationContext, ObjectMapper.class);
+		if(mapper!=null){
+			this.setObjectMapper(mapper);
+			return ;
+		}
+		
+		mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
 //		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
 		String clsName = "com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module";
 		if(ClassUtils.isPresent(clsName, ClassUtils.getDefaultClassLoader())){
@@ -58,9 +68,11 @@ public class BootJsonView extends MappingJackson2JsonView {
 
 			field = ReflectUtils.getStaticFieldValue(featureCls, "FORCE_LAZY_LOADING");
 			ReflectUtils.invokeMethod("disable", h4m, field);
+			mapper.registerModule((Module)h4m);
 		}
-		if(module!=null)
-			mapper.registerModule(module);
+		List<Module> modules = SpringUtils.getBeans(applicationContext, Module.class);
+		if(LangUtils.isNotEmpty(modules))
+			mapper.registerModules(modules);
 		this.setObjectMapper(mapper);
 	}
 

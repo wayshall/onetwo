@@ -284,23 +284,6 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		getJfishDao().findPage(page, squery);
 	}
 
-	/*public void findPage(Page page, QueryBuilder squery) {
-		entityManagerWraper.findPage(page, squery);
-	}*/
-	
-	/*public <T> T findUnique(QueryBuilder squery) {
-		return entityManagerWraper.findUnique(squery);
-	}*/
-
-	/*public <T> List<T> findList(QueryBuilder squery) {
-		return entityManagerWraper.findList(squery);
-	}*/
-
-
-	/*public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return jfishDao.findUniqueByProperties(entityClass, CUtils.asLinkedMap(properties));
-	}*/
-
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findUniqueByProperties(entityClass, properties);
 	}
@@ -311,9 +294,6 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return (T) dq.getSingleResult();
 	}
 
-	/*public <T> T findUnique(String sql, Map<String, Object> values) {
-		return (T)jfishDao.createAsDataQuery(sql, values).getSingleResult();
-	}*/
 
 	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
 		return findByProperties(entityClass, CUtils.asLinkedMap(properties));
@@ -337,43 +317,20 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return jfishDao.countByProperties(entityClass, properties);
 	}
 
-	/*@Override
-	public void delete(ILogicDeleteEntity entity) {
-		entity.deleted();
-		getJfishDao().save(entity);
-	}
-
-	@Override
-	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id) {
-		Object entity = getJfishDao().findById(entityClass, id);
-		if(entity==null)
-			return null;
-		if(!ILogicDeleteEntity.class.isAssignableFrom(entity.getClass())){
-			throw new ServiceException("实体不支持删除！");
-		}
-		T logicDeleteEntity = (T) entity;
-		logicDeleteEntity.deleted();
-		getJfishDao().save(logicDeleteEntity);
-		return logicDeleteEntity;
-	}*/
-
 	@Override
 	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
 		return getFileNamedQueryFactory().findPage(queryName, page, params);
 	}
-
 
 	@Override
 	public JFishDao getRawManagerObject() {
 		return jfishDao;
 	}
 
-
 	@Override
 	public <T> T getRawManagerObject(Class<T> rawClass) {
 		return rawClass.cast(getRawManagerObject());
 	}
-
 
 	public void setFileNamedQueryFactory(FileNamedQueryFactory fileNamedQueryFactory) {
 		this.fileNamedQueryFactory = fileNamedQueryFactory;

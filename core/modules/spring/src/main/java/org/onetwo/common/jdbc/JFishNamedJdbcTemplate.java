@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  * @author weishao
  *
  */
-@SuppressWarnings("unchecked")
 public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implements NamedJdbcTemplate{
 
 	public JFishNamedJdbcTemplate(DataSource dataSource) {
@@ -34,7 +33,7 @@ public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implement
 		PreparedStatementCreator pstCreator = getPreparedStatementCreator(sql, new MapSqlParameterSource(paramMap));
 		final PreparedStatementSetter setter = (PreparedStatementSetter) pstCreator;
 //		System.out.println("sql: " + ((SqlProvider)setter).getSql());
-		return execute(sql, new MapSqlParameterSource(paramMap), new PreparedStatementCallback(){
+		return execute(sql, new MapSqlParameterSource(paramMap), new PreparedStatementCallback<Object>(){
 
 			@Override
 			public Object doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {

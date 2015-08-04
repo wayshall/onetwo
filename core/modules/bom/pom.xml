@@ -44,6 +44,8 @@
 	<mybatis.spring.version>1.1.0</mybatis.spring.version>
 	
 	<spring-security.version>3.2.7.RELEASE</spring-security.version>
+	
+	<jpa.version>2.0.0</jpa.version>
   </properties> 
 	
 <dependencyManagement>
@@ -174,12 +176,13 @@
         <artifactId>javatuples</artifactId>
         <version>${javatuples.version}</version>
     </dependency>
-	<!-- 
+	
 	<dependency>
 	  <groupId>javax.persistence</groupId>
 	  <artifactId>com.springsource.javax.persistence</artifactId>
+      <version>${jpa.version}</version>
 	</dependency>
-	 -->
+	
 	
 	<dependency>
 	  <groupId>javax.validation</groupId>
@@ -229,6 +232,11 @@
         <artifactId>mail</artifactId>
         <version>${mail.version}</version>
     </dependency>
+    
+    <!-- <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+    </dependency> -->
     
     <dependency>
 	    <groupId>org.springframework.security</groupId>

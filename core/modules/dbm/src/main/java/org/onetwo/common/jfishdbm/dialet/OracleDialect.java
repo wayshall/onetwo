@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.dialet;
 
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleBatchInsertEventListener;
@@ -12,6 +13,7 @@ import org.onetwo.common.utils.StringUtils;
 public class OracleDialect extends AbstractDBDialect {
 
 	public OracleDialect() {
+		super(DBMeta.create(DataBase.Oracle));
 	}
 
 	public void registerIdStrategy(){

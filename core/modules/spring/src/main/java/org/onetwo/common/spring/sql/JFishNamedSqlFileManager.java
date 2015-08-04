@@ -11,8 +11,9 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoListener;
-import org.onetwo.common.utils.propconf.PropertiesNamespaceInfoManagerImpl;
+import org.onetwo.common.utils.propconf.NamespacePropertiesFileListener;
+import org.onetwo.common.utils.propconf.NamespacePropertiesFileManagerImpl;
+import org.onetwo.common.utils.propconf.NamespaceProperty;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -24,21 +25,21 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  *
  * @param <T>
  */
-public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends PropertiesNamespaceInfoManagerImpl<T> {
+public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends NamespacePropertiesFileManagerImpl<T> {
 	
-	public static JFishNamedSqlFileManager<JFishNamedFileQueryInfo> createDefaultJFishNamedSqlFileManager(
+	/*public static JFishNamedSqlFileManager<JFishNamedFileQueryInfo> createDefaultJFishNamedSqlFileManager(
 			DataBase databaseType,
 			boolean watchSqlFile,
 			PropertiesNamespaceInfoListener<JFishNamedFileQueryInfo> listener){
 		return new DefaultJFishNamedSqlFileManager(databaseType, watchSqlFile, listener);
-	}
+	}*/
 	
-	private static class DefaultJFishNamedSqlFileManager extends JFishNamedSqlFileManager<JFishNamedFileQueryInfo> {
+	public static class DefaultJFishNamedSqlFileManager extends JFishNamedSqlFileManager<JFishNamedFileQueryInfo> {
 
 		public DefaultJFishNamedSqlFileManager(
 				DataBase databaseType,
 				boolean watchSqlFile,
-				PropertiesNamespaceInfoListener<JFishNamedFileQueryInfo> listener) {
+				NamespacePropertiesFileListener<JFishNamedFileQueryInfo> listener) {
 			super(new DialetNamedSqlConf<JFishNamedFileQueryInfo>(){
 				{
 					setDatabaseType(databaseType);
@@ -54,6 +55,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	public static final String SQL_POSTFIX = ".sql";
 	
 	public static class DialetNamedSqlConf<E> extends JFishPropertyConf<E> {
+		public static final String JFISH_SQL_POSTFIX = ".jfish.sql";
 		private DataBase databaseType;
 		
 		public DialetNamedSqlConf(){
@@ -89,7 +91,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 		}, listener);
 		this.databaseType = databaseType;
 	}*/
-	public JFishNamedSqlFileManager(DialetNamedSqlConf<T> conf, PropertiesNamespaceInfoListener<T> listener) {
+	public JFishNamedSqlFileManager(DialetNamedSqlConf<T> conf, NamespacePropertiesFileListener<T> listener) {
 		super(conf, listener);
 		this.databaseType = conf.getDatabaseType();
 	}
@@ -109,7 +111,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	}
 	
 	@Override
-	protected List<String> readResourceAsList(ResourceAdapter f){
+	protected List<String> readResourceAsList(ResourceAdapter<?> f){
 		if(f.isSupportedToFile()){
 			return FileUtils.readAsList(f.getFile());
 		}else{
@@ -123,13 +125,13 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	}
 	
 	@Override
-	protected ResourceAdapter[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
+	protected ResourceAdapter<?>[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
 		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
 		
-		ResourceAdapter[] allSqlFiles = null;
+		ResourceAdapter<?>[] allSqlFiles = null;
 		try {
 			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
 			if(StringUtils.isNotBlank(conf.getOverrideDir())){

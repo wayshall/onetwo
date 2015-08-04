@@ -11,13 +11,12 @@ import org.onetwo.common.jdbc.JFishJdbcTemplateProxy;
 import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jdbc.JdbcUtils;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.dialet.DbmetaFetcher;
 import org.onetwo.common.jfishdbm.dialet.DefaultDatabaseDialetManager;
-import org.onetwo.common.jfishdbm.dialet.InnerDBDialet;
 import org.onetwo.common.jfishdbm.dialet.MySQLDialect;
 import org.onetwo.common.jfishdbm.dialet.OracleDialect;
-import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
@@ -27,18 +26,15 @@ import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
-import org.onetwo.common.spring.context.ApplicationConfigKeys;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.spring.sql.JFishNamedSqlFileManager.DefaultJFishNamedSqlFileManager;
 import org.onetwo.common.spring.sql.StringTemplateLoaderFileSqlParser;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -48,17 +44,33 @@ import org.springframework.context.annotation.Configuration;
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
 //@Import(JFishProfiles.class)
 public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean{
+//	public static final String JFISH_DBM_SQLFILE_WATCH = "jfish.dbm.sqlfile.watch";
 
 	private ApplicationContext applicationContext;
 
 	@Autowired
 	private DataSource dataSource;
 
-	@Value(ApplicationConfigKeys.BASE_PACKAGE_EXPR)
-	protected String jfishBasePackages;
+	/*@Value(ApplicationConfigKeys.BASE_PACKAGE_EXPR)
+	protected String jfishBasePackages;*/
 
+	/*@Value(JFISH_DBM_SQLFILE_WATCH)
+	private boolean watchSqlFile;*/
+
+	/*@Autowired
+	private JFishPropertyPlaceholder configHolder;*/
+	
 	@Autowired
-	private JFishPropertyPlaceholder configHolder;
+	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
+	
+	@Autowired(required=false)
+	private DataBaseConfig dataBaseConfig;
+	
+	/***
+	 * 避免延迟加载
+	 */
+	@Autowired
+	private JFishEntityManager jfishEntityManager;
 	
 	public JFishdbmSpringConfiguration(){
 	}
@@ -82,8 +94,11 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	}
 
 	@Bean
-	public DataBaseConfig dataBaseConfig(){
-		return new DefaultDataBaseConfig(configHolder);
+	public DataBaseConfig defaultDataBaseConfig(){
+		if(dataBaseConfig==null){
+			dataBaseConfig = new DefaultDataBaseConfig();
+		}
+		return dataBaseConfig;
 	}
 	@Bean
 	public JFishDaoImplementor jfishDao() {
@@ -102,11 +117,11 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	public JFishJdbcOperations jdbcTemplate(){
 		JFishJdbcTemplate template = new JFishJdbcTemplate();
 		template.setDataSource(dataSource);
-		template.setDebug(dataBaseConfig().isLogSql());
+		template.setDebug(defaultDataBaseConfig().isLogSql());
 //		template.setNamedTemplate(namedJdbcTemplate());
 //		template.setLogJdbcSql(logJdbcSql);
 
-		if(dataBaseConfig().isLogSql()){
+		if(defaultDataBaseConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
 			ajf.setProxyTargetClass(false);
 			ajf.addAspect(JFishJdbcTemplateProxy.class);
@@ -142,7 +157,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		MappedEntryManager em = new MutilMappedEntryManager(dialect());
 		em.initialize();
 		// em.setMappedEntryBuilder(mappedEntryBuilderList());
-		String[] packages = dataBaseConfig().getModelBasePackages();
+		String[] packages = defaultDataBaseConfig().getModelBasePackages();
 		if(!LangUtils.isEmpty(packages)){
 			em.scanPackages(packages);
 		}
@@ -153,17 +168,19 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	@Bean
 	public DefaultDatabaseDialetManager databaseDialetManager(){
 		DefaultDatabaseDialetManager databaseDialetManager = new DefaultDatabaseDialetManager();
-		databaseDialetManager.register(DataBase.MySQL.getName(), new MySQLDialect());
-		databaseDialetManager.register(DataBase.Oracle.getName(), new OracleDialect());
+		databaseDialetManager.register(new MySQLDialect());
+		databaseDialetManager.register(new OracleDialect());
 		return databaseDialetManager;
 	}
 	
 	@Bean
 	public DBDialect dialect(){
-		DataBase db = JdbcUtils.getDataBase(dataSource);
-		DBDialect dialect = databaseDialetManager().getRegistered(db.getName());
+//		DataBase db = JdbcUtils.getDataBase(dataSource);
 		DBMeta dbmeta = DbmetaFetcher.create(dataSource).getDBMeta();
-		LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
+		
+		DBDialect dialect = databaseDialetManager().getRegistered(dbmeta.getDbName());
+//		LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
+		dialect.getDbmeta().setVersion(dbmeta.getVersion());
 		return dialect;
 	}
 
@@ -186,19 +203,23 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 
 	@Bean
 	public FileNamedQueryFactory<JFishNamedFileQueryInfo> fileNamedQueryFactory(){
-		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		FileNamedQueryFactory<JFishNamedFileQueryInfo> fq = new JFishNamedFileQueryManagerImpl(sqlFileManager(), listener);
+//		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
+		FileNamedQueryFactory<JFishNamedFileQueryInfo> fq = new JFishNamedFileQueryManagerImpl(sqlFileManager(), fileNamedQueryFactoryListener);
 		fq.initQeuryFactory(jfishEntityManager());
 		return fq;
 	}
 	
+	/***
+	 * sql文件管理
+	 * @return
+	 */
 	@Bean
 	public JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager() {
-		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
+//		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		DataBase db = JdbcUtils.getDataBase(dataSource);
 //		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
-		JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlfileMgr = JFishNamedSqlFileManager.createDefaultJFishNamedSqlFileManager(db, watchSqlFile, listener);
+		JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlfileMgr = new DefaultJFishNamedSqlFileManager(db, defaultDataBaseConfig().isWatchSqlFile(), listener);
 		return sqlfileMgr;
 	}
 	
