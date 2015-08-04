@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.propconf.AbstractPropertiesManager.NamespaceProperty;
 import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
+import org.onetwo.common.utils.propconf.NamespaceProperty;
 
 /****
  * 基于文件的命名查询工厂
@@ -15,7 +15,6 @@ import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
  * @param <PT>
  */
 public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
-	public String WATCH_SQL_FILE = "watch.sql.file";
 	
 	/***
 	 * 初始化

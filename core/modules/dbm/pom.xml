@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+	
+  <artifactId>onetwo-dbm</artifactId>
+  <packaging>jar</packaging>
+
+  <name>onetwo-dbm</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-spring</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>javax.persistence</groupId>
+	  <artifactId>com.springsource.javax.persistence</artifactId>
+	</dependency>
+    
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>test</scope>
+    </dependency> 
+	
+  </dependencies>
+  
+  <build>
+  	<plugins>
+	    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+		</plugin>
+		
+  	</plugins>
+  </build>
+  
+</project>

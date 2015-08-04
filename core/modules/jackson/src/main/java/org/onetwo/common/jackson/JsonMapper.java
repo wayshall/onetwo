@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.type.TypeBindings;
@@ -101,7 +101,8 @@ public class JsonMapper {
 		return this;
 	}*/
 	
-	public JsonMapper defaultFiler(BeanPropertyFilter bpf){
+	public JsonMapper defaultFiler(PropertyFilter bpf){
+//		this.filterProvider.setDefaultFilter(bpf);
 		this.filterProvider.setDefaultFilter(bpf);
 		return this;
 	}

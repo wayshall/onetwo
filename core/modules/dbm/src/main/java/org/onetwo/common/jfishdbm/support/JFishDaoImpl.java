@@ -17,25 +17,24 @@ import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.dialet.DbmetaFetcher;
 import org.onetwo.common.jfishdbm.dialet.DefaultDatabaseDialetManager;
-import org.onetwo.common.jfishdbm.dialet.InnerDBDialet;
 import org.onetwo.common.jfishdbm.dialet.MySQLDialect;
 import org.onetwo.common.jfishdbm.dialet.OracleDialect;
-import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.event.JFishDeleteEvent;
+import org.onetwo.common.jfishdbm.event.JFishDeleteEvent.DeleteType;
 import org.onetwo.common.jfishdbm.event.JFishEvent;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishEventListener;
 import org.onetwo.common.jfishdbm.event.JFishEventSource;
 import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent;
+import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.jfishdbm.event.JFishFindEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertOrUpdateEvent;
 import org.onetwo.common.jfishdbm.event.JFishUpdateEvent;
-import org.onetwo.common.jfishdbm.event.JFishDeleteEvent.DeleteType;
-import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.jdbc.JFishRowMapperFactory;
 import org.onetwo.common.jfishdbm.jpa.JFishSequenceNameManager;
@@ -122,7 +121,8 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 			if (this.dialect == null) {
 				throw new IllegalArgumentException("'dialect' is required");
 			}
-			LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
+//			LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
+			this.dialect.getDbmeta().setVersion(dbmeta.getVersion());
 			this.dialect.initialize();
 		}
 		

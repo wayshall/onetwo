@@ -16,6 +16,7 @@ public interface DBDialect extends Initializable {
 //	public MappedEntryManager getMappedEntryManager();
 	
 //	public void initialize();
+//	public DataBase getDbmeta();
 	public DBMeta getDbmeta();
 
 	public SQLBuilderFactory getSqlBuilderFactory();

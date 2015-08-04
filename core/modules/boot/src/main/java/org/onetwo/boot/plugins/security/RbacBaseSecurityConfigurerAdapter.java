@@ -12,7 +12,12 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 
-public class RbacWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter  {
+/***
+ * 
+ * @author way
+ *
+ */
+public class RbacBaseSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter  {
 
 	/*@Autowired
 	private FilterInvocationSecurityMetadataSource securityMetadataSource;*/
