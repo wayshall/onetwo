@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.common.db.QueryProvideManager;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

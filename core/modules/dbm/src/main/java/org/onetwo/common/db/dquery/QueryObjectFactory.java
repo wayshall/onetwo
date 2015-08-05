@@ -1,6 +1,6 @@
 package org.onetwo.common.db.dquery;
 
-import org.onetwo.common.db.QueryProvideManager;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 
 public interface QueryObjectFactory {
 

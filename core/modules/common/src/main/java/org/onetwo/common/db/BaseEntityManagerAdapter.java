@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.exception.NotUniqueResultException;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
@@ -19,7 +20,10 @@ import org.slf4j.Logger;
 public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
+
+	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry(){
+		throw new UnsupportedOperationException("no SqlParamterPostfixFunctionRegistry found!");
+	}
 
 	abstract public SequenceNameManager getSequenceNameManager();
 		

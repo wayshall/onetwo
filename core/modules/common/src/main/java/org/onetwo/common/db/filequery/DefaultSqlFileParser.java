@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -127,10 +126,11 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 	}
 
 	protected List<String> readResourceAsList(ResourceAdapter<?> f){
-		if(f.isSupportedToFile())
+		/*if(f.isSupportedToFile())
 			return FileUtils.readAsList(f.getFile());
 		else
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException();*/
+		return f.readAsList();
 	}
 	
 	/***********

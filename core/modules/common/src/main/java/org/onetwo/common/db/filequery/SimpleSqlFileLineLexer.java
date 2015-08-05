@@ -7,9 +7,9 @@ import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 
-public class LineLexer {
+public class SimpleSqlFileLineLexer {
 
-    public final static byte EOI = 0x1A;//eof
+//    public final static byte EOI = 0x1A;//eof
     
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String COMMENT = "--";
@@ -27,12 +27,12 @@ public class LineLexer {
 		EOF
 	}
 	
-	final private LineReader lineReader;
+	final private SimpleSqlFileLineReader lineReader;
 	private String nextLine;
 	private List<String> lineBuf = new ArrayList<String>();
 	private LineToken lineToken;
 	
-	public LineLexer(LineReader lineReader) {
+	public SimpleSqlFileLineLexer(SimpleSqlFileLineReader lineReader) {
 		super();
 		this.lineReader = lineReader;
 		scanNextLine();
@@ -147,7 +147,7 @@ public class LineLexer {
 		return ImmutableList.copyOf(lineBuf);
 	}
 
-	public LineReader getLineReader() {
+	public SimpleSqlFileLineReader getLineReader() {
 		return lineReader;
 	}
 

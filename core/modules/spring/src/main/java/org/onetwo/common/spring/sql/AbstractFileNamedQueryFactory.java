@@ -4,23 +4,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
-import org.onetwo.common.db.FileNamedSqlGenerator;
-import org.onetwo.common.db.QueryProvideManager;
+import org.onetwo.common.db.filequery.FileNamedQueryFactory;
+import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractFileNamedQueryFactory<T extends JFishNamedFileQueryInfo> implements FileNamedQueryFactory<T> {
 
-	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
+//	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
 	private QueryProvideManager createQueryable;
 	protected JFishNamedSqlFileManager<T> sqlFileManager;
 	protected TemplateParser parser;
 
-	public AbstractFileNamedQueryFactory(JFishNamedSqlFileManager<T> sqlFileManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
+	public AbstractFileNamedQueryFactory(JFishNamedSqlFileManager<T> sqlFileManager) {
 		super();
-		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
+//		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
 		if(sqlFileManager!=null){
 			this.parser = (TemplateParser)sqlFileManager.getListener();
 			this.sqlFileManager = sqlFileManager;
@@ -31,8 +30,8 @@ abstract public class AbstractFileNamedQueryFactory<T extends JFishNamedFileQuer
 	public void initQeuryFactory(QueryProvideManager em){
 		this.createQueryable = em;
 		this.buildNamedQueryInfos();
-		if(this.fileNamedQueryFactoryListener!=null)
-			this.fileNamedQueryFactoryListener.onInitialized(em, this);
+		/*if(this.fileNamedQueryFactoryListener!=null)
+			this.fileNamedQueryFactoryListener.onInitialized(em, this);*/
 	}
 	
 	

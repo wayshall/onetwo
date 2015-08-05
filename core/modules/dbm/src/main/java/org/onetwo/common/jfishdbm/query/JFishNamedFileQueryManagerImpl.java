@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.spring.sql.AbstractFileNamedQueryFactory;
@@ -18,22 +17,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo>{
 
-//	private JFishEntityManager baseEntityManager;
-	/*private JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager;
-	private TemplateParser parser;
-	*/
-	/*public JFishNamedFileQueryManagerImpl(JFishEntityManager jem, DataBase dbname, boolean watchSqlFile, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
-		super(fileNamedQueryFactoryListener);
-//		this.baseEntityManager = jem;
-		
-		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> p = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
-//		p.initialize();
-		this.parser = p;
-		sqlFileManager = new JFishNamedSqlFileManager<JFishNamedFileQueryInfo> (dbname, watchSqlFile, JFishNamedFileQueryInfo.class, p);
-	}*/
 
-	public JFishNamedFileQueryManagerImpl(JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager, FileNamedQueryFactoryListener fileNamedQueryFactoryListener) {
-		super(sqlFileManager, fileNamedQueryFactoryListener);
+	public JFishNamedFileQueryManagerImpl(JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager) {
+		super(sqlFileManager);
 		/*if(sqlFileManager!=null){
 			this.parser = (TemplateParser)sqlFileManager.getListener();
 			this.sqlFileManager = sqlFileManager;

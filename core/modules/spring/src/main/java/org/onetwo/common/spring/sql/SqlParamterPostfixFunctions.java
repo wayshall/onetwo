@@ -4,22 +4,24 @@ import java.util.Date;
 import java.util.Map;
 
 import org.onetwo.common.db.ExtQueryUtils;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunction;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.JodatimeUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.convert.Types;
 
-public class SqlParamterPostfixFunctions {
+public class SqlParamterPostfixFunctions implements SqlParamterPostfixFunctionRegistry {
 	
-	final private static SqlParamterPostfixFunctions instance = new SqlParamterPostfixFunctions();
-	public static SqlParamterPostfixFunctions getInstance() {
+	/*final private static SqlParamterPostfixFunctionRegistry instance = new SqlParamterPostfixFunctions();
+	public static SqlParamterPostfixFunctionRegistry getInstance() {
 		return instance;
-	}
+	}*/
 	
 	private Map<String, SqlParamterPostfixFunction> funcMap = LangUtils.newHashMap();
 
-	private SqlParamterPostfixFunctions(){
+	public SqlParamterPostfixFunctions(){
 		register(new String[]{"like", "likeString"}, new SqlParamterPostfixFunction(){
 			@Override
 			public Object toSqlString(String paramName, Object value) {
@@ -73,17 +75,21 @@ public class SqlParamterPostfixFunctions {
 		
 	}
 
-	private SqlParamterPostfixFunctions register(String postfix, SqlParamterPostfixFunction func){
+	private SqlParamterPostfixFunctionRegistry register(String postfix, SqlParamterPostfixFunction func){
 		funcMap.put(postfix, func);
 		return this;
 	}
-	private SqlParamterPostfixFunctions register(String[] postfixs, SqlParamterPostfixFunction func){
+	private SqlParamterPostfixFunctionRegistry register(String[] postfixs, SqlParamterPostfixFunction func){
 		for(String postfix : postfixs){
 			register(postfix, func);
 		}
 		return this;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.onetwo.common.spring.sql.SqlParamterPostfixFunctionRegistry#getFunc(java.lang.String)
+	 */
+	@Override
 	public SqlParamterPostfixFunction getFunc(String postfix){
 		if(!funcMap.containsKey(postfix)){
 			throw new BaseException("no postfix func fund: " + postfix);

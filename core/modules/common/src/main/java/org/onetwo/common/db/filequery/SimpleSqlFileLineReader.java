@@ -3,11 +3,11 @@ package org.onetwo.common.db.filequery;
 import java.util.Iterator;
 import java.util.List;
 
-public class LineReader {
+public class SimpleSqlFileLineReader {
 	final private Iterator<String> lineIterator;
 	private int lineNumber;
 
-	public LineReader(List<String> lines) {
+	public SimpleSqlFileLineReader(List<String> lines) {
 		super();
 		this.lineIterator = lines.iterator();
 	}

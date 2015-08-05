@@ -1,6 +1,6 @@
 package org.onetwo.common.db.dquery;
 
-import org.onetwo.common.db.QueryProvideManager;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.cache.Cache;

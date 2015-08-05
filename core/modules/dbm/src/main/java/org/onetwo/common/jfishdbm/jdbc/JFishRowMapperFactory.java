@@ -26,9 +26,9 @@ public class JFishRowMapperFactory extends SimpleRowMapperFactory {
 		RowMapper<?> rowMapper = null;
 		JFishMappedEntry entry = this.getMappedEntryManager().findEntry(type);
 		if(entry!=null)
-			rowMapper = new EntryRowMapper(entry);
+			rowMapper = new EntryRowMapper<>(entry);
 		else
-			rowMapper = getBeanPropertyRowMapper(type);
+			rowMapper = super.getBeanPropertyRowMapper(type);
 		return rowMapper;
 	}
 	

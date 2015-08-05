@@ -28,7 +28,7 @@ public class SimpleRowMapperFactory implements RowMapperFactory {
 			rowMapper = new UnknowTypeRowMapper();
 		}else if(isSimpleType(type) || LangUtils.isTimeClass(type)){
 			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
-			rowMapper = new SingleColumnRowMapper(type);
+			rowMapper = new SingleColumnRowMapper<>(type);
 		}else if(LangUtils.isMapClass(type)){
 			rowMapper = new ColumnMapRowMapper();
 		}else if(Object[].class==type){
@@ -44,7 +44,7 @@ public class SimpleRowMapperFactory implements RowMapperFactory {
 	}
 
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> entityClass) {
-		return new BeanPropertyRowMapper(entityClass);
+		return new BeanPropertyRowMapper<>(entityClass);
 	}
 	
 
