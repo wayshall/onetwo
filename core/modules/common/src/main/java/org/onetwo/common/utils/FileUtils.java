@@ -1100,17 +1100,17 @@ public class FileUtils {
 		return baseDir;
 	}
 	
-	public static ResourceAdapter adapterResource(Object resource){
-		return new ResourceAdapterImpl(resource);
+	public static <T> ResourceAdapter<T> adapterResource(T resource){
+		return new ResourceAdapterImpl<T>(resource);
 	}
 	
-	public static ResourceAdapter[] adapterResources(Object[] resource){
+	public static <T> ResourceAdapter<T>[] adapterResources(T[] resource){
 		if(LangUtils.isEmpty(resource))
-			return EMPTY_RESOURCES;
-		ResourceAdapterImpl[] reslist = new ResourceAdapterImpl[resource.length];
+			return (ResourceAdapter<T>[])EMPTY_RESOURCES;
+		ResourceAdapterImpl<T>[] reslist = new ResourceAdapterImpl[resource.length];
 		int index = 0;
-		for(Object obj : resource){
-			reslist[index++] = new ResourceAdapterImpl(obj);
+		for(T obj : resource){
+			reslist[index++] = new ResourceAdapterImpl<T>(obj);
 		}
 		return reslist;
 	}

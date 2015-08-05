@@ -1,6 +1,8 @@
-package org.onetwo.common.utils.propconf;
+package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.propconf.JFishProperties;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
 
 public class NamespaceProperty /*extends JFishNameValuePair*/{
 	public static final char DOT_KEY = '.';

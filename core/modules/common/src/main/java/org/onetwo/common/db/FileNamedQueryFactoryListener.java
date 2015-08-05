@@ -1,6 +1,6 @@
 package org.onetwo.common.db;
 
-import org.onetwo.common.utils.propconf.NamespaceProperty;
+import org.onetwo.common.db.filequery.NamespaceProperty;
 
 
 
