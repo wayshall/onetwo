@@ -2,13 +2,12 @@ package org.onetwo.common.db.dquery;
 
 import java.util.Collection;
 
-import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
-import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.db.dquery.annotation.QueryProvider;
+import org.onetwo.common.db.filequery.FileNamedQueryFactory;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -18,25 +17,33 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 
-public class DefaultQueryObjectFactoryManager implements ApplicationContextAware, FileNamedQueryFactoryListener {
+public class DynamicQueryObjectRegister implements ApplicationContextAware, /*FileNamedQueryFactoryListener, */InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private NamespacePropertiesManager<? extends NamespaceProperty> namespacePropertiesManager;
 	
 	private ApplicationContext applicationContext;
 	private QueryObjectFactory queryObjectFactory;
-	
+	private QueryProvideManager baseEntityManager;
+	private FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory;
 	
 
 	@Override
-	public void onInitialized(QueryProvideManager baseEntityManager, FileNamedQueryFactory<? extends NamespaceProperty> fq) {
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(baseEntityManager);
+		Assert.notNull(fileNamedQueryFactory);
+		this.scanAndRegisterQueryObject();
+	}
+
+	protected void scanAndRegisterQueryObject() {
 		Assert.notNull(queryObjectFactory);
-		this.namespacePropertiesManager = fq.getNamespacePropertiesManager();
+		this.namespacePropertiesManager = fileNamedQueryFactory.getNamespacePropertiesManager();
 		
 		
 		BeanFactory bf = null;
@@ -96,6 +103,15 @@ public class DefaultQueryObjectFactoryManager implements ApplicationContextAware
 
 	public void setQueryObjectFactory(QueryObjectFactory queryObjectFactory) {
 		this.queryObjectFactory = queryObjectFactory;
+	}
+
+	public void setBaseEntityManager(QueryProvideManager baseEntityManager) {
+		this.baseEntityManager = baseEntityManager;
+	}
+
+	public void setFileNamedQueryFactory(
+			FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory) {
+		this.fileNamedQueryFactory = fileNamedQueryFactory;
 	}
 
 

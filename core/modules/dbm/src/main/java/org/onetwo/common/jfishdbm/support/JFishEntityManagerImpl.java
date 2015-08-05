@@ -8,9 +8,10 @@ import java.util.Map;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
-import org.onetwo.common.db.FileNamedQueryFactory;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
+import org.onetwo.common.db.filequery.FileNamedQueryFactory;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
@@ -31,10 +32,6 @@ import org.springframework.jdbc.core.RowMapper;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
-//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
-//	private SQLSymbolManager SQLSymbolManager;
-
 	private JFishDaoImplementor jfishDao;
 //	private EntityManagerOperationImpl entityManagerWraper;
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
@@ -42,6 +39,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	
 	private FileNamedQueryFactory fileNamedQueryFactory;
 //	private boolean watchSqlFile = false;
+	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
 	public JFishEntityManagerImpl(){
 	}
@@ -334,6 +332,16 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	public void setFileNamedQueryFactory(FileNamedQueryFactory fileNamedQueryFactory) {
 		this.fileNamedQueryFactory = fileNamedQueryFactory;
+	}
+
+
+	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry() {
+		return sqlParamterPostfixFunctionRegistry;
+	}
+
+	public void setSqlParamterPostfixFunctionRegistry(
+			SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry) {
+		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
 	}
 
 }

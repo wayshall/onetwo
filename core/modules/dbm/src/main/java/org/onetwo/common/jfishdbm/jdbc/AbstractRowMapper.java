@@ -5,14 +5,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.onetwo.common.jfishdbm.exception.JFishDbException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 
 abstract public class AbstractRowMapper<T> implements RowMapper<T>{
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	public AbstractRowMapper() {
 		super();

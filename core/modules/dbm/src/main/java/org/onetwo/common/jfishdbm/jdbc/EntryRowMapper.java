@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -18,7 +18,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 
 public class EntryRowMapper<T> implements RowMapper<T>{
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private JFishMappedEntry entry;
 	private boolean debug;

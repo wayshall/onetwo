@@ -1,8 +1,5 @@
 package org.onetwo.common.spring.sql;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.onetwo.common.db.filequery.MultipCommentsSqlFileParser;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileListener;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl;
@@ -12,7 +9,6 @@ import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
 import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
@@ -38,7 +34,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 	public JFishNamedSqlFileManager(DialetNamedSqlConf<T> conf, NamespacePropertiesFileListener<T> listener) {
 		super(conf, listener);
 		this.databaseType = conf.getDatabaseType();
-		this.setSqlFileParser(new JFsihSqlFileParser());
+		this.setSqlFileParser(new MultipCommentsSqlFileParser<T>());
 	}
 
 	public DataBase getDatabaseType() {
@@ -110,7 +106,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 		}
 	}
 	
-	private class JFsihSqlFileParser extends MultipCommentsSqlFileParser<T> {
+	/*private class JFsihSqlFileParser extends MultipCommentsSqlFileParser<T> {
 		
 		@Override
 		protected List<String> readResourceAsList(ResourceAdapter<?> f){
@@ -125,7 +121,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 				}
 			}
 		}
-	}
+	}*/
 	
 
 	public static class DefaultJFishNamedSqlFileManager extends JFishNamedSqlFileManager<JFishNamedFileQueryInfo> {

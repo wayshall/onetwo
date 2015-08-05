@@ -126,26 +126,10 @@ public class JFishQueryImpl implements JFishQuery {
 		return result;
 	}
 	
-	/*protected void createParameterIfNull(){
-		if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
-		}
-		Assert.notNull(holder);
-		if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(holder, null);
-		}else if(parameters.getHolder() != holder){
-			LangUtils.throwBaseException("the query["+this.parameters.getHolder()+"] cant not support : " + holder);
-		}
-	}*/
 
 	public String getSqlString() {
-		//check parameters
-		/*if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(PlaceHolder.POSITION, null);
-		}*/
-//		this.createParameterIfNull();
 		String sql = sqlString;
-		if(needSetRange()){
+		if(isLimitedQuery()){
 			if(this.parameters.isNamed())
 				sql = dbDialect.getLimitStringWithNamed(sqlString, FIRST_RESULT_NAME, MAX_RESULT_NAME);
 			else
@@ -164,7 +148,7 @@ public class JFishQueryImpl implements JFishQuery {
 	public JFishQueryValue getActualParameters(String sql) {
 		this.parameters.setResultClass(resultClass);
 		this.parameters.setSql(sql);
-		if(!needSetRange()){
+		if(!isLimitedQuery()){
 			return this.parameters;
 		}
 		/*if(!params.containsKey(FIRST_RESULT_NAME))
@@ -181,7 +165,7 @@ public class JFishQueryImpl implements JFishQuery {
 		return this.parameters;
 	}
 
-	public boolean needSetRange(){
+	public boolean isLimitedQuery(){
 		return this.getFirstResult()>INVALID_VALUE && this.getMaxResults()>INVALID_VALUE_MAX_RESULTS;
 	}
 
