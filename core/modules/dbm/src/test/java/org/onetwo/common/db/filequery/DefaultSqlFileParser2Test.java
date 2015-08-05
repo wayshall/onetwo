@@ -19,7 +19,7 @@ public class DefaultSqlFileParser2Test {
 		String fileName = FileUtils.getResourcePath("sql/org.onetwo.common.jfishdbm.model.dao.UserAutoidDao.jfish.sql");
 		List<String> lines = FileUtils.readAsList(fileName);
 		System.out.println("line:"+lines);
-		DefaultSqlFileParser2<JFishNamedFileQueryInfo> parser = new DefaultSqlFileParser2<>();
+		MultipCommentsSqlFileParser<JFishNamedFileQueryInfo> parser = new MultipCommentsSqlFileParser<>();
 		ResourceAdapter<File> f = FileUtils.adapterResource(new File(fileName));
 		
 		DialetNamedSqlConf<JFishNamedFileQueryInfo> conf = new DialetNamedSqlConf<JFishNamedFileQueryInfo>(){
