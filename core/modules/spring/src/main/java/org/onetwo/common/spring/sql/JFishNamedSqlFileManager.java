@@ -3,7 +3,7 @@ package org.onetwo.common.spring.sql;
 import java.io.IOException;
 import java.util.List;
 
-import org.onetwo.common.db.filequery.DefaultSqlFileParser2;
+import org.onetwo.common.db.filequery.MultipCommentsSqlFileParser;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileListener;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl;
 import org.onetwo.common.db.filequery.NamespaceProperty;
@@ -110,7 +110,7 @@ public class JFishNamedSqlFileManager<T extends JFishNamedFileQueryInfo> extends
 		}
 	}
 	
-	private class JFsihSqlFileParser extends DefaultSqlFileParser2<T> {
+	private class JFsihSqlFileParser extends MultipCommentsSqlFileParser<T> {
 		
 		@Override
 		protected List<String> readResourceAsList(ResourceAdapter<?> f){
