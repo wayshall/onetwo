@@ -1,10 +1,10 @@
 package org.onetwo.common.lexer;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 abstract public class AbstractLexer<T> {
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	protected final SourceReader reader;
 	

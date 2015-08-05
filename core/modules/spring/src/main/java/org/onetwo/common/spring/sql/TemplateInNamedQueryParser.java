@@ -1,9 +1,9 @@
 package org.onetwo.common.spring.sql;
 
+import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
-import org.onetwo.common.utils.propconf.NamespaceProperty;
 
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;

@@ -1,4 +1,4 @@
-package org.onetwo.common.utils.propconf;
+package org.onetwo.common.db.filequery;
 
 import java.util.Collection;
 

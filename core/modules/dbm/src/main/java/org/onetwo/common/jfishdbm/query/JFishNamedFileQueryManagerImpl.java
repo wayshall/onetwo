@@ -6,13 +6,13 @@ import java.util.Map;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.FileNamedQueryFactoryListener;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.spring.sql.AbstractFileNamedQueryFactory;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
 import org.springframework.jdbc.core.RowMapper;
 
 
