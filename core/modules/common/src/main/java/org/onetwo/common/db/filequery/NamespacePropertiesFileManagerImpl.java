@@ -1,4 +1,4 @@
-package org.onetwo.common.utils.propconf;
+package org.onetwo.common.db.filequery;
 
 import java.io.File;
 import java.util.Collection;
@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.exception.BaseException;
@@ -17,6 +16,7 @@ import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.onetwo.common.utils.watch.FileChangeListener;
 import org.onetwo.common.utils.watch.FileWatcher;
 import org.slf4j.Logger;
@@ -40,13 +40,12 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	private FileWatcher fileMonitor;
 	protected JFishPropertyConf<T> conf;
 	private long period = 1;
-	private boolean debug;// = true;
 	
 	Map<String, PropertiesNamespaceInfo<T>> namespaceProperties;
 //	private List<Properties> sqlfiles;
 //	private PropertiesWraper wrapper;
 	private Map<String, T> namedQueryCache;
-	
+	private SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();
 	final private NamespacePropertiesFileListener<T> listener;
 
 	public NamespacePropertiesFileManagerImpl(JFishPropertyConf<T> conf, NamespacePropertiesFileListener<T> listener) {
@@ -178,7 +177,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		if(globalNamespace){
 			np = namespacesMap.get(namespace);
 			if(np==null){
-				np = new GlobalNamespaceProperties();
+				np = new GlobalNamespaceProperties<T>();
 				namespacesMap.put(np.getKey(), np);
 			}
 //			np.addAll(namedinfos, throwIfExist);
@@ -186,7 +185,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			if(throwIfExist && namespacesMap.containsKey(namespace)){
 				throw new BaseException("sql namespace has already exist : " + namespace);
 			}
-			np = new CommonNamespaceProperties(namespace, f);
+			np = new CommonNamespaceProperties<T>(namespace, f);
 			namespacesMap.put(np.getKey(), np);
 		}
 		
@@ -213,198 +212,12 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 
 	/****
 	 * 解释sql文件，构建为对象
-	 * 以后改为可替换的接口实现
 	 * @param np
 	 * @param file
 	 */
 	protected void buildNamedInfosToNamespaceFromResource(PropertiesNamespaceInfo<T> np, ResourceAdapter<?> file){
-		JFishPropertiesData jproperties = loadSqlFile(file);
-		if(jproperties==null){
-			return ;
-		}
-		logger.info("build [{}] sql file : {}", np.getNamespace(), file.getName());
-		try {
-			this.buildPropertiesAsNamedInfos(np, file, jproperties, conf.getPropertyBeanClass());
-		} catch (Exception e) {
-			throw new BaseException("build named info error in " + file.getName() + " : " + e.getMessage(), e);
-		}
-	}
-	
-	/***********
-	 * build a map: 
-	 * key is name of beanClassOfProperty
-	 * value is instance of beanClassOfProperty
-	 * @param resource
-	 * @param namespace
-	 * @param wrapper
-	 * @param beanClassOfProperty
-	 * @return
-	 */
-	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter<?> resource, JFishPropertiesData jp, Class<T> beanClassOfProperty){
-		JFishProperties wrapper = jp.getProperties();
-		List<String> keyNames = wrapper.sortedKeys();
-		if(debug){
-			logger.info("================>>> buildPropertiesAsNamedInfos");
-			for(String str : wrapper.sortedKeys()){
-				logger.info(str);
-			}
-		}
-		T propBean = null;
-		boolean newBean = true;
-		String preKey = null;
-//		String val = "";
-//		Map<String, T> namedProperties = LangUtils.newHashMap();
-		for(String key : keyNames){
-			if(preKey!=null)
-				newBean = !key.startsWith(preKey);
-			if(newBean){
-				if(propBean!=null){
-					extBuildNamedInfoBean(propBean);
-					namespaceInfo.put(propBean.getName(), propBean, true);
-				}
-				propBean = ReflectUtils.newInstance(beanClassOfProperty);
-				String val = wrapper.getAndThrowIfEmpty(key);
-				/*if(key.endsWith(IGNORE_NULL_KEY)){
-					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
-				}*/
-				propBean.setName(key);
-				propBean.setValue(val);
-//				propBean.setNamespace(namespace);
-				newBean = false;
-				preKey = key+NamespaceProperty.DOT_KEY;
-				propBean.setSrcfile(resource);
-				propBean.setConfig(jp.getConfig());
-				propBean.setNamespaceInfo(namespaceInfo);
-			}else{
-				String val = wrapper.getProperty(key, "");
-				String prop = key.substring(preKey.length());
-				/*if(prop.startsWith(NamespaceProperty.ATTRS_DOT_KEY)){
-					//no convert to java property name
-				}else{
-					if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-						prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
-					}
-				}*/
-				setNamedInfoProperty(propBean, prop, val);
-			}
-		}
-		if(propBean!=null){
-			namespaceInfo.put(propBean.getName(), propBean, true);
-		}
-		if(logger.isInfoEnabled()){
-			logger.info("================ {} named query start ================", namespaceInfo.getNamespace());
-			for(NamespaceProperty prop : namespaceInfo.getNamedProperties()){
-				logger.info(prop.getName()+": \t"+prop);
-			}
-			logger.info("================ {} named query end ================", namespaceInfo.getNamespace());
-		}
-		
-//		return namedProperties;
-	}
-	protected void extBuildNamedInfoBean(T propBean){
-	}
-	protected void setNamedInfoProperty(T bean, String prop, Object val){
-		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
-		}
-		try {
-			ReflectUtils.setExpr(bean, prop, val);
-		} catch (Exception e) {
-			logger.error("set value error : "+prop);
-			LangUtils.throwBaseException(e);
-		}
-	}
-	
-	protected JFishPropertiesData loadSqlFile(ResourceAdapter<?> f){
-//		String fname = FileUtils.getFileNameWithoutExt(f.getName());
-		if(!f.getName().endsWith(conf.getPostfix())){
-			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
-			return null;
-		}
-		
-		JFishPropertiesData jpData = null;
-		Properties pf = new Properties();
-		Properties config = new Properties();
-		try {
-			List<String> fdatas = readResourceAsList(f);
-			String key = null;
-			StringBuilder value = null;
-//			String line = null;
-
-			boolean matchConfig = false;
-			boolean matchName = false;
-			boolean multiCommentStart = false;
-			for(int i=0; i<fdatas.size(); i++){
-				final String line = fdatas.get(i).trim();
-				/*if(line.startsWith(COMMENT)){
-					continue;
-				}*/
-				
-				if(line.startsWith(MULTIP_COMMENT_START)){
-					multiCommentStart = true;
-					continue;
-				}else if(line.endsWith(MULTIP_COMMENT_END)){
-					multiCommentStart = false;
-					continue;
-				}
-				if(multiCommentStart){
-					continue;
-				}
-				if(line.startsWith(NAME_PREFIX)){//@开始到=结束，作为key，其余部分作为value
-					if(value!=null){
-						if(matchConfig){
-							config.setProperty(key, value.toString());
-						}else{
-							pf.setProperty(key, value.toString());
-						}
-						matchName = false;
-						matchConfig = false;
-					}
-					int eqIndex = line.indexOf(EQUALS_MARK);
-					if(eqIndex==-1)
-						LangUtils.throwBaseException("the jfish sql file lack a equals mark : " + line);
-					
-					if(line.startsWith(CONFIG_PREFIX)){
-						matchConfig = true;
-						key = line.substring(CONFIG_PREFIX.length(), eqIndex).trim();
-					}else{
-						matchName = true;
-						key = line.substring(NAME_PREFIX.length(), eqIndex).trim();
-					}
-					value = new StringBuilder();
-					value.append(line.substring(eqIndex+EQUALS_MARK.length()));
-					value.append(" ");
-				}else if(line.startsWith(COMMENT)){
-					continue;
-				}else{
-					if(!matchName)
-						continue;
-//						if(value==null)
-//							LangUtils.throwBaseException("can not find the key for value : " + line);
-					value.append(line);
-					value.append(" ");
-				}
-			}
-			if(StringUtils.isNotBlank(key) && value!=null){
-				pf.setProperty(key, value.toString());
-			}
-
-//			jp.setProperties(new JFishProperties(pf));
-//			jp.setConfig(new JFishProperties(config));
-			
-			jpData = new JFishPropertiesData(new JFishProperties(pf), new JFishProperties(config));
-			System.out.println("loaded jfish file : " + f.getName());
-		} catch (Exception e) {
-			LangUtils.throwBaseException("load jfish file error : " + f, e);
-		}
-		return jpData;
-	}
-
-	protected List<String> readResourceAsList(ResourceAdapter<?> f){
-		if(f.isSupportedToFile())
-			return FileUtils.readAsList(f.getFile());
-		else
-			throw new UnsupportedOperationException();
+//		SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();a
+		sqlFileParser.parseToNamespaceProperty(conf, np, file);
 	}
 
 	public T getJFishProperty(String fullname) {
@@ -437,10 +250,16 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		return namespaceProperties.values();
 	}
 	
-	public class CommonNamespaceProperties implements PropertiesNamespaceInfo<T> {
+	final public void setSqlFileParser(SqlFileParser<T> sqlFileParser) {
+		this.sqlFileParser = sqlFileParser;
+	}
+
+
+
+	public static class CommonNamespaceProperties<E extends NamespaceProperty> implements PropertiesNamespaceInfo<E> {
 		private final String namespace;
 		private ResourceAdapter<?> source;
-		private Map<String, T> namedProperties;
+		private Map<String, E> namedProperties;
 		
 		public CommonNamespaceProperties(String namespace){
 			this.namespace = namespace;
@@ -468,7 +287,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		}
 
 		@Override
-		public Collection<T> getNamedProperties() {
+		public Collection<E> getNamedProperties() {
 			return namedProperties.values();
 		}
 
@@ -476,17 +295,17 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			return source;
 		}
 		@Override
-		public T getNamedProperty(String name) {
+		public E getNamedProperty(String name) {
 			return namedProperties.get(name);
 		}
 		@Override
-		public void addAll(Map<String, T> namedInfos, boolean throwIfExist) {
-			for(Entry<String, T> entry : namedInfos.entrySet()){
+		public void addAll(Map<String, E> namedInfos, boolean throwIfExist) {
+			for(Entry<String, E> entry : namedInfos.entrySet()){
 				put(entry.getKey(), entry.getValue(), throwIfExist);
 			}
 		}
 		@Override
-		public void put(String name, T info, boolean throwIfExist) {
+		public void put(String name, E info, boolean throwIfExist) {
 			Assert.hasText(name);
 			Assert.notNull(info);
 			if(throwIfExist && this.namedProperties.containsKey(name)){
@@ -502,7 +321,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		
 	}
 
-	public class GlobalNamespaceProperties extends CommonNamespaceProperties {
+	public class GlobalNamespaceProperties<E extends NamespaceProperty> extends CommonNamespaceProperties<E> {
 		private final List<File> sources;
 		
 		private GlobalNamespaceProperties() {
@@ -523,23 +342,6 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			return true;
 		}
 	}
-	protected class JFishPropertiesData {
-		final private JFishProperties properties;
-		final private JFishProperties config;
-		public JFishPropertiesData(JFishProperties properties, JFishProperties config) {
-			super();
-			this.properties = properties;
-			this.config = config;
-		}
-		public JFishProperties getProperties() {
-			return properties;
-		}
-		public JFishProperties getConfig() {
-			return config;
-		}
-		
-	}
-	
 	
 	/***
 	 * 配置信息
