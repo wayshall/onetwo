@@ -67,7 +67,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	private DataBaseConfig dataBaseConfig;
 	
 	/***
-	 * 避免延迟加载
+	 * 避免启动时JFishEntityManager延迟加载
 	 */
 	@Autowired
 	private JFishEntityManager jfishEntityManager;
@@ -184,12 +184,6 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		return dialect;
 	}
 
-/*	@Bean
-	public DBDialect jfishDialect() {
-		InnerDBDialet dialet = (InnerDBDialet)jfishDao().getDialect();
-//		dialet.setPrintSql(watchSqlFile);
-		return dialet;
-	}*/
 
 
 	@Bean

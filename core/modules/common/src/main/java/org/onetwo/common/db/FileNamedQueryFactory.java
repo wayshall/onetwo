@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.filequery.NamespacePropertiesManager;
+import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.propconf.NamespacePropertiesManager;
-import org.onetwo.common.utils.propconf.NamespaceProperty;
 
 /****
  * 基于文件的命名查询工厂
