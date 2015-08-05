@@ -1,11 +1,10 @@
-package org.onetwo.common.db;
+package org.onetwo.common.db.filequery;
 
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParamValues.PlaceHolder;
-import org.onetwo.common.db.filequery.NamespacePropertiesManager;
-import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.utils.Page;
 
 /****

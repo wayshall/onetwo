@@ -2,8 +2,9 @@ package org.onetwo.common.jfishdbm.spring;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.FileNamedQueryFactory;
-import org.onetwo.common.db.FileNamedQueryFactoryListener;
+import org.onetwo.common.db.dquery.DynamicQueryObjectRegister;
+import org.onetwo.common.db.filequery.FileNamedQueryFactory;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jdbc.JFishJdbcTemplate;
@@ -60,8 +61,13 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	/*@Autowired
 	private JFishPropertyPlaceholder configHolder;*/
 	
-	@Autowired
-	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
+	/*@Autowired
+	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;*/
+	@Autowired(required=false)
+	private DynamicQueryObjectRegister dynamicQueryObjectRegister;
+
+	@Autowired(required=false)
+	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
 	@Autowired(required=false)
 	private DataBaseConfig dataBaseConfig;
@@ -190,6 +196,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	public JFishEntityManager jfishEntityManager() {
 		JFishEntityManagerImpl jem = new JFishEntityManagerImpl();
 		jem.setJfishDao(jfishDao());
+		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry);
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 		return jem;
@@ -198,7 +205,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	@Bean
 	public FileNamedQueryFactory<JFishNamedFileQueryInfo> fileNamedQueryFactory(){
 //		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
-		FileNamedQueryFactory<JFishNamedFileQueryInfo> fq = new JFishNamedFileQueryManagerImpl(sqlFileManager(), fileNamedQueryFactoryListener);
+		FileNamedQueryFactory<JFishNamedFileQueryInfo> fq = new JFishNamedFileQueryManagerImpl(sqlFileManager());
 		fq.initQeuryFactory(jfishEntityManager());
 		return fq;
 	}
@@ -209,11 +216,11 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	 */
 	@Bean
 	public JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager() {
-//		boolean watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
 		DataBase db = JdbcUtils.getDataBase(dataSource);
 //		FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
 		JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlfileMgr = new DefaultJFishNamedSqlFileManager(db, defaultDataBaseConfig().isWatchSqlFile(), listener);
+//		sqlfileMgr.setSqlFileParser(sqlFileParser);
 		return sqlfileMgr;
 	}
 	

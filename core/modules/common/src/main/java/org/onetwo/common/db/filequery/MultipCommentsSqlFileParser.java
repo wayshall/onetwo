@@ -3,11 +3,10 @@ package org.onetwo.common.db.filequery;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.onetwo.common.db.filequery.LineLexer.LineToken;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
+import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer.LineToken;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -46,7 +45,7 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
 			return ;
 		}
-		LineLexer lineLexer = new LineLexer(createLineReader(f));
+		SimpleSqlFileLineLexer lineLexer = new SimpleSqlFileLineLexer(createLineReader(f));
 		lineLexer.nextLineToken();
 		while(lineLexer.getLineToken()!=LineToken.EOF){
 			LineToken token = lineLexer.getLineToken();
@@ -136,16 +135,17 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 		}
 	}
 	
-
+/*
 	protected List<String> readResourceAsList(ResourceAdapter<?> f){
 		if(f.isSupportedToFile())
 			return FileUtils.readAsList(f.getFile());
 		else
 			throw new UnsupportedOperationException();
-	}
+	}*/
 
-	protected LineReader createLineReader(ResourceAdapter<?> f){
-		return new LineReader(readResourceAsList(f));
+	protected SimpleSqlFileLineReader createLineReader(ResourceAdapter<?> f){
+//		return new SimpleSqlFileLineReader(readResourceAsList(f));
+		return new SimpleSqlFileLineReader(f.readAsList());
 	}
 	public void setDebug(boolean debug) {
 		this.debug = debug;

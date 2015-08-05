@@ -1,6 +1,7 @@
 package org.onetwo.common.utils.propconf;
 
 import java.io.File;
+import java.util.List;
 
 import org.onetwo.common.utils.FileUtils;
 
@@ -12,12 +13,22 @@ public class ResourceAdapterImpl<T> implements ResourceAdapter<T> {
 		super();
 		this.resource = resource;
 	}
+
 	
+	@Override
+	public List<String> readAsList(){
+		if(isSupportedToFile())
+			return FileUtils.readAsList(getFile());
+		else
+			throw new UnsupportedOperationException();
+	}
 
 	public T getResource() {
 		return resource;
 	}
 
+	
+	@Override
 	public boolean isSupportedToFile() {
 		if(resource instanceof File){
 			return true;

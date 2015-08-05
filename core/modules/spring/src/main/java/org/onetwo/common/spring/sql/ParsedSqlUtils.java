@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.onetwo.common.db.QueryConfigData;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -28,8 +29,10 @@ final public class ParsedSqlUtils {
 	public static class ParsedSqlWrapper {
 //		final private ParsedSql parsedSql;
 		final private Collection<SqlParamterMeta> parameterNames;
-		public ParsedSqlWrapper(ParsedSql parsedSql) {
+		final private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctions;
+		public ParsedSqlWrapper(ParsedSql parsedSql, SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctions) {
 			super();
+			this.sqlParamterPostfixFunctions = sqlParamterPostfixFunctions;
 			List<String> parameterNames = (List<String>) ReflectUtils.getFieldValue(parsedSql, "parameterNames");;
 			this.parameterNames = new HashSet<SqlParamterMeta>();
 			for(String pname : parameterNames){
@@ -73,7 +76,8 @@ final public class ParsedSqlUtils {
 				Object value = paramBean.getPropertyValue(property);
 				if(hasFunction()){
 //					value = ReflectUtils.invokeMethod(function, SqlParamterPostfixFunctions.getInstance(), value);
-					value = SqlParamterPostfixFunctions.getInstance().getFunc(function).toSqlString(property, value);
+//					value = SqlParamterPostfixFunctions.getInstance().getFunc(function).toSqlString(property, value);
+					value = sqlParamterPostfixFunctions.getFunc(function).toSqlString(property, value);
 				}
 				return value;
 			}
@@ -89,9 +93,9 @@ final public class ParsedSqlUtils {
 		}
 	}
 	
-	public static ParsedSqlWrapper parseSql(String sql){
+	public static ParsedSqlWrapper parseSql(String sql, SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctions){
 		ParsedSql parsedSql = NamedParameterUtils.parseSqlStatement(sql);
-		return new ParsedSqlWrapper(parsedSql);
+		return new ParsedSqlWrapper(parsedSql, sqlParamterPostfixFunctions);
 	}
 	private ParsedSqlUtils(){
 	}

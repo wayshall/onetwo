@@ -12,7 +12,7 @@ import org.onetwo.common.spring.sql.JFishNamedSqlFileManager.DialetNamedSqlConf;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 
-public class DefaultSqlFileParser2Test {
+public class MultipCommentsSqlFileParserTest {
 	
 	@Test
 	public void test(){

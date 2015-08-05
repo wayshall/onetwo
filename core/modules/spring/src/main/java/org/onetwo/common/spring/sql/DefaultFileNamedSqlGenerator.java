@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.ExtQueryUtils;
-import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
+import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.log.JFishLoggerFactory;
