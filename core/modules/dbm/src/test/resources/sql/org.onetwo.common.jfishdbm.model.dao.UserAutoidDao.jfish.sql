@@ -1,8 +1,7 @@
 /*****
  * @name: batchInsert
  * @parser: template
- * 批量插入
- */
+ * 批量插入     */
     insert 
     into
         test_user_autoid

@@ -15,16 +15,16 @@ import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;
 
-public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFileParser<T> {
+public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements SqlFileParser<T> {
 	
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String AT = "@";
-	public static final String EQUALS_MARK = "=";
+//	public static final String EQUALS_MARK = "=";
 	public static final String COLON = ":";
 	
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	protected boolean debug = true;
+	protected boolean debug = false;
 //	protected LineLexer lineLexer;
 	
 
@@ -50,7 +50,9 @@ public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFi
 		lineLexer.nextLineToken();
 		while(lineLexer.getLineToken()!=LineToken.EOF){
 			LineToken token = lineLexer.getLineToken();
-			logger.info("current token {} : {} ", token, lineLexer.getNextLine());
+			if(debug)
+				logger.info("current token {}  ", token);
+			
 			switch (token) {
 				case MULTIP_COMMENT:
 					T bean = ReflectUtils.newInstance(conf.getPropertyBeanClass());
@@ -62,11 +64,13 @@ public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFi
 					bean.setName(config.getAndThrowIfEmpty("name"));
 					config.remove("name");
 					bean.setConfig(config);
-					logger.info("config: {}", config);
 					
-					Enumeration<String> keys = (Enumeration<String>)config.propertyNames();
+					if(debug)
+						logger.info("config: {}", config);
+					
+					Enumeration<?> keys = config.propertyNames();
 					while(keys.hasMoreElements()){
-						String prop = keys.nextElement();
+						String prop = keys.nextElement().toString();
 						this.setNamedInfoProperty(bean, prop, config.getProperty(prop));
 					}
 					
@@ -84,13 +88,17 @@ public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFi
 						}
 					}
 					bean.setValue(buf.toString());
-					logger.info("value: {}", bean.getValue());
+					
+					if(debug)
+						logger.info("value: {}", bean.getValue());
 					
 					np.put(bean.getName(), bean, true);
 					break;
 					
 				default:
-					logger.info("ignore token {} : {} ", token, lineLexer.getLineBuf());
+					if(debug)
+						logger.info("ignore token {} : {} ", token, lineLexer.getLineBuf());
+					
 					lineLexer.nextLineToken();
 					break;
 			}
@@ -105,16 +113,11 @@ public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFi
 			logger.info("comment: {}", comment);
 			if(comment.startsWith(AT)){
 				String line = comment.substring(AT.length());
-				String[] strs = StringUtils.split(line, EQUALS_MARK);
+				String[] strs = StringUtils.split(line, COLON);
 				if(strs.length==2){
 					config.setProperty(strs[0], strs[1]);
 				}else{
-					strs = StringUtils.split(line, COLON);
-					if(strs.length==2){
-						config.setProperty(strs[0], strs[1]);
-					}else{
-						throw new BaseException("error syntax for config: " + comment);
-					}
+					throw new BaseException("error syntax for config: " + comment);
 				}
 			}
 		}
@@ -143,6 +146,9 @@ public class DefaultSqlFileParser2<T extends NamespaceProperty> implements SqlFi
 
 	protected LineReader createLineReader(ResourceAdapter<?> f){
 		return new LineReader(readResourceAsList(f));
+	}
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 }
