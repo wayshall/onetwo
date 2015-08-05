@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.sql;
+package org.onetwo.common.db.filequery;
 
 public interface SqlParamterPostfixFunction {
 	

@@ -1,6 +1,6 @@
-package org.onetwo.common.db;
+package org.onetwo.common.db.filequery;
 
-import org.onetwo.common.db.filequery.NamespaceProperty;
+import org.onetwo.common.db.ParsedSqlContext;
 
 public interface FileNamedSqlGenerator<T extends NamespaceProperty> {
 

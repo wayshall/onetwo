@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.FileNamedSqlGenerator;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.QueryProvideManager;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
+import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.NamespaceProperty;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -184,7 +184,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		
 		BeanWrapper paramsContextBean = SpringUtils.newBeanWrapper(params);
 		List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
-		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql());
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql(), em.getSqlParamterPostfixFunctionRegistry());
 		for(Object val : batchParameter){
 			Map<String, Object> paramValueMap = new HashMap<String, Object>();
 			BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
