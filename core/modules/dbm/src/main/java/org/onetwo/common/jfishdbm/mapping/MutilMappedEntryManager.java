@@ -2,8 +2,9 @@ package org.onetwo.common.jfishdbm.mapping;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.exception.JFishNoMappedEntryException;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
@@ -20,25 +21,24 @@ import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 
 public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryManager {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	private Map<String, JFishMappedEntry> entryCache = new ConcurrentHashMap<String, JFishMappedEntry>();
+//	private Map<String, JFishMappedEntry> entryCache = new ConcurrentHashMap<String, JFishMappedEntry>();
 	private List<MappedEntryBuilder> mappedEntryBuilders;
 //	private MappedEntryListenerManager mappedEntryListenerManager;
 
 	private ResourcesScanner scanner = ResourcesScanner.CLASS_CANNER;
-//	private String[] packagesToScan;
+//	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	
-//	private ApplicationContext applicationContext;
-	
-	private Object entryCacheLock = new Object();
-	
-//	private JFishDaoImplementor jfishDaoImplementor;
 	private DBDialect dialet;
+	
+	private Cache<String, JFishMappedEntry> entryCaches = CacheBuilder.newBuilder().build();
 
 	public MutilMappedEntryManager(DBDialect dialet) {
 		this.dialet = dialet;
@@ -65,28 +65,11 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	public void scanPackages(String... packagesToScan) {
 		Assert.notEmpty(mappedEntryBuilders, "no mapped entry builders ...");
 		
-		/*List<MappedEntryManagerListener> mappedEntryBuilderEvents = SpringUtils.getBeans(applicationContext, MappedEntryManagerListener.class);
-		Assert.notEmpty(mappedEntryBuilderEvents, "no mapped entry events ...");
-		this.mappedEntryListenerManager = new MappedEntryListenerManager(this);
-		this.mappedEntryListenerManager.setMappedEntryBuilderEvents(mappedEntryBuilderEvents);*/
-
 		if (!LangUtils.isEmpty(packagesToScan)) {
 			List<ScanedClassContext> entryClassNameList = scanner.scan(new ScanResourcesCallback<ScanedClassContext>() {
 
-				/*@Override
-				public boolean isCandidate(MetadataReader metadataReader) {
-					String className = metadataReader.getClassMetadata().getClassName();
-					Class<?> clazz = ReflectUtils.loadClass(className);
-					return isSupported(clazz);
-					return isSupported(metadataReader);
-				}*/
-
 				@Override
 				public ScanedClassContext doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {
-					/*Class<?> clazz = mappedEntryListenerManager.fireBeforeBuildMappedEntryEvents(metadataReader);
-					if(clazz==null){
-						clazz = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName());
-					}*/
 					if(!isSupported(metadataReader))
 						return null;
 					return new ScanedClassContext(metadataReader);
@@ -95,8 +78,6 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			}, packagesToScan);
 			
 
-//			mappedEntryListenerManager.fireBeforeBuildEvents(entryClassNameList);
-			
 			JFishList<JFishMappedEntry> entryList = JFishList.create();
 			int count = 0;
 			for(ScanedClassContext ctx : entryClassNameList){
@@ -114,10 +95,8 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 				if(StringUtils.isNotBlank(key))
 					putInCache(key, entry);
 				
-//				mappedEntryListenerManager.fireAfterBuildEvents(entry);
 			}
 
-//			mappedEntryListenerManager.fireAfterAllEntriesHaveBuiltEvents(entryList);
 			//锁定
 			for(JFishMappedEntry entry : entryList){
 				entry.freezing();
@@ -132,12 +111,10 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			throw new JFishOrmException("build entry["+entry.getEntityName()+"] error: "+e.getMessage(), e);
 		}
 	}
-	protected JFishMappedEntry getFromCache(String key) {
-		return entryCache.get(key);
-	}
 
-	protected void putInCache(String key, JFishMappedEntry entry) {
-		this.entryCache.put(key, entry);
+	private void putInCache(String key, JFishMappedEntry entry) {
+		this.entryCaches.put(key, entry);
+		logger.info("put entry into cache : " + key);
 	}
 
 	@Override
@@ -188,33 +165,54 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			return entry;
 		}
 		
+		try {
+			final Object entityObject = object;
+			entry = entryCaches.get(key, ()->{
+				JFishMappedEntry value = buildMappedEntry(entityObject);
+
+				if (value == null)
+					throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
+
+				buildEntry(value);
+				putInCache(key, value);
+				value.freezing();
+				return value;
+			});
+		} catch (ExecutionException e) {
+			throw new BaseException("create entry error for entity: " + object, e);
+		}
+		return entry;
+		
 		//多判断一次，如果是预先加载了，就不用进入同步块
-		if(entryCache.containsKey(key))
+		/*if(entryCache.containsKey(key))
 			return entryCache.get(key);
 
-		// syn?
-		synchronized (entryCacheLock) {
-			entry = getFromCache(key);
-			if (entry != null) {
-				return entry;
+//		synchronized (entryCacheLock) {
+		lock.readLock().lock();
+		try {
+			if(!entryCache.containsKey(key)){
+//				return entryCache.get(key);
+				lock.readLock().unlock();
+				lock.writeLock().lock();
+				try {
+					entry = buildMappedEntry(object);
+
+					if (entry == null)
+						throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + object.getClass());
+
+					buildEntry(entry);
+					putInCache(key, entry);
+					entry.freezing();
+				} finally{
+					lock.readLock().lock();//降级锁
+					lock.writeLock().unlock();
+				}
 			}
-
-			entry = buildMappedEntry(object);
-
-			if (entry == null)
-				throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + object.getClass());
-
-//			mappedEntryListenerManager.fireAfterBuildEvents(entry);
-			buildEntry(entry);
-			
-			putInCache(key, entry);
-			//build after put it into cache
-//			mappedEntryListenerManager.fireAfterBuildEvents(entry);
-			entry.freezing();
-		}
+			return entryCache.get(key);
+		}finally{
+			lock.readLock().unlock();
+		}*/
 		
-		logger.info("put entry into cache : " + key);
-		return entry;
 	}
 
 	@Override
@@ -236,7 +234,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	public String getCacheKey(Object object) {
 		String key = null;
 		if (Map.class.isInstance(object)) {
-
+			//no cache
 		} else {
 			Class<?> entityClass = ReflectUtils.getObjectClass(LangUtils.getFirst(object));
 			key = entityClass.getName();
@@ -247,13 +245,5 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	public void setMappedEntryBuilder(List<MappedEntryBuilder> managers) {
 		this.mappedEntryBuilders = managers;
 	}
-
-	/*public void setPackagesToScan(String[] packagesToScan) {
-		this.packagesToScan = packagesToScan;
-	}
-
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}*/
 
 }
