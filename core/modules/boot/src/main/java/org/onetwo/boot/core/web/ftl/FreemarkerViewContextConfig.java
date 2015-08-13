@@ -9,14 +9,19 @@ import org.onetwo.common.web.view.ftl.OverrideDirective;
 import org.onetwo.common.web.view.ftl.ProfileDirective;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
 import freemarker.template.SimpleHash;
 
 @Configuration
+@ConditionalOnClass({ freemarker.template.Configuration.class, FreeMarkerConfigurationFactory.class })
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FreemarkerViewContextConfig implements InitializingBean {
 
 	/*@Autowired
