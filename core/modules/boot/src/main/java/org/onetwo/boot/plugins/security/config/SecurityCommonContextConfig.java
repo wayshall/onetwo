@@ -17,6 +17,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
+/****
+ * security的通用配置
+ * @author way
+ *
+ */
 @EnableConfigurationProperties({BootSecurityConfig.class})
 @Configuration
 public class SecurityCommonContextConfig {
@@ -47,6 +52,7 @@ public class SecurityCommonContextConfig {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(SecurityWebExceptionResolver.class)
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
 	}
