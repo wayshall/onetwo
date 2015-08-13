@@ -12,6 +12,7 @@ import java.util.Map;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
+import org.onetwo.common.db.dquery.annotation.Dispatcher;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.db.filequery.QueryProvideManager;
@@ -26,6 +27,7 @@ import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.convert.Types;
@@ -110,54 +112,58 @@ public class DynamicQueryHandler implements InvocationHandler {
 		DynamicMethod dmethod = getDynamicMethod(method);
 		Class<?> resultClass = dmethod.getResultClass();
 //		Class<?> componentClass = dmethod.getComponentClass();
-		String queryName = dmethod.getQueryName();
+		Map<Object, Object> parsedParams = dmethod.toMapByArgs(args);
+		String parsedQueryName = dmethod.getQueryName(parsedParams.get(Dispatcher.class));
 
 		if(debug)
 			logger.info("{}: {}", method.getDeclaringClass().getSimpleName()+"."+method.getName(), LangUtils.toString(args));
 		
 		Object result = null;
 		Object[] methodArgs = null;
-		if(Page.class.isAssignableFrom(resultClass)){
-			Page<?> page = (Page<?>)args[0];
-			
-//			Object[] trimPageArgs = ArrayUtils.remove(args, 0);
-			methodArgs = dmethod.toArrayByArgs(args);
-			result = em.getFileNamedQueryFactory().findPage(queryName, page, methodArgs);
-			
-		}else if(List.class.isAssignableFrom(resultClass)){
-			methodArgs = dmethod.toArrayByArgs(args);
-//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
-			result = em.getFileNamedQueryFactory().findList(queryName, methodArgs);
-			
-		}else if(DataQuery.class.isAssignableFrom(resultClass)){
-//			methodArgs = dmethod.toArrayByArgs(args, null);
-			methodArgs = dmethod.toArrayByArgs(args);
-//			logger.info("dq args: {}", LangUtils.toString(methodArgs));
-			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
-			return dq;
-			
-		}else if(dmethod.isExecuteUpdate()){
-			methodArgs = dmethod.toArrayByArgs(args);
-			DataQuery dq = em.getFileNamedQueryFactory().createQuery(queryName, methodArgs);
-			result = dq.executeUpdate();
-			
-		}else if(dmethod.isBatch()){
+		
+		if(dmethod.isBatch()){
 			//TODO 先特殊处理，待修改
-			result = handleBatch(dmethod, args);
-			
+			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
 		}else{
-			methodArgs = dmethod.toArrayByArgs(args);
-			result = em.getFileNamedQueryFactory().findOne(queryName, methodArgs);
+			methodArgs = Langs.toArray(parsedParams);
+			
+			if(Page.class.isAssignableFrom(resultClass)){
+				Page<?> page = (Page<?>)args[0];
+				
+//				Object[] trimPageArgs = ArrayUtils.remove(args, 0);
+//				methodArgs = dmethod.toArrayByArgs(args);
+				result = em.getFileNamedQueryFactory().findPage(parsedQueryName, page, methodArgs);
+				
+			}else if(List.class.isAssignableFrom(resultClass)){
+//				methodArgs = dmethod.toArrayByArgs(args);
+//				logger.info("dq args: {}", LangUtils.toString(methodArgs));
+				result = em.getFileNamedQueryFactory().findList(parsedQueryName, methodArgs);
+				
+			}else if(DataQuery.class.isAssignableFrom(resultClass)){
+//				methodArgs = dmethod.toArrayByArgs(args, null);
+//				methodArgs = dmethod.toArrayByArgs(args);
+//				logger.info("dq args: {}", LangUtils.toString(methodArgs));
+				DataQuery dq = em.getFileNamedQueryFactory().createQuery(parsedQueryName, methodArgs);
+				return dq;
+				
+			}else if(dmethod.isExecuteUpdate()){
+//				methodArgs = dmethod.toArrayByArgs(args);
+				DataQuery dq = em.getFileNamedQueryFactory().createQuery(parsedQueryName, methodArgs);
+				result = dq.executeUpdate();
+				
+			}else{
+//				methodArgs = dmethod.toArrayByArgs(args);
+				result = em.getFileNamedQueryFactory().findOne(parsedQueryName, methodArgs);
+			}
 		}
 		
 		return result;
 	}
 	
-	protected Object handleBatch(DynamicMethod dmethod, Object[] args){
-
-		Class<?> componentClass = dmethod.getComponentClass();
+	protected Object handleBatch(DynamicMethod dmethod, Object[] args, String parsedQueryName, Map<Object, Object> params){
+//		Class<?> componentClass = dmethod.getComponentClass();
 //		methodArgs = dmethod.toArrayByArgs(args);
-		Map<Object, Object> params = dmethod.toMapByArgs(args);
+//		Map<Object, Object> params = dmethod.toMapByArgs(args);
 		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
 		if(batchParameter==null){
 			if(LangUtils.size(args)!=1 || !Collection.class.isInstance(args[0])){
@@ -168,7 +174,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			batchParameter = (Collection<?>)args[0];
 		}
 		
-		FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(dmethod.getQueryName(), params);
+		FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(parsedQueryName, params);
 		ParsedSqlContext sv = sqlGen.generatSql();
 		JdbcDao jdao = this.jdao;
 		if(jdao==null){

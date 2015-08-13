@@ -39,11 +39,16 @@
 		  <groupId>org.onetwo</groupId>
 		  <artifactId>onetwo-jackson</artifactId>
 		</dependency>
-		
-		<dependency>
-		  <groupId>org.onetwo</groupId>
-		  <artifactId>onetwo-spring</artifactId>
-		</dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-spring</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-dbm</artifactId>
+        </dependency>
 		
 		<dependency>
 		  <groupId>org.onetwo</groupId>

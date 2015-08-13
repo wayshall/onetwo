@@ -24,6 +24,7 @@ import org.onetwo.common.ftp.FtpFileStorer;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.SessionUserManager;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
+//@Import({BootContextConfig.class})
 public class BootWebContextConfig {
 	
 	@Autowired
@@ -84,6 +86,7 @@ public class BootWebContextConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(BootServletContextInitializer.class)
 	public BootServletContextInitializer bootServletContextInitializer(){
 		return new BootServletContextInitializer();
 	}
@@ -160,7 +163,7 @@ public class BootWebContextConfig {
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)
-	public SessionUserManager sessionUserManager(){
+	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new BootSessionUserManager();
 	}
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)

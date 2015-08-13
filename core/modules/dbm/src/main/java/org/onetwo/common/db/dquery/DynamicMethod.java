@@ -15,6 +15,7 @@ import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
+import org.onetwo.common.db.dquery.annotation.Dispatcher;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
 import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
@@ -27,7 +28,6 @@ import org.onetwo.common.spring.sql.ParserContext;
 import org.onetwo.common.spring.sql.ParserContextFunctionSet;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -146,11 +146,11 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	}
 	
 
-	public Object[] toArrayByArgs(Object[] args){
+	/*public Object[] toArrayByArgs(Object[] args){
 		Map<Object, Object> map = toMapByArgs(args);
 		return Langs.toArray(map);
 //		return toArrayByArgs2(args, componentClass);
-	}
+	}*/
 
 	/*public Object[] toArrayByArgs2(Object[] args, Class<?> componentClass){
 		List<Object> values = LangUtils.newArrayList(parameters.size()*2);
@@ -245,14 +245,15 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 				for(Object obj : listValue){
 					Pair<String, Object> pair = addAndCheckParamValue(name, mp.getParameterName()+index, obj);
 					if(pair!=null){
-						values.put(pair.getLeft(), pair.getRight());
+						putArg2Map(values, pair.getLeft(), pair.getRight());
 //						if(addAndCheckParamValue(name, values, mp.getParameterName()+index, obj)){
 						index++;
 					}
 				}
 				/*values.add(mp.getParameterName());
 				values.add(listValue);*/
-				values.put(mp.getParameterName(), listValue);
+				putArg2Map(values, mp.getParameterName(), listValue);
+				
 			}else{
 //				addAndCheckParamValue(name, values, mp.getParameterName(), pvalue);
 				/*if(mp.hasParameterAnnotation(BatchObject.class)){
@@ -265,17 +266,28 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 				}*/
 				Pair<String, Object> pair = addAndCheckParamValue(name, mp.getParameterName(), pvalue);
 				if(pair!=null){
-					values.put(pair.getLeft(), pair.getRight());
+					putArg2Map(values, pair.getLeft(), pair.getRight());
 				}
 			}
 				
 		}else if(mp.hasParameterAnnotation(BatchObject.class)){
-			values.put(BatchObject.class, pvalue);
+			putArg2Map(values, BatchObject.class, pvalue);
+			
+		}else if(mp.hasParameterAnnotation(Dispatcher.class)){
+			putArg2Map(values, Dispatcher.class, pvalue);
+			
 		}else{
 			/*values.add(mp.getParameterName());
 			values.add(pvalue);*/
-			values.put(mp.getParameterName(), pvalue);
+			putArg2Map(values, mp.getParameterName(), pvalue);
 		}
+	}
+	
+	private void putArg2Map(Map<Object, Object> values, Object key, Object value){
+		if(values.containsKey(key)){
+			throw new IllegalArgumentException("parameter has exist: " + key);
+		}
+		values.put(key, value);
 	}
 	
 	protected void buildQueryConfig(ParserContext parserContext){
@@ -331,7 +343,10 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return componentClass;
 	}
 
-	public String getQueryName() {
+	public String getQueryName(Object dispatcher) {
+		if(dispatcher!=null){
+			return queryName + "(" + dispatcher+")";
+		}
 		return queryName;
 	}
 	
