@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;

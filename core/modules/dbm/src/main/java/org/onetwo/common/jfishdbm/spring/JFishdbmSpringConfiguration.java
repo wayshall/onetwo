@@ -2,7 +2,6 @@ package org.onetwo.common.jfishdbm.spring;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.dquery.DynamicQueryObjectRegister;
 import org.onetwo.common.db.filequery.FileNamedQueryFactory;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
@@ -16,7 +15,6 @@ import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
-import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.SqlParamterPostfixFunctions;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
