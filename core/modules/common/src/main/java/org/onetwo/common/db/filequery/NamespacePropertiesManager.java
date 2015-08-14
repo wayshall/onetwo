@@ -6,6 +6,7 @@ import org.onetwo.common.utils.propconf.ResourceAdapter;
 
 public interface NamespacePropertiesManager<T extends NamespaceProperty> /*extends JFishPropertiesManager<T>*/{
 
+	public static final String GLOBAL_NS_KEY = "global";
 
 	public T getJFishProperty(String name);
 	public boolean contains(String fullname);

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
+import org.onetwo.common.jfishdbm.exception.DBException;
 import org.onetwo.common.jfishdbm.exception.JFishNoMappedEntryException;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.jpa.JPAMappedEntryBuilder;
@@ -172,20 +172,23 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		}
 		
 		try {
-			final Object entityObject = object;
-			entry = entryCaches.get(key, ()->{
-				JFishMappedEntry value = buildMappedEntry(entityObject);
-
-				if (value == null)
-					throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
-
-				buildEntry(value);
-				putInCache(key, value);
-				value.freezing();
-				return value;
-			});
+			entry = entryCaches.getIfPresent(key);
+			if(entry==null){
+				final Object entityObject = object;
+				entry = entryCaches.get(key, ()->{
+					JFishMappedEntry value = buildMappedEntry(entityObject);
+	
+					if (value == null)
+						throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
+	
+					buildEntry(value);
+					putInCache(key, value);
+					value.freezing();
+					return value;
+				});
+			}
 		} catch (ExecutionException e) {
-			throw new BaseException("create entry error for entity: " + object, e);
+			throw new DBException("create entry error for entity: " + object, e);
 		}
 		return entry;
 		
