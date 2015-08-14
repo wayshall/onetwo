@@ -8,7 +8,7 @@ import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.Assert;
 import org.springframework.jdbc.core.RowMapper;
 
-public class JFishFileQueryImpl extends DefaultFileQueryImpl<JFishNamedFileQueryInfo> {
+public class JFishFileQueryImpl extends DefaultFileQueryImpl {
 
 //	private JFishNamedFileQueryInfo info;
 //	private QueryProvideManager baseEntityManager;

@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.filequery.NamespaceProperty;
-import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -23,7 +22,7 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 		return name.substring(0, name.length() - COUNT_POSTFIX.length());
 	}
 
-	private DataBase dataBaseType;
+//	private DataBase dataBaseType;
 	private String mappedEntity;
 	private String countSql;
 	private FileSqlParserType parser = FileSqlParserType.NONE;
@@ -125,12 +124,12 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	public String getTemplateName(String attr){
 		return getFullName() + "."+TEMPLATE_DOT_KEY + attr;
 	}
-	public DataBase getDataBaseType() {
+	/*public DataBase getDataBaseType() {
 		return dataBaseType;
 	}
 	public void setDataBaseType(DataBase dataBaseType) {
 		this.dataBaseType = dataBaseType;
-	}
+	}*/
 	public String toString() {
 		return LangUtils.append("{namespace:, ", getNamespace(), ", name:", getName(), ", config:", getConfig(), ", mappedEntity:", mappedEntity, ", sql:", getSql(), ", countSql:", getCountSqlString(), "}");
 	}

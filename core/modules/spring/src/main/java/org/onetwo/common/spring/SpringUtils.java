@@ -78,7 +78,7 @@ final public class SpringUtils {
 		setProfiles(newProfiles);
 	}
 
-	public static <T> List<T> getBeans(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
 			return Collections.EMPTY_LIST;
@@ -92,7 +92,7 @@ final public class SpringUtils {
 		return beanMaps;
 	}
 	
-	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> T getBean(ListableBeanFactory appContext, Class<T> clazz) {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
 	}
