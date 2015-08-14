@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
@@ -17,7 +19,9 @@ import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jdbc.JdbcDao;
+import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.spring.SpringApplication;
@@ -48,13 +52,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	private JdbcDao jdao;
+	private NamedJdbcTemplate namedJdbcTemplate;
 	
 
 	/*public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
 		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
 	}*/
 	
-	public DynamicQueryHandler(QueryProvideManager em, Cache methodCache, JdbcDao jdao, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvideManager em, Cache methodCache, NamedJdbcTemplate namedJdbcTemplate, Class<?>... proxiedInterfaces){
 //		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
 //		Assert.notNull(em);
 		this.em = em;
@@ -64,7 +69,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			Method method = methods[j];
 			excludeMethods.add(method);
 		}
-		this.jdao = jdao;
+		this.namedJdbcTemplate = namedJdbcTemplate;
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
 	}
@@ -176,11 +181,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 		
 		FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(parsedQueryName, params);
 		ParsedSqlContext sv = sqlGen.generatSql();
-		JdbcDao jdao = this.jdao;
-		if(jdao==null){
-			jdao = SpringApplication.getInstance().getBean(JdbcDao.class, false);
-			if(jdao==null)
-				throw new BaseException("no supported jdbc batch execute!");
+//		JdbcDao jdao = this.jdao;
+		NamedJdbcTemplate namedJdbcTemplate = this.namedJdbcTemplate;
+		if(namedJdbcTemplate==null){
+			DataSource ds = SpringApplication.getInstance().getBean(DataSource.class, false);
+			namedJdbcTemplate = new JFishNamedJdbcTemplate(ds);
 		}
 		
 		

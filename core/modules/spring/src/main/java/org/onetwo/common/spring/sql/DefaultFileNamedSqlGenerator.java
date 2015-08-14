@@ -13,10 +13,10 @@ import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
-public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> implements FileNamedSqlGenerator<T> {
+public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFishNamedFileQueryInfo> {
 	
 	private static final Logger logger = JFishLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
-	protected T info;
+	protected JFishNamedFileQueryInfo info;
 	protected boolean countQuery;
 	private TemplateParser parser;
 	private ParserContext parserContext;
@@ -29,7 +29,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 	
 	
 	
-	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
 			TemplateParser parser, Map<Object, Object> params) {
 		super();
 		this.info = info;
@@ -41,7 +41,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 		}
 	}
 
-	public DefaultFileNamedSqlGenerator(T info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
 			TemplateParser parser, ParserContext parserContext,
 			Class<?> resultClass, String[] ascFields, String[] desFields,
 			Map<Object, Object> params) {
@@ -78,7 +78,7 @@ public class DefaultFileNamedSqlGenerator<T extends JFishNamedFileQueryInfo> imp
 				parserContext = ParserContext.create();
 			}
 			
-			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+//			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
 			this.parserContext.putAll(params);
 			TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
 			this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);

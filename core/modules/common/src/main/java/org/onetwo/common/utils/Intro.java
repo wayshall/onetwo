@@ -21,6 +21,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class Intro<T> {
@@ -39,11 +40,11 @@ public class Intro<T> {
 	private final Class<T> clazz;
 	private final Map<String, PropertyDescriptor> propertyDescriptors;
 	private Map<String, Field> _fieldMaps;
-	private ReentrantLock fieldLock = new ReentrantLock();
+	private ReentrantLock _fieldLock = new ReentrantLock();
 
 //	private List<Field> allFields;
 	private Map<String, Field> _allFieldMap;
-	private ReentrantLock allFieldLock = new ReentrantLock();
+	private ReentrantLock _allFieldLock = new ReentrantLock();
 
 	public Intro(Class<T> clazz) {
 		Assert.notNull(clazz);
@@ -57,7 +58,7 @@ public class Intro<T> {
 	}
 	
 	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
-		if(clazz.isInterface())
+		if(clazz.isInterface() || clazz.isPrimitive())
 			return Collections.EMPTY_MAP;
 		BeanInfo beanInfo = null;
 		try {
@@ -74,14 +75,6 @@ public class Intro<T> {
 		return Collections.unmodifiableMap(maps);
 	}
 	
-	private Map<String, Field> loadFields(){
-		Field[] fields = clazz.getDeclaredFields();
-		Map<String, Field> maps = new LinkedHashMap<String, Field>();
-		for(Field field : fields){
-			maps.put(field.getName(), field);
-		}
-		return Collections.unmodifiableMap(maps);
-	}
 	
 	public JFishList<Field> getAllFields() {
 		_loadAllFields();
@@ -122,23 +115,55 @@ public class Intro<T> {
 		if(_allFieldMap!=null)
 			return ;
 		
-		allFieldLock.lock();
+		_allFieldLock.lock();
 		try {
 			if(_allFieldMap!=null)//dbcheck
 				return ;
 
-			_allFieldMap = Maps.newHashMap(getFieldMaps());
+			Map<String, Field> tempMap = Maps.newHashMap(getFieldMaps());
 			List<Class<?>> classes = findSuperClasses(clazz);
 			Field[] fs = null;
 			for (Class<?> cls : classes) {
 				fs = cls.getDeclaredFields();
 				for (Field f : fs) {
-					_allFieldMap.put(f.getName(), f);
+					tempMap.put(f.getName(), f);
 				}
 			}
+			
+			this._allFieldMap = ImmutableMap.copyOf(tempMap);
 		} finally{
-			allFieldLock.unlock();
+			_allFieldLock.unlock();
 		}
+	}
+
+	private void _loadFields(){
+		if(_fieldMaps!=null)
+			return ;
+		
+		this._fieldLock.lock();
+		try{
+			if(_fieldMaps!=null)
+				return ;
+
+			if(clazz.isInterface() || clazz.isPrimitive()){
+				_fieldMaps = Collections.EMPTY_MAP;
+				return ;
+			}
+			Field[] fields = clazz.getDeclaredFields();
+			Map<String, Field> maps = new LinkedHashMap<String, Field>(fields.length);
+			for(Field field : fields){
+				maps.put(field.getName(), field);
+			}
+			this._fieldMaps = ImmutableMap.copyOf(maps);
+		}finally{
+			this._fieldLock.unlock();
+		}
+		
+	}
+
+	public Map<String, Field> getFieldMaps() {
+		_loadFields();
+		return _fieldMaps;
 	}
 	
 	public Map<String, PropertyDescriptor> getPropertyDescriptors() {
@@ -197,16 +222,6 @@ public class Intro<T> {
 	}
 	
 	
-	public Map<String, Field> getFieldMaps() {
-		this.fieldLock.lock();
-		try{
-			if(_fieldMaps==null)
-				_fieldMaps = loadFields();
-		}finally{
-			this.fieldLock.unlock();
-		}
-		return _fieldMaps;
-	}
 
 	public Field getField(String fieldName){
 		return getFieldMaps().get(fieldName);
