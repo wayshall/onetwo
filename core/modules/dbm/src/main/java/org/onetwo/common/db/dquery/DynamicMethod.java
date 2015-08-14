@@ -15,10 +15,11 @@ import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
-import org.onetwo.common.db.dquery.annotation.Dispatcher;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
 import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
+import org.onetwo.common.db.dquery.annotation.QuerySwitch;
+import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
@@ -273,8 +274,11 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		}else if(mp.hasParameterAnnotation(BatchObject.class)){
 			putArg2Map(values, BatchObject.class, pvalue);
 			
-		}else if(mp.hasParameterAnnotation(Dispatcher.class)){
-			putArg2Map(values, Dispatcher.class, pvalue);
+		}else if(mp.hasParameterAnnotation(QuerySwitch.class)){
+			if(mp.getParameterIndex()!=0){
+				throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (mp.getParameterIndex()+1));
+			}
+			putArg2Map(values, QuerySwitch.class, pvalue);
 			
 		}else{
 			/*values.add(mp.getParameterName());

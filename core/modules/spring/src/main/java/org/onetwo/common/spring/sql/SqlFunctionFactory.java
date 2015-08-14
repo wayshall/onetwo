@@ -2,7 +2,7 @@ package org.onetwo.common.spring.sql;
 
 import java.util.Map;
 
-import org.onetwo.common.jdbc.DataBase;
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.spring.sql.func.OracleSqlFunctionDialet;
 import org.onetwo.common.spring.sql.func.SqlFunctionDialet;
 import org.onetwo.common.spring.sql.func.SqlServerSqlFunctionDialet;

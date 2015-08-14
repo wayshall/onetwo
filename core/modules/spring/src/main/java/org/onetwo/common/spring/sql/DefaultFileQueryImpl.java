@@ -63,7 +63,8 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 	}
 	
 	protected DataQuery createDataQueryIfNecessarry(){
-		FileNamedSqlGenerator sqlGen = new DefaultFileNamedSqlGenerator(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
+		FileNamedSqlGenerator<JFishNamedFileQueryInfo> sqlGen = new DefaultFileNamedSqlGenerator(info, countQuery, parser, getParserContext(), 
+																				resultClass, ascFields, desFields, params, baseEntityManager.getDataBase());
 		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
 			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);

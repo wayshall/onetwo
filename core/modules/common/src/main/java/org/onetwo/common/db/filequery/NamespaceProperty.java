@@ -4,7 +4,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 
-public class NamespaceProperty /*extends JFishNameValuePair*/{
+public class NamespaceProperty {
 	public static final char DOT_KEY = '.';
 
 	private String name;

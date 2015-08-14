@@ -21,7 +21,7 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryFac
 		super();
 //		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
 		if(sqlFileManager!=null){
-			this.parser = (TemplateParser)sqlFileManager.getListener();
+			this.parser = sqlFileManager.getSqlStatmentParser();
 			this.sqlFileManager = sqlFileManager;
 		}
 	}
@@ -56,7 +56,7 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryFac
 	@Override
 	public FileNamedSqlGenerator<JFishNamedFileQueryInfo> createFileNamedSqlGenerator(String queryName, Map<Object, Object> params) {
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		FileNamedSqlGenerator<JFishNamedFileQueryInfo> g = new DefaultFileNamedSqlGenerator(nameInfo, false, parser, params);
+		FileNamedSqlGenerator<JFishNamedFileQueryInfo> g = new DefaultFileNamedSqlGenerator(nameInfo, false, parser, params, queryProvideManager.getDataBase());
 		return g;
 	}
 

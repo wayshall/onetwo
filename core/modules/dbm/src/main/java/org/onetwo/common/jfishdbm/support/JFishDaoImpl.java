@@ -8,13 +8,13 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;

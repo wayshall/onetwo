@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.BaseEntityManagerAdapter;
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.JFishQueryValue;
@@ -16,29 +17,24 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
-import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 
 //@SuppressWarnings({"rawtypes", "unchecked"})
-public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
+public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, InitializingBean , DisposableBean {
 
 	private JFishDaoImplementor jfishDao;
 //	private EntityManagerOperationImpl entityManagerWraper;
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
-	private ApplicationContext applicationContext;
+//	private ApplicationContext applicationContext;
 	
 	private FileNamedQueryFactory<?> fileNamedQueryFactory;
 //	private boolean watchSqlFile = false;
@@ -54,9 +50,15 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 
-	@Override
+	/*@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}*/
+
+
+	@Override
+	public DataBase getDataBase() {
+		return jfishDao.getDialect().getDbmeta().getDataBase();
 	}
 
 
@@ -311,12 +313,12 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
-		Map properties = CUtils.bean2Map(obj);
+		Map<Object, Object> properties = CUtils.bean2Map(obj);
 		return this.findByProperties(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
-		Map properties = CUtils.bean2Map(obj);
+		Map<Object, Object> properties = CUtils.bean2Map(obj);
 		this.findPage(entityClass, page, properties);
 	}
 
@@ -330,8 +332,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	@Override
-	public JFishDao getRawManagerObject() {
-		return jfishDao;
+	public <T> T getRawManagerObject() {
+		return (T)jfishDao;
 	}
 
 	@Override
@@ -339,7 +341,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return rawClass.cast(getRawManagerObject());
 	}
 
-	public void setFileNamedQueryFactory(FileNamedQueryFactory fileNamedQueryFactory) {
+	public void setFileNamedQueryFactory(FileNamedQueryFactory<?> fileNamedQueryFactory) {
 		this.fileNamedQueryFactory = fileNamedQueryFactory;
 	}
 
