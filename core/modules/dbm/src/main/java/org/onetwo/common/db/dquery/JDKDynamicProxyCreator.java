@@ -1,5 +1,7 @@
 package org.onetwo.common.db.dquery;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.annotation.QueryProvider;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
@@ -12,26 +14,28 @@ import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cache.Cache;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
+import com.google.common.cache.LoadingCache;
+
 public class JDKDynamicProxyCreator implements InitializingBean, ApplicationContextAware, FactoryBean<Object> {
-	
+
+	private LoadingCache<Method, DynamicMethod> methodCache;
 	private ApplicationContext applicationContext;
 	private Class<?> interfaceClass;
 	private Object targetObject;
 	private ResourceAdapter<?> sqlFile;
 
-	private Cache methodCache;
 	private NamedJdbcTemplate namedJdbcTemplate;
 //	private JFishNamedSqlFileManager namedSqlFileManager;
 //	private QueryProvideManager queryProvideManager;
 	
-	public JDKDynamicProxyCreator(Class<?> interfaceClass) {
+	public JDKDynamicProxyCreator(Class<?> interfaceClass, LoadingCache<Method, DynamicMethod> methodCache) {
 		super();
 		this.interfaceClass = interfaceClass;
+		this.methodCache = methodCache;
 	}
 
 	@Override
@@ -41,9 +45,6 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		}*/
 		if(namedJdbcTemplate==null){
 			namedJdbcTemplate = SpringUtils.getBean(applicationContext, NamedJdbcTemplate.class);
-		}
-		if(methodCache==null){
-			methodCache = SpringUtils.getBean(applicationContext, Cache.class);
 		}
 		
 		QueryProvideManager queryProvideManager;
@@ -87,10 +88,6 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 	@Override
 	public boolean isSingleton() {
 		return true;
-	}
-
-	public void setMethodCache(Cache methodCache) {
-		this.methodCache = methodCache;
 	}
 
 	public void setApplicationContext(ApplicationContext applicationContext) {

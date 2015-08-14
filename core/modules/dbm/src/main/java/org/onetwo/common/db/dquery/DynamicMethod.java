@@ -36,6 +36,10 @@ import org.springframework.core.MethodParameter;
 
 public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter>{
 
+	public static DynamicMethod newDynamicMethod(Method method){
+		return new DynamicMethod(method);
+	}
+
 	public static final List<String> EXECUTE_UPDATE_PREFIX = LangUtils.newArrayList("save", "update", "remove", "delete", "insert", "create");
 	public static final List<String> BATCH_PREFIX = LangUtils.newArrayList("batch");
 //	public static final String FIELD_NAME_SPERATOR = "By";
@@ -123,9 +127,9 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return this.parameters.remove(index);
 	}
 	
-	private boolean addAndCheckParamValue(Name name, List<Object> values, String pname, Object pvalue){
+	/*private boolean addAndCheckParamValue(Name name, List<Object> values, String pname, Object pvalue){
 		//TODO 参数ifParamNull已过时，将来注释下面这段代码
-		/*IfNull ifnull = name.ifParamNull();
+		IfNull ifnull = name.ifParamNull();
 		if(pvalue==null){
 			switch (ifnull) {
 				case Ignore:
@@ -135,7 +139,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 				default:
 					break;
 			}
-		}*/
+		}
 		//end
 		values.add(pname);
 		if(String.class.isInstance(pvalue) && name.isLikeQuery()){
@@ -144,7 +148,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 			values.add(pvalue);
 		}
 		return true;
-	}
+	}*/
 	
 
 	/*public Object[] toArrayByArgs(Object[] args){
