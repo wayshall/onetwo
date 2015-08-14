@@ -15,10 +15,10 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 
 
-public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory<JFishNamedFileQueryInfo>{
+public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory {
 
 
-	public JFishNamedFileQueryManagerImpl(JFishNamedSqlFileManager<JFishNamedFileQueryInfo> sqlFileManager) {
+	public JFishNamedFileQueryManagerImpl(JFishNamedSqlFileManager sqlFileManager) {
 		super(sqlFileManager);
 		/*if(sqlFileManager!=null){
 			this.parser = (TemplateParser)sqlFileManager.getListener();

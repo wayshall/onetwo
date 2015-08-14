@@ -6,7 +6,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.CommonNamespaceProperties;
-import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager.DialetNamedSqlConf;
 import org.onetwo.common.utils.FileUtils;
@@ -22,14 +21,7 @@ public class MultipCommentsSqlFileParserTest {
 		MultipCommentsSqlFileParser<JFishNamedFileQueryInfo> parser = new MultipCommentsSqlFileParser<>();
 		ResourceAdapter<File> f = FileUtils.adapterResource(new File(fileName));
 		
-		DialetNamedSqlConf<JFishNamedFileQueryInfo> conf = new DialetNamedSqlConf<JFishNamedFileQueryInfo>(){
-			{
-				setDatabaseType(DataBase.of("mysql"));
-//				setPostfix(SQL_POSTFIX);
-				setWatchSqlFile(false);
-				setPropertyBeanClass(JFishNamedFileQueryInfo.class);
-			}
-		};
+		DialetNamedSqlConf conf = new DialetNamedSqlConf(false);
 		
 		CommonNamespaceProperties<JFishNamedFileQueryInfo> np = new CommonNamespaceProperties<>("org.onetwo.common.jfishdbm.model.dao.UserAutoidDao");
 		parser.parseToNamespaceProperty(conf, np, f);

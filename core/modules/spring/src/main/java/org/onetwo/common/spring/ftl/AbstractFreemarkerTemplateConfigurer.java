@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.ftl;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
@@ -100,9 +99,9 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		try {
 			template = getConfiguration().getTemplate(name);
 		}catch (ParseException e) {
-			throw new BaseException("sql tempalte syntax error : " + e.getMessage());
-		} catch (IOException e) {
-			throw new BaseException("get tempalte error : " + e.getMessage(), e);
+			throw new BaseException("sql tempalte["+name+"] syntax error : " + e.getMessage());
+		} catch (Exception e) {
+			throw new BaseException("get tempalte["+name+"] error : " + e.getMessage(), e);
 		}
 		return template;
 	}

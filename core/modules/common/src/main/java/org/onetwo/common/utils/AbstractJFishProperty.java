@@ -49,7 +49,7 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	}
 
 	public Intro<?> getFirstParameterTypeClassWrapper() {
-		return Intro.wrap((Class)getFirstParameterType());
+		return Intro.wrap((Class<?>)getFirstParameterType());
 	}
 
 	public Intro<?> getTypeClassWrapper() {
@@ -57,11 +57,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	}
 
 	public boolean isCollectionType(){
-		return propertyClassWrapper.isCollectionType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isCollectionType();
 	}
 
 	public boolean isMapType(){
-		return propertyClassWrapper.isMapType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isMapType();
 	}
 	
 }

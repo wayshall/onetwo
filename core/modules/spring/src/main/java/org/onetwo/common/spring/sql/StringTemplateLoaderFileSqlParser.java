@@ -46,7 +46,7 @@ public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo
 
 
 	@Override
-	public void afterBuild(ResourceAdapter<?>[] sqlfileArray, Map<String, PropertiesNamespaceInfo<T>> namespaceInfos) {
+	public void afterBuild(Map<String, PropertiesNamespaceInfo<T>> namespaceInfos, ResourceAdapter<?>... sqlfileArray) {
 		this.initialize();
 		for(PropertiesNamespaceInfo<T> namespace : namespaceInfos.values()){
 			this.putTemplateByNamespaceInfo(namespace);

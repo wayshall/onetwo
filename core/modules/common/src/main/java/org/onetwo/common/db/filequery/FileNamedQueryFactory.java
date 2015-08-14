@@ -15,12 +15,9 @@ import org.onetwo.common.utils.Page;
  */
 public interface FileNamedQueryFactory<PT extends NamespaceProperty> {
 	
-	/***
-	 * 初始化
-	 * @param createQueryable
-	 */
-	public void initQeuryFactory(QueryProvideManager createQueryable);
+//	public void initQeuryFactory(QueryProvideManager createQueryable);
 	
+//	public JFishNamedSqlFileManager getSqlFileManager();
 	public NamespacePropertiesManager<PT> getNamespacePropertiesManager();
 
 	public DataQuery createQuery(String queryName, Object... args);
