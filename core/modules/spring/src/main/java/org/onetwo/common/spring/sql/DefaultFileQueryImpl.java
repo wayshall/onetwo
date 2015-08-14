@@ -21,7 +21,7 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 
-public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends AbstractDataQuery implements QueryOrderByable {
+public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrderByable {
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;
@@ -36,14 +36,14 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	private int maxRecords;
 	private Class<?> resultClass;
 	
-	protected T info;
+	protected JFishNamedFileQueryInfo info;
 	private TemplateParser parser;
 	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
 
-	public DefaultFileQueryImpl(QueryProvideManager baseEntityManager, T info, boolean count, TemplateParser parser) {
+	public DefaultFileQueryImpl(QueryProvideManager baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;
@@ -63,7 +63,7 @@ public class DefaultFileQueryImpl<T extends JFishNamedFileQueryInfo> extends Abs
 	}
 	
 	protected DataQuery createDataQueryIfNecessarry(){
-		FileNamedSqlGenerator<T> sqlGen = new DefaultFileNamedSqlGenerator<T>(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
+		FileNamedSqlGenerator sqlGen = new DefaultFileNamedSqlGenerator(info, countQuery, parser, getParserContext(), resultClass, ascFields, desFields, params);
 		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
 			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);

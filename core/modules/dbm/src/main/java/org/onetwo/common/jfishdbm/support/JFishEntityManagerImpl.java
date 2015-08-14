@@ -16,10 +16,13 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
+import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
+import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeansException;
@@ -29,7 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowMapper;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+//@SuppressWarnings({"rawtypes", "unchecked"})
 public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, ApplicationContextAware, InitializingBean , DisposableBean {
 
 	private JFishDaoImplementor jfishDao;
@@ -37,7 +40,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 	private ApplicationContext applicationContext;
 	
-	private FileNamedQueryFactory fileNamedQueryFactory;
+	private FileNamedQueryFactory<?> fileNamedQueryFactory;
 //	private boolean watchSqlFile = false;
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
@@ -64,7 +67,13 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		
 //		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
 		//不在set方法里设置，避免循环依赖
-		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
+//		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
+		
+		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(jfishDao.getDataBaseConfig().isWatchSqlFile());
+		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
+		fq.setQueryProvideManager(this);
+		this.fileNamedQueryFactory = fq;
+			
 	}
 
 	@Override
@@ -206,7 +215,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		SQLSymbolManager = sQLSymbolManager;
 	}*/
 
-	public FileNamedQueryFactory getFileNamedQueryFactory() {
+	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
 		return this.fileNamedQueryFactory;
 	}
 

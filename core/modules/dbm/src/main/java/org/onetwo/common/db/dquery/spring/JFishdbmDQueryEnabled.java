@@ -13,6 +13,6 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Documented
 @Import(DynamicQueryContextConfig.class)
-public @interface DynamicQueryEnabled {
+public @interface JFishdbmDQueryEnabled {
 
 }

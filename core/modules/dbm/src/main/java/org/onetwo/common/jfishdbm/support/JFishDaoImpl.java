@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.JFishQueryValue;
 import org.onetwo.common.db.SelectExtQuery;
@@ -79,6 +80,8 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	private DefaultDatabaseDialetManager databaseDialetManager;
 	protected DataBaseConfig dataBaseConfig;
 	
+	protected String[] packagesToScan;
+	
 	/*public JFishDaoImpl(){
 	}*/
 
@@ -126,10 +129,15 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 			this.dialect.initialize();
 		}
 		
+		//mappedEntryManager
 		if(mappedEntryManager==null){
 			this.mappedEntryManager = new MutilMappedEntryManager(this.dialect);
 			this.mappedEntryManager.initialize();
 		}
+		if(ArrayUtils.isNotEmpty(packagesToScan)){
+			mappedEntryManager.scanPackages(packagesToScan);
+		}
+		
 		//init sql symbol
 		if(sqlSymbolManager==null){
 			JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
@@ -650,6 +658,10 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	@Override
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 		return this.namedParameterJdbcTemplate;
+	}
+
+	public void setPackagesToScan(String... packagesToScan) {
+		this.packagesToScan = packagesToScan;
 	}
 
 

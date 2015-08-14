@@ -6,20 +6,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.onetwo.common.utils.watch.FileChangeListener;
 import org.onetwo.common.utils.watch.FileWatcher;
 import org.slf4j.Logger;
+
+import com.google.common.collect.Maps;
 
 
 public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*extends AbstractPropertiesManager<T>*/ implements NamespacePropertiesManager<T>{
@@ -41,24 +40,27 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	protected JFishPropertyConf<T> conf;
 	private long period = 1;
 	
-	Map<String, PropertiesNamespaceInfo<T>> namespaceProperties;
+	private Map<String, PropertiesNamespaceInfo<T>> namespaceProperties = Maps.newHashMap();
 //	private List<Properties> sqlfiles;
 //	private PropertiesWraper wrapper;
-	private Map<String, T> namedQueryCache;
+	private Map<String, T> namedQueryCache = Maps.newConcurrentMap();
 	private SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();
 	final private NamespacePropertiesFileListener<T> listener;
-
+	
 	public NamespacePropertiesFileManagerImpl(JFishPropertyConf<T> conf, NamespacePropertiesFileListener<T> listener) {
 //		super(conf);
 		this.conf = conf;
-		if(conf.getPropertyBeanClass()==null){
+		if(conf!=null && conf.getPropertyBeanClass()==null){
 			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), NamespacePropertiesFileManagerImpl.class);
 			conf.setPropertyBeanClass(clz);
 		}
 		this.listener = listener;
 	}
-
 	
+	public void setConf(JFishPropertyConf<T> conf) {
+		this.conf = conf;
+	}
+
 	public NamespacePropertiesFileListener<T> getListener() {
 		return listener;
 	}
@@ -67,19 +69,36 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		return conf;
 	}
 
-	public void build(){
-		this.namedQueryCache = new ConcurrentHashMap<String, T>();
+	/*public void build(){
+		Assert.notNull(conf);
+//		this.namedQueryCache = new ConcurrentHashMap<String, T>();
 		ResourceAdapter<?>[] sqlfileArray = scanMatchSqlFiles(conf);
 		this.namespaceProperties = this.parseSqlFiles(sqlfileArray);
 		this.buildSqlFileMonitor(sqlfileArray);
 
 		if(this.listener!=null){
-			this.listener.afterBuild(sqlfileArray, namespaceProperties);
+			this.listener.afterBuild(namespaceProperties, sqlfileArray);
+		}
+		logger.info("all named query : ");
+		for(T prop : this.namedQueryCache.values()){
+			logger.info(prop.toString());
+		}
+	}*/
+
+	@Override
+	public PropertiesNamespaceInfo<T> buildSqlFile(ResourceAdapter<?> sqlFile){
+		Assert.notNull(sqlFile);
+		PropertiesNamespaceInfo<T> info = this.parseSqlFile(sqlFile, true);
+		this.buildSqlFileMonitor(sqlFile);
+
+		if(this.listener!=null){
+			this.listener.afterReload(sqlFile, info);
 		}
 		/*logger.info("all named query : ");
 		for(T prop : this.namedQueryCache.values()){
 			logger.info(prop.toString());
 		}*/
+		return info;
 	}
 	
 	/****
@@ -87,7 +106,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	 * @param conf
 	 * @return
 	 */
-	protected ResourceAdapter<?>[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
+	/*protected ResourceAdapter<?>[] scanMatchSqlFiles(JFishPropertyConf<T> conf){
 		String sqldirPath = FileUtils.getResourcePath(conf.getClassLoader(), conf.getDir());
 
 		File[] sqlfileArray = FileUtils.listFiles(sqldirPath, conf.getPostfix());
@@ -107,13 +126,13 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			}
 		}
 		return FileUtils.adapterResources(sqlfileArray);
-	}
+	}*/
 	
 	/***
 	 * 监测sql文件变化
 	 * @param sqlfileArray
 	 */
-	protected void buildSqlFileMonitor(ResourceAdapter<?>[] sqlfileArray){
+	protected void buildSqlFileMonitor(ResourceAdapter<?>... sqlfileArray){
 		if(conf.isWatchSqlFile() && fileMonitor==null){
 			fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
@@ -137,7 +156,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			logger.warn("no file relaoded : " + file);
 			return ;
 		}*/
-		PropertiesNamespaceInfo<T> namepsaceInfo = this.parseSqlFile(this.namespaceProperties, file, false);
+		PropertiesNamespaceInfo<T> namepsaceInfo = this.parseSqlFile(file, false);
 		logger.warn("file relaoded : " + file);
 		if(listener!=null){
 			listener.afterReload(file, namepsaceInfo);
@@ -154,16 +173,16 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			return Collections.EMPTY_MAP;
 		}
 		
-		Map<String, PropertiesNamespaceInfo<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
+//		Map<String, PropertiesNamespaceInfo<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
 		for(ResourceAdapter<?> f : sqlfileArray){
 //			logger.info("parse named sql file: {}", f);
-			this.parseSqlFile(nsproperties, f, true);
+			this.parseSqlFile(f, true);
 		}
-		return nsproperties;
+		return namespaceProperties;
 	}
 
 
-	protected PropertiesNamespaceInfo<T> parseSqlFile(Map<String, PropertiesNamespaceInfo<T>> namespacesMap, ResourceAdapter<?> f, boolean throwIfExist){
+	protected PropertiesNamespaceInfo<T> parseSqlFile(ResourceAdapter<?> f, boolean throwIfExist){
 		logger.info("parse named sql file: {}" + f.getName());
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
@@ -175,18 +194,18 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 
 		PropertiesNamespaceInfo<T> np = null;
 		if(globalNamespace){
-			np = namespacesMap.get(namespace);
+			np = namespaceProperties.get(namespace);
 			if(np==null){
 				np = new GlobalNamespaceProperties<T>();
-				namespacesMap.put(np.getKey(), np);
+				namespaceProperties.put(np.getKey(), np);
 			}
 //			np.addAll(namedinfos, throwIfExist);
 		}else{
-			if(throwIfExist && namespacesMap.containsKey(namespace)){
+			if(throwIfExist && namespaceProperties.containsKey(namespace)){
 				throw new BaseException("sql namespace has already exist : " + namespace);
 			}
 			np = new CommonNamespaceProperties<T>(namespace, f);
-			namespacesMap.put(np.getKey(), np);
+			namespaceProperties.put(np.getKey(), np);
 		}
 		
 		buildNamedInfosToNamespaceFromResource(np, f);
@@ -203,10 +222,10 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	}
 	protected String getFileNameNoJfishSqlPostfix(ResourceAdapter<?> f){
 		String fname = f.getName();
-		if(!fname.endsWith(conf.getPostfix())){
+		if(!fname.endsWith(SqlFileScanner.JFISH_SQL_POSTFIX)){
 			return fname;
 		}else{
-			return fname.substring(0, fname.length()-conf.getPostfix().length());
+			return fname.substring(0, fname.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());
 		}
 	}
 
@@ -350,27 +369,27 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	 * @param <T>
 	 */
 	public static class JFishPropertyConf<T> {
-		private String dir;
-		private String overrideDir;
+//		private String dir;
+//		private String overrideDir;
 		private ClassLoader classLoader = FileUtils.getClassLoader();
 		private Class<T> propertyBeanClass;
 		private boolean watchSqlFile;
-		private String postfix;
+		private String postfix = SqlFileScanner.JFISH_SQL_POSTFIX;
 		
-		public String getDir() {
+		/*public String getDir() {
 			return dir;
 		}
 		public void setDir(String dir) {
 			Assert.hasText(dir);
 			this.dir = dir;
-		}
-		public String getOverrideDir() {
+		}*/
+		/*public String getOverrideDir() {
 			return overrideDir;
 		}
 		public void setOverrideDir(String overrideDir) {
 			Assert.hasText(overrideDir);
 			this.overrideDir = overrideDir.toLowerCase();
-		}
+		}*/
 		public ClassLoader getClassLoader() {
 			return classLoader;
 		}
@@ -395,11 +414,11 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		}
 		public String getPostfix() {
 			return postfix;
-		}
+		}/*
 		public void setPostfix(String postfix) {
 			Assert.hasText(postfix);
 			this.postfix = postfix;
-		}
+		}*/
 		
 	}
 }

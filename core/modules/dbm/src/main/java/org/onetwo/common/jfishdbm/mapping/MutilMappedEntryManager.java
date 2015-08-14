@@ -45,6 +45,9 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	}
 
 
+	/***
+	 * first
+	 */
 	@Override
 	public void initialize() {
 		if(LangUtils.isEmpty(mappedEntryBuilders)){
@@ -61,6 +64,9 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	}
 
 
+	/***
+	 * second
+	 */
 	@Override
 	public void scanPackages(String... packagesToScan) {
 		Assert.notEmpty(mappedEntryBuilders, "no mapped entry builders ...");

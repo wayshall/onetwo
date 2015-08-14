@@ -1,47 +1,84 @@
 package org.onetwo.common.db.dquery;
 
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import org.onetwo.common.db.dquery.annotation.QueryProvider;
-import org.onetwo.common.db.filequery.FileNamedQueryFactory;
-import org.onetwo.common.db.filequery.NamespacePropertiesManager;
-import org.onetwo.common.db.filequery.NamespaceProperty;
-import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
-import org.onetwo.common.db.filequery.QueryProvideManager;
-import org.onetwo.common.exception.BaseException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.db.filequery.SqlFileScanner;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.spring.sql.SpringBasedSqlFileScanner;
 import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.SingletonBeanRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.util.ClassUtils;
 
-public class DynamicQueryObjectRegister implements ApplicationContextAware, /*FileNamedQueryFactoryListener, */InitializingBean {
+
+public class DynamicQueryObjectRegister implements /*FileNamedQueryFactoryListener, */ BeanDefinitionRegistryPostProcessor {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	private NamespacePropertiesManager<? extends NamespaceProperty> namespacePropertiesManager;
+//	private NamespacePropertiesManager<? extends NamespaceProperty> namespacePropertiesManager;
 	
-	private ApplicationContext applicationContext;
-	private QueryObjectFactory queryObjectFactory;
-	private QueryProvideManager baseEntityManager;
-	private FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory;
+//	private ApplicationContext applicationContext;
+//	private QueryObjectFactory queryObjectFactory;
+	
+//	private QueryProvideManager baseEntityManager;
+//	private FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory;
+	
+//	private boolean watchSqlFile = true;
+	private SqlFileScanner sqlFileScanner = new SpringBasedSqlFileScanner(ClassUtils.getDefaultClassLoader());
 	
 
 	@Override
+	public void postProcessBeanFactory(
+			ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+		/*BeanDefinition namedQueryMgrBeandef = BeanDefinitionBuilder.rootBeanDefinition(JFishNamedFileQueryManagerImpl.class)
+												.addConstructorArgValue(JFishNamedSqlFileManager.createNamedSqlFileManager(watchSqlFile))
+												.getBeanDefinition();
+		registry.registerBeanDefinition(StringUtils.uncapitalize(JFishNamedFileQueryManagerImpl.class.getName()), namedQueryMgrBeandef);
+		*/
+		ResourceAdapter<?>[] sqlfiles = sqlFileScanner.scanMatchSqlFiles();
+		Stream.of(sqlfiles).forEach(f->{
+			final String fileName = f.getName();
+			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());
+			final Class<?> interfaceClass = ReflectUtils.loadClass(className);
+			BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(JDKDynamicProxyCreator.class)
+								.addConstructorArgValue(interfaceClass)
+								.addPropertyValue("sqlFile", f)
+								.setScope(BeanDefinition.SCOPE_SINGLETON)
+//								.setRole(BeanDefinition.ROLE_APPLICATION)
+								.getBeanDefinition();
+			registry.registerBeanDefinition(className, beandef);
+			logger.info("register dao bean: {} ", className);
+		});
+		
+	}
+	
+
+	/*@Override
 	public void afterPropertiesSet() throws Exception {
+		if(this.baseEntityManager==null)
+			this.baseEntityManager = SpringUtils.getBean(applicationContext, QueryProvideManager.class);
+		if(this.fileNamedQueryFactory==null)
+			this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
+		
 		Assert.notNull(baseEntityManager);
 		Assert.notNull(fileNamedQueryFactory);
 		this.scanAndRegisterQueryObject();
-	}
+	}*/
 
-	protected void scanAndRegisterQueryObject() {
+	/*protected void scanAndRegisterQueryObject() {
 		Assert.notNull(queryObjectFactory);
 		this.namespacePropertiesManager = fileNamedQueryFactory.getNamespacePropertiesManager();
 		
@@ -84,18 +121,18 @@ public class DynamicQueryObjectRegister implements ApplicationContextAware, /*Fi
 			sbr.registerSingleton(beanName, this.queryObjectFactory.createQueryObject(cq, dqInterface));
 			logger.info("register dynamic query dao {} ", beanName);
 		}
-	}
+	}*/
 
-	private Class<?> loadQueryClass(PropertiesNamespaceInfo<NamespaceProperty> nsp){
+	/*private Class<?> loadQueryClass(PropertiesNamespaceInfo<NamespaceProperty> nsp){
 		try {
 			return ReflectUtils.loadClass(nsp.getNamespace());
 		} catch (Exception e) {
 			throw new BaseException("load class for query error: " + e.getMessage(), e);
 		}
-	}
+	}*/
 	
 
-	@Override
+	/*@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
@@ -105,14 +142,11 @@ public class DynamicQueryObjectRegister implements ApplicationContextAware, /*Fi
 		this.queryObjectFactory = queryObjectFactory;
 	}
 
-	public void setBaseEntityManager(QueryProvideManager baseEntityManager) {
-		this.baseEntityManager = baseEntityManager;
-	}
 
 	public void setFileNamedQueryFactory(
 			FileNamedQueryFactory<? extends NamespaceProperty> fileNamedQueryFactory) {
 		this.fileNamedQueryFactory = fileNamedQueryFactory;
-	}
+	}*/
 
 
 
