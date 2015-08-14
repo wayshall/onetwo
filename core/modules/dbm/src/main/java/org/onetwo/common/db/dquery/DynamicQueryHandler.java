@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -15,12 +18,12 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.QuerySwitch;
+import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
-import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
@@ -37,38 +40,31 @@ import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.convert.Types;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
+
+import com.google.common.cache.LoadingCache;
 
 public class DynamicQueryHandler implements InvocationHandler {
 	
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	private Cache methodCache;
+	private LoadingCache<Method, DynamicMethod> methodCache;
 	private QueryProvideManager em;
 	private Object proxyObject;
-	private List<Method> excludeMethods = new ArrayList<Method>();
+//	private List<Method> excludeMethods = new ArrayList<Method>();
+	private List<Method> includeMethods = new ArrayList<Method>();
 	private boolean debug = true;
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
-	private JdbcDao jdao;
 	private NamedJdbcTemplate namedJdbcTemplate;
 	
-
-	/*public DynamicQueryHandler(CreateQueryable em, Cache methodCache, Class<?>... proxiedInterfaces){
-		this(em, methodCache, SpringApplication.getInstance().getBean(JdbcDao.class, false), proxiedInterfaces);
-	}*/
-	
-	public DynamicQueryHandler(QueryProvideManager em, Cache methodCache, NamedJdbcTemplate namedJdbcTemplate, Class<?>... proxiedInterfaces){
-//		Class[] proxiedInterfaces = srcObject.getClass().getInterfaces();
-//		Assert.notNull(em);
+	public DynamicQueryHandler(QueryProvideManager em, LoadingCache<Method, DynamicMethod> methodCache, NamedJdbcTemplate namedJdbcTemplate, Class<?>... proxiedInterfaces){
 		this.em = em;
 		this.methodCache = methodCache;
-		Method[] methods = Object.class.getDeclaredMethods();
-		for (int j = 0; j < methods.length; j++) {
-			Method method = methods[j];
-			excludeMethods.add(method);
-		}
+		
+		includeMethods = Stream.of(proxiedInterfaces)
+								.map(i->i.getDeclaredMethods())
+								.flatMap(array->Stream.of(array))
+								.collect(Collectors.toList());
 		this.namedJdbcTemplate = namedJdbcTemplate;
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
@@ -77,7 +73,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		if(excludeMethods.contains(method)){
+		/*if(excludeMethods.contains(method)){
+			logger.info("ignore method {} ...", method.toString());
+			return ReflectUtils.invokeMethod(method, this, args);
+		}*/
+		if(!includeMethods.contains(method)){
 			logger.info("ignore method {} ...", method.toString());
 			return ReflectUtils.invokeMethod(method, this, args);
 		}
@@ -93,7 +93,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}
 	
 	protected DynamicMethod getDynamicMethod(Method method){
-		if(methodCache!=null){
+		try {
+			return methodCache.get(method);
+		} catch (ExecutionException e) {
+			throw new FileNamedQueryException("get dynamic method error", e);
+//			return newDynamicMethod(method);
+		}
+		/*if(methodCache!=null){
 			ValueWrapper value = methodCache.get(method);
 			if(value!=null)
 				return (DynamicMethod) value.get();
@@ -102,13 +108,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 			return dm;
 		}else{
 			return newDynamicMethod(method);
-		}
+		}*/
 	}
 	
-	private DynamicMethod newDynamicMethod(Method method){
+	/*private DynamicMethod newDynamicMethod(Method method){
 		return new DynamicMethod(method);
 //		return new DynamicMethodJ8(method);
-	}
+	}*/
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
 //		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
@@ -223,7 +229,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		logger.info("batch sql : {}", sv.getParsedSql() );
 		@SuppressWarnings("unchecked")
-		int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+//		int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+		int[] counts = namedJdbcTemplate.batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 		
 		logger.info("===>>> batch insert stop ...");
 		t.stop();
