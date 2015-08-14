@@ -1,5 +1,6 @@
 package org.onetwo.common.db.filequery;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 
 public interface QueryProvideManager {
@@ -9,4 +10,6 @@ public interface QueryProvideManager {
 	public FileNamedQueryFactory<? extends NamespaceProperty> getFileNamedQueryFactory();
 	
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
+	
+	public DataBase getDataBase();
 }

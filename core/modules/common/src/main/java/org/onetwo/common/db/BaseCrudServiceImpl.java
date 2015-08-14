@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 @SuppressWarnings({"unchecked", "rawtypes"})
 abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements CrudEntityManager<T, PK> {
  
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	protected Class entityClass;
 	
@@ -104,16 +104,6 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	}
 
 	@Override
-	public void delete(ILogicDeleteEntity entity) {
-		getBaseEntityManager().delete(entity);
-	}
-
-	@Override
-	public ILogicDeleteEntity deleteById(Serializable id) {
-		return (ILogicDeleteEntity)getBaseEntityManager().deleteById(entityClass, id);
-	}
-
-	@Override
 	public T findUnique(Map<Object, Object> properties) {
 		return (T)getBaseEntityManager().findUnique(entityClass, properties);
 	}
@@ -132,7 +122,7 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 		return getBaseEntityManager().findByProperties(query);
 	}
 	@Override
-	public void findPage(final Page page, QueryBuilder query) {
+	public void findPage(final Page<T> page, QueryBuilder query) {
 		getBaseEntityManager().findPage(page, query);
 	}
 

@@ -1,9 +1,10 @@
 package org.onetwo.common.db.dquery;
 
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.db.dquery.annotation.QueryProvider;
+import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jdbc.JdbcDao;
 import org.onetwo.common.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
@@ -26,7 +27,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 	private Cache methodCache;
 	private NamedJdbcTemplate namedJdbcTemplate;
 //	private JFishNamedSqlFileManager namedSqlFileManager;
-	private QueryProvideManager queryProvideManager;
+//	private QueryProvideManager queryProvideManager;
 	
 	public JDKDynamicProxyCreator(Class<?> interfaceClass) {
 		super();
@@ -44,8 +45,20 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		if(methodCache==null){
 			methodCache = SpringUtils.getBean(applicationContext, Cache.class);
 		}
-		if(queryProvideManager==null){
+		
+		QueryProvideManager queryProvideManager;
+		QueryProvider queryProvider = this.interfaceClass.getAnnotation(QueryProvider.class);
+		if(queryProvider==null){
 			queryProvideManager = SpringUtils.getBean(applicationContext, QueryProvideManager.class);
+		}else{
+			if(StringUtils.isNotBlank(queryProvider.value())){
+				queryProvideManager = SpringUtils.getBean(applicationContext, queryProvider.value());
+			}else{
+				queryProvideManager = SpringUtils.getBean(applicationContext, queryProvider.beanClass());
+			}
+		}
+		if(queryProvideManager==null){
+			throw new FileNamedQueryException("no QueryProvideManager found!");
 		}
 		
 		JFishNamedSqlFileManager namedSqlFileManager = (JFishNamedSqlFileManager)queryProvideManager.getFileNamedQueryFactory().getNamespacePropertiesManager();
@@ -56,7 +69,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		PropertiesNamespaceInfo<JFishNamedFileQueryInfo> info = namedSqlFileManager.buildSqlFile(sqlFile);
 //		interfaceClass = ReflectUtils.loadClass(info.getNamespace());
 		if(!interfaceClass.getName().equals(info.getNamespace())){
-			throw new BaseException("namespace error:  interface->" + interfaceClass+", namespace->"+info.getNamespace());
+			throw new FileNamedQueryException("namespace error:  interface->" + interfaceClass+", namespace->"+info.getNamespace());
 		}
 		targetObject = new DynamicQueryHandler(queryProvideManager, methodCache, namedJdbcTemplate, interfaceClass).getQueryObject();
 	}
@@ -92,8 +105,8 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		this.namedJdbcTemplate = namedJdbcTemplate;
 	}
 
-	public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
+	/*public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
 		this.queryProvideManager = queryProvideManager;
-	}
+	}*/
 	
 }

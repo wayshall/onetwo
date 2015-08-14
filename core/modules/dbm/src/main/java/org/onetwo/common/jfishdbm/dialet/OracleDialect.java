@@ -1,7 +1,7 @@
 package org.onetwo.common.jfishdbm.dialet;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleBatchInsertEventListener;

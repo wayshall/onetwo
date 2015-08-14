@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
-import org.onetwo.common.db.dquery.annotation.Dispatcher;
+import org.onetwo.common.db.dquery.annotation.QuerySwitch;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.db.filequery.QueryProvideManager;
@@ -118,7 +118,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		Class<?> resultClass = dmethod.getResultClass();
 //		Class<?> componentClass = dmethod.getComponentClass();
 		Map<Object, Object> parsedParams = dmethod.toMapByArgs(args);
-		String parsedQueryName = dmethod.getQueryName(parsedParams.get(Dispatcher.class));
+		String parsedQueryName = dmethod.getQueryName(parsedParams.get(QuerySwitch.class));
 
 		if(debug)
 			logger.info("{}: {}", method.getDeclaringClass().getSimpleName()+"."+method.getName(), LangUtils.toString(args));

@@ -529,7 +529,7 @@ public class LangUtils {
 		return asBaseException(msg, null);
 	}
 	
-	public static BaseException asBaseException(String msg, Exception e){
+	public static BaseException asBaseException(String msg, Throwable e){
 		if(e==null){
 			return new BaseException(msg);
 		}else if(e instanceof BaseException){

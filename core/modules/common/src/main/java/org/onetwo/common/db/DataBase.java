@@ -1,4 +1,4 @@
-package org.onetwo.common.jdbc;
+package org.onetwo.common.db;
 
 
 public enum DataBase {

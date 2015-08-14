@@ -84,15 +84,6 @@ public interface BaseEntityManager extends QueryProvideManager {
 	public <T> void findPage(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
 	
 	public <T> void findPage(final Page<T> page, QueryBuilder query);
-	/****
-	 * @see remove
-	 * @param entity
-	 */
-	@Deprecated
-	public void delete(ILogicDeleteEntity entity);
-
-	@Deprecated
-	public <T extends ILogicDeleteEntity> T deleteById(Class<T> entityClass, Serializable id);
 	
 	public void flush();
 	
