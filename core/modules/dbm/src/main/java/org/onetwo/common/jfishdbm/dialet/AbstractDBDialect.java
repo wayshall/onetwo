@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.jdbc.DataBase;
 import org.onetwo.common.jfishdbm.event.JFishBatchInsertEventListener;
 import org.onetwo.common.jfishdbm.event.JFishBatchUpdateEventListener;
 import org.onetwo.common.jfishdbm.event.JFishDeleteEventListener;
@@ -193,33 +193,33 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 			return new DBMeta(db);
 		}
 		
-		final private DataBase db;
+		final private DataBase dataBase;
 		private String dbName;
 		private String version;
 		
 		public DBMeta(String dbName) {
 			super();
-			this.db = DataBase.of(dbName);
+			this.dataBase = DataBase.of(dbName);
 			this.dbName = dbName;
 		}
 		
 		public DBMeta(DataBase db) {
 			super();
-			this.db = db;
+			this.dataBase = db;
 			this.dbName = db.getName();
 		}
 		public boolean isMySQL(){
-			return DataBase.MySQL==db;
+			return DataBase.MySQL==dataBase;
 		}
 		public boolean isOracle(){
-			return DataBase.Oracle==db;
+			return DataBase.Oracle==dataBase;
 		}
 		public String getDialetName(){
 			return dbName + "Dialect";
 		}
 		
 		public String getDbName() {
-			return db.getName();
+			return dataBase.getName();
 		}
 
 		public String getVersion() {
@@ -234,8 +234,8 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 			this.version = version;
 		}
 		
-		public DataBase getDb() {
-			return db;
+		public DataBase getDataBase() {
+			return dataBase;
 		}
 		public String toString(){
 			StringBuilder sb = new StringBuilder();

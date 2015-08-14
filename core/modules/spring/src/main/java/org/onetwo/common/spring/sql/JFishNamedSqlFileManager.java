@@ -6,6 +6,7 @@ import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl;
 import org.onetwo.common.db.filequery.NamespaceProperty;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.StringUtils;
 
 /****
@@ -20,36 +21,27 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	public static JFishNamedSqlFileManager createNamedSqlFileManager(boolean watchSqlFile) {
 		StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<JFishNamedFileQueryInfo>();
 		listener.initialize();
-		JFishNamedSqlFileManager sqlfileMgr = new JFishNamedSqlFileManager(new DialetNamedSqlConf(watchSqlFile), listener);
+		JFishNamedSqlFileManager sqlfileMgr = new JFishNamedSqlFileManager(new DialetNamedSqlConf(watchSqlFile), listener, listener);
 //		sqlfileMgr.setDataSource(dataSource);
 		return sqlfileMgr;
 	}
 	
 	
 	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY;
-//	public static final String SQL_POSTFIX = ".sql";
-	
-//	protected final DataBase databaseType;
-//	private DataSource dataSource;
+	private TemplateParser sqlStatmentParser;
 	
 
-	public JFishNamedSqlFileManager(DialetNamedSqlConf conf, NamespacePropertiesFileListener<JFishNamedFileQueryInfo> listener) {
+	public JFishNamedSqlFileManager(DialetNamedSqlConf conf, TemplateParser sqlStatmentParser, NamespacePropertiesFileListener<JFishNamedFileQueryInfo> listener) {
 		super(conf, listener);
 //		this.databaseType = conf.getDatabaseType();
 		this.setSqlFileParser(new MultipCommentsSqlFileParser<JFishNamedFileQueryInfo>());
+		this.sqlStatmentParser = sqlStatmentParser;
+	}
+	
+	public TemplateParser getSqlStatmentParser() {
+		return sqlStatmentParser;
 	}
 
-	/*@Override
-	public void build(){
-		if(conf==null){
-			conf = new DialetNamedSqlConf(watchSqlFile);
-		}
-		super.build();
-	}*/
-
-	/*public DataBase getDatabaseType() {
-		return ((DialetNamedSqlConf)conf).getDatabaseType();
-	}*/
 	protected void extBuildNamedInfoBean(JFishNamedFileQueryInfo propBean){
 //		propBean.setDataBaseType(getDatabaseType());
 	}
@@ -60,37 +52,6 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 			throw new BaseException("namedQuery not found : " + name);
 		return info;
 	}
-	
-//	@Override
-//	protected ResourceAdapter<?>[] scanMatchSqlFiles(JFishPropertyConf<JFishNamedFileQueryInfo> conf){
-//		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-//		
-//		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + conf.getDir();
-////		String sqldirPath = locationPattern+"/*"+conf.getPostfix();
-//		String sqldirPath = locationPattern+"/**/*"+conf.getPostfix();
-//		
-//		ResourceAdapter<?>[] allSqlFiles = null;
-//		try {
-//			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
-////			if(StringUtils.isNotBlank(conf.getOverrideDir())){
-////				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**/*"+conf.getPostfix();
-////				logger.info("scan database dialect dir : " + sqldirPath);
-////				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
-////				if(!LangUtils.isEmpty(dbsqlfiles)){
-////					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
-////				}
-////			}
-//			allSqlFiles = new ResourceAdapter[sqlfileArray.length];
-//			int index = 0;
-//			for(Resource rs : sqlfileArray){
-//				allSqlFiles[index++] = new SpringResourceAdapterImpl(rs);
-//			}
-//		} catch (Exception e) {
-//			throw new BaseException("scan sql file error: " + e.getMessage());
-//		}
-//		
-//		return allSqlFiles;
-//	}
 	
 	private boolean isAttrsProperty(String prop){
 		return prop.startsWith(ATTRS_KEY);
@@ -118,25 +79,6 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	}
 
 
-	/*public static class DefaultJFishNamedSqlFileManager extends JFishNamedSqlFileManager<JFishNamedFileQueryInfo> {
-
-		public DefaultJFishNamedSqlFileManager(
-				DataBase databaseType,
-				boolean watchSqlFile,
-				NamespacePropertiesFileListener<JFishNamedFileQueryInfo> listener) {
-			super(listener);
-			new DialetNamedSqlConf<JFishNamedFileQueryInfo>(){
-				{
-					setDatabaseType(databaseType);
-//					setPostfix(SQL_POSTFIX);
-					setWatchSqlFile(watchSqlFile);
-					setPropertyBeanClass(JFishNamedFileQueryInfo.class);
-				}
-			}
-		}
-		
-	}*/
-	
 	public static class DialetNamedSqlConf extends JFishPropertyConf<JFishNamedFileQueryInfo> {
 //		private DataBase databaseType;
 		
@@ -145,14 +87,5 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 			setPropertyBeanClass(JFishNamedFileQueryInfo.class);
 		}
 
-		/*public DataBase getDatabaseType() {
-			return databaseType;
-		}
-
-		public void setDatabaseType(DataBase databaseType) {
-			this.databaseType = databaseType;
-			setOverrideDir(databaseType.toString());
-		}
-		*/
 	}
 }

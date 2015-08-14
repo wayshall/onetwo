@@ -9,7 +9,6 @@ import javax.annotation.Resource;
 import javax.validation.ValidationException;
 
 import org.onetwo.common.db.BaseCrudServiceImpl;
-import org.onetwo.common.db.ILogicDeleteEntity;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
@@ -121,18 +120,6 @@ abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends B
 	public void persist(Object entity) {
 		super.persist(entity);
 	}*/
-
-	@Override
-	@Transactional
-	public void delete(ILogicDeleteEntity entity) {
-		super.delete(entity);
-	}
-
-	@Override
-	@Transactional
-	public ILogicDeleteEntity deleteById(Serializable id) {
-		return super.deleteById(id);
-	}
 
 	@Override
 	@Transactional(readOnly=true)

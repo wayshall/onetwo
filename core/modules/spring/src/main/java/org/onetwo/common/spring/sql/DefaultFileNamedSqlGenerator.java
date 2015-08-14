@@ -3,6 +3,7 @@ package org.onetwo.common.spring.sql;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
@@ -13,6 +14,11 @@ import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
+/****
+ * sql语句解释
+ * @author way
+ *
+ */
 public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFishNamedFileQueryInfo> {
 	
 	private static final Logger logger = JFishLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
@@ -21,6 +27,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFish
 	private TemplateParser parser;
 	private ParserContext parserContext;
 	private Class<?> resultClass;
+	private final DataBase dataBase;
 	
 	private String[] ascFields;
 	private String[] desFields;
@@ -30,7 +37,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFish
 	
 	
 	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
-			TemplateParser parser, Map<Object, Object> params) {
+			TemplateParser parser, Map<Object, Object> params, DataBase dataBase) {
 		super();
 		this.info = info;
 		this.countQuery = countQuery;
@@ -39,12 +46,13 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFish
 		if(params!=null){
 			this.parserContext = (ParserContext)this.params.get(JNamedQueryKey.ParserContext);
 		}
+		this.dataBase = dataBase;
 	}
 
 	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
 			TemplateParser parser, ParserContext parserContext,
 			Class<?> resultClass, String[] ascFields, String[] desFields,
-			Map<Object, Object> params) {
+			Map<Object, Object> params, DataBase dataBase) {
 		super();
 		this.info = info;
 		this.countQuery = countQuery;
@@ -54,6 +62,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFish
 		this.ascFields = ascFields;
 		this.desFields = desFields;
 		this.params = LangUtils.emptyIfNull(params);
+		this.dataBase = dataBase;
 	}
 
 	@Override
@@ -78,7 +87,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator<JFish
 				parserContext = ParserContext.create();
 			}
 			
-//			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(info.getDataBaseType()));
+			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(dataBase));
 			this.parserContext.putAll(params);
 			TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
 			this.parserContext.put(JFishNamedFileQueryInfo.TEMPLATE_KEY, attrParser);

@@ -43,11 +43,7 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 
 	public Page<T> findPage(final Page<T> page, Map<Object, Object> properties);
 	
-	public void findPage(final Page page, QueryBuilder query);
-
-	public void delete(ILogicDeleteEntity entity);
-	
-	public ILogicDeleteEntity deleteById(Serializable id);
+	public void findPage(final Page<T> page, QueryBuilder query);
 
 	public T findUnique(Object... properties);
 	
