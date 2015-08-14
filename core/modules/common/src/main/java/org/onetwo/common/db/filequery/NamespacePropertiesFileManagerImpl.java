@@ -24,8 +24,6 @@ import com.google.common.collect.Maps;
 public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*extends AbstractPropertiesManager<T>*/ implements NamespacePropertiesManager<T>{
 
 	
-
-	public static final String GLOBAL_NS_KEY = "global";
 	public static final String COMMENT = "--";
 	public static final String MULTIP_COMMENT_START = "/*";
 	public static final String MULTIP_COMMENT_END = "*/";
