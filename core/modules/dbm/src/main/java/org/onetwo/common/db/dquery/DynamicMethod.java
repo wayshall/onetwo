@@ -20,7 +20,6 @@ import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
 import org.onetwo.common.db.dquery.annotation.QuerySwitch;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.spring.sql.JNamedQueryKey;
@@ -54,6 +53,8 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	private boolean batchUpdate;
 //	private List<String> parameterNames;
 	
+	private DynamicMethodParameter pageParamter;
+	
 	public DynamicMethod(Method method){
 		super(method);
 		
@@ -63,28 +64,38 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
-			rClass = parameters.get(0).getParameterType();
-//			rClass = parameters.remove(0).getParameterType();
+			DynamicMethodParameter firstParamter = parameters.get(0);
+			pageParamter = firstParamter.hasParameterAnnotation(QuerySwitch.class)?parameters.get(1):parameters.get(0);
 			//如果返回类型为空，看第一个参数是否是page对象
+			rClass = pageParamter.getParameterType();
 			if(Page.class != rClass){
-				throw new BaseException("method no return type, the first arg of method must be a Page object: " + method.toGenericString());
+				throw new FileNamedQueryException("["+method.toGenericString()+"] return void type, pelease define the Page object at parameter position : " + pageParamter.getParameterIndex());
 			}
-			DynamicMethodParameter pageParamter = this.parameters.get(0);
-			if(pageParamter.getParameterAnnotation(Name.class)==null)//如果page对象没有name注解，移除它
-				this.parameters.remove(0);
+//			DynamicMethodParameter pageParamter = this.parameters.get(0);
+			/*if(pageParamter.getParameterAnnotation(Name.class)==null)//如果page对象没有name注解，移除它
+				this.parameters.remove(0)*/;
 			Type ptype = pageParamter.getGenericParameterType();
 			if(ptype instanceof ParameterizedType){
 				compClass = ReflectUtils.getGenricType(ptype, 0);
 			}
-		}else if(Page.class==rClass){
-			rClass = parameters.get(0).getParameterType();
-//			rClass = parameters.remove(0).getParameterType();
-			if(Page.class == rClass){
-				throw new BaseException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
+		}else{
+			parameters.stream().filter(p->p.getParameterType()==Page.class)
+							.findAny()
+							.ifPresent(p->{
+								throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
+							});
+			if(Page.class==rClass){
+				/*rClass = parameters.get(0).getParameterType();
+//				rClass = parameters.remove(0).getParameterType();
+				if(Page.class == rClass){
+					throw new FileNamedQueryException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
+				}*/
+				throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
+			}else if(DataQuery.class==rClass){
+				compClass = null;
 			}
-		}else if(DataQuery.class==rClass){
-			compClass = null;
 		}
+		
 		
 		resultClass = rClass;
 		if(compClass==Object.class)
@@ -98,8 +109,11 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	protected DynamicMethodParameter createMethodParameter(Method method, int parameterIndex, Parameter parameter) {
 		return new DynamicMethodParameterJ8(method, parameterIndex, parameter);
 	}
-
 	
+	public DynamicMethodParameter getPageParamter() {
+		return pageParamter;
+	}
+
 	protected boolean judgeBatchUpdateFromParameterObjects(List<DynamicMethodParameter> mparameters){
 		for(DynamicMethodParameter mp : mparameters){
 			if(mp.hasParameterAnnotation(BatchObject.class)){

@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.utils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -12,7 +13,9 @@ import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -23,14 +26,19 @@ import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings("unchecked")
@@ -384,4 +392,24 @@ public final class BootWebUtils {
 		return RequestUtils.isAjaxRequest(request);
 	}
 	
+	public static ObjectMapper createObjectMapper(ApplicationContext applicationContext){
+		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
+//		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+		String clsName = "com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module";
+		if(ClassUtils.isPresent(clsName, ClassUtils.getDefaultClassLoader())){
+			Object h4m = ReflectUtils.newInstance(clsName);
+			
+			Class<?> featureCls = ReflectUtils.loadClass(clsName+"$Feature");
+			Object field = ReflectUtils.getStaticFieldValue(featureCls, "SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS");
+			ReflectUtils.invokeMethod("enable", h4m, field);
+
+			field = ReflectUtils.getStaticFieldValue(featureCls, "FORCE_LAZY_LOADING");
+			ReflectUtils.invokeMethod("disable", h4m, field);
+			mapper.registerModule((Module)h4m);
+		}
+		List<Module> modules = SpringUtils.getBeans(applicationContext, Module.class);
+		if(LangUtils.isNotEmpty(modules))
+			mapper.registerModules(modules);
+		return mapper;
+	}
 }
