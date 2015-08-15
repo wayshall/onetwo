@@ -139,7 +139,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			methodArgs = Langs.toArray(parsedParams);
 			
 			if(Page.class.isAssignableFrom(resultClass)){
-				Page<?> page = (Page<?>)args[0];
+				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
 				
 //				Object[] trimPageArgs = ArrayUtils.remove(args, 0);
 //				methodArgs = dmethod.toArrayByArgs(args);
