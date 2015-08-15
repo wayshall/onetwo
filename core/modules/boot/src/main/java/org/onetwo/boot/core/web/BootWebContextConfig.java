@@ -16,13 +16,17 @@ import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.WebHolderManager;
@@ -32,12 +36,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
@@ -124,6 +132,15 @@ public class BootWebContextConfig {
 	@Bean
 	public BootJsonView bootJsonView(){
 		return new BootJsonView();
+	}
+	
+	/***
+	 * instead of boot mapper config by JacksonAutoConfiguration
+	 * @return
+	 */
+	@Bean
+	public ObjectMapper objectMapper(){
+		return BootWebUtils.createObjectMapper(applicationContext);
 	}
 	
 	@Bean
