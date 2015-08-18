@@ -16,5 +16,6 @@ public interface UserAutoidDao {
 	
 	@ExecuteUpdate
 	public int removeByUserName(String userName);
+	
 
 }

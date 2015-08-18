@@ -1,20 +1,27 @@
-package org.onetwo.common.db.filequery;
+package org.onetwo.common.spring.sql;
 
 import java.util.Enumeration;
 import java.util.List;
 
+import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
+import org.onetwo.common.db.filequery.NamespaceProperty;
+import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
+import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer;
 import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer.LineToken;
+import org.onetwo.common.db.filequery.SimpleSqlFileLineReader;
+import org.onetwo.common.db.filequery.SqlFileParser;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
-public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements SqlFileParser<T> {
+public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFileQueryInfo> {
 	
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String AT = "@";
@@ -40,7 +47,7 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 	}*/
 	
 	@Override
-	public void parseToNamespaceProperty(JFishPropertyConf<T> conf, PropertiesNamespaceInfo<T> np, ResourceAdapter<?> f) {
+	public void parseToNamespaceProperty(JFishPropertyConf<JFishNamedFileQueryInfo> conf, PropertiesNamespaceInfo<JFishNamedFileQueryInfo> np, ResourceAdapter<?> f) {
 		if(!f.getName().endsWith(conf.getPostfix())){
 			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
 			return ;
@@ -54,23 +61,52 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 			
 			switch (token) {
 				case MULTIP_COMMENT:
-					T bean = ReflectUtils.newInstance(conf.getPropertyBeanClass());
-					bean.setNamespaceInfo(np);
-					bean.setSrcfile(f);
-					
 					List<String> comments = lineLexer.getLineBuf();
 					JFishProperties config = parseComments(comments);
-					bean.setName(config.getAndThrowIfEmpty("name"));
-					config.remove("name");
-					bean.setConfig(config);
+					//name
+					String name = config.getAndThrowIfEmpty(JFishNamedFileQueryInfo.NAME_KEY);
+					config.remove(JFishNamedFileQueryInfo.NAME_KEY);
+					
+					JFishNamedFileQueryInfo bean = np.getNamedProperty(name);
+					String sqlPropertyName = "value";
+					if(bean==null){
+						bean = ReflectUtils.newInstance(conf.getPropertyBeanClass());
+						bean.setNamespaceInfo(np);
+						bean.setSrcfile(f);
+
+						bean.setName(name);
+						bean.setConfig(config);
+
+						np.put(bean.getName(), bean, true);
+					}else{
+						if(config.containsKey(JFishNamedFileQueryInfo.PROPERTY_KEY)){
+							//property
+							sqlPropertyName = config.getProperty(JFishNamedFileQueryInfo.PROPERTY_KEY);
+							config.remove(JFishNamedFileQueryInfo.PROPERTY_KEY);
+							
+						}else if(config.containsKey(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
+							//fragment
+							sqlPropertyName = JFishNamedFileQueryInfo.FRAGMENT_KEY + "[" + 
+																		config.getProperty(JFishNamedFileQueryInfo.FRAGMENT_KEY)
+																				+ "]";
+							config.remove(JFishNamedFileQueryInfo.FRAGMENT_KEY);
+							
+						}else{
+							throw new FileNamedQueryException("named query["+name+"]'s  must be specify a @property or @fragment."
+									+ "line : " + lineLexer.getLineReader().getLineNumber());
+						}
+//						sqlPropertyName = config.getProperty(PROPERTY_KEY);
+					}
+					
 					
 					if(debug)
 						logger.info("config: {}", config);
 					
 					Enumeration<?> keys = config.propertyNames();
+					BeanWrapper beanBw = PropertyAccessorFactory.forBeanPropertyAccess(bean);
 					while(keys.hasMoreElements()){
 						String prop = keys.nextElement().toString();
-						this.setNamedInfoProperty(bean, prop, config.getProperty(prop));
+						this.setNamedInfoProperty(beanBw, prop, config.getProperty(prop));
 					}
 					
 					StringBuilder buf = new StringBuilder();
@@ -83,15 +119,15 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 							String value = StringUtils.join(lineLexer.getLineBuf(), " ");
 							buf.append(value).append(" ");
 						}else{
-							throw new BaseException("error syntax: " + lineLexer.getLineToken());
+							throw new FileNamedQueryException("error syntax: " + lineLexer.getLineToken());
 						}
 					}
-					bean.setValue(buf.toString());
+//					bean.setValue(buf.toString());
+					beanBw.setPropertyValue(sqlPropertyName, buf.toString());
 					
 					if(debug)
 						logger.info("value: {}", bean.getValue());
 					
-					np.put(bean.getName(), bean, true);
 					break;
 					
 				default:
@@ -114,25 +150,26 @@ public class MultipCommentsSqlFileParser<T extends NamespaceProperty> implements
 				String line = comment.substring(AT.length());
 				String[] strs = StringUtils.split(line, COLON);
 				if(strs.length==2){
-					config.setProperty(strs[0], strs[1]);
+					config.setProperty(strs[0].trim(), strs[1].trim());
 				}else{
-					throw new BaseException("error syntax for config: " + comment);
+					throw new FileNamedQueryException("error syntax for config: " + comment);
 				}
 			}
 		}
 		return config;
 	}
 	
-	protected void setNamedInfoProperty(T bean, String prop, Object val){
+	protected void setNamedInfoProperty(BeanWrapper beanBw, String prop, Object val){
 		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
 			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
 		}
-		try {
+		beanBw.setPropertyValue(prop, val);
+		/*try {
 			ReflectUtils.setExpr(bean, prop, val);
 		} catch (Exception e) {
 			logger.error("set value error : "+prop);
 			LangUtils.throwBaseException(e);
-		}
+		}*/
 	}
 	
 /*
