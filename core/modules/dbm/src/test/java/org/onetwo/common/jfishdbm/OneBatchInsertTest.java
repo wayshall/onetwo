@@ -1,7 +1,6 @@
 package org.onetwo.common.jfishdbm;
 
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
@@ -28,7 +28,7 @@ public class OneBatchInsertTest extends AppBaseTest {
 		NiceDate niceNowSeconde = NiceDate.New().thisSec();
 		TimeCounter t = new TimeCounter("OneBatchInsertTest");
 		t.start();
-		int count = this.userAutoidServiceImpl.daoBatchInsert("testBatchInsert", niceNowSeconde.getTime(), insertCount);
+		int count = this.userAutoidServiceImpl.daoBatchInsert("testBatchInsert", UserStatus.NORMAL, niceNowSeconde.getTime(), insertCount);
 		Assert.assertEquals(insertCount, count);
 		t.stop();
 		

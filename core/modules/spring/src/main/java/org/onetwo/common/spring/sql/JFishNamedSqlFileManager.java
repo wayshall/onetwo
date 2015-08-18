@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.sql;
 
-import org.onetwo.common.db.filequery.MultipCommentsSqlFileParser;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileListener;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl;
 import org.onetwo.common.db.filequery.NamespaceProperty;
@@ -27,14 +26,14 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	}
 	
 	
-	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY;
+	public static final String ATTRS_KEY = JFishNamedFileQueryInfo.FRAGMENT_DOT_KEY;
 	private TemplateParser sqlStatmentParser;
 	
 
 	public JFishNamedSqlFileManager(DialetNamedSqlConf conf, TemplateParser sqlStatmentParser, NamespacePropertiesFileListener<JFishNamedFileQueryInfo> listener) {
 		super(conf, listener);
 //		this.databaseType = conf.getDatabaseType();
-		this.setSqlFileParser(new MultipCommentsSqlFileParser<JFishNamedFileQueryInfo>());
+		this.setSqlFileParser(new MultipCommentsSqlFileParser());
 		this.sqlStatmentParser = sqlStatmentParser;
 	}
 	
@@ -53,16 +52,16 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 		return info;
 	}
 	
-	private boolean isAttrsProperty(String prop){
+	/*private boolean isAttrsProperty(String prop){
 		return prop.startsWith(ATTRS_KEY);
 	}
 	
 	private String getAttrsProperty(String prop){
 		return prop.substring(ATTRS_KEY.length());
-	}
+	}*/
 
-	protected void setNamedInfoProperty(JFishNamedFileQueryInfo bean, String prop, Object val){
-		if(prop.startsWith(JFishNamedFileQueryInfo.TEMPLATE_DOT_KEY)){
+	/*protected void setNamedInfoProperty(JFishNamedFileQueryInfo bean, String prop, Object val){
+		if(prop.startsWith(JFishNamedFileQueryInfo.FRAGMENT_DOT_KEY)){
 			//no convert to java property name
 		}else{
 			if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
@@ -76,7 +75,7 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 		}else{
 			SpringUtils.newBeanWrapper(bean).setPropertyValue(prop, val);
 		}
-	}
+	}*/
 
 
 	public static class DialetNamedSqlConf extends JFishPropertyConf<JFishNamedFileQueryInfo> {

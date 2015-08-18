@@ -7,10 +7,13 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao;
+import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao2;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.support.JFishDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,9 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	
 	@Resource
 	private UserAutoidDao userAutoidDao;
+	
+	@Resource
+	private UserAutoidDao2 userAutoidDao2;
 	
 	/* (non-Javadoc)
 	 * @see org.onetwo.test.jorm.model.service.UserAutoidService#deleteAll()
@@ -87,7 +93,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 		return jfishDao.delete(users);
 	}
 	
-	public int daoBatchInsert(String userNamePrefix, Date birthday, int count){ 
+	public int daoBatchInsert(String userNamePrefix, UserStatus status, Date birthday, int count){ 
 		List<UserAutoidEntity> users = LangUtils.newArrayList();
 		for (int i = 0; i < count; i++) {
 			UserAutoidEntity user = new UserAutoidEntity();
@@ -98,6 +104,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			user.setNickName("nickName-batch-"+i);
 			user.setEmail("test@qq.com");
 			user.setMobile("137"+i);
+			user.setStatus(status.name());
 			user.setBirthday(birthday);
 			
 			users.add(user);
@@ -126,5 +133,15 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	public int removeByUserName(String userName){
 		return this.userAutoidDao.removeByUserName(userName);
 	}
+
+
+	public void findUserPage(Page<UserAutoidEntity> page, String userName){
+		this.userAutoidDao2.findUserPage(page, userName);
+	}
+
+	public List<UserAutoidEntity> findUserList(String status){
+		return this.userAutoidDao2.findUserList(status);
+	}
+	
 
 }

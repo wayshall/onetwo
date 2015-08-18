@@ -1,7 +1,7 @@
 package org.onetwo.common.spring.sql;
 
+import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.NamespaceProperty;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
 
@@ -37,8 +37,8 @@ public class TemplateInNamedQueryParser implements TemplateHashModel {
 	private void checkKeyIfNamespaceScope(String key){
 		String qname = getQueryName(key);
 		String subkey = key.substring(qname.length()+DOT.length());
-		if(!subkey.startsWith(JFishNamedFileQueryInfo.TEMPLATE_KEY)){
-			throw new BaseException("only can access "+JFishNamedFileQueryInfo.TEMPLATE_KEY+" of query, error key: " + key);
+		if(!subkey.startsWith(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
+			throw new FileNamedQueryException("only can access "+JFishNamedFileQueryInfo.FRAGMENT_KEY+" of query, error key: " + key);
 		}
 	}
 	@Override
@@ -55,7 +55,7 @@ public class TemplateInNamedQueryParser implements TemplateHashModel {
 		}else{
 //			checkKey(key);
 //			value = query.getAttrs().get(key);
-			value = query.getTemplateName(key);
+			value = query.getFragmentTemplateName(key);
 		}
 //		value = this.parser.parse(parser.asFtlContent(value), parserContext);// 不再解释，value含有星号的话，freemarker会认为是路径模糊匹配导致出错
 		value = this.parser.parse(value, parserContext);
