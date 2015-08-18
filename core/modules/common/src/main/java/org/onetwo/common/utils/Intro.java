@@ -122,12 +122,13 @@ public class Intro<T> {
 
 			Map<String, Field> tempMap = Maps.newHashMap(getFieldMaps());
 			List<Class<?>> classes = findSuperClasses(clazz);
-			Field[] fs = null;
+//			Field[] fs = null;
 			for (Class<?> cls : classes) {
-				fs = cls.getDeclaredFields();
+				/*fs = cls.getDeclaredFields();
 				for (Field f : fs) {
 					tempMap.put(f.getName(), f);
-				}
+				}*/
+				tempMap.putAll(Intro.wrap(cls).getAllFieldMap());
 			}
 			
 			this._allFieldMap = ImmutableMap.copyOf(tempMap);
@@ -145,7 +146,7 @@ public class Intro<T> {
 			if(_fieldMaps!=null)
 				return ;
 
-			if(clazz.isInterface() || clazz.isPrimitive()){
+			if(clazz==Object.class || clazz.isPrimitive()){
 				_fieldMaps = Collections.EMPTY_MAP;
 				return ;
 			}

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.JFishProperties;
@@ -19,22 +18,14 @@ import org.onetwo.common.utils.propconf.ResourceAdapter;
  * @param <T>
  */
 public class OneCommentBasedSqlFileParser<T extends NamespaceProperty> extends DefaultSqlFileParser<T> implements SqlFileParser<T> {
-
-//	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+//	public static final String GLOBAL_NS_KEY = "global";
+//	public static final String COMMENT = "--";
+//	public static final String MULTIP_COMMENT_START = "/*";
+//	public static final String MULTIP_COMMENT_END = "*/";
+	public static final String CONFIG_PREFIX = "--@@";
+	public static final String NAME_PREFIX = "--@";
+//	public static final String EQUALS_MARK = "=";
 	
-	@Override
-	public void parseToNamespaceProperty(JFishPropertyConf<T> conf, PropertiesNamespaceInfo<T> np, ResourceAdapter<?> file) {
-		JFishPropertiesData jproperties = loadSqlFile(conf, file);
-		if(jproperties==null){
-			return ;
-		}
-		logger.info("build [{}] sql file : {}", np.getNamespace(), file.getName());
-		try {
-			this.buildPropertiesAsNamedInfos(np, file, jproperties, conf.getPropertyBeanClass());
-		} catch (Exception e) {
-			throw new BaseException("build named info error in " + file.getName() + " : " + e.getMessage(), e);
-		}
-	}
 	protected JFishPropertiesData loadSqlFile(JFishPropertyConf<T> conf, ResourceAdapter<?> f){
 //		String fname = FileUtils.getFileNameWithoutExt(f.getName());
 		if(!f.getName().endsWith(conf.getPostfix())){

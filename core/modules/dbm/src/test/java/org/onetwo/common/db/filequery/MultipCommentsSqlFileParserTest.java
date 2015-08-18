@@ -8,17 +8,18 @@ import org.junit.Test;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.CommonNamespaceProperties;
 import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.spring.sql.JFishNamedSqlFileManager.DialetNamedSqlConf;
+import org.onetwo.common.spring.sql.MultipCommentsSqlFileParser;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 
 public class MultipCommentsSqlFileParserTest {
 	
 	@Test
-	public void test(){
+	public void testBase(){
 		String fileName = FileUtils.getResourcePath("sql/org.onetwo.common.jfishdbm.model.dao.UserAutoidDao.jfish.sql");
 		List<String> lines = FileUtils.readAsList(fileName);
 		System.out.println("line:"+lines);
-		MultipCommentsSqlFileParser<JFishNamedFileQueryInfo> parser = new MultipCommentsSqlFileParser<>();
+		MultipCommentsSqlFileParser parser = new MultipCommentsSqlFileParser();
 		ResourceAdapter<File> f = FileUtils.adapterResource(new File(fileName));
 		
 		DialetNamedSqlConf conf = new DialetNamedSqlConf(false);
