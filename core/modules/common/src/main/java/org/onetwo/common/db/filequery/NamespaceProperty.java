@@ -49,7 +49,7 @@ public class NamespaceProperty {
 		return namespaceInfo;
 	}
 
-	void setNamespaceInfo(PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo) {
+	public void setNamespaceInfo(PropertiesNamespaceInfo<? extends NamespaceProperty> namespaceInfo) {
 		this.namespaceInfo = namespaceInfo;
 		this.namespace = namespaceInfo.getNamespace();
 	}
