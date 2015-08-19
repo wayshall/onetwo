@@ -28,13 +28,13 @@ where
  */
 select 
     usr.*
-${fragment['subWhere']}
+${fragment['deleteSubWhere']}
 --${fragment['findUserPage.fragment.subWhere']}
 
     
 /***
  *  @name: findUserList(DELETE)
- *  @fragment: subWhere
+ *  @fragment: deleteSubWhere
  */
 from 
     test_user_autoid usr

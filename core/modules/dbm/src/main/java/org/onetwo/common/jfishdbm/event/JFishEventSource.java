@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.event;
 
 import java.util.Map;
 
-import org.onetwo.common.db.SelectExtQuery;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 
 public interface JFishEventSource extends JFishDaoImplementor {

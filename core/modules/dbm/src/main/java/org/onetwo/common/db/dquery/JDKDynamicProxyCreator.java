@@ -5,12 +5,12 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.annotation.QueryProvider;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
+import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
-import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
-import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,7 +62,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 			throw new FileNamedQueryException("no QueryProvideManager found!");
 		}
 		
-		JFishNamedSqlFileManager namedSqlFileManager = (JFishNamedSqlFileManager)queryProvideManager.getFileNamedQueryFactory().getNamespacePropertiesManager();
+		JFishNamedSqlFileManager namedSqlFileManager = (JFishNamedSqlFileManager)queryProvideManager.getFileNamedQueryManager().getNamespacePropertiesManager();
 		Assert.notNull(namedSqlFileManager);
 		Assert.notNull(namedJdbcTemplate);
 		Assert.notNull(sqlFile);

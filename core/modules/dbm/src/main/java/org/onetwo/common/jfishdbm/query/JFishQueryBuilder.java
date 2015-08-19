@@ -2,9 +2,9 @@ package org.onetwo.common.jfishdbm.query;
 
 import java.util.List;
 
-import org.onetwo.common.db.EntityExtBuilder;
-import org.onetwo.common.db.ExtQuery;
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.sqlext.EntityExtBuilder;
+import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
 import org.springframework.jdbc.core.ResultSetExtractor;

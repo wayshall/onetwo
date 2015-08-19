@@ -3,8 +3,8 @@ package org.onetwo.common.jfishdbm.query;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.SelectExtQueryImpl;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.db.sqlext.SelectExtQueryImpl;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -37,7 +36,7 @@ public class SpringApplication {
 	
 	private boolean initialized;
 	
-	private BaseEntityManager baseEntityManager;
+//	private BaseEntityManager baseEntityManager;
 	
 	private ValidatorWrapper validatorWrapper;
 	
@@ -226,7 +225,7 @@ public class SpringApplication {
 		System.out.println("=================================== spring beans ===================================");
 	}
 
-	public BaseEntityManager getBaseEntityManager() {
+	/*public BaseEntityManager getBaseEntityManager() {
 		BaseEntityManager be = baseEntityManager;
 		if(be==null){
 			be = getBean(BaseEntityManager.class);
@@ -234,7 +233,7 @@ public class SpringApplication {
 		}
 		return be;
 	}
-	
+	*/
 
 	public ValidatorWrapper getValidator(){
 		if(this.validatorWrapper!=null)
