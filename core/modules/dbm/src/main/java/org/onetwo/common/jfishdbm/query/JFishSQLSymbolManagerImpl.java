@@ -2,10 +2,10 @@ package org.onetwo.common.jfishdbm.query;
 
 import java.util.Map;
 
-import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
 import org.onetwo.common.db.sqlext.SQLDialet;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
 

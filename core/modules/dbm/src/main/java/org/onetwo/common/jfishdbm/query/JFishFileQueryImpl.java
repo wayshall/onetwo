@@ -1,10 +1,10 @@
 package org.onetwo.common.jfishdbm.query;
 
 import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.filequery.DefaultFileQueryImpl;
+import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.spring.ftl.TemplateParser;
-import org.onetwo.common.spring.sql.DefaultFileQueryImpl;
-import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
 import org.onetwo.common.utils.Assert;
 import org.springframework.jdbc.core.RowMapper;
 

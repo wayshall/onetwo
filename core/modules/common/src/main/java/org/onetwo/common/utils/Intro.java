@@ -58,7 +58,7 @@ public class Intro<T> {
 	}
 	
 	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
-		if(clazz.isInterface() || clazz.isPrimitive())
+		if(clazz==Object.class || clazz.isInterface() || clazz.isPrimitive())
 			return Collections.EMPTY_MAP;
 		BeanInfo beanInfo = null;
 		try {

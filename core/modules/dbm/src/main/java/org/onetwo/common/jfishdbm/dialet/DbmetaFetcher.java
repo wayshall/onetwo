@@ -4,8 +4,8 @@ import java.sql.DatabaseMetaData;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.jdbc.SpringDatasourceExecutor;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
+import org.onetwo.common.jfishdbm.jdbc.SpringDatasourceExecutor;
 
 public class DbmetaFetcher {
 	

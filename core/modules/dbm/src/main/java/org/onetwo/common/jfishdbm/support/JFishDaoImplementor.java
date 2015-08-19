@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.jdbc.JFishJdbcOperations;
-import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
+import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
+import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
 import org.onetwo.common.utils.Page;

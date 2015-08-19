@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.onetwo.common.db.QueryContextVariable;
-import org.onetwo.common.spring.sql.ParserContextFunctionSet;
+import org.onetwo.common.db.filequery.ParserContextFunctionSet;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

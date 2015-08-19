@@ -16,22 +16,20 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.dquery.annotation.BatchObject;
-import org.onetwo.common.db.dquery.annotation.QuerySwitch;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
-import org.onetwo.common.db.filequery.NamespaceProperty;
+import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.ParsedSqlUtils;
 import org.onetwo.common.db.filequery.QueryProvideManager;
+import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
+import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
-import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.sql.ParsedSqlUtils;
-import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper;
-import org.onetwo.common.spring.sql.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Langs;
@@ -117,14 +115,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}*/
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
-//		LangUtils.println("proxy: "+proxy+", method: ${0}", method);
-//		TimeCounter t = new TimeCounter("doproxy", true);
-//		t.start();
 		DynamicMethod dmethod = getDynamicMethod(method);
+		InvokeContext invokeContext = new InvokeContext(dmethod, args);
+		
 		Class<?> resultClass = dmethod.getResultClass();
 //		Class<?> componentClass = dmethod.getComponentClass();
-		Map<Object, Object> parsedParams = dmethod.toMapByArgs(args);
-		String parsedQueryName = dmethod.getQueryName(parsedParams.get(QuerySwitch.class));
+//		Map<Object, Object> parsedParams = dmethod.toMapByArgs(args);
+//		String queryName = dmethod.getQueryName(parsedParams.get(QuerySwitch.class));
+		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
 
 		if(debug)
 			logger.info("{}: {}", method.getDeclaringClass().getSimpleName()+"."+method.getName(), LangUtils.toString(args));
@@ -134,58 +132,62 @@ public class DynamicQueryHandler implements InvocationHandler {
 		
 		if(dmethod.isBatch()){
 			//TODO 先特殊处理，待修改
-			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
+//			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
+			result = handleBatch(parsedQueryName, invokeContext);
 		}else{
-			methodArgs = Langs.toArray(parsedParams);
+			methodArgs = Langs.toArray(invokeContext.getParsedParams());
 			
 			if(Page.class.isAssignableFrom(resultClass)){
 				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
 				
 //				Object[] trimPageArgs = ArrayUtils.remove(args, 0);
 //				methodArgs = dmethod.toArrayByArgs(args);
-				result = em.getFileNamedQueryFactory().findPage(parsedQueryName, page, methodArgs);
+				result = em.getFileNamedQueryManager().findPage(parsedQueryName, page, methodArgs);
 				
 			}else if(List.class.isAssignableFrom(resultClass)){
 //				methodArgs = dmethod.toArrayByArgs(args);
 //				logger.info("dq args: {}", LangUtils.toString(methodArgs));
-				result = em.getFileNamedQueryFactory().findList(parsedQueryName, methodArgs);
+				result = em.getFileNamedQueryManager().findList(parsedQueryName, methodArgs);
 				
 			}else if(DataQuery.class.isAssignableFrom(resultClass)){
 //				methodArgs = dmethod.toArrayByArgs(args, null);
 //				methodArgs = dmethod.toArrayByArgs(args);
 //				logger.info("dq args: {}", LangUtils.toString(methodArgs));
-				DataQuery dq = em.getFileNamedQueryFactory().createQuery(parsedQueryName, methodArgs);
+				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
 				return dq;
 				
 			}else if(dmethod.isExecuteUpdate()){
 //				methodArgs = dmethod.toArrayByArgs(args);
-				DataQuery dq = em.getFileNamedQueryFactory().createQuery(parsedQueryName, methodArgs);
+				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
 				result = dq.executeUpdate();
 				
 			}else{
 //				methodArgs = dmethod.toArrayByArgs(args);
-				result = em.getFileNamedQueryFactory().findOne(parsedQueryName, methodArgs);
+				result = em.getFileNamedQueryManager().findOne(parsedQueryName, methodArgs);
 			}
 		}
 		
 		return result;
 	}
 	
-	protected Object handleBatch(DynamicMethod dmethod, Object[] args, String parsedQueryName, Map<Object, Object> params){
+	protected Object handleBatch(JFishNamedFileQueryInfo parsedQueryName, InvokeContext invokeContext){
+//		protected Object handleBatch(DynamicMethod dmethod, Object[] args, String parsedQueryName, Map<Object, Object> params){
 //		Class<?> componentClass = dmethod.getComponentClass();
 //		methodArgs = dmethod.toArrayByArgs(args);
 //		Map<Object, Object> params = dmethod.toMapByArgs(args);
-		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
-		if(batchParameter==null){
-			if(LangUtils.size(args)!=1 || !Collection.class.isInstance(args[0])){
-				throw new BaseException("BatchObject not found, the batch method parameter only supported one parameter and must a Collection : " + dmethod.getMethod().toGenericString());
+//		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
+		DynamicMethod dmethod = invokeContext.getDynamicMethod();
+		Collection<?> batchParameter = invokeContext.getBatchParameter();
+		/*if(batchParameter==null){
+			if(LangUtils.size(invokeContext.getParameterValues())!=1 || !Collection.class.isInstance(invokeContext.getParameterValues()[0])){
+				throw new BaseException("BatchObject not found, the batch method parameter only supported one parameter and must a Collection : " + invokeContext.getDynamicMethod().getMethod().toGenericString());
 			}
 			
 			//default is first arg
 			batchParameter = (Collection<?>)args[0];
-		}
+		}*/
 		
-		FileNamedSqlGenerator<NamespaceProperty> sqlGen = (FileNamedSqlGenerator<NamespaceProperty>)em.getFileNamedQueryFactory().createFileNamedSqlGenerator(parsedQueryName, params);
+		FileNamedSqlGenerator sqlGen = em.getFileNamedQueryManager().createFileNamedSqlGenerator(parsedQueryName, invokeContext.getParsedParams());
 		ParsedSqlContext sv = sqlGen.generatSql();
 //		JdbcDao jdao = this.jdao;
 		NamedJdbcTemplate namedJdbcTemplate = this.namedJdbcTemplate;
@@ -199,7 +201,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		TimeCounter t = new TimeCounter("prepare insert");
 		t.start();
 		
-		BeanWrapper paramsContextBean = SpringUtils.newBeanWrapper(params);
+		BeanWrapper paramsContextBean = SpringUtils.newBeanWrapper(invokeContext.getParsedParams());
 		List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
 		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql(), em.getSqlParamterPostfixFunctionRegistry());
 		for(Object val : batchParameter){
