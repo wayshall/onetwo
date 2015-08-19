@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.db.filequery.JFishNamedSqlFileManager.DialetNamedSqlConf;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.CommonNamespaceProperties;
-import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
-import org.onetwo.common.spring.sql.JFishNamedSqlFileManager.DialetNamedSqlConf;
-import org.onetwo.common.spring.sql.MultipCommentsSqlFileParser;
 import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 

@@ -10,23 +10,22 @@ import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.SelectExtQuery;
-import org.onetwo.common.db.filequery.FileNamedQueryFactory;
+import org.onetwo.common.db.filequery.FileNamedQueryManager;
+import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
-import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.core.RowMapper;
 
 //@SuppressWarnings({"rawtypes", "unchecked"})
 public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, InitializingBean , DisposableBean {
@@ -36,7 +35,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 //	private ApplicationContext applicationContext;
 	
-	private FileNamedQueryFactory<?> fileNamedQueryFactory;
+	private FileNamedQueryManager fileNamedQueryManager;
 //	private boolean watchSqlFile = false;
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
@@ -74,7 +73,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(jfishDao.getDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 		fq.setQueryProvideManager(this);
-		this.fileNamedQueryFactory = fq;
+		this.fileNamedQueryManager = fq;
 			
 	}
 
@@ -178,7 +177,9 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public DataQuery createNamedQuery(String name) {
-		return getFileNamedQueryFactory().createQuery(name);
+		/*JFishNamedFileQueryInfo nameInfo = getFileNamedQueryFactory().getNamedQueryInfo(name);
+		return getFileNamedQueryFactory().createQuery(nameInfo);*/
+		throw new UnsupportedOperationException("jfish named query unsupported by this way!");
 	}
 	
 
@@ -217,21 +218,23 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		SQLSymbolManager = sQLSymbolManager;
 	}*/
 
-	public FileNamedQueryFactory<?> getFileNamedQueryFactory() {
-		return this.fileNamedQueryFactory;
+	@Override
+	public FileNamedQueryManager getFileNamedQueryManager() {
+		return this.fileNamedQueryManager;
 	}
 
-
+	@Override
 	public SequenceNameManager getSequenceNameManager(){
 		return jfishDao.getSequenceNameManager();
 	}
 	
-	public Long getSequences(Class entityClass, boolean createIfNotExist) {
+	@Override
+	public Long getSequences(Class<?> entityClass, boolean createIfNotExist) {
 		String seqName = getSequenceNameManager().getSequenceName(entityClass);
 		return getSequences(seqName, createIfNotExist);
 	}
 
-	
+	@Override
 	public Long getSequences(String sequenceName, boolean createIfNotExist) {
 		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
 		Long id = null;
@@ -263,14 +266,17 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return id;
 	}
 
+	@Override
 	public DataQuery createQuery(String sql, Map<String, Object> values) {
 		return jfishDao.createAsDataQuery(sql, values);
 	}
 
-	public void findPage(Class entityClass, Page page, Object... properties) {
+	@Override
+	public void findPage(Class<?> entityClass, Page<?> page, Object... properties) {
 		jfishDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
 	}
 
+	@Override
 	public <T> void findPage(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
@@ -326,10 +332,11 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return jfishDao.countByProperties(entityClass, properties);
 	}
 
-	@Override
+	/*@Override
 	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		return getFileNamedQueryFactory().findPage(queryName, page, params);
-	}
+		JFishNamedFileQueryInfo nameInfo = getFileNamedQueryFactory().getNamedQueryInfo(queryName);
+		return getFileNamedQueryFactory().findPage(nameInfo, page, params);
+	}*/
 
 	@Override
 	public <T> T getRawManagerObject() {
@@ -341,8 +348,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return rawClass.cast(getRawManagerObject());
 	}
 
-	public void setFileNamedQueryFactory(FileNamedQueryFactory<?> fileNamedQueryFactory) {
-		this.fileNamedQueryFactory = fileNamedQueryFactory;
+	public void setFileNamedQueryManager(FileNamedQueryManager fileNamedQueryFactory) {
+		this.fileNamedQueryManager = fileNamedQueryFactory;
 	}
 
 

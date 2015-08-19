@@ -5,9 +5,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
+import org.onetwo.common.db.filequery.SpringBasedSqlFileScanner;
 import org.onetwo.common.db.filequery.SqlFileScanner;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.sql.SpringBasedSqlFileScanner;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;

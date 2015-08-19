@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQuery;
-import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.exception.NotUniqueResultException;
+import org.onetwo.common.db.sqlext.ExtQuery;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.utils.LangUtils;

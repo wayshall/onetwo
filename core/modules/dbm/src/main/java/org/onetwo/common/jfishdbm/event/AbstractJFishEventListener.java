@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.jdbc.JdbcUtils;
-import org.onetwo.common.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
+import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryMeta;
