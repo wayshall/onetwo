@@ -2,20 +2,20 @@ package org.onetwo.common.jfishdbm.spring;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.filequery.FileNamedQueryFactory;
+import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
-import org.onetwo.common.jdbc.JFishJdbcOperations;
-import org.onetwo.common.jdbc.JFishJdbcTemplate;
-import org.onetwo.common.jdbc.JFishJdbcTemplateProxy;
-import org.onetwo.common.jdbc.JFishNamedJdbcTemplate;
-import org.onetwo.common.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
+import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
+import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplateAspectProxy;
+import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
-import org.onetwo.common.spring.sql.SqlParamterPostfixFunctions;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,13 +96,13 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 
 	@Bean
 	@Autowired
-	public FileNamedQueryFactory<?> fileNamedQueryFactory(){
+	public FileNamedQueryManager fileNamedQueryFactory(){
 		/*JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 //		fq.initQeuryFactory(createQueryable);
 		fq.setQueryProvideManager(jfishEntityManager());
 		return fq;*/
-		return jfishEntityManager().getFileNamedQueryFactory();
+		return jfishEntityManager().getFileNamedQueryManager();
 	}
 	
 	@Bean
@@ -129,7 +129,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		if(defaultDataBaseConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
 			ajf.setProxyTargetClass(false);
-			ajf.addAspect(JFishJdbcTemplateProxy.class);
+			ajf.addAspect(JFishJdbcTemplateAspectProxy.class);
 //			ajf.setTargetClass(JFishJdbcOperations.class);
 			return ajf.getProxy();
 		}

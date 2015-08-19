@@ -10,28 +10,29 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQueryUtils;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
+import org.onetwo.common.db.dquery.annotation.Matcher;
 import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
-import org.onetwo.common.db.dquery.annotation.QuerySwitch;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
+import org.onetwo.common.db.filequery.JNamedQueryKey;
+import org.onetwo.common.db.filequery.ParsedSqlUtils;
+import org.onetwo.common.db.filequery.ParserContext;
+import org.onetwo.common.db.filequery.ParserContextFunctionSet;
+import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
-import org.onetwo.common.spring.sql.JNamedQueryKey;
-import org.onetwo.common.spring.sql.ParsedSqlUtils;
-import org.onetwo.common.spring.sql.ParserContext;
-import org.onetwo.common.spring.sql.ParserContextFunctionSet;
 import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
+
 
 public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter>{
 
@@ -54,24 +55,27 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 //	private List<String> parameterNames;
 	
 	private DynamicMethodParameter pageParamter;
+	private DynamicMethodParameter matcherParamter;
 	
 	public DynamicMethod(Method method){
 		super(method);
 		
 		this.setupExecuteType();
 		
+		//check query swither
+		this.matcherParamter = checkAndFindQuerySwitch(parameters);
+		
 		queryName = method.getDeclaringClass().getName()+"."+method.getName();
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
-			DynamicMethodParameter firstParamter = parameters.get(0);
-			pageParamter = firstParamter.hasParameterAnnotation(QuerySwitch.class)?parameters.get(1):parameters.get(0);
+//			DynamicMethodParameter firstParamter = parameters.get(0);
+			pageParamter = matcherParamter!=null?parameters.get(1):parameters.get(0);
 			//如果返回类型为空，看第一个参数是否是page对象
 			rClass = pageParamter.getParameterType();
 			if(Page.class != rClass){
 				throw new FileNamedQueryException("["+method.toGenericString()+"] return void type, pelease define the Page object at parameter position : " + pageParamter.getParameterIndex());
 			}
-//			DynamicMethodParameter pageParamter = this.parameters.get(0);
 			/*if(pageParamter.getParameterAnnotation(Name.class)==null)//如果page对象没有name注解，移除它
 				this.parameters.remove(0)*/;
 			Type ptype = pageParamter.getGenericParameterType();
@@ -85,11 +89,6 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 								throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
 							});
 			if(Page.class==rClass){
-				/*rClass = parameters.get(0).getParameterType();
-//				rClass = parameters.remove(0).getParameterType();
-				if(Page.class == rClass){
-					throw new FileNamedQueryException("method has return Page object, the first arg can not return the Page object: " + method.toGenericString());
-				}*/
 				throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
 			}else if(DataQuery.class==rClass){
 				compClass = null;
@@ -103,6 +102,22 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		this.componentClass = compClass;
 		
 		LangUtils.println("resultClass: ${0}, componentClass:${1}", resultClass, compClass);
+	}
+	
+	private DynamicMethodParameter checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
+		return parameters.stream().filter(p->{
+								if(p.hasParameterAnnotation(Matcher.class)){
+									if(p.getParameterIndex()!=0){
+										throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (p.getParameterIndex()+1));
+									}else if(p.getParameterType()!=String.class){
+										throw new FileNamedQueryException("QuerySwitch must be must be a String!");
+									}
+									return true;
+								}
+								return false;
+							})
+						.findFirst()
+						.orElse(null);
 	}
 	
 	@Override
@@ -123,7 +138,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return false;
 	}
 	
-	final protected void setupExecuteType(){
+	final private void setupExecuteType(){
 		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
 		if(executeUpdate!=null){
 			this.update = true;
@@ -292,17 +307,28 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		}else if(mp.hasParameterAnnotation(BatchObject.class)){
 			putArg2Map(values, BatchObject.class, pvalue);
 			
-		}else if(mp.hasParameterAnnotation(QuerySwitch.class)){
+		}/*else if(mp.hasParameterAnnotation(QuerySwitch.class)){
 			if(mp.getParameterIndex()!=0){
 				throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (mp.getParameterIndex()+1));
 			}
 			putArg2Map(values, QuerySwitch.class, pvalue);
 			
-		}else{
+		}*/else{
 			/*values.add(mp.getParameterName());
 			values.add(pvalue);*/
 			putArg2Map(values, mp.getParameterName(), pvalue);
 		}
+		
+		/*if(mp.hasParameterAnnotation(QuerySwitch.class)){
+			if(values.containsKey(QuerySwitch.class)){
+				throw new FileNamedQueryException("allows only one QuerySwitch parameter!");
+			}
+			if(mp.getParameterIndex()!=0){
+				throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (mp.getParameterIndex()+1));
+			}
+			putArg2Map(values, QuerySwitch.class, pvalue);
+			
+		}*/
 	}
 	
 	private void putArg2Map(Map<Object, Object> values, Object key, Object value){
@@ -328,6 +354,16 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		}else{
 			parserContext.setQueryConfig(ParsedSqlUtils.EMPTY_CONFIG);
 		}
+	}
+	
+	public Object getMatcherValue(Object[] args){
+		if(!hasMatcher())
+			return null;
+		return args[matcherParamter.getParameterIndex()];
+	}
+	
+	public boolean hasMatcher(){
+		return this.matcherParamter!=null;
 	}
 
 	public Map<Object, Object> toMapByArgs(Object[] args){
@@ -365,10 +401,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return componentClass;
 	}
 
-	public String getQueryName(Object dispatcher) {
-		if(dispatcher!=null){
-			return queryName + "(" + dispatcher+")";
-		}
+	public String getQueryName() {
 		return queryName;
 	}
 	

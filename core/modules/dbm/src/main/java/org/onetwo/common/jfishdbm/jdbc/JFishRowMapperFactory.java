@@ -1,6 +1,5 @@
 package org.onetwo.common.jfishdbm.jdbc;
 
-import org.onetwo.common.jdbc.SimpleRowMapperFactory;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.RowMapper;

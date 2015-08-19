@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
+import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
-import org.onetwo.common.spring.sql.AbstractFileNamedQueryFactory;
-import org.onetwo.common.spring.sql.JFishNamedFileQueryInfo;
-import org.onetwo.common.spring.sql.JFishNamedSqlFileManager;
+import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -28,18 +28,20 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 
 	@Override
-	public JFishDataQuery createQuery(String queryName, Object... args){
-		return createDataQuery(false, queryName, PlaceHolder.NAMED, args);
+	public JFishDataQuery createQuery(JFishNamedFileQueryInfo nameInfo, Object... args){
+		return createDataQuery(false, nameInfo, PlaceHolder.NAMED, args);
 	}
 	
-	public JFishDataQuery createCountQuery(String queryName, Object... args){
-		return createDataQuery(true, queryName, PlaceHolder.NAMED, args);
+	public JFishDataQuery createCountQuery(JFishNamedFileQueryInfo nameInfo, Object... args){
+		return createDataQuery(true, nameInfo, PlaceHolder.NAMED, args);
 	}
 
-	public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public JFishDataQuery createDataQuery(boolean count, JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args){
+//		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
 		Assert.notNull(type);
 
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
+//		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
 		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
 		
 		if(type==PlaceHolder.POSITION){
@@ -56,34 +58,34 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	
 
 	@Override
-	public DataQuery createQuery(String queryName, PlaceHolder type, Object... args){
-		return createDataQuery(false, queryName, type, args);
+	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args){
+		return createDataQuery(false, nameInfo, type, args);
 	}
 	
 
 
 	@Override
-	public <T> List<T> findList(String queryName, Object... params) {
-		DataQuery jq = this.createQuery(queryName, params);
+	public <T> List<T> findList(JFishNamedFileQueryInfo nameInfo, Object... params) {
+		DataQuery jq = this.createQuery(nameInfo, params);
 		return jq.getResultList();
 	}
 
 
 	@Override
-	public <T> T findUnique(String queryName, Object... params) {
-		DataQuery jq = this.createQuery(queryName, params);
+	public <T> T findUnique(JFishNamedFileQueryInfo nameInfo, Object... params) {
+		DataQuery jq = this.createQuery(nameInfo, params);
 		return jq.getSingleResult();
 	}
 
 
 	@Override
-	public <T> Page<T> findPage(String queryName, Page<T> page, Object... params) {
-		DataQuery jq = this.createCountQuery(queryName, params);
+	public <T> Page<T> findPage(JFishNamedFileQueryInfo nameInfo, Page<T> page, Object... params) {
+		DataQuery jq = this.createCountQuery(nameInfo, params);
 		Long total = jq.getSingleResult();
 		total = (total==null?0:total);
 		page.setTotalCount(total);
 		if(total>0){
-			jq = this.createQuery(queryName, params);
+			jq = this.createQuery(nameInfo, params);
 			jq.setFirstResult(page.getFirst()-1);
 			jq.setMaxResults(page.getPageSize());
 			List<T> datalist = jq.getResultList();
@@ -94,12 +96,12 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	
 	
 //	@Override
-	public <T> Page<T> findPage(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		JFishDataQuery jq = this.createCountQuery(queryName, params);
+	public <T> Page<T> findPage(JFishNamedFileQueryInfo nameInfo, RowMapper<T> rowMapper, Page<T> page, Object... params) {
+		JFishDataQuery jq = this.createCountQuery(nameInfo, params);
 		Long total = jq.getSingleResult();
 		page.setTotalCount(total);
 		if(total!=null && total>0){
-			jq = this.createQuery(queryName, params);
+			jq = this.createQuery(nameInfo, params);
 			jq.setFirstResult(page.getFirst()-1);
 			jq.setMaxResults(page.getPageSize());
 			jq.getJfishQuery().setRowMapper(rowMapper);

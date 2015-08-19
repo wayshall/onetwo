@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.log.JFishLoggerFactory;
