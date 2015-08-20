@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.onetwo.common.tree.TreeModel;
 
 @SuppressWarnings({ "unchecked", "serial" })
 @XmlType(name="TreeModel")

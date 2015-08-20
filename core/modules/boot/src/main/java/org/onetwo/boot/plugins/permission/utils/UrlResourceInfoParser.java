@@ -3,10 +3,10 @@ package org.onetwo.boot.plugins.permission.utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.common.utils.Expression;
-import org.onetwo.common.utils.SimpleExpression;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.SimpleExpression;
+import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.ValueProvider;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Joiner;

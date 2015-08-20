@@ -155,7 +155,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	@Override
-	public DataQuery createSQLQuery(String sqlString, Class entityClass) {
+	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
 		JFishQuery jq = getJfishDao().createJFishQuery(sqlString, entityClass);
 		DataQuery query = new JFishDataQuery(jq);
 		return query;

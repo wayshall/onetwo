@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Locale;
 
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 import freemarker.cache.TemplateLoader;
 

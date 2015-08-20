@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.onetwo.common.utils.func.Closure;
 import org.onetwo.common.utils.list.Predicate;
 
 

@@ -2,7 +2,7 @@ package org.onetwo.easyui;
 
 import java.util.List;
 
-import org.onetwo.common.utils.TreeBuilder;
+import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.utils.map.MappableMap.MappingValueFunc;
 import org.onetwo.common.utils.map.ObjectMappingBuilder;
 import org.onetwo.easyui.EasyBuilder.SimpleEasyBuilder;

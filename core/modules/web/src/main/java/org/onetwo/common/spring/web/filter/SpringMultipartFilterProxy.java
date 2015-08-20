@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.DataResult;
+import org.onetwo.common.result.DataResult;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;

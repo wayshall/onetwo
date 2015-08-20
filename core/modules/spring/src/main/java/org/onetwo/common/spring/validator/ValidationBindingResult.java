@@ -9,8 +9,8 @@ import org.onetwo.common.annotation.JInfo;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.func.SimpleBlock;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 

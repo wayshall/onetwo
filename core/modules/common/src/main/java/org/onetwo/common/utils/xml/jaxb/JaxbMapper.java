@@ -25,9 +25,9 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 
 /**

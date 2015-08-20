@@ -23,11 +23,13 @@ public class JFishRowMapperFactory extends SimpleRowMapperFactory {
 
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> type) {
 		RowMapper<?> rowMapper = null;
-		JFishMappedEntry entry = this.getMappedEntryManager().findEntry(type);
-		if(entry!=null)
+		if(getMappedEntryManager().isSupportedMappedEntry(type)){
+			JFishMappedEntry entry = this.getMappedEntryManager().getEntry(type);
 			rowMapper = new EntryRowMapper<>(entry);
-		else
+			return rowMapper;
+		}else{
 			rowMapper = super.getBeanPropertyRowMapper(type);
+		}
 		return rowMapper;
 	}
 	
