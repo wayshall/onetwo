@@ -29,33 +29,16 @@ import org.springframework.context.annotation.Configuration;
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
 //@Import(JFishProfiles.class)
 public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean{
-//	public static final String JFISH_DBM_SQLFILE_WATCH = "jfish.dbm.sqlfile.watch";
 
 	private ApplicationContext applicationContext;
 
 	@Autowired
 	private DataSource dataSource;
 
-	/*@Value(ApplicationConfigKeys.BASE_PACKAGE_EXPR)
-	protected String jfishBasePackages;*/
-
-	/*@Value(JFISH_DBM_SQLFILE_WATCH)
-	private boolean watchSqlFile;*/
-
-	/*@Autowired
-	private JFishPropertyPlaceholder configHolder;*/
-	
-	/*@Autowired
-	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;*/
-	/*@Autowired(required=false)
-	private DynamicQueryObjectRegister dynamicQueryObjectRegister;*/
-
-	
 	@Autowired(required=false)
 	private DataBaseConfig dataBaseConfig;
 	
 	public JFishdbmSpringConfiguration(){
-		System.out.println("init jfishdbm");
 	}
 
 
@@ -156,87 +139,4 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		return new SqlParamterPostfixFunctions();
 	}
 	
-	/*@Bean
-	public JFishDaoProxy jfishDaoProxy(){
-		JFishDaoProxy jdaoProxy = new JFishDaoProxy();
-		return jdaoProxy;
-	}*/
-
-	/*@Bean
-	public MappedEntryManager mappedEntryManager() {
-		MappedEntryManager em = new MutilMappedEntryManager(dialect());
-		em.initialize();
-		// em.setMappedEntryBuilder(mappedEntryBuilderList());
-		String[] packages = defaultDataBaseConfig().getModelBasePackages();
-		if(!LangUtils.isEmpty(packages)){
-			em.scanPackages(packages);
-		}
-			
-		return em;
-	}*/
-	
-	/*@Bean
-	public DefaultDatabaseDialetManager databaseDialetManager(){
-		DefaultDatabaseDialetManager databaseDialetManager = new DefaultDatabaseDialetManager();
-		databaseDialetManager.register(new MySQLDialect());
-		databaseDialetManager.register(new OracleDialect());
-		return databaseDialetManager;
-	}*/
-	
-	/*@Bean
-	public DBDialect dialect(){
-//		DataBase db = JdbcUtils.getDataBase(dataSource);
-		DBMeta dbmeta = DbmetaFetcher.create(dataSource).getDBMeta();
-		
-		DBDialect dialect = databaseDialetManager().getRegistered(dbmeta.getDbName());
-//		LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
-		dialect.getDbmeta().setVersion(dbmeta.getVersion());
-		return dialect;
-	}*/
-
-
-	
-	/***
-	 * sql文件管理
-	 * @return
-	 */
-	/*@Bean
-	public JFishNamedSqlFileManager sqlFileManager() {
-		return JFishNamedSqlFileManager.createJFishNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
-	}*/
-	
-/****
-	@Bean(name = "cacheManager")
-	public CacheManager cacheManager() {
-		CacheManager cache = null;
-		Resource res = SpringUtils.newClassPathResource("cache/ehcache.xml");
-		if(res.exists()){
-			cache = ehcacheCacheManager(res);
-		}else{
-			cache = jfishSimpleCacheManager();
-		}
-		
-		return cache;
-	}
-
-	@Bean(name = "jfishSimpleCacheManager")
-	public CacheManager jfishSimpleCacheManager() {
-		JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
-		
-		return cache;
-	}
-	
-	protected CacheManager ehcacheCacheManager(Resource configLocation){
-		net.sf.ehcache.CacheManager cm = null;
-		if(AbstractJFishAnnotationConfig.class.isInstance(applicationContex)){
-			AbstractJFishAnnotationConfig jfishWebapp = (AbstractJFishAnnotationConfig) applicationContex;
-			cm = jfishWebapp.registerAndGetBean(EhCacheManagerFactoryBean.class, "configLocation", configLocation);
-		}else{
-			cm = SpringUtils.registerBean(applicationContex, EhCacheManagerFactoryBean.class, "configLocation", configLocation);
-		}
-		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
-		cacheManager.setCacheManager(cm);
-		return cacheManager;
-	}
-****/
 }

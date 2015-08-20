@@ -238,6 +238,14 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		throw new JFishNoMappedEntryException("jfish orm unsupported the type["+ReflectUtils.getObjectClass(object)+"] as a entity");
 //		return entry;
 	}
+	
+	public boolean isSupportedMappedEntry(Object entity){
+		if(mappedEntryBuilders.isEmpty())
+			return false;
+		return mappedEntryBuilders.stream().filter(b->b.isSupported(entity))
+											.findAny()
+											.isPresent();
+	}
 
 
 	public String getCacheKey(Object object) {

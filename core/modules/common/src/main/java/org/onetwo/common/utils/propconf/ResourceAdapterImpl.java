@@ -3,7 +3,7 @@ package org.onetwo.common.utils.propconf;
 import java.io.File;
 import java.util.List;
 
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 public class ResourceAdapterImpl<T> implements ResourceAdapter<T> {
 

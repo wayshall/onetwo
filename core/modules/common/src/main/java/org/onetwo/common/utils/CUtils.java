@@ -19,6 +19,7 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.onetwo.common.utils.func.SimpleBlock;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;

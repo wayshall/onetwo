@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.utils.func.SimpleBlock;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class StringUtils {
 

@@ -3,8 +3,8 @@ package org.onetwo.common.utils.xml;
 import java.io.File;
 import java.util.Map;
 
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
