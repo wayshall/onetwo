@@ -1,8 +1,8 @@
 package org.onetwo.common.db.generator.ftl;
 
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 public class FileTemplateProvider implements StringTemplateProvider {
 

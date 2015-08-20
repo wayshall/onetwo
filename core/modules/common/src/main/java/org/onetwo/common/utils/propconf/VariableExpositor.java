@@ -3,10 +3,10 @@ package org.onetwo.common.utils.propconf;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.onetwo.common.utils.Expression;
-import org.onetwo.common.utils.ExpressionFacotry;
-import org.onetwo.common.utils.ValueProvider;
-import org.onetwo.common.utils.VariableSupporterProvider;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.expr.ValueProvider;
+import org.onetwo.common.expr.VariableSupporterProvider;
 
 public class VariableExpositor {
 	// private static final Log log =

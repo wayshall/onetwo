@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.DataResult;
+import org.onetwo.common.result.DataResult;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;

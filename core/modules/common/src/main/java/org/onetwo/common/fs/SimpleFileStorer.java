@@ -1,9 +1,9 @@
 package org.onetwo.common.fs;
 
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.NiceDate;
+import org.onetwo.common.utils.file.FileUtils;
 
 
 public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{

@@ -97,31 +97,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 			throw new FileNamedQueryException("get dynamic method error", e);
 //			return newDynamicMethod(method);
 		}
-		/*if(methodCache!=null){
-			ValueWrapper value = methodCache.get(method);
-			if(value!=null)
-				return (DynamicMethod) value.get();
-			DynamicMethod dm = newDynamicMethod(method);
-			methodCache.put(method, dm);
-			return dm;
-		}else{
-			return newDynamicMethod(method);
-		}*/
 	}
-	
-	/*private DynamicMethod newDynamicMethod(Method method){
-		return new DynamicMethod(method);
-//		return new DynamicMethodJ8(method);
-	}*/
 	
 	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
 		DynamicMethod dmethod = getDynamicMethod(method);
 		InvokeContext invokeContext = new InvokeContext(dmethod, args);
 		
 		Class<?> resultClass = dmethod.getResultClass();
-//		Class<?> componentClass = dmethod.getComponentClass();
-//		Map<Object, Object> parsedParams = dmethod.toMapByArgs(args);
-//		String queryName = dmethod.getQueryName(parsedParams.get(QuerySwitch.class));
 		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
 
 		if(debug)
@@ -140,29 +122,20 @@ public class DynamicQueryHandler implements InvocationHandler {
 			if(Page.class.isAssignableFrom(resultClass)){
 				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
 				
-//				Object[] trimPageArgs = ArrayUtils.remove(args, 0);
-//				methodArgs = dmethod.toArrayByArgs(args);
 				result = em.getFileNamedQueryManager().findPage(parsedQueryName, page, methodArgs);
 				
 			}else if(List.class.isAssignableFrom(resultClass)){
-//				methodArgs = dmethod.toArrayByArgs(args);
-//				logger.info("dq args: {}", LangUtils.toString(methodArgs));
 				result = em.getFileNamedQueryManager().findList(parsedQueryName, methodArgs);
 				
 			}else if(DataQuery.class.isAssignableFrom(resultClass)){
-//				methodArgs = dmethod.toArrayByArgs(args, null);
-//				methodArgs = dmethod.toArrayByArgs(args);
-//				logger.info("dq args: {}", LangUtils.toString(methodArgs));
 				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
 				return dq;
 				
 			}else if(dmethod.isExecuteUpdate()){
-//				methodArgs = dmethod.toArrayByArgs(args);
 				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
 				result = dq.executeUpdate();
 				
 			}else{
-//				methodArgs = dmethod.toArrayByArgs(args);
 				result = em.getFileNamedQueryManager().findOne(parsedQueryName, methodArgs);
 			}
 		}
@@ -171,11 +144,6 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}
 	
 	protected Object handleBatch(JFishNamedFileQueryInfo parsedQueryName, InvokeContext invokeContext){
-//		protected Object handleBatch(DynamicMethod dmethod, Object[] args, String parsedQueryName, Map<Object, Object> params){
-//		Class<?> componentClass = dmethod.getComponentClass();
-//		methodArgs = dmethod.toArrayByArgs(args);
-//		Map<Object, Object> params = dmethod.toMapByArgs(args);
-//		Collection<?> batchParameter = (Collection<?>)params.get(BatchObject.class);;
 		DynamicMethod dmethod = invokeContext.getDynamicMethod();
 		Collection<?> batchParameter = invokeContext.getBatchParameter();
 		/*if(batchParameter==null){

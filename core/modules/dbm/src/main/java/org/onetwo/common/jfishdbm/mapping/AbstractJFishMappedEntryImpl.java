@@ -613,7 +613,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	@Override
 	public boolean isJoined() {
-		return getMappedType()==MappedType.JOINED;
+//		return getMappedType()==MappedType.JOINED;
+		return false;
 	}
 
 	@Override

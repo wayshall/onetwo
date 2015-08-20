@@ -17,6 +17,7 @@ public class ObjectMappingBuilder<S, T> {
 	final private List<MappingInfo<S>> mappingInfos = new ArrayList<>();
 	//		final private List<T> sourceObjects;
 	private boolean mapAllFields = true;
+	@SuppressWarnings("unused")
 	private Class<S> srcClass;
 	private Class<T> targetClass;
 	

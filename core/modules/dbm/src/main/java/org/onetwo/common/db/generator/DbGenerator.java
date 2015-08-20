@@ -14,8 +14,8 @@ import org.onetwo.common.db.generator.mapping.ColumnMapping;
 import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 import com.google.common.collect.Lists;
 

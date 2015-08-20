@@ -11,10 +11,10 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.Block;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.utils.func.Block;
 
 import com.thoughtworks.xstream.XStream;
 

@@ -3,7 +3,7 @@ package org.onetwo.common.spring.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.file.FileUtils;
 import org.springframework.core.io.InputStreamSource;
 
 public class SmbInputStreamSource implements InputStreamSource {

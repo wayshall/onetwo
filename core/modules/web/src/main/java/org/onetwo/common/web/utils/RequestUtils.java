@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.FileUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.springframework.util.ClassUtils;

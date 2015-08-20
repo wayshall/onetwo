@@ -68,7 +68,8 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 
 	@Override
 	public MappedType getMappedType() {
-		return MappedType.JOINED;
+//		return MappedType.JOINED;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

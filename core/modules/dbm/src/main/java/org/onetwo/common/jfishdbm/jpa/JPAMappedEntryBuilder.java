@@ -1,8 +1,10 @@
 package org.onetwo.common.jfishdbm.jpa;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,8 +21,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
+import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.BaseColumnInfo;
@@ -35,6 +37,7 @@ import org.onetwo.common.jfishdbm.mapping.version.IntegerVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.LongVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.utils.Intro;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ReflectUtils;
@@ -103,6 +106,19 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 			Class<?> entityClass = ReflectUtils.getObjectClass(entity);
 			return entityClass.getAnnotation(Entity.class)!=null;
 		}
+	}
+	
+
+	@Override
+	public JFishMappedEntry buildMappedEntry(Object object) {
+		Object entity = LangUtils.getFirst(object);
+		Class<?> entityClass = ReflectUtils.getObjectClass(entity);
+		Optional<Field> idField = Intro.wrap(entityClass).getAllFields()
+								.stream()
+								.filter(f->f.getAnnotation(Id.class)!=null)
+								.findAny();
+							
+		return buildMappedEntry(entityClass, !idField.isPresent());
 	}
 	
 	@Override

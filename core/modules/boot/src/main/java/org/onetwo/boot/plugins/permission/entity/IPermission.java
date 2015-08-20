@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission.entity;
 import java.util.List;
 
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
-import org.onetwo.common.utils.Closure;
+import org.onetwo.common.utils.func.Closure;
 
 public interface IPermission<T extends IPermission<T>> {
 

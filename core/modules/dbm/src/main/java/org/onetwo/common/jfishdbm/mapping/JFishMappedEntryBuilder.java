@@ -185,9 +185,9 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
 				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo);
-			}else if(jentity.type()==MappedType.JOINED){
+			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
-			}else{
+			}*/else{
 				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo);
 			}
 		}
