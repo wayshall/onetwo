@@ -4,8 +4,8 @@ import java.text.MessageFormat;
 import java.util.Properties;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.Expression;
-import org.onetwo.common.utils.ExpressionFacotry;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.convert.Types;
 

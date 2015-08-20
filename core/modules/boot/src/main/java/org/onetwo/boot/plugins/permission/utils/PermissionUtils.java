@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.boot.plugins.permission.entity.PermissionType;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
-import org.onetwo.common.utils.Closure;
-import org.onetwo.common.utils.TreeBuilder;
+import org.onetwo.common.tree.TreeBuilder;
+import org.onetwo.common.utils.func.Closure;
 
 final public class PermissionUtils {
 	public static interface BuildBlock {

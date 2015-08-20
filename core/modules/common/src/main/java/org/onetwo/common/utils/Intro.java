@@ -76,18 +76,18 @@ public class Intro<T> {
 	}
 	
 	
-	public JFishList<Field> getAllFields() {
+	public List<Field> getAllFields() {
 		_loadAllFields();
 		
 		return JFishList.wrap(_allFieldMap.values());
 	}
 	
-	public JFishList<String> getAllPropertyNames() {
+	public List<String> getAllPropertyNames() {
 		return JFishList.wrap(propertyDescriptors.keySet());
 	}
 	
 
-	public JFishList<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
+	public List<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
 		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
 	}
 	

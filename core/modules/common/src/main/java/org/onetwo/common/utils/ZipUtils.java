@@ -8,7 +8,7 @@ import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.utils.file.FileUtils;
 
 public class ZipUtils {
 //	private static final Logger logger = MyLoggerFactory.getLogger(ZipUtils.class);

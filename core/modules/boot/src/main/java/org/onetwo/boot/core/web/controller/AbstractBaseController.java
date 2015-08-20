@@ -23,14 +23,15 @@ import org.onetwo.common.fs.FileStoredMeta;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.spring.web.mvc.DataWrapper.LazyValue;
-import org.onetwo.common.utils.FileUtils;
-import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.utils.func.SimpleBlock;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -273,6 +274,10 @@ abstract public class AbstractBaseController {
 
 	protected ModelAndView responseData(Object value){
 		return mv("", DataWrapper.wrap(value));
+	}
+	
+	protected ModelAndView responseAsResult(Object value){
+		return mv("", DataWrapper.wrap(new SimpleDataResult<Object>(value)));
 	}
 	protected ModelAndView responseData(LazyValue value){
 		return mv("", DataWrapper.lazy(value));

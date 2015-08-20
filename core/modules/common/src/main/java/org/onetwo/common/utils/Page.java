@@ -12,9 +12,14 @@ public class Page<T> implements Serializable {
 	 *  
 	 */
 	private static final long serialVersionUID = 5041683742265451593L;
-	
+
 	public static <T> Page<T> create(){
 		return new Page<T>();
+	}
+	public static <T> Page<T> create(int pageNo){
+		Page<T> page = new Page<>();
+		page.setPageNo(pageNo);
+		return page;
 	}
 	public static final String PAGINATION_KEY = "pagination";
 	public static final String ASC = ":asc";
@@ -130,21 +135,17 @@ public class Page<T> implements Serializable {
 		this.order = StringUtils.lowerCase(order);
 	}
 	
-	public boolean isSort(){
-		return isOrderBySetted();
+	public boolean needSort(){
+		return (StringUtils.isNotBlank(orderBy) && StringUtils.isNotBlank(order));
 	}
 	
 	public String getOrderString(){
-		return isSort()?this.order.substring(1):"";
+		return needSort()?this.order.substring(1):"";
 	}
 
 	public Page<T> order(final String theOrder) {
 		setOrder(theOrder);
 		return this;
-	}
-
-	public boolean isOrderBySetted() {
-		return (StringUtils.isNotBlank(orderBy) && StringUtils.isNotBlank(order));
 	}
 
 	public boolean isAutoCount() {
