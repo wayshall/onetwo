@@ -47,7 +47,7 @@ import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
 import org.onetwo.common.utils.file.FileUtils;
 import org.onetwo.common.utils.func.Block;
-import org.onetwo.common.utils.map.NonCaseMap;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class LangUtils {
@@ -1407,7 +1407,7 @@ public class LangUtils {
 	public static Map mapListToMap(List<? extends Map> datas, String keyName, String valueName){
 		if(datas==null)
 			return null;
-		Map map = new NonCaseMap();
+		Map map = new CaseInsensitiveMap();
 		for(Map row : datas){
 			map.put(row.get(keyName), row.get(valueName));
 		}

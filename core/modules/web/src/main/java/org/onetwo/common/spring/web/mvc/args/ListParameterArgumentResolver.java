@@ -16,6 +16,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 public class ListParameterArgumentResolver implements HandlerMethodArgumentResolver {
 	
@@ -37,16 +39,24 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 			attrName = parameter.getParameterName();
 
 		Class<?> etype = ReflectUtils.getGenricType(parameter.getGenericParameterType(), 0);
-		Object list = ReflectUtils.newList(listParameterAnnotation.type());
+		Object list = null;
 		
-		Map<String, Object> listWrapper = LangUtils.newHashMap();
-		listWrapper.put(attrName, list);
-		BeanWrapper bw = SpringUtils.newBeanWrapper(listWrapper, attrName, etype);
-		Iterator<String> pnames = webRequest.getParameterNames();
-		while(pnames.hasNext()){
-			String pname = pnames.next();
-			if(pname.startsWith(attrName)){
-				bw.setPropertyValue(pname, webRequest.getParameter(pname));
+		if(MultipartFile.class.isAssignableFrom(etype)){
+			MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+			list = mrequest.getFiles(attrName);
+			
+		}else{
+			list = ReflectUtils.newList(listParameterAnnotation.type());
+			Map<String, Object> listWrapper = LangUtils.newHashMap();
+			listWrapper.put(attrName, list);
+			BeanWrapper bw = SpringUtils.newBeanWrapper(listWrapper, attrName, etype);
+			Iterator<String> pnames = webRequest.getParameterNames();
+			while(pnames.hasNext()){
+				String pname = pnames.next();
+//				System.out.println("pname: " + pname);
+				if(pname.startsWith(attrName)){
+					bw.setPropertyValue(pname, webRequest.getParameter(pname));
+				}
 			}
 		}
 		

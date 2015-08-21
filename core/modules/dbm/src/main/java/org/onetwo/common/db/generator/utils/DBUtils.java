@@ -30,7 +30,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.map.NonCaseMap;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -497,7 +497,7 @@ public class DBUtils {
 	}
 	
 	public static Map<String, Object> toMap(ResultSet rs, boolean autoClose, String...names) {
-		Map<String, Object> rowMap = new NonCaseMap<String, Object>();
+		Map<String, Object> rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){
 				Map<String, Integer> columnNames = getColumnMeta(rs);
@@ -537,7 +537,7 @@ public class DBUtils {
 	public static Map<String, Integer> getColumnMeta(ResultSet rs) throws SQLException{
 		ResultSetMetaData rsMeta = rs.getMetaData();
 		int colCount = rsMeta.getColumnCount();
-		Map<String, Integer> column = new NonCaseMap<String, Integer>();
+		Map<String, Integer> column = new CaseInsensitiveMap<String, Integer>();
 		for(int i=1; i<=colCount; i++){
 			column.put(rsMeta.getColumnName(i), i-1);
 		}

@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.boot.core.web.view.BootJsonView;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fs.FileStoredMeta;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.StoringFileContext;
@@ -77,19 +75,12 @@ abstract public class AbstractBaseController {
 	protected AbstractBaseController(){
 	}
 	
-	/*public String getMessage(String code, Object...args){
-		return codeMessager.getMessage(code, args);
-	}*/
-	
-	protected FileStoredMeta uploadFile(MultipartFile file){
+	protected FileStoredMeta uploadFile(String module, MultipartFile file){
+		Assert.notNull(file);
 		Assert.notNull(fileStorer);
-		StoringFileContext context;
-		try {
-			context = StoringFileContext.create(file.getInputStream(), file.getOriginalFilename());
-			return fileStorer.write(context);
-		} catch (IOException e) {
-			throw new BaseException("upload file error!", e);
-		}
+//			context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
+		StoringFileContext context = BootWebUtils.create(module, file);
+		return fileStorer.write(context);
 	}
 
 	protected String redirect(String path){

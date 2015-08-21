@@ -141,18 +141,18 @@ public abstract class StringUtils {
 	}
 
 	public static String toPropertyName(String str) {
-		return toJavaName(str, false);
+		return toCamel(str, false);
 	}
 
 	public static String toClassName(String str) {
-		return toJavaName(str, true);
+		return toCamel(str, true);
 	}
 
-	public static String toJavaName(String str, boolean isFirstUpper) {
-		return toJavaName(str, '_', isFirstUpper);
+	public static String toCamel(String str, boolean isFirstUpper) {
+		return toCamel(str, '_', isFirstUpper);
 	}
 
-	public static String toJavaName(String str, char op, boolean isFirstUpper) {
+	public static String toCamel(String str, char op, boolean isFirstUpper) {
 		if (str.indexOf(op) == -1) {
 			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
