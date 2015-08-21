@@ -13,6 +13,7 @@ import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.fs.StoringFileContext;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -56,6 +57,14 @@ public final class BootWebUtils {
 //	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	private BootWebUtils(){
+	}
+
+	public static StoringFileContext create(String module, MultipartFile file){
+		try {
+			return new StoringFileContext(module, file.getInputStream(), file.getOriginalFilename());
+		} catch (IOException e) {
+			throw new BaseException("create StoringFileContext error: " + file.getOriginalFilename());
+		}
 	}
 	
 	public static Locale getLocale(){

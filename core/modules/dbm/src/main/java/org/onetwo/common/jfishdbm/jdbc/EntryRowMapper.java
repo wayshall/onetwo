@@ -94,7 +94,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 		if(propName.contains("___")){
 			propName = propName.replace("___", ".");
 		}
-		propName = StringUtils.toJavaName(propName, false);
+		propName = StringUtils.toCamel(propName, false);
 		return propName;
 	}
 	
