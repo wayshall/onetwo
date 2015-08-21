@@ -10,17 +10,23 @@ import com.google.common.collect.Maps;
 public class StoringFileContext {
 	
 	public static StoringFileContext create(InputStream inputStream, String fileName){
-		return new StoringFileContext(inputStream, fileName);
+		return new StoringFileContext(null, inputStream, fileName);
+	}
+	
+	public static StoringFileContext create(String module, InputStream inputStream, String fileName){
+		return new StoringFileContext(module, inputStream, fileName);
 	}
 	
 	private InputStream inputStream;
 	private String fileName;
 	private Map<String, Object> context;
+	private String module;
 	
-	public StoringFileContext(InputStream inputStream, String fileName) {
+	public StoringFileContext(String module, InputStream inputStream, String fileName) {
 		super();
 		this.inputStream = inputStream;
 		this.fileName = fileName;
+		this.module = module;
 	}
 
 	public StoringFileContext put(String name, Object value){
@@ -41,6 +47,14 @@ public class StoringFileContext {
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
 	}
 
 }

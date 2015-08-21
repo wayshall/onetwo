@@ -1340,7 +1340,7 @@ public class ReflectUtils {
 			boolean throwIfError) {
 		try {
 			String getterName = "get"
-					+ org.onetwo.common.utils.StringUtils.toJavaName(f
+					+ org.onetwo.common.utils.StringUtils.toCamel(f
 							.getName(), true);
 			Method getter = findMethod(getObjectClass(obj), getterName);
 			Object val = invokeMethod(getter, obj);
@@ -1358,7 +1358,7 @@ public class ReflectUtils {
 			boolean throwIfError) {
 		try {
 			String setterName = "set"
-					+ org.onetwo.common.utils.StringUtils.toJavaName(f
+					+ org.onetwo.common.utils.StringUtils.toCamel(f
 							.getName(), true);
 			Method setter = findMethod(getObjectClass(obj), setterName, f.getType());
 			invokeMethod(setter, obj, value);
@@ -1430,7 +1430,7 @@ public class ReflectUtils {
 		for (String path : paths) {
 			
 			if (path.indexOf('-') != -1) {
-				path = org.onetwo.common.utils.StringUtils.toJavaName(path, '-', false);
+				path = org.onetwo.common.utils.StringUtils.toCamel(path, '-', false);
 			}
 			if (parentObj == null)
 				LangUtils.throwBaseException("expr[" + name + "] parent object can not be null : " + path);
@@ -1641,7 +1641,7 @@ public class ReflectUtils {
 				mappingFields.put(fname, fname);
 				
 			}else if(fname.indexOf(separator)!=-1){
-				String destname = StringUtils.toJavaName(fname, separator, false);
+				String destname = StringUtils.toCamel(fname, separator, false);
 				if(desctFields.contains(destname)){
 					mappingFields.put(fname, destname);
 				}

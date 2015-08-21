@@ -208,7 +208,7 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 	}
 	protected void setNamedInfoProperty(T bean, String prop, Object val){
 		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+			prop = StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
 		}
 		try {
 			ReflectUtils.setExpr(bean, prop, val);

@@ -2,8 +2,10 @@ package org.onetwo.common.jfishdbm.jdbc;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.map.CamelMap;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,7 +32,9 @@ public class SimpleRowMapperFactory implements RowMapperFactory {
 			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
 			rowMapper = new SingleColumnRowMapper<>(type);
 		}else if(LangUtils.isMapClass(type)){
-			rowMapper = new ColumnMapRowMapper();
+//			rowMapper = new ColumnMapRowMapper();
+			rowMapper = new CamelNameRowMapper();
+			
 		}else if(Object[].class==type){
 			rowMapper = new ObjectArrayRowMapper();
 		}else if(List.class.isAssignableFrom(type)){
@@ -45,6 +49,13 @@ public class SimpleRowMapperFactory implements RowMapperFactory {
 
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> entityClass) {
 		return new BeanPropertyRowMapper<>(entityClass);
+	}
+	
+	static class CamelNameRowMapper extends ColumnMapRowMapper {
+
+		protected Map<String, Object> createColumnMap(int columnCount) {
+			return new CamelMap<Object>(columnCount);
+		}
 	}
 	
 

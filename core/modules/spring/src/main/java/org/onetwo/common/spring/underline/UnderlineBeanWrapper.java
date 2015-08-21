@@ -35,7 +35,7 @@ public class UnderlineBeanWrapper extends BeanWrapperImpl {
 
 	protected String transformPropertyName(String propertyName){
 		if(needTransformPropertyName && propertyName.indexOf(spliter)!=-1){
-			return StringUtils.toJavaName(propertyName, spliter, false);
+			return StringUtils.toCamel(propertyName, spliter, false);
 		}
 		return propertyName;
 	}

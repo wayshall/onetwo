@@ -171,7 +171,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 	
 	protected void setNamedInfoProperty(BeanWrapper beanBw, String prop, Object val){
 		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
+			prop = StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
 		}
 		beanBw.setPropertyValue(prop, val);
 		/*try {

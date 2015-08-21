@@ -9,7 +9,11 @@ import org.onetwo.common.utils.convert.Types;
 @SuppressWarnings("serial")
 public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	
-	public BaseMap(){super();};
+	public BaseMap(){super();}
+	
+	public BaseMap(int initialCapacity) {
+		super(initialCapacity);
+	}
 	
 	public BaseMap(Map<K, V> map){
 		super(map);

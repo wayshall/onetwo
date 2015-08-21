@@ -1,7 +1,17 @@
 package org.onetwo.common.utils.map;
 
 @SuppressWarnings({ "unchecked", "serial" })
-public class NonCaseMap<K, V> extends BaseMap<K, V>{
+public class CaseInsensitiveMap<K, V> extends BaseMap<K, V>{
+	
+	public CaseInsensitiveMap() {
+		super();
+	}
+
+
+	public CaseInsensitiveMap(int initialCapacity) {
+		super(initialCapacity);
+	}
+	
 
 	@Override
 	public V get(Object key) {
