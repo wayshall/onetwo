@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 
 public class LoggerInterceptor extends WebInterceptorAdapter implements InitializingBean {
-	public static final int INTERCEPTOR_ORDER = BootFirstInterceptor.INTERCEPTOR_ORDER+100;
+//	public static final int INTERCEPTOR_ORDER = BootFirstInterceptor.INTERCEPTOR_ORDER+100;
 
 	public static interface UserDetailRetriever {
 		UserDetail getUserDetail();
@@ -134,7 +134,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 	@Override
 	public int getOrder() {
-		return INTERCEPTOR_ORDER;
+		return ORDERED_LOG;
 	}
 
 	public void setContextHolder(ContextHolder contextHolder) {

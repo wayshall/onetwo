@@ -34,7 +34,7 @@ import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.common.utils.map.NonCaseMap;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -659,7 +659,7 @@ public class DBUtils {
 		List<BaseMap> datas = new ArrayList<BaseMap>();
 		
 		try {
-			NonCaseMap<String, Object> rowMap = null;
+			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
 				rowMap = toMap(rs, false, mapper);
 				if(rowMap!=null)
@@ -675,8 +675,8 @@ public class DBUtils {
 	}
 	
 
-	public static NonCaseMap toMap(ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
-		NonCaseMap rowMap = new NonCaseMap();
+	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
+		CaseInsensitiveMap rowMap = new CaseInsensitiveMap();
 		try {
 			rowMap = mapper.map(rs, rowMap);
 		} catch (Exception e) {
@@ -692,7 +692,7 @@ public class DBUtils {
 		List<Map> datas = new ArrayList<Map>();
 		
 		try {
-			NonCaseMap<String, Object> rowMap = null;
+			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
 				rowMap = toMap(rs, false, names);
 				if(rowMap!=null)
@@ -717,12 +717,12 @@ public class DBUtils {
 	 * @param names
 	 * @return
 	 */
-	public static NonCaseMap toMap(ResultSet rs, String...names) {
+	public static CaseInsensitiveMap toMap(ResultSet rs, String...names) {
 		return toMap(rs, false, names);
 	}
 	
-	public static NonCaseMap toMap(ResultSet rs, boolean autoClose, String...names) {
-		NonCaseMap rowMap = new NonCaseMap<String, Object>();
+	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, String...names) {
+		CaseInsensitiveMap rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){
 				Map<String, Integer> columnNames = getColumnMeta(rs);
@@ -763,7 +763,7 @@ public class DBUtils {
 	public static Map<String, Integer> getColumnMeta(ResultSet rs) throws SQLException{
 		ResultSetMetaData rsMeta = rs.getMetaData();
 		int colCount = rsMeta.getColumnCount();
-		Map<String, Integer> column = new NonCaseMap<String, Integer>();
+		Map<String, Integer> column = new CaseInsensitiveMap<String, Integer>();
 		for(int i=1; i<=colCount; i++){
 			column.put(rsMeta.getColumnName(i), i-1);
 		}
