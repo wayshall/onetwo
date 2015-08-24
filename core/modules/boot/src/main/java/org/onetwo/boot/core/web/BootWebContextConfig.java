@@ -78,6 +78,7 @@ public class BootWebContextConfig {
 		if(type==StoreType.LOCAL){
 			SimpleFileStorer fs = new SimpleFileStorer();
 			fs.setStoreBaseDir(config.getFileStorePath());
+			fs.setKeepContextPath(config.getKeepContextPath());
 			return fs;
 		}else if(type==StoreType.FTP){
 			FtpConfig ftpConfig = new FtpConfig();
@@ -88,6 +89,7 @@ public class BootWebContextConfig {
 			FtpFileStorer fs = new FtpFileStorer(ftpConfig);
 			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
 			fs.setStoreBaseDir(config.getFtpBaseDir());
+			fs.setKeepContextPath(config.getKeepContextPath());
 			return fs;
 		}
 		throw new IllegalArgumentException("type: " + type);

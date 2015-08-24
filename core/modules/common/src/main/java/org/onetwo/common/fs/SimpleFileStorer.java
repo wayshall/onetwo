@@ -11,12 +11,16 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
 	private StoreFilePathStrategy strategy;
 	private String storeBaseDir;
+	private String keepContextPath;
 	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
 		String storePath = getStoreDir(context);
 		doStoring(storePath, context);
 		String returnPath = StringUtils.substringAfter(storePath, storeBaseDir);
+		if(StringUtils.isNotBlank(keepContextPath)){
+			returnPath = StringUtils.trimEndWith(keepContextPath, "/") + returnPath;
+		}
 		return new SimpleFileStoredMeta(returnPath);
 	}
 	
@@ -49,5 +53,14 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 			return baseDir + now.formatAsDate()+"/"+newfn;
 		};
 	}
+
+	public void setKeepContextPath(String keepContextPath) {
+		this.keepContextPath = keepContextPath;
+	}
+
+	public String getKeepContextPath() {
+		return keepContextPath;
+	}
+
 	
 }
