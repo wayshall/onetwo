@@ -18,6 +18,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 	
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String AT = "@";
+	public static final String COMMENT_BRACKET = SimpleSqlFileLineLexer.COMMENT + "[";
 //	public static final String EQUALS_MARK = "=";
 	public static final String COLON = ":";
 	
@@ -137,6 +138,13 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 				break;
 			}else if(lineLexer.getLineToken()==LineToken.MULTIP_COMMENT){
 				break;
+			}else if(lineLexer.getLineToken()==LineToken.ONE_LINE_COMMENT){
+				String value = StringUtils.join(lineLexer.getLineBuf(), " ");
+				if(value.startsWith(COMMENT_BRACKET)){//--[#if ]
+					value = value.substring(SimpleSqlFileLineLexer.COMMENT.length());
+					buf.append(value).append(" ");
+				}
+				continue;
 			}else if(lineLexer.getLineToken()==LineToken.CONTENT){
 				String value = StringUtils.join(lineLexer.getLineBuf(), " ");
 				buf.append(value).append(" ");

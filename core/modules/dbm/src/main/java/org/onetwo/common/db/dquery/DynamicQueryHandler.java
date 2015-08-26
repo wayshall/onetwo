@@ -169,7 +169,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		TimeCounter t = new TimeCounter("prepare insert");
 		t.start();
 		
-		BeanWrapper paramsContextBean = SpringUtils.newBeanWrapper(invokeContext.getParsedParams());
+		BeanWrapper paramsContextBean = SpringUtils.newBeanMapWrapper(invokeContext.getParsedParams());
 		List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
 		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql(), em.getSqlParamterPostfixFunctionRegistry());
 		for(Object val : batchParameter){

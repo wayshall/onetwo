@@ -1,5 +1,10 @@
 package org.onetwo.common.result;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.onetwo.common.utils.Assert;
+
 
 
 
@@ -40,6 +45,42 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 			return false;
 	}
 	
+
+	public static class LazyResult extends AbstractDataResult<Object> {
+
+
+		public static LazyResult createSucceed(String message, LazyValue obj){
+			return create(SUCCEED, message, obj);
+		}
+		public static LazyResult create(int code, String message, LazyValue obj){
+			LazyResult result = new LazyResult(obj);
+			result.setCode(code);
+			result.setMessage(message);
+			result.setData(obj);
+			return result;
+		}
+		
+		private LazyValue lazyValue;
+		private Object data;
+
+		private LazyResult(LazyValue data) {
+			super();
+			Assert.notNull(data);
+			this.lazyValue = data;
+		}
+
+		public Object getData() {
+			if(data==null){
+				data = lazyValue.lazyGet();
+			}
+			return data;
+		}
+
+		public void setData(Object data) {
+			this.data = data;
+		}
+	}
+	
 	public static class SimpleDataResult<T> extends AbstractDataResult<T> {
 		public static <E> SimpleDataResult<E> createFailed(String message){
 			return create(FAILED, message, null);
@@ -59,11 +100,11 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 		
 		private T data;
 		
-		public SimpleDataResult() {
+		private SimpleDataResult() {
 			super();
 		}
 
-		public SimpleDataResult(T data) {
+		private SimpleDataResult(T data) {
 			super();
 			this.data = data;
 		}
@@ -75,5 +116,38 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 		public void setData(T data) {
 			this.data = data;
 		}
+	}
+	
+	public static class ListDataResult<T> extends AbstractDataResult<List<T>>{
+
+		public static <E> ListDataResult<E> createFailed(String message){
+			return create(FAILED, message);
+		}
+
+		@SafeVarargs
+		public static <E> ListDataResult<E> createSucceed(E...objects){
+			return create(SUCCEED, "SUCCEED", objects);
+		}
+		
+		@SafeVarargs
+		public static <E> ListDataResult<E> create(int code, String message, E...objects){
+			ListDataResult<E> result = new ListDataResult<>();
+			result.setCode(code);
+			result.setMessage(message);
+			result.setData(Arrays.asList(objects));
+			return result;
+		}
+		
+		private List<T> data;
+		
+
+		public List<T> getData() {
+			return data;
+		}
+
+		public void setData(List<T> data) {
+			this.data = data;
+		}
+		
 	}
 }

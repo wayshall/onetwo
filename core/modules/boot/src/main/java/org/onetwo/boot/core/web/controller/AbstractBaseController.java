@@ -16,17 +16,18 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
-import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.fs.FileStoredMeta;
 import org.onetwo.common.fs.FileStorer;
 import org.onetwo.common.fs.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.result.AbstractDataResult;
+import org.onetwo.common.result.AbstractDataResult.LazyResult;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.result.LazyValue;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
-import org.onetwo.common.spring.web.mvc.DataWrapper.LazyValue;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.file.FileUtils;
 import org.onetwo.common.utils.func.SimpleBlock;
@@ -57,8 +58,8 @@ abstract public class AbstractBaseController {
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
 
-	public static final String FILTER_KEYS = BootJsonView.FILTER_KEYS;
-	public static final String JSON_DATAS = BootJsonView.JSON_DATAS;
+	/*public static final String FILTER_KEYS = BootJsonView.FILTER_KEYS;
+	public static final String JSON_DATAS = BootJsonView.JSON_DATAS;*/
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -263,15 +264,43 @@ abstract public class AbstractBaseController {
 		return bootSiteConfig;
 	}
 
+	/***
+	 * 返回json，里面只包含 value 数据对象
+	 * @param value
+	 * @return
+	 */
 	protected ModelAndView responseData(Object value){
 		return mv("", DataWrapper.wrap(value));
 	}
-	
-	protected ModelAndView responseAsResult(Object value){
-		return mv("", DataWrapper.wrap(new SimpleDataResult<Object>(value)));
-	}
+	/***
+	 * 返回json，里面只包含 value 数据对象
+	 * @param value
+	 * @return
+	 */
 	protected ModelAndView responseData(LazyValue value){
 		return mv("", DataWrapper.lazy(value));
+	}
+	
+	/***
+	 * 返回json，数据对象为AbstractDataResult类型
+	 * @param value
+	 * @return
+	 */
+	protected ModelAndView responseResult(Object value){
+		return mv("", SimpleDataResult.createSucceed(null, value));
+	}
+	
+	/***
+	 * 返回json，数据对象为AbstractDataResult类型
+	 * @param value
+	 * @return
+	 */
+	protected ModelAndView responseResult(LazyValue value){
+		return mv("", LazyResult.createSucceed(null, value));
+	}
+	
+	protected AbstractDataResult<Object> asResult(Object value){
+		return SimpleDataResult.createSucceed(null, value);
 	}
 	
 	protected ResponseType getResponseType(){

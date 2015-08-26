@@ -1,6 +1,5 @@
 package org.onetwo.boot.core.web.view;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,13 +8,11 @@ import javax.annotation.PostConstruct;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
+import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.result.DataResult;
 import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
-import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.list.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
@@ -26,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BootJsonView extends MappingJackson2JsonView {
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 
-	public static final String FILTER_KEYS = ":filterKeys";
-	public static final String JSON_DATAS = ":jsonDatas";
+	/*public static final String FILTER_KEYS = ":filterKeys";
+	public static final String JSON_DATAS = ":jsonDatas";*/
 	
 	private boolean wrapModelAsDataResult = true;
 	
@@ -60,44 +57,33 @@ public class BootJsonView extends MappingJackson2JsonView {
 	protected Object filterModel(Map<String, Object> model) {
 		model.remove(BootFirstInterceptor.NOW_KEY);
 		
-		if(model.containsKey(JSON_DATAS)){
-			Object datas = model.get(JSON_DATAS);
-			model.clear();
-			model.put(JSON_DATAS, datas);
-		}else if(model.containsKey(FILTER_KEYS)){
-//			Iterator<Map.Entry<String, Object>> it = model.entrySet().iterator();
-			final List<String> filterKeys = LangUtils.asList(model.get(FILTER_KEYS));
-			CUtils.filter(model, new Predicate<Entry<String, Object>>() {
-
-				@Override
-				public boolean apply(Entry<String, Object> entry) {
-					return !filterKeys.contains(entry.getKey());
-				}
-				
-			});
-		}else{
-			for(Map.Entry<String, Object> entry : model.entrySet()){
-				if(Result.class.isInstance(entry.getValue())){
-					return entry.getValue();
-				}else if(DataWrapper.class.isInstance(entry.getValue())){
-					return ((DataWrapper)entry.getValue()).getValue();
-				}
+		Object result = null;
+		for(Map.Entry<String, Object> entry : model.entrySet()){
+			if(Result.class.isInstance(entry.getValue())){
+				result = entry.getValue();
+				return result;
+			}else if(DataWrapper.class.isInstance(entry.getValue())){
+				result = ((DataWrapper)entry.getValue()).getValue();
+				return result;
 			}
 		}
 
 //		setExtractValueFromSingleKeyModel(false);
 //		filterModelByCallback(model);
-		Object result = super.filterModel(model);
-		
-		return wrapAsDataResultIfNeed(result);
+		if(result==null){
+			result = super.filterModel(model);
+		}
+
+		if(wrapModelAsDataResult)
+			return wrapAsDataResultIfNeed(result);
+		return result;
 	}
 	
 	
 	private Object wrapAsDataResultIfNeed(Object result){
-		if(!wrapModelAsDataResult)
+		if(Result.class.isInstance(result)){
 			return result;
-		
-		if(Map.class.isInstance(result)){
+		}else if(Map.class.isInstance(result)){
 			Map<String, Object> map = (Map<String, Object>) result;
 			DataResult dataResult = DataResult.createSucceed("");
 			for(Entry<String, Object> entry : map.entrySet()){
@@ -121,7 +107,8 @@ public class BootJsonView extends MappingJackson2JsonView {
 			}
 			return dataResult;
 		}else{
-			return result;
+			SimpleDataResult<Object> dataResult = SimpleDataResult.createSucceed("", result);
+			return dataResult;
 		}
 	}
 	

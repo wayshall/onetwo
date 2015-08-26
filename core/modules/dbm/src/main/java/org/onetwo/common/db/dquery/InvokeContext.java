@@ -1,13 +1,12 @@
 package org.onetwo.common.db.dquery;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
-
-import com.google.common.collect.ImmutableMap;
 
 public class InvokeContext {
 
@@ -19,7 +18,9 @@ public class InvokeContext {
 		super();
 		this.dynamicMethod = dynamicMethod;
 		this.parameterValues = parameterValues;
-		this.parsedParams = ImmutableMap.copyOf(dynamicMethod.toMapByArgs(parameterValues));
+		//ImmutableMap.copyOf key和value不能为null
+//		this.parsedParams = ImmutableMap.copyOf(dynamicMethod.toMapByArgs(parameterValues));
+		this.parsedParams = Collections.unmodifiableMap(dynamicMethod.toMapByArgs(parameterValues));
 	}
 
 	public String getQueryName() {
