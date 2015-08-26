@@ -2,6 +2,8 @@ package org.onetwo.common.spring.web.mvc;
 
 import java.io.Serializable;
 
+import org.onetwo.common.result.LazyValue;
+
 /*****
  * @author wayshall
  * 
@@ -11,10 +13,6 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class DataWrapper implements Serializable{
-	
-	public static interface LazyValue {
-		Object get();
-	}
 	
 	public static DataWrapper wrap(Object value){
 		return new DataWrapper(value);
@@ -32,7 +30,7 @@ public class DataWrapper implements Serializable{
 
 	public Object getValue() {
 		if(LazyValue.class.isInstance(value)){
-			return ((LazyValue)value).get();
+			return ((LazyValue)value).lazyGet();
 		}
 		return value;
 	}
