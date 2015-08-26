@@ -2,6 +2,9 @@ package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
+import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -14,7 +17,7 @@ public class SpringBasedSqlFileScanner extends SimpleSqlFileScanner {
 	}
 
 	@Override
-	public ResourceAdapter<?>[] scanMatchSqlFiles(){
+	public ResourceAdapter<?>[] scanMatchSqlFiles(String dialectDir){
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 		
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + dir;
@@ -23,14 +26,17 @@ public class SpringBasedSqlFileScanner extends SimpleSqlFileScanner {
 		ResourceAdapter<?>[] allSqlFiles = null;
 		try {
 			Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
-//			if(StringUtils.isNotBlank(conf.getOverrideDir())){
-//				sqldirPath = locationPattern+"/"+conf.getOverrideDir()+"/**/*"+conf.getPostfix();
-//				logger.info("scan database dialect dir : " + sqldirPath);
-//				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
-//				if(!LangUtils.isEmpty(dbsqlfiles)){
-//					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
-//				}
-//			}
+			
+			//scan dialectDir
+			if(StringUtils.isNotBlank(dialectDir)){
+				sqldirPath = locationPattern+"/"+dialectDir+"/**/*"+postfix;
+				logger.info("scan database dialect dir : " + sqldirPath);
+				Resource[] dbsqlfiles = resourcePatternResolver.getResources(sqldirPath);
+				if(!LangUtils.isEmpty(dbsqlfiles)){
+					sqlfileArray = (Resource[]) ArrayUtils.addAll(sqlfileArray, dbsqlfiles);
+				}
+			}
+			
 			allSqlFiles = new ResourceAdapter[sqlfileArray.length];
 			int index = 0;
 			for(Resource rs : sqlfileArray){

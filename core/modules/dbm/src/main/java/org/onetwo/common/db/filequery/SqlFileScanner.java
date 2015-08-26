@@ -10,6 +10,6 @@ public interface SqlFileScanner {
 	 * @param conf
 	 * @return
 	 */
-	ResourceAdapter<?>[] scanMatchSqlFiles();
+	ResourceAdapter<?>[] scanMatchSqlFiles(String dialectDir);
 
 }
