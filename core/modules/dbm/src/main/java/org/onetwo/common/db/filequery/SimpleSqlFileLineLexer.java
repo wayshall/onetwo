@@ -52,8 +52,8 @@ public class SimpleSqlFileLineLexer {
 			}else if(isOneCommentStart()){
 				scanOneLineComment();
 				scanNextLine();
-//				return true;
-				continue;
+				return true;
+//				continue;
 				
 			}else if(isMultipCommentStart()){
 				scanMultipComment();
@@ -94,6 +94,7 @@ public class SimpleSqlFileLineLexer {
 	}
 	
 	protected void scanOneLineComment(){
+		this.saveToBuf();
 		this.lineToken = LineToken.ONE_LINE_COMMENT;
 	}
 	
