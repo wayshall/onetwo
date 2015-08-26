@@ -65,6 +65,11 @@ public class BeanWrapperTest {
 		
 		bw.setPropertyValue("id", "11");
 		Assert.assertTrue(user.getId()==11L);
+
+		bw.setPropertyValue("bust[0]", 99);
+		Assert.assertEquals(99, user.getBust()[0]);;
+		bw.setPropertyValue("bust[1]", 90);
+		Assert.assertEquals(90, user.getBust()[1]);;
 		
 		bw.setPropertyValue("roles[0].id", 12L);
 		bw.setPropertyValue("roles[0].name", "way");
@@ -171,7 +176,7 @@ public class BeanWrapperTest {
 		Map<String, Object> map = LangUtils.newHashMap();
 		map.put("users", userList);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map, "users", UserEntity.class);
+		bw = SpringUtils.newBeanMapWrapper(map, "users", UserEntity.class);
 		bw.setAutoGrowNestedPaths(true);
 		bw.setPropertyValue("users[0].userName", "userName1");
 		bw.setPropertyValue("users[0].age", 17);
