@@ -26,6 +26,8 @@ public class UserEntity {
 	
 	private Map<String, Object> attrs;
 	
+	private int[] bust;
+	
 	public Long getId() {
 		return id;
 	}
@@ -102,6 +104,14 @@ public class UserEntity {
 
 	public void setAttrs(Map<String, Object> attrs) {
 		this.attrs = attrs;
+	}
+
+	public int[] getBust() {
+		return bust;
+	}
+
+	public void setBust(int[] bust) {
+		this.bust = bust;
 	}
 
 

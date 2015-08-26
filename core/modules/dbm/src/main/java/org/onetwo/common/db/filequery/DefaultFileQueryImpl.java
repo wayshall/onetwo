@@ -80,7 +80,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		dataQuery = createDataQuery(parsedSql, resultClass);
 		
 		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql, baseEntityManager.getSqlParamterPostfixFunctionRegistry());
-		BeanWrapper paramBean = SpringUtils.newBeanWrapper(sqlAndValues.asMap());
+		BeanWrapper paramBean = SpringUtils.newBeanMapWrapper(sqlAndValues.asMap());
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			if(!paramBean.isReadableProperty(parameter.getProperty()))
 				continue;

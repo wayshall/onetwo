@@ -34,10 +34,12 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 		if(!List.class.isAssignableFrom(parameter.getParameterType())){
 			throw new BaseException("the parameter type must be a List: " + parameter.getParameterType());
 		}
-		String attrName = listParameterAnnotation.value();
-		if(StringUtils.isBlank(attrName))
+		final String attrName;
+		if(StringUtils.isBlank(listParameterAnnotation.value()))
 			attrName = parameter.getParameterName();
-
+		else
+			attrName = listParameterAnnotation.value();
+		
 		Class<?> etype = ReflectUtils.getGenricType(parameter.getGenericParameterType(), 0);
 		Object list = null;
 		
@@ -49,16 +51,25 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 			list = ReflectUtils.newList(listParameterAnnotation.type());
 			Map<String, Object> listWrapper = LangUtils.newHashMap();
 			listWrapper.put(attrName, list);
-			BeanWrapper bw = SpringUtils.newBeanWrapper(listWrapper, attrName, etype);
+			BeanWrapper bw = SpringUtils.newBeanMapWrapper(listWrapper, attrName, etype);
 			Iterator<String> pnames = webRequest.getParameterNames();
 			while(pnames.hasNext()){
 				String pname = pnames.next();
-//				System.out.println("pname: " + pname);
-				if(pname.startsWith(attrName)){
+				if(pname.startsWith(attrName) && bw.isWritableProperty(pname)){
 					bw.setPropertyValue(pname, webRequest.getParameter(pname));
 				}
 			}
+
+			if(webRequest.getNativeRequest() instanceof MultipartRequest){
+				MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+				mrequest.getFileNames().forEachRemaining(fn->{
+					if(fn.startsWith(attrName) && bw.isWritableProperty(fn)){
+						bw.setPropertyValue(fn, mrequest.getFile(fn));
+					}
+				});
+			}
 		}
+		
 		
 		return list;
 	}

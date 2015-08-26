@@ -44,7 +44,7 @@ public class DynamicQueryObjectRegister implements /*FileNamedQueryFactoryListen
 	
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-		ResourceAdapter<?>[] sqlfiles = sqlFileScanner.scanMatchSqlFiles();
+		ResourceAdapter<?>[] sqlfiles = sqlFileScanner.scanMatchSqlFiles(null);
 		Stream.of(sqlfiles).forEach(f->{
 			final String fileName = f.getName();
 			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());
