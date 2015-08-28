@@ -13,6 +13,7 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
+import org.onetwo.common.db.dquery.annotation.AsCountQuery;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
 import org.onetwo.common.db.dquery.annotation.Matcher;
@@ -48,10 +49,11 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 //	private final List<DynamicMethodParameter> parameters;
 	private final Class<?> resultClass;
 	private final Class<?> componentClass;
-	private final String queryName;
+	private String queryName;
 //	private final ExecuteUpdate executeUpdate;
 	private boolean update;
 	private boolean batchUpdate;
+	private AsCountQuery asCountQuery;
 //	private List<String> parameterNames;
 	
 	private DynamicMethodParameter pageParamter;
@@ -60,12 +62,9 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	public DynamicMethod(Method method){
 		super(method);
 		
-		this.setupExecuteType();
+		this.checkAndSetExecuteType();
 		
-		//check query swither
-		this.matcherParamter = checkAndFindQuerySwitch(parameters);
 		
-		queryName = method.getDeclaringClass().getName()+"."+method.getName();
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
@@ -100,12 +99,45 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		if(compClass==Object.class)
 			compClass = resultClass;
 		this.componentClass = compClass;
+
+		//check query swither
+		checkAndFindQuerySwitch(parameters);
+		checkAndFindAsCountQuery(componentClass);
+		findAndSetQueryName(this.asCountQuery);
 		
 		LangUtils.println("resultClass: ${0}, componentClass:${1}", resultClass, compClass);
 	}
 	
-	private DynamicMethodParameter checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
-		return parameters.stream().filter(p->{
+	/***
+	 * dependency AsCountQuery
+	 * @param asCountQuery
+	 */
+	private void findAndSetQueryName(AsCountQuery asCountQuery){
+		if(asCountQuery!=null){
+			queryName = method.getDeclaringClass().getName()+"."+asCountQuery.value();
+		}else{
+			queryName = method.getDeclaringClass().getName()+"."+method.getName();
+		}
+	}
+	
+	/***
+	 * dependency componentClass
+	 * @param componentClass
+	 */
+	private void checkAndFindAsCountQuery(Class<?> componentClass){
+		this.asCountQuery = method.getAnnotation(AsCountQuery.class);
+		if(asCountQuery!=null){
+			if(update || batchUpdate){
+				update = batchUpdate = false;
+			}
+			if(!LangUtils.isNumberType(componentClass)){
+				throw new FileNamedQueryException("countquery's return type must be a number, but " + componentClass);
+			}
+		}
+	}
+	
+	private void checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
+		this.matcherParamter = parameters.stream().filter(p->{
 								if(p.hasParameterAnnotation(Matcher.class)){
 									if(p.getParameterIndex()!=0){
 										throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (p.getParameterIndex()+1));
@@ -118,6 +150,10 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 							})
 						.findFirst()
 						.orElse(null);
+	}
+	
+	public boolean isAsCountQuery(){
+		return asCountQuery!=null;
 	}
 	
 	@Override
@@ -138,7 +174,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return false;
 	}
 	
-	final private void setupExecuteType(){
+	final private void checkAndSetExecuteType(){
 		ExecuteUpdate executeUpdate = method.getAnnotation(ExecuteUpdate.class);
 		if(executeUpdate!=null){
 			this.update = true;
