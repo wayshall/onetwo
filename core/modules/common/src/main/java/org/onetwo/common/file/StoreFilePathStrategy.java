@@ -1,4 +1,4 @@
-package org.onetwo.common.fs;
+package org.onetwo.common.file;
 
 
 public interface StoreFilePathStrategy {

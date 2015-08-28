@@ -20,9 +20,9 @@ import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
-import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
@@ -135,6 +135,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
 				result = dq.executeUpdate();
 				
+			}else if(dmethod.isAsCountQuery()){
+//				parsedQueryName.setMappedEntity(dmethod.getResultClass());
+				DataQuery dq = em.getFileNamedQueryManager().createCountQuery(parsedQueryName, methodArgs);
+				result = dq.getSingleResult();
+				result = Types.convertValue(result, resultClass);
 			}else{
 				result = em.getFileNamedQueryManager().findOne(parsedQueryName, methodArgs);
 			}

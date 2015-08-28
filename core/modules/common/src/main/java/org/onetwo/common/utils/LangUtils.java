@@ -42,10 +42,10 @@ import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.annotation.BeanOrder;
 import org.onetwo.common.utils.convert.Types;
 import org.onetwo.common.utils.encrypt.MDFactory;
-import org.onetwo.common.utils.file.FileUtils;
 import org.onetwo.common.utils.func.Block;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
@@ -1708,9 +1708,20 @@ public class LangUtils {
 	}
 	
 	public static boolean isNumberType(Class<?> clazz){
+		if(clazz==null)
+			return false;
 		if(clazz.isPrimitive()){
 			return int.class==clazz || long.class==clazz || short.class==clazz || float.class==clazz || double.class==clazz;
 		}
 		return Number.class.isAssignableFrom(clazz);
+	}
+	
+	public static boolean isIntegralType(Class<?> clazz){
+		if(clazz==null)
+			return false;
+		if(clazz.isPrimitive()){
+			return int.class==clazz || long.class==clazz || short.class==clazz;
+		}
+		return Integer.class==clazz || Long.class==clazz || Short.class==clazz;
 	}
 }

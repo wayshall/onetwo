@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.fs.FileStoredMeta;
-import org.onetwo.common.fs.FileStorer;
-import org.onetwo.common.fs.StoringFileContext;
+import org.onetwo.common.file.FileStoredMeta;
+import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.StoringFileContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

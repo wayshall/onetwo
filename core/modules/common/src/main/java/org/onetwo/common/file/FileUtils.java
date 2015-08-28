@@ -1,4 +1,4 @@
-package org.onetwo.common.utils.file;
+package org.onetwo.common.file;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
