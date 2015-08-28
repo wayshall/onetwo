@@ -22,13 +22,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.db.generator.mapping.ResultSetMapper;
 import org.onetwo.common.db.generator.mapping.SimpleMetaMapping;
 import org.onetwo.common.db.generator.mapping.SqlTypeMapping;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 import org.slf4j.Logger;

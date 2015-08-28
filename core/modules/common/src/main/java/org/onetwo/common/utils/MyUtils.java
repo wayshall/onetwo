@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")

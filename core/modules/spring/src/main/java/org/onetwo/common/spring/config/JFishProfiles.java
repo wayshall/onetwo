@@ -1,8 +1,8 @@
 package org.onetwo.common.spring.config;
 
+import org.onetwo.common.propconf.Environment;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.Environment;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

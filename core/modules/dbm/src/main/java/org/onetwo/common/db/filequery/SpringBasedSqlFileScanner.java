@@ -1,11 +1,11 @@
 package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;

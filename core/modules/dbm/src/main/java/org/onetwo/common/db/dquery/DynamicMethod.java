@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
@@ -27,10 +28,9 @@ import org.onetwo.common.db.filequery.ParserContextFunctionSet;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
-import org.onetwo.common.utils.AnnotationUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
 

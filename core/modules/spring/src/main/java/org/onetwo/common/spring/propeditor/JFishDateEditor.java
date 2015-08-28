@@ -3,8 +3,8 @@ package org.onetwo.common.spring.propeditor;
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.DateUtil;
 import org.slf4j.Logger;
 
 public class JFishDateEditor extends PropertyEditorSupport {

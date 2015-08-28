@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 
 /***
  * 把对象映射为map

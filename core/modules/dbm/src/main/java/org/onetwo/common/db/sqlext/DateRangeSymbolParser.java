@@ -3,11 +3,11 @@ package org.onetwo.common.db.sqlext;
 import java.util.Date;
 import java.util.List;
 
+import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.db.builder.QueryField;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.NiceDate;
 
 /****
  * 对in操作符的解释

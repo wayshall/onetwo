@@ -2,6 +2,7 @@ package org.onetwo.common.jfishdbm.query;
 
 import java.util.Collection;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.AbstractJFishMappedEntryImpl;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
@@ -9,7 +10,6 @@ import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedType;
 import org.onetwo.common.jfishdbm.mapping.TableInfo;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.utils.AnnotationInfo;
 
 public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 

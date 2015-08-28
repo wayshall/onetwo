@@ -1,8 +1,8 @@
 package org.onetwo.common.file;
 
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.StringUtils;
 
 

@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.common.utils.delegate.DelegateFactory;
-import org.onetwo.common.utils.delegate.DelegateMethod;
+import org.onetwo.common.delegate.DelegateFactory;
+import org.onetwo.common.delegate.DelegateMethod;
 import org.onetwo.common.utils.func.Block;
 
 public class Timeit {

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.ConversionNotSupportedException;
 
 public class CopyUtilsTest {

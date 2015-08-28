@@ -7,10 +7,10 @@ import javax.annotation.Resource;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.ds.SwitcherInfo.Type;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.fish.utils.ContextHolder;
-import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.utils.Assert;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;

@@ -12,9 +12,9 @@ import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
 
 /*******************************************************************************

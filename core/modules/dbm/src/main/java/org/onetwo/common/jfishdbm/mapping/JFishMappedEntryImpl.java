@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.utils.AnnotationInfo;
 import org.onetwo.common.utils.LangUtils;
 
 public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {

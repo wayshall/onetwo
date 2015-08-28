@@ -1,10 +1,10 @@
 package org.onetwo.common.cmd;
 
+import org.onetwo.common.commandline.CmdRunner;
+import org.onetwo.common.commandline.CommandManager;
+import org.onetwo.common.commandline.DefaultCommandManager;
+import org.onetwo.common.commandline.HelpCommand;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.utils.commandline.CmdRunner;
-import org.onetwo.common.utils.commandline.CommandManager;
-import org.onetwo.common.utils.commandline.DefaultCommandManager;
-import org.onetwo.common.utils.commandline.HelpCommand;
 import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 
 abstract public class SpringCmdRunner extends CmdRunner {

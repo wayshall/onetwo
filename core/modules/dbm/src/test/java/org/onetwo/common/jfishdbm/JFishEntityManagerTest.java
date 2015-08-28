@@ -4,10 +4,10 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.jackson.UserEntity;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.test.context.ActiveProfiles;

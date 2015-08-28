@@ -2,8 +2,8 @@ package org.onetwo.common.jfishdbm.mapping;
 
 import java.util.Collection;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.utils.AnnotationInfo;
 
 /****
  * 连接表映射？

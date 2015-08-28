@@ -2,7 +2,7 @@ package org.onetwo.common.db.filequery;
 
 import java.util.Collection;
 
-import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.propconf.ResourceAdapter;
 
 public interface NamespacePropertiesManager<T extends NamespaceProperty> /*extends JFishPropertiesManager<T>*/{
 

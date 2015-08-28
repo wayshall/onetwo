@@ -6,10 +6,10 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
-import org.onetwo.common.utils.NiceDate;
 import org.onetwo.common.utils.Page;
 
 //@TransactionConfiguration(defaultRollback=true)

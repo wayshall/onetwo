@@ -3,12 +3,12 @@ package org.onetwo.common.db.filequery;
 import java.util.Date;
 import java.util.Map;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.JodatimeUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.convert.Types;
 
 public class SqlParamterPostfixFunctions implements SqlParamterPostfixFunctionRegistry {
 	

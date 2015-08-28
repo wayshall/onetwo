@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.AnnotationUtils;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.common.web.utils.RequestUtils;
 

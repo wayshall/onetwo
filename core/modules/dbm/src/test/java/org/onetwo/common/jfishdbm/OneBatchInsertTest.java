@@ -9,11 +9,11 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.NiceDate;
 
 //@TransactionConfiguration(defaultRollback=true)
 public class OneBatchInsertTest extends AppBaseTest {

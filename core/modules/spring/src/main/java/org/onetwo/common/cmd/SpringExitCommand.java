@@ -1,8 +1,8 @@
 package org.onetwo.common.cmd;
 
+import org.onetwo.common.commandline.CmdContext;
+import org.onetwo.common.commandline.ExitCommand;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.utils.commandline.CmdContext;
-import org.onetwo.common.utils.commandline.ExitCommand;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
