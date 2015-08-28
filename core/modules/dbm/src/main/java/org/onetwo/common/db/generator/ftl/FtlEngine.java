@@ -8,9 +8,9 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.generator.TemplateEngine;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.ftl.DynamicFreemarkerTemplateConfigurer;
 import org.onetwo.common.spring.ftl.StringTemplateProvider;
-import org.onetwo.common.utils.file.FileUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import freemarker.template.Template;

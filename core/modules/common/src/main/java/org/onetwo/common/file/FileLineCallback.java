@@ -1,4 +1,4 @@
-package org.onetwo.common.utils.file;
+package org.onetwo.common.file;
 
 /********
  * 按行读取回调

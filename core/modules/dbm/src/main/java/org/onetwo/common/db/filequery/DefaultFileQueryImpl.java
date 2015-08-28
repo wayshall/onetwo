@@ -48,7 +48,12 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		this.parser = parser;
 		
 		this.info = info;
-		this.resultClass = countQuery?Long.class:info.getMappedEntityClass();
+//		this.resultClass = countQuery?Long.class:info.getMappedEntityClass();
+		if(countQuery){
+			this.resultClass = LangUtils.isIntegralType(info.getMappedEntityClass())?info.getMappedEntityClass():Long.class;
+		}else{
+			this.resultClass = info.getMappedEntityClass();
+		}
 	}
 	
 //	abstract protected DataQuery createDataQuery(DynamicQuery query);

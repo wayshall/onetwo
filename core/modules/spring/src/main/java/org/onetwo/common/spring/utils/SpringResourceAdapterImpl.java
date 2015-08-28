@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.file.FileUtils;
 import org.onetwo.common.utils.propconf.ResourceAdapterImpl;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
