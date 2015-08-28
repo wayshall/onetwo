@@ -80,12 +80,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 			return ReflectUtils.invokeMethod(method, this, args);
 		}
 
+
+		DynamicMethod dmethod = getDynamicMethod(method);
 		try {
-			return this.doInvoke(proxy, method, args);
+			return this.doInvoke(proxy, dmethod, args);
 		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
 		}*/catch (Throwable e) {
-			throw new BaseException("invoke query error : " + e.getMessage(), e);
+			throw new BaseException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
 		}
 		
 	}
@@ -99,15 +101,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 		}
 	}
 	
-	public Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
-		DynamicMethod dmethod = getDynamicMethod(method);
+	public Object doInvoke(Object proxy, DynamicMethod dmethod, Object[] args) throws Throwable {
 		InvokeContext invokeContext = new InvokeContext(dmethod, args);
 		
 		Class<?> resultClass = dmethod.getResultClass();
 		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
 
 		if(debug)
-			logger.info("{}: {}", method.getDeclaringClass().getSimpleName()+"."+method.getName(), LangUtils.toString(args));
+			logger.info("{}: {}", dmethod.getQueryName(), LangUtils.toString(args));
 		
 		Object result = null;
 		Object[] methodArgs = null;

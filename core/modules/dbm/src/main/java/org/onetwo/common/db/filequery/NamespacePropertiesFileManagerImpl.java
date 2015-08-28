@@ -131,8 +131,9 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	 * @param sqlfileArray
 	 */
 	protected void buildSqlFileMonitor(ResourceAdapter<?>... sqlfileArray){
-		if(conf.isWatchSqlFile() && fileMonitor==null){
-			fileMonitor = FileWatcher.newWatcher(1);
+		if(conf.isWatchSqlFile()){
+			if(fileMonitor==null)
+				fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
 		}
 	}
