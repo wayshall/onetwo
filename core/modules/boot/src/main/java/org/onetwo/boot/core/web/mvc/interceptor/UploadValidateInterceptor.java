@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.file.FileUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;

@@ -8,8 +8,8 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.file.FileUtils;
 import org.slf4j.Logger;
 
 public abstract class PropUtils {

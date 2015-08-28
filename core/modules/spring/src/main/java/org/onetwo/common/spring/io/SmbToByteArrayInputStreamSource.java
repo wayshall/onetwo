@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.file.FileUtils;
 import org.springframework.core.io.InputStreamSource;
 
 public class SmbToByteArrayInputStreamSource implements InputStreamSource {

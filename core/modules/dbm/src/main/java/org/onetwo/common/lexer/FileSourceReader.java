@@ -2,8 +2,8 @@ package org.onetwo.common.lexer;
 
 import java.io.File;
 
-import org.onetwo.common.utils.file.FileLineCallback;
-import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.file.FileLineCallback;
+import org.onetwo.common.file.FileUtils;
 
 public class FileSourceReader implements SourceReader {
 

@@ -11,7 +11,7 @@ import jcifs.smb.SmbFileInputStream;
 import jcifs.smb.SmbFileOutputStream;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.file.FileUtils;
+import org.onetwo.common.file.FileUtils;
 
 public class SmbFileUtils {
 
