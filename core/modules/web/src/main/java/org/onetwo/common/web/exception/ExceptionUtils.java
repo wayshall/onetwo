@@ -2,7 +2,7 @@ package org.onetwo.common.web.exception;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.common.utils.AnnotationUtils;
+import org.onetwo.common.annotation.AnnotationUtils;
 
 final public class ExceptionUtils {
 	

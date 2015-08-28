@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class JFishNamedFileQueryInfo extends NamespaceProperty {

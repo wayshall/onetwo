@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
@@ -28,14 +29,13 @@ import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.convert.Types;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 

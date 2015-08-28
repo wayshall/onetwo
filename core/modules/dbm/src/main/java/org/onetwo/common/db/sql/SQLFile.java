@@ -3,9 +3,9 @@ package org.onetwo.common.db.sql;
 import java.util.Map;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.propconf.PropConfig;
+import org.onetwo.common.propconf.PropUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.PropConfig;
-import org.onetwo.common.utils.propconf.PropUtils;
 
 /***
  * .sql文件的管理类

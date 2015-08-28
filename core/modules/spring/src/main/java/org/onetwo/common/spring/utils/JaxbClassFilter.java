@@ -2,7 +2,7 @@ package org.onetwo.common.spring.utils;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 

@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.converter;
 
-import org.onetwo.common.utils.convert.Types;
+import org.onetwo.common.convert.Types;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.util.Assert;

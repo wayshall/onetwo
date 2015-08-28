@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission.parser;
 import java.lang.reflect.Field;
 
 import org.onetwo.boot.plugins.permission.entity.IPermission;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 
 
 

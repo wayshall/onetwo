@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.onetwo.common.utils.propconf.Env;
+import org.onetwo.common.propconf.Env;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /***

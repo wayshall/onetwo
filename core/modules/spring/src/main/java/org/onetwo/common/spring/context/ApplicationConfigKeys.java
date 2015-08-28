@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.context;
 
-import org.onetwo.common.utils.propconf.AppConfig;
+import org.onetwo.common.propconf.AppConfig;
 
 public final class ApplicationConfigKeys {
 	

@@ -2,7 +2,7 @@ package org.onetwo.boot.core;
 
 import javax.servlet.FilterConfig;
 
-import org.onetwo.common.utils.propconf.AppConfig;
+import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.web.filter.AppConfigProvider;
 import org.springframework.stereotype.Component;
 

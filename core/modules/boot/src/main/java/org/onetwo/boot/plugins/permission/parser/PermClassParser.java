@@ -8,8 +8,8 @@ import org.onetwo.boot.plugins.permission.annotation.MenuMapping;
 import org.onetwo.boot.plugins.permission.annotation.ProxyMenu;
 import org.onetwo.boot.plugins.permission.entity.PermissionType;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.list.JFishList;
 
 public class PermClassParser {

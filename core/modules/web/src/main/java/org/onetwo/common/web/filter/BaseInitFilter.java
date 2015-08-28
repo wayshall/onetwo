@@ -17,9 +17,9 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.propconf.AppConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;

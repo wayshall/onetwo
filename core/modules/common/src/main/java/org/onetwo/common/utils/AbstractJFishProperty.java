@@ -4,6 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.common.reflect.Intro;
+
 
 abstract public class AbstractJFishProperty implements JFishProperty {
 

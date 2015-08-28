@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.ResourceAdapter;
 
 /****
  * --@queryname

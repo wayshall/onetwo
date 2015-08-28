@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission.entity;
 import java.util.Arrays;
 
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.utils.AbstractTreeModel;
+import org.onetwo.common.tree.AbstractTreeModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

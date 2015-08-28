@@ -10,8 +10,8 @@ import java.util.Set;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.TypeDefinition;
 import org.dozer.loader.api.TypeMappingBuilder;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
