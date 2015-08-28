@@ -15,10 +15,10 @@ import org.onetwo.common.db.builder.QueryField;
 import org.onetwo.common.db.builder.QueryFieldImpl;
 import org.onetwo.common.db.builder.SqlFuncFieldImpl;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 

@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
 import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 
 final public class JFishdbUtils {
 	private JFishdbUtils(){

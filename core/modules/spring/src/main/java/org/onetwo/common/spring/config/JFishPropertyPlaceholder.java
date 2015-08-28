@@ -2,7 +2,7 @@ package org.onetwo.common.spring.config;
 
 import java.util.Properties;
 
-import org.onetwo.common.utils.propconf.JFishProperties;
+import org.onetwo.common.propconf.JFishProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;

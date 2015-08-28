@@ -1,7 +1,7 @@
 package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
-import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.propconf.ResourceAdapter;
 
 public interface SqlFileParser<T extends NamespaceProperty> {
 

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.onetwo.common.db.IBaseEntity;
-import org.onetwo.common.utils.xml.jaxb.DateAdapter;
+import org.onetwo.common.xml.jaxb.DateAdapter;
 
 @XmlRootElement
 @MappedSuperclass

@@ -1,8 +1,8 @@
 package org.onetwo.common.jfishdbm.mapping;
 
+import org.onetwo.common.propconf.AppConfig;
+import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
-import org.onetwo.common.utils.propconf.AppConfig;
-import org.onetwo.common.utils.propconf.JFishProperties;
 
 public class DefaultDataBaseConfig implements DataBaseConfig {
 	public static final String JFISH_BASE_PACKAGES = AppConfig.JFISH_BASE_PACKAGES;

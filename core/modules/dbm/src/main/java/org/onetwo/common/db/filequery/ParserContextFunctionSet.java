@@ -4,10 +4,10 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Date;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.SqlUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 

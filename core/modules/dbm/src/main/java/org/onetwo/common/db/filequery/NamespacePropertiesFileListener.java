@@ -2,7 +2,7 @@ package org.onetwo.common.db.filequery;
 
 import java.util.Map;
 
-import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.propconf.ResourceAdapter;
 
 public interface NamespacePropertiesFileListener<T extends NamespaceProperty> {
 

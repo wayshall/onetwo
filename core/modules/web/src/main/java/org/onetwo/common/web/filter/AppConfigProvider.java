@@ -2,7 +2,7 @@ package org.onetwo.common.web.filter;
 
 import javax.servlet.FilterConfig;
 
-import org.onetwo.common.utils.propconf.AppConfig;
+import org.onetwo.common.propconf.AppConfig;
 
 public interface AppConfigProvider {
 

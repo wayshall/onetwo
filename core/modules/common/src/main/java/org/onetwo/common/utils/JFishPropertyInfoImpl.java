@@ -7,7 +7,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.reflect.Intro;
+import org.onetwo.common.reflect.ReflectUtils;
 
 public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 	

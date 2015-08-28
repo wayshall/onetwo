@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.map.MappableMap.MappingInfo;
 import org.onetwo.common.utils.map.MappableMap.MappingValueFunc;
 

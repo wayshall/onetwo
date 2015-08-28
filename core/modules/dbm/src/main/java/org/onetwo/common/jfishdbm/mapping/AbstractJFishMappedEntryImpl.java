@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.db.IBaseEntity;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.annotation.JFishEntityListeners;
@@ -21,11 +22,10 @@ import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})

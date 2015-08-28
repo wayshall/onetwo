@@ -3,42 +3,46 @@ package org.onetwo.common.db.filequery;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
 import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer.LineToken;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.ResourceAdapter;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.propconf.ResourceAdapter;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFileQueryInfo> {
 	
+	public static class SimpleDirectiveExtractor implements SqlDirectiveExtractor {
+		public static final String DIRECTIVE_START = SimpleSqlFileLineLexer.COMMENT + "[";
+		public static final String DIRECTIVE_END = "]";
+
+		@Override
+		public boolean isDirective(String value) {
+			return value.startsWith(DIRECTIVE_START) && value.endsWith(DIRECTIVE_END);
+		}
+
+		@Override
+		public String extractDirective(String value) {
+//			String directive = StringUtils.substringBetween(value, DIRECTIVE_START, DIRECTIVE_END);// value.substring(SimpleSqlFileLineLexer.COMMENT.length());
+			String directive = StringUtils.substringAfter(value, SimpleSqlFileLineLexer.COMMENT);// value.substring(SimpleSqlFileLineLexer.COMMENT.length());
+			return directive;
+		}
+		
+	}
+	
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String AT = "@";
-	public static final String COMMENT_BRACKET = SimpleSqlFileLineLexer.COMMENT + "[";
 //	public static final String EQUALS_MARK = "=";
 	public static final String COLON = ":";
 	
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	protected boolean debug = false;
-//	protected LineLexer lineLexer;
-	
-
-	/*public DefaultSqlFileParser2(ResourceAdapter<?> f){
-		lineLexer = new LineLexer(createLineReader(f));
-	}
-	
-	public DefaultSqlFileParser2(List<String> lines){
-		this.lineLexer = new LineLexer(new LineReader(lines));
-	}
-	
-	public DefaultSqlFileParser2(LineReader lineReader){
-		this.lineLexer = new LineLexer(lineReader);
-	}*/
+	protected SqlDirectiveExtractor sqlDirectiveExtractor = new SimpleDirectiveExtractor();
 	
 	@Override
 	public void parseToNamespaceProperty(JFishPropertyConf<JFishNamedFileQueryInfo> conf, PropertiesNamespaceInfo<JFishNamedFileQueryInfo> np, ResourceAdapter<?> f) {
@@ -140,9 +144,8 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 				break;
 			}else if(lineLexer.getLineToken()==LineToken.ONE_LINE_COMMENT){
 				String value = StringUtils.join(lineLexer.getLineBuf(), " ");
-				if(value.startsWith(COMMENT_BRACKET)){//--[#if ]
-					value = value.substring(SimpleSqlFileLineLexer.COMMENT.length());
-					buf.append(value).append(" ");
+				if(sqlDirectiveExtractor.isDirective(value)){//--[#if ]
+					buf.append(sqlDirectiveExtractor.extractDirective(value)).append(" ");
 				}
 				continue;
 			}else if(lineLexer.getLineToken()==LineToken.CONTENT){
@@ -179,7 +182,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 	
 	protected void setNamedInfoProperty(BeanWrapper beanBw, String prop, Object val){
 		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
+			prop = org.onetwo.common.utils.StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
 		}
 		beanBw.setPropertyValue(prop, val);
 		/*try {

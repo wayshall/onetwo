@@ -6,11 +6,11 @@ import java.util.Properties;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.propconf.ResourceAdapter;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.ResourceAdapter;
 import org.slf4j.Logger;
 
 public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFileParser<T> {

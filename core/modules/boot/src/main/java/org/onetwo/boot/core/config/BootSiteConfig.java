@@ -13,11 +13,11 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.propconf.AppConfig;
+import org.onetwo.common.propconf.Env;
+import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.propconf.AppConfig;
-import org.onetwo.common.utils.propconf.Env;
-import org.onetwo.common.utils.propconf.JFishProperties;
 import org.onetwo.common.web.filter.AppConfigProvider;
 import org.springframework.core.env.PropertySource;
 

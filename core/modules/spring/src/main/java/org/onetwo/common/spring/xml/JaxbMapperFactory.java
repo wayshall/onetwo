@@ -6,7 +6,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.JaxbClassFilter;
 import org.onetwo.common.spring.utils.ResourcesScanner;
-import org.onetwo.common.utils.xml.jaxb.JaxbMapper;
+import org.onetwo.common.xml.jaxb.JaxbMapper;
 
 final public class JaxbMapperFactory {
 	

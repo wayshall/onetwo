@@ -1,6 +1,11 @@
 package org.onetwo.boot.test;
 
+import java.util.List;
+
 import org.junit.Before;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.Langs;
+import org.onetwo.common.utils.func.IndexableClosure;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 
@@ -15,5 +20,15 @@ public class RestAssuredBaseTests {
 	@Before
 	public void setupRest(){
 		RestAssured.port = serverPort;
+	}
+	
+
+	protected <T> List<T> createObjects(int size, Class<T> clazz, IndexableClosure<T> mapper){
+		List<T> estatelist = Langs.generateList(size, i->{
+			T obj = ReflectUtils.newInstance(clazz);
+			mapper.execute(obj, i);
+			return  obj;
+		});
+		return estatelist;
 	}
 }

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.utils.DateInterval;
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.DateUtil.DateType;
+import org.onetwo.common.date.DateInterval;
+import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtil.DateType;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

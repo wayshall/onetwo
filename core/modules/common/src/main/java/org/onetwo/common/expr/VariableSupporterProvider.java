@@ -1,9 +1,9 @@
 package org.onetwo.common.expr;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.propconf.VariableSupporter;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.VariableSupporter;
 import org.slf4j.Logger;
 
 /*********

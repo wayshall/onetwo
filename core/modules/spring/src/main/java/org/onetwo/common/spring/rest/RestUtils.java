@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils.PropertyDescriptorCallback;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.ReflectUtils.PropertyDescriptorCallback;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

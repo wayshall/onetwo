@@ -1,6 +1,6 @@
 package org.onetwo.easyui;
 
-import org.onetwo.common.utils.AbstractTreeModel;
+import org.onetwo.common.tree.AbstractTreeModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

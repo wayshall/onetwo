@@ -3,8 +3,8 @@ package org.onetwo.easyui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.convert.Types;
+import org.onetwo.common.convert.Types;
+import org.onetwo.common.reflect.ReflectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

@@ -3,7 +3,7 @@ package org.onetwo.common.jackson;
 import java.io.IOException;
 import java.util.Date;
 
-import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.date.DateUtil;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

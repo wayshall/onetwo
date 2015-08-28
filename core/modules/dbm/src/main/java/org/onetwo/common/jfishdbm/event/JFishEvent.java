@@ -1,6 +1,6 @@
 package org.onetwo.common.jfishdbm.event;
 
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 
 public class JFishEvent {
 //	private static final String RELATED_FIELD_PROPERTY_SYMBOL = ".";

@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.mapping;
 
 import java.util.Collection;
 
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.annotation.AnnotationInfo;
 
 public interface JFishMappedEntryMeta {
 
