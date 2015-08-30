@@ -1,10 +1,6 @@
 package org.onetwo.common.utils;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -26,14 +22,6 @@ final public class Langs {
 		return Stream.iterate(1, i->i+1).limit(count)
 										.map(mapper)
 										.collect(Collectors.toList());
-	}
-	
-	public static Date toDate(LocalDate localDate){
-		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-	}
-	
-	public static Date toDate(LocalDateTime localDateTime){
-		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
 	
 //	public static long sum(Iterable<T>)
