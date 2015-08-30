@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.onetwo.common.date.DateRange;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateRangeStaticFacotry;
 import org.onetwo.common.date.timegen.TimeRule.RuleType;
 import org.onetwo.common.utils.Assert;
 
@@ -21,7 +21,7 @@ public class DateOfMonthCycleGenerator implements DateGenerator {
 		Assert.notNull(rule.getStartIndex());
 		Assert.notNull(rule.getEndIndex());
 		
-		Collection<DateRange> drs = DateUtil.splitAsDateRangeByMonth(rule.getStartTime(), rule.getEndTime());
+		Collection<DateRange> drs = DateRangeStaticFacotry.splitAsDateRangeByMonth(rule.getStartTime(), rule.getEndTime());
 		Collection<DateRange> genDateRangs = new LinkedHashSet<DateRange>(drs.size());
 		for(DateRange dr : drs){
 			int startIndex = rule.getStartIndex();
