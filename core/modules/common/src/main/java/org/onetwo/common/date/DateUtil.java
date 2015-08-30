@@ -5,15 +5,10 @@ import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -83,36 +78,6 @@ abstract public class DateUtil {
 	public static final String DateTime = "yyyyMMddHHmmss";
 	public static final String TimeOnly = "HHmmss";
 
-	/********
-	 * 开始想当然以为SimpleDateFormat只是一个简单的pattern解释，没什么可变的内部状态的维护。
-	 * 所以才创建了公开的这些常量。
-	 * 下面的createDateFormat方法返回经过重写的同步方法的SimpleDateFormat，也是为了修补这个bug。
-	 */
-	@Deprecated
-	public static final SimpleDateFormat YYYY_MM_DD = createDateFormat(Date_Only, true);
-	@Deprecated
-	public static final SimpleDateFormat YYYY_MM_DD_HH_MM_SS = createDateFormat(Date_Time, true);
-	@Deprecated
-	public static final SimpleDateFormat YYYY_MM_DD_HH_MM = createDateFormat("yyyy-MM-dd HH:mm", true);
-	@Deprecated
-	public static final SimpleDateFormat HH_MM_SS = createDateFormat(Time_Only, true);
-	@Deprecated
-	public static final SimpleDateFormat HH_MM = createDateFormat("HH:mm", true);
-
-	@Deprecated
-	public static final SimpleDateFormat YYYYMMDD = createDateFormat(DateOnly, true);
-	@Deprecated
-	public static final SimpleDateFormat YYYYMMDDHHMMSS = createDateFormat(DateTime, true);
-	@Deprecated
-	public static final SimpleDateFormat HHMMSS = createDateFormat(TimeOnly, true);
-
-	@Deprecated
-	public static final SimpleDateFormat YYYYMMDDHHMMSS_SSS = createDateFormat("yyyyMMddHHmmssSSS", true);
-	@Deprecated
-	public static final SimpleDateFormat YYYYMMDDHHMM = createDateFormat("yyyyMMddHHmm", true);
-	@Deprecated
-	public static final SimpleDateFormat YYYY_MM_DD_HH_MM_SS_SSS = createDateFormat("yyyy-MM-dd HH:mm:ss SSS", true);
-
 	public static final int UNIT_SECOND = 1000;
 	public static final int UNIT_MINUTE = 60 * 1000;
 	public static final int UNIT_HOUR = 60 * 60 * 1000;
@@ -134,6 +99,7 @@ abstract public class DateUtil {
 	 * @param sync 
 	 * @return
 	 */
+	@Deprecated
 	public static SimpleDateFormat createDateFormat(String pattern, boolean sync){
 		SimpleDateFormat df = null;
 		if(sync){
@@ -830,52 +796,6 @@ abstract public class DateUtil {
 		}
 	}
 	
-
-	public static Collection<DateRange> splitAsDateRangeByWeek(Date startDate, Date endDate){
-		LocalDate start = new LocalDate(startDate);
-		LocalDate end = new LocalDate(endDate);
-		return splitAsDateRangeByWeek(start, end);
-	}
-	public static Collection<DateRange> splitAsDateRangeByWeek(LocalDate start, LocalDate end){
-		
-		Set<DateRange> dates = new LinkedHashSet<DateRange>();
-		dates.add(new DateRange(start, start.withDayOfWeek(DateTimeConstants.SUNDAY)));
-		
-		LocalDate startDateOfWeek = start.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1);
-		while(!startDateOfWeek.isAfter(end)){
-			LocalDate endDateOfWeek = startDateOfWeek.withDayOfWeek(DateTimeConstants.SUNDAY);
-			if(endDateOfWeek.isAfter(end)){
-				endDateOfWeek = end;
-			}
-			dates.add(new DateRange(startDateOfWeek, endDateOfWeek));
-			startDateOfWeek = startDateOfWeek.plusWeeks(1);
-		}
-		return dates;
-	}
-
-
-	public static Collection<DateRange> splitAsDateRangeByMonth(Date startDate, Date endDate){
-		LocalDate start = new LocalDate(startDate);
-		LocalDate end = new LocalDate(endDate);
-		return splitAsDateRangeByMonth(start, end);
-	}
-	public static Collection<DateRange> splitAsDateRangeByMonth(LocalDate start, LocalDate end){
-		
-		Set<DateRange> dates = new LinkedHashSet<DateRange>();
-		dates.add(new DateRange(start, start.withDayOfMonth(start.dayOfMonth().getMaximumValue())));
-		
-		LocalDate startDateOfMonth = start.withDayOfMonth(start.dayOfMonth().getMinimumValue()).plusMonths(1);
-		while(!startDateOfMonth.isAfter(end)){
-			LocalDate endDateOfWeek = startDateOfMonth.withDayOfMonth(startDateOfMonth.dayOfMonth().getMaximumValue());
-			if(endDateOfWeek.isAfter(end)){
-				endDateOfWeek = end;
-			}
-			DateRange dr = new DateRange(startDateOfMonth, endDateOfWeek);
-			dates.add(dr);
-			startDateOfMonth = startDateOfMonth.plusMonths(1);
-		}
-		return dates;
-	}
 
 	public static void main(String[] args) {
 //		Date date = null;
