@@ -371,7 +371,11 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		if(values.containsKey(key)){
 			throw new IllegalArgumentException("parameter has exist: " + key);
 		}
-		values.put(key, value);
+		if(value instanceof Enum){
+			values.put(key, ((Enum<?>)value).name());
+		}else{
+			values.put(key, value);
+		}
 	}
 	
 	protected void buildQueryConfig(ParserContext parserContext){

@@ -40,10 +40,17 @@ public class JFishStringToEnumConverterFactory implements ConverterFactory<Strin
 				return (T) val;*/
 			}else{
 				if (source.length() == 0) {
-					// It's an empty enum identifier: reset the enum value to null.
 					return null;
 				}
-				return (T) Enum.valueOf(this.enumType, source.trim());
+				try {
+					return (T) Enum.valueOf(this.enumType, source.trim());
+				} catch (IllegalArgumentException e) {
+					try {
+						return (T) Enum.valueOf(this.enumType, source.trim().toUpperCase());
+					} catch (IllegalArgumentException e2) {
+						throw e;
+					}
+				}
 			}
 		}
 	}
