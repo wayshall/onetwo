@@ -20,8 +20,8 @@ public class GlobalConfig {
 		String getControllerPath(TableGeneratedConfig tableConfig);
 	}
 
-	public static interface TableContexts {
-		Map<String, Object> getContexts(TableGeneratedConfig tableConfig);
+	public static interface TableContextCreator {
+		Map<String, Object> createContexts(TableGeneratedConfig tableConfig);
 	}
 	
 	private HashMap<String, Object> rootContext = Maps.newHashMap();
@@ -114,7 +114,7 @@ public class GlobalConfig {
 		return this;
 	}
 
-	TableContexts getTableContexts() {
+	TableContextCreator getTableContextCreator() {
 		return defaultTableContexts;
 	}
 

@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
@@ -39,6 +40,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	private JFishMathcer matcher ;
 	private String[] excludes;
 	private UserDetailRetriever userDetailRetriever;
+	private BootSiteConfig bootSiteConfig;
 	
 	public LoggerInterceptor(){
 	}
@@ -49,9 +51,9 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		}
 		this.matcher = JFishMathcer.excludes(false, excludes);
 		if(isLogOperation() && accessLogger==null){
-			accessLogger = new DefaultAccessLogger();
-		}
-		if(accessLogger!=null){
+			DefaultAccessLogger defaultLogger = new DefaultAccessLogger();
+			defaultLogger.setDebug(!bootSiteConfig.isProduct());
+			this.accessLogger = defaultLogger;
 			accessLogger.initLogger();
 		}
 	}

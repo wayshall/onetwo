@@ -268,8 +268,12 @@ public class DbGenerator {
 		}
 		
 		public DbTableGenerator entityTemplate(String templatePath){
+			return entityTemplate(templatePath, "entity");
+		}
+		
+		public DbTableGenerator entityTemplate(String templatePath, String entitySubPackage){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
-			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/entity", templatePath));
+			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/"+entitySubPackage, templatePath));
 			generatedConfigs.add(config);
 			return this;
 		}
@@ -307,7 +311,7 @@ public class DbGenerator {
 				Assert.notNull(outFileNameFunc, "no outFileNameFunc");
 				String outfilePath = outFileNameFunc.getOutFileName(config);
 				
-				Map<String, Object> tableContext = globalConfig.getTableContexts().getContexts(config);
+				Map<String, Object> tableContext = globalConfig.getTableContextCreator().createContexts(config);
 				if(tableContext!=null){
 					globalConfig.put(TABLE_CONTEXT_KEY, tableContext);
 				}
@@ -333,7 +337,7 @@ public class DbGenerator {
 				Assert.notNull(outFileNameFunc, "no outFileNameFunc");
 				String outfilePath = outFileNameFunc.getOutFileName(config);*/
 				
-				Map<String, Object> tableContext = globalConfig.getTableContexts().getContexts(config);
+				Map<String, Object> tableContext = globalConfig.getTableContextCreator().createContexts(config);
 				if(tableContext!=null){
 					globalConfig.put(TABLE_CONTEXT_KEY, tableContext);
 				}
