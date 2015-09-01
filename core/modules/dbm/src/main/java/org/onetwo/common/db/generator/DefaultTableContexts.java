@@ -3,16 +3,16 @@ package org.onetwo.common.db.generator;
 import java.util.Map;
 
 import org.onetwo.common.db.generator.DbGenerator.DbTableGenerator.TableGeneratedConfig;
-import org.onetwo.common.db.generator.GlobalConfig.TableContexts;
+import org.onetwo.common.db.generator.GlobalConfig.TableContextCreator;
 import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.collect.Maps;
 
-public class DefaultTableContexts implements TableContexts {
+public class DefaultTableContexts implements TableContextCreator {
 //	private String stripTablePrefix;
 	
 	final private GlobalConfig globalGeneratedConfig;
-	private TableContexts tableContexts;
+	private TableContextCreator tableContexts;
 	
 
 	public DefaultTableContexts(GlobalConfig globalGeneratedConfig) {
@@ -21,7 +21,7 @@ public class DefaultTableContexts implements TableContexts {
 	}
 
 	@Override
-	public Map<String, Object> getContexts(TableGeneratedConfig tableConfig) {
+	public Map<String, Object> createContexts(TableGeneratedConfig tableConfig) {
 		Map<String, Object> context = Maps.newHashMap();
 		
 		String tableNameWithoutPrefix = tableConfig.tableNameStripStart(globalGeneratedConfig.getStripTablePrefix());
@@ -32,7 +32,7 @@ public class DefaultTableContexts implements TableContexts {
 		context.put("className", className);
 		context.put("propertyName", propertyName);
 		if(tableContexts!=null){
-			Map<String, Object> other = tableContexts.getContexts(tableConfig);
+			Map<String, Object> other = tableContexts.createContexts(tableConfig);
 			if(other!=null){
 				context.putAll(other);
 			}
@@ -54,7 +54,7 @@ public class DefaultTableContexts implements TableContexts {
 		return globalGeneratedConfig;
 	}
 
-	public DefaultTableContexts tableContexts(TableContexts tableContexts) {
+	public DefaultTableContexts tableContexts(TableContextCreator tableContexts) {
 		this.tableContexts = tableContexts;
 		return this;
 	}
