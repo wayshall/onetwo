@@ -1,7 +1,5 @@
 package org.onetwo.common.db.generator
 
-import java.sql.Types
-
 import javax.sql.DataSource
 
 import org.junit.Assert
@@ -9,10 +7,7 @@ import org.junit.Test
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet
 import org.onetwo.common.db.generator.dialet.MysqlMetaDialet
 import org.onetwo.common.db.generator.ftl.FtlDbGenerator
-import org.onetwo.common.db.generator.mapping.ColumnMapping
-import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc
 import org.onetwo.common.db.generator.meta.TableMeta
-import org.onetwo.common.utils.FileUtils
 import org.onetwo.common.utils.LangUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration

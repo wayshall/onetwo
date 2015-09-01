@@ -16,18 +16,26 @@ public class DefaultAccessLogger implements AccessLogger {
 	public static final String LOGGER_KEY = "accessLogger";
 	private Logger accessLogger;
 	private String loggerName;
-	private String seprator = "\n";
+	private String seprator;
+	private boolean debug;
 	
 
 	public DefaultAccessLogger() {
+		this(LOGGER_KEY);
 	}
 	public DefaultAccessLogger(String loggerName) {
 		super();
 		this.loggerName = loggerName;
 	}
 
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 	@Override
 	public void initLogger() {
+		if(this.seprator==null){
+			this.seprator = debug?"\n":" ";
+		}
 		accessLogger = createAccessLoggerLogger();// JFishLoggerFactory.getLogger(LOGGER_KEY);
 		Assert.notNull(accessLogger, "accessLogger not null");
 	}
