@@ -2,6 +2,7 @@ package org.onetwo.boot.core;
 
 import javax.validation.Validator;
 
+import org.onetwo.boot.core.config.BootBussinessConfig;
 import org.onetwo.boot.core.config.JFishBootConfig;
 import org.onetwo.boot.core.config.SpringBootConfig;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
@@ -13,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
 @Configuration
-@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
+//@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
+@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class, BootBussinessConfig.class})
 public class BootContextConfig {
 
 	@Bean

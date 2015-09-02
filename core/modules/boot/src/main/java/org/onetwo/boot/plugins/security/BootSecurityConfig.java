@@ -26,6 +26,7 @@ public class BootSecurityConfig implements WebContextConfigProvider {
 	private BootSiteConfig bootSiteConfig;
 	private String logoutUrl;
 	private CasConfig cas = new CasConfig();
+//	private boolean csrf = true;
 	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;

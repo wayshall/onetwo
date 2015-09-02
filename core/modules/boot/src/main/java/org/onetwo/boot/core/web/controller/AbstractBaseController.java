@@ -13,6 +13,9 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.web.controller.WebResultCreator.ListResultBuilder;
+import org.onetwo.boot.core.web.controller.WebResultCreator.MapResultBuilder;
+import org.onetwo.boot.core.web.controller.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
@@ -22,7 +25,6 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult;
-import org.onetwo.common.result.AbstractDataResult.LazyResult;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.result.LazyValue;
 import org.onetwo.common.spring.SpringApplication;
@@ -281,26 +283,36 @@ abstract public class AbstractBaseController {
 		return mv("", DataWrapper.lazy(value));
 	}
 	
-	/***
-	 * 返回json，数据对象为AbstractDataResult类型
-	 * @param value
-	 * @return
-	 */
-	protected ModelAndView responseResult(Object value){
+	/*protected ModelAndView responseSucceedResult(Object value){
 		return mv("", SimpleDataResult.createSucceed(null, value));
-	}
+	}*/
+	/*protected ModelAndView responseFailedResultWithMessage(String msg){
+		return mv("", SimpleDataResult.createFailed(msg));
+	}*/
+	/*protected ModelAndView responseResult(Result<?, ?> result){
+		return mv("", result);
+	}*/
 	
-	/***
-	 * 返回json，数据对象为AbstractDataResult类型
-	 * @param value
-	 * @return
-	 */
-	protected ModelAndView responseResult(LazyValue value){
+	/*protected ModelAndView responseSuccessResult(LazyValue value){
 		return mv("", LazyResult.createSucceed(null, value));
+	}*/
+	
+	protected AbstractDataResult<Object> asSucceedResult(Object value){
+		return SimpleDataResult.createSucceed(null, value);
 	}
 	
-	protected AbstractDataResult<Object> asResult(Object value){
-		return SimpleDataResult.createSucceed(null, value);
+	protected AbstractDataResult<Object> asFailedResult(String msg){
+		return SimpleDataResult.createFailed(msg);
+	}
+
+	protected SimpleResultBuilder simpleResult(){
+		return WebResultCreator.simpleResult();
+	}
+	protected ListResultBuilder listResult(){
+		return WebResultCreator.listResult();
+	}
+	protected MapResultBuilder mapResult(){
+		return WebResultCreator.mapResult();
 	}
 	
 	protected ResponseType getResponseType(){

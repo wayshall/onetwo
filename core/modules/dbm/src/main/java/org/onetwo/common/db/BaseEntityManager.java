@@ -10,7 +10,6 @@ import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 
-@SuppressWarnings("rawtypes")
 public interface BaseEntityManager extends QueryProvideManager {
 
 	public <T> T load(Class<T> entityClass, Serializable id);
