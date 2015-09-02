@@ -10,7 +10,7 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.DataResult;
+import org.onetwo.common.result.MapResult;
 import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
@@ -101,20 +101,20 @@ public class BootJsonView extends MappingJackson2JsonView {
 			return result;
 		}else if(Map.class.isInstance(result)){
 			Map<String, Object> map = (Map<String, Object>) result;
-			DataResult dataResult = DataResult.createSucceed("");
+			MapResult dataResult = MapResult.createSucceed("");
 			for(Entry<String, Object> entry : map.entrySet()){
 				if(BindingResult.class.isInstance(entry.getValue())){
 					BindingResult br = (BindingResult) entry.getValue();
 					if(br.hasErrors()){
-						dataResult.setCode(DataResult.FAILED);
+						dataResult.setCode(MapResult.FAILED);
 					}
 					
 				}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.setCode(DataResult.SUCCEED);
+					dataResult.setCode(MapResult.SUCCEED);
 					dataResult.setMessage(entry.getValue().toString());
 					
 				}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.setCode(DataResult.FAILED);
+					dataResult.setCode(MapResult.FAILED);
 					dataResult.setMessage(entry.getValue().toString());
 					
 				}else{

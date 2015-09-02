@@ -21,7 +21,7 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.result.DataResult;
+import org.onetwo.common.result.MapResult;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
@@ -102,7 +102,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		if(isAjaxRequest(request)){
 //			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
 //			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
-			DataResult result = new DataResult();
+			MapResult result = new MapResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
 			result.setMessage("操作失败，"+ errorMessage.getMesage());
 //			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));

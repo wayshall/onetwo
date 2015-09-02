@@ -40,6 +40,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	private JFishMathcer matcher ;
 	private String[] excludes;
 	private UserDetailRetriever userDetailRetriever;
+	@Autowired
 	private BootSiteConfig bootSiteConfig;
 	
 	public LoggerInterceptor(){
@@ -52,9 +53,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		this.matcher = JFishMathcer.excludes(false, excludes);
 		if(isLogOperation() && accessLogger==null){
 			DefaultAccessLogger defaultLogger = new DefaultAccessLogger();
+//			if(bootSiteConfig!=null)
 			defaultLogger.setDebug(!bootSiteConfig.isProduct());
+			defaultLogger.initLogger();
 			this.accessLogger = defaultLogger;
-			accessLogger.initLogger();
 		}
 	}
 

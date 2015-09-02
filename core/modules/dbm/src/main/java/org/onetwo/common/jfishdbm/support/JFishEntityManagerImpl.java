@@ -18,6 +18,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
+import org.onetwo.common.jfishdbm.exception.JFishOrmException;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
@@ -110,18 +111,26 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public <T> T save(T entity) {
-		getJfishDao().save(entity);
+		int rs = getJfishDao().save(entity);
+		throwIfEffectiveCountError("save", 1, rs);
 		return entity;
+	}
+	
+	private void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
+		if(effectiveCount<expectCount)
+			throw new JFishOrmException(operation + " error, expect effective: " + expectCount+", but actual effective: " + effectiveCount);
 	}
 
 	@Override
 	public void persist(Object entity) {
-		getJfishDao().insert(entity);
+		int rs = getJfishDao().insert(entity);
+		throwIfEffectiveCountError("persist", 1, rs);
 	}
 
 	@Override
 	public void remove(Object entity) {
-		getJfishDao().delete(entity);
+		int rs = getJfishDao().delete(entity);
+		throwIfEffectiveCountError("remove", 1, rs);
 	}
 
 	@Override
@@ -134,7 +143,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		T entity = getJfishDao().findById(entityClass, id);
 		if(entity==null)
 			return null;
-		getJfishDao().delete(entity);
+		int rs = getJfishDao().delete(entity);
+		throwIfEffectiveCountError("removeById", 1, rs);
 		return entity;
 	}
 

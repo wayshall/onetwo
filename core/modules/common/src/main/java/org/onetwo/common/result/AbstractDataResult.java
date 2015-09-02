@@ -118,20 +118,20 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 		}
 	}
 	
-	public static class ListDataResult<T> extends AbstractDataResult<List<T>>{
+	public static class ListResult<T> extends AbstractDataResult<List<T>>{
 
-		public static <E> ListDataResult<E> createFailed(String message){
+		public static <E> ListResult<E> createFailed(String message){
 			return create(FAILED, message);
 		}
 
 		@SafeVarargs
-		public static <E> ListDataResult<E> createSucceed(E...objects){
+		public static <E> ListResult<E> createSucceed(E...objects){
 			return create(SUCCEED, "SUCCEED", objects);
 		}
 		
 		@SafeVarargs
-		public static <E> ListDataResult<E> create(int code, String message, E...objects){
-			ListDataResult<E> result = new ListDataResult<>();
+		public static <E> ListResult<E> create(int code, String message, E...objects){
+			ListResult<E> result = new ListResult<>();
 			result.setCode(code);
 			result.setMessage(message);
 			result.setData(Arrays.asList(objects));
