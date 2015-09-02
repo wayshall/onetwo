@@ -27,7 +27,7 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 		SelectExtQuery extQuery = es.createExtQuery(extEvent.getEntityClass(), props);
 		
 		if(extEvent.getExtQueryType()==ExtQueryType.UNIQUE){
-			extQuery.setMaxResults(1);//add: support unique
+			extQuery.setMaxResults(2);//防止数据量过大
 			extQuery.build();
 			List<?> list = es.createAsDataQuery(extQuery).getResultList();
 			Object rs = null;
