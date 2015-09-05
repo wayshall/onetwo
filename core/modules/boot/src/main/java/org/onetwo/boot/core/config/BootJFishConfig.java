@@ -7,6 +7,7 @@ import lombok.Data;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
@@ -17,16 +18,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix="jfish")
 @Data
-public class JFishBootConfig {
+public class BootJFishConfig {
+	
+	@Autowired
+	private BootSpringConfig bootSpringConfig;
 	
 	private String ftlDir = "/jfish/ftl";
-
 	private Properties mediaTypes;
 	
 	private UploadConfig upload = new UploadConfig();
+	private JsonConfig json = new JsonConfig();
+	
 
 	@Data
-	public static class UploadConfig {
+	public class JsonConfig {
+		private boolean prettyPrint = !bootSpringConfig.isProduct();
+	}
+	
+	@Data
+	public class UploadConfig {
 		private StoreType storeType = StoreType.LOCAL;
 		private String fileStorePath;
 		private String keepContextPath;

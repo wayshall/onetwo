@@ -8,12 +8,12 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	
 	protected int code;
 	protected String message;
-	final protected Class<B> builderClass;
+//	final protected Class<?> builderClass;
 //	private T data;
 	
-	public AbstractResultBuilder(Class<B> builderClass) {
+	public AbstractResultBuilder() {
 		super();
-		this.builderClass = builderClass;
+//		this.builderClass = builderClass;
 	}
 
 	public B succeed(){
@@ -32,15 +32,19 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 		return code(AbstractDataResult.FAILED, message);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public B code(int code, String message){
 		this.code = code;
 		this.message = message;
-		return builderClass.cast(this);
+//		return builderClass.cast(this);
+		return (B) this;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public B message(String message){
 		this.message = message;
-		return builderClass.cast(this);
+//		return builderClass.cast(this);
+		return (B) this;
 	}
 
 	abstract public T buildResult();

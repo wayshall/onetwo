@@ -18,12 +18,12 @@ final public class WebResultCreator {
 	private WebResultCreator() {
 	}
 
-	public static SimpleResultBuilder simpleResult(){
-		return new SimpleResultBuilder().succeed();
+	public static <T> SimpleResultBuilder<T> simpleResult(){
+		return new SimpleResultBuilder<T>().succeed();
 	}
 	
-	public static ListResultBuilder listResult(){
-		return new ListResultBuilder().succeed();
+	public static <T> ListResultBuilder<T> listResult(){
+		return new ListResultBuilder<T>().succeed();
 	}
 	
 	public static MapResultBuilder mapResult(){
@@ -39,7 +39,7 @@ final public class WebResultCreator {
 		private LazyValue data;
 		
 		public LazyResultBuilder() {
-			super(LazyResultBuilder.class);
+//			super(LazyResultBuilder.class);
 		}
 		
 		public LazyResultBuilder data(LazyValue data){
@@ -53,38 +53,39 @@ final public class WebResultCreator {
 
 	}
 
-	public static class SimpleResultBuilder extends AbstractResultBuilder<SimpleDataResult<?>, SimpleResultBuilder> {
+	public static class SimpleResultBuilder<T> extends AbstractResultBuilder<SimpleDataResult<?>, SimpleResultBuilder<T>> {
 		
-		private Object data;
+		private T data;
 		
 		public SimpleResultBuilder() {
-			super(SimpleResultBuilder.class);
+//			super(SimpleResultBuilder.class);
 		}
 		
-		public SimpleResultBuilder data(Object data){
+		public SimpleResultBuilder<T> data(T data){
 			this.data = data;
 			return this;
 		}
 		
-		public SimpleDataResult<?> buildResult(){
+		public SimpleDataResult<T> buildResult(){
 			return SimpleDataResult.create(code, message, data);
 		}
 	}
 
-	public static class ListResultBuilder extends AbstractResultBuilder<ListResult<?>, ListResultBuilder> {
-		private List<Object> data;
+	public static class ListResultBuilder<T> extends AbstractResultBuilder<ListResult<T>, ListResultBuilder<T>> {
+		private List<T> data;
 		
 		public ListResultBuilder() {
-			super(ListResultBuilder.class);
+//			super(ListResultBuilder.class);
 			this.data = Lists.newArrayList();
 		}
 		
-		public ListResultBuilder addData(Object... elements){
+		@SuppressWarnings("unchecked")
+		public ListResultBuilder<T> addData(T... elements){
 			Stream.of(elements).forEach(e->data.add(e));
 			return this;
 		}
 		
-		public ListResult<?> buildResult(){
+		public ListResult<T> buildResult(){
 			return ListResult.create(code, message, data);
 		}
 	}
@@ -94,7 +95,7 @@ final public class WebResultCreator {
 		private Map<Object, Object> data;
 		
 		public MapResultBuilder() {
-			super(MapResultBuilder.class);
+//			super(MapResultBuilder.class);
 			this.data = Maps.newHashMap();
 		}
 		

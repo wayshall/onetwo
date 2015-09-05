@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.DBException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.QueryException;
 import org.onetwo.common.jfishdbm.mapping.DBValueHanlder;
 import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
@@ -590,7 +590,7 @@ public class DBUtils {
 				}
 			}
 		}catch(Exception e){
-			throw new DBException("set bean property ["+colName+"] error!", e);
+			throw new DbmException("set bean property ["+colName+"] error!", e);
 		}
 	}
 	
@@ -608,7 +608,7 @@ public class DBUtils {
 				}
 			}
 		}catch(Exception e){
-			throw new DBException("set bean property ["+colName+"] error!", e);
+			throw new DbmException("set bean property ["+colName+"] error!", e);
 		}
 	}
 
@@ -699,7 +699,7 @@ public class DBUtils {
 					datas.add(rowMap);
 			}
 		} catch (Exception e) {
-			handleDBException(e);
+			handleDbmException(e);
 		} finally{
 			if(autoClose)
 				closeResultSet(rs);
@@ -707,7 +707,7 @@ public class DBUtils {
 		return datas;
 	}
 	
-	public static void handleDBException(Exception e){
+	public static void handleDbmException(Exception e){
 		LangUtils.throwBaseException(e);
 	}
 	
@@ -752,7 +752,7 @@ public class DBUtils {
 				}
 			}
 		} catch (Exception e) {
-			handleDBException(e);
+			handleDbmException(e);
 		} finally{
 			if(autoClose)
 				closeResultSet(rs);
@@ -780,18 +780,18 @@ public class DBUtils {
 		return rsMeta.getColumnType(columnIndex);
 	}
 
-	public static DBException asDBException(String msg){
-		return asDBException(msg, null);
+	public static DbmException asDbmException(String msg){
+		return asDbmException(msg, null);
 	}
 	
-	public static DBException asDBException(String msg, Exception e){
-		if(e instanceof DBException)
-			return (DBException) e;
-		DBException dbe = null;
+	public static DbmException asDbmException(String msg, Exception e){
+		if(e instanceof DbmException)
+			return (DbmException) e;
+		DbmException dbe = null;
 		if(msg==null)
-			dbe = new DBException(e.getMessage(), e);
+			dbe = new DbmException(e.getMessage(), e);
 		else
-			dbe = new DBException(msg, e);
+			dbe = new DbmException(msg, e);
 		return dbe;
 	}
 	public static QueryException asQueryException(String msg){
@@ -809,11 +809,11 @@ public class DBUtils {
 		return qe;
 	}
 	
-	public static void throwDBException(String msg){
-		throw asDBException(msg);
+	public static void throwDbmException(String msg){
+		throw asDbmException(msg);
 	}
-	public static void throwDBException(String msg, Exception e){
-		throw asDBException(msg, e);
+	public static void throwDbmException(String msg, Exception e){
+		throw asDbmException(msg, e);
 	}
 	
 	public static void throwQueryException(String msg){

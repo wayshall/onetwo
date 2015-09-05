@@ -131,10 +131,13 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 		
 		@SafeVarargs
 		public static <E> ListResult<E> create(int code, String message, E...objects){
+			return create(code, message, Arrays.asList(objects));
+		}
+		public static <E> ListResult<E> create(int code, String message, List<E> data){
 			ListResult<E> result = new ListResult<>();
 			result.setCode(code);
 			result.setMessage(message);
-			result.setData(Arrays.asList(objects));
+			result.setData(data);
 			return result;
 		}
 		

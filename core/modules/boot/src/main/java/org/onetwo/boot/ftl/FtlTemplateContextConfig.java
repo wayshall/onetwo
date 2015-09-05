@@ -2,7 +2,7 @@ package org.onetwo.boot.ftl;
 
 import javax.annotation.Resource;
 
-import org.onetwo.boot.core.config.JFishBootConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.WebRender;
 import org.onetwo.boot.core.web.ftl.FtlWebRender;
 import org.onetwo.common.spring.ftl.DefaultTemplateParser;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class FtlTemplateContextConfig {
 	
 	@Resource
-	private JFishBootConfig jfishBootConfig;
+	private BootJFishConfig jfishBootConfig;
 	
 	@Bean
 	public DirsFreemarkerTemplateConfigurer dirFreemarkerTemplateConfigurer(){

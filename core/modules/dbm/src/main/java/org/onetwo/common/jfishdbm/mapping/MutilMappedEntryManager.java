@@ -5,9 +5,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
-import org.onetwo.common.jfishdbm.exception.DBException;
-import org.onetwo.common.jfishdbm.exception.JFishNoMappedEntryException;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.exception.NoMappedEntryException;
 import org.onetwo.common.jfishdbm.jpa.JPAMappedEntryBuilder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -92,7 +91,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 				
 				JFishMappedEntry entry = buildMappedEntry(clazz);
 				if(entry==null)
-					throw new JFishOrmException("can not build the entity : " + clazz);
+					throw new DbmException("can not build the entity : " + clazz);
 				buildEntry(entry);
 				logger.info("build entity entry[" + (count++) + "]: " + entry.getEntityName());
 				entryList.add(entry);
@@ -114,7 +113,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		try {
 			entry.buildEntry();
 		} catch (Exception e) {
-			throw new JFishOrmException("build entry["+entry.getEntityName()+"] error: "+e.getMessage(), e);
+			throw new DbmException("build entry["+entry.getEntityName()+"] error: "+e.getMessage(), e);
 		}
 	}
 
@@ -136,12 +135,12 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	public JFishMappedEntry findEntry(Object object) {
 		try {
 			return getEntry(object);
-		} catch (JFishNoMappedEntryException e) {
+		} catch (NoMappedEntryException e) {
 			//ignore
-		} catch (JFishOrmException e) {
+		} catch (DbmException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new JFishOrmException("find entry error: " + e.getMessage(), e);
+			throw new DbmException("find entry error: " + e.getMessage(), e);
 		}
 		return null;
 	}
@@ -153,7 +152,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		
 		Object object = LangUtils.getFirst(objects);
 		if(object==null)
-			throw new JFishNoMappedEntryException("object can not null or emtpty, objects:"+objects);
+			throw new NoMappedEntryException("object can not null or emtpty, objects:"+objects);
 		
 		if(String.class.isInstance(object) && object.toString().indexOf('.')!=-1){
 			object = ReflectUtils.loadClass(object.toString());
@@ -179,7 +178,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 					JFishMappedEntry value = buildMappedEntry(entityObject);
 	
 					if (value == null)
-						throw new JFishNoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
+						throw new NoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
 	
 					buildEntry(value);
 					putInCache(key, value);
@@ -188,7 +187,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 				});
 			}
 		} catch (ExecutionException e) {
-			throw new DBException("create entry error for entity: " + object, e);
+			throw new DbmException("create entry error for entity: " + object, e);
 		}
 		return entry;
 		
@@ -235,7 +234,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 				return entry;
 			}
 		}
-		throw new JFishNoMappedEntryException("jfish orm unsupported the type["+ReflectUtils.getObjectClass(object)+"] as a entity");
+		throw new NoMappedEntryException("jfish orm unsupported the type["+ReflectUtils.getObjectClass(object)+"] as a entity");
 //		return entry;
 	}
 	

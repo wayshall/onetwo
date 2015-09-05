@@ -9,7 +9,7 @@ import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent.ExtQueryType;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
@@ -31,7 +31,7 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 			extQuery.build();
 			List<?> list = es.createAsDataQuery(extQuery).getResultList();
 			Object rs = null;
-			if(LangUtils.hasElement(list)){
+			if(!LangUtils.isEmpty(list)){
 				if(list.size()>1){
 					logger.warn(list.size() + " entity["+extEvent.getEntityClass()+"] found when findUnique");
 					throw new NotUniqueResultException(list.size());
@@ -44,7 +44,7 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 		}else if(extEvent.getExtQueryType()==ExtQueryType.PAGINATION){
 			extQuery.build();
 			if(!Page.class.isInstance(extEvent.getObject()))
-				throw new JFishOrmException("not a page object");
+				throw new DbmException("not a page object");
 			Page<Object> page = (Page<Object>)extEvent.getObject();
 			
 			if (Page.ASC.equals(page.getOrder()) && StringUtils.isNotBlank(page.getOrderBy())) {

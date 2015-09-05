@@ -14,10 +14,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class BootBussinessConfig extends JFishProperties {
 	
 	@Autowired
-	private SpringBootConfig springBootConfig;
+	private BootSpringConfig bootSpringConfig;
 
-	public SpringBootConfig getSpringBootConfig() {
-		return springBootConfig;
+	public BootSpringConfig getBootSpringConfig() {
+		return bootSpringConfig;
 	}
 	
 }

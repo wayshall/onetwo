@@ -95,11 +95,6 @@ abstract public class AbstractBaseController {
 		redirectAttributes.addFlashAttribute(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 	}
 
-	/*protected WebHelper webHelper(){
-		return JFishWebUtils.webHelper();
-	}*/
-
-	
 	/*****
 	 * 根据model返回一个ModelAndView
 	 * @param models
@@ -283,32 +278,19 @@ abstract public class AbstractBaseController {
 		return mv("", DataWrapper.lazy(value));
 	}
 	
-	/*protected ModelAndView responseSucceedResult(Object value){
-		return mv("", SimpleDataResult.createSucceed(null, value));
-	}*/
-	/*protected ModelAndView responseFailedResultWithMessage(String msg){
-		return mv("", SimpleDataResult.createFailed(msg));
-	}*/
-	/*protected ModelAndView responseResult(Result<?, ?> result){
-		return mv("", result);
-	}*/
-	
-	/*protected ModelAndView responseSuccessResult(LazyValue value){
-		return mv("", LazyResult.createSucceed(null, value));
-	}*/
-	
 	protected AbstractDataResult<Object> asSucceedResult(Object value){
-		return SimpleDataResult.createSucceed(null, value);
+//		return SimpleDataResult.createSucceed(null, value);
+		return simpleResult().data(value).buildResult();
 	}
 	
 	protected AbstractDataResult<Object> asFailedResult(String msg){
 		return SimpleDataResult.createFailed(msg);
 	}
 
-	protected SimpleResultBuilder simpleResult(){
+	protected <T> SimpleResultBuilder<T> simpleResult(){
 		return WebResultCreator.simpleResult();
 	}
-	protected ListResultBuilder listResult(){
+	protected <T> ListResultBuilder<T> listResult(){
 		return WebResultCreator.listResult();
 	}
 	protected MapResultBuilder mapResult(){
