@@ -33,7 +33,7 @@ import org.onetwo.common.jfishdbm.event.JFishFindEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertOrUpdateEvent;
 import org.onetwo.common.jfishdbm.event.JFishUpdateEvent;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jfishdbm.jdbc.JFishRowMapperFactory;
 import org.onetwo.common.jfishdbm.jdbc.JdbcDao;
@@ -351,6 +351,9 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		this.fireEvents(event);
 	}
 	
+	/***
+	 * 查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
+	 */
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties){
 		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.UNIQUE, entityClass, properties, this);
 		this.fireEvents(event);
@@ -446,7 +449,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 			newMsg.append("may be the query result type mapped error, check it.");
 		}
 		newMsg.append("[").append(msg).append("]");
-		throw new JFishOrmException(newMsg.toString(), e);
+		throw new DbmException(newMsg.toString(), e);
 	}
 	
 	public <T> List<T> findList(DynamicQuery query){

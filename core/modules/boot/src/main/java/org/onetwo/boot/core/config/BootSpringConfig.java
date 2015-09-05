@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix="spring")
 @SuppressWarnings("unchecked")
-public class SpringBootConfig {
+public class BootSpringConfig {
 	private List<String> profilesActive;
 	
 

@@ -47,6 +47,12 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 //	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
 	
+	/***
+	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
+	 * @param entityClass
+	 * @param properties
+	 * @return
+	 */
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties);
 	
 	public <T> T findOne(Class<T> entityClass, Object... properties);

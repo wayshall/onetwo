@@ -5,8 +5,8 @@ abstract public class RequestTypeUtils {
 	public static class AjaxKeys {
 		public static final String MESSAGE_KEY = "message";
 		public static final String MESSAGE_CODE_KEY = "message_code";
-		public static final Integer RESULT_SUCCEED = 1;
-		public static final Integer RESULT_FAILED = 0;
+//		public static final Integer RESULT_SUCCEED = 1;
+//		public static final Integer RESULT_FAILED = 0;
 	}
 	
 	public static final String HEADER_KEY = "X-Requested-With";

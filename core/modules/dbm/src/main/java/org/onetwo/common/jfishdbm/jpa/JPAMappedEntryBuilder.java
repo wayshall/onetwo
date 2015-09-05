@@ -24,7 +24,7 @@ import javax.persistence.Version;
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.BaseColumnInfo;
 import org.onetwo.common.jfishdbm.mapping.ColumnInfo;
@@ -164,7 +164,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		}
 		if(mfield.getPropertyInfo().hasAnnotation(Version.class)){
 			if(!versionTypes.containsKey(mfield.getPropertyInfo().getType())){
-				throw new JFishOrmException("the type of field["+mfield.getName()+"] is not a supported version type. supported types: " + versionTypes.keySet());
+				throw new DbmException("the type of field["+mfield.getName()+"] is not a supported version type. supported types: " + versionTypes.keySet());
 			}
 			mfield.setVersionableType(versionTypes.get(mfield.getPropertyInfo().getType()));
 		}

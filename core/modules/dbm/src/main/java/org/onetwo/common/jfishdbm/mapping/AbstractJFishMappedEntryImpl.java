@@ -18,7 +18,7 @@ import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
 import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEntityListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -142,7 +142,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	public JFishMappedField getField(String fieldName){
 		JFishMappedField field = mappedFields.get(fieldName);
 		if(field==null)
-			throw new JFishOrmException(getEntityName()+" no field mapped : " + fieldName);
+			throw new DbmException(getEntityName()+" no field mapped : " + fieldName);
 		return field;
 	}
 	
@@ -167,7 +167,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		columnName = columnName.toLowerCase();
 		JFishMappedField field = mappedColumns.get(columnName);
 		if(field==null)
-			throw new JFishOrmException(getEntityName() + " no column mapped : " + columnName);
+			throw new DbmException(getEntityName() + " no column mapped : " + columnName);
 		return field;
 	}
 	
@@ -246,7 +246,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			this.identifyField = field;
 		}else if(field.isVersionControll()){
 			if(versionField!=null)
-				throw new JFishOrmException("a version field has already exist : " + versionField.getName());
+				throw new DbmException("a version field has already exist : " + versionField.getName());
 			this.versionField = field;
 		}
 
@@ -364,7 +364,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	@Override
 	public JdbcStatementContext<Object[]> makeSelectVersion(Object object){
 		if(LangUtils.isMultiple(object)){
-			throw new JFishOrmException("not a entity: " + object);
+			throw new DbmException("not a entity: " + object);
 		}
 		EntrySQLBuilder sqlb = getStaticSelectVersionSqlBuilder();
 		sqlb.build();
@@ -526,7 +526,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	
 	protected void checkIdValue(Object entity){
 		if(!hasIdentifyValue(entity))
-			throw new JFishOrmException("entity["+entity+"] id can not be null");
+			throw new DbmException("entity["+entity+"] id can not be null");
 	}
 	
 	@Override

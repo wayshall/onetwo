@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQueryImpl;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -96,12 +96,12 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 			joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(joinTableName).append(hasParentheses?") ":" ");
 		fjoin.remove(0);
 		if(fjoin.isEmpty()){
-			throw new JFishOrmException("join table without on cause, check it!");
+			throw new DbmException("join table without on cause, check it!");
 		}
 		joinBuf.append("on (");
 		for (int i=0; i<fjoin.size(); i++) {
 			if(!fjoin.get(i).getClass().isArray())
-				throw new JFishOrmException("join cause must be a array");
+				throw new DbmException("join cause must be a array");
 			if(i!=0)
 				joinBuf.append(" and ");
 			Object[] onsArray = (Object[]) fjoin.get(i);

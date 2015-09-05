@@ -3,8 +3,7 @@ package org.onetwo.boot.core.web.view;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
@@ -15,6 +14,7 @@ import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class BootJsonView extends MappingJackson2JsonView {
+public class BootJsonView extends MappingJackson2JsonView implements InitializingBean {
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 
 	/*public static final String FILTER_KEYS = ":filterKeys";
@@ -35,6 +35,8 @@ public class BootJsonView extends MappingJackson2JsonView {
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private BootJFishConfig bootJFishConfig;
 	
 	public BootJsonView(){
 //		this.configJson();
@@ -45,18 +47,17 @@ public class BootJsonView extends MappingJackson2JsonView {
 		this.wrapModelAsDataResult = wrapModelAsDataResult;
 	}
 
-	@PostConstruct
-	public void initJsonConfig(){
+	public void afterPropertiesSet() throws Exception {
 		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
 		ObjectMapper mapper = SpringUtils.getBean(applicationContext, ObjectMapper.class);
 		if(mapper!=null){
 			this.setObjectMapper(mapper);
-			return ;
+		}else{
+			mapper = BootWebUtils.createObjectMapper(applicationContext);
+			this.setObjectMapper(mapper);
 		}
 		
-		mapper = BootWebUtils.createObjectMapper(applicationContext);
-		this.setObjectMapper(mapper);
 	}
 
 	protected Object filterModel(Map<String, Object> model) {
@@ -131,4 +132,6 @@ public class BootJsonView extends MappingJackson2JsonView {
 	protected Object delegateSpringFilterModel(Map<String, Object> model) {
 		return super.filterModel(model);
 	}
+
+
 }

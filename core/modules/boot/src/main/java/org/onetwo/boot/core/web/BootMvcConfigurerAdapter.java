@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.onetwo.boot.core.config.JFishBootConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.common.spring.converter.JFishStringToEnumConverterFactory;
 import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
@@ -35,7 +35,7 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private BootWebExceptionResolver bootWebExceptionResolver;
 
 	@Autowired
-	private JFishBootConfig jfishBootConfig;
+	private BootJFishConfig jfishBootConfig;
 
 	@Autowired
 	private List<HandlerInterceptor> interceptorList;

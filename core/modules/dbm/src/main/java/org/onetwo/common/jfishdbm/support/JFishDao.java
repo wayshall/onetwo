@@ -181,6 +181,12 @@ public interface JFishDao {
 	
 	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties);
 	
+	/*****
+	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
+	 * @param entityClass
+	 * @param properties
+	 * @return
+	 */
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
 	
 	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties);
