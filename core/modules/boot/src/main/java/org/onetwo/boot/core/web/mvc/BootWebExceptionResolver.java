@@ -11,6 +11,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
+import org.onetwo.boot.core.web.controller.WebResultCreator;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
@@ -21,11 +22,10 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.result.MapResult;
+import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
-import org.onetwo.common.web.utils.RequestTypeUtils.AjaxKeys;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
@@ -48,11 +48,10 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionRes
 public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionResolver implements InitializingBean {
 	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
 
-	public static final String EXCEPTION_STATCK_KEY2 = "__exception__stack__";
-	public static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
-	public static final String ERROR_CODE_KEY = "__errorCode__";
-	public static final String PRE_URL = "preurl";
-	public static final String AJAX_RESULT_KEY = "result";
+	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
+	private static final String ERROR_CODE_KEY = "__errorCode__";
+	private static final String PRE_URL = "preurl";
+	private static final String AJAX_RESULT_PLACEHOLDER = "result";
 	
 	public static final int RESOLVER_ORDER = -9999;
 
@@ -100,13 +99,13 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(isAjaxRequest(request)){
-//			model.put(AjaxKeys.MESSAGE_KEY, "操作失败："+ ex.getMessage());
-//			model.put(AjaxKeys.MESSAGE_CODE_KEY, AjaxKeys.RESULT_FAILED);
-			MapResult result = new MapResult();
+			/*MapResult result = new MapResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
-			result.setMessage("操作失败，"+ errorMessage.getMesage());
-//			model.put(AJAX_RESULT_KEY, SingleReturnWrapper.wrap(result));
-			model.put(AJAX_RESULT_KEY, result);
+			result.setMessage("操作失败，"+ errorMessage.getMesage());*/
+			SimpleDataResult<?> result = WebResultCreator.simpleResult()
+							.failed("操作失败，"+ errorMessage.getMesage())
+							.buildResult();
+			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			return createModelAndView(null, model, request);
 		}
 		
@@ -130,12 +129,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		}
 //		eInfo = errorMessage.toString()+"  "+ eInfo;
 		model.put(EXCEPTION_STATCK_KEY, eInfo);
-		model.put(EXCEPTION_STATCK_KEY2, eInfo);
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
-		
-		
-//		WebContextUtils.attr(request, ERROR_CODE_KEY, ecode);
-		
 		
 		return createModelAndView(errorMessage.getViewName(), model, request);
 	}
@@ -164,18 +158,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		}else if(ex instanceof AuthenticationException){
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
-		}/*else if(ex instanceof BusinessException){
-			defaultViewName = ExceptionView.BUSINESS;
-			detail = false;
-		}else if(ex instanceof JFishBusinessException){
-			defaultViewName = ExceptionView.SERVICE;
-			detail = false;
-		}else if(ex instanceof JFishServiceException){
-			defaultViewName = ExceptionView.SERVICE;
-			detail = false;
-		}else if(ex instanceof ServiceException){
-			defaultViewName = ExceptionView.SERVICE;
-		}*/else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
+		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
 			errorArgs = codeMark.getArgs();
@@ -231,14 +214,6 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		}
 		
 		String viewName = null;
-		/*if(error.isNotLoginException()){
-			viewName = getLoginView(request, model);
-//			model.addAttribute(PRE_URL, getPreurl(request));
-//			if(JFishWebUtils.isRedirect(viewName))
-//				viewName = appendPreurlForAuthentic(viewName);
-		}else if(error.isNoPermissionException()){
-			viewName = getNoPermissionView(request, model, error);
-		}*/
 		
 		if(StringUtils.isBlank(viewName)){
 			viewName = findInSiteConfig(ex); 
@@ -272,18 +247,6 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		return preurl;
 	}
 	
-	/*protected String getLoginView(HttpServletRequest request, ModelMap model){
-		if(model!=null){
-			model.addAttribute(PRE_URL, getPreurl(request));
-		}
-		if(StringUtils.isBlank(defaultRedirect))
-			return JFishWebUtils.redirect(defaultRedirect);
-		return BootWebUtils.redirect("/login");
-		AuthenticationContext context = AuthenticUtils.getContextFromRequest(request);
-		String view = context!=null?context.getConfig().getRedirect():"";
-		return view;
-	}*/
-	
 	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request){
 		return new ModelAndView(viewName, model);
 	}
@@ -298,21 +261,6 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
 	}
-	
-//	protected String findWhenExceptionView(Class<?> clazz, Method method, Exception ex){
-//		String key = method.toGenericString();
-//		WhenExceptionMap map = this.whenExceptionCaches.get(key);
-//		if(map!=null && map.match(ex))
-//			return map.getPage();
-//		
-//		WhenExceptionMap wm = ExceptionUtils.findWhenException(clazz, method);
-//		if(wm!=null){
-//			this.whenExceptionCaches.put(key, wm);
-//			if(wm.match(ex))
-//				return wm.getPage();
-//		}
-//		return null;
-//	}
 	
 	public String findInSiteConfig(Exception ex){
 		Class<?> eclass = ex.getClass();

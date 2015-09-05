@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import org.onetwo.common.jfishdbm.exception.JFishDbException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
@@ -39,7 +39,7 @@ abstract public class AbstractRowMapper<T> implements RowMapper<T>{
 		try {
 			return type.cast(JdbcUtils.getResultSetValue(rs, index, type));
 		} catch (Exception e) {
-			throw new JFishDbException("get the ["+index+"] column value error: " + e.getMessage(), e);
+			throw new DbmException("get the ["+index+"] column value error: " + e.getMessage(), e);
 		}
 	}
 

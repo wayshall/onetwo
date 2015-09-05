@@ -3,18 +3,21 @@ package org.onetwo.boot.core.web;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.StoreType;
+import org.onetwo.boot.core.config.BootJFishConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.JFishBootConfig;
-import org.onetwo.boot.core.config.JFishBootConfig.StoreType;
-import org.onetwo.boot.core.config.JFishBootConfig.UploadConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
+import org.onetwo.boot.core.web.filter.SimpleCorsFilter;
 import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
@@ -30,11 +33,15 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
@@ -54,7 +61,7 @@ public class BootWebContextConfig {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private JFishBootConfig jfishBootConfig;
+	private BootJFishConfig bootJfishConfig;
 	
 	@PostConstruct
 	public void init(){
@@ -66,10 +73,25 @@ public class BootWebContextConfig {
 		return BootSiteConfig.getInstance();
 	}
 	
+	/****
+	 * CorsFilter 须在所有filter之前，包括security的filter
+	 * 否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
+	 * filter
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnBean(name = SimpleCorsFilter.CORS_FILTER_NAME)
+	public FilterRegistrationBean corsFilterRegistration(@Qualifier(SimpleCorsFilter.CORS_FILTER_NAME) Filter filter){
+		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		registration.setName(SimpleCorsFilter.CORS_FILTER_NAME);
+		return registration;
+	}
+	
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)
 	public FileStorer<?> fileStorer(){
-		UploadConfig config = jfishBootConfig.getUpload();
+		UploadConfig config = bootJfishConfig.getUpload();
 		StoreType type = config.getStoreType();
 		
 		if(type==StoreType.LOCAL){
@@ -138,7 +160,9 @@ public class BootWebContextConfig {
 	
 	@Bean
 	public BootJsonView bootJsonView(){
-		return new BootJsonView();
+		BootJsonView jv = new BootJsonView();
+		jv.setPrettyPrint(bootJfishConfig.getJson().isPrettyPrint());
+		return jv;
 	}
 	
 	/***
@@ -181,7 +205,7 @@ public class BootWebContextConfig {
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(jfishBootConfig.getUpload().getMaxUploadSize());
+		resolver.setMaxUploadSize(bootJfishConfig.getUpload().getMaxUploadSize());
 		return resolver;
 	}
 
@@ -190,6 +214,12 @@ public class BootWebContextConfig {
 	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new BootSessionUserManager();
 	}
+
+	@Bean
+	public UploadValidateInterceptor uploadValidateInterceptor(){
+		return new UploadValidateInterceptor();
+	}
+	
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	public CommonsMultipartResolver filterMultipartResolver(){
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();

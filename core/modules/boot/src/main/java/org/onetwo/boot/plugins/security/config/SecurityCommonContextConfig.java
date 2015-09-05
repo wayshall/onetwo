@@ -51,11 +51,6 @@ public class SecurityCommonContextConfig {
 		});
 		return log;
 	}
-	
-	@Bean
-	public UploadValidateInterceptor uploadValidateInterceptor(){
-		return new UploadValidateInterceptor();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(SecurityWebExceptionResolver.class)

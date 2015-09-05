@@ -17,8 +17,8 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
@@ -99,7 +99,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		T entity = findById(entityClass, id);
 //		Assert.notNull(entity, "can not load the object from db : " + id);
 		if(entity==null){
-			throw new JFishEntityNotFoundException("找不到数据：" + id);
+			throw new EntityNotFoundException("找不到数据：" + id);
 		}
 		return entity;
 	}
@@ -118,7 +118,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	
 	private void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
 		if(effectiveCount<expectCount)
-			throw new JFishOrmException(operation + " error, expect effective: " + expectCount+", but actual effective: " + effectiveCount);
+			throw new DbmException(operation + " error, expect effective: " + expectCount+", but actual effective: " + effectiveCount);
 	}
 
 	@Override
@@ -309,6 +309,9 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		getJfishDao().findPage(page, squery);
 	}
 
+	/****
+	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
+	 */
 	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findUniqueByProperties(entityClass, properties);
 	}

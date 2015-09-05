@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
 import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
@@ -58,7 +58,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	protected void throwIfMultiple(Object parent, Object entity){
 		if(LangUtils.isMultiple(entity)){
 			String msg = "element of "+(parent==null?"container":parent)+" can not be a multiple object, element: " + entity;
-			throw new JFishOrmException(msg);
+			throw new DbmException(msg);
 		}
 	}
 
