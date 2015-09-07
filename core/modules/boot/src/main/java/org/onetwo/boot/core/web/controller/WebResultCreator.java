@@ -19,19 +19,19 @@ final public class WebResultCreator {
 	}
 
 	public static <T> SimpleResultBuilder<T> simpleResult(){
-		return new SimpleResultBuilder<T>().succeed();
+		return new SimpleResultBuilder<T>().success();
 	}
 	
 	public static <T> ListResultBuilder<T> listResult(){
-		return new ListResultBuilder<T>().succeed();
+		return new ListResultBuilder<T>().success();
 	}
 	
 	public static MapResultBuilder mapResult(){
-		return new MapResultBuilder().succeed();
+		return new MapResultBuilder().success();
 	}
 	
 	public static LazyResultBuilder lazyResult(){
-		return new LazyResultBuilder().succeed();
+		return new LazyResultBuilder().success();
 	}
 
 	

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T, B>> {
 	
-	protected int code;
+	protected String code = AbstractDataResult.SUCCESS;
 	protected String message;
 //	final protected Class<?> builderClass;
 //	private T data;
@@ -16,27 +16,47 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 //		this.builderClass = builderClass;
 	}
 
-	public B succeed(){
-		return succeed(null);
+	public B success(){
+		return success(null);
 	}
 	
-	public B succeed(String message){
-		return code(AbstractDataResult.SUCCEED, message);
+	public B success(String message){
+		return code(AbstractDataResult.SUCCESS, message);
 	}
 	
 
-	public B failed(){
-		return failed(null);
+	public B error(){
+		return error(null);
 	}
-	public B failed(String message){
-		return code(AbstractDataResult.FAILED, message);
+	public B error(String message){
+		return code(AbstractDataResult.ERROR, message);
 	}
 	
+	/****
+	 * 如果表示错误，以 {@linkplain AbstractDataResult#ERROR ERROR} 为前缀
+	 * @param code
+	 * @param message
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public B code(int code, String message){
+	public B code(String code, String message){
 		this.code = code;
 		this.message = message;
 //		return builderClass.cast(this);
+		return (B) this;
+	}
+	public B code(Enum<?> code, String message){
+		return code(code.name(), message);
+	}
+	@SuppressWarnings("unchecked")
+	public B code(String code){
+		this.code = code;
+		return (B) this;
+	}
+	@SuppressWarnings("unchecked")
+	public B code(Enum<?> code){
+		this.code = code.name();
+		this.message = code.toString();
 		return (B) this;
 	}
 

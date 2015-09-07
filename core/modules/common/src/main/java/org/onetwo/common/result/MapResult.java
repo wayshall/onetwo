@@ -8,18 +8,18 @@ import org.onetwo.common.utils.LangUtils;
 @SuppressWarnings("serial")
 public class MapResult extends AbstractDataResult<Map<Object, Object>>{
 
-	public static MapResult createFailed(String message){
-		return create(FAILED, message);
+	public static MapResult error(String message){
+		return create(ERROR, message);
 	}
 
-	public static MapResult createSucceed(String message){
-		return create(SUCCEED, message);
+	public static MapResult success(String message){
+		return create(SUCCESS, message);
 	}
 
-	public static MapResult createSucceed(Object...objects){
-		return create(SUCCEED, "SUCCEED", objects);
+	public static MapResult success(Object...objects){
+		return create(SUCCESS, "SUCCEED", objects);
 	}
-	public static MapResult create(int code, String message, Object...objects){
+	public static MapResult create(String code, String message, Object...objects){
 		MapResult result = new MapResult();
 		result.setCode(code);
 		result.setMessage(message);

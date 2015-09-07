@@ -30,7 +30,7 @@ public class SpringMultipartFilterProxy extends MultipartFilter {
 			String msg = "文件超过限制："+LangUtils.getCauseServiceException(e).getMessage();
 			logger.error(msg);
 			if(RequestUtils.getResponseType(request)==ResponseType.JSON){
-				MapResult dataResult = MapResult.createFailed(msg);
+				MapResult dataResult = MapResult.error(msg);
 				ResponseUtils.renderObjectAsJson(response, dataResult);
 			}else{
 				response.getWriter().print(msg);

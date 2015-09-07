@@ -21,11 +21,14 @@ import java.util.TreeSet;
 
 import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.func.SimpleBlock;
+import org.onetwo.common.utils.func.IndexableMapClosure;
+import org.onetwo.common.utils.func.MapClosure;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.ListMap;
+
+import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -467,7 +470,7 @@ final public class CUtils {
 		return list;
 	}
 	
-	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
+	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, MapClosure<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	
@@ -579,11 +582,27 @@ final public class CUtils {
 	}
 	
 
-	public static List toList(Map map) {
+	
+	public static Map<Integer, Object> toMap(List<?> list){
+		return toMap(list, (e, index)->index);
+	}
+	
+	public static <K> Map<K, Object> toMap(List<?> list, IndexableMapClosure<Object, K> keyMap){
+		Map<K, Object> map = Maps.newHashMap();
+		int index = 0;
+		for(Object e : list){
+			K key = keyMap.execute(e, index);
+			map.put(key, e);
+			index++;
+		}
+		return map;
+	}
+
+	public static List<Object> toList(Map<?, ?> map) {
 		if(map==null)
 			return NULL_LIST;
-		List list = new ArrayList(map.size()*2);
-		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
+		List<Object> list = new ArrayList(map.size()*2);
+		for(Map.Entry<?, ?> entry : map.entrySet()){
 			list.add(entry.getKey());
 			list.add(entry.getValue());
 		}

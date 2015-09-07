@@ -48,7 +48,7 @@ import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.func.Block;
+import org.onetwo.common.utils.func.ArgsMapClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -556,7 +556,7 @@ public class LangUtils {
 	}
 
 	
-	public static <T> T block(Block block, Object...objects){
+	public static <T> T block(ArgsMapClosure block, Object...objects){
 		T result = null;
 		try {
 			result = block.execute(objects);
