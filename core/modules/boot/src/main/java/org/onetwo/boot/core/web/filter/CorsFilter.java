@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Maps;
 
-public class SimpleCorsFilter implements Filter {
+public class CorsFilter implements Filter {
 	public static final String CORS_FILTER_NAME = "corsFilter";
 	private Map<String, String> headers = Maps.newHashMap();
 
@@ -30,10 +30,13 @@ public class SimpleCorsFilter implements Filter {
 	
 	protected void configHeader(HttpServletResponse httpResponse){
 		if(headers.isEmpty()){
-			httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+			//允许接收从任何来源发来的请求
+			httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
 			httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+			//设置预检的有效时间的，单位是秒
 			httpResponse.setHeader("Access-Control-Max-Age", "3600");
 			httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type, authorization");
+			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
 		}else{
 			headers.entrySet().forEach(e->{
 				httpResponse.setHeader(e.getKey(), e.getValue());

@@ -32,7 +32,7 @@ import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.DataWrapper;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.func.SimpleBlock;
+import org.onetwo.common.utils.func.MapClosure;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -232,7 +232,7 @@ abstract public class AbstractBaseController {
 		exportText(response, datas, filename, obj->obj.toString());
 	}
 	
-	protected void exportText(HttpServletResponse response, List<?> datas, String filename, SimpleBlock<Object, String> block){
+	protected void exportText(HttpServletResponse response, List<?> datas, String filename, MapClosure<Object, String> block){
 		PrintWriter out = null;
 		try {
 			out = response.getWriter();
@@ -284,7 +284,7 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected AbstractDataResult<Object> asFailedResult(String msg){
-		return SimpleDataResult.createFailed(msg);
+		return SimpleDataResult.error(msg);
 	}
 
 	protected <T> SimpleResultBuilder<T> simpleResult(){

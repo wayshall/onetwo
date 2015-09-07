@@ -14,7 +14,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.func.Block;
+import org.onetwo.common.utils.func.ArgsMapClosure;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -98,7 +98,7 @@ public class XMLReader {
 		if(!file.exists())
 			throw new ServiceException("找不到文件：" +  realPath);
 		
-		Object datas = parse(new Block(){
+		Object datas = parse(new ArgsMapClosure(){
 
 			@Override
 			public Object execute(Object... objects) {
@@ -114,7 +114,7 @@ public class XMLReader {
 		return datas;
 	}
 	
-	protected Object parse(Block closure){
+	protected Object parse(ArgsMapClosure closure){
 		Object datas = null;
 		try {
 			datas = closure.execute();

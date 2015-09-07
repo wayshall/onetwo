@@ -8,7 +8,7 @@ public class BCryptPasswordEncoderTest {
 	@Test
 	public void test(){
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String str = encoder.encode("test");
+		String str = encoder.encode("13333333333");
 		System.out.println("str:" + str);
 	}
 

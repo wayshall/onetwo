@@ -1,6 +1,6 @@
 package org.onetwo.common.utils.func;
 
-public interface Block {
+public interface ArgsMapClosure {
 
 	public <T> T execute(Object...objects) ;
 }

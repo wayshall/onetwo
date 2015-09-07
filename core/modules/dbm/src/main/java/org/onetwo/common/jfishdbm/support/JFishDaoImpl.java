@@ -501,6 +501,9 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		}
 	}
 	
+	/****
+	 * Extractor: RowMapperResultSetExtractor
+	 */
 	public <T> List<T> findList(JFishQueryValue queryValue, RowMapper<T> rowMapper){
 		if(queryValue.isPosition()){
 			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rowMapper);

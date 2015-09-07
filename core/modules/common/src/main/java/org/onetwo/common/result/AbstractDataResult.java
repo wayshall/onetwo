@@ -10,23 +10,23 @@ import org.onetwo.common.utils.Assert;
 
 
 @SuppressWarnings("serial")
-abstract public class AbstractDataResult<T> implements Result<Integer, T>{
+abstract public class AbstractDataResult<T> implements Result<String, T>{
+	public static final String SUCCESS = "SUCCESS";
+	public static final String ERROR = "ERROR";
+	public static final String ERR = "ERR";
 	
-
-	public static final int SUCCEED = 1;
-	public static final int FAILED = 0;
-	private int code = 1;//0,1;
+	private String code = SUCCESS;//0,1;
 	private String message;//
 	
 	public AbstractDataResult(){
-		this.code = SUCCEED;
+		this.code = SUCCESS;
 	}
 
-	public Integer getCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public void setCode(int code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
@@ -39,7 +39,11 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 	}
 
 	public boolean isSuccess(){
-		if(code==SUCCEED)
+		return !isError();
+	}
+
+	public boolean isError(){
+		if(code!=null && code.toUpperCase().startsWith(ERR) || code.toUpperCase().startsWith(ERROR))
 			return true;
 		else
 			return false;
@@ -49,10 +53,10 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 	public static class LazyResult extends AbstractDataResult<Object> {
 
 
-		public static LazyResult createSucceed(String message, LazyValue obj){
-			return create(SUCCEED, message, obj);
+		public static LazyResult success(String message, LazyValue obj){
+			return create(SUCCESS, message, obj);
 		}
-		public static LazyResult create(int code, String message, LazyValue obj){
+		public static LazyResult create(String code, String message, LazyValue obj){
 			LazyResult result = new LazyResult(obj);
 			result.setCode(code);
 			result.setMessage(message);
@@ -82,15 +86,15 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 	}
 	
 	public static class SimpleDataResult<T> extends AbstractDataResult<T> {
-		public static <E> SimpleDataResult<E> createFailed(String message){
-			return create(FAILED, message, null);
+		public static <E> SimpleDataResult<E> error(String message){
+			return create(ERROR, message, null);
 		}
 
-		public static <E> SimpleDataResult<E> createSucceed(String message, E obj){
-			return create(SUCCEED, message, obj);
+		public static <E> SimpleDataResult<E> success(String message, E obj){
+			return create(SUCCESS, message, obj);
 		}
 
-		public static <E> SimpleDataResult<E> create(int code, String message, E obj){
+		public static <E> SimpleDataResult<E> create(String code, String message, E obj){
 			SimpleDataResult<E> result = new SimpleDataResult<>();
 			result.setCode(code);
 			result.setMessage(message);
@@ -120,20 +124,20 @@ abstract public class AbstractDataResult<T> implements Result<Integer, T>{
 	
 	public static class ListResult<T> extends AbstractDataResult<List<T>>{
 
-		public static <E> ListResult<E> createFailed(String message){
-			return create(FAILED, message);
+		public static <E> ListResult<E> error(String message){
+			return create(ERROR, message);
 		}
 
 		@SafeVarargs
-		public static <E> ListResult<E> createSucceed(E...objects){
-			return create(SUCCEED, "SUCCEED", objects);
+		public static <E> ListResult<E> success(E...objects){
+			return create(SUCCESS, "SUCCEED", objects);
 		}
 		
 		@SafeVarargs
-		public static <E> ListResult<E> create(int code, String message, E...objects){
+		public static <E> ListResult<E> create(String code, String message, E...objects){
 			return create(code, message, Arrays.asList(objects));
 		}
-		public static <E> ListResult<E> create(int code, String message, List<E> data){
+		public static <E> ListResult<E> create(String code, String message, List<E> data){
 			ListResult<E> result = new ListResult<>();
 			result.setCode(code);
 			result.setMessage(message);
