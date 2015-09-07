@@ -103,7 +103,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			result.setCode(AjaxKeys.RESULT_FAILED);
 			result.setMessage("操作失败，"+ errorMessage.getMesage());*/
 			SimpleDataResult<?> result = WebResultCreator.simpleResult()
-							.failed("操作失败，"+ errorMessage.getMesage())
+							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			return createModelAndView(null, model, request);

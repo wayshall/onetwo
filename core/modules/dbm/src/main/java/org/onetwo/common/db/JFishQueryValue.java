@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 
 
@@ -44,42 +45,50 @@ public class JFishQueryValue {
 			while(index>=list.size()){
 				list.add(null);
 			}
-			list.set(index, value);
+			list.set(index, convertValue(value));
 		}
 		else {
 			Map map = getValues();
-			map.put(String.valueOf(index), value);
+			map.put(String.valueOf(index), convertValue(value));
 		}
 		return this;
 	}
 	
+
+	private Object convertValue(Object value){
+		return ExtQueryUtils.getNameIfEnum(value, value);
+	}
+	
 	public JFishQueryValue setValue(Map<String, Object> parameters){
-		if(this.holder==PlaceHolder.NAMED){
+		/*if(this.holder==PlaceHolder.NAMED){
 			((Map<String, Object>) this.values).putAll(parameters);
 		}else{
 			List<Object> params = this.getValues();
 			for(Map.Entry<String, Object> entry : parameters.entrySet()){
 				try {
-					params.add(Integer.parseInt(entry.getKey()), entry.getValue());
+					params.add(Integer.parseInt(entry.getKey()), convertValue(entry.getValue()));
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("error parameter position : " + entry.getKey());
 				}
 			}
-		}
+		}*/
+		parameters.forEach((k,v)-> setValue(k, v));
 		return this;
 	}
 	
 	public JFishQueryValue setValue(List<?> parametsrs){
-		if(this.holder==PlaceHolder.POSITION){
+		/*if(this.holder==PlaceHolder.POSITION){
 			((List)this.values).addAll(parametsrs);
 		}else{
 			Map<String, Object> params = this.getValues();
 			int index = 0;
 			for(Object val : parametsrs){
-				params.put(String.valueOf(index), val);
+				params.put(String.valueOf(index), convertValue(val));
 				index++;
 			}
-		}
+		}*/
+		Map<String, Object> parameters = CUtils.toMap(parametsrs, (e, index)->String.valueOf(index));
+		this.setValue(parameters);
 		return this;
 	}
 	
@@ -88,14 +97,14 @@ public class JFishQueryValue {
 			List list = getValues();
 			try {
 				int index = Integer.parseInt(field);
-				list.add(index, value);
+				list.add(index, convertValue(value));
 			} catch (NumberFormatException e) {
-				list.add(value);
+				list.add(convertValue(value));
 			}
 		}
 		else {
 			Map map = getValues();
-			map.put(field, value);
+			map.put(field, convertValue(value));
 		}
 		return this;
 	}

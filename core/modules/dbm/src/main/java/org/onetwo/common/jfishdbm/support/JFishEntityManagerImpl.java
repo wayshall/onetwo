@@ -327,6 +327,10 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return findByProperties(entityClass, CUtils.asLinkedMap(properties));
 	}
 
+	/***
+	 * 根据属性查找数据
+	 * 返回结果不为null
+	 */
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findByProperties(entityClass, properties);
 	}

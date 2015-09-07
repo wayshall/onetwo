@@ -190,5 +190,13 @@ public abstract class ExtQueryUtils {
 		}
 		return fields;
 	}
+
+	
+	public static Object getNameIfEnum(Object value, Object def){
+		if(Enum.class.isInstance(value)){
+			return ((Enum<?>)value).name();
+		}
+		return def;
+	}
 	
 }

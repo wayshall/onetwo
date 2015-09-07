@@ -104,8 +104,8 @@ public class JFishQueryImpl implements JFishQuery {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.onetwo.common.fish.JFishQuery#getResultList()
+	/****
+	 * 返回结果集，返回值不为null
 	 */
 	@Override
 	public <T> List<T> getResultList(){

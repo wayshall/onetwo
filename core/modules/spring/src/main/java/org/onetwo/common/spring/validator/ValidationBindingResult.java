@@ -10,7 +10,7 @@ import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.func.SimpleBlock;
+import org.onetwo.common.utils.func.MapClosure;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 
@@ -62,7 +62,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 		return fmsg;
 	}
 
-	public String getFieldErrorMessage(FieldError fe, SimpleBlock<FieldError, String> block){
+	public String getFieldErrorMessage(FieldError fe, MapClosure<FieldError, String> block){
 		String fmsg = "";
 		if(block!=null){
 			fmsg = block.execute(fe);
@@ -73,7 +73,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 		return fmsg;
 	}
 	
-	public List<String> getFieldErrorMessages(SimpleBlock<FieldError, String> block){
+	public List<String> getFieldErrorMessages(MapClosure<FieldError, String> block){
 		List<FieldError> fieldErrors = getFieldErrors();
 		List<String> msgs = LangUtils.newArrayList(fieldErrors.size());
 		for(FieldError fe : fieldErrors){
@@ -89,7 +89,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 			msgs.add(getFieldErrorMessage(fe, readFieldMeta));
 		}
 		return msgs;*/
-		return getFieldErrorMessages(new SimpleBlock<FieldError, String>() {
+		return getFieldErrorMessages(new MapClosure<FieldError, String>() {
 
 			@Override
 			public String execute(FieldError fe) {

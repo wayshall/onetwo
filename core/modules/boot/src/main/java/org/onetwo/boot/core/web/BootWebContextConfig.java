@@ -11,7 +11,7 @@ import org.onetwo.boot.core.config.BootJFishConfig.StoreType;
 import org.onetwo.boot.core.config.BootJFishConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
-import org.onetwo.boot.core.web.filter.SimpleCorsFilter;
+import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
@@ -80,11 +80,11 @@ public class BootWebContextConfig {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnBean(name = SimpleCorsFilter.CORS_FILTER_NAME)
-	public FilterRegistrationBean corsFilterRegistration(@Qualifier(SimpleCorsFilter.CORS_FILTER_NAME) Filter filter){
+	@ConditionalOnBean(name = CorsFilter.CORS_FILTER_NAME)
+	public FilterRegistrationBean corsFilterRegistration(@Qualifier(CorsFilter.CORS_FILTER_NAME) Filter filter){
 		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		registration.setName(SimpleCorsFilter.CORS_FILTER_NAME);
+		registration.setName(CorsFilter.CORS_FILTER_NAME);
 		return registration;
 	}
 	

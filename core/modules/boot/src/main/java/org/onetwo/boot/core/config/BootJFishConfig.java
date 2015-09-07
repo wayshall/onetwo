@@ -32,7 +32,14 @@ public class BootJFishConfig {
 
 	@Data
 	public class JsonConfig {
-		private boolean prettyPrint = !bootSpringConfig.isProduct();
+		private Boolean prettyPrint;
+		
+		public boolean isPrettyPrint(){
+			 if(prettyPrint==null)
+				 return !bootSpringConfig.isProduct();
+			 else
+				 return prettyPrint;
+		}
 	}
 	
 	@Data
