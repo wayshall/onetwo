@@ -229,6 +229,12 @@ public class BeanCopier<T> {
 		return srcValue;
 	}
 
+	/***
+	 * 如果原对象没有目标对象的属性，则返回null
+	 * @param srcBean
+	 * @param targetPropertyName
+	 * @return
+	 */
 	private Object getPropertyValue(BeanWrapper srcBean, String targetPropertyName){
 		Object srcValue = null;
 		if(srcBean.isReadableProperty(targetPropertyName)){

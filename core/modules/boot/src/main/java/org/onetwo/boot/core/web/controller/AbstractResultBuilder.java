@@ -4,10 +4,11 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.result.AbstractDataResult;
 import org.springframework.web.servlet.ModelAndView;
 
-abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T, B>> {
+abstract public class AbstractResultBuilder<T extends AbstractDataResult<?>, B extends AbstractResultBuilder<T, B>> {
 	
 	protected String code = AbstractDataResult.SUCCESS;
 	protected String message;
+	private boolean extractableData = false;
 //	final protected Class<?> builderClass;
 //	private T data;
 	
@@ -23,7 +24,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	public B success(String message){
 		return code(AbstractDataResult.SUCCESS, message);
 	}
-	
+
 
 	public B error(){
 		return error(null);
@@ -48,6 +49,16 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	public B code(Enum<?> code, String message){
 		return code(code.name(), message);
 	}
+	
+	/****
+	 * 指示客户端是否只提取result里的data作为返回结果
+	 * @param extractableData
+	 * @return
+	 */
+	public B extractableData(boolean extractableData){
+		this.extractableData = extractableData;
+		return (B) this;
+	}
 	@SuppressWarnings("unchecked")
 	public B code(String code){
 		this.code = code;
@@ -67,7 +78,13 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 		return (B) this;
 	}
 
-	abstract public T buildResult();
+	abstract protected T creeateResult();
+
+	public T buildResult(){
+		T rs = creeateResult();
+		rs.setExtractableData(extractableData);
+		return rs;
+	}
 
 	public ModelAndView buildModelAndView(){
 		T rs = buildResult();

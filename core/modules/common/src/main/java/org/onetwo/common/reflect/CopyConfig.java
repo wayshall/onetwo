@@ -8,7 +8,7 @@ public class CopyConfig {
 	};
 	
 	public static CopyConfig createIgnoreBlank(String...ignoreFields) {
-		return CopyConfig.create().ignoreIfNoSetMethod().ignoreNull().ignoreBlank().ignoreFields(ignoreFields);
+		return CopyConfig.create().ignoreIfNoSetMethod(true).ignoreNull().ignoreBlank().ignoreFields(ignoreFields);
 	};
 
 	private boolean ignoreNull = false;
@@ -72,8 +72,8 @@ public class CopyConfig {
 		return throwIfError;
 	}
 
-	public CopyConfig throwIfError() {
-		this.throwIfError = true;
+	public CopyConfig throwIfError(boolean throwIfError) {
+		this.throwIfError = throwIfError;
 		return this;
 	}
 
@@ -81,8 +81,8 @@ public class CopyConfig {
 		return ignoreIfNoSetMethod;
 	}
 
-	public CopyConfig ignoreIfNoSetMethod() {
-		this.ignoreIfNoSetMethod = true;
+	public CopyConfig ignoreIfNoSetMethod(boolean ignoreIfNoSetMethod) {
+		this.ignoreIfNoSetMethod = ignoreIfNoSetMethod;
 		return this;
 	}
 	
