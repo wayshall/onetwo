@@ -17,6 +17,8 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 	
 	private String code = SUCCESS;//0,1;
 	private String message;//
+	//面向某些领域时，指示客户端是否只提取result里的data作为返回结果
+	private boolean extractableData = false;
 	
 	public AbstractDataResult(){
 		this.code = SUCCESS;
@@ -49,6 +51,20 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 			return false;
 	}
 	
+	public boolean isExtractableData() {
+		return extractableData;
+	}
+
+	/***
+	 * 指示客户端是否只提取result里的data作为返回结果
+	 * @param extractableData
+	 */
+	public void setExtractableData(boolean extractableData) {
+		this.extractableData = extractableData;
+	}
+
+
+
 
 	public static class LazyResult extends AbstractDataResult<Object> {
 

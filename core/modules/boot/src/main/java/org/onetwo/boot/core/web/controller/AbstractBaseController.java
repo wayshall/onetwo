@@ -278,7 +278,7 @@ abstract public class AbstractBaseController {
 		return mv("", DataWrapper.lazy(value));
 	}
 	
-	protected AbstractDataResult<Object> asSucceedResult(Object value){
+	protected AbstractDataResult<?> asSucceedResult(Object value){
 //		return SimpleDataResult.createSucceed(null, value);
 		return simpleResult().data(value).buildResult();
 	}
@@ -287,12 +287,33 @@ abstract public class AbstractBaseController {
 		return SimpleDataResult.error(msg);
 	}
 
+	/***
+	 * SimpleResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 
+	 * @return
+	 */
 	protected <T> SimpleResultBuilder<T> simpleResult(){
 		return WebResultCreator.simpleResult();
 	}
+	/****
+	 * 
+	 * ListResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.AbstractDataResult.ListResult ListResult}) 类型返回
+	 * 
+	 * @return
+	 */
 	protected <T> ListResultBuilder<T> listResult(){
 		return WebResultCreator.listResult();
 	}
+	
+	/***
+	 * 
+	 * MapResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
+	 * 
+	 * @return
+	 */
 	protected MapResultBuilder mapResult(){
 		return WebResultCreator.mapResult();
 	}

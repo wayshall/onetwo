@@ -60,7 +60,7 @@ public class ReflectUtils {
 
 	
 
-	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().ignoreIfNoSetMethod().ignoreNull().ignoreBlank();
+	public static final CopyConfig IGNORE_BLANK = CopyConfig.create().ignoreIfNoSetMethod(true).ignoreNull().ignoreBlank();
 
 	public static final Class<?>[] EMPTY_CLASSES = new Class[0];
 //	public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
@@ -214,7 +214,7 @@ public class ReflectUtils {
 			}
 			if(prop.getWriteMethod()==null){
 				if(!skipIfNoSetMethod){
-					throw new NoSuchMethodException("property: " + propName);
+					throw new NoSuchMethodException("not property[" + propName+"] setter found on class: " + element.getClass());
 				}else{
 					return ;
 				}
@@ -915,12 +915,12 @@ public class ReflectUtils {
 	}
 
 	public static void copy(Object source, Object target, boolean throwIfError) {
-		copy(source, target, CopyConfig.create().throwIfError());
+		copy(source, target, CopyConfig.create().throwIfError(throwIfError));
 	}
 
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
-		copy(source, target, CopyConfig.create().throwIfError().ignoreIfNoSetMethod().ignoreFields(excludeNames));
+		copy(source, target, CopyConfig.create().throwIfError(true).ignoreIfNoSetMethod(true).ignoreFields(excludeNames));
 	}
 	
 	public static void copyIgnoreBlank(Object source, Object target, String...ignoreFields) {
