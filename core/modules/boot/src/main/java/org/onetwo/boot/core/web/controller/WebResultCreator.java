@@ -47,7 +47,8 @@ final public class WebResultCreator {
 			return this;
 		}
 		
-		public LazyResult buildResult(){
+		@Override
+		protected LazyResult creeateResult(){
 			return LazyResult.create(code, message, data);
 		}
 
@@ -66,7 +67,8 @@ final public class WebResultCreator {
 			return this;
 		}
 		
-		public SimpleDataResult<T> buildResult(){
+		@Override
+		protected SimpleDataResult<T> creeateResult(){
 			return SimpleDataResult.create(code, message, data);
 		}
 	}
@@ -85,7 +87,8 @@ final public class WebResultCreator {
 			return this;
 		}
 		
-		public ListResult<T> buildResult(){
+		@Override
+		protected ListResult<T> creeateResult(){
 			return ListResult.create(code, message, data);
 		}
 	}
@@ -104,7 +107,8 @@ final public class WebResultCreator {
 			return this;
 		}
 		
-		public MapResult buildResult(){
+		@Override
+		protected MapResult creeateResult(){
 			return MapResult.create(code, message, data);
 		}
 	}
