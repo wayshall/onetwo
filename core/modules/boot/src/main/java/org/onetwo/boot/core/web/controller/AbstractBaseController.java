@@ -13,8 +13,6 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.web.controller.WebResultCreator.ListResultBuilder;
-import org.onetwo.boot.core.web.controller.WebResultCreator.MapResultBuilder;
 import org.onetwo.boot.core.web.controller.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
@@ -294,28 +292,10 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected <T> SimpleResultBuilder<T> simpleResult(){
-		return WebResultCreator.simpleResult();
+		return result().simple();
 	}
-	/****
-	 * 
-	 * ListResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.AbstractDataResult.ListResult ListResult}) 类型返回
-	 * 
-	 * @return
-	 */
-	protected <T> ListResultBuilder<T> listResult(){
-		return WebResultCreator.listResult();
-	}
-	
-	/***
-	 * 
-	 * MapResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
-	 * 
-	 * @return
-	 */
-	protected MapResultBuilder mapResult(){
-		return WebResultCreator.mapResult();
+	protected WebResultCreator result(){
+		return WebResultCreator.result();
 	}
 	
 	protected ResponseType getResponseType(){

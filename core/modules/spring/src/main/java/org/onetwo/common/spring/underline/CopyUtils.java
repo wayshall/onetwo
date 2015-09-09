@@ -16,6 +16,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
@@ -106,11 +108,16 @@ public class CopyUtils {
     public static <T> T copy(Class<T> targetClass, Object src){
     	return copy(newInstance(targetClass), src, UNDERLINE_CONVERTOR);
     }
-	
+
 
     public static <T> T copy(T target, Object src){
 //    	return copy(target, src, UNDERLINE_CONVERTOR);
     	return BEAN_COPIER.fromObject(src, target);
+    }
+
+    public static <T> List<T> copy(Class<T> targetCls, Iterable<?> srcs){
+    	return StreamSupport.stream(srcs.spliterator(), false)
+    						.map(e->copy(targetCls, e)).collect(Collectors.toList());
     }
     
     /*****

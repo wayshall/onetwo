@@ -3,6 +3,8 @@ package org.onetwo.common.utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -13,11 +15,28 @@ public class Page<T> implements Serializable {
 	 */
 	private static final long serialVersionUID = 5041683742265451593L;
 
-	public static <T> Page<T> create(){
-		return new Page<T>();
+	public static <E> Page<E> create(){
+		return new Page<E>();
 	}
-	public static <T> Page<T> create(int pageNo){
-		Page<T> page = new Page<>();
+
+	public static <E2, E1> Page<E2> createByPage(Page<E1> p, Function<? super E1, ? extends E2> mapper){
+		Page<E2> page = Page.create();
+		page.pageNo = p.pageNo;
+		page.pageSize = p.pageSize;
+		page.order = p.order;
+		page.orderBy = p.orderBy;
+		page.first = p.first;
+		page.autoCount = p.autoCount;
+		page.totalCount = p.totalCount;
+		page.pagination = p.pagination;
+		if(mapper!=null){
+			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
+			page.result = rs;
+		}
+		return page;
+	}
+	public static <E> Page<E> create(int pageNo){
+		Page<E> page = new Page<>();
 		page.setPageNo(pageNo);
 		return page;
 	}
@@ -283,6 +302,9 @@ public class Page<T> implements Serializable {
 	public void setPagination(boolean pagination) {
 		this.pagination = pagination;
 	}
-	
+
+	public <R> Page<R> mapToNewPage(Function<? super T, ? extends R> mapper){
+		return createByPage(this, mapper);
+	}
 	
 }
