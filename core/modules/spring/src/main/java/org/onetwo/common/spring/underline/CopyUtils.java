@@ -18,27 +18,53 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 public class CopyUtils {
     public static final PropertyDescriptor[] EMPTY_PROPERTIES_ARRAY = new PropertyDescriptor[0];
-    public static final String SPLITER = "_";
     
-    private static final PropertyNameConvertor UNDERLINE_CONVERTOR = new PropertyNameConvertor(){
-
-		@Override
-		public String convert(String targetPropertyName) {
-			if(targetPropertyName.contains(SPLITER)){
-				return StringUtils.toPropertyName(targetPropertyName);
-			}else if(StringUtils.hasUpper(targetPropertyName)){
-				return StringUtils.convert2UnderLineName(targetPropertyName, SPLITER);
-			}
-			return targetPropertyName;
-		}
+    
+    public static class BeanCopierBuilder {
+    	public static BeanCopierBuilder newBuilder(){
+    		return new BeanCopierBuilder();
+    	}
+//    	private Object targetObject;
+    	private Object fromObject;
+    	private PropertyFilter propertyFilter;
+    	private PropertyNameConvertor propertyNameConvertor;
     	
-    };
+    	public BeanCopierBuilder copy(Object from){
+    		this.fromObject = from;
+    		return this;
+    	}
+
+    	public BeanCopierBuilder filter(PropertyFilter propertyFilter){
+    		this.propertyFilter = propertyFilter;
+    		return this;
+    	}
+
+    	public BeanCopierBuilder propertyNameConvertor(PropertyNameConvertor propertyNameConvertor){
+    		this.propertyNameConvertor = propertyNameConvertor;
+    		return this;
+    	}
+    	
+    	public <T> T to(Class<T> targetClass){
+    		T targetObject = ReflectUtils.newInstance(targetClass);
+    		to(targetObject);
+    		return targetObject;
+    	}
+    	
+    	public <T> void to(T target){
+    		SimpleBeanCopier copier = new SimpleBeanCopier();
+    		copier.setPropertyFilter(propertyFilter);
+    		copier.setPropertyNameConvertor(propertyNameConvertor);
+    		copier.fromObject(fromObject, target);
+    	}
+    }
+
+    public static final PropertyNameConvertor UNDERLINE_CONVERTOR = SimpleBeanCopier.UNDERLINE_CONVERTOR;
+    public static final SimpleBeanCopier BEAN_COPIER = new SimpleBeanCopier();
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
@@ -83,7 +109,8 @@ public class CopyUtils {
 	
 
     public static <T> T copy(T target, Object src){
-    	return copy(target, src, UNDERLINE_CONVERTOR);
+//    	return copy(target, src, UNDERLINE_CONVERTOR);
+    	return BEAN_COPIER.fromObject(src, target);
     }
     
     /*****
@@ -94,7 +121,17 @@ public class CopyUtils {
      * @return
      */
     public static <T> T copy(T target, Object src, PropertyNameConvertor convertor){
-    	return new BeanCopier<T>(target, convertor).fromObject(src);
+//    	return new BeanWrappedCopier<T>(target, convertor).fromObject(src);
+    	BeanCopierBuilder.newBuilder()
+    					.copy(src)
+    					.propertyNameConvertor(convertor)
+    					.to(target);
+    	return target;
+    }
+    
+
+    public static BeanCopierBuilder copier(){
+    	return BeanCopierBuilder.newBuilder();
     }
 
 	public static Collection<String> desribPropertyNames(Class<?> clazz){

@@ -7,7 +7,7 @@ import org.onetwo.boot.plugins.permission.entity.IPermission;
 import org.onetwo.boot.plugins.permission.entity.PermissionType;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.common.tree.TreeBuilder;
-import org.onetwo.common.utils.func.Closure;
+import org.onetwo.common.utils.func.Closure1;
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
@@ -32,7 +32,7 @@ final public class PermissionUtils {
 		return PermissionType.of(node.getPtype());*/
 		return node.getPermissionType();
 	}
-	public static <T extends IPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure<T> block){
+	public static <T extends IPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure1<T> block){
 		if(block!=null){
 			block.execute(node);
 		}else{

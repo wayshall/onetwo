@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.func.MapClosure;
+import org.onetwo.common.utils.func.ReturnableClosure;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class StringUtils {
@@ -550,7 +550,7 @@ public abstract class StringUtils {
 		return join(array, separator, 0, array.length);
 	}
 
-	public static String join(Object[] array, String separator, MapClosure<Object, String> it) {
+	public static String join(Object[] array, String separator, ReturnableClosure<Object, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}
@@ -561,7 +561,7 @@ public abstract class StringUtils {
 		return join(iterator, separator, null);
 	}
 
-	public static String join(Iterator iterator, String separator, MapClosure<Object, String> it) {
+	public static String join(Iterator iterator, String separator, ReturnableClosure<Object, String> it) {
 
 		// handle null, zero and one elements before building a buffer
 		if (iterator == null) {
@@ -606,7 +606,7 @@ public abstract class StringUtils {
 		return join(collection.iterator(), separator);
 	}
 
-	public static String join(Collection collection, String separator, MapClosure<Object, String> it) {
+	public static String join(Collection collection, String separator, ReturnableClosure<Object, String> it) {
 		if (collection == null) {
 			return EMPTY;
 		}
@@ -617,7 +617,7 @@ public abstract class StringUtils {
 		return join(array, separator, startIndex, endIndex, null);
 	}
 
-	public static String join(Object[] array, String separator, int startIndex, int endIndex, MapClosure<Object, String> it) {
+	public static String join(Object[] array, String separator, int startIndex, int endIndex, ReturnableClosure<Object, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}

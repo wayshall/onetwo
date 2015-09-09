@@ -4,7 +4,6 @@ import java.beans.PropertyDescriptor;
 
 public interface PropertyFilter {
 
-	boolean isCopiable(PropertyDescriptor toProperty);
-	boolean isCopiable(Object fromValue);
+	boolean isCopiable(PropertyDescriptor toProperty, Object fromPropertyValue);
 
 }

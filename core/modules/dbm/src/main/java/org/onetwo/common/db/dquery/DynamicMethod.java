@@ -17,7 +17,7 @@ import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.common.db.dquery.annotation.AsCountQuery;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
-import org.onetwo.common.db.dquery.annotation.Matcher;
+import org.onetwo.common.db.dquery.annotation.Dispatcher;
 import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
 import org.onetwo.common.db.filequery.FileNamedQueryException;
@@ -138,7 +138,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	
 	private void checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
 		this.matcherParamter = parameters.stream().filter(p->{
-								if(p.hasParameterAnnotation(Matcher.class)){
+								if(p.hasParameterAnnotation(Dispatcher.class)){
 									if(p.getParameterIndex()!=0){
 										throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (p.getParameterIndex()+1));
 									}else if(p.getParameterType()!=String.class){

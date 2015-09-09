@@ -71,7 +71,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
 		if(BootWebUtils.isAjaxRequest(request)){
-			SimpleDataResult<Object> rs = WebResultCreator.simpleResult()
+			SimpleDataResult<?> rs = WebResultCreator.simpleResult()
 											.success("登录成功！")
 											.data(authentication.getPrincipal())
 											.buildResult();

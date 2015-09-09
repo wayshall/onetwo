@@ -45,8 +45,10 @@ import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.func.Closure2;
 import org.onetwo.common.utils.map.BaseMap;
 import org.slf4j.Logger;
+
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
 public class ReflectUtils {
@@ -152,23 +154,30 @@ public class ReflectUtils {
 	public static Object getProperty(Object element, String propName) {
 		return getProperty(element, propName, true);
 	}
+	
 
 	public static Object getProperty(Object element, String propName, boolean throwIfError) {
+		return getProperty(element, propName, (p, e)->{
+			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
+			if(throwIfError)
+				throw new BaseException("get ["+element+"] property["+propName+"] error", e);
+		});
+	}
+
+	public static  Object getProperty(Object element, String propName, Closure2<String, Exception> errorHandler) {
 		if (element instanceof Map) {
 			return getValue((Map) element, propName);
 		}
-		/*PropertyDescriptor prop = getPropertyDescriptor(element, propName);
-		Object value = null;
-		if (prop != null)
-			value = invokeMethod(throwIfError, getReadMethod(
-					element.getClass(), prop), element);
-		return value;*/
 		try{
+//			Intro<?> info = getIntro(getObjectClass(element));
+//			PropertyDescriptor pd = info.getProperty(propName);
+//			return info.getPropertyValue(element, pd);
 			return getIntro(getObjectClass(element)).getPropertyValue(element, propName);
 		}catch(Exception e){
-			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
+			/*logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
 			if(throwIfError)
-				throw LangUtils.asBaseException(e);
+				throw new BaseException("get ["+element+"] property["+propName+"] error", e);*/
+			errorHandler.execute(propName, e);
 		}
 		return null;
 	}

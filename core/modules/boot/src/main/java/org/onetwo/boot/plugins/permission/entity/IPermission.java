@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission.entity;
 import java.util.List;
 
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
-import org.onetwo.common.utils.func.Closure;
+import org.onetwo.common.utils.func.Closure1;
 
 public interface IPermission<T extends IPermission<T>> {
 
@@ -68,7 +68,7 @@ public interface IPermission<T extends IPermission<T>> {
 
 	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();
-		PermissionUtils.buildString(str, (T)this, "--", new Closure<T>() {
+		PermissionUtils.buildString(str, (T)this, "--", new Closure1<T>() {
 			
 			@Override
 			public void execute(T obj) {

@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.annotation.JInfo;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -28,8 +27,8 @@ public final class ValidatorUtils {
 		}
 	}
 	
-	public static JInfo findValidationInfo(Class<?> objClass, String fieldName){
-		return AnnotationUtils.findFieldAnnotation(objClass, fieldName, JInfo.class);
+	public static FieldName findValidationInfo(Class<?> objClass, String fieldName){
+		return AnnotationUtils.findFieldAnnotation(objClass, fieldName, FieldName.class);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -41,7 +40,9 @@ public final class ValidatorUtils {
 		for(ObjectError error : br.getAllErrors()){
 			msg = "";
 			if(appendFieldname && FieldError.class.isInstance(error)){
-				msg = ((FieldError)error).getField();
+				FieldError fe = (FieldError) error;
+				FieldName info = findValidationInfo(br.getTarget().getClass(), fe.getField());
+				msg = info==null?fe.getField():info.value();
 			}
 			msg += error.getDefaultMessage();
 			msglist.add(msg);
