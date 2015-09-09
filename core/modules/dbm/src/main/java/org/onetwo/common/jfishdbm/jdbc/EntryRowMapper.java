@@ -21,7 +21,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private JFishMappedEntry entry;
-	private boolean debug;
+	private boolean debug = false;
 	
 	public EntryRowMapper(JFishMappedEntry entry) {
 		super();
@@ -38,7 +38,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 
 	@Override
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
-		Assert.state(entry!=null, "no entry!");
+		Assert.state(entry!=null, "no mapping entry!");
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
 
@@ -89,13 +89,13 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 		return entity;
 	}
 	
-	protected String toPropertyName(String column){
-		String propName = column;
+	protected String toPropertyName(final String column){
+		/*String propName = column;
 		if(propName.contains("___")){
 			propName = propName.replace("___", ".");
 		}
-		propName = StringUtils.toCamel(propName, false);
-		return propName;
+		propName = StringUtils.toCamel(propName, false);*/
+		return StringUtils.toCamel(column, false);
 	}
 	
 	/*protected void setRelatedProperty(ResultSet rs, int index, Object entity, String propName) throws SQLException{
