@@ -9,29 +9,78 @@ import org.onetwo.common.result.AbstractDataResult.ListResult;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.result.LazyValue;
 import org.onetwo.common.result.MapResult;
+import org.onetwo.common.utils.CUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+@SuppressWarnings("unchecked")
 final public class WebResultCreator {
 
 	private WebResultCreator() {
 	}
 
-	public static <T> SimpleResultBuilder<T> simpleResult(){
-		return new SimpleResultBuilder<T>().success();
+	public static WebResultCreator result(){
+		return new WebResultCreator();
 	}
-	
-	public static <T> ListResultBuilder<T> listResult(){
+	/***
+	 * SimpleResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 
+	 * @return
+	 */
+	public <T> SimpleResultBuilder<T> simple(){
+		return simple(null);
+	}
+	public <T> SimpleResultBuilder<T> simple(T data){
+		SimpleResultBuilder<T> builder = new SimpleResultBuilder<T>().success();
+		builder.data(data);
+		return builder;
+	}
+	/****
+	 * 
+	 * ListResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.AbstractDataResult.ListResult ListResult}) 类型返回
+	 * 
+	 * @return
+	 */
+	public <T> ListResultBuilder<T> list(){
 		return new ListResultBuilder<T>().success();
 	}
-	
-	public static MapResultBuilder mapResult(){
+	public <T> ListResultBuilder<T> list(T...elements){
+		ListResultBuilder<T> builder = new ListResultBuilder<T>().success();
+		builder.addElements(elements);
+		return builder;
+	}
+	public <T> ListResultBuilder<T> list(List<T> list){
+		ListResultBuilder<T> builder = new ListResultBuilder<T>().success();
+		builder.addList(list);
+		return builder;
+	}
+	/***
+	 * 
+	 * MapResultBuilder
+	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
+	 * 
+	 * @return
+	 */
+	public MapResultBuilder map(){
 		return new MapResultBuilder().success();
 	}
+	public MapResultBuilder map(Object...objects){
+		MapResultBuilder builder = new MapResultBuilder().success();
+		builder.puts(objects);
+		return builder;
+	}
 	
-	public static LazyResultBuilder lazyResult(){
+	public LazyResultBuilder lazy(){
 		return new LazyResultBuilder().success();
+	}
+	
+	public LazyResultBuilder lazy(LazyValue data){
+		LazyResultBuilder builder = new LazyResultBuilder().success();
+		builder.data(data);
+		return builder;
 	}
 
 	
@@ -81,9 +130,13 @@ final public class WebResultCreator {
 			this.data = Lists.newArrayList();
 		}
 		
-		@SuppressWarnings("unchecked")
-		public ListResultBuilder<T> addData(T... elements){
+		public ListResultBuilder<T> addElements(T... elements){
 			Stream.of(elements).forEach(e->data.add(e));
+			return this;
+		}
+		
+		public ListResultBuilder<T> addList(List<T> list){
+			data.addAll(list);
 			return this;
 		}
 		
@@ -104,6 +157,11 @@ final public class WebResultCreator {
 		
 		public MapResultBuilder put(Object key, Object value){
 			data.put(key, value);
+			return this;
+		}
+		
+		public MapResultBuilder puts(Object...objs){
+			data.putAll(CUtils.asMap(objs));
 			return this;
 		}
 		

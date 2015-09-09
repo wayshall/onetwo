@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -607,6 +609,10 @@ final public class CUtils {
 			list.add(entry.getValue());
 		}
 		return list;
+	}
+
+	public static <T, R> List<R> map(Collection<T> list, Function<? super T, ? extends R> mapper){
+		return list.stream().map(mapper).collect(Collectors.toList());
 	}
 	
 	private CUtils(){

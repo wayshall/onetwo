@@ -107,8 +107,13 @@ public class JFishQueryImpl implements JFishQuery {
 	/****
 	 * 返回结果集，返回值不为null
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> getResultList(){
+		return (List<T>)getResultList(rowMapper);
+	}
+	
+	public <T> List<T> getResultList(RowMapper<T> rowMapper){
 		String fname = this.getClass().getSimpleName()+".getResultList";
 		UtilTimerStack.push(fname);
 		

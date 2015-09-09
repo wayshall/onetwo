@@ -24,6 +24,7 @@ final public class Langs {
 										.collect(Collectors.toList());
 	}
 	
+	
 //	public static long sum(Iterable<T>)
 	
 	private Langs(){}
