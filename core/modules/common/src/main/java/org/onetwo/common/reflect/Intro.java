@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -348,14 +349,28 @@ public class Intro<T> {
 	public Object setPropertyValue(Object element, String propName, Object value) {
 		Method writeMthod = getWriteMethod(propName);
 		if(writeMthod==null)
-			throw new BaseException("no write method found : " + propName);
+			throw new NoSuchElementException("no write method found, class:"+element.getClass()+", property:"+propName);
+		return ReflectUtils.invokeMethod(writeMthod, element, value);
+	}
+	
+	public Object setPropertyValue(Object element, PropertyDescriptor pd, Object value) {
+		Method writeMthod = pd.getWriteMethod();
+		if(writeMthod==null)
+			throw new NoSuchElementException("no write method found, class:"+element.getClass()+", property:"+pd.getName());
 		return ReflectUtils.invokeMethod(writeMthod, element, value);
 	}
 	
 	public Object getPropertyValue(Object element, String propName) {
 		Method readMethod = getReadMethod(propName);
 		if(readMethod==null)
-			throw new BaseException("no read method found : " + propName);
+			throw new NoSuchElementException("no read method found, class:"+element.getClass()+", property:"+propName);
+		return ReflectUtils.invokeMethod(readMethod, element);
+	}
+	
+	public Object getPropertyValue(Object element, PropertyDescriptor pd) {
+		Method readMethod = pd.getReadMethod();
+		if(readMethod==null)
+			throw new NoSuchElementException("no read method found, class:"+element.getClass()+", property:"+pd.getName());
 		return ReflectUtils.invokeMethod(readMethod, element);
 	}
 	

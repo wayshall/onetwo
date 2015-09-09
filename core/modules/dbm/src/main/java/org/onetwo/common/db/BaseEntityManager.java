@@ -21,6 +21,10 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 	public void persist(Object entity);
 	
+	/****
+	 * 根据id把实体的所有字段更新到数据库
+	 * @param entity
+	 */
 	public void update(Object entity);
 
 	/****
@@ -95,6 +99,11 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 	public void clear();
 	
+	/***
+	 * 依赖于实现
+	 * @param entity
+	 * @return
+	 */
 	public <T> T merge(T entity);
 	
 //	public EntityManager getEntityManager();

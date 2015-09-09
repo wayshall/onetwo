@@ -21,8 +21,8 @@ import java.util.TreeSet;
 
 import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.func.IndexableMapClosure;
-import org.onetwo.common.utils.func.MapClosure;
+import org.onetwo.common.utils.func.IndexableReturnableClosure;
+import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
@@ -470,7 +470,7 @@ final public class CUtils {
 		return list;
 	}
 	
-	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, MapClosure<V, K> block){
+	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	
@@ -587,7 +587,7 @@ final public class CUtils {
 		return toMap(list, (e, index)->index);
 	}
 	
-	public static <K> Map<K, Object> toMap(List<?> list, IndexableMapClosure<Object, K> keyMap){
+	public static <K> Map<K, Object> toMap(List<?> list, IndexableReturnableClosure<Object, K> keyMap){
 		Map<K, Object> map = Maps.newHashMap();
 		int index = 0;
 		for(Object e : list){

@@ -5,15 +5,8 @@ import java.beans.PropertyDescriptor;
 public class SimplePropertyFilter implements PropertyFilter {
 
 	@Override
-	public boolean isCopiable(PropertyDescriptor toProperty) {
-		return toProperty.getWriteMethod()!=null;
+	public boolean isCopiable(PropertyDescriptor toProperty, Object fromValue) {
+		return toProperty.getWriteMethod()!=null && fromValue!=null;
 	}
-
-	@Override
-	public boolean isCopiable(Object fromValue) {
-		return fromValue!=null;
-	}
-	
-	
 
 }

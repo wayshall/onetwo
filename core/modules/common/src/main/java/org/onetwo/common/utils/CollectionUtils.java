@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.onetwo.common.utils.func.Closure;
+import org.onetwo.common.utils.func.Closure1;
 import org.onetwo.common.utils.list.Predicate;
 
 
@@ -258,11 +258,11 @@ public abstract class CollectionUtils {
 		return true;
 	}
 	
-	 public static <T> void doExecute(Collection<T> collect, Closure<T> closure){
+	 public static <T> void doExecute(Collection<T> collect, Closure1<T> closure){
 		doExecute((T[])collect.toArray(), closure);
 	}
 	
-	public static <T> void doExecute(T[] array, Closure<T> closure){
+	public static <T> void doExecute(T[] array, Closure1<T> closure){
 		if(array==null)
 			return ;
 		for(T obj : array){
