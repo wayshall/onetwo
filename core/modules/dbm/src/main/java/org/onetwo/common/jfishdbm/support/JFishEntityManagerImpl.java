@@ -17,8 +17,8 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
 import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
@@ -46,7 +46,8 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	
 	@Override
 	public void update(Object entity) {
-		this.jfishDao.update(entity);
+		int rs = this.jfishDao.update(entity);
+		throwIfEffectiveCountError("update", 1, rs);
 	}
 
 
@@ -158,9 +159,13 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		throw new UnsupportedOperationException();
 	}
 
+	/***
+	 * jfish dbm实现为dymanicUpdate, 更新非null字段到数据库
+	 */
 	@Override
 	public <T> T merge(T entity) {
-		getJfishDao().dymanicUpdate(entity);
+		int rs = getJfishDao().dymanicUpdate(entity);
+		throwIfEffectiveCountError("merge", 1, rs);
 		return entity;
 	}
 

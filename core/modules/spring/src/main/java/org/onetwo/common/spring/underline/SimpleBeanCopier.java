@@ -8,63 +8,72 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-public class BeanCopier<T> {
+public class SimpleBeanCopier {
+    public static final String SPLITER = "_";
 
-	public final <R> BeanCopier<R> newBeanCopier(Class<R> targetClass){
-		BeanCopier<R> copier = new BeanCopier<R>(CopyUtils.newInstance(targetClass), propertyNameConvertor);
-		copier.propertyFilter = this.propertyFilter;
-		copier.propertyNameConvertor = this.propertyNameConvertor;
-		return copier;
-	}
+    public static final PropertyNameConvertor UNDERLINE_CONVERTOR = new PropertyNameConvertor(){
+
+		@Override
+		public String convert(String targetPropertyName) {
+			if(targetPropertyName.contains(SPLITER)){
+				return StringUtils.toPropertyName(targetPropertyName);
+			}else if(StringUtils.hasUpper(targetPropertyName)){
+				return StringUtils.convert2UnderLineName(targetPropertyName, SPLITER);
+			}
+			return targetPropertyName;
+		}
+    	
+    };
+
 	
-	private BeanWrapper targetBeanWrapper;
-	private PropertyNameConvertor propertyNameConvertor;
-	private final T target;
+//	private BeanWrapper targetBeanWrapper;
+	private PropertyNameConvertor propertyNameConvertor = UNDERLINE_CONVERTOR;
+//	private final T target;
 //	private boolean ignoreNull;
 	private PropertyFilter propertyFilter = new SimplePropertyFilter();
 	
 
-	public BeanCopier(T target) {
-		this(target, null);
+	public SimpleBeanCopier() {
 	}
 
-	public BeanCopier(T target, PropertyNameConvertor convertor) {
-		super();
-		this.target = target;
-		this.targetBeanWrapper = CopyUtils.newBeanWrapper(target);
+	public SimpleBeanCopier(PropertyNameConvertor convertor) {
 		this.propertyNameConvertor = convertor;
 	}
+
+
+	public <T> T fromObject(Object src, Class<T> targetClass){
+		return fromObject(src, ReflectUtils.newInstance(targetClass));
+	}
 	
-	/*protected boolean isSimpleType(Type clazz){
-		return SIMPLE_CLASS.contains(clazz);
-	}*/
-	
-	/***
-	 * deep copy
-	 * @param src
-	 * @return
-	 */
-	public T fromObject(Object src){
+	public <T> T fromObject(Object src, T target){
+		BeanWrapper targetBeanWrapper = SpringUtils.newBeanWrapper(target);
+		
     	BeanWrapper srcBean = CopyUtils.newBeanWrapper(src);
     	PropertyDescriptor[] properties = targetBeanWrapper.getPropertyDescriptors();
 		for(PropertyDescriptor property : properties){
 			/*if(property.getWriteMethod()==null)
 				continue ;*/
-			if(!propertyFilter.isCopiable(property)){
+			if(!targetBeanWrapper.isWritableProperty(property.getName())){
 				continue;
 			}
 			Object srcValue = getPropertyValue(srcBean, property);
-
-			if(!propertyFilter.isCopiable(srcValue)){
+			if(propertyFilter!=null && !propertyFilter.isCopiable(property, srcValue)){
 				continue;
 			}
-			setPropertyValue(property, srcValue);
+			setPropertyValue(targetBeanWrapper, property, srcValue);
     	}
 		return target;
+	}
+
+	public void setPropertyFilter(PropertyFilter propertyFilter) {
+		this.propertyFilter = propertyFilter;
 	}
 	
 	protected boolean isCopyValueOrRef(PropertyDescriptor property, Cloneable cloneable){
@@ -80,7 +89,7 @@ public class BeanCopier<T> {
 		return cloneable==null || !cloneable.valueCloneable();
 	}
 	
-	protected Cloneable getCloneableAnnotation(PropertyDescriptor property){
+	protected Cloneable getCloneableAnnotation(Object target, PropertyDescriptor property){
 		Cloneable cloneable = property.getReadMethod().getAnnotation(Cloneable.class);
 		if(cloneable==null){
 			Field field = ReflectionUtils.findField(target.getClass(), property.getName());
@@ -91,7 +100,7 @@ public class BeanCopier<T> {
 		return cloneable;
 	}
 
-	protected void setPropertyValue(PropertyDescriptor toProperty, Object srcValue){
+	protected void setPropertyValue(BeanWrapper targetBeanWrapper, PropertyDescriptor toProperty, Object srcValue){
 		String propertyName = toProperty.getName();
 		if(srcValue==null){
 			targetBeanWrapper.setPropertyValue(propertyName, null);
@@ -101,28 +110,29 @@ public class BeanCopier<T> {
 //		Object targetValue = null;
 		Type type = toProperty.getPropertyType();
 		Class<?> propertyType = (Class<?>) type;
-		Cloneable cloneable = this.getCloneableAnnotation(toProperty);
+		Cloneable cloneable = this.getCloneableAnnotation(targetBeanWrapper.getWrappedInstance(), toProperty);
 		if(isCopyValueOrRef(toProperty, cloneable)){
 			targetBeanWrapper.setPropertyValue(propertyName, srcValue);
 			
 		}else if(propertyType.isArray()){
-			this.copyArray(propertyType, cloneable, toProperty, srcValue);
+			this.copyArray(targetBeanWrapper, propertyType, cloneable, toProperty, srcValue);
 			
 		}else if(Collection.class.isAssignableFrom(propertyType)){
-			this.copyCollection((Class<? extends Collection<?>>)propertyType, cloneable, toProperty, (Collection<?>)srcValue);
+			this.copyCollection(targetBeanWrapper, (Class<? extends Collection<?>>)propertyType, cloneable, toProperty, (Collection<?>)srcValue);
 			
 		}else if(Map.class.isAssignableFrom(propertyType)){
-			this.copyMap(((Class<? extends Map>)propertyType), cloneable, toProperty, (Map<?, ?>)srcValue);
+			this.copyMap(targetBeanWrapper, (Class<? extends Map>)propertyType, cloneable, toProperty, (Map<?, ?>)srcValue);
 			
 		}else{
-			Object targetValue = newBeanCopier(toProperty.getPropertyType()).fromObject(srcValue);
+//			Object targetValue = newBeanCopier(toProperty.getPropertyType()).fromObject(srcValue);
+			Object targetValue = fromObject(srcValue, toProperty.getPropertyType());
 			targetBeanWrapper.setPropertyValue(propertyName, targetValue);
 		}
 		
 	}
 	
 
-	protected void copyArray(Class<?> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Object srcValue){
+	protected void copyArray(BeanWrapper targetBeanWrapper, Class<?> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Object srcValue){
 		Assert.isTrue(propertyType==srcValue.getClass());
 		int length = Array.getLength(srcValue);
 		Object array = Array.newInstance(propertyType.getComponentType(), length);
@@ -133,7 +143,8 @@ public class BeanCopier<T> {
 			}
 		}else{
 			for (int i = 0; i < length; i++) {
-				Object targetElement = newBeanCopier(propertyType.getComponentType()).fromObject(Array.get(array, i));
+//				Object targetElement = newBeanCopier(propertyType.getComponentType()).fromObject(Array.get(array, i));
+				Object targetElement = fromObject(Array.get(array, i), propertyType.getComponentType());
 				Array.set(array, i, targetElement);
 			}
 		}
@@ -141,7 +152,7 @@ public class BeanCopier<T> {
 	}
 	
 
-	protected void copyCollection(Class<? extends Collection<?>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Collection<?> srcValue){
+	protected void copyCollection(BeanWrapper targetBeanWrapper, Class<? extends Collection<?>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Collection<?> srcValue){
 		Collection<Object> cols = CopyUtils.newCollections((Class<? extends Collection>)propertyType);
 		
 		if(isContainerValueCopyValueOrRef(cloneable)){
@@ -152,12 +163,14 @@ public class BeanCopier<T> {
 				Type elementType = ptype.getActualTypeArguments()[0];
 				
 				for(Object element : srcValue){
-					Object targetElement = newBeanCopier((Class<?>)elementType).fromObject(element);
+//					Object targetElement = newBeanCopier((Class<?>)elementType).fromObject(element);
+					Object targetElement = fromObject(element, (Class<?>)elementType);
 					cols.add(targetElement);
 				}
 			}else{
 				for(Object element : srcValue){
-					Object targetElement = newBeanCopier(element.getClass()).fromObject(element);
+//					Object targetElement = newBeanCopier(element.getClass()).fromObject(element);
+					Object targetElement = fromObject(element, element.getClass());
 					cols.add(targetElement);
 				}
 			}
@@ -166,7 +179,7 @@ public class BeanCopier<T> {
 		targetBeanWrapper.setPropertyValue(toProperty.getName(), cols);
 	}
 	
-	protected void copyMap(Class<? extends Map> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
+	protected void copyMap(BeanWrapper targetBeanWrapper, Class<? extends Map> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
 		Map<Object, Object> map = CopyUtils.newMap(propertyType);
 		if(isContainerKeyCopyValueOrRef(cloneable) && isContainerValueCopyValueOrRef(cloneable)){
 			map.putAll(srcValue);
@@ -180,12 +193,14 @@ public class BeanCopier<T> {
 				Object value = null;
 				for(Map.Entry<?, ?> entry : srcValue.entrySet()){
 					if(isContainerKeyCopyValueOrRef(cloneable)){
-						key = newBeanCopier((Class<?>)keyType).fromObject(entry.getKey());
+//						key = newBeanCopier((Class<?>)keyType).fromObject(entry.getKey());
+						key = fromObject(entry.getKey(), (Class<?>)keyType);
 					}else{
 						key = entry.getKey();
 					}
 					if(isContainerValueCopyValueOrRef(cloneable)){
-						value = newBeanCopier((Class<?>)valueType).fromObject(entry.getValue());
+//						value = newBeanCopier((Class<?>)valueType).fromObject(entry.getValue());
+						value = fromObject(entry.getValue(), (Class<?>)valueType);
 					}else{
 						value = entry.getValue();
 					}
@@ -197,12 +212,14 @@ public class BeanCopier<T> {
 				Object value = null;
 				for(Map.Entry<?, ?> entry : srcValue.entrySet()){
 					if(isContainerKeyCopyValueOrRef(cloneable)){
-						key = newBeanCopier(entry.getKey().getClass()).fromObject(entry.getKey());
+//						key = newBeanCopier(entry.getKey().getClass()).fromObject(entry.getKey());
+						key = fromObject(entry.getKey(), entry.getKey().getClass());
 					}else{
 						key = entry.getKey();
 					}
 					if(isContainerValueCopyValueOrRef(cloneable)){
-						value = newBeanCopier(entry.getValue().getClass()).fromObject(entry.getValue());
+//						value = newBeanCopier(entry.getValue().getClass()).fromObject(entry.getValue());
+						value = fromObject(entry.getValue(), entry.getValue().getClass());
 					}else{
 						value = entry.getValue();
 					}
@@ -245,10 +262,6 @@ public class BeanCopier<T> {
 
 	public void setPropertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
 		this.propertyNameConvertor = propertyNameConvertor;
-	}
-
-	public void setPropertyFilter(PropertyFilter propertyFilter) {
-		this.propertyFilter = propertyFilter;
 	}
 
 	/*public BeanCopier<T> ignoreNull() {

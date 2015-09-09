@@ -11,11 +11,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.collect.Maps;
-
 public class CorsFilter implements Filter {
 	public static final String CORS_FILTER_NAME = "corsFilter";
-	private Map<String, String> headers = Maps.newHashMap();
+	private Map<String, String> headers;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -29,18 +27,24 @@ public class CorsFilter implements Filter {
 	}
 	
 	protected void configHeader(HttpServletResponse httpResponse){
-		if(headers.isEmpty()){
-			//允许接收从任何来源发来的请求
-			httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
+		if(headers==null){
 			httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
 			//设置预检的有效时间的，单位是秒
 			httpResponse.setHeader("Access-Control-Max-Age", "3600");
 			httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type, authorization");
+			
+			//1. 允许接收从任何来源发来的请求
+//			httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+			
+			//2. 跨越cookies，client side: RestangularProvider.setDefaultHttpFields({withCredentials: true});
+			httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
 			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
 		}else{
-			headers.entrySet().forEach(e->{
-				httpResponse.setHeader(e.getKey(), e.getValue());
-			});
+			if(!headers.isEmpty()){
+				headers.entrySet().forEach(e->{
+					httpResponse.setHeader(e.getKey(), e.getValue());
+				});
+			}
 		}
 	}
 	

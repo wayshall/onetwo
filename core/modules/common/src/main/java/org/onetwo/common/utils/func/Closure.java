@@ -1,6 +1,6 @@
 package org.onetwo.common.utils.func;
 
-public interface Closure<T> {
+public interface Closure {
 
-	public void execute(T obj);
+	public void execute();
 }

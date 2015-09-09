@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 
 
 
@@ -17,7 +18,10 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 	
 	private String code = SUCCESS;//0,1;
 	private String message;//
-	//面向某些领域时，指示客户端是否只提取result里的data作为返回结果
+	/***
+	 * 
+	面向某些领域时，指示客户端是否只提取result里的data作为返回结果
+	 */
 	private boolean extractableData = false;
 	
 	public AbstractDataResult(){
@@ -63,7 +67,9 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 		this.extractableData = extractableData;
 	}
 
-
+	public boolean isMessageOnly() {
+		return StringUtils.isNotBlank(message) && getData()==null;
+	}
 
 
 	public static class LazyResult extends AbstractDataResult<Object> {

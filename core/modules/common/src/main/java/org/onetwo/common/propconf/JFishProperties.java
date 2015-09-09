@@ -32,7 +32,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.EnumUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.func.MapClosure;
+import org.onetwo.common.utils.func.ReturnableClosure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		
 	};
 
-	private MapClosure<String, Map<String, String>> startWithBlock = new MapClosure<String, Map<String, String>>() {
+	private ReturnableClosure<String, Map<String, String>> startWithBlock = new ReturnableClosure<String, Map<String, String>>() {
 		@Override
 		public Map<String, String> execute(String keyStartWith) {
 			Map<String, String> values = LangUtils.newHashMap();
@@ -75,7 +75,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		}
 	};
 	
-	private MapClosure<String[], List<String>> splitBlock = new MapClosure<String[], List<String>>() {
+	private ReturnableClosure<String[], List<String>> splitBlock = new ReturnableClosure<String[], List<String>>() {
 
 		@Override
 		public List<String> execute(String[] key) {
@@ -97,7 +97,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		
 	};
 	
-	private MapClosure<String, List<Class>> classBlock = new MapClosure<String, List<Class>>() {
+	private ReturnableClosure<String, List<Class>> classBlock = new ReturnableClosure<String, List<Class>>() {
 
 		@Override
 		public List<Class> execute(String object) {
@@ -252,7 +252,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		return getFromCache(keyStartWith, startWithBlock, keyStartWith);
 	}
 
-	protected <K, T> T getFromCache(String key, final MapClosure<K, T> block, final K k) {
+	protected <K, T> T getFromCache(String key, final ReturnableClosure<K, T> block, final K k) {
 		try {
 			return (T)this.cache.get(key, new Callable<T>() {
 

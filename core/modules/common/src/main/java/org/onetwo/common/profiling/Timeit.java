@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.delegate.DelegateFactory;
 import org.onetwo.common.delegate.DelegateMethod;
-import org.onetwo.common.utils.func.ArgsMapClosure;
+import org.onetwo.common.utils.func.ArgsReturnableClosure;
 
 public class Timeit {
 	
@@ -29,10 +29,10 @@ public class Timeit {
 		super();
 		this.out = ouputer;
 	}
-	public void ptime(String name, ArgsMapClosure block){
+	public void ptime(String name, ArgsReturnableClosure block){
 		out.log("timeit ["+name+"] : " + timeit(name, block));
 	}
-	public Timeit timeit(String name, ArgsMapClosure block){
+	public Timeit timeit(String name, ArgsReturnableClosure block){
 		long start = System.currentTimeMillis();
 		block.execute();
 		long cost = System.currentTimeMillis() - start;
