@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.annotation.AnnotationInfo;
-import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.db.TimeRecordableEntity;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.annotation.JFishEntityListeners;
 import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
@@ -446,14 +446,14 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}*/
 	
 	private void processIBaseEntity(Object entity, boolean create){
-		if(!(entity instanceof IBaseEntity))
+		if(!(entity instanceof TimeRecordableEntity))
 			return ;
 		Date now = new Date();
-		IBaseEntity ib = (IBaseEntity) entity;
+		TimeRecordableEntity ib = (TimeRecordableEntity) entity;
 		if(create){
-			ib.setCreateTime(now);
+			ib.setCreateAt(now);
 		}
-		ib.setLastUpdateTime(now);
+		ib.setUpdateAt(now);
 	}
 	
 	@Override
