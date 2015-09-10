@@ -11,7 +11,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
-import org.onetwo.boot.core.web.controller.WebResultCreator;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
@@ -23,6 +22,7 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
@@ -102,7 +102,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			/*MapResult result = new MapResult();
 			result.setCode(AjaxKeys.RESULT_FAILED);
 			result.setMessage("操作失败，"+ errorMessage.getMesage());*/
-			SimpleDataResult<?> result = WebResultCreator.result().simple()
+			SimpleDataResult<?> result = WebResultCreator.creator()
 							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
