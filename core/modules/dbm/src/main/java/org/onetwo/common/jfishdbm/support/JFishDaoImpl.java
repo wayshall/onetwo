@@ -188,7 +188,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 
 	public <T> int insertOrUpdate(T entity, boolean dymanicIfUpdate){
 		if(LangUtils.isNullOrEmptyObject(entity))
-			return 0;
+			throw new DbmException("entity can not be null or empty: " + entity);
 		JFishInsertOrUpdateEvent event = new JFishInsertOrUpdateEvent(entity, dymanicIfUpdate, this);
 //		event.setRelatedFields(relatedFields);
 		this.fireEvents(event);

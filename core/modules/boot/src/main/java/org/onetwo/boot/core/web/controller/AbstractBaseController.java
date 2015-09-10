@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -252,8 +253,15 @@ abstract public class AbstractBaseController {
 	
 
 	protected UserDetail getCurrentLoginUser(){
-//		return BootWebUtils.getUserDetail();a
 		return sessionUserManager.getCurrentUser();
+	}
+	protected <T extends UserDetail> Optional<T> getCurrentLoginUser(Class<T> clazz){
+		Assert.notNull(clazz);
+		UserDetail user = sessionUserManager.getCurrentUser();
+		if(user==null){
+			return Optional.ofNullable(null);
+		}
+		return Optional.of(clazz.cast(user));
 	}
 
 	public BootSiteConfig getBootSiteConfig() {

@@ -9,12 +9,12 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.db.TimeRecordableEntity;
 import org.onetwo.common.xml.jaxb.DateAdapter;
 
 @XmlRootElement
 @MappedSuperclass
-abstract public class BaseEntity implements IBaseEntity{
+abstract public class BaseEntity implements TimeRecordableEntity{
  
 	private static final long serialVersionUID = 122579169646461421L;
 
@@ -25,22 +25,22 @@ abstract public class BaseEntity implements IBaseEntity{
 	@Column(name="CREATE_TIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date getCreateTime() {
+	public Date getCreateAt() {
 		return createTime;
 	}
 
-	public void setCreateTime(Date createTime) {
+	public void setCreateAt(Date createTime) {
 		this.createTime = createTime;
 	}
 
 	@Column(name="LAST_UPDATE_TIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	@XmlJavaTypeAdapter(DateAdapter.class)
-	public Date getLastUpdateTime() {
+	public Date getUpdateAt() {
 		return lastUpdateTime;
 	}
 
-	public void setLastUpdateTime(Date lastUpdateTime) {
+	public void setUpdateAt(Date lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
