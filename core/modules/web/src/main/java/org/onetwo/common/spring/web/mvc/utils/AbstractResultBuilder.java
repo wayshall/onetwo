@@ -1,14 +1,16 @@
-package org.onetwo.boot.core.web.controller;
+package org.onetwo.common.spring.web.mvc.utils;
 
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.result.AbstractDataResult;
+import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.springframework.web.servlet.ModelAndView;
 
-abstract public class AbstractResultBuilder<T extends AbstractDataResult<?>, B extends AbstractResultBuilder<T, B>> {
+@SuppressWarnings("unchecked")
+abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T, B>> {
 	
 	protected String code = AbstractDataResult.SUCCESS;
 	protected String message;
 	private boolean extractableData = false;
+	protected T data;
 //	final protected Class<?> builderClass;
 //	private T data;
 	
@@ -59,36 +61,41 @@ abstract public class AbstractResultBuilder<T extends AbstractDataResult<?>, B e
 		this.extractableData = extractableData;
 		return (B) this;
 	}
-	@SuppressWarnings("unchecked")
 	public B code(String code){
 		this.code = code;
 		return (B) this;
 	}
-	@SuppressWarnings("unchecked")
 	public B code(Enum<?> code){
 		this.code = code.name();
 		this.message = code.toString();
 		return (B) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public B message(String message){
 		this.message = message;
 //		return builderClass.cast(this);
 		return (B) this;
 	}
 
-	abstract protected T creeateResult();
+	public B data(T data){
+		this.data = data;
+		return (B) this;
+	}
 
-	public T buildResult(){
-		T rs = creeateResult();
+	protected SimpleDataResult<T> creeateResult(){
+		SimpleDataResult<T> rs = SimpleDataResult.create(code, message, data);
+		return rs;
+	}
+
+	public SimpleDataResult<T> buildResult(){
+		SimpleDataResult<T> rs = creeateResult();
 		rs.setExtractableData(extractableData);
 		return rs;
 	}
 
 	public ModelAndView buildModelAndView(){
-		T rs = buildResult();
-		return BootWebUtils.createModelAndView("", rs);
+		SimpleDataResult<T> rs = buildResult();
+		return MvcUtils.createModelAndView("", rs);
 	}
 	
 	/*public SimpleDataResult<?> buildResult(){

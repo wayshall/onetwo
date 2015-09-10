@@ -6,12 +6,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.web.controller.WebResultCreator;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.MapResult;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,8 +70,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
 		if(BootWebUtils.isAjaxRequest(request)){
-			SimpleDataResult<?> rs = WebResultCreator.result().simple()
-											.success("登录成功！")
+			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
 											.data(authentication.getPrincipal())
 											.buildResult();
 			String text = mapper.toJson(rs);
@@ -88,7 +86,8 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
             ServletException {
 		logger.error("login error", exception);
 		if(BootWebUtils.isAjaxRequest(request)){
-			MapResult rs = MapResult.error(exception.getMessage()+": 找不到用户或密码错误！");
+			SimpleDataResult<?> rs = WebResultCreator.creator().error(exception.getMessage()+": 找不到用户或密码错误！")
+														.buildResult();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{
