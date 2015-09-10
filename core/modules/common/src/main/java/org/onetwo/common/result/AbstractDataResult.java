@@ -1,8 +1,5 @@
 package org.onetwo.common.result;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
@@ -82,7 +79,6 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 			LazyResult result = new LazyResult(obj);
 			result.setCode(code);
 			result.setMessage(message);
-			result.setData(obj);
 			return result;
 		}
 		
@@ -102,9 +98,6 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 			return data;
 		}
 
-		public void setData(Object data) {
-			this.data = data;
-		}
 	}
 	
 	public static class SimpleDataResult<T> extends AbstractDataResult<T> {
@@ -142,41 +135,5 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 		public void setData(T data) {
 			this.data = data;
 		}
-	}
-	
-	public static class ListResult<T> extends AbstractDataResult<List<T>>{
-
-		public static <E> ListResult<E> error(String message){
-			return create(ERROR, message);
-		}
-
-		@SafeVarargs
-		public static <E> ListResult<E> success(E...objects){
-			return create(SUCCESS, "SUCCEED", objects);
-		}
-		
-		@SafeVarargs
-		public static <E> ListResult<E> create(String code, String message, E...objects){
-			return create(code, message, Arrays.asList(objects));
-		}
-		public static <E> ListResult<E> create(String code, String message, List<E> data){
-			ListResult<E> result = new ListResult<>();
-			result.setCode(code);
-			result.setMessage(message);
-			result.setData(data);
-			return result;
-		}
-		
-		private List<T> data;
-		
-
-		public List<T> getData() {
-			return data;
-		}
-
-		public void setData(List<T> data) {
-			this.data = data;
-		}
-		
 	}
 }

@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc;
+package org.onetwo.common.spring.web.mvc.utils;
 
 import java.io.Serializable;
 

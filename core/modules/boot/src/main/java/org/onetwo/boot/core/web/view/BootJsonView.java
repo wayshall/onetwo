@@ -7,10 +7,11 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.MapResult;
 import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.web.mvc.DataWrapper;
+import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.MapResultBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -92,32 +93,30 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		return data;
 	}
 	
-	private Object wrapAsDataResultIfNeed(Object result){
+	private Result<?, ?> wrapAsDataResultIfNeed(Object result){
 		if(Result.class.isInstance(result)){
-			return result;
+			return (Result<?, ?>)result;
 		}else if(Map.class.isInstance(result)){
 			Map<String, Object> map = (Map<String, Object>) result;
-			MapResult dataResult = MapResult.success("");
+			MapResultBuilder dataResult = WebResultCreator.creator().map().success();
 			for(Entry<String, Object> entry : map.entrySet()){
 				if(BindingResult.class.isInstance(entry.getValue())){
 					BindingResult br = (BindingResult) entry.getValue();
 					if(br.hasErrors()){
-						dataResult.setCode(MapResult.ERROR);
+						dataResult.error();
 					}
 					
 				}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.setCode(MapResult.SUCCESS);
-					dataResult.setMessage(entry.getValue().toString());
+					dataResult.success(entry.getValue().toString());
 					
 				}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.setCode(MapResult.ERROR);
-					dataResult.setMessage(entry.getValue().toString());
+					dataResult.error(entry.getValue().toString());
 					
 				}else{
-					dataResult.putData(entry.getKey(), entry.getValue());
+					dataResult.put(entry.getKey(), entry.getValue());
 				}
 			}
-			return dataResult;
+			return dataResult.buildResult();
 		}else{
 			SimpleDataResult<Object> dataResult = SimpleDataResult.success("", result);
 			return dataResult;

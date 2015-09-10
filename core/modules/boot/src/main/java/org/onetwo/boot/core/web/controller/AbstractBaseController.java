@@ -13,7 +13,6 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.web.controller.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
@@ -28,7 +27,9 @@ import org.onetwo.common.result.LazyValue;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.onetwo.common.spring.web.mvc.DataWrapper;
+import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.web.userdetails.SessionUserManager;
@@ -278,7 +279,7 @@ abstract public class AbstractBaseController {
 	
 	protected AbstractDataResult<?> asSucceedResult(Object value){
 //		return SimpleDataResult.createSucceed(null, value);
-		return simpleResult().data(value).buildResult();
+		return result().simple(value).buildResult();
 	}
 	
 	protected AbstractDataResult<Object> asFailedResult(String msg){
@@ -291,11 +292,11 @@ abstract public class AbstractBaseController {
 	 * 
 	 * @return
 	 */
-	protected <T> SimpleResultBuilder<T> simpleResult(){
-		return result().simple();
+	protected SimpleResultBuilder simpleResult(){
+		return WebResultCreator.creator().simple(null);
 	}
 	protected WebResultCreator result(){
-		return WebResultCreator.result();
+		return WebResultCreator.creator();
 	}
 	
 	protected ResponseType getResponseType(){

@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.result.MapResult;
+import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
@@ -30,7 +31,7 @@ public class SpringMultipartFilterProxy extends MultipartFilter {
 			String msg = "文件超过限制："+LangUtils.getCauseServiceException(e).getMessage();
 			logger.error(msg);
 			if(RequestUtils.getResponseType(request)==ResponseType.JSON){
-				MapResult dataResult = MapResult.error(msg);
+				SimpleDataResult<?> dataResult = WebResultCreator.creator().error(msg).buildResult();
 				ResponseUtils.renderObjectAsJson(response, dataResult);
 			}else{
 				response.getWriter().print(msg);
