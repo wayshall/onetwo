@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +16,7 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
@@ -253,15 +253,15 @@ abstract public class AbstractBaseController {
 	
 
 	protected UserDetail getCurrentLoginUser(){
-		return sessionUserManager.getCurrentUser();
+		return getCurrentLoginUser(UserDetail.class, false);
 	}
-	protected <T extends UserDetail> Optional<T> getCurrentLoginUser(Class<T> clazz){
+	protected <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
 		Assert.notNull(clazz);
 		UserDetail user = sessionUserManager.getCurrentUser();
-		if(user==null){
-			return Optional.ofNullable(null);
+		if(user==null && throwIfNotFound){
+			throw new NotLoginException();
 		}
-		return Optional.of(clazz.cast(user));
+		return clazz.cast(user);
 	}
 
 	public BootSiteConfig getBootSiteConfig() {
