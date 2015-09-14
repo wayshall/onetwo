@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 
-@SuppressWarnings("rawtypes")
 public interface ExtQuery {
 	
 	public static class Msg {

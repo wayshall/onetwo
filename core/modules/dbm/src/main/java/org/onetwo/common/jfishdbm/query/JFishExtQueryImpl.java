@@ -53,6 +53,12 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 		}
 		return "*";
 	}
+	
+	@Override
+	public String getSelectFieldName(String f) {
+		String fname = getFieldName(f);
+		return super.getSelectFieldName(fname);
+	}
 
 	@Override
 	public String getFieldName(String f) {
