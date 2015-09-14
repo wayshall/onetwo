@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
@@ -37,7 +36,6 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,10 +177,10 @@ abstract public class AbstractBaseController {
 		return mv;
 	}*/
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	protected <T extends UserDetail> T getCurrentUserLogin(HttpSession session){
 		return (T)WebContextUtils.getUserDetail(session);
-	}
+	}*/
 	
 	protected <T> void validate(T object, BindingResult bindResult, Class<?>... groups){
 		this.getValidator().validate(object, bindResult, groups);
