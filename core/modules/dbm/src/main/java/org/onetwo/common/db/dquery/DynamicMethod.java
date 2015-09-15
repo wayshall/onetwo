@@ -63,7 +63,9 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		super(method);
 		
 		this.checkAndSetExecuteType();
-		
+
+		//check query swither
+		checkAndFindQuerySwitch(parameters);
 		
 		Class<?> rClass = method.getReturnType();
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
@@ -100,8 +102,6 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 			compClass = resultClass;
 		this.componentClass = compClass;
 
-		//check query swither
-		checkAndFindQuerySwitch(parameters);
 		checkAndFindAsCountQuery(componentClass);
 		findAndSetQueryName(this.asCountQuery);
 		
