@@ -48,7 +48,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 			this.sort = (Comparable<Object>) id;
 	}
 
-	public AbstractTreeModel(Object id, String name, Object parentId, Comparable<Object> sort) {
+	public AbstractTreeModel(Object id, String name, Object parentId, Comparable<?> sort) {
 		Assert.notNull(id, "id must not be null!");
 		this.id = id;
 		this.name = name;
