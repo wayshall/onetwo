@@ -14,7 +14,7 @@ public class JsonDateOnlySerializer extends JsonSerializer<Date>{
 
 	@Override
 	public void serialize(Date value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-		String val = DateUtil.formatDateByPattern(value, DateUtil.Date_Only);
+		String val = DateUtil.formatDateByPattern(value, DateUtil.DATE_ONLY);
 		jgen.writeString(val);
 	}
 	

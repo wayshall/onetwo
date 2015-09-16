@@ -540,7 +540,7 @@ public class FileUtils {
 	
 
 	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
-		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DateTime, 6);
+		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DATETIME, 6);
 	}
 	
 	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){
