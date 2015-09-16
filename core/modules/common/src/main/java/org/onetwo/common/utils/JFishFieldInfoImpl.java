@@ -39,7 +39,7 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	public void setValue(Object entity, Object value){
 		Assert.notNull(entity);
 		try {
-			field.set(entity, value);
+			field.set(entity, getAcutalValue(field.getType(), value));
 		} catch (Exception e) {
 			throw new BaseException("set bean ["+getBeanClass()+"] field["+getName()+"] fieldType["+this.getType()+"] value error", e);
 		}

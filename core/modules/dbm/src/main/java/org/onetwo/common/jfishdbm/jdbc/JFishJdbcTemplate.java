@@ -214,4 +214,8 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 		});
 	}
 	
+	protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
+		return new DbmArgumentPreparedStatementSetter(args);
+	}
+	
 }
