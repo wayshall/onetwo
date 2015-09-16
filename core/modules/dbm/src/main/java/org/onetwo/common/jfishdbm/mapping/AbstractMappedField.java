@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
 import org.onetwo.common.utils.JFishProperty;
@@ -66,6 +71,25 @@ abstract public class AbstractMappedField implements JFishMappedField{
 		propertyInfo.setValue(entity, value);
 	}
 	
+	
+	protected Object convertToPropertyValue(Object value){
+		Object actualValue = value;
+		if(Enum.class.isAssignableFrom(propertyInfo.getType())){
+			Enumerated enumerated = propertyInfo.getAnnotation(Enumerated.class);
+			if(enumerated!=null){
+				EnumType etype = enumerated.value();
+				if(etype==EnumType.ORDINAL){
+					actualValue = Types.asValue(Integer.valueOf(value.toString()), propertyInfo.getType());
+				}else if(etype==EnumType.STRING){
+					actualValue = Types.asValue(value.toString(), propertyInfo.getType());
+				}else{
+					throw new DbmException("error enum type: " + etype);
+				}
+			}
+		}
+		return actualValue;
+	}
+	
 	@Override
 	public Object getValue(Object entity){
 		return propertyInfo.getValue(entity);
@@ -73,7 +97,8 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	
 	@Override
 	public void setColumnValue(Object entity, Object value){
-		propertyInfo.setValue(entity, value);
+		Object newValue = convertToPropertyValue(value);
+		propertyInfo.setValue(entity, newValue);
 	}
 	
 

@@ -57,7 +57,7 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 			throw new BaseException("property["+getName()+"] of ["+getBeanClass()+"] h write method ");
 		}
 		try {
-			ReflectUtils.invokeMethod(getWriteMethod(), entity, getAcutalValue(propertyType, value));
+			ReflectUtils.invokeMethod(getWriteMethod(), entity, value);
 		} catch (Exception e) {
 			throw new BaseException("set entity["+beanClassWrapper.getClazz()+"] property["+getName()+"] propertyType["+this.getType()+"]value error", e);
 		}

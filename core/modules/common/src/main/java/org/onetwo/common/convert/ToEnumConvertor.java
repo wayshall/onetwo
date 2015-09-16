@@ -21,7 +21,12 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 	        String name = value.toString();
 	        if(StringUtils.isBlank(name))
 	        	return null;
-	        return Enum.valueOf((Class)componentType, name);
+//	        return Enum.valueOf((Class)componentType, name);
+	        try {
+				return Enum.valueOf((Class)componentType, name.trim());
+			} catch (IllegalArgumentException e) {
+				return Enum.valueOf((Class)componentType, name.trim().toUpperCase());
+			}
 		}
 	}
 
