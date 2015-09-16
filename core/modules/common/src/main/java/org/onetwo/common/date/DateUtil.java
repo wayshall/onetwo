@@ -65,18 +65,18 @@ abstract public class DateUtil {
     public static final int MILLIS_PER_HOUR = SECONDS_PER_HOUR * MILLIS_PER_SECOND;
     public static final int MILLIS_PER_MINUTE = SECONDS_PER_MINUTE * MILLIS_PER_SECOND;
 
-	public static final String Year_Only = "yyyy";
-	public static final String Year_Month = "yyyy-MM";
-	public static final String Date_Only = "yyyy-MM-dd";
-	public static final String Date_Time = "yyyy-MM-dd HH:mm:ss";
+	public static final String YEAR_ONLY = "yyyy";
+	public static final String YEAR_MONTH = "yyyy-MM";
+	public static final String DATE_ONLY = "yyyy-MM-dd";
+	public static final String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_TIME_MILLS = "yyyy-MM-dd HH:mm:ss.SSS";
 	public static final String DATE_TIME_MILLS2 = "yyyy-MM-dd HH:mm:ss SSS";
 	public static final String DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
-	public static final String Time_Only = "HH:mm:ss";
+	public static final String TIME_ONLY = "HH:mm:ss";
 	public static final String SHORT_TIME_ONLY = "HH:mm";
-	public static final String DateOnly = "yyyyMMdd";
-	public static final String DateTime = "yyyyMMddHHmmss";
-	public static final String TimeOnly = "HHmmss";
+	public static final String DATEONLY = "yyyyMMdd";
+	public static final String DATETIME = "yyyyMMddHHmmss";
+	public static final String TIMEONLY = "HHmmss";
 
 	public static final int UNIT_SECOND = 1000;
 	public static final int UNIT_MINUTE = 60 * 1000;
@@ -99,7 +99,7 @@ abstract public class DateUtil {
 	 * @param sync 
 	 * @return
 	 */
-	@Deprecated
+	/*@Deprecated
 	public static SimpleDateFormat createDateFormat(String pattern, boolean sync){
 		SimpleDateFormat df = null;
 		if(sync){
@@ -129,7 +129,7 @@ abstract public class DateUtil {
 			df = createDateFormat(pattern);
 		}
 		return df;
-	}
+	}*/
 	
 	public static SimpleDateFormat createDateFormat(String pattern){
 		Assert.hasText(pattern);
@@ -212,7 +212,7 @@ abstract public class DateUtil {
 	public static String formatDateTime(Date date) {
 		if(date==null)
 			return "";
-		return formatDateByPattern(date, Date_Time);
+		return formatDateByPattern(date, DATE_TIME);
 	}
 	public static String formatDateTimeMillis(Date date) {
 		if(date==null)
@@ -229,7 +229,7 @@ abstract public class DateUtil {
 		if(date==null)
 			return "";
 		if (StringUtils.isBlank(pattern))
-			pattern = Date_Time;
+			pattern = DATE_TIME;
 		SimpleDateFormat sdf = getDateFormat(pattern);
 		return format(sdf, date);
 	}
@@ -262,7 +262,7 @@ abstract public class DateUtil {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		if (dateFormats == null || dateFormats.length == 0)
-			return parse(createDateFormat(Date_Time), dateStr);
+			return parse(createDateFormat(DATE_TIME), dateStr);
 		Date date = null;
 		for (SimpleDateFormat sdf : dateFormats) {
 			date = parse(sdf, dateStr);
@@ -276,7 +276,7 @@ abstract public class DateUtil {
 		if(StringUtils.isBlank(dateStr))
 			return null;
 		if (patterns == null || patterns.length == 0)
-			return parse(createDateFormat(Date_Time), dateStr);
+			return parse(createDateFormat(DATE_TIME), dateStr);
 		Date date = null;
 		for (String p : patterns) {
 			SimpleDateFormat sdf = getDateFormat(p);
@@ -288,11 +288,11 @@ abstract public class DateUtil {
 	}
 
 	public static Date parseDate(String dateStr) {
-		return parseByPatterns(dateStr, Date_Only);
+		return parseByPatterns(dateStr, DATE_ONLY);
 	}
 
 	public static Date parseTime(String dateStr) {
-		return parseByPatterns(dateStr, Time_Only);
+		return parseByPatterns(dateStr, TIME_ONLY);
 	}
 
 	public static Date parseShortTime(String dateStr) {
@@ -300,7 +300,7 @@ abstract public class DateUtil {
 	}
 
 	public static Date parseDateTime(String dateStr) {
-		return parseByPatterns(dateStr, Date_Time);
+		return parseByPatterns(dateStr, DATE_TIME);
 	}
 
 	public static Date parseDateTimeMills(String dateStr) {
@@ -372,7 +372,7 @@ abstract public class DateUtil {
 
 	public static SimpleDateFormat getDateFormat(String p) {
 		if (StringUtils.isBlank(p))
-			p = Date_Only;
+			p = DATE_ONLY;
 		SimpleDateFormat sdf = createDateFormat(p);
 		return sdf;
 	}
@@ -619,7 +619,7 @@ abstract public class DateUtil {
 //		Assert.notNull(date, "date can not be null");
 		if(date==null)
 			return "";
-		return createDateFormat(DateTime).format(date);
+		return createDateFormat(DATETIME).format(date);
 	}
 
 	public static String getString(Date date, String format) {
@@ -637,11 +637,11 @@ abstract public class DateUtil {
 	}
 
 	public static String formatDate(Date date) {
-		return formatDateByPattern(date, Date_Only);
+		return formatDateByPattern(date, DATE_ONLY);
 	}
 
 	public static String formatTime(Date date) {
-		return formatDateByPattern(date, Time_Only);
+		return formatDateByPattern(date, TIME_ONLY);
 	}
 	
 	public static int compareAtField(Date d1, Date d2, int field){
@@ -776,17 +776,17 @@ abstract public class DateUtil {
 	
 	public static String matchPattern(String dateStr){
 		if(isYyyy(dateStr)){
-			return Year_Only;
+			return YEAR_ONLY;
 		}else if(isYyyy_MM(dateStr)){
-			return Year_Month;
+			return YEAR_MONTH;
 		}else if(isYyyy_MM_dd(dateStr)){
-			return Date_Only;
+			return DATE_ONLY;
 		}else if(isYyyy_MM_dd_HH(dateStr)){
 			return "yyyy-MM-dd HH";
 		}else if(isYyyy_MM_dd_HH_mm(dateStr)){
 			return "yyyy-MM-dd HH:mm";
 		}else if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
-			return Date_Time;
+			return DATE_TIME;
 		}else if(isHH_mm(dateStr)){
 			return "HH:mm";
 		}else if(isHH_mm_ss(dateStr)){
