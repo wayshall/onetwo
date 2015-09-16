@@ -67,15 +67,4 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		return propertyClassWrapper!=null && propertyClassWrapper.isMapType();
 	}
 	
-	protected Object getAcutalValue(Class<?> valueType, Object value){
-		Object actualValue = value;
-		if(Enum.class.isAssignableFrom(valueType)){
-			if(String.class.isInstance(value)){
-				StringToEnum<?> enumConvert = new StringToEnum(valueType);
-				actualValue = enumConvert.convert(value.toString());
-			}
-		}
-		return actualValue;
-	}
-	
 }
