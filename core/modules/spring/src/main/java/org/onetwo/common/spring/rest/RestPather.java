@@ -4,7 +4,8 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 public class RestPather {
 
-	protected final Logger logger = MyLoggerFactory.getLogger(RestPather.class);
+	protected final Logger logger = JFishLoggerFactory.getLogger(RestPather.class);
 	
 	private Map<Class<?>, EntityPathInfo> entityPaths = LangUtils.newHashMap();
 	
@@ -38,7 +39,7 @@ public class RestPather {
 	public static class PathInfo {
 		private final String path;
 		private final String method;
-		private Expression expr = Expression.BRACE;
+		private Expression expr = ExpressionFacotry.BRACE;
 		
 		public PathInfo(String path, String method) {
 			super();

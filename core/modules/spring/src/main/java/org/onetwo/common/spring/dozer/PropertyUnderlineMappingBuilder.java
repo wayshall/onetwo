@@ -96,7 +96,7 @@ public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 						mappingFields.put(fname, destname);
 					}
 				}else if(StringUtils.hasUpper(fname)){
-					String destname = StringUtils.convert2UnderLineName(fname, fieldSplit);
+					String destname = StringUtils.convertWithSeperator(fname, fieldSplit);
 					if(desctFields.contains(destname)){
 						mappingFields.put(fname, destname);
 					}

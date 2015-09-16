@@ -25,7 +25,7 @@ public class SimpleBeanCopier {
 			if(targetPropertyName.contains(SPLITER)){
 				return StringUtils.toPropertyName(targetPropertyName);
 			}else if(StringUtils.hasUpper(targetPropertyName)){
-				return StringUtils.convert2UnderLineName(targetPropertyName, SPLITER);
+				return StringUtils.convertWithSeperator(targetPropertyName, SPLITER);
 			}
 			return targetPropertyName;
 		}

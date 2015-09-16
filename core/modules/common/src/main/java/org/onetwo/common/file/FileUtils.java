@@ -36,6 +36,7 @@ import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.propconf.ResourceAdapterImpl;
@@ -66,7 +67,7 @@ public class FileUtils {
 	public static final String DB_SLASH_HEAD = "//";
 
 	public static ResourceAdapter<?>[] EMPTY_RESOURCES = new ResourceAdapter[0];
-	private static final Expression PLACE_HODER_EXP = Expression.DOLOR;
+	private static final Expression PLACE_HODER_EXP = ExpressionFacotry.DOLOR;
 
 	private FileUtils() {
 	}
