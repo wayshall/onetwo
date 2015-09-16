@@ -4,11 +4,11 @@ import org.onetwo.common.expr.SimpleExpression.Context;
 
 public interface Expression {
 
-	public static final Expression AT = ExpressionFacotry.AT;
+	/*public static final Expression AT = ExpressionFacotry.AT;
 	public static final Expression PERCENT = ExpressionFacotry.PERCENT;
 	public static final Expression DOLOR = ExpressionFacotry.DOLOR;
 	public static final Expression WELL = ExpressionFacotry.WELL;
-	public static final Expression BRACE = ExpressionFacotry.BRACE;
+	public static final Expression BRACE = ExpressionFacotry.BRACE;*/
 	
 	public boolean isExpresstion(String text);
 

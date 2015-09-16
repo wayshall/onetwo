@@ -190,10 +190,12 @@ public abstract class StringUtils {
 	}
 
 	public static String convert2UnderLineName(String name) {
-		return convert2UnderLineName(name, "_");
+		return convertWithSeperator(name, "_");
 	}
 
-	public static String convert2UnderLineName(String name, String op) {
+	public static String convertWithSeperator(String name, String op) {
+		if(name==null)
+			return "";
 		StringBuffer table = new StringBuffer();
 		char[] chars = name.toCharArray();
 		table.append(Character.toLowerCase(chars[0]));

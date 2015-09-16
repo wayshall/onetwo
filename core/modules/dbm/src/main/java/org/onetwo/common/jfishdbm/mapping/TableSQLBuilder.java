@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.common.utils.Assert;
@@ -22,7 +23,7 @@ public class TableSQLBuilder {
 	public static final String SQL_QUERY = "select ${selectFields} from ${tableName} ${alias}";
 	public static final String SQL_QUERY_CAUSE = "where ${whereCause}";
 
-	public static final Expression PARSER = Expression.DOLOR;
+	public static final Expression PARSER = ExpressionFacotry.DOLOR;
 
 	
 	public static final String QMARK = "?";

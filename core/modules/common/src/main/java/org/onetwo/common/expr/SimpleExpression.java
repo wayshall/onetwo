@@ -15,8 +15,8 @@ import org.onetwo.common.utils.StringUtils;
 @SuppressWarnings("rawtypes")
 public class SimpleExpression implements Expression {
  
-	public static final Expression DOLOR_INSTANCE = DOLOR;
-	public static final Expression WELL_INSTANCE = WELL;
+//	public static final Expression DOLOR_INSTANCE = DOLOR;
+//	public static final Expression WELL_INSTANCE = WELL;
 	
 
 	public static class Context {
