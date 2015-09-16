@@ -27,6 +27,7 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.EnumUtils;
@@ -119,7 +120,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 
 	protected VariableExpositor expositor;
 	
-	protected Expression expression = Expression.AT;
+	protected Expression expression = ExpressionFacotry.AT;
 
 //	private Map cache = new HashMap();
 	private Cache<String, Object> cache = CacheBuilder.newBuilder().build();

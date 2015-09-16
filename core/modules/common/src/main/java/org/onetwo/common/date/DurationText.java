@@ -75,6 +75,8 @@ public class DurationText {
 		return getText(fromDate, LocalDateTime.now());
 	}
 	public String getText(Date fromDate){
+		if(fromDate==null)
+			return "";
 		return getText(Dates.toLocalDateTime(fromDate), LocalDateTime.now());
 	}
 	
