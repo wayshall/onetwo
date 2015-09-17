@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.onetwo.common.jfishdbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;

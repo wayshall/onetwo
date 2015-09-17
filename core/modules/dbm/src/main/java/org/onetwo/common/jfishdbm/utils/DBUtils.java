@@ -37,6 +37,7 @@ import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.SqlTypeValue;
 
 
 @SuppressWarnings("unchecked")
@@ -276,7 +277,7 @@ public class DBUtils {
 	private DBUtils(){
 	}
 	
-	public static final int TYPE_UNKNOW = Integer.MIN_VALUE;
+	public static final int TYPE_UNKNOW = SqlTypeValue.TYPE_UNKNOWN;
 	
 	public static DBValueHanlder getValueHandler(Class<?> clazz){
 		if(!DBVALUE_HANDLERS.containsKey(clazz)){

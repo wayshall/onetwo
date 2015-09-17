@@ -8,11 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 @Target({TYPE, FIELD, METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JFishFieldListeners {
+public @interface DbmFieldListeners {
 
-	Class<? extends JFishEntityFieldListener>[] value();
+	Class<? extends DbmEntityFieldListener>[] value();
 	
 }

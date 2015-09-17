@@ -1,6 +1,6 @@
 package org.onetwo.common.jfishdbm.event;
 
-public interface JFishEntityListener {
+public interface DbmEntityListener {
 	
 	public void beforeInsert(Object entity);
 	

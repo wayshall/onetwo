@@ -125,7 +125,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	}
 	
 
-	protected void executeJFishEntityListener(boolean before, JFishEvent jfishEvent, Object entities, List<JFishEntityListener> listeners){
+	protected void executeJFishEntityListener(boolean before, JFishEvent jfishEvent, Object entities, List<DbmEntityListener> listeners){
 		if(LangUtils.isMultiple(entities)){
 			List<?> list = LangUtils.asList(entities);
 			for(Object entity : list){
@@ -136,28 +136,28 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 		}
 	}
 
-	protected void executeJFishEntityListenerForSingle(boolean before, JFishEvent jfishEvent, Object entity, List<JFishEntityListener> listeners){
+	protected void executeJFishEntityListenerForSingle(boolean before, JFishEvent jfishEvent, Object entity, List<DbmEntityListener> listeners){
 		if(LangUtils.isEmpty(listeners))
 			return ;
 		if(before){
 			if(jfishEvent.getAction()==JFishEventAction.insert){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.beforeInsert(entity);
 				}
 			}
 			else if(jfishEvent.getAction()==JFishEventAction.update){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.beforeUpdate(entity);
 				}
 			}
 		}else{
 			if(jfishEvent.getAction()==JFishEventAction.insert){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.afterInsert(entity);
 				}
 			}
 			else if(jfishEvent.getAction()==JFishEventAction.update){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.afterUpdate(entity);
 				}
 			}

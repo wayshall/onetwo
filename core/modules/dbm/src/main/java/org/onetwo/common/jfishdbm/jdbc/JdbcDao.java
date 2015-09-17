@@ -7,6 +7,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.onetwo.common.jfishdbm.jdbc.mapper.JdbcDaoRowMapperFactory;
+import org.onetwo.common.jfishdbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -45,7 +47,7 @@ public class JdbcDao {
 
 	protected void initDao() throws Exception {
 		if(this.rowMapperFactory==null){
-			this.rowMapperFactory = new SimpleRowMapperFactory();
+			this.rowMapperFactory = new JdbcDaoRowMapperFactory();
 		}
 	}
 	
