@@ -3,7 +3,9 @@ package org.onetwo.common.date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -22,7 +24,7 @@ final public class Dates {
 	public static final DateTimeFormatter DATE_TIME_MILLS = DateTimeFormatter.ofPattern(DateUtil.DATE_TIME_MILLS);
 	public static final DateTimeFormatter DATE_TIME_MILLS2 = DateTimeFormatter.ofPattern(DateUtil.DATE_TIME_MILLS2);
 	public static final DateTimeFormatter DATE_SHORT_TIME = DateTimeFormatter.ofPattern(DateUtil.DATE_SHORT_TIME);
-	public static final DateTimeFormatter Time_Only = DateTimeFormatter.ofPattern(DateUtil.TIME_ONLY);
+	public static final DateTimeFormatter TIME_ONLY = DateTimeFormatter.ofPattern(DateUtil.TIME_ONLY);
 	public static final DateTimeFormatter SHORT_TIME_ONLY = DateTimeFormatter.ofPattern(DateUtil.SHORT_TIME_ONLY);
 	
 	public static final DateTimeFormatter DATEONLY = DateTimeFormatter.ofPattern(DateUtil.DATEONLY);
@@ -45,11 +47,19 @@ final public class Dates {
 	}
 	
 	public static LocalDate toLocalDate(Date date) {
-	    return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-	  }
+	    return toZonedDateTime(date).toLocalDate();
+	}
 
 	public static LocalDateTime toLocalDateTime(Date date) {
-		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		return toZonedDateTime(date).toLocalDateTime();
+	}
+
+	public static LocalTime toLocalTime(Date date) {
+		return toZonedDateTime(date).toLocalTime();
+	}
+
+	public static ZonedDateTime toZonedDateTime(Date date) {
+		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault());
 	}
   
 //	public static long sum(Iterable<T>)

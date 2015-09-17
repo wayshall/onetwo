@@ -307,7 +307,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 	
 	public <T> T findUnique(JFishQueryValue queryValue) {
-		return (T)getJfishDao().findUnique(queryValue);
+		return getJfishDao().findUnique(queryValue);
 	}
 	
 	public <T> void findPage(Page<T> page, JFishQueryValue squery) {
@@ -324,7 +324,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	public <T> T findUnique(String sql, Object... values) {
 		DataQuery dq = jfishDao.createAsDataQuery(sql, (Class<?>)null);
 		dq.setParameters(values);
-		return (T) dq.getSingleResult();
+		return dq.getSingleResult();
 	}
 
 
@@ -341,12 +341,12 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
-		Map<Object, Object> properties = CUtils.bean2Map(obj);
+		Map<String, Object> properties = CUtils.bean2Map(obj);
 		return this.findByProperties(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
-		Map<Object, Object> properties = CUtils.bean2Map(obj);
+		Map<String, Object> properties = CUtils.bean2Map(obj);
 		this.findPage(entityClass, page, properties);
 	}
 

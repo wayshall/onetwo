@@ -24,6 +24,10 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 		this(Intro.wrap(beanClass), ReflectUtils.findProperty(beanClass, propName));
 	}
 
+	public JFishPropertyInfoImpl(PropertyDescriptor property){
+		this(Intro.wrap(property.getReadMethod().getDeclaringClass()), property);
+	}
+
 	public JFishPropertyInfoImpl(Class<?> beanClass, PropertyDescriptor property){
 		this(Intro.wrap(beanClass), property);
 	}

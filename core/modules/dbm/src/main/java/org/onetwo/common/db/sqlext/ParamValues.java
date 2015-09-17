@@ -29,9 +29,9 @@ public class ParamValues {
 		this.sqlDialet = sqlDialet;
 		this.holder = holder;
 		if(PlaceHolder.POSITION.equals(holder))
-			this.values = new ArrayList();
+			this.values = new ArrayList<Object>();
 		else
-			this.values = new LinkedHashMap();
+			this.values = new LinkedHashMap<String, Object>();
 	}
 
 	public void addValue(String field, Object value, StringBuilder sqlScript){
@@ -98,11 +98,11 @@ public class ParamValues {
 	public <T> T getValues(){
 		return (T) values;
 	}
-	public Map asMap(){
+	public Map<String, Object> asMap(){
 		return (Map) getValues();
 	}
-	public List asList(){
-		return (List) getValues();
+	public List<Object> asList(){
+		return (List<Object>) getValues();
 	}
 	
 	public boolean isList(){

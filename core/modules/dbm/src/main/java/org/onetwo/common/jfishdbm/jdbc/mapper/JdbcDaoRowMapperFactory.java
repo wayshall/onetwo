@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.jdbc;
+package org.onetwo.common.jfishdbm.jdbc.mapper;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,10 +11,10 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
-public class SimpleRowMapperFactory implements RowMapperFactory {
+public class JdbcDaoRowMapperFactory implements RowMapperFactory {
 
 	
-	public SimpleRowMapperFactory() {
+	public JdbcDaoRowMapperFactory() {
 		super();
 	}
 	

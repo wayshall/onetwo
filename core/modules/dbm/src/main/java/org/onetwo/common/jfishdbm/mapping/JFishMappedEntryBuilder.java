@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jfishdbm.annotation.JFishColumn;
-import org.onetwo.common.jfishdbm.annotation.JFishEntity;
-import org.onetwo.common.jfishdbm.annotation.JFishQueryable;
+import org.onetwo.common.jfishdbm.annotation.DbmColumn;
+import org.onetwo.common.jfishdbm.annotation.DbmEntity;
+import org.onetwo.common.jfishdbm.annotation.DbmQueryable;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.query.JFishQueryableMappedEntryImpl;
@@ -68,10 +68,10 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		if(MetadataReader.class.isInstance(entity)){
 			MetadataReader metadataReader = (MetadataReader) entity;
 			AnnotationMetadata am = metadataReader.getAnnotationMetadata();
-			return am.hasAnnotation(JFishEntity.class.getName()) || am.hasAnnotation(JFishQueryable.class.getName());
+			return am.hasAnnotation(DbmEntity.class.getName()) || am.hasAnnotation(DbmQueryable.class.getName());
 		}else{
 			Class<?> entityClass = ReflectUtils.getObjectClass(entity);
-			return entityClass.getAnnotation(JFishEntity.class)!=null || entityClass.getAnnotation(JFishQueryable.class)!=null;
+			return entityClass.getAnnotation(DbmEntity.class)!=null || entityClass.getAnnotation(DbmQueryable.class)!=null;
 		}
 	}
 	
@@ -173,8 +173,8 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo){
 		AbstractJFishMappedEntryImpl entry = null;
 		Class<?> entityClass = annotationInfo.getSourceClass();
-		JFishEntity jentity = entityClass.getAnnotation(JFishEntity.class);
-		JFishQueryable jqueryable = entityClass.getAnnotation(JFishQueryable.class);
+		DbmEntity jentity = entityClass.getAnnotation(DbmEntity.class);
+		DbmQueryable jqueryable = entityClass.getAnnotation(DbmQueryable.class);
 
 		if(jentity==null && jqueryable==null)
 			throw new BaseException("it's not a valid entity : " + entityClass);
@@ -268,14 +268,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	
 	protected String buildTableName(AnnotationInfo entry){
 		String tname = null;
-		if(entry.getAnnotation(JFishQueryable.class)!=null){
-			JFishQueryable queryable = entry.getAnnotation(JFishQueryable.class);
+		if(entry.getAnnotation(DbmQueryable.class)!=null){
+			DbmQueryable queryable = entry.getAnnotation(DbmQueryable.class);
 			tname = queryable.table();
 		}
 		
 		//JFishEntity's table name will be override JFishQueryable
-		if(entry.getAnnotation(JFishEntity.class)!=null){
-			JFishEntity jfishEntity = entry.getAnnotation(JFishEntity.class);
+		if(entry.getAnnotation(DbmEntity.class)!=null){
+			DbmEntity jfishEntity = entry.getAnnotation(DbmEntity.class);
 			tname = jfishEntity.table();
 		}
 		if(StringUtils.isBlank(tname))
@@ -290,7 +290,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 //		Method method = ReflectUtils.getReadMethod(entityClass, field.getProperty());
 		
 		String colName = null;
-		JFishColumn jc = field.getPropertyInfo().getAnnotation(JFishColumn.class);
+		DbmColumn jc = field.getPropertyInfo().getAnnotation(DbmColumn.class);
 		if(jc!=null){
 			colName = jc.name();
 		}else{

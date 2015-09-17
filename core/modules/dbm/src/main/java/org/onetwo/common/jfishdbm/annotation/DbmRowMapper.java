@@ -6,14 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.common.jfishdbm.mapping.MappedType;
+/**********
+ * only for named query
+ * @author wayshall
+ *
+ */
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JFishEntity {
+public @interface DbmRowMapper {
+	
+	Class<?> value() default Void.class;
 
-//	String name();
-	String table();
-	
-	MappedType type() default MappedType.ENTITY;
-	
 }

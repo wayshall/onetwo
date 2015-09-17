@@ -36,6 +36,13 @@ import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
+
+/********
+ * http://wiki.fasterxml.com/JacksonHowToCustomSerializers
+ * 
+ * @author way
+ *
+ */
 public class JsonMapper {
 	
 	public static String DEFAULT_JSONP_NAME = "callback";

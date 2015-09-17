@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.jdbc;
+package org.onetwo.common.jfishdbm.jdbc.mapper;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

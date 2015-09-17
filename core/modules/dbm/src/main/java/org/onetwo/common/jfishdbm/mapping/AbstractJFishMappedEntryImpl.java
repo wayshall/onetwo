@@ -13,14 +13,14 @@ import java.util.Map;
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.db.TimeRecordableEntity;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jfishdbm.annotation.JFishEntityListeners;
-import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
-import org.onetwo.common.jfishdbm.event.JFishEntityListener;
+import org.onetwo.common.jfishdbm.annotation.DbmEntityListeners;
+import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
@@ -59,8 +59,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	private boolean freezing;
 	
-	private List<JFishEntityListener> entityListeners = Collections.EMPTY_LIST;
-	private List<JFishEntityFieldListener> fieldListeners;
+	private List<DbmEntityListener> entityListeners = Collections.EMPTY_LIST;
+	private List<DbmEntityFieldListener> fieldListeners;
 	
 	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
@@ -74,20 +74,20 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		if(Map.class.isAssignableFrom(entityClass)){
 			this.setDynamic(true);
 		}
-		JFishEntityListeners listenersAnntation = annotationInfo.getAnnotation(JFishEntityListeners.class);
+		DbmEntityListeners listenersAnntation = annotationInfo.getAnnotation(DbmEntityListeners.class);
 		if(listenersAnntation!=null){
-			Class<? extends JFishEntityListener>[] listenerClasses = listenersAnntation.value();
+			Class<? extends DbmEntityListener>[] listenerClasses = listenersAnntation.value();
 			entityListeners = LangUtils.newArrayList(listenerClasses.length);
-			for(Class<? extends JFishEntityListener> lcs : listenerClasses){
+			for(Class<? extends DbmEntityListener> lcs : listenerClasses){
 				if(lcs==null)
 					continue;
-				JFishEntityListener listener = ReflectUtils.newInstance(lcs);
+				DbmEntityListener listener = ReflectUtils.newInstance(lcs);
 				entityListeners.add(listener);
 			}
 		}
 
-		JFishFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(JFishFieldListeners.class);
-		this.fieldListeners = JFishdbUtils.initJFishEntityFieldListeners(fieldListenersAnntation);
+		DbmFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(DbmFieldListeners.class);
+		this.fieldListeners = DbmUtils.initJFishEntityFieldListeners(fieldListenersAnntation);
 	}
 
 	public Collection<AbstractMappedField> getFields(){
@@ -664,11 +664,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return LangUtils.append(getEntityName());
 	}
 
-	public List<JFishEntityListener> getEntityListeners() {
+	public List<DbmEntityListener> getEntityListeners() {
 		return entityListeners;
 	}
 
-	public List<JFishEntityFieldListener> getFieldListeners() {
+	public List<DbmEntityFieldListener> getFieldListeners() {
 		return fieldListeners;
 	}
 

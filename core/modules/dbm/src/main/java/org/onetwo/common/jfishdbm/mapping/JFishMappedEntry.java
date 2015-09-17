@@ -3,8 +3,8 @@ package org.onetwo.common.jfishdbm.mapping;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
-import org.onetwo.common.jfishdbm.event.JFishEntityListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityListener;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 public interface JFishMappedEntry extends JFishMappedEntryMeta {
@@ -88,7 +88,7 @@ public interface JFishMappedEntry extends JFishMappedEntryMeta {
 	
 	public JdbcStatementContextBuilder createJdbcStatementContextBuilder(SqlBuilderType type);
 	
-	public List<JFishEntityListener> getEntityListeners();
-	public List<JFishEntityFieldListener> getFieldListeners();
+	public List<DbmEntityListener> getEntityListeners();
+	public List<DbmEntityFieldListener> getFieldListeners();
 	
 }

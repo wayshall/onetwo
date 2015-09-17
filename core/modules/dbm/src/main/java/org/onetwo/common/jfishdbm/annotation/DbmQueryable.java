@@ -12,7 +12,7 @@ import static java.lang.annotation.ElementType.*;
  */
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JFishQueryable {
+public @interface DbmQueryable {
 
 	String table() default "";
 	
