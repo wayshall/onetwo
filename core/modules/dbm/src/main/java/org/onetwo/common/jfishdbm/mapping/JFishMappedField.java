@@ -3,7 +3,7 @@ package org.onetwo.common.jfishdbm.mapping;
 import java.util.List;
 
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
@@ -18,7 +18,7 @@ public interface JFishMappedField {
 
 	public Object getColumnValue(Object entity);
 	
-	public List<JFishEntityFieldListener> getFieldListeners();
+	public List<DbmEntityFieldListener> getFieldListeners();
 
 	public boolean isIdentify();
 

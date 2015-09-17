@@ -1,8 +1,13 @@
 package org.onetwo.common.jfishdbm.jdbc;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import org.onetwo.common.date.Dates;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
@@ -27,6 +32,27 @@ public class DbmArgumentPreparedStatementSetter extends ArgumentPreparedStatemen
 	private Object getActualValue(Object value){
 		if(Enum.class.isInstance(value)){
 			return ((Enum<?>)value).name();
+		}else if(value instanceof LocalDate){
+			final LocalDate localDate = (LocalDate) value;
+			return new SqlTypeValue(){
+
+				@Override
+				public void setTypeValue(PreparedStatement ps, int paramIndex, int sqlType, String typeName) throws SQLException {
+					ps.setDate(paramIndex, new Date(Dates.toDate(localDate).getTime()));
+				}
+				
+			};
+		}else if(value instanceof LocalDateTime){
+			final LocalDateTime localDateTime = (LocalDateTime) value;
+			return new SqlTypeValue(){
+
+				@Override
+				public void setTypeValue(PreparedStatement ps, int paramIndex, int sqlType, String typeName) throws SQLException {
+					ps.setTimestamp(paramIndex, new Timestamp(Dates.toDate(localDateTime).getTime()));
+				}
+				
+			};
+			
 		}
 		return value;
 	}

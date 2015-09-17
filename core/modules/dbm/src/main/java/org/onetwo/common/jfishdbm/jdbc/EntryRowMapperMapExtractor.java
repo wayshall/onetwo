@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.onetwo.common.jfishdbm.jdbc.mapper.EntryRowMapper;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.jdbc.core.ResultSetExtractor;
 

@@ -19,6 +19,10 @@ import org.onetwo.common.utils.StringUtils;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQuery {
+
+	private final static int AT_LEAST_RESULTS_SIZE = 1;
+	private final static int MIN_RESULT_INDEX = 0;
+//	private final static int INVALID_LEAST_RESULTS = 0;
 	
 
 	protected StringBuilder select;
@@ -70,7 +74,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	
 	
 	public boolean needSetRange(){
-		return this.firstResult>=0 && this.maxResults!=-1;
+		return this.firstResult>=MIN_RESULT_INDEX && this.maxResults>=AT_LEAST_RESULTS_SIZE;
 	}
 
 	public Integer getFirstResult() {

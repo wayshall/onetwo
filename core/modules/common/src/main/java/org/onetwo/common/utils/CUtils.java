@@ -169,15 +169,15 @@ final public class CUtils {
 			return null;
 	}
 	
-	public static Map bean2Map(Object obj, Object... ignores) {
+	public static Map<String, Object> bean2Map(Object obj, Object... ignores) {
 		Assert.notNull(obj);
-		if(Map.class.isInstance(obj))
-			return (Map)obj;
+		/*if(Map.class.isInstance(obj))
+			return (Map)obj;*/
 		Ignore ig = null;
 		if(LangUtils.hasElement(ignores))
 			ig = Ignore.create(ignores);
 		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-		Map propMap = LangUtils.newHashMap();
+		Map<String, Object> propMap = LangUtils.newHashMap();
 		Object val = null;
 		
 		for(PropertyDescriptor prop : props){
@@ -191,7 +191,7 @@ final public class CUtils {
 	}
 	public static <T extends Map> T arrayIntoMap(T properties, Object... params) {
 		if (params.length % 2 == 1)
-			throw new IllegalArgumentException("参数个数必须是偶数个！ ");
+			throw new IllegalArgumentException("参数不是key, value形式！ ");
 
 		int index = 0;
 		Object name = null;

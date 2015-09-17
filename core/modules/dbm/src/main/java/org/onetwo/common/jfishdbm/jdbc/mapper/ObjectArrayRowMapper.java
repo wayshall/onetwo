@@ -1,26 +1,25 @@
-package org.onetwo.common.jfishdbm.jdbc;
+package org.onetwo.common.jfishdbm.jdbc.mapper;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashSet;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 
-public class HashsetRowMapper implements RowMapper<HashSet<?>> {
+public class ObjectArrayRowMapper implements RowMapper<Object[]> {
 
 	@Override
-	public HashSet<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public Object[] mapRow(ResultSet rs, int rowNum) throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
-		HashSet<Object> sets = new HashSet<Object>(columnCount);
+		Object[] array = new Object[columnCount];
 		Object obj = null;
 		for (int i = 1; i <= columnCount; i++) {
 			obj = JdbcUtils.getResultSetValue(rs, i);
-			sets.add(obj);
+			array[i-1] = obj;
 		}
-		return sets;
+		return array;
 	}
 
 }

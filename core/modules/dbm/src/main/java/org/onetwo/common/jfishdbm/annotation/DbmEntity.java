@@ -6,11 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.common.jfishdbm.event.JFishEntityListener;
+import org.onetwo.common.jfishdbm.mapping.MappedType;
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JFishEntityListeners {
+public @interface DbmEntity {
 
-	Class<? extends JFishEntityListener>[] value();
+//	String name();
+	String table();
+	
+	MappedType type() default MappedType.ENTITY;
 	
 }

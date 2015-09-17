@@ -1,6 +1,6 @@
 package org.onetwo.common.jfishdbm.event;
 
-public class JFishEntityFieldListenerAdapter implements JFishEntityFieldListener {
+public class JFishEntityFieldListenerAdapter implements DbmEntityFieldListener {
 
 	@Override
 	public Object beforeFieldInsert(String fieldName, Object value) {
