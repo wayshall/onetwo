@@ -29,7 +29,9 @@
                     authentication-success-handler-ref="ajaxAuthenticationHandler"/>
                     
         <logout logout-url="/logout" logout-success-url="/login" delete-cookies="JSESSIONID" invalidate-session="true"/>
-        <session-management >
+        <!-- 会话管理 -->
+        <session-management>
+            <!-- 如果使用同一个账号重复登录，则后面登录的用户登录时会抛出异常 -->
             <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
         </session-management>
     </http>

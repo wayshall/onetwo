@@ -58,8 +58,90 @@ public class CopyUtilsTest {
 		Assert.assertEquals(srcBean.getUserName(), target.getUser_name());
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
 		Assert.assertEquals(srcBean.getCreateTime(), target.getCreate_time());
+		
+	}
+	
+
+	@Test
+	public void testCopyIngoreNull(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setUserName(userName);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		
+		Integer age = 5000;
+		CapitalBean target = new CapitalBean();
+		target.setAge(age);
+		srcBean.setAge(null);
+		CopyUtils.from(srcBean).ignoreNullValue().to(target);
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(srcBean.getUserName(), target.getUserName());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertEquals(age, target.getAge());
+
+		target = new CapitalBean();
+		target.setAge(age);
+		srcBean.setAge(null);
+		CopyUtils.from(srcBean).to(target);
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(srcBean.getUserName(), target.getUserName());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertTrue(target.getAge()==null);
 	}
 
+
+	@Test
+	public void testCopyIngoreBlank(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		
+		Integer age = 5000;
+		CapitalBean target = new CapitalBean();
+		target.setAge(age);
+		target.setUserName(userName);
+		srcBean.setUserName("");
+		srcBean.setPassword("     ");
+		srcBean.setAge(null);
+		CopyUtils.from(srcBean)
+				.ignoreBlankString()
+				.to(target);
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(userName, target.getUserName());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertTrue(target.getAge()==null);
+		Assert.assertTrue(target.getPassword()==null);
+		
+		target = new CapitalBean();
+		target.setAge(age);
+		target.setUserName(userName);
+		srcBean.setUserName("");
+		srcBean.setPassword("     ");
+		srcBean.setAge(null);
+		CopyUtils.from(srcBean)
+				.ignoreNullValue()
+				.ignoreBlankString()
+				.to(target);
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(userName, target.getUserName());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertEquals(age, target.getAge());
+		Assert.assertTrue(target.getPassword()==null);
+
+	}
+	
 	@Test
 	public void testCopyList(){
 		Date now = new Date();
@@ -124,29 +206,13 @@ public class CopyUtilsTest {
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
 		Assert.assertEquals(srcBean.getCreateTime(), target.getCreate_time());
 	}
-
-	@Test
-	public void testExtBeanWrapper(){
-		CapitalBean srcBean = new CapitalBean();
-		UnderlineBeanWrapper bw = new UnderlineBeanWrapper(srcBean);
-
-		String userName = "testValue";
-		long id = 11;
-		Date createTime = new Date();
-		bw.setPropertyValue("id", id);
-		bw.setPropertyValue("user_name", userName);
-		bw.setPropertyValue("create_time", createTime);
-		Assert.assertEquals(id, srcBean.getId());
-		Assert.assertEquals(userName, srcBean.getUserName());
-		Assert.assertEquals(createTime, srcBean.getCreateTime());
-		
-	}
 	
 
-	@ConvertUnderlineProperty
 	public static class CapitalBean {
 		private long id;
+		private Integer age;
 		private String userName;
+		private String password;
 		private Date birthday;
 		private Date createTime;
 		
@@ -182,6 +248,18 @@ public class CopyUtilsTest {
 		}
 		public void setDatas(List<CapitalBean2> datas) {
 			this.datas = datas;
+		}
+		public Integer getAge() {
+			return age;
+		}
+		public void setAge(Integer age) {
+			this.age = age;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public void setPassword(String password) {
+			this.password = password;
 		}
 		
 	}

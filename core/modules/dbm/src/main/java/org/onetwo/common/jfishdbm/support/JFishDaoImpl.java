@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.support;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -143,6 +145,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 			JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
 //			newSqlSymbolManager.setDialect(dialect);
 			newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
+			newSqlSymbolManager.setListeners(Arrays.asList(new DataQueryFilterListener()));
 			this.sqlSymbolManager = newSqlSymbolManager;
 		}
 		

@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
+import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplateAspectProxy;
@@ -75,6 +76,11 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 		return jem;
+	}
+	
+	@Bean
+	public DataQueryFilterListener dataQueryFilterListener(){
+		return new DataQueryFilterListener();
 	}
 
 	@Bean

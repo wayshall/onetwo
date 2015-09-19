@@ -8,6 +8,7 @@ import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet
 import org.onetwo.common.db.generator.dialet.MysqlMetaDialet
 import org.onetwo.common.db.generator.ftl.FtlDbGenerator
 import org.onetwo.common.db.generator.meta.TableMeta
+import org.onetwo.common.file.FileUtils
 import org.onetwo.common.utils.LangUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -46,7 +47,7 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 		List<GeneratedResult<String>> gr = FtlDbGenerator.newGenerator(dataSource)
 				//										.templateEngine(new FtlEngine())
 														.mysql()
-														.stripTablePrefix("zyt_estate_")
+														.stripTablePrefix("zyt_")
 														//.stripTablePrefix("zyt_estate_")
 														.globalConfig()
 															.pageFileBaseDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\resources\templates/$)
@@ -54,13 +55,13 @@ class DbGeneratorTest extends AbstractJUnit4SpringContextTests {
 															.javaSrcDir($/D:\mydev\java\yooyo-workspace\zhiyetong-manager\src\main\java/$)
 															.javaBasePackage("com.yooyo.zhiyetong")
 //															.moduleName("admin")
-															.moduleName("configmgr")
+															.moduleName("content")
 															.defaultTableContexts()
 //																.stripTablePrefix("zyt_estate_")
 															.end()
 														.end()
 //														.table("zyt_estate_rental_house")
-														.table("zyt_estate_price_record")
+														.table("zyt_news")
 //														.table("")
 															.pageTemplate("${basePath}/db/generator/datagrid/index.html.ftl")
 															.pageTemplate("${basePath}/db/generator/datagrid/edit-form.html.ftl")
