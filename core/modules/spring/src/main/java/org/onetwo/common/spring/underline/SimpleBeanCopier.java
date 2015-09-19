@@ -10,34 +10,36 @@ import java.util.Map;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 public class SimpleBeanCopier {
-    public static final String SPLITER = "_";
+	
+	public static SimpleBeanCopier unmodifyCopier(SimpleBeanCopier copier){
+		return new SimpleBeanCopier(copier.propertyNameConvertor, copier.propertyFilter){
 
-    public static final PropertyNameConvertor UNDERLINE_CONVERTOR = new PropertyNameConvertor(){
-
-		@Override
-		public String convert(String targetPropertyName) {
-			if(targetPropertyName.contains(SPLITER)){
-				return StringUtils.toPropertyName(targetPropertyName);
-			}else if(StringUtils.hasUpper(targetPropertyName)){
-				return StringUtils.convertWithSeperator(targetPropertyName, SPLITER);
+			@Override
+			public void setPropertyFilter(PropertyFilter propertyFilter) {
+				throw new UnsupportedOperationException("can not modify!");
 			}
-			return targetPropertyName;
-		}
-    	
-    };
+			@Override
+			public void setPropertyNameConvertor(
+					PropertyNameConvertor propertyNameConvertor) {
+				throw new UnsupportedOperationException("can not modify!");
+			}
+	    	
+	    };
+	}
+    
+    public static final PropertyNameConvertor NOTHING_CONVERTOR = (name)-> name;
 
 	
 //	private BeanWrapper targetBeanWrapper;
-	private PropertyNameConvertor propertyNameConvertor = UNDERLINE_CONVERTOR;
+	private PropertyNameConvertor propertyNameConvertor = NOTHING_CONVERTOR;
 //	private final T target;
 //	private boolean ignoreNull;
-	private PropertyFilter propertyFilter = new SimplePropertyFilter();
+	private PropertyFilter propertyFilter = SimplePropertyFilters.IGNORE_NULL;
 	
 
 	public SimpleBeanCopier() {
@@ -47,6 +49,11 @@ public class SimpleBeanCopier {
 		this.propertyNameConvertor = convertor;
 	}
 
+	public SimpleBeanCopier(PropertyNameConvertor propertyNameConvertor, PropertyFilter propertyFilter) {
+		super();
+		this.propertyNameConvertor = propertyNameConvertor;
+		this.propertyFilter = propertyFilter;
+	}
 
 	public <T> T fromObject(Object src, Class<T> targetClass){
 		return fromObject(src, ReflectUtils.newInstance(targetClass));
@@ -60,6 +67,7 @@ public class SimpleBeanCopier {
 		for(PropertyDescriptor property : properties){
 			/*if(property.getWriteMethod()==null)
 				continue ;*/
+			//if no writable
 			if(!targetBeanWrapper.isWritableProperty(property.getName())){
 				continue;
 			}

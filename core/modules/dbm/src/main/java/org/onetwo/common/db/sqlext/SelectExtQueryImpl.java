@@ -43,11 +43,11 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 //	protected StringBuilder couontSelect;
 	protected StringBuilder couontJoin;
 
-	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
+	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
 	}
 	
-	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+	public SelectExtQueryImpl(Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		super(entityClass, alias, params, symbolManager, listeners);
 	}
 
