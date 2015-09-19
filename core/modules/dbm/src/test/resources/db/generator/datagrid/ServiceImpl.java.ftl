@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.boot.mybatis.MyBatisUtils;
 import org.springframework.beans.factory.annotation.Autowired;

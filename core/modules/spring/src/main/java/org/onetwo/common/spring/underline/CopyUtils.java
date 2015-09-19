@@ -20,53 +20,123 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.underline.BaseCopierBuilder.SimpleCopierBuilder;
+import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.util.Assert;
 
 public class CopyUtils {
     public static final PropertyDescriptor[] EMPTY_PROPERTIES_ARRAY = new PropertyDescriptor[0];
     
     
-    public static class BeanCopierBuilder {
-    	public static BeanCopierBuilder newBuilder(){
-    		return new BeanCopierBuilder();
-    	}
-//    	private Object targetObject;
-    	private Object fromObject;
-    	private PropertyFilter propertyFilter;
-    	private PropertyNameConvertor propertyNameConvertor;
-    	
-    	public BeanCopierBuilder copy(Object from){
-    		this.fromObject = from;
-    		return this;
-    	}
 
-    	public BeanCopierBuilder filter(PropertyFilter propertyFilter){
-    		this.propertyFilter = propertyFilter;
-    		return this;
-    	}
 
-    	public BeanCopierBuilder propertyNameConvertor(PropertyNameConvertor propertyNameConvertor){
-    		this.propertyNameConvertor = propertyNameConvertor;
-    		return this;
+    public static class ObjectCopierBuilder extends SimpleCopierBuilder<Object, ObjectCopierBuilder> {
+    	public static ObjectCopierBuilder newBuilder(){
+    		return new ObjectCopierBuilder();
     	}
-    	
-    	public <T> T to(Class<T> targetClass){
-    		T targetObject = ReflectUtils.newInstance(targetClass);
-    		to(targetObject);
-    		return targetObject;
-    	}
-    	
-    	public <T> void to(T target){
-    		SimpleBeanCopier copier = new SimpleBeanCopier();
-    		copier.setPropertyFilter(propertyFilter);
-    		copier.setPropertyNameConvertor(propertyNameConvertor);
-    		copier.fromObject(fromObject, target);
+    	public static ObjectCopierBuilder from(Object obj){
+    		return new ObjectCopierBuilder().copy(obj);
     	}
     }
 
-    public static final PropertyNameConvertor UNDERLINE_CONVERTOR = SimpleBeanCopier.UNDERLINE_CONVERTOR;
-    public static final SimpleBeanCopier BEAN_COPIER = new SimpleBeanCopier();
+    public static class BeanCopierBuilder<T> extends SimpleCopierBuilder<T, BeanCopierBuilder<T>> {
+    	public static <E> BeanCopierBuilder<E> newBuilder(){
+    		return new BeanCopierBuilder<E>();
+    	}
+    	public static <E> BeanCopierBuilder<E> from(E obj){
+    		return new BeanCopierBuilder<E>().copy(obj);
+    	}
+    }
+    public static class PageCopierBuilder<T> extends BaseCopierBuilder<PageCopierBuilder<T>> {
+    	public static <E> PageCopierBuilder<E> from(Page<E> page){
+    		return new PageCopierBuilder<E>(page);
+    	}
+    	
+    	private Page<T> page;
+    	
+		public PageCopierBuilder(Page<T> page) {
+			super();
+			this.page = page;
+		}
+		
+		public Page<T> to(Class<T> targetClass){
+			Page<T> newPage = Page.createByPage(page, (e)->ReflectUtils.newInstance(targetClass));
+			return newPage;
+		}
+		
+    }
+    public static class ListCopierBuilder<T> extends BaseCopierBuilder<ListCopierBuilder<T>> {
+    	public static <E> ListCopierBuilder<E> from(Iterable<E> page){
+    		return new ListCopierBuilder<E>(page);
+    	}
+    	
+    	private Iterable<T> datas;
+    	
+		public ListCopierBuilder(Iterable<T> datas) {
+			super();
+			this.datas = datas;
+		}
+
+		public <R> ListCopierBuilder2<T, R> withElement(Class<R> elementClass){
+			return new ListCopierBuilder2<T, R>(datas).withElement(elementClass);
+		}
+		
+		public List<T> toList(){
+			List<T> newDatas = StreamSupport.stream(datas.spliterator(), false)
+						.map((e)->{
+							return newCopier().fromObject(e, (Class<T>)e.getClass());
+						})
+						.collect(Collectors.toList());
+			return newDatas;
+		}
+		
+		
+		public <E> List<E> toListClass(Class<E> targetClass){
+			List<E> newDatas = StreamSupport.stream(datas.spliterator(), false)
+						.map((e)->{
+							return newCopier().fromObject(e, targetClass);
+						})
+						.collect(Collectors.toList());
+			return newDatas;
+		}
+		
+    }
+    
+
+    public static class ListCopierBuilder2<T, R> extends BaseCopierBuilder<ListCopierBuilder2<T, R>> {
+    	public static <E1, E2> ListCopierBuilder2<E1, E2> from(Iterable<E1> page){
+    		return new ListCopierBuilder2<E1, E2>(page);
+    	}
+    	
+    	private Iterable<T> datas;
+    	private Class<R> elementClass;
+    	
+		public ListCopierBuilder2(Iterable<T> datas) {
+			super();
+			this.datas = datas;
+		}
+		
+		public ListCopierBuilder2<T, R> withElement(Class<R> elementClass){
+			this.elementClass = elementClass;
+			return this;
+		}
+		
+		public List<R> toList(){
+			Assert.notNull(elementClass);
+			List<R> newDatas = StreamSupport.stream(datas.spliterator(), false)
+						.map((e)->{
+							return newCopier().fromObject(e, elementClass);
+						})
+						.collect(Collectors.toList());
+			return newDatas;
+		}
+		
+    }
+
+    public static final PropertyNameConvertor UNDERLINE_CONVERTOR = SeperatorNamedConvertor.UNDERLINE_CONVERTOR;
+    public static final SimpleBeanCopier BEAN_COPIER = SimpleBeanCopier.unmodifyCopier(new SimpleBeanCopier(UNDERLINE_CONVERTOR));
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
@@ -111,9 +181,20 @@ public class CopyUtils {
 
 
     public static <T> T copy(T target, Object src){
-//    	return copy(target, src, UNDERLINE_CONVERTOR);
     	return BEAN_COPIER.fromObject(src, target);
     }
+
+    public static <T> BeanCopierBuilder<T> from(T target){
+    	return BeanCopierBuilder.from(target);
+    }
+
+    public static <T> ListCopierBuilder<T> from(Iterable<T> target){
+    	return ListCopierBuilder.from(target);
+    }
+
+    /*public static <T, R> ListCopierBuilder2<T, R> from2(Iterable<T> target){
+    	return ListCopierBuilder2.from(target);
+    }*/
 
     public static <T> List<T> copy(Class<T> targetCls, Iterable<?> srcs){
     	return StreamSupport.stream(srcs.spliterator(), false)
@@ -129,16 +210,15 @@ public class CopyUtils {
      */
     public static <T> T copy(T target, Object src, PropertyNameConvertor convertor){
 //    	return new BeanWrappedCopier<T>(target, convertor).fromObject(src);
-    	BeanCopierBuilder.newBuilder()
-    					.copy(src)
+    	BeanCopierBuilder.from(src)
     					.propertyNameConvertor(convertor)
     					.to(target);
     	return target;
     }
     
 
-    public static BeanCopierBuilder copier(){
-    	return BeanCopierBuilder.newBuilder();
+    public static ObjectCopierBuilder copier(){
+    	return ObjectCopierBuilder.newBuilder();
     }
 
 	public static Collection<String> desribPropertyNames(Class<?> clazz){

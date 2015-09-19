@@ -3,6 +3,7 @@ package org.onetwo.common.jfishdbm.query;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQueryImpl;
 import org.onetwo.common.jfishdbm.exception.DbmException;
@@ -15,11 +16,17 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 
 	JFishMappedEntry entry;
 	
-	@SuppressWarnings("rawtypes")
-	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
+	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
 		this.entry = entry;
 	}
+
+	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+		super(entityClass, alias, params, symbolManager, listeners);
+		this.entry = entry;
+	}
+
+
 
 	@Override
 	public void initQuery(){
