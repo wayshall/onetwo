@@ -79,7 +79,7 @@ public class CopyUtilsTest {
 		CapitalBean target = new CapitalBean();
 		target.setAge(age);
 		srcBean.setAge(null);
-		CopyUtils.from(srcBean).ignoreNullValue().to(target);
+		CopyUtils.copyFrom(srcBean).ignoreNullValue().to(target);
 		Assert.assertEquals(srcBean.getId(), target.getId());
 		Assert.assertEquals(srcBean.getUserName(), target.getUserName());
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
@@ -88,7 +88,7 @@ public class CopyUtilsTest {
 		target = new CapitalBean();
 		target.setAge(age);
 		srcBean.setAge(null);
-		CopyUtils.from(srcBean).to(target);
+		CopyUtils.copyFrom(srcBean).to(target);
 		Assert.assertEquals(srcBean.getId(), target.getId());
 		Assert.assertEquals(srcBean.getUserName(), target.getUserName());
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
@@ -115,7 +115,7 @@ public class CopyUtilsTest {
 		srcBean.setUserName("");
 		srcBean.setPassword("     ");
 		srcBean.setAge(null);
-		CopyUtils.from(srcBean)
+		CopyUtils.copyFrom(srcBean)
 				.ignoreBlankString()
 				.to(target);
 		Assert.assertEquals(srcBean.getId(), target.getId());
@@ -130,7 +130,7 @@ public class CopyUtilsTest {
 		srcBean.setUserName("");
 		srcBean.setPassword("     ");
 		srcBean.setAge(null);
-		CopyUtils.from(srcBean)
+		CopyUtils.copyFrom(srcBean)
 				.ignoreNullValue()
 				.ignoreBlankString()
 				.to(target);

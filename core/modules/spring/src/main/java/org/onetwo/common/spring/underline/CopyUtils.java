@@ -36,7 +36,7 @@ public class CopyUtils {
     	public static ObjectCopierBuilder newBuilder(){
     		return new ObjectCopierBuilder();
     	}
-    	public static ObjectCopierBuilder from(Object obj){
+    	public static ObjectCopierBuilder copyFrom(Object obj){
     		return new ObjectCopierBuilder().copy(obj);
     	}
     }
@@ -45,12 +45,12 @@ public class CopyUtils {
     	public static <E> BeanCopierBuilder<E> newBuilder(){
     		return new BeanCopierBuilder<E>();
     	}
-    	public static <E> BeanCopierBuilder<E> from(E obj){
+    	public static <E> BeanCopierBuilder<E> copyFrom(E obj){
     		return new BeanCopierBuilder<E>().copy(obj);
     	}
     }
     public static class PageCopierBuilder<T> extends BaseCopierBuilder<PageCopierBuilder<T>> {
-    	public static <E> PageCopierBuilder<E> from(Page<E> page){
+    	public static <E> PageCopierBuilder<E> copyFrom(Page<E> page){
     		return new PageCopierBuilder<E>(page);
     	}
     	
@@ -83,7 +83,7 @@ public class CopyUtils {
 			return new ListCopierBuilder2<T, R>(datas).withElement(elementClass);
 		}
 		
-		public List<T> toList(){
+		public List<T> toNewList(){
 			List<T> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
 							return newCopier().fromObject(e, (Class<T>)e.getClass());
@@ -93,7 +93,7 @@ public class CopyUtils {
 		}
 		
 		
-		public <E> List<E> toListClass(Class<E> targetClass){
+		public <E> List<E> toNewListWith(Class<E> targetClass){
 			List<E> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
 							return newCopier().fromObject(e, targetClass);
@@ -123,7 +123,7 @@ public class CopyUtils {
 			return this;
 		}
 		
-		public List<R> toList(){
+		public List<R> toNewList(){
 			Assert.notNull(elementClass);
 			List<R> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
@@ -184,11 +184,11 @@ public class CopyUtils {
     	return BEAN_COPIER.fromObject(src, target);
     }
 
-    public static <T> BeanCopierBuilder<T> from(T target){
-    	return BeanCopierBuilder.from(target);
+    public static <T> BeanCopierBuilder<T> copyFrom(T target){
+    	return BeanCopierBuilder.copyFrom(target);
     }
 
-    public static <T> ListCopierBuilder<T> from(Iterable<T> target){
+    public static <T> ListCopierBuilder<T> copyFrom(Iterable<T> target){
     	return ListCopierBuilder.from(target);
     }
 
@@ -210,7 +210,7 @@ public class CopyUtils {
      */
     public static <T> T copy(T target, Object src, PropertyNameConvertor convertor){
 //    	return new BeanWrappedCopier<T>(target, convertor).fromObject(src);
-    	BeanCopierBuilder.from(src)
+    	BeanCopierBuilder.copyFrom(src)
     					.propertyNameConvertor(convertor)
     					.to(target);
     	return target;

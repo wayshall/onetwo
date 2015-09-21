@@ -1,7 +1,8 @@
 package org.onetwo.common.spring.underline;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.reflect.ReflectUtils;import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.ArrayUtils;
 
 
 
@@ -89,8 +90,13 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 			this.fromObject = from;
 			return (B)this;
 		}
-		public T to(Class<T> targetClass){
+		/*public T to(Class<T> targetClass){
 			T targetObject = ReflectUtils.newInstance(targetClass);
+			to(targetObject);
+			return targetObject;
+		}*/
+		public T toNewInstance(){
+			T targetObject = (T)ReflectUtils.newInstance(fromObject.getClass());
 			to(targetObject);
 			return targetObject;
 		}
