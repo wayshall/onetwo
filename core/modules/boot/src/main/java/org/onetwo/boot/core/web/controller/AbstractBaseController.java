@@ -251,7 +251,7 @@ abstract public class AbstractBaseController {
 	
 
 	protected UserDetail getCurrentLoginUser(){
-		return getCurrentLoginUser(UserDetail.class, false);
+		return getCurrentLoginUser(UserDetail.class, true);
 	}
 	protected <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
 		Assert.notNull(clazz);

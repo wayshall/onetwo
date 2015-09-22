@@ -62,7 +62,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 					field = entry.getFieldByColumnName(column);
 					value = getColumnValue(rs, index, field.getColumnType());
 					if(value!=null){
-						field.setColumnValue(entity, value);
+						field.setValueFromJdbc(entity, value);
 					}
 				}else{
 					String propName = toPropertyName(column);

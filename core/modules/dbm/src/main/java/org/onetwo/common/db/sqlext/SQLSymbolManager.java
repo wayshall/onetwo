@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryField;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 
 /***
  * sql操作符管理
@@ -53,7 +52,7 @@ public interface SQLSymbolManager {
 	
 	public HqlSymbolParser getHqlSymbolParser(String symbol);
 //	public String createHql(Map<Object, Object> properties, List<Object> values) ;
-	public PlaceHolder getPlaceHolder();
+//	public PlaceHolder getPlaceHolder();
 	
 	public ExtQuery createDeleteQuery(Class<?> entityClass, Map<Object, Object> properties);
 	

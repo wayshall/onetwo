@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -22,11 +21,13 @@ import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import com.google.common.collect.ImmutableList;
+
 final public class DbmUtils {
 	private DbmUtils(){
 	}
 	public static List<DbmEntityFieldListener> initJFishEntityFieldListeners(DbmFieldListeners listenersAnntation){
-		List<DbmEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
+		List<DbmEntityFieldListener> fieldListeners = ImmutableList.of();
 		if(listenersAnntation!=null){
 			fieldListeners = LangUtils.newArrayList();
 			Class<? extends DbmEntityFieldListener>[] flClasses = listenersAnntation.value();
@@ -69,11 +70,19 @@ final public class DbmUtils {
 		return actualValue;
 	}
 	
-	public static Object convertSqlParameterValue(JFishProperty propertyInfo, Object value){
+	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value){
 		if(value==null)
 			return null;
 		int sqlType = SqlTypeFactory.getType(propertyInfo.getType());
-		SqlParameterValue sqlValue = new SqlParameterValue(sqlType, value);
+		SqlParameterValue sqlValue = new SqlParameterValue(sqlType, getActualSqlValue(value));
 		return sqlValue;
+	}
+
+	public static Object getActualSqlValue(Object value){
+		if(Enum.class.isAssignableFrom(value.getClass())){
+//			return Types.asValue(value.toString(), value.getClass());
+			return ((Enum<?>)value).name();
+		}
+		return value;
 	}
 }
