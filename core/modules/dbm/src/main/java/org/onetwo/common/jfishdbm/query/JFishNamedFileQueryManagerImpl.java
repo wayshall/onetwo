@@ -8,8 +8,6 @@ import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,38 +27,34 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 	@Override
 	public JFishDataQuery createQuery(JFishNamedFileQueryInfo nameInfo, Object... args){
-		return createDataQuery(false, nameInfo, PlaceHolder.NAMED, args);
+		return createDataQuery(false, nameInfo, args);
 	}
 	
 	public JFishDataQuery createCountQuery(JFishNamedFileQueryInfo nameInfo, Object... args){
-		return createDataQuery(true, nameInfo, PlaceHolder.NAMED, args);
+		return createDataQuery(true, nameInfo, args);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JFishDataQuery createDataQuery(boolean count, JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args){
+	public JFishDataQuery createDataQuery(boolean count, JFishNamedFileQueryInfo nameInfo, Object... args){
 //		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
-		Assert.notNull(type);
+//		Assert.notNull(type);
 
 //		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
 		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
-		
-		if(type==PlaceHolder.POSITION){
-			jq.setParameters(LangUtils.asList(args));
+
+		if(args.length==1 && LangUtils.isMap(args[0])){
+			jq.setParameters((Map)args[0]);
 		}else{
-			if(args.length==1 && LangUtils.isMap(args[0])){
-				jq.setParameters((Map)args[0]);
-			}else{
-				jq.setQueryAttributes(LangUtils.asMap(args));
-			}
+			jq.setQueryAttributes(LangUtils.asMap(args));
 		}
 		return jq.getRawQuery(JFishDataQuery.class);
 	}
 	
 
-	@Override
+	/*@Override
 	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args){
 		return createDataQuery(false, nameInfo, type, args);
-	}
+	}*/
 	
 
 

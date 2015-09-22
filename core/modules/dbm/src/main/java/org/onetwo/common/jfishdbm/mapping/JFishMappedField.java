@@ -7,6 +7,7 @@ import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 public interface JFishMappedField {
 
@@ -14,9 +15,9 @@ public interface JFishMappedField {
 
 	public Object getValue(Object entity);
 
-	public void setColumnValue(Object entity, Object value);
+	public void setValueFromJdbc(Object entity, Object value);
 
-	public Object getColumnValue(Object entity);
+	public SqlParameterValue getValueForJdbc(Object entity);
 	
 	public List<DbmEntityFieldListener> getFieldListeners();
 
@@ -70,7 +71,7 @@ public interface JFishMappedField {
 
 //	public DataHolder<String, Object> getDataHolder();
 	
-	public Object getColumnValueWithJFishEventAction(Object entity, JFishEventAction eventAction);
+	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction);
 
 	public boolean isVersionControll();
 	public <T> VersionableType<T> getVersionableType();

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.onetwo.common.db.builder.QueryField;
 import org.onetwo.common.db.builder.QueryFieldImpl;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
@@ -36,7 +35,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 
 	private boolean debug;
 	protected boolean hasBuilt;
-	private boolean sqlQuery = false;
+//	private boolean sqlQuery = false;
 //	private boolean throwIfCaseValueIsNull;
 	private IfNull ifNull;
 
@@ -77,15 +76,11 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		this.hasBuilt = false;
 		this.initParams();
 		
-		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
+//		setSqlQuery(getValueAndRemoveKeyFromParams(K.SQL_QUERY, sqlQuery));
 		this.debug = getValueAndRemoveKeyFromParams(K.DEBUG, true);
 		this.ifNull = getValueAndRemoveKeyFromParams(K.IF_NULL, IfNull.Calm);
 
-		PlaceHolder holder = symbolManager.getPlaceHolder();
-		if(isSqlQuery()){
-			holder = PlaceHolder.POSITION;
-		}
-		this.paramsValue = new ParamValues(holder, symbolManager.getSqlDialet());
+		this.paramsValue = new ParamValues(symbolManager.getSqlDialet());
 		
 		this.fireListeners = getValueAndRemoveKeyFromParams(K.LISTENERS, true);
 		
@@ -169,18 +164,18 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 			if (K.OR.equals(fields)) {
 				if (!Map.class.isAssignableFrom(values.getClass()))
 					throw new ServiceException("sub query's vaue must be map!");
-				Map subParams = (Map) values;
+				Map<?, ?> subParams = (Map<?, ?>) values;
 				h = this.buildWhere(subParams, true);
 				where.append("or ");
 			} else if(K.AND.equals(fields)){
 				if (!Map.class.isAssignableFrom(values.getClass()))
 					throw new ServiceException("sub query's vaue must be map!");
-				Map subParams = (Map) values;
+				Map<?, ?> subParams = (Map<?, ?>) values;
 				h = this.buildWhere(subParams, true);
 				
 				if(!first)
 					where.append("and ");
-			} else if(K.RAW_QL.equals(fields)){
+			} /*else if(K.RAW_QL.equals(fields)){
 				if (!values.getClass().isArray() && !List.class.isAssignableFrom(values.getClass()) && !String.class.isAssignableFrom(values.getClass()))
 					throw new ServiceException("raw-ql args error: " + values);
 //				List listValue = L.tolist(values, true);
@@ -192,7 +187,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 				
 				if(!first)
 					where.append("and ");
-			}else{
+			}*/else{
 				h = buildFieldQueryString(fields, values);
 				if (StringUtils.isBlank(h))
 					continue;
@@ -238,15 +233,6 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		for (int i = 0; i < fieldList.size(); i++) {
 			Object p = fieldList.get(i);
 
-//			List valueList = (List<String>) MyUtils.asList(values);//asList(values, false);
-			
-			/*if (valueList == null || valueList.isEmpty())
-				return null;*/
-
-			/*if(ExtQueryUtils.isContinueByCauseValue(values, ifNull)){
-				continue;
-			}*/
-
 			Object v = null;
 			try {
 				if (fieldList.size() == 1){
@@ -261,14 +247,6 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 				v = valueList.get(0);//if can't find the corresponding value, get the first one.
 			}
 
-			/*if(v==null)
-				return null;*/
-			
-			/*if(ExtQueryUtils.isContinueByCauseValue(values, ifNull)){
-				continue;
-			}*/
-
-//			String[] sp = StringUtils.split(p.toString(), SQLSymbolManager.SPLIT_SYMBOL);
 			QueryField qf = QueryFieldImpl.create(p);
 			qf.init(this, v);
 			
@@ -378,13 +356,13 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 	public boolean hasBuilt() {
 		return hasBuilt;
 	}
-	@Override
+	/*@Override
 	public boolean isSqlQuery() {
 		return sqlQuery;
 	}
 	protected void setSqlQuery(boolean sqlQuery) {
 		this.sqlQuery = sqlQuery;
-	}
+	}*/
 	@Override
 	public boolean hasParameterField(String fieldName) {
 		return getAllParameterFieldNames().contains(fieldName);

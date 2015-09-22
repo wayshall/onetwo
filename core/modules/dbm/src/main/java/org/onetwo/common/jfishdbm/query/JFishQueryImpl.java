@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -44,7 +43,7 @@ public class JFishQueryImpl implements JFishQuery {
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
 		this.sqlString = sqlString;
 		this.resultClass = resultClass;
-		this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
+		this.parameters = JFishQueryValue.create(null);
 	}
 	
 	/**********
@@ -135,10 +134,7 @@ public class JFishQueryImpl implements JFishQuery {
 	public String getSqlString() {
 		String sql = sqlString;
 		if(isLimitedQuery()){
-			if(this.parameters.isNamed())
-				sql = dbDialect.getLimitStringWithNamed(sqlString, FIRST_RESULT_NAME, MAX_RESULT_NAME);
-			else
-				sql = dbDialect.getLimitString(sqlString);
+			sql = dbDialect.getLimitStringWithNamed(sqlString, FIRST_RESULT_NAME, MAX_RESULT_NAME);
 		}
 		if(UtilTimerStack.isActive()){
 			this.logger.info("sql:"+sql);

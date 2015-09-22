@@ -58,7 +58,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		Object val = null;
 		EntrySQLBuilder builder = getSqlBuilder();
 		for(JFishMappedField field : builder.getFields()){
-			val = field.getColumnValueWithJFishEventAction(entity, getEventAction());
+			val = field.getValueForJdbcAndFireDbmEventAction(entity, getEventAction());
 			if(field.isVersionControll()){
 				if(JFishEventAction.insert==getEventAction()){
 					val = field.getVersionableType().getVersionValule(val);
@@ -106,7 +106,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		Assert.notNull(entity);
 		Object val = null;
 		for(JFishMappedField field : this.sqlBuilder.getWhereCauseFields()){
-			val = field.getColumnValue(entity);
+			val = field.getValueForJdbc(entity);
 			this.causeValues.add(val);
 		}
 		return this;
