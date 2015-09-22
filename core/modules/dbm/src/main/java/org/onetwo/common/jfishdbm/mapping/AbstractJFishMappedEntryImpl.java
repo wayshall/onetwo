@@ -549,7 +549,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		for(JFishMappedField mfield : this.mappedColumns.values()){
 			
 //			val = mfield.getColumnValue(entity);
-			val = mfield.getColumnValueWithJFishEventAction(entity, JFishEventAction.update);
+			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
 			if(mfield.isIdentify()){
 				Assert.notNull(val, "id can not be null : " + entity);
 				sqlBuilder.appendWhere(mfield, val);

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.onetwo.common.db.EntityManagerProvider;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 
@@ -24,7 +23,7 @@ public class SQLSymbolManagerFactory {
 	{
 //		 SQLSymbolManager jpa = new DefaultSQLSymbolManagerImpl(new JPQLDialetImpl());
 		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
-		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl(), PlaceHolder.POSITION);
+		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
 		 
 		 Map<EntityManagerProvider, SQLSymbolManager> temp = new HashMap<EntityManagerProvider, SQLSymbolManager>();
 //		 temp.put(EntityManagerProvider.JPA, jpa);

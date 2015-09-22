@@ -13,6 +13,7 @@ import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 
 @SuppressWarnings("unchecked")
@@ -79,7 +80,7 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	 * @param value
 	 * @return
 	 */
-	protected Object convertSqlParameterValue(Object value){
+	protected SqlParameterValue convertSqlParameterValue(Object value){
 		return DbmUtils.convertSqlParameterValue(propertyInfo, value);
 	}
 	
@@ -89,42 +90,48 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	}
 	
 	@Override
-	public void setColumnValue(Object entity, Object value){
+	public void setValueFromJdbc(Object entity, Object value){
 		Object newValue = convertPropertyValue(value);
 		propertyInfo.setValue(entity, newValue);
 	}
 	
 
+	/****
+	 * 获取sql参数值
+	 */
 	@Override
-	public Object getColumnValue(Object entity){
-		Object sqlValue = convertSqlParameterValue(propertyInfo.getValue(entity));
+	public SqlParameterValue getValueForJdbc(Object entity){
+		SqlParameterValue sqlValue = convertSqlParameterValue(propertyInfo.getValue(entity));
 		return sqlValue;
 	}
 	
-
-	public Object getColumnValueWithJFishEventAction(Object entity, JFishEventAction eventAction){
-		Object oldValue = getColumnValue(entity);
+	@Override
+	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction){
+//		Object oldValue = getColumnValue(entity);
+		Object oldValue = getValue(entity);
 		Object newValue = oldValue;
 		boolean doListener = false;
 		if(JFishEventAction.insert==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldInsert(getName(), newValue);
+					newValue = fl.beforeFieldInsert(getName(), oldValue);
 					doListener = true;
 				}
 			}
 		}else if(JFishEventAction.update==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldUpdate(getName(), newValue);
+					newValue = fl.beforeFieldUpdate(getName(), oldValue);
 					doListener = true;
 				}
 			}
 		}
 		if(doListener){
-			setColumnValue(entity, newValue);
+//			setValueFromJdbc(entity, newValue);
+			setValue(entity, newValue);
 		}
-		return newValue;
+//		return getValueForJdbc(entity);
+		return convertSqlParameterValue(newValue);
 	}
 	
 	public Class<?> getColumnType(){

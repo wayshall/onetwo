@@ -43,5 +43,44 @@ public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implement
 			
 		});
 	}
+	/*
+	@Override
+	public <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper)
+			throws DataAccessException {
+
+		return query(sql, new MapSqlParameterSource(paramMap), rowMapper);
+	}
+	
+	static class DbmMapSqlParameterSource extends MapSqlParameterSource {
+		
+		public MapSqlParameterSource addValue(String paramName, Object value) {
+			Object newValue = unwrapSqlParameterValue(value);
+			return super.addValue(paramName, newValue);
+		}
+		
+		@Override
+		public MapSqlParameterSource addValue(String paramName, Object value, int sqlType) {
+			Object newValue = unwrapSqlParameterValue(value);
+			return super.addValue(paramName, newValue, sqlType);
+		}
+
+		@Override
+		public MapSqlParameterSource addValue(String paramName, Object value, int sqlType, String typeName) {
+			Object newValue = unwrapSqlParameterValue(value);
+			return super.addValue(paramName, newValue, sqlType, typeName);
+		}
+
+		@Override
+		public DbmMapSqlParameterSource addValues(Map<String, ?> values) {
+			if (values != null) {
+				values.entrySet().forEach(e->addValue(e.getKey(), e.getValue()));
+			}
+			return this;
+		}
+
+		public static Object unwrapSqlParameterValue(Object value){
+			return DbmUtils.unwrapSqlParameterValue(value);
+		}
+	}*/
 
 }

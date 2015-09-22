@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
+import org.onetwo.common.db.sqlext.CopyOfParamValues.PlaceHolder;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 
@@ -17,25 +17,25 @@ import org.onetwo.common.utils.Assert;
 public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	
 	public static SQLSymbolManager create(){
-		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl(), PlaceHolder.POSITION);
+//		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl(), PlaceHolder.POSITION);
+		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
 		return sql;
 	}
 	
 	protected Map<String, HqlSymbolParser> parser;
 	private SQLDialet sqlDialet;
-	private PlaceHolder placeHolder;
+//	private PlaceHolder placeHolder;
 	
 	private List<ExtQueryListener> listeners;
 	
 
-	public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {
+	/*public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {
 		this(sqlDialet, ParamValues.PlaceHolder.NAMED);
-	}
+	}*/
 
-	public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet, PlaceHolder placeHolder) {
+	public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {
 		parser = new HashMap<String, HqlSymbolParser>();
 		this.sqlDialet = sqlDialet;
-		this.placeHolder = placeHolder;
 		this.initParser();
 	}
 
@@ -43,9 +43,9 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 		return sqlDialet;
 	}
 
-	public PlaceHolder getPlaceHolder() {
+	/*public PlaceHolder getPlaceHolder() {
 		return placeHolder;
-	}
+	}*/
 
 	@Override
 	public ExtQuery createDeleteQuery(Class<?> entityClass, Map<Object, Object> properties) {

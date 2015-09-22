@@ -23,7 +23,7 @@ public interface ExtQuery {
 
 		public static final String DEBUG = "_EXTQUERY_DEBUG_NAME_KEY";
 		public static final String IF_NULL = ":if-null";
-		public static final String SQL_QUERY = ":sql-query";
+//		public static final String SQL_QUERY = ":sql-query";
 
 		public static final String NO_PREFIX = ".";//不会加 "ent."
 
@@ -38,7 +38,7 @@ public interface ExtQuery {
 		
 		public static final String OR = ":or";
 		public static final String AND = ":and";
-		public static final String RAW_QL = ":raw-ql";
+//		public static final String RAW_QL = ":raw-ql";
 
 		public static final String SELECT = ":select";
 		public static final String SQL_SELECT = ":sql-select";
@@ -119,7 +119,7 @@ public interface ExtQuery {
 	public StringBuilder getWhere();
 
 	public Class<?> getEntityClass();
-	public boolean isSqlQuery();
+//	public boolean isSqlQuery();
 	
 
 }

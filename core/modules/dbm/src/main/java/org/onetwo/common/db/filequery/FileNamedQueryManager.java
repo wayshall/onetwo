@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.dquery.InvokeContext;
-import org.onetwo.common.db.sqlext.ParamValues.PlaceHolder;
 import org.onetwo.common.utils.Page;
 
 /****
@@ -39,7 +38,7 @@ public interface FileNamedQueryManager {
 	
 //	public JFishQueryValue createQueryValue();
 	
-	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args);
+//	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args);
 
 	public DataQuery createCountQuery(JFishNamedFileQueryInfo nameInfo, Object... args);
 

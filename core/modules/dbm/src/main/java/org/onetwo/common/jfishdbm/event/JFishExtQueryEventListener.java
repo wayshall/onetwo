@@ -58,14 +58,18 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 			if (page.isAutoCount()) {
 //				Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 				Long totalCount = 0l;
-				if(extQuery.isSqlQuery()){
+				
+				/*if(extQuery.isSqlQuery()){
 					DataQuery countQuery = es.createAsDataQuery(extQuery.getCountSql(), Long.class);
 					countQuery.setParameters((List<Object>)extQuery.getParamsValue().getValues());
 					totalCount = (Long)countQuery.getSingleResult();
 				}else{
 					Number countNumber = (Number)es.findUnique(extQuery.getCountSql(), (Map<String, ?>)extQuery.getParamsValue().getValues(), Number.class);
 					totalCount = countNumber.longValue();
-				}
+				}*/
+				Number countNumber = (Number)es.findUnique(extQuery.getCountSql(), (Map<String, ?>)extQuery.getParamsValue().getValues(), Number.class);
+				totalCount = countNumber.longValue();
+				
 				page.setTotalCount(totalCount);
 				if(page.getTotalCount()<1){
 					return ;

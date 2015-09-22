@@ -395,29 +395,32 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	}
 	
 	public <T> T findUnique(JFishQueryValue queryValue){
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			return findUnique(queryValue.getSql(), queryValue.asList().toArray(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), true));
 		}else{
 			return findUnique(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), true));
-		}
+		}*/
+		return findUnique(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), true));
 	}
 	
 	public <T> T findUnique(JFishQueryValue queryValue, RowMapper<T> row){
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			return findUnique(queryValue.getSql(), queryValue.asList().toArray(), row);
 		}else{
 			return findUnique(queryValue.getSql(), queryValue.asMap(), row);
-		}
+		}*/
+		return findUnique(queryValue.getSql(), queryValue.asMap(), row);
 	}
 	
 	public Number count(JFishQueryValue queryValue){
 		Number count = null;
 		SingleColumnRowMapper mapper = new SingleColumnRowMapper<Number>(Number.class);
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			count = (Number)findUnique(queryValue.getCountSql(), queryValue.asList().toArray(), mapper);
 		}else{
 			count = (Number)findUnique(queryValue.getCountSql(), queryValue.asMap(), mapper);
-		}
+		}*/
+		count = (Number)findUnique(queryValue.getCountSql(), queryValue.asMap(), mapper);
 		return count;
 	}
 	
@@ -473,11 +476,12 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	}
 	
 	public <T> List<T> findList(JFishQueryValue queryValue){
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			return findList(queryValue.getSql(), queryValue.asList().toArray(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
 		}else{
 			return findList(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
-		}
+		}*/
+		return findList(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
 	}
 	
 	public <T> void findPage(Page<T> page, JFishQueryValue queryValue){
@@ -487,41 +491,45 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 			return ;
 //		List<T> results = findList(queryValue);a
 		JFishQuery jq = createJFishQuery(queryValue.getSql(), queryValue.getResultClass());
-		if(queryValue.isNamed()){
+		/*if(queryValue.isNamed()){
 			jq.setParameters(queryValue.asMap());
 		}else{
 			jq.setParameters(queryValue.asList());
-		}
+		}*/
+		jq.setParameters(queryValue.asMap());
 		List<T> results = jq.setFirstResult(page.getFirst()-1).setMaxResults(page.getPageSize()).getResultList();
 		page.setResult(results);
 	}
 	
 	public <T> T find(JFishQueryValue queryValue, ResultSetExtractor<T> rse){
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rse);
 		}else{
 			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rse);
-		}
+		}*/
+		return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rse);
 	}
 	
 	/****
 	 * Extractor: RowMapperResultSetExtractor
 	 */
 	public <T> List<T> findList(JFishQueryValue queryValue, RowMapper<T> rowMapper){
-		if(queryValue.isPosition()){
+		/*if(queryValue.isPosition()){
 			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rowMapper);
 		}else{
 			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
-		}
+		}*/
+		return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
 	}
 	
 	public int executeUpdate(JFishQueryValue queryValue){
 		int update = 0;
-		if(queryValue.isNamed()){
+		/*if(queryValue.isNamed()){
 			update = this.getNamedParameterJdbcTemplate().update(queryValue.getSql(), queryValue.asMap());
 		}else{
 			update = this.getJFishJdbcTemplate().update(queryValue.getSql(), queryValue.asList().toArray());
-		}
+		}*/
+		update = this.getNamedParameterJdbcTemplate().update(queryValue.getSql(), queryValue.asMap());
 		return update;
 	}
 	
@@ -566,12 +574,14 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	
 	public DataQuery createAsDataQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
-		if(extQuery.isSqlQuery()){
+		/*if(extQuery.isSqlQuery()){
 			q = this.createAsDataQuery(extQuery.getSql(), extQuery.getEntityClass());
 			q.setParameters((List)extQuery.getParamsValue().getValues());
 		}else{
 			q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
-		}
+		}*/
+		q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
+		
 		JFishQuery jq = q.getRawQuery(JFishQuery.class);
 		jq.setResultClass(extQuery.getEntityClass());
 		if(extQuery.needSetRange()){

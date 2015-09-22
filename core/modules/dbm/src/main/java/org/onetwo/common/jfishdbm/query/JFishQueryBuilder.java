@@ -26,13 +26,15 @@ public class JFishQueryBuilder extends EntityExtBuilder {
 	}
 	
 	protected JFishQueryValue convertAsJFishQueryValue(ExtQuery extQuery){
-		JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());
+		JFishQueryValue qv = JFishQueryValue.create(extQuery.getSql());
 		qv.setResultClass(extQuery.getEntityClass());
-		if(extQuery.getParamsValue().isList()){
+		/*if(extQuery.getParamsValue().isList()){
 			qv.setValue(extQuery.getParamsValue().asList());
 		}else{
 			qv.setValue(extQuery.getParamsValue().asMap());
-		}
+		}*/
+		qv.setValue(extQuery.getParamsValue().asMap());
+		
 		return qv;
 	}
 	public <T> T queryAs(ResultSetExtractor<T> rse){

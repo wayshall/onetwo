@@ -133,14 +133,8 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		if (page.isAutoCount()) {
 //			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 			Long totalCount = 0l;
-			if(extQuery.isSqlQuery()){
-				DataQuery countQuery = this.createSQLQuery(extQuery.getCountSql(), Long.class);
-				countQuery.setParameters(extQuery.getParamsValue().getValues());
-				totalCount = (Long)countQuery.getSingleResult();
-			}else{
-				Number countNumber = (Number)this.findUnique(extQuery.getCountSql(), extQuery.getParamsValue().asMap());
-				totalCount = countNumber.longValue();
-			}
+			Number countNumber = (Number)this.findUnique(extQuery.getCountSql(), extQuery.getParamsValue().asMap());
+			totalCount = countNumber.longValue();
 			page.setTotalCount(totalCount);
 			if(page.getTotalCount()<1){
 				return ;
@@ -155,12 +149,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 	
 	protected DataQuery createQuery(SelectExtQuery extQuery){
 		DataQuery q = null;
-		if(extQuery.isSqlQuery()){
-			q = this.createSQLQuery(extQuery.getSql(), extQuery.getEntityClass());
-			q.setParameters(extQuery.getParamsValue().asList());
-		}else{
-			q = this.createQuery(extQuery.getSql(), extQuery.getParamsValue().asMap());
-		}
+		q = this.createQuery(extQuery.getSql(), extQuery.getParamsValue().asMap());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());
 		}
