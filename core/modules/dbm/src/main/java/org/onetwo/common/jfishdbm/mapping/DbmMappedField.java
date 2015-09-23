@@ -9,7 +9,7 @@ import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-public interface JFishMappedField {
+public interface DbmMappedField {
 
 	public void setValue(Object entity, Object value);
 

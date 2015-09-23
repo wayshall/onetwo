@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractMappedField implements JFishMappedField{
+abstract public class AbstractMappedField implements DbmMappedField{
 	
 	private final JFishMappedEntry entry;
 	
@@ -48,7 +48,7 @@ abstract public class AbstractMappedField implements JFishMappedField{
 		
 		DbmFieldListeners listenersAnntation = propertyInfo.getAnnotation(DbmFieldListeners.class);
 		if(listenersAnntation!=null){
-			fieldListeners = DbmUtils.initJFishEntityFieldListeners(listenersAnntation);
+			fieldListeners = DbmUtils.initDbmEntityFieldListeners(listenersAnntation);
 		}else{
 			if(!entry.getFieldListeners().isEmpty()){
 				this.fieldListeners = new ArrayList<DbmEntityFieldListener>(entry.getFieldListeners());
@@ -108,30 +108,30 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	@Override
 	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction){
 //		Object oldValue = getColumnValue(entity);
-		Object oldValue = getValue(entity);
-		Object newValue = oldValue;
+		Object fieldValue = getValue(entity);
+//		Object newValue = null;
 		boolean doListener = false;
 		if(JFishEventAction.insert==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldInsert(getName(), oldValue);
+					fieldValue = fl.beforeFieldInsert(propertyInfo, fieldValue);
 					doListener = true;
 				}
 			}
 		}else if(JFishEventAction.update==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldUpdate(getName(), oldValue);
+					fieldValue = fl.beforeFieldUpdate(propertyInfo, fieldValue);
 					doListener = true;
 				}
 			}
 		}
 		if(doListener){
 //			setValueFromJdbc(entity, newValue);
-			setValue(entity, newValue);
+			setValue(entity, fieldValue);
 		}
 //		return getValueForJdbc(entity);
-		return convertSqlParameterValue(newValue);
+		return convertSqlParameterValue(fieldValue);
 	}
 	
 	public Class<?> getColumnType(){

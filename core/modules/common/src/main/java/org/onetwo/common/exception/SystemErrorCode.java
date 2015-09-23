@@ -7,9 +7,9 @@ public interface SystemErrorCode {
 	public String UNKNOWN = "unknown";
 	
 	public static class JFishErrorCode {
-		public static final String BASE_CODE = "[JFISH_ERROR]";//前缀
+		public static final String BASE_CODE = "[BASE_ERROR]";//前缀
 		public static final String DB_ERROR = BASE_CODE + "DB_ERROR";
-		public static final String ORM_ERROR = BASE_CODE + "ORM ERROR";
+		public static final String ORM_ERROR = BASE_CODE + "ORM_ERROR";
 		public static final String REST_INVOKE_ERROR = BASE_CODE + "REST_INVOKE_ERROR";
 		public static final String INVALID_TOKEN_ERROR = BASE_CODE + "INVALID_TOKEN_ERROR";
 	}

@@ -18,25 +18,21 @@ import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SqlTypeFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
-import org.onetwo.common.utils.LangUtils;
 import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.util.Assert;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 final public class DbmUtils {
 	private DbmUtils(){
 	}
-	public static List<DbmEntityFieldListener> initJFishEntityFieldListeners(DbmFieldListeners listenersAnntation){
-		List<DbmEntityFieldListener> fieldListeners = ImmutableList.of();
-		if(listenersAnntation!=null){
-			fieldListeners = LangUtils.newArrayList();
-			Class<? extends DbmEntityFieldListener>[] flClasses = listenersAnntation.value();
-			for(Class<? extends DbmEntityFieldListener> flClass : flClasses){
-				if(flClass==null)
-					continue;
-				DbmEntityFieldListener fl = ReflectUtils.newInstance(flClass);
-				fieldListeners.add(fl);
-			}
+	public static List<DbmEntityFieldListener> initDbmEntityFieldListeners(DbmFieldListeners listenersAnntation){
+		Assert.notNull(listenersAnntation);
+		Class<? extends DbmEntityFieldListener>[] flClasses = listenersAnntation.value();
+		List<DbmEntityFieldListener> fieldListeners = Lists.newArrayList();
+		for(Class<? extends DbmEntityFieldListener> flClass : flClasses){
+			DbmEntityFieldListener fl = ReflectUtils.newInstance(flClass);
+			fieldListeners.add(fl);
 		}
 		return fieldListeners;
 	}

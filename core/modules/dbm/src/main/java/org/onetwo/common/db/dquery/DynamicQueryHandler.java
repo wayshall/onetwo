@@ -17,7 +17,6 @@ import javax.sql.DataSource;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
@@ -25,6 +24,7 @@ import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
 import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -87,7 +87,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
 		}*/catch (Throwable e) {
-			throw new BaseException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
+			if(e instanceof FileNamedQueryException){
+				throw (FileNamedQueryException)e;
+			}else{
+				throw new FileNamedQueryException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
+			}
 		}
 		
 	}

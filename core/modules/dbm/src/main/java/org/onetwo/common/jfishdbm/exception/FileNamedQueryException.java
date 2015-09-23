@@ -1,9 +1,8 @@
-package org.onetwo.common.db.filequery;
+package org.onetwo.common.jfishdbm.exception;
 
-import org.onetwo.common.exception.BaseException;
 
 @SuppressWarnings("serial")
-public class FileNamedQueryException extends BaseException {
+public class FileNamedQueryException extends QueryException {
 
 	public FileNamedQueryException(String msg, Throwable cause) {
 		super(msg, cause);
