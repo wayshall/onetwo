@@ -1,6 +1,7 @@
 package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.spring.ftl.TemplateParser;
 
 /****
@@ -43,36 +44,10 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	public JFishNamedFileQueryInfo getNamedQueryInfo(String name) {
 		JFishNamedFileQueryInfo info = super.getJFishProperty(name);
 		if(info==null)
-			throw new BaseException("namedQuery not found : " + name);
+			throw new FileNamedQueryException("namedQuery not found : " + name);
 		return info;
 	}
 	
-	/*private boolean isAttrsProperty(String prop){
-		return prop.startsWith(ATTRS_KEY);
-	}
-	
-	private String getAttrsProperty(String prop){
-		return prop.substring(ATTRS_KEY.length());
-	}*/
-
-	/*protected void setNamedInfoProperty(JFishNamedFileQueryInfo bean, String prop, Object val){
-		if(prop.startsWith(JFishNamedFileQueryInfo.FRAGMENT_DOT_KEY)){
-			//no convert to java property name
-		}else{
-			if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-				prop = StringUtils.toJavaName(prop, NamespaceProperty.DOT_KEY, false);
-			}
-		}
-		
-		if(isAttrsProperty(prop)){
-			String attrProp = getAttrsProperty(prop);
-			bean.getAttrs().put(attrProp, val.toString());
-		}else{
-			SpringUtils.newBeanWrapper(bean).setPropertyValue(prop, val);
-		}
-	}*/
-
-
 	public static class DialetNamedSqlConf extends JFishPropertyConf<JFishNamedFileQueryInfo> {
 //		private DataBase databaseType;
 		

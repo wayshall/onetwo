@@ -6,7 +6,7 @@ import java.util.List;
 import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
 import org.onetwo.common.jfishdbm.exception.EntityVersionException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -64,7 +64,7 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 		Object currentTransactionVersion = null;
 
 		if(entry.isVersionControll()){
-			JFishMappedField versionField = entry.getVersionField();
+			DbmMappedField versionField = entry.getVersionField();
 			JdbcStatementContext<Object[]> versionContext = entry.makeSelectVersion(singleEntity);
 			//因为在同一个事务里，实际上得到的version还是旧的，只是防止程序员自己修改version字段
 			currentTransactionVersion = es.getJFishJdbcTemplate().queryForObject(versionContext.getSql(), versionField.getColumnType(), entry.getId(singleEntity));

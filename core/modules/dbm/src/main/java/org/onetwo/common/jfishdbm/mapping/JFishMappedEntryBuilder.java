@@ -286,7 +286,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		return tname;
 	}
 
-	protected BaseColumnInfo buildColumnInfo(TableInfo tableInfo, JFishMappedField field){
+	protected BaseColumnInfo buildColumnInfo(TableInfo tableInfo, DbmMappedField field){
 //		Method method = ReflectUtils.getReadMethod(entityClass, field.getProperty());
 		
 		String colName = null;
@@ -357,7 +357,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		return mfield;
 	}
 
-	protected void buildMappedField(JFishMappedField mfield){
+	protected void buildMappedField(DbmMappedField mfield){
 		if("id".equals(mfield.getName()))
 			mfield.setIdentify(true);
 		if(this.getDialect().getDbmeta().isMySQL()){

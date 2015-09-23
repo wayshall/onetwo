@@ -50,8 +50,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	private Map<String, AbstractMappedField> mappedFields = new LinkedHashMap<String, AbstractMappedField>();
 	private Map<String, AbstractMappedField> mappedColumns = new HashMap<String, AbstractMappedField>();
-	private JFishMappedField identifyField;
-	private JFishMappedField versionField;
+	private DbmMappedField identifyField;
+	private DbmMappedField versionField;
 	
 	private SQLBuilderFactory sqlBuilderFactory;
 	
@@ -60,7 +60,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	private boolean freezing;
 	
 	private List<DbmEntityListener> entityListeners = Collections.EMPTY_LIST;
-	private List<DbmEntityFieldListener> fieldListeners;
+	private List<DbmEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
 	
 	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
@@ -87,7 +87,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}
 
 		DbmFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(DbmFieldListeners.class);
-		this.fieldListeners = DbmUtils.initJFishEntityFieldListeners(fieldListenersAnntation);
+		if(fieldListenersAnntation!=null)
+			this.fieldListeners = DbmUtils.initDbmEntityFieldListeners(fieldListenersAnntation);
 	}
 
 	public Collection<AbstractMappedField> getFields(){
@@ -139,8 +140,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 	
 	@Override
-	public JFishMappedField getField(String fieldName){
-		JFishMappedField field = mappedFields.get(fieldName);
+	public DbmMappedField getField(String fieldName){
+		DbmMappedField field = mappedFields.get(fieldName);
 		if(field==null)
 			throw new DbmException(getEntityName()+" no field mapped : " + fieldName);
 		return field;
@@ -163,9 +164,9 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 	
 	@Override
-	public JFishMappedField getFieldByColumnName(String columnName){
+	public DbmMappedField getFieldByColumnName(String columnName){
 		columnName = columnName.toLowerCase();
-		JFishMappedField field = mappedColumns.get(columnName);
+		DbmMappedField field = mappedColumns.get(columnName);
 		if(field==null)
 			throw new DbmException(getEntityName() + " no column mapped : " + columnName);
 		return field;
@@ -316,12 +317,12 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 
 	@Override
-	public JFishMappedField getIdentifyField() {
+	public DbmMappedField getIdentifyField() {
 		return identifyField;
 	}
 
 	@Override
-	public JFishMappedField getVersionField() {
+	public DbmMappedField getVersionField() {
 		return versionField;
 	}
 
@@ -546,7 +547,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
 		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(JFishEventAction.update, this, sb);
 		Object val = null;
-		for(JFishMappedField mfield : this.mappedColumns.values()){
+		for(DbmMappedField mfield : this.mappedColumns.values()){
 			
 //			val = mfield.getColumnValue(entity);
 			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
@@ -631,7 +632,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 
 	public void freezing() {
-		for(JFishMappedField field : mappedFields.values()){
+		for(DbmMappedField field : mappedFields.values()){
 			field.freezing();
 		}
 		freezing = true;

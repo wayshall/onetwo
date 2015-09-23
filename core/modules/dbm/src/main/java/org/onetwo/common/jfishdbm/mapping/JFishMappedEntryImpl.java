@@ -25,18 +25,18 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	}
 
 
-	protected Collection<JFishMappedField> getInsertableFields(){
-		List<JFishMappedField> insertables = new ArrayList<JFishMappedField>();
-		for(JFishMappedField field : getMappedColumns().values()){
+	protected Collection<DbmMappedField> getInsertableFields(){
+		List<DbmMappedField> insertables = new ArrayList<DbmMappedField>();
+		for(DbmMappedField field : getMappedColumns().values()){
 			if(field.getColumn().isInsertable())
 				insertables.add(field);
 		}
 		return insertables;
 	}
 	
-	public List<JFishMappedField> getUpdateableFields(){
-		List<JFishMappedField> updatables = new ArrayList<JFishMappedField>();
-		for(JFishMappedField col : getMappedColumns().values()){
+	public List<DbmMappedField> getUpdateableFields(){
+		List<DbmMappedField> updatables = new ArrayList<DbmMappedField>();
+		for(DbmMappedField col : getMappedColumns().values()){
 			if(col.getColumn().isUpdatable())
 				updatables.add(col);
 		}
@@ -44,9 +44,9 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	}
 	
 
-	public Collection<JFishMappedField> getSelectableField() {
-		List<JFishMappedField> cols = LangUtils.newArrayList();
-		for(JFishMappedField col : this.getMappedColumns().values()){
+	public Collection<DbmMappedField> getSelectableField() {
+		List<DbmMappedField> cols = LangUtils.newArrayList();
+		for(DbmMappedField col : this.getMappedColumns().values()){
 			if(col.getColumn().isLazy())
 				continue;
 			cols.add(col);
@@ -76,7 +76,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 		staticSeqSqlBuilder.setNamedPlaceHoder(false);
 		staticSeqSqlBuilder.build();
 
-		Collection<JFishMappedField> columns = getSelectableField();
+		Collection<DbmMappedField> columns = getSelectableField();
 		staticFetchSqlBuilder = createSQLBuilder(SqlBuilderType.query);
 		staticFetchSqlBuilder.setNamedPlaceHoder(false);
 		staticFetchSqlBuilder.append(columns);

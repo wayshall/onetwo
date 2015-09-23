@@ -56,6 +56,7 @@ public class ParserContextFunctionSet implements QueryContextVariable {
 	}
 
 	/****
+	 * spring named sql supported List value
 	 * ${_func.paramIn('dptcode', dptcodeList)}
 	 * @param name
 	 * @param inValue

@@ -4,7 +4,7 @@ import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.utils.LangUtils;
 
-public class NamespaceProperty {
+public class NamespaceProperty implements Cloneable {
 	public static final char DOT_KEY = '.';
 
 	private String name;
@@ -68,6 +68,21 @@ public class NamespaceProperty {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	@Override
+	public NamespaceProperty clone() throws CloneNotSupportedException {
+		NamespaceProperty prop = new NamespaceProperty();
+		cloneProperties(prop);
+		return prop;
+	}
+	protected void cloneProperties(NamespaceProperty newProp) {
+		newProp.name = name;
+		newProp.value = value;
+		newProp.namespace = namespace;
+		newProp.namespaceInfo = namespaceInfo;
+		newProp.srcfile = srcfile;
+		newProp.config = new JFishProperties(config);
 	}
 	
 }

@@ -20,12 +20,12 @@ import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
 import org.onetwo.common.db.dquery.annotation.Dispatcher;
 import org.onetwo.common.db.dquery.annotation.Name;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
-import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.JNamedQueryKey;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
 import org.onetwo.common.db.filequery.ParserContext;
 import org.onetwo.common.db.filequery.ParserContextFunctionSet;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -57,7 +57,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 //	private List<String> parameterNames;
 	
 	private DynamicMethodParameter pageParamter;
-	private DynamicMethodParameter matcherParamter;
+	private DynamicMethodParameter dispatcherParamter;
 	
 	public DynamicMethod(Method method){
 		super(method);
@@ -71,7 +71,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		Class<?> compClass = ReflectUtils.getGenricType(method.getGenericReturnType(), 0);
 		if(rClass==void.class){
 //			DynamicMethodParameter firstParamter = parameters.get(0);
-			pageParamter = matcherParamter!=null?parameters.get(1):parameters.get(0);
+			pageParamter = dispatcherParamter!=null?parameters.get(1):parameters.get(0);
 			//如果返回类型为空，看第一个参数是否是page对象
 			rClass = pageParamter.getParameterType();
 			if(Page.class != rClass){
@@ -137,7 +137,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	}
 	
 	private void checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
-		this.matcherParamter = parameters.stream().filter(p->{
+		this.dispatcherParamter = parameters.stream().filter(p->{
 								if(p.hasParameterAnnotation(Dispatcher.class)){
 									if(p.getParameterIndex()!=0){
 										throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (p.getParameterIndex()+1));
@@ -397,13 +397,13 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	}
 	
 	public Object getMatcherValue(Object[] args){
-		if(!hasMatcher())
+		if(!hasDispatcher())
 			return null;
-		return args[matcherParamter.getParameterIndex()];
+		return args[dispatcherParamter.getParameterIndex()];
 	}
 	
-	public boolean hasMatcher(){
-		return this.matcherParamter!=null;
+	public boolean hasDispatcher(){
+		return this.dispatcherParamter!=null;
 	}
 
 	public Map<Object, Object> toMapByArgs(Object[] args){

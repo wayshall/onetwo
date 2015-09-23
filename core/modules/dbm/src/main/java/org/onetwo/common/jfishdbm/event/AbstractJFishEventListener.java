@@ -11,7 +11,7 @@ import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryMeta;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
@@ -63,8 +63,8 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	}
 
 	
-	protected <T extends JFishMappedField> void processRelatedField(String[] relatedFields, Collection<? extends JFishMappedField> mappedFields, MappedFieldProcessor<T> processor){
-		for(JFishMappedField field : mappedFields){
+	protected <T extends DbmMappedField> void processRelatedField(String[] relatedFields, Collection<? extends DbmMappedField> mappedFields, MappedFieldProcessor<T> processor){
+		for(DbmMappedField field : mappedFields){
 			if(ArrayUtils.contains(relatedFields, field.getName())){
 				processor.execute((T)field);
 			}
