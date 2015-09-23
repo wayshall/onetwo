@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
 import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer.LineToken;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.ResourceAdapter;

@@ -236,6 +236,8 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	protected void buildNamedInfosToNamespaceFromResource(PropertiesNamespaceInfo<T> np, ResourceAdapter<?> file){
 //		SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();a
 		sqlFileParser.parseToNamespaceProperty(conf, np, file);
+		
+		//post process 
 	}
 
 	public T getJFishProperty(String fullname) {

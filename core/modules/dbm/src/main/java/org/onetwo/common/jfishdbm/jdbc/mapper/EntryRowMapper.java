@@ -5,7 +5,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -42,7 +42,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
 
-		JFishMappedField field;
+		DbmMappedField field;
 		String column = null;
 		T entity = entry.newInstance();
 		Object value = null;

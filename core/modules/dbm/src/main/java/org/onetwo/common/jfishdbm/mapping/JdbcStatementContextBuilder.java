@@ -24,7 +24,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 	
 	private AbstractJFishMappedEntryImpl entry;
 	private EntrySQLBuilder sqlBuilder;
-	private Map<JFishMappedField, Object> columnValues = CUtils.newLinkedHashMap();
+	private Map<DbmMappedField, Object> columnValues = CUtils.newLinkedHashMap();
 	private List<Object> causeValues = new ArrayList<Object>(5);
 	private List<Object[]> values;
 	private final JFishEventAction eventAction;
@@ -37,13 +37,13 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		this.eventAction = eventAction;
 	}
 	
-	public JdbcStatementContextBuilder append(JFishMappedField field, Object val){
+	public JdbcStatementContextBuilder append(DbmMappedField field, Object val){
 		this.sqlBuilder.append(field);
 		this.columnValues.put(field, val);
 		return this;
 	}
 	
-	public JdbcStatementContextBuilder appendWhere(JFishMappedField column, Object val){
+	public JdbcStatementContextBuilder appendWhere(DbmMappedField column, Object val){
 		this.sqlBuilder.appendWhere(column);
 		this.causeValues.add(val);
 		return this;
@@ -57,7 +57,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		Assert.notNull(entity);
 		Object val = null;
 		EntrySQLBuilder builder = getSqlBuilder();
-		for(JFishMappedField field : builder.getFields()){
+		for(DbmMappedField field : builder.getFields()){
 			val = field.getValueForJdbcAndFireDbmEventAction(entity, getEventAction());
 			if(field.isVersionControll()){
 				if(JFishEventAction.insert==getEventAction()){
@@ -105,7 +105,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 	public JdbcStatementContextBuilder processWhereCauseValuesFromEntity(Object entity){
 		Assert.notNull(entity);
 		Object val = null;
-		for(JFishMappedField field : this.sqlBuilder.getWhereCauseFields()){
+		for(DbmMappedField field : this.sqlBuilder.getWhereCauseFields()){
 			val = field.getValueForJdbc(entity);
 			this.causeValues.add(val);
 		}

@@ -1,14 +1,16 @@
 package org.onetwo.common.jfishdbm.event;
 
+import org.onetwo.common.utils.JFishProperty;
+
 public class JFishEntityFieldListenerAdapter implements DbmEntityFieldListener {
 
 	@Override
-	public Object beforeFieldInsert(String fieldName, Object value) {
+	public Object beforeFieldInsert(JFishProperty field, Object value) {
 		return value;
 	}
 
 	@Override
-	public Object beforeFieldUpdate(String fieldName, Object value) {
+	public Object beforeFieldUpdate(JFishProperty field, Object value) {
 		return value;
 	}
 

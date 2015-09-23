@@ -20,6 +20,8 @@ import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.exception.SystemErrorCode.JFishErrorCode;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
@@ -166,8 +168,13 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			
 			findMsgByCode = StringUtils.isNotBlank(errorCode) && !codeMark.isDefaultErrorCode();
 			detail = !bootSiteConfig.isProduct();
+		}else if(DbmException.class.isInstance(ex)){
+			defaultViewName = ExceptionView.UNDEFINE;
+			errorCode = JFishErrorCode.ORM_ERROR;
+			
+//			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(ex instanceof BaseException){
-			defaultViewName = ExceptionView.SYS_BASE;
+			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);

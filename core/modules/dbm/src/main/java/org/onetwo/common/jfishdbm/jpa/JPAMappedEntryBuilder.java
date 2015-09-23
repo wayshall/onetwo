@@ -31,7 +31,7 @@ import org.onetwo.common.jfishdbm.mapping.ColumnInfo;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryImpl;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.TableInfo;
 import org.onetwo.common.jfishdbm.mapping.version.DateVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.IntegerVersionableType;
@@ -157,7 +157,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	}
 
 	@Override
-	protected void buildMappedField(JFishMappedField mfield){
+	protected void buildMappedField(DbmMappedField mfield){
 		if(mfield.getPropertyInfo().hasAnnotation(Id.class)){
 			mfield.setIdentify(true);
 			this.buildIdMappedField(mfield);
@@ -170,7 +170,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		}
 	}
 	
-	private void buildIdMappedField(JFishMappedField mfield){
+	private void buildIdMappedField(DbmMappedField mfield){
 		GeneratedValue g = mfield.getPropertyInfo().getAnnotation(GeneratedValue.class);
 		if(g!=null){
 			if(g.strategy()==GenerationType.AUTO){
@@ -189,7 +189,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	}
 	
 	@Override
-	protected BaseColumnInfo buildColumnInfo(TableInfo tableInfo, JFishMappedField field){
+	protected BaseColumnInfo buildColumnInfo(TableInfo tableInfo, DbmMappedField field){
 //		Method method = field.getReadMethod();
 //		Method method = ReflectUtils.findMe(getEntityClass(), field.getName());
 		String colName = field.getName();

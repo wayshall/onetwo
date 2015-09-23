@@ -4,11 +4,11 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.annotation.QueryProvider;
-import org.onetwo.common.db.filequery.FileNamedQueryException;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.spring.SpringUtils;
