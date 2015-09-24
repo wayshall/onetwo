@@ -118,7 +118,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		Object[] methodArgs = null;
 		
 		if(dmethod.isBatch()){
-			//TODO 先特殊处理，待修改
+			//先特殊处理，待修改
 //			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
 			result = handleBatch(parsedQueryName, invokeContext);
 		}else{

@@ -10,8 +10,11 @@ import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.spring.SpringUtils;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -20,8 +23,10 @@ import org.springframework.util.Assert;
 
 import com.google.common.cache.LoadingCache;
 
-public class JDKDynamicProxyCreator implements InitializingBean, ApplicationContextAware, FactoryBean<Object> {
+public class JDKDynamicProxyCreator implements InitializingBean, ApplicationContextAware, FactoryBean<Object>, BeanNameAware {
 
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	private LoadingCache<Method, DynamicMethod> methodCache;
 	private ApplicationContext applicationContext;
 	private Class<?> interfaceClass;
@@ -31,6 +36,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 	private NamedJdbcTemplate namedJdbcTemplate;
 //	private JFishNamedSqlFileManager namedSqlFileManager;
 //	private QueryProvideManager queryProvideManager;
+	private String beanName;
 	
 	public JDKDynamicProxyCreator(Class<?> interfaceClass, LoadingCache<Method, DynamicMethod> methodCache) {
 		super();
@@ -66,7 +72,8 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		Assert.notNull(namedSqlFileManager);
 		Assert.notNull(namedJdbcTemplate);
 		Assert.notNull(sqlFile);
-		
+
+		logger.info("initialize dynamic query proxy[{}] for : {}", beanName, sqlFile);
 		PropertiesNamespaceInfo<JFishNamedFileQueryInfo> info = namedSqlFileManager.buildSqlFile(sqlFile);
 //		interfaceClass = ReflectUtils.loadClass(info.getNamespace());
 		if(!interfaceClass.getName().equals(info.getNamespace())){
@@ -100,6 +107,11 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 
 	public void setNamedJdbcTemplate(NamedJdbcTemplate namedJdbcTemplate) {
 		this.namedJdbcTemplate = namedJdbcTemplate;
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
 	}
 
 	/*public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
