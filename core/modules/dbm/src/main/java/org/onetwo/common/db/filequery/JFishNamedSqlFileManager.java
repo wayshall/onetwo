@@ -1,6 +1,5 @@
 package org.onetwo.common.db.filequery;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.spring.ftl.TemplateParser;
 
@@ -31,6 +30,20 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 //		this.databaseType = conf.getDatabaseType();
 		this.setSqlFileParser(new MultipCommentsSqlFileParser());
 		this.sqlStatmentParser = sqlStatmentParser;
+	}
+
+	protected void putIntoCaches(String key, JFishNamedFileQueryInfo nsp){
+		super.putIntoCaches(key, nsp);
+		nsp.getAliasList().forEach(aliasName->{
+			/*try {
+				JFishNamedFileQueryInfo cloneBean = nsp.clone();
+				cloneBean.setName(aliasName);
+				super.putIntoCaches(aliasName, cloneBean);
+			} catch (Exception e) {
+				throw new DbmException("clone error: " + key);
+			}*/
+			super.putIntoCaches(nsp.getFullName(aliasName), nsp);
+		});
 	}
 	
 	public TemplateParser getSqlStatmentParser() {

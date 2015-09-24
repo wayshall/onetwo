@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -18,6 +20,7 @@ import org.onetwo.common.watch.FileChangeListener;
 import org.onetwo.common.watch.FileWatcher;
 import org.slf4j.Logger;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 
@@ -201,7 +204,8 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 //			np.addAll(namedinfos, throwIfExist);
 		}else{
 			if(throwIfExist && namespaceProperties.containsKey(namespace)){
-				throw new BaseException("sql namespace has already exist : " + namespace);
+				PropertiesNamespaceInfo<T> existNp = namespaceProperties.get(namespace);
+				throw new DbmException("sql namespace has already exist : " + namespace+", file: " + f+", exists file: "+ existNp.getSource());
 			}
 			np = new CommonNamespaceProperties<T>(namespace, f);
 			namespaceProperties.put(np.getKey(), np);
@@ -212,13 +216,21 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			return null;*/
 
 //		namespacesMap.put(namespace, np);
-		
 		for(T nsp : np.getNamedProperties()){
-			this.namedQueryCache.put(nsp.getFullName(), nsp);
+			if(namedQueryCache.containsKey(nsp.getFullName())){
+				throw new FileNamedQueryException("cache file named query error, key is exists : " + nsp.getFullName());
+			}
+			putIntoCaches(nsp.getFullName(), nsp);
 		}
 		
 		return np;
 	}
+	
+	protected void putIntoCaches(String key, T nsp){
+		logger.info("cache query : {}", key);
+		this.namedQueryCache.put(key, nsp);
+	}
+	
 	protected String getFileNameNoJfishSqlPostfix(ResourceAdapter<?> f){
 		String fname = f.getName();
 		if(!fname.endsWith(SqlFileScanner.JFISH_SQL_POSTFIX)){
@@ -239,6 +251,17 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		
 		//post process 
 	}
+	
+	/*private static final Pattern DIPATCHER_PATTER = Pattern.compile("\\((\\w+)(?:\\|{2}(\\w+))*\\)");
+	private void postProccessNamedInnfo(PropertiesNamespaceInfo<T> np){
+		//JFishNamedFileQueryInfo
+		np.getNamedProperties().forEach(prop->{
+			Matcher matcher = DIPATCHER_PATTER.matcher(prop.getName());
+			if(matcher.find()){
+				
+			}
+		});
+	}*/
 
 	public T getJFishProperty(String fullname) {
 		T info = namedQueryCache.get(fullname);
@@ -308,7 +331,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 
 		@Override
 		public Collection<E> getNamedProperties() {
-			return namedProperties.values();
+			return ImmutableList.copyOf(namedProperties.values());
 		}
 
 		public ResourceAdapter<?> getSource() {
@@ -333,6 +356,8 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 				throw new BaseException("int file["+info.getSrcfile()+"], sql key["+name+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile());
 			}
 			this.namedProperties.put(name, info);
+			E newE = this.namedProperties.get(name);
+			System.out.println("newE:"+newE);
 		}
 		@Override
 		public boolean isGlobal() {

@@ -93,6 +93,12 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 			bean.setConfig(config);
 
 			np.put(bean.getName(), bean, true);
+
+			//别名
+			if(config.containsKey(JFishNamedFileQueryInfo.ALIAS_KEY)){
+				bean.setAliasList(config.getStringList(JFishNamedFileQueryInfo.ALIAS_KEY, ","));
+				config.remove(JFishNamedFileQueryInfo.ALIAS_KEY);
+			}
 			
 			/*if(config.containsKey(JFishNamedFileQueryInfo.MATCHER_KEY)){
 				//matcher
@@ -108,12 +114,12 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 			}
 		}else{
 			if(config.containsKey(JFishNamedFileQueryInfo.PROPERTY_KEY)){
-				//property
+				//property:propertyName
 				sqlPropertyName = config.getProperty(JFishNamedFileQueryInfo.PROPERTY_KEY);
 				config.remove(JFishNamedFileQueryInfo.PROPERTY_KEY);
 				
 			}else if(config.containsKey(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
-				//fragment
+				//fragment[fragmentValue]=sql
 				sqlPropertyName = JFishNamedFileQueryInfo.FRAGMENT_KEY + "[" + 
 															config.getProperty(JFishNamedFileQueryInfo.FRAGMENT_KEY)
 																	+ "]";
@@ -167,7 +173,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 	protected JFishProperties parseComments(List<String> comments){
 		JFishProperties config = new JFishProperties();
 		for(final String comment : comments){
-			logger.info("comment: {}", comment);
+//			logger.info("comment: {}", comment);
 			if(comment.startsWith(AT)){
 				String line = comment.substring(AT.length());
 				String[] strs = StringUtils.split(line, COLON);
