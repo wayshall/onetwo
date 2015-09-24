@@ -89,7 +89,7 @@ public class SpringApplication {
 	}
 	
 	public Object getBean(String beanName) {
-		return getBean(beanName, false);
+		return getBean(beanName, true);
 	}
 
 	public Object getBean(String beanName, boolean throwIfError) {
@@ -104,9 +104,11 @@ public class SpringApplication {
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-//			logger.error("get bean["+beanName+"] from spring error! ");
-			if(throwIfError)
+			if(throwIfError){
 				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
+			}else{
+				logger.info("get bean["+beanName+"] from spring error! ");
+			}
 		}
 		return bean;
 	}
@@ -219,8 +221,8 @@ public class SpringApplication {
 		System.out.println("=================================== spring beans ===================================");
 		int index = 0;
 		for (String bn : beanNames) {
-			Object obj = SpringApplication.getInstance().getBean(bn);
-			System.out.println("["+(++index)+"]" + bn + ":" + (obj != null ? obj.getClass() : "null"));
+//			Object obj = SpringApplication.getInstance().getBean(bn, false);
+			System.out.println("["+(++index)+"]" + bn );
 		}
 		System.out.println("=================================== spring beans ===================================");
 	}

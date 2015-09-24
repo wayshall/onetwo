@@ -8,7 +8,7 @@ import org.onetwo.common.db.parser.SqlKeywords.SqlType;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -27,7 +27,7 @@ public class DynamicQueryImpl implements DynamicQuery {
 
 	private static final String REPLACE_SQL = "1=1";
 
-	protected Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	protected Class<?> entityClass;
 
 	protected String originalSql;

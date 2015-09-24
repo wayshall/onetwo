@@ -6,6 +6,7 @@ import org.onetwo.common.utils.LangUtils;
 
 public class NamespaceProperty implements Cloneable {
 	public static final char DOT_KEY = '.';
+	public static final char UNDERLINE_KEY = '_';
 
 	private String name;
 	private String value;
@@ -20,9 +21,13 @@ public class NamespaceProperty implements Cloneable {
 	}
 
 	public String getFullName(){
+		return getFullName(getName());
+	}
+
+	public String getFullName(String name){
 		if(namespaceInfo.isGlobal())
-			return getName();
-		return namespace+"."+getName();
+			return name;
+		return namespace+"."+name;
 	}
 	
 	public String toString(){
