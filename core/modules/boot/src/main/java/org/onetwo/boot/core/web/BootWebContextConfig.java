@@ -145,8 +145,11 @@ public class BootWebContextConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootWebExceptionResolver.class)
+//	@Autowired
 	public BootWebExceptionResolver bootWebExceptionResolver(){
-		return new BootWebExceptionResolver();
+		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
+//		resolver.setExceptionMessage(exceptionMessage);
+		return resolver;
 	}
 	
 	/***

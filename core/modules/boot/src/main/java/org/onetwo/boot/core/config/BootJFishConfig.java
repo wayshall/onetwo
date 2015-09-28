@@ -29,6 +29,12 @@ public class BootJFishConfig {
 	private UploadConfig upload = new UploadConfig();
 	private JsonConfig json = new JsonConfig();
 	
+	private MessageSourceConfig messageSource = new MessageSourceConfig();
+	
+	@Data
+	public class MessageSourceConfig {
+		private int cacheSeconds = -1;//cache forever
+	}
 
 	@Data
 	public class JsonConfig {
@@ -56,6 +62,10 @@ public class BootJFishConfig {
 		private String ftpUser;
 		private String ftpPassword;
 //		private String ftpBaseDir;
+		
+		/*public int getMaxUploadSize(){
+			return maxUploadSize;
+		}*/
 	}
 	
 	public static enum StoreType {

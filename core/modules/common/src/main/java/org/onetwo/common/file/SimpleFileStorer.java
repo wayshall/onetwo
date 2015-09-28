@@ -1,14 +1,24 @@
 package org.onetwo.common.file;
 
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 
 public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
-	private StoreFilePathStrategy strategy;
+	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, ctx)->{
+		NiceDate now = NiceDate.New();
+		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
+		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
+
+		//sotreDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+		String baseDir = StoreFilePathStrategy.getModuleDir(storeBaseDir, ctx);
+		return baseDir + now.formatAsDate()+"/"+newfn;
+	};
+	
+//	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
 	private String storeBaseDir;
 	private String keepContextPath;
 	
@@ -28,29 +38,20 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	}
 	
 	protected String getStoreDir(StoringFileContext context){
-		Assert.notNull(strategy, "strategy can not be null");
+//		Assert.notNull(context.getStoreFilePathStrategy(), "strategy can not be null");
+		if(StringUtils.isBlank(storeBaseDir)){
+			throw new BaseException("store dir must be config, but : " + storeBaseDir);
+		}
+		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
+		if(strategy==null){
+			strategy = SIMPLE_STORE_STRATEGY;
+		}
 		String storePath = strategy.getStoreFilePath(storeBaseDir, context);
 		return storePath;
 	}
 
-
-	public void setStrategy(StoreFilePathStrategy strategy) {
-		this.strategy = strategy;
-	}
-	
 	public void setStoreBaseDir(String storeDir){
 		this.storeBaseDir = storeDir;
-		this.strategy = (storeBaseDir, ctx)->{
-			NiceDate now = NiceDate.New();
-			String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
-			newfn += FileUtils.getExtendName(ctx.getFileName(), true);
-			
-			String baseDir = FileUtils.convertDir(storeBaseDir);
-			if(StringUtils.isNotBlank(ctx.getModule())){
-				baseDir += FileUtils.convertDir(ctx.getModule());
-			}
-			return baseDir + now.formatAsDate()+"/"+newfn;
-		};
 	}
 
 	public void setKeepContextPath(String keepContextPath) {

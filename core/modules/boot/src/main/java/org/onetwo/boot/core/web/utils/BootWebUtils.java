@@ -59,7 +59,7 @@ public final class BootWebUtils {
 	private BootWebUtils(){
 	}
 
-	public static StoringFileContext create(String module, MultipartFile file){
+	public static StoringFileContext createStoringFileContext(String module, MultipartFile file){
 		try {
 			return new StoringFileContext(module, file.getInputStream(), file.getOriginalFilename());
 		} catch (IOException e) {

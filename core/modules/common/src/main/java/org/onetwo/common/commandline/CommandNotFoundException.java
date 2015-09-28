@@ -6,7 +6,10 @@ public class CommandNotFoundException extends CommandLineException {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 317687896561703415L;
+	private static final long serialVersionUID = 6117722707298643778L;
+	/**
+	 * 
+	 */
 	public static final String DEFAULT_MESSAGE = "错误的指令";
 	
 	public CommandNotFoundException() {
