@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.onetwo.boot.core.BootContextConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.ModelMap;
@@ -48,7 +50,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionRes
  *
  */
 public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionResolver implements InitializingBean {
-	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
+//	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
 
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
 	private static final String ERROR_CODE_KEY = "__errorCode__";
@@ -61,7 +63,9 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
 	protected final Logger mailLogger = JFishLoggerFactory.findLogger("mailLogger");
 	
-//	private MvcSetting mvcSetting;
+//	resouce: exception-messages
+	@Qualifier(BootContextConfig.BEAN_EXCEPTION_MESSAGE)
+	@Autowired
 	private MessageSource exceptionMessage;
 	
 	private List<String> notifyThrowables;// = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
@@ -150,11 +154,12 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		ErrorMessage error = new ErrorMessage(ex);
 		
 		boolean findMsgByCode = true;
-		if(ex instanceof MaxUploadSizeExceededException){
+		/*if(ex instanceof MaxUploadSizeExceededException){
 			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = MAX_UPLOAD_SIZE_ERROR;//MvcError.MAX_UPLOAD_SIZE_ERROR;
 //			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
-		}else if(ex instanceof LoginException){
+		}else */
+		if(ex instanceof LoginException){
 			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
 		}else if(ex instanceof AuthenticationException){
@@ -164,7 +169,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
 			errorArgs = codeMark.getArgs();
-			errorMsg = ex.getMessage();
+//			errorMsg = ex.getMessage();
 			
 			findMsgByCode = StringUtils.isNotBlank(errorCode) && !codeMark.isDefaultErrorCode();
 			detail = !bootSiteConfig.isProduct();
@@ -178,10 +183,10 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
-		}else if(TypeMismatchException.class.isInstance(ex)){
+		}/*else if(TypeMismatchException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;
 			//errorMsg = "parameter convert error!";
-		}else if(ex instanceof ConstraintViolationException){
+		}*/else if(ex instanceof ConstraintViolationException){
 			ConstraintViolationException cex = (ConstraintViolationException) ex;
 			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
 			int i = 0;
@@ -192,9 +197,9 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 				i++;
 			}
 			findMsgByCode = false;
-		}else if(ex instanceof ObjectOptimisticLockingFailureException){
+		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
-		}/*else if(BeanCreationException.class.isInstance(ex)){
+		}*//*else if(BeanCreationException.class.isInstance(ex)){
 			
 		}*/
 		else{
@@ -227,6 +232,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
 		}
 		
+		//always true if not production
 		detail = bootSiteConfig.isProduct()?detail:true;
 		error.setCode(errorCode);
 		error.setMesage(errorMsg);

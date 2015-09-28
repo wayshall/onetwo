@@ -520,6 +520,7 @@ public class FileUtils {
 	}
 	
 	public static String replaceBackSlashToSlash(String path){
+		Assert.hasText(path);
 		path = path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
 		return path;
 	}
