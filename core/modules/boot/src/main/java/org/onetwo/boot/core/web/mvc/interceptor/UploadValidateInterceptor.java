@@ -8,15 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.exception.SystemErrorCode.UplaodErrorCode;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
 public class UploadValidateInterceptor extends WebInterceptorAdapter {
 
-//	public static final String[] DEFAULT_ALLOW_FILE_TYPES = new String[]{"jpg", "jpeg", "gif", "png", "bmp", "xls", "xlsx", "pdf", "doc", "txt"};
+	public static final String[] DEFAULT_ALLOW_FILE_TYPES = {"jpg", "jpeg", "gif", "png", "bmp", "xls", "xlsx", "pdf", "doc", "txt"};
 
 //	public static final String[] ALL = new String[]{""};
 	
@@ -31,8 +33,10 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 		return true;
 	}
 	
+	//默认检查所有上传
 	public boolean isSupport(HttpServletRequest request, HandlerMethod handler) {
-		return MultipartRequest.class.isInstance(request) && handler.getMethodAnnotation(UploadFileValidator.class)!=null;
+		return MultipartRequest.class.isInstance(request);
+//		return MultipartRequest.class.isInstance(request) && handler.getMethodAnnotation(UploadFileValidator.class)!=null;
 	}
 
 	public void doValidate(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
@@ -49,21 +53,27 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 					.filter(f->StringUtils.isNotBlank(f.getOriginalFilename()))
 					.collect(Collectors.toList());
 		
-		if(files.isEmpty() && !validator.nullable()){
+		if(files.isEmpty() && validator!=null && !validator.nullable()){
 			throw new ServiceException(validator.nullableErrorMessage());
 		}
 		this.checkFileTypes(files, validator);
 	}
 	
 	protected void checkFileTypes(List<MultipartFile> fileItems, UploadFileValidator validator){
-		List<String> allowed = Arrays.asList(validator.allowedPostfix());
+		List<String> allowed = validator!=null?Arrays.asList(validator.allowedPostfix()):Arrays.asList(DEFAULT_ALLOW_FILE_TYPES);
 		
 		for(MultipartFile item : fileItems){
 			String postfix = FileUtils.getExtendName(item.getOriginalFilename().toLowerCase());
-			if(!allowed.contains(postfix))
-				throw new ServiceException(validator.allowedPostfixErrorMessage() + ": " + item.getOriginalFilename());
-			if(item.getSize()>validator.maxUploadSize())
-				throw new ServiceException(validator.maxUploadSizeErrorMessage() + ": " + item.getOriginalFilename());
+			
+			if(validator==null){
+				if(!allowed.contains(postfix))
+					throw new ServiceException("It's not allowed file type. file: " + item.getOriginalFilename(), UplaodErrorCode.NOT_ALLOW_FILE);
+			}else{
+				if(!allowed.contains(postfix))
+					throw new ServiceException(validator.allowedPostfixErrorMessage() + " file: " + item.getOriginalFilename(), UplaodErrorCode.NOT_ALLOW_FILE);
+				if(item.getSize()>validator.maxUploadSize())
+					throw new MaxUploadSizeExceededException(validator.maxUploadSize());
+			}
 //				throw new MaxUploadSizeExceededException(validator.maxUploadSize());
 		}
 	}

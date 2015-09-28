@@ -19,6 +19,7 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult;
@@ -79,8 +80,18 @@ abstract public class AbstractBaseController {
 	protected FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file);
 		Assert.notNull(fileStorer);
-//			context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
-		StoringFileContext context = BootWebUtils.create(module, file);
+		return uploadFile(module, file, null);
+	}
+	
+	protected FileStoredMeta uploadFile(String module, MultipartFile file, StoreFilePathStrategy storeFilePathStrategy){
+		Assert.notNull(file);
+		Assert.notNull(fileStorer);
+//		context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
+//		Assert.notNull(storeFilePathStrategy);
+		StoringFileContext context = BootWebUtils.createStoringFileContext(module, file);
+		if(storeFilePathStrategy!=null){
+			context.setStoreFilePathStrategy(storeFilePathStrategy);
+		}
 		return fileStorer.write(context);
 	}
 
