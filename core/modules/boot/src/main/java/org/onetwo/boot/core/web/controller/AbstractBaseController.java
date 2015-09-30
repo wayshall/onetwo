@@ -264,6 +264,9 @@ abstract public class AbstractBaseController {
 	protected UserDetail getCurrentLoginUser(){
 		return getCurrentLoginUser(UserDetail.class, true);
 	}
+	protected UserDetail getCurrentLoginUser(boolean throwIfNotFound){
+		return getCurrentLoginUser(UserDetail.class, throwIfNotFound);
+	}
 	protected <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
 		Assert.notNull(clazz);
 		UserDetail user = sessionUserManager.getCurrentUser();
@@ -309,9 +312,9 @@ abstract public class AbstractBaseController {
 	 * 
 	 * @return
 	 */
-	protected SimpleResultBuilder simpleResult(){
+	/*protected SimpleResultBuilder result(){
 		return WebResultCreator.creator().simple(null);
-	}
+	}*/
 	protected WebResultCreator result(){
 		return WebResultCreator.creator();
 	}

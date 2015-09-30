@@ -32,7 +32,7 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 
 	@Override
 	public Number countRecord(Map<Object, Object> properties) {
-		return getBaseEntityManager().countRecord(entityClass, properties);
+		return getBaseEntityManager().countRecordByProperties(entityClass, properties);
 	}
 
 	@Override
@@ -47,17 +47,17 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 
 	@Override
 	public List<T> findByProperties(Map<Object, Object> properties) {
-		return getBaseEntityManager().findByProperties(entityClass, properties);
+		return getBaseEntityManager().findListByProperties(entityClass, properties);
 	}
 
 	@Override
 	public List<T> findByProperties(Object... properties) {
-		return getBaseEntityManager().findByProperties(entityClass, properties);
+		return getBaseEntityManager().findList(entityClass, properties);
 	}
 
 	@Override
 	public Page<T> findPage(Page<T> page, Map<Object, Object> properties) {
-		getBaseEntityManager().findPage(entityClass, page, properties);
+		getBaseEntityManager().findPageByProperties(entityClass, page, properties);
 		return page;
 	}
 
@@ -106,7 +106,7 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 
 	@Override
 	public T findUnique(Map<Object, Object> properties) {
-		return (T)getBaseEntityManager().findUnique(entityClass, properties);
+		return (T)getBaseEntityManager().findUniqueByProperties(entityClass, properties);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 
 	@Override
 	public List<T> findByProperties(QueryBuilder query) {
-		return getBaseEntityManager().findByProperties(query);
+		return getBaseEntityManager().findList(query);
 	}
 	@Override
 	public void findPage(final Page<T> page, QueryBuilder query) {

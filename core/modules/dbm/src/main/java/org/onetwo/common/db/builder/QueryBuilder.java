@@ -4,6 +4,11 @@ import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ParamValues;
 
+/***
+ * TODO 需重构
+ * @author way
+ *
+ */
 public interface QueryBuilder {
 
 	public String getAlias();

@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.jfishdbm.event.JFishBatchInsertEventListener;
 import org.onetwo.common.jfishdbm.event.JFishBatchUpdateEventListener;
 import org.onetwo.common.jfishdbm.event.JFishDeleteEventListener;
@@ -123,7 +123,7 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 	
 	abstract public String getLimitString(String sql, String firstName, String maxResultName);
 	
-	public void addLimitedValue(JFishQueryValue params, String firstName, int firstResult, String maxName, int maxResults){
+	public void addLimitedValue(DbmQueryValue params, String firstName, int firstResult, String maxName, int maxResults){
 		params.setValue(firstName, firstResult);
 		params.setValue(maxName, getMaxResults(firstResult, maxResults));
 	}

@@ -31,15 +31,12 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver;
 

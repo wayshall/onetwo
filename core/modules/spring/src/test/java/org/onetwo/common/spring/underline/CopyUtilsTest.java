@@ -142,6 +142,61 @@ public class CopyUtilsTest {
 
 	}
 	
+
+	@Test
+	public void testCopyIngoreField(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		srcBean.setUserName(userName);
+		srcBean.setPassword("password1");
+		srcBean.setAge(null);
+		
+		Integer age = 5000;
+		CapitalBean target = new CapitalBean();
+		target.setAge(age+1);
+		target.setUserName("userName2");
+		target.setPassword("password2");
+		target.setId(1111);
+		CopyUtils.copyFrom(srcBean)
+//				.ignoreBlankString()
+				.ignoreFields("password")
+				.ignoreFields("userName")
+				.to(target);
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertTrue(target.getAge()==null);
+		Assert.assertTrue(target.getId()==srcBean.getId());
+		Assert.assertTrue(srcBean.getPassword()=="password1");
+		Assert.assertTrue(target.getPassword()=="password2");
+		Assert.assertTrue(srcBean.getUserName()==userName);
+		Assert.assertTrue(target.getUserName()=="userName2");
+		
+
+		target = new CapitalBean();
+		target.setAge(age+1);
+		target.setUserName("userName2");
+		target.setPassword("password2");
+		target.setId(1111);
+		CopyUtils.copyFrom(srcBean)
+//				.ignoreBlankString()
+				.includeFields("password")
+				.includeFields("userName")
+				.to(target);
+		Assert.assertEquals(1111, target.getId());
+		Assert.assertTrue(target.getBirthday()==null);
+		Assert.assertTrue(target.getAge()==age+1);
+		Assert.assertTrue(target.getPassword()=="password1");
+		Assert.assertTrue(target.getUserName()==userName);
+
+	}
+	
 	@Test
 	public void testCopyList(){
 		Date now = new Date();
