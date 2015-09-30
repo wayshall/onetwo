@@ -66,7 +66,7 @@ public abstract class ExtQueryUtils {
 		Assert.notEmpty(fields);
 		String[] newFileds = null;
 		for(String field : fields){
-			field = field + SQLSymbolManager.SPLIT_SYMBOL + op;
+			field = field + QueryField.SPLIT_SYMBOL + op;
 			newFileds = (String[])ArrayUtils.add(newFileds, field);
 		}
 		return newFileds;
@@ -192,11 +192,11 @@ public abstract class ExtQueryUtils {
 	}
 
 	
-	public static Object getNameIfEnum(Object value, Object def){
+	/*public static Object getNameIfEnum(Object value, Object def){
 		if(Enum.class.isInstance(value)){
 			return ((Enum<?>)value).name();
 		}
 		return def;
-	}
+	}*/
 	
 }

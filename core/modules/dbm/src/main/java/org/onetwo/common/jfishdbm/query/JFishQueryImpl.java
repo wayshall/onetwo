@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -27,7 +27,7 @@ public class JFishQueryImpl implements JFishQuery {
 	private DBDialect dbDialect;
 	private String sqlString;
 //	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
-	private JFishQueryValue parameters = null;
+	private DbmQueryValue parameters = null;
 	
 	private Class<?> resultClass;
 	
@@ -43,7 +43,7 @@ public class JFishQueryImpl implements JFishQuery {
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
 		this.sqlString = sqlString;
 		this.resultClass = resultClass;
-		this.parameters = JFishQueryValue.create(null);
+		this.parameters = DbmQueryValue.create(null);
 	}
 	
 	/**********
@@ -90,7 +90,7 @@ public class JFishQueryImpl implements JFishQuery {
 		UtilTimerStack.push(fname);
 		
 		String sql = getSqlString();
-		JFishQueryValue params = this.getActualParameters(sql);
+		DbmQueryValue params = this.getActualParameters(sql);
 		T result = null;
 		
 		if(rowMapper!=null){
@@ -118,7 +118,7 @@ public class JFishQueryImpl implements JFishQuery {
 		
 		List<T> result = null;
 		String sql = getSqlString();
-		JFishQueryValue params = this.getActualParameters(sql);
+		DbmQueryValue params = this.getActualParameters(sql);
 		
 		if(rowMapper!=null){
 			result = (List<T>)this.JFishDaoImplementor.findList(params, rowMapper);
@@ -146,7 +146,7 @@ public class JFishQueryImpl implements JFishQuery {
 		return JFishDaoImplementor;
 	}
 
-	public JFishQueryValue getActualParameters(String sql) {
+	public DbmQueryValue getActualParameters(String sql) {
 		this.parameters.setResultClass(resultClass);
 		this.parameters.setSql(sql);
 		if(!isLimitedQuery()){
@@ -210,7 +210,7 @@ public class JFishQueryImpl implements JFishQuery {
 	public int executeUpdate(){
 		int result = 0;
 		String sql = getSqlString();
-		JFishQueryValue params = getActualParameters(sql);
+		DbmQueryValue params = getActualParameters(sql);
 		result = JFishDaoImplementor.executeUpdate(params);
 		return result;
 	}

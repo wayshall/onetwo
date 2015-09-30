@@ -37,6 +37,9 @@ final public class WebResultCreator {
 	 * 
 	 * @return
 	 */
+	public SimpleResultBuilder simple(){
+		return simple(null);
+	}
 	public SimpleResultBuilder simple(Object data){
 		SimpleResultBuilder builder = new SimpleResultBuilder().success();
 		builder.data(data);

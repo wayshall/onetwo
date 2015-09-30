@@ -1,7 +1,7 @@
 package org.onetwo.common.jfishdbm.dialet;
 
 import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleBatchInsertEventListener;
@@ -68,7 +68,7 @@ public class OracleDialect extends AbstractDBDialect {
 	}
 
 	@Override
-	public void addLimitedValue(JFishQueryValue params, String firstName, int firstResult, String maxName, int maxResults){
+	public void addLimitedValue(DbmQueryValue params, String firstName, int firstResult, String maxName, int maxResults){
 		params.setValue(maxName, getMaxResults(firstResult, maxResults));
 		params.setValue(firstName, firstResult);
 	}

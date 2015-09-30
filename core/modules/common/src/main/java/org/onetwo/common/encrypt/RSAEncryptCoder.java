@@ -99,7 +99,6 @@ public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {
 			throw new BaseException("generate public key error: " + e.getMessage() , e);
 		}
 
-
 		byte[] result = chunkedCipher(keyPublic, Cipher.ENCRYPT_MODE, encryptSize, byteContent);
 		return result;
 	}
@@ -119,7 +118,15 @@ public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {
 		byte[] result = chunkedCipher(keyPrivate, Cipher.DECRYPT_MODE, dencryptSize, byteContent);
 		return result;
 	}
-	
+	/***
+	 * 
+	 * 分段加密
+	 * @param key
+	 * @param opmode
+	 * @param chunkSize
+	 * @param byteContent
+	 * @return
+	 */
 	private byte[] chunkedCipher(Key key, int opmode, int chunkSize, byte[] byteContent){
 		int chunkCount = byteContent.length/chunkSize;
 		chunkCount = (byteContent.length%chunkSize!=0)?(chunkCount+1):chunkCount;
@@ -131,7 +138,7 @@ public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {
 //			if(chunkEndIndex>byteContent.length)
 //				chunkEndIndex = byteContent.length;
 			temp = doCipher(key, opmode, ArrayUtils.subarray(byteContent, chunkStartIndex, chunkStartIndex+chunkSize));
-			System.out.println("temp length: " + temp.length);
+//			System.out.println("temp length: " + temp.length);
 			result = ArrayUtils.addAll(result, temp);
 		}
 		return result;

@@ -51,6 +51,8 @@ final public class DbmUtils {
 				}else{
 					throw new DbmException("error enum type: " + etype);
 				}
+			}else{
+				actualValue = Types.asValue(value.toString(), propType);
 			}
 			
 		}else if(Date.class.isInstance(value) && Temporal.class.isAssignableFrom(propType)){

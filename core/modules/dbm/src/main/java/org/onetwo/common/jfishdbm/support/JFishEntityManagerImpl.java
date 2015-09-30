@@ -9,7 +9,7 @@ import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.EntityManagerProvider;
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -176,10 +176,6 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return query;
 	}
 
-	@Override
-	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping) {
-		throw new UnsupportedOperationException("not support operation!");
-	}
 	
 	protected DataQuery createQuery(SelectExtQuery extQuery){
 		return getJfishDao().createAsDataQuery(extQuery);
@@ -292,7 +288,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	@Override
-	public <T> void findPage(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
+	public <T> void findPageByProperties(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
 		jfishDao.findPageByProperties(entityClass, page, properties);
 	}
 
@@ -302,22 +298,22 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		getJfishDao().delete(entities);
 	}*/
 	
-	public <T> List<T> findList(JFishQueryValue queryValue) {
+	public <T> List<T> findList(DbmQueryValue queryValue) {
 		return getJfishDao().findList(queryValue);
 	}
 	
-	public <T> T findUnique(JFishQueryValue queryValue) {
+	public <T> T findUnique(DbmQueryValue queryValue) {
 		return getJfishDao().findUnique(queryValue);
 	}
 	
-	public <T> void findPage(Page<T> page, JFishQueryValue squery) {
+	public <T> void findPage(Page<T> page, DbmQueryValue squery) {
 		getJfishDao().findPage(page, squery);
 	}
 
 	/****
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
-	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties) {
+	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findUniqueByProperties(entityClass, properties);
 	}
 
@@ -328,21 +324,21 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 
-	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties) {
-		return findByProperties(entityClass, CUtils.asLinkedMap(properties));
+	public <T> List<T> findList(Class<T> entityClass, Object... properties) {
+		return findListByProperties(entityClass, CUtils.asLinkedMap(properties));
 	}
 
 	/***
 	 * 根据属性查找数据
 	 * 返回结果不为null
 	 */
-	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties) {
+	public <T> List<T> findListByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		return jfishDao.findByProperties(entityClass, properties);
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
 		Map<String, Object> properties = CUtils.bean2Map(obj);
-		return this.findByProperties(entityClass, properties);
+		return this.findList(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
@@ -350,7 +346,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		this.findPage(entityClass, page, properties);
 	}
 
-	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties) {
+	public Number countRecordByProperties(Class<?> entityClass, Map<Object, Object> properties) {
 		return jfishDao.countByProperties(entityClass, properties);
 	}
 

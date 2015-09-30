@@ -12,9 +12,9 @@ import org.onetwo.common.db.builder.QueryField;
  *
  */
 public interface SQLSymbolManager {
-	public static final char SPLIT_SYMBOL = QueryField.SPLIT_SYMBOL;
 	
 	public static class FieldOP {
+		public static final char SPLIT_SYMBOL = QueryField.SPLIT_SYMBOL;
 		public static final String like = "like";
 		public static final String like2 = "=~";
 		public static final String not_like = "not like";

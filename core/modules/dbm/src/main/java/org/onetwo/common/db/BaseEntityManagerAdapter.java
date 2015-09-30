@@ -23,6 +23,11 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
+	/*@Override
+	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping) {
+		throw new UnsupportedOperationException("not support operation!");
+	}*/
+	
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry(){
 		throw new UnsupportedOperationException("no SqlParamterPostfixFunctionRegistry found!");
 	}
@@ -58,7 +63,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 	
 
 	public Number countRecord(Class<?> entityClass, Object... params) {
-		return countRecord(entityClass, CUtils.asLinkedMap(params));
+		return countRecordByProperties(entityClass, CUtils.asLinkedMap(params));
 	}
 	public void delete(ILogicDeleteEntity entity){
 		entity.deleted();
@@ -78,13 +83,13 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		return logicDeleteEntity;
 	}
 	
-	public <T> List<T> findByProperties(QueryBuilder squery) {
-		return findByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
+	public <T> List<T> findList(QueryBuilder squery) {
+		return findListByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 
 	@Override
 	public <T> void findPage(final Page<T> page, QueryBuilder squery){
-		findPage((Class<T>)squery.getEntityClass(), page, squery.getParams());
+		findPageByProperties((Class<T>)squery.getEntityClass(), page, squery.getParams());
 	}
 	
 	@Override
@@ -157,30 +162,31 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		return q;
 	}
 
-	@Override
+	/*@Override
 	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties) {
-		throw new UnsupportedOperationException();
-	}
+//		throw new UnsupportedOperationException();
+		return findByProperties(entityClass, properties);
+	}*/
 
 
 	public <T> T findUnique(QueryBuilder squery) {
-		return findUnique((Class<T>)squery.getEntityClass(), squery.getParams());
+		return findUniqueByProperties((Class<T>)squery.getEntityClass(), squery.getParams());
 	}
 
 	/****
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return this.findUnique(entityClass, MyUtils.convertParamMap(properties));
+		return this.findUniqueByProperties(entityClass, MyUtils.convertParamMap(properties));
 	}
 	
 	public <T> T findOne(Class<T> entityClass, Object... properties) {
-		return this.findOne(entityClass, MyUtils.convertParamMap(properties));
+		return this.findOneByProperties(entityClass, MyUtils.convertParamMap(properties));
 	}
 
-	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties) {
+	public <T> T findOneByProperties(Class<T> entityClass, Map<Object, Object> properties) {
 		try {
-			return findUnique(entityClass, properties);
+			return findUniqueByProperties(entityClass, properties);
 		} catch (NotUniqueResultException e) {
 			return null;//return null if error
 		}

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.utils.Page;
@@ -164,7 +164,7 @@ public interface JFishDao {
 	 */
 	public <T> T findUnique(DynamicQuery query);
 	
-	public Number count(JFishQueryValue queryValue);
+	public Number count(DbmQueryValue queryValue);
 	
 	public int executeUpdate(DynamicQuery query);
 
