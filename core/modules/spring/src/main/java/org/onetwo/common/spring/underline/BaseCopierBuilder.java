@@ -1,50 +1,116 @@
 package org.onetwo.common.spring.underline;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.LangUtils;
+
+import com.google.common.collect.Lists;
 
 
 
 @SuppressWarnings("unchecked")
 abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
-	
-	private CompositePropertyFilter propertyFilters =  new CompositePropertyFilter();
-	private PropertyNameConvertor propertyNameConvertor;
 
+	private CompositePropertyFilter<?> propertyFilters;
+//	private CompositePropertyFilter<?> currentFilters;
+	private PropertyNameConvertor propertyNameConvertor;
+	private List<String> ignoreFields;
+	private List<String> includeFields;
+
+	public BaseCopierBuilder(){
+		andMode();
+	}
+
+	final public B orMode(){
+		this.checkMode();
+		this.propertyFilters = new OrCompositePropertyFilter();
+//		or();
+		return (B)this;
+	}
+	final public B andMode(){
+		this.checkMode();
+		this.propertyFilters = new AndCompositePropertyFilter();
+//		and();
+		return (B)this;
+	}
+
+	/*final public B or(){
+		this.currentFilters = new OrCompositePropertyFilter();
+		this.propertyFilters.add(currentFilters);
+		return (B)this;
+	}
+
+	final public B and(){
+		this.currentFilters = new AndCompositePropertyFilter();
+		this.propertyFilters.add(currentFilters);
+		return (B)this;
+	}*/
+	
+	private void checkMode(){
+		if(propertyFilters!=null && !this.propertyFilters.isEmpty()){
+			throw new BaseException("invoke model before add any fileter!");
+		}
+	}
+	
 	/****
 	 * 添加filter
 	 * 最终会组合这些filter，所有filter都通过才会被copy
 	 * @param propertyFilter
 	 * @return
 	 */
-	public B filter(PropertyFilter propertyFilter){
+	final public B filter(PropertyFilter propertyFilter){
 //		this.checkPropertyFilterNotNull();
 		this.propertyFilters.add(propertyFilter);
 		return (B)this;
 	}
 
-	public B ignoreNullValue(){
+	final public B ignoreNullValue(){
 		return filter(SimplePropertyFilters.IGNORE_NULL);
 	}
 
-	public B ignoreBlankString(){
+	final public B ignoreBlankString(){
 		return filter(SimplePropertyFilters.IGNORE_BLANK_STRING);
 	}
 
-	public B ignoreFields(String...fieldNames){
-		return filter((prop, fromValue)->{
-			return ArrayUtils.contains(fieldNames, prop.getName());
-		});
+	final public B ignoreFields(String...fieldNames){
+		if(ignoreFields==null){
+			ignoreFields = Lists.newArrayList();
+		}
+		ignoreFields.addAll(Arrays.asList(fieldNames));
+		return getSelf();
+		/*return filter((prop, fromValue)->{
+			System.out.println("fieldNames:"+LangUtils.toString(fieldNames) + ", rs:" + !ArrayUtils.contains(fieldNames, prop.getName()));
+			return !ArrayUtils.contains(fieldNames, prop.getName());
+		});*/
+	}
+	
+	protected B getSelf(){
+		return (B)this;
 	}
 
-	public B propertyNameConvertor(PropertyNameConvertor propertyNameConvertor){
+	final public B includeFields(String...fieldNames){
+		if(includeFields==null){
+			includeFields = Lists.newArrayList();
+		}
+		includeFields.addAll(Arrays.asList(fieldNames));
+		return getSelf();
+	}
+
+	final public B clearFilters(){
+		propertyFilters.clear();
+		return (B)this;
+	}
+
+	final public B propertyNameConvertor(PropertyNameConvertor propertyNameConvertor){
 		this.checkPropertyNameConvertorNotNull();
 		this.propertyNameConvertor = propertyNameConvertor;
 		return (B)this;
 	}
 
-	public B nameWithSeperator(String seperator){
+	final public B nameWithSeperator(String seperator){
 		this.checkPropertyNameConvertorNotNull();
 		this.propertyNameConvertor = new SeperatorNamedConvertor(seperator);
 		return (B)this;
@@ -60,13 +126,19 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 			throw new BaseException("propertyFilter is not null, you can't override it a not null propertyFilter!");
 	}*/
 
-	public B nameWithUnderline(){
+	final public B nameWithUnderline(){
 		this.checkPropertyNameConvertorNotNull();
 		this.propertyNameConvertor = SeperatorNamedConvertor.UNDERLINE_CONVERTOR;
 		return (B)this;
 	}
 	
 	protected SimpleBeanCopier newCopier(){
+		if(LangUtils.isNotEmpty(ignoreFields)){
+			this.propertyFilters.add((prop, fromValue)->!ignoreFields.contains(prop.getName()));
+		}
+		if(LangUtils.isNotEmpty(includeFields)){
+			this.propertyFilters.add((prop, fromValue)->includeFields.contains(prop.getName()));
+		}
 		SimpleBeanCopier copier = new SimpleBeanCopier();
 		copier.setPropertyFilter(this.propertyFilters);
 		copier.setPropertyNameConvertor(getPropertyNameConvertor());

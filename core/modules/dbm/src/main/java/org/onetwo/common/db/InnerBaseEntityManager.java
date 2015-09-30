@@ -13,6 +13,6 @@ public interface InnerBaseEntityManager extends BaseEntityManager {
 	public void selectPage(Page<?> page, SelectExtQuery extQuery);
 	
 
-	public <T> List<T> findList(JFishQueryValue queryValue);
-	public <T> T findUnique(JFishQueryValue queryValue);
+	public <T> List<T> findList(DbmQueryValue queryValue);
+	public <T> T findUnique(DbmQueryValue queryValue);
 }

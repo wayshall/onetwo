@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
@@ -31,8 +31,8 @@ public interface JFishDaoImplementor extends JFishDao {
 	 * @param queryValue
 	 * @return
 	 */
-	public <T> T findUnique(JFishQueryValue queryValue);
-	public <T> T findUnique(JFishQueryValue queryValue, RowMapper<T> row);
+	public <T> T findUnique(DbmQueryValue queryValue);
+	public <T> T findUnique(DbmQueryValue queryValue, RowMapper<T> row);
 	
 	public <T> List<T> findList(String sql, Object[] args, RowMapper<T> rowMapper);
 	
@@ -45,13 +45,13 @@ public interface JFishDaoImplementor extends JFishDao {
 	 * @param queryValue
 	 * @return
 	 */
-	public <T> List<T> findList(JFishQueryValue queryValue);
+	public <T> List<T> findList(DbmQueryValue queryValue);
 	
-	public <T> void findPage(Page<T> page, JFishQueryValue queryValue);
+	public <T> void findPage(Page<T> page, DbmQueryValue queryValue);
 	
-	public <T> T find(JFishQueryValue queryValue, ResultSetExtractor<T> rse);
+	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse);
 	
-	public <T> List<T> findList(JFishQueryValue queryValue, RowMapper<T> rowMapper);
+	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
 	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type);
 	
@@ -61,7 +61,7 @@ public interface JFishDaoImplementor extends JFishDao {
 	
 	public int executeUpdate(String sql, Object...args);
 	
-	public int executeUpdate(JFishQueryValue queryValue);
+	public int executeUpdate(DbmQueryValue queryValue);
 
 	public JFishJdbcOperations getJFishJdbcTemplate();
 	

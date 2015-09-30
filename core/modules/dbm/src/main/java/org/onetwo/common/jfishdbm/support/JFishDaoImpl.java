@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -394,7 +394,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return findUnique(sql, args, getDefaultRowMapper(type, true));
 	}
 	
-	public <T> T findUnique(JFishQueryValue queryValue){
+	public <T> T findUnique(DbmQueryValue queryValue){
 		/*if(queryValue.isPosition()){
 			return findUnique(queryValue.getSql(), queryValue.asList().toArray(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), true));
 		}else{
@@ -403,7 +403,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return findUnique(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), true));
 	}
 	
-	public <T> T findUnique(JFishQueryValue queryValue, RowMapper<T> row){
+	public <T> T findUnique(DbmQueryValue queryValue, RowMapper<T> row){
 		/*if(queryValue.isPosition()){
 			return findUnique(queryValue.getSql(), queryValue.asList().toArray(), row);
 		}else{
@@ -412,7 +412,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return findUnique(queryValue.getSql(), queryValue.asMap(), row);
 	}
 	
-	public Number count(JFishQueryValue queryValue){
+	public Number count(DbmQueryValue queryValue){
 		Number count = null;
 		SingleColumnRowMapper mapper = new SingleColumnRowMapper<Number>(Number.class);
 		/*if(queryValue.isPosition()){
@@ -475,7 +475,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return findList(sql, params, getDefaultRowMapper(type, false));
 	}
 	
-	public <T> List<T> findList(JFishQueryValue queryValue){
+	public <T> List<T> findList(DbmQueryValue queryValue){
 		/*if(queryValue.isPosition()){
 			return findList(queryValue.getSql(), queryValue.asList().toArray(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
 		}else{
@@ -484,7 +484,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return findList(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
 	}
 	
-	public <T> void findPage(Page<T> page, JFishQueryValue queryValue){
+	public <T> void findPage(Page<T> page, DbmQueryValue queryValue){
 		long totalCount = count(queryValue).longValue();
 		page.setTotalCount(totalCount);
 		if(totalCount<1)
@@ -501,7 +501,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		page.setResult(results);
 	}
 	
-	public <T> T find(JFishQueryValue queryValue, ResultSetExtractor<T> rse){
+	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse){
 		/*if(queryValue.isPosition()){
 			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rse);
 		}else{
@@ -513,7 +513,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	/****
 	 * Extractor: RowMapperResultSetExtractor
 	 */
-	public <T> List<T> findList(JFishQueryValue queryValue, RowMapper<T> rowMapper){
+	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper){
 		/*if(queryValue.isPosition()){
 			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rowMapper);
 		}else{
@@ -522,7 +522,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
 	}
 	
-	public int executeUpdate(JFishQueryValue queryValue){
+	public int executeUpdate(DbmQueryValue queryValue){
 		int update = 0;
 		/*if(queryValue.isNamed()){
 			update = this.getNamedParameterJdbcTemplate().update(queryValue.getSql(), queryValue.asMap());

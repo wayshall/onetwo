@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.query;
 
 import java.util.List;
 
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sqlext.EntityExtBuilder;
 import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
@@ -25,8 +25,8 @@ public class JFishQueryBuilder extends EntityExtBuilder {
 		return (JFishEntityManager) getBaseEntityManager();
 	}
 	
-	protected JFishQueryValue convertAsJFishQueryValue(ExtQuery extQuery){
-		JFishQueryValue qv = JFishQueryValue.create(extQuery.getSql());
+	protected DbmQueryValue convertAsJFishQueryValue(ExtQuery extQuery){
+		DbmQueryValue qv = DbmQueryValue.create(extQuery.getSql());
 		qv.setResultClass(extQuery.getEntityClass());
 		/*if(extQuery.getParamsValue().isList()){
 			qv.setValue(extQuery.getParamsValue().asList());

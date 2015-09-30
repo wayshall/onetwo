@@ -1,8 +1,7 @@
 package org.onetwo.common.db.builder;
 
-import org.onetwo.common.db.sqlext.ExtQueryInner;
-import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
+import org.onetwo.common.db.sqlext.ExtQueryInner;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -34,7 +33,7 @@ public class QueryFieldImpl implements QueryField {
 		super();
 		this.fieldExpr = fieldExpr;
 
-		String[] sp = StringUtils.split(fieldExpr, SQLSymbolManager.SPLIT_SYMBOL);
+		String[] sp = StringUtils.split(fieldExpr, QueryField.SPLIT_SYMBOL);
 		this.fieldName = sp[0];
 		if(sp.length==2)
 			this.operator = sp[1];

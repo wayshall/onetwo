@@ -10,6 +10,12 @@ import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 
+/****
+ * 通用的实体查询接口
+ * ByProperties后缀的方法名一般以Map为参数，其作用和没有ByProperties后缀的一样
+ * @author way
+ *
+ */
 public interface BaseEntityManager extends QueryProvideManager {
 
 	public <T> T load(Class<T> entityClass, Serializable id);
@@ -40,42 +46,22 @@ public interface BaseEntityManager extends QueryProvideManager {
 
 	public <T> List<T> findAll(Class<T> entityClass);
 
-	public Number countRecord(Class<?> entityClass, Map<Object, Object> properties);
+	public Number countRecordByProperties(Class<?> entityClass, Map<Object, Object> properties);
 
 	public Number countRecord(Class<?> entityClass, Object... params);
 
-//	public <T> T findUnique(final String sql, final Object... values);
-//	public <T> T findUnique(QueryBuilder squery);
-	
-	public <T> T findUnique(Class<T> entityClass, Object... properties);
-	
-//	public <T> T findUnique(Class<T> entityClass, boolean tryTheBest, Object... properties);
-	
 	/***
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 * @param entityClass
 	 * @param properties
 	 * @return
 	 */
-	public <T> T findUnique(Class<T> entityClass, Map<Object, Object> properties);
+	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
+	public <T> T findUnique(Class<T> entityClass, Object... properties);
 	
 	public <T> T findOne(Class<T> entityClass, Object... properties);
-	public <T> T findOne(Class<T> entityClass, Map<Object, Object> properties);
+	public <T> T findOneByProperties(Class<T> entityClass, Map<Object, Object> properties);
 
-	public <T> List<T> findByProperties(Class<T> entityClass, Object... properties);
-
-	public <T> List<T> findByProperties(QueryBuilder squery);
-
-	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties);
-	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties);
-	
-	/*****
-	 * {@link #findByProperties(Class, Map)} 同义词
-	 * @param entityClass
-	 * @param properties
-	 * @return
-	 */
-	public <T> List<T> select(Class<?> entityClass, Map<Object, Object> properties);
 
 	/*****
 	 * 根据属性查询列表
@@ -83,17 +69,21 @@ public interface BaseEntityManager extends QueryProvideManager {
 	 * @param properties
 	 * @return
 	 */
-	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
+	public <T> List<T> findList(Class<T> entityClass, Object... properties);
+	public <T> List<T> findListByProperties(Class<T> entityClass, Map<Object, Object> properties);
+	public <T> List<T> findList(QueryBuilder squery);
+
+	public <T> List<T> selectFields(Class<?> entityClass, Object[] selectFields, Object... properties);
+	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties);
 	
-//	public <T> List<T> findList(QueryBuilder squery);
-	
-//	public void findPage(final Page page, QueryBuilder squery);
 
 	public void findPage(final Class<?> entityClass, final Page<?> page, Object... properties);
 
-	public <T> void findPage(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
+	public <T> void findPageByProperties(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
 	
 	public <T> void findPage(final Page<T> page, QueryBuilder query);
+	
+	public <T> void findPage(Page<T> page, DbmQueryValue squery);
 	
 	public void flush();
 	
@@ -108,7 +98,7 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 //	public EntityManager getEntityManager();
 	
-	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping);
+//	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping);
 	
 	
 	public DataQuery createNamedQuery(String name);
@@ -123,8 +113,6 @@ public interface BaseEntityManager extends QueryProvideManager {
 	public SQLSymbolManager getSQLSymbolManager();
 	
 
-	
-	public <T> void findPage(Page<T> page, JFishQueryValue squery);
 
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);

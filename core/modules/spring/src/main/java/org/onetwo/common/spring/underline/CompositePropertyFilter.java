@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.underline;
 
-import java.beans.PropertyDescriptor;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -11,22 +10,21 @@ import com.google.common.collect.Lists;
  * @author way
  *
  */
-public class CompositePropertyFilter implements PropertyFilter {
+abstract public class CompositePropertyFilter<F extends CompositePropertyFilter<F>> implements PropertyFilter {
 
-	private final List<PropertyFilter> filters = Lists.newArrayList();
+	protected final List<PropertyFilter> filters = Lists.newArrayList();
 	
-	public CompositePropertyFilter add(PropertyFilter filter){
+	public F add(PropertyFilter filter){
 		filters.add(filter);
-		return this;
+		return (F)this;
 	}
-	
-	@Override
-	public boolean isCopiable(PropertyDescriptor toProperty, Object fromValue) {
-		boolean rs = true;
-		for(PropertyFilter filter : filters){
-			rs = filter.isCopiable(toProperty, fromValue) & rs;
-		}
-		return rs;
+
+	public void clear() {
+		filters.clear();
+	}
+
+	public boolean isEmpty() {
+		return filters.isEmpty();
 	}
 
 }
