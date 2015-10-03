@@ -41,7 +41,6 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	 * @param message
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public B code(String code, String message){
 		this.code = code;
 		this.message = message;
