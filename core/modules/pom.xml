@@ -19,10 +19,11 @@
 	  <profile>
     	<id>modules</id>
     	<modules>
-				<module>boot-parent</module>
+				<module>parent</module>
 				<module>common</module>
 				<module>jackson</module>
 				<module>spring</module>
+				<module>dbm</module>
 				<module>ajaxanywhere</module>
 				<module>web</module>
 				<module>boot</module>
