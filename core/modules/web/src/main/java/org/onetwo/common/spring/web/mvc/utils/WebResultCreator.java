@@ -6,7 +6,9 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.result.LazyValue;
+import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.CUtils;
+import org.springframework.validation.BindingResult;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,6 +27,11 @@ final public class WebResultCreator {
 	public SimpleResultBuilder error(String message){
 		SimpleResultBuilder builder = new SimpleResultBuilder().error(message);
 		return builder;
+	}
+
+	public SimpleResultBuilder error(BindingResult bindingResult){
+		String message = ValidatorUtils.asString(bindingResult);
+		return error(message);
 	}
 
 	public SimpleResultBuilder success(String message){
