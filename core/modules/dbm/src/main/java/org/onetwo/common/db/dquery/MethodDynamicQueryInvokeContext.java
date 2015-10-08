@@ -8,19 +8,20 @@ import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 
-public class InvokeContext {
+public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext {
 
 	final private DynamicMethod dynamicMethod;
 	final private Object[] parameterValues;
 	final private Map<Object, Object> parsedParams;
 	
-	public InvokeContext(DynamicMethod dynamicMethod, Object[] parameterValues) {
+	public MethodDynamicQueryInvokeContext(DynamicMethod dynamicMethod, Object[] parameterValues) {
 		super();
 		this.dynamicMethod = dynamicMethod;
 		this.parameterValues = parameterValues;
 		//ImmutableMap.copyOf key和value不能为null
 //		this.parsedParams = ImmutableMap.copyOf(dynamicMethod.toMapByArgs(parameterValues));
-		this.parsedParams = Collections.unmodifiableMap(dynamicMethod.toMapByArgs(parameterValues));
+		Map<Object, Object> methodParams = dynamicMethod.toMapByArgs(parameterValues);
+		this.parsedParams = Collections.unmodifiableMap(methodParams);
 	}
 
 	public String getQueryName() {

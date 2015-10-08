@@ -37,7 +37,6 @@ public class ParserContext implements Map<Object, Object> {
 		this.context = context;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void setQueryConfig(QueryConfigData config){
 		Assert.notNull(config);
 		QueryConfigData oldConfig = (QueryConfigData)this.context.put(QUERY_CONFIG, config);

@@ -1,10 +1,9 @@
 package org.onetwo.common.db.filequery;
 
 import java.util.List;
-import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.dquery.InvokeContext;
+import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.utils.Page;
 
 /****
@@ -23,31 +22,31 @@ public interface FileNamedQueryManager {
 	 * @param invokeContext
 	 * @return
 	 */
-	public JFishNamedFileQueryInfo getNamedQueryInfo(InvokeContext invokeContext);
+	public JFishNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
 	/***
 	 * 通过queryName查找
 	 * @param queryName
 	 * @return
 	 */
-	public JFishNamedFileQueryInfo getNamedQueryInfo(String queryName);
+//	public JFishNamedFileQueryInfo getNamedQueryInfo(String queryName);
 	public NamespacePropertiesManager<JFishNamedFileQueryInfo> getNamespacePropertiesManager();
 
-	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, Object... args);
+	public DataQuery createQuery(NamedQueryInvokeContext invokeContext);
 	
-	public FileNamedSqlGenerator createFileNamedSqlGenerator(JFishNamedFileQueryInfo nameInfo, Map<Object, Object> params);
+	public FileNamedSqlGenerator createFileNamedSqlGenerator(NamedQueryInvokeContext invokeContext);
 	
 //	public JFishQueryValue createQueryValue();
 	
 //	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args);
 
-	public DataQuery createCountQuery(JFishNamedFileQueryInfo nameInfo, Object... args);
+	public DataQuery createCountQuery(NamedQueryInvokeContext invokeContext);
 
-	public <T> List<T> findList(JFishNamedFileQueryInfo nameInfo, Object... params);
+	public <T> List<T> findList(NamedQueryInvokeContext invokeContext);
 
-	public <T> T findUnique(JFishNamedFileQueryInfo nameInfo, Object... params);
-	public <T> T findOne(JFishNamedFileQueryInfo nameInfo, Object... params);
+	public <T> T findUnique(NamedQueryInvokeContext invokeContext);
+	public <T> T findOne(NamedQueryInvokeContext invokeContext);
 
-	public <T> Page<T> findPage(JFishNamedFileQueryInfo nameInfo, Page<T> page, Object... params);
+	public <T> Page<T> findPage(Page<T> page, NamedQueryInvokeContext invokeContext);
 	
 	
 }
