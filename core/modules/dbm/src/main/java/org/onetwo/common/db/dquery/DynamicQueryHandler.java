@@ -3,14 +3,11 @@ package org.onetwo.common.db.dquery;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -18,7 +15,6 @@ import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
-import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
@@ -29,12 +25,10 @@ import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Langs;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
@@ -49,7 +43,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private QueryProvideManager em;
 	private Object proxyObject;
 //	private List<Method> excludeMethods = new ArrayList<Method>();
-	private List<Method> includeMethods = new ArrayList<Method>();
+//	private List<Method> includeMethods = new ArrayList<Method>();
 	private boolean debug = true;
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
@@ -59,10 +53,10 @@ public class DynamicQueryHandler implements InvocationHandler {
 		this.em = em;
 		this.methodCache = methodCache;
 		
-		includeMethods = Stream.of(proxiedInterfaces)
+		/*includeMethods = Stream.of(proxiedInterfaces)
 								.map(i->i.getDeclaredMethods())
 								.flatMap(array->Stream.of(array))
-								.collect(Collectors.toList());
+								.collect(Collectors.toList());*/
 		this.namedJdbcTemplate = namedJdbcTemplate;
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
@@ -71,13 +65,23 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		/*if(excludeMethods.contains(method)){
+		/*if(!includeMethods.contains(method)){
 			logger.info("ignore method {} ...", method.toString());
 			return ReflectUtils.invokeMethod(method, this, args);
 		}*/
-		if(!includeMethods.contains(method)){
-			logger.info("ignore method {} ...", method.toString());
-			return ReflectUtils.invokeMethod(method, this, args);
+		
+		if(Object.class  == method.getDeclaringClass()) {
+			String name = method.getName();
+			if("equals".equals(name)) {
+				return proxy == args[0];
+			} else if("hashCode".equals(name)) {
+				return System.identityHashCode(proxy);
+			} else if("toString".equals(name)) {
+				return proxy.getClass().getName() + "@" +
+	               Integer.toHexString(System.identityHashCode(proxy)) + ", InvocationHandler " + this;
+			} else {
+				throw new IllegalStateException(String.valueOf(method));
+			}
 		}
 
 
@@ -106,54 +110,54 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}
 	
 	public Object doInvoke(Object proxy, DynamicMethod dmethod, Object[] args) throws Throwable {
-		InvokeContext invokeContext = new InvokeContext(dmethod, args);
+		MethodDynamicQueryInvokeContext invokeContext = new MethodDynamicQueryInvokeContext(dmethod, args);
 		
 		Class<?> resultClass = dmethod.getResultClass();
-		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
+//		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
 
 		if(debug)
 			logger.info("{}: {}", dmethod.getQueryName(), LangUtils.toString(args));
 		
 		Object result = null;
-		Object[] methodArgs = null;
+//		Object[] methodArgs = null;
 		
 		if(dmethod.isBatch()){
 			//先特殊处理，待修改
 //			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
-			result = handleBatch(parsedQueryName, invokeContext);
+			result = handleBatch(invokeContext);
 		}else{
-			methodArgs = Langs.toArray(invokeContext.getParsedParams());
+//			methodArgs = Langs.toArray(invokeContext.getParsedParams());
 			
 			if(Page.class.isAssignableFrom(resultClass)){
 				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
 				
-				result = em.getFileNamedQueryManager().findPage(parsedQueryName, page, methodArgs);
+				result = em.getFileNamedQueryManager().findPage(page, invokeContext);
 				
 			}else if(List.class.isAssignableFrom(resultClass)){
-				result = em.getFileNamedQueryManager().findList(parsedQueryName, methodArgs);
+				result = em.getFileNamedQueryManager().findList(invokeContext);
 				
 			}else if(DataQuery.class.isAssignableFrom(resultClass)){
-				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
+				DataQuery dq = em.getFileNamedQueryManager().createQuery(invokeContext);
 				return dq;
 				
 			}else if(dmethod.isExecuteUpdate()){
-				DataQuery dq = em.getFileNamedQueryManager().createQuery(parsedQueryName, methodArgs);
+				DataQuery dq = em.getFileNamedQueryManager().createQuery(invokeContext);
 				result = dq.executeUpdate();
 				
 			}else if(dmethod.isAsCountQuery()){
 //				parsedQueryName.setMappedEntity(dmethod.getResultClass());
-				DataQuery dq = em.getFileNamedQueryManager().createCountQuery(parsedQueryName, methodArgs);
+				DataQuery dq = em.getFileNamedQueryManager().createCountQuery(invokeContext);
 				result = dq.getSingleResult();
 				result = Types.convertValue(result, resultClass);
 			}else{
-				result = em.getFileNamedQueryManager().findOne(parsedQueryName, methodArgs);
+				result = em.getFileNamedQueryManager().findOne(invokeContext);
 			}
 		}
 		
 		return result;
 	}
 	
-	protected Object handleBatch(JFishNamedFileQueryInfo parsedQueryName, InvokeContext invokeContext){
+	protected Object handleBatch(MethodDynamicQueryInvokeContext invokeContext){
 		DynamicMethod dmethod = invokeContext.getDynamicMethod();
 		Collection<?> batchParameter = invokeContext.getBatchParameter();
 		/*if(batchParameter==null){
@@ -165,7 +169,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 			batchParameter = (Collection<?>)args[0];
 		}*/
 		
-		FileNamedSqlGenerator sqlGen = em.getFileNamedQueryManager().createFileNamedSqlGenerator(parsedQueryName, invokeContext.getParsedParams());
+		FileNamedSqlGenerator sqlGen = em.getFileNamedQueryManager().createFileNamedSqlGenerator(invokeContext);
 		ParsedSqlContext sv = sqlGen.generatSql();
 //		JdbcDao jdao = this.jdao;
 		NamedJdbcTemplate namedJdbcTemplate = this.namedJdbcTemplate;
