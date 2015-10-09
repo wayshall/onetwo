@@ -58,6 +58,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			user.setNickName("nickName-batch-"+i);
 			user.setEmail("test@qq.com");
 			user.setMobile("137"+i);
+			user.setStatus(UserStatus.NORMAL);
 			user.setBirthday(birthday);
 			
 			list.add(user);
@@ -104,7 +105,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			user.setNickName("nickName-batch-"+i);
 			user.setEmail("test@qq.com");
 			user.setMobile("137"+i);
-			user.setStatus(status.name());
+			user.setStatus(status);
 			user.setBirthday(birthday);
 			
 			users.add(user);

@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.JFishProperty;
@@ -71,10 +75,10 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	 * 根据实体的属性做一定的类型转换
 	 * @param value
 	 * @return
-	 */
+	 
 	protected Object convertPropertyValue(Object value){
 		return DbmUtils.convertPropertyValue(propertyInfo, value);
-	}
+	}*/
 	/***
 	 * 转成spring jdbc sql parameter 参数
 	 * @param value
@@ -91,8 +95,8 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	
 	@Override
 	public void setValueFromJdbc(Object entity, Object value){
-		Object newValue = convertPropertyValue(value);
-		propertyInfo.setValue(entity, newValue);
+//		Object newValue = convertPropertyValue(value);
+		setValue(entity, value);
 	}
 	
 
@@ -135,7 +139,23 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	}
 	
 	public Class<?> getColumnType(){
-		return propertyInfo.getType();
+		Class<?> actualType = propertyInfo.getType();
+		if(Enum.class.isAssignableFrom(actualType)){
+			Enumerated enumerated = propertyInfo.getAnnotation(Enumerated.class);
+			if(enumerated!=null){
+				EnumType etype = enumerated.value();
+				if(etype==EnumType.ORDINAL){
+					actualType = int.class;
+				}else if(etype==EnumType.STRING){
+					actualType = String.class;
+				}else{
+					throw new DbmException("error enum type: " + etype);
+				}
+			}else{
+				actualType = String.class;
+			}
+		}
+		return actualType;
 	}
 	
 	@Override

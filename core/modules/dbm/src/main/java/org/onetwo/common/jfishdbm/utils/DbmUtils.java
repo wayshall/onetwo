@@ -1,5 +1,6 @@
 package org.onetwo.common.jfishdbm.utils;
 
+import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,6 +17,7 @@ import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SqlTypeFactory;
+import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.springframework.jdbc.core.SqlParameterValue;
@@ -37,10 +39,19 @@ final public class DbmUtils {
 		return fieldListeners;
 	}
 	
+
+	public static Object convertPropertyValue(PropertyDescriptor pd, Object value){
+		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+//		JFishMappedProperty mappedProperty = new JFishMappedProperty(null, jproperty);
+		return convertPropertyValue(jproperty, value);
+	}
+	
 	public static Object convertPropertyValue(JFishProperty propertyInfo, Object value){
+		if(value==null)
+			return value;
 		Object actualValue = value;
 		Class<?> propType = propertyInfo.getType();
-		if(Enum.class.isAssignableFrom(propType)){
+		if(Enum.class.isAssignableFrom(propType) && !Enum.class.isInstance(actualValue)){
 			Enumerated enumerated = propertyInfo.getAnnotation(Enumerated.class);
 			if(enumerated!=null){
 				EnumType etype = enumerated.value();
@@ -68,11 +79,37 @@ final public class DbmUtils {
 		return actualValue;
 	}
 	
+
+	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value){
+		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+		return convertSqlParameterValue(jproperty, value);
+	}
+	
 	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value){
 		if(value==null)
 			return null;
 		int sqlType = SqlTypeFactory.getType(propertyInfo.getType());
-		SqlParameterValue sqlValue = new SqlParameterValue(sqlType, getActualSqlValue(value));
+		
+		Object actualValue = value;
+		Class<?> propType = propertyInfo.getType();
+		if(Enum.class.isAssignableFrom(propType)){
+			Enum<?> enumValue = (Enum<?>)value;
+			Enumerated enumerated = propertyInfo.getAnnotation(Enumerated.class);
+			if(enumerated!=null){
+				EnumType etype = enumerated.value();
+				if(etype==EnumType.ORDINAL){
+					actualValue = enumValue.ordinal();
+				}else if(etype==EnumType.STRING){
+					actualValue = enumValue.name();
+				}else{
+					throw new DbmException("error enum type: " + etype);
+				}
+			}else{
+				actualValue = enumValue.name();
+			}
+		}
+		
+		SqlParameterValue sqlValue = new SqlParameterValue(sqlType, actualValue);
 		return sqlValue;
 	}
 

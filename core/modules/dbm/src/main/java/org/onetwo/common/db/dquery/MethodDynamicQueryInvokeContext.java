@@ -70,6 +70,4 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 		return parsedParams;
 	}
 	
-	
-	
 }
