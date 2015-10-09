@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -70,7 +72,7 @@ public class UserAutoidEntity {
 	 * 
 	 */
 	protected Integer gender;
-	protected String status;
+	protected UserStatus status;
 	
   
 	/*****
@@ -202,8 +204,8 @@ public class UserAutoidEntity {
 
 	
 
-//	@Enumerated(EnumType.STRING)
-	public String getStatus() {
+	@Enumerated(EnumType.STRING)
+	public UserStatus getStatus() {
 		return status;
 	}
 
@@ -218,7 +220,7 @@ public class UserAutoidEntity {
 	}
 
 
-	public void setStatus(String status) {
+	public void setStatus(UserStatus status) {
 		this.status = status;
 	}
 	

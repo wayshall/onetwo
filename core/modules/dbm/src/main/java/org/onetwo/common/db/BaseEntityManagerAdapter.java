@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryBuilder;
-import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
@@ -185,11 +184,13 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 	}
 
 	public <T> T findOneByProperties(Class<T> entityClass, Map<Object, Object> properties) {
-		try {
+		/*try {
 			return findUniqueByProperties(entityClass, properties);
 		} catch (NotUniqueResultException e) {
 			return null;//return null if error
-		}
+		}*/
+		List<T> list = findListByProperties(entityClass, properties);
+		return list.isEmpty()?null:list.get(0);
 	}
 
 	@Override
