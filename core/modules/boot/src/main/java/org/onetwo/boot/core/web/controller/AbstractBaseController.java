@@ -30,7 +30,6 @@ import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.web.userdetails.SessionUserManager;
@@ -260,14 +259,23 @@ abstract public class AbstractBaseController {
 		}
 	}
 	
-
-	protected UserDetail getCurrentLoginUser(){
-		return getCurrentLoginUser(UserDetail.class, true);
+	/*****
+	 * 检查当前登录用户，如果没有找到则抛出异常，如果找到，返回登录信息
+	 * @return
+	 */
+	protected UserDetail checkAndGetCurrentLoginUser(){
+		return checkAndGetCurrentLoginUser(UserDetail.class, true);
 	}
-	protected UserDetail getCurrentLoginUser(boolean throwIfNotFound){
-		return getCurrentLoginUser(UserDetail.class, throwIfNotFound);
+	protected UserDetail checkAndGetCurrentLoginUser(boolean throwIfNotFound){
+		return checkAndGetCurrentLoginUser(UserDetail.class, throwIfNotFound);
 	}
-	protected <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
+	/***
+	 * 检查当前登录用户
+	 * @param clazz
+	 * @param throwIfNotFound true表示如果没有找到则抛出异常，false则忽略
+	 * @return
+	 */
+	protected <T extends UserDetail> T checkAndGetCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
 		Assert.notNull(clazz);
 		UserDetail user = sessionUserManager.getCurrentUser();
 		if(user==null && throwIfNotFound){

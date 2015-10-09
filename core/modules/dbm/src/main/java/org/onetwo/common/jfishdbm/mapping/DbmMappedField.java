@@ -55,6 +55,10 @@ public interface DbmMappedField {
 
 	public JFishProperty getPropertyInfo();
 	
+	/***
+	 * 获取实际映射到类型
+	 * @return
+	 */
 	public Class<?> getColumnType();
 
 	public void freezing();

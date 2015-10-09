@@ -11,8 +11,10 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.profiling.TimeCounter;
@@ -36,6 +38,7 @@ public class JFishDaoTest extends AppBaseTest {
 		user.setEmail("test@qq.com");
 		user.setMobile("137"+i);
 		user.setBirthday(new Date());
+		user.setStatus(UserStatus.NORMAL);
 		return user;
 	}
 	
@@ -45,11 +48,16 @@ public class JFishDaoTest extends AppBaseTest {
 		//精确到秒，否则会有误差，比如2015-05-06 13:49:09.783存储到mysql后会变成2015-05-06 13:49:10，mysql的datetime只能精确到秒
 		TimeCounter t = new TimeCounter("testInsert");
 		t.start();
+		String userName = "unique_user_name______________________";
 		Stream.iterate(1, item->item+1).limit(insertCount).forEach(item->{
 			UserAutoidEntity entity = createUserAutoidEntity("test", item);
+			entity.setUserName(userName);
 			jfishEntityManager.save(entity);
 		});
 		t.stop();
+		
+		UserAutoidEntity user = jfishEntityManager.findOne(UserAutoidEntity.class, "userName", userName);
+		Assert.assertEquals(UserStatus.NORMAL, user.getStatus());
 		
 		userAutoidServiceImpl.deleteAll();
 	}

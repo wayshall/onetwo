@@ -23,6 +23,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.spring.SpringApplication;
@@ -192,8 +193,12 @@ public class DynamicQueryHandler implements InvocationHandler {
 			
 			for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 				Object value = null;
+				if("status".equalsIgnoreCase(parameter.getProperty())){
+					System.out.println("test");
+				}
 				if(paramBean.isReadableProperty(parameter.getProperty())){
 					value = parameter.getParamterValue(paramBean);
+					value = DbmUtils.convertSqlParameterValue(paramBean.getPropertyDescriptor(parameter.getProperty()), value);
 				}else{
 					if(!paramsContextBean.isReadableProperty(parameter.getProperty()))
 						throw new BaseException("batch execute parameter["+parameter.getProperty()+"] not found in bean["+val+"]'s properties or params");

@@ -1231,6 +1231,11 @@ public class ReflectUtils {
 		return invokeMethod(m, target, args);
 	}
 
+	/***
+	 * 如果target是class，直接返回
+	 * @param target
+	 * @return
+	 */
 	public static Class getObjectClass(Object target) {
 		if(target==null)
 			return null;
