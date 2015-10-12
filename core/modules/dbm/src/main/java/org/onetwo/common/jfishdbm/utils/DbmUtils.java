@@ -114,7 +114,7 @@ final public class DbmUtils {
 	}
 
 	public static Object getActualSqlValue(Object value){
-		if(Enum.class.isAssignableFrom(value.getClass())){
+		if(value!=null && Enum.class.isAssignableFrom(value.getClass())){
 //			return Types.asValue(value.toString(), value.getClass());
 			return ((Enum<?>)value).name();
 		}
