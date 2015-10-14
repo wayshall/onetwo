@@ -37,6 +37,10 @@ public class TableMeta {
 	}
 	
 	public String getTableName(){
+		return getName();
+	}
+	
+	public String getTableClassName(){
 		return StringUtils.toClassName(getShortName());
 	}
 	

@@ -52,6 +52,12 @@ final public class WebResultCreator {
 		builder.data(data);
 		return builder;
 	}
+	
+	/***
+	 * 把data付给result的data属性，并设置extractableData属性为true
+	 * @param data
+	 * @return
+	 */
 	public SimpleResultBuilder extractableData(Object data){
 		return simple(data).extractableData(true);
 	}

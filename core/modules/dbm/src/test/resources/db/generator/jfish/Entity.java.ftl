@@ -21,7 +21,7 @@ import lombok.Data;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="${table.tableName}")
+@Table(name="${table.name}")
 @Data
 public class ${entityClassName} implements Serializable  {
 
