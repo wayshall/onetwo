@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.utils.Assert;
@@ -19,7 +20,7 @@ import org.slf4j.Logger;
  */
 public class FileWatcher {
 	private static final int DEFAULT_INIT_DELAY = 3;
-	private static final int DEFAULT_THREAD_COUNT = 3;
+	private static final int DEFAULT_THREAD_COUNT = 2;
 	
 	public static final FileWatcher GLOBAL_WATCHER = newWatcher(DEFAULT_THREAD_COUNT);
 	
@@ -27,7 +28,7 @@ public class FileWatcher {
 		return new FileWatcher(threadCount, DEFAULT_INIT_DELAY);
 	}
 
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	private final ScheduledExecutorService executor;
 	private int initDelay = DEFAULT_INIT_DELAY;
 	
@@ -39,10 +40,10 @@ public class FileWatcher {
 		this.initDelay = initDelay;
 	}
 
-	public void watchFile(FileChangeListener listener, ResourceAdapter...files){
+	public void watchFile(FileChangeListener listener, ResourceAdapter<?>...files){
 		watchFile(1, listener, files);
 	}
-	public void watchFile(long periodSecond, FileChangeListener listener, ResourceAdapter...files){
+	public void watchFile(long periodSecond, FileChangeListener listener, ResourceAdapter<?>...files){
 		Assert.notEmpty(files);
 		WatchFileTask task = new WatchFileTask(files, listener);
 		addFileTask(periodSecond, task);
@@ -58,10 +59,10 @@ public class FileWatcher {
 		private final JFishList<FileState> fileStates;
 		private final FileChangeListener listener;
 		
-		private WatchFileTask(ResourceAdapter[] files, FileChangeListener listener) {
+		private WatchFileTask(ResourceAdapter<?>[] files, FileChangeListener listener) {
 			super();
 			fileStates = JFishList.newList(files.length);
-			for(ResourceAdapter file : files){
+			for(ResourceAdapter<?> file : files){
 				if(file.isSupportedToFile())
 					fileStates.add(new FileState(file.getFile()));
 			}

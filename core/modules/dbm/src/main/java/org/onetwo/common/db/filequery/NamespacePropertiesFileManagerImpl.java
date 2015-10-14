@@ -147,7 +147,11 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			
 			@Override
 			public void fileChanged(File file) {
-				reloadFile(FileUtils.adapterResource(file));
+				try {
+					reloadFile(FileUtils.adapterResource(file));
+				} catch (Exception e) {
+					logger.error("watch sql file error: " + e.getMessage(), e);
+				}
 			}
 		}, sqlResourceArray);
 	}
@@ -203,7 +207,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			}
 //			np.addAll(namedinfos, throwIfExist);
 		}else{
-			if(throwIfExist && namespaceProperties.containsKey(namespace)){
+			if(namespaceProperties.containsKey(namespace) && throwIfExist){
 				PropertiesNamespaceInfo<T> existNp = namespaceProperties.get(namespace);
 				throw new DbmException("sql namespace has already exist : " + namespace+", file: " + f+", exists file: "+ existNp.getSource());
 			}
@@ -217,7 +221,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 
 //		namespacesMap.put(namespace, np);
 		for(T nsp : np.getNamedProperties()){
-			if(namedQueryCache.containsKey(nsp.getFullName())){
+			if(namedQueryCache.containsKey(nsp.getFullName()) && throwIfExist){
 				throw new FileNamedQueryException("cache file named query error, key is exists : " + nsp.getFullName());
 			}
 			putIntoCaches(nsp.getFullName(), nsp);

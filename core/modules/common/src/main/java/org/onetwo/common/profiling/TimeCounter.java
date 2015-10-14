@@ -43,6 +43,11 @@ public class TimeCounter {
 		this.start = new Date(start);
 		return this.start;
 	}
+
+	public TimeCounter startIt() {
+		start();
+		return this;
+	}
 	
 
 	
