@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import lombok.Data;
 
+import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class BootJFishConfig {
 	private JsonConfig json = new JsonConfig();
 	
 	private MessageSourceConfig messageSource = new MessageSourceConfig();
+	
+	private DefaultDataBaseConfig dbm = new DefaultDataBaseConfig();
 	
 	@Data
 	public class MessageSourceConfig {

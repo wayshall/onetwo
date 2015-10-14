@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.underline;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.Langs;
 import org.springframework.beans.ConversionNotSupportedException;
 
 public class CopyUtilsTest {
@@ -263,7 +265,94 @@ public class CopyUtilsTest {
 	}
 	
 
-	public static class CapitalBean {
+	
+	@Test
+	public void testDeepClone(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setUserName(userName);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		
+		long dataId = 2342332;
+		String subName = "subNameTest";
+		CapitalBean2 srcData = new CapitalBean2();
+		srcData.setId(dataId);
+		srcData.setSubName(subName);
+		srcData.setCreateTime(createTime);
+		
+		List<CapitalBean2> datas = new ArrayList<CopyUtilsTest.CapitalBean2>();
+		datas.add(srcData);
+		srcBean.setDatas(datas);
+		
+		List<CapitalBean2> datas2 = CopyUtils.deepClones(datas);
+		Assert.assertFalse(datas==datas2);
+		
+		CapitalBean target = CopyUtils.deepClone(srcBean);
+		Assert.assertNotEquals(srcBean, target);
+		Assert.assertNotEquals(srcBean.getDatas(), target.getDatas());
+		
+		Assert.assertNotEquals(srcBean.getDatas().get(0), target.getDatas().get(0));
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(srcBean.getUserName(), target.getUserName());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		
+
+		Assert.assertEquals(srcBean.getDatas().get(0).getId(), target.getDatas().get(0).getId());
+		Assert.assertEquals(srcBean.getDatas().get(0).getSubName(), target.getDatas().get(0).getSubName());
+		Assert.assertEquals(srcBean.getDatas().get(0).getCreateTime(), target.getDatas().get(0).getCreateTime());
+
+	}
+	
+//	@Test
+	public void testCompare(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setUserName(userName);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		
+		int count = 100000;
+		Langs.repeatRun("copyFrom", count, ()->{
+			CopyUtils.copyFrom(srcBean).toNewInstance();
+		});
+		
+		Langs.repeatRun("deepClone", count, ()->{
+			CopyUtils.deepClone(srcBean);
+		});
+		
+		long dataId = 2342332;
+		String subName = "subNameTest";
+		CapitalBean2 srcData = new CapitalBean2();
+		srcData.setId(dataId);
+		srcData.setSubName(subName);
+		srcData.setCreateTime(createTime);
+		
+		List<CapitalBean2> datas = new ArrayList<CopyUtilsTest.CapitalBean2>();
+		datas.add(srcData);
+		srcBean.setDatas(datas);
+		
+
+		Langs.repeatRun("copyFrom", count, ()->{
+			CopyUtils.copyFrom(srcBean).toNewInstance();
+		});
+		
+		Langs.repeatRun("deepClone", count, ()->{
+			CopyUtils.deepClone(srcBean);
+		});
+	}
+
+	public static class CapitalBean implements Serializable {
 		private long id;
 		private Integer age;
 		private String userName;
@@ -320,7 +409,7 @@ public class CopyUtilsTest {
 	}
 	
 
-	public static class CapitalBean2 {
+	public static class CapitalBean2 implements Serializable{
 		private long id;
 		private String subName;
 		private Date createTime;
@@ -345,7 +434,7 @@ public class CopyUtilsTest {
 		}
 	}
 
-	public static class UnderlineBean {
+	public static class UnderlineBean implements Serializable {
 		private long id;
 		private String user_name;
 		private Date birthday;
@@ -388,7 +477,7 @@ public class CopyUtilsTest {
 	}
 	
 
-	public static class UnderlineBean2 {
+	public static class UnderlineBean2 implements Serializable {
 		private long id;
 		private String sub_name;
 		private Date create_time;

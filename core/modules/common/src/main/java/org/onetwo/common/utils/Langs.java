@@ -7,6 +7,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.utils.func.Closure;
+
 /***
  * langutils for java8
  * @author way
@@ -22,6 +25,22 @@ final public class Langs {
 		return Stream.iterate(1, i->i+1).limit(count)
 										.map(mapper)
 										.collect(Collectors.toList());
+	}
+	
+
+	public static void repeatRun(Integer times, Closure closure){
+		repeatRun(null, times, closure);
+	}
+	
+	public static void repeatRun(String printTimeTag, Integer times, Closure closure){
+		TimeCounter t = StringUtils.isNotBlank(printTimeTag)?new TimeCounter(printTimeTag).startIt():null;
+		Stream.iterate(1, i->i+1).limit(times)
+									.forEach(i->{
+										closure.execute();
+									});
+		if(t!=null){
+			t.stop();
+		}
 	}
 	
 	

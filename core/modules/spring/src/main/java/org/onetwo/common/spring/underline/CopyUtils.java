@@ -3,6 +3,11 @@ package org.onetwo.common.spring.underline;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +24,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.underline.BaseCopierBuilder.SimpleCopierBuilder;
 import org.onetwo.common.utils.Page;
@@ -26,6 +32,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
 
+@SuppressWarnings("unchecked")
 public class CopyUtils {
     public static final PropertyDescriptor[] EMPTY_PROPERTIES_ARRAY = new PropertyDescriptor[0];
     
@@ -242,6 +249,28 @@ public class CopyUtils {
 		PropertyDescriptor[] props = beanInfo.getPropertyDescriptors();
 		
 		return props;
+	}
+
+	public static <T extends Serializable> T deepClone(T obj){
+		T cloneObj;
+		try {
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			ObjectOutputStream objOut = new ObjectOutputStream(bao);
+			objOut.writeObject(obj);
+
+			ByteArrayInputStream bais = new ByteArrayInputStream(bao.toByteArray());
+			ObjectInputStream bis = new ObjectInputStream(bais);
+			cloneObj = (T)bis.readObject();
+		} catch (Exception e) {
+			throw new BaseException("serializeClone error: " + e.getMessage(), e);
+		} 
+		return cloneObj;
+	}
+	public static <T extends Serializable> List<T> deepClones(List<T> datas){
+		if(Serializable.class.isInstance(datas)){
+			return (List<T>)deepClone((Serializable)datas);
+		}
+		throw new IllegalArgumentException("datas not serializable");
 	}
 	
 	private CopyUtils(){

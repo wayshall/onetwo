@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
 //@Import(JFishProfiles.class)
+//@EnableConfigurationProperties({DataBaseConfig.class})
 public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean{
 
 	private ApplicationContext applicationContext;
@@ -100,6 +101,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		JFishDaoImpl jfishDao = new JFishDaoImpl(dataSource);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());
+		jfishDao.setDataBaseConfig(defaultDataBaseConfig());
 //		jfishDao.setMappedEntryManager(mappedEntryManager());
 //		jfishDao.setDialect(dialect());
 //		jfishDao.setSqlSymbolManager(sqlSymbolManager());
