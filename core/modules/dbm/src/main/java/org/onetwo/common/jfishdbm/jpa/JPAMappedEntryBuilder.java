@@ -23,20 +23,20 @@ import javax.persistence.Version;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
-import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.BaseColumnInfo;
 import org.onetwo.common.jfishdbm.mapping.ColumnInfo;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryImpl;
-import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.TableInfo;
 import org.onetwo.common.jfishdbm.mapping.version.DateVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.IntegerVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.LongVersionableType;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
@@ -59,8 +59,8 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		versionTypes = Collections.unmodifiableMap(tem);
 	}
 	
-	public JPAMappedEntryBuilder(DBDialect dialect) {
-		super(dialect);
+	public JPAMappedEntryBuilder(SimpleDbmInnserServiceRegistry serviceRegistry) {
+		super(serviceRegistry);
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	@Override
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
 		TableInfo tableInfo = newTableInfo(annotationInfo);
-		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(annotationInfo, tableInfo);
+		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		entry.setSqlBuilderFactory(this.getDialect().getSqlBuilderFactory());
 		return entry;
 	}

@@ -1,28 +1,20 @@
 package org.onetwo.common.jfishdbm.support;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.DbmQueryValue;
-import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
-import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
-import org.onetwo.common.jfishdbm.dialet.DbmetaFetcher;
 import org.onetwo.common.jfishdbm.dialet.DefaultDatabaseDialetManager;
-import org.onetwo.common.jfishdbm.dialet.MySQLDialect;
-import org.onetwo.common.jfishdbm.dialet.OracleDialect;
 import org.onetwo.common.jfishdbm.event.JFishDeleteEvent;
 import org.onetwo.common.jfishdbm.event.JFishDeleteEvent.DeleteType;
 import org.onetwo.common.jfishdbm.event.JFishEvent;
@@ -39,16 +31,11 @@ import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jfishdbm.jdbc.JdbcDao;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.common.jfishdbm.jdbc.mapper.JFishRowMapperFactory;
-import org.onetwo.common.jfishdbm.jpa.JFishSequenceNameManager;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
-import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
-import org.onetwo.common.jfishdbm.mapping.MutilMappedEntryManager;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.query.JFishQueryImpl;
-import org.onetwo.common.jfishdbm.query.JFishSQLSymbolManagerImpl;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -82,7 +69,10 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	private DefaultDatabaseDialetManager databaseDialetManager;
 	protected DataBaseConfig dataBaseConfig;
 	
-	protected String[] packagesToScan;
+//	protected String[] packagesToScan;
+	
+	private SimpleDbmInnserServiceRegistry serviceRegistry;
+
 	
 	/*public JFishDaoImpl(){
 	}*/
@@ -108,7 +98,19 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 
 	@Override
 	protected void initDao() throws Exception {
-		if(dataBaseConfig==null){
+		/*this.serviceRegistry = new SimpleDbmInnserServiceRegistry();
+		this.serviceRegistry.initialize(getDataSource(), packagesToScan);*/
+		Assert.notNull(serviceRegistry);
+		
+		this.dataBaseConfig = this.serviceRegistry.getDataBaseConfig();
+		this.databaseDialetManager = this.serviceRegistry.getDatabaseDialetManager();
+		this.dialect = this.serviceRegistry.getDialect();
+		this.mappedEntryManager = this.serviceRegistry.getMappedEntryManager();
+		this.sqlSymbolManager = this.serviceRegistry.getSqlSymbolManager();
+		this.setRowMapperFactory(this.serviceRegistry.getRowMapperFactory());
+		this.sequenceNameManager = this.serviceRegistry.getSequenceNameManager();
+		
+		/*if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDataBaseConfig();
 		}
 		if(databaseDialetManager==null){
@@ -154,7 +156,7 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();
-		}
+		}*/
 //		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
 	}
 	
@@ -635,10 +637,6 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return dialect;
 	}
 
-	public void setDialect(DBDialect dialect) {
-		this.dialect = dialect;
-	}
-
 	/*
 	protected DBMeta getDBMeta(){
 		Connection dbcon = null;
@@ -670,19 +668,21 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 		return sequenceNameManager;
 	}
 
-	public void setSequenceNameManager(SequenceNameManager sequenceNameManager) {
-		this.sequenceNameManager = sequenceNameManager;
-	}
-
 	@Override
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 		return this.namedParameterJdbcTemplate;
 	}
 
-	public void setPackagesToScan(String... packagesToScan) {
+	/*public void setPackagesToScan(String... packagesToScan) {
 		this.packagesToScan = packagesToScan;
+	}*/
+
+	public SimpleDbmInnserServiceRegistry getServiceRegistry() {
+		return serviceRegistry;
 	}
 
-
+	public void setServiceRegistry(SimpleDbmInnserServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
+	}
 
 }

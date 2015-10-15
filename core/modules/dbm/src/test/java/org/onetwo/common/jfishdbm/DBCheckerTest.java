@@ -21,7 +21,7 @@ public class DBCheckerTest extends AppBaseTest {
 	
 	@Before
 	public void setup(){
-		this.jfishDao = DaoFactory.newJFishDao(dataSource);
+		this.jfishDao = DaoFactory.newDao(dataSource);
 	}
 	
 	@Test

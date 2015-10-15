@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.spring;
 
 import javax.sql.DataSource;
+import javax.validation.Validator;
 
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -13,10 +14,12 @@ import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
+import org.onetwo.common.jfishdbm.support.DaoFactory;
 import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
 import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
 import org.onetwo.common.jfishdbm.support.JFishEntityManager;
 import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,6 +42,9 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 
 	@Autowired(required=false)
 	private DataBaseConfig dataBaseConfig;
+
+	@Autowired(required=false)
+	private Validator validator;
 	
 	public JFishdbmSpringConfiguration(){
 	}
@@ -96,12 +102,18 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	}
 	
 	@Bean
+	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(){
+		return DaoFactory.createServiceRegistry(dataSource, validator);
+	}
+	
+	@Bean
 	@Autowired
 	public JFishDaoImplementor jfishDao() {
 		JFishDaoImpl jfishDao = new JFishDaoImpl(dataSource);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());
 		jfishDao.setDataBaseConfig(defaultDataBaseConfig());
+		jfishDao.setServiceRegistry(dbmInnserServiceRegistry());
 //		jfishDao.setMappedEntryManager(mappedEntryManager());
 //		jfishDao.setDialect(dialect());
 //		jfishDao.setSqlSymbolManager(sqlSymbolManager());

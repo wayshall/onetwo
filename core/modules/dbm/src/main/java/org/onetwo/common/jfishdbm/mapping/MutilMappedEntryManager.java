@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.NoMappedEntryException;
-import org.onetwo.common.jfishdbm.jpa.JPAMappedEntryBuilder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.utils.ResourcesScanner;
@@ -22,7 +20,6 @@ import org.springframework.core.type.classreading.MetadataReader;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
 
 public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryManager {
 	
@@ -35,21 +32,20 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	private ResourcesScanner scanner = ResourcesScanner.CLASS_CANNER;
 //	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	
-	private DBDialect dialet;
-	
 	private Cache<String, JFishMappedEntry> entryCaches = CacheBuilder.newBuilder().build();
+//	final private SimpleInnserServiceRegistry serviceRegistry;
+//	private DBDialect dialet;
 
-	public MutilMappedEntryManager(DBDialect dialet) {
-		this.dialet = dialet;
+
+	public MutilMappedEntryManager() {
 	}
-
-
+	
 	/***
 	 * first
 	 */
 	@Override
 	public void initialize() {
-		if(LangUtils.isEmpty(mappedEntryBuilders)){
+		/*if(LangUtils.isEmpty(mappedEntryBuilders)){
 			List<MappedEntryBuilder> builders = LangUtils.newArrayList();
 			MappedEntryBuilder builder = new JFishMappedEntryBuilder(dialet);
 			builder.initialize();
@@ -59,7 +55,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			builder.initialize();
 			builders.add(builder);
 			this.mappedEntryBuilders = ImmutableList.copyOf(builders);
-		}
+		}*/
 	}
 
 
