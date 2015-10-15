@@ -15,11 +15,13 @@ import org.onetwo.common.db.TimeRecordableEntity;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.annotation.DbmEntityListeners;
 import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
+import org.onetwo.common.jfishdbm.annotation.DbmValidatorEnabled;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.DbmEntityListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -61,14 +63,19 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	
 	private List<DbmEntityListener> entityListeners = Collections.EMPTY_LIST;
 	private List<DbmEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
+
+	private final boolean enabledEntithyValidator;
+//	private final SimpleDbmInnserServiceRegistry serviceRegistry;
+	private EntityValidator entityValidator;
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
+	/*public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
-	}
+	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
+//		this.serviceRegistry = serviceRegistry;
 		this.entityName = this.entityClass.getName();
 		this.tableInfo = tableInfo;
 		if(Map.class.isAssignableFrom(entityClass)){
@@ -89,6 +96,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		DbmFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(DbmFieldListeners.class);
 		if(fieldListenersAnntation!=null)
 			this.fieldListeners = DbmUtils.initDbmEntityFieldListeners(fieldListenersAnntation);
+		this.enabledEntithyValidator = annotationInfo.hasAnnotation(DbmValidatorEnabled.class);
+		if(enabledEntithyValidator){
+			this.entityValidator = serviceRegistry.getEntityValidator();
+			Assert.notNull(entityValidator, "no entity validator found!");
+		}
 	}
 
 	public Collection<AbstractMappedField> getFields(){
@@ -410,12 +422,14 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 				return null;
 			for(Object en : list){
 				this.processIBaseEntity(en, true);
+				this.vailidateEntity(en);
 //				dsb.setColumnValuesFromEntity(en).addBatch();
 //				doEveryMappedFieldInStatementContext(dsb, en).addBatch();
 				dsb.processColumnValues(en).addBatch();
 			}
 		}else{
 			this.processIBaseEntity(entity, true);
+			this.vailidateEntity(entity);
 //			dsb.setColumnValuesFromEntity(entity);
 			dsb.processColumnValues(entity);
 		}
@@ -425,26 +439,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return dsb;
 	}
 	
-/*	private JdbcStatementContextBuilder doEveryMappedFieldInStatementContext(JdbcStatementContextBuilder statement, Object entity){
-		Assert.notNull(entity);
-		Object val = null;
-		EntrySQLBuilder builder = statement.getSqlBuilder();
-		for(JFishMappedField field : builder.getFields()){
-			val = field.getColumnValueWithJFishEventAction(entity, statement.getEventAction());
-			if(field.isVersionControll()){
-				if(JFishEventAction.insert==statement.getEventAction()){
-					val = field.getVersionValule(val);
-					field.setValue(entity, val);//write the version value into the entity
-				}else if(JFishEventAction.update==statement.getEventAction()){
-					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + getEntityName());
-					val = field.getVersionValule(val);
-					field.setValue(entity, val);a
-				}
-			}
-			statement.putColumnValue(field, val);
+	private void vailidateEntity(Object entity){
+		if(this.entityValidator!=null){
+			this.entityValidator.validate(entity);
 		}
-		return statement;
-	}*/
+	}
 	
 	private void processIBaseEntity(Object entity, boolean create){
 		if(!(entity instanceof TimeRecordableEntity))
@@ -506,6 +505,9 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			for(Object en : list){
 				this.checkIdValue(en);
 				this.processIBaseEntity(en, false);
+				
+				this.vailidateEntity(entity);
+				
 //				dsb.setColumnValuesFromEntity(en)
 				dsb.processColumnValues(en)
 					.processWhereCauseValuesFromEntity(en)
@@ -514,6 +516,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}else{
 			this.checkIdValue(entity);
 			this.processIBaseEntity(entity, false);
+			
+			this.vailidateEntity(entity);
 //			dsb.setColumnValuesFromEntity(entity);
 			dsb.processColumnValues(entity);
 			dsb.processWhereCauseValuesFromEntity(entity);
@@ -566,31 +570,6 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}
 		return sqlBuilder;
 	}
-/*
-	public Object getColumnValueWithJFishEventAction(JFishMappedField field, Object entity, JFishEventAction eventAction){
-		Object oldValue = field.getColumnValue(entity);
-		Object newValue = oldValue;
-		boolean doListener = false;
-		if(JFishEventAction.insert==eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					newValue = fl.beforeFieldInsert(field.getName(), newValue);
-					doListener = true;
-				}
-			}
-		}else if(JFishEventAction.update==eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					newValue = fl.beforeFieldUpdate(field.getName(), newValue);
-					doListener = true;
-				}
-			}
-		}
-		if(doListener){
-			field.setColumnValue(entity, newValue);
-		}
-		return newValue;
-	}*/
 	
 	@Override
 	public Map<String, AbstractMappedField> getMappedFields() {

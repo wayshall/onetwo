@@ -12,9 +12,10 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jfishdbm.annotation.DbmColumn;
 import org.onetwo.common.jfishdbm.annotation.DbmEntity;
 import org.onetwo.common.jfishdbm.annotation.DbmQueryable;
-import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
+import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.query.JFishQueryableMappedEntryImpl;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
@@ -43,14 +44,16 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	private MappedEntryBuilderListenerManager listenerManager;
 	
 	final private Map<String, MappedEntryBuilderListener> builderListeners = new LinkedHashMap<>();
+	protected final SimpleDbmInnserServiceRegistry serviceRegistry;
 	
 
 	public Map<String, MappedEntryBuilderListener> getRegister() {
 		return builderListeners;
 	}
 
-	public JFishMappedEntryBuilder(DBDialect dialect){
-		this.dialect = dialect;
+	public JFishMappedEntryBuilder(SimpleDbmInnserServiceRegistry serviceRegistry){
+		this.serviceRegistry = serviceRegistry;
+		this.dialect = this.serviceRegistry.getDialect();
 	}
 	
 	@Override
@@ -181,14 +184,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){
-			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo);
+			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
-				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo);
+				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
 			}*/else{
-				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo);
+				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}
 		}
 		entry.setSqlBuilderFactory(this.dialect.getSqlBuilderFactory());
