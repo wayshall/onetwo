@@ -1,8 +1,7 @@
 package org.onetwo.common.jfishdbm.mapping;
 
-import org.onetwo.common.jfishdbm.utils.Initializable;
 
-public interface MappedEntryManager extends Initializable {
+public interface MappedEntryManager {
 	
 //	public boolean isSupported(Object entity);
 	public boolean isSupportedMappedEntry(Object entity);
