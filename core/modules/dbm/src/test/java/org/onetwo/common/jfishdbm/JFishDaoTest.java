@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
-import org.onetwo.common.jfishdbm.support.JFishEntityManager;
+import org.onetwo.common.jfishdbm.support.DbmEntityManager;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
 
@@ -24,7 +24,7 @@ import org.onetwo.common.utils.LangUtils;
 public class JFishDaoTest extends AppBaseTest {
 	
 	@Resource
-	private JFishEntityManager jfishEntityManager;
+	private DbmEntityManager jfishEntityManager;
 	@Resource
 	private UserAutoidServiceImpl userAutoidServiceImpl;
 	

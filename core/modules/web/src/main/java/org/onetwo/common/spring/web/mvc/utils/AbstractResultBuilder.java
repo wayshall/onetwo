@@ -11,6 +11,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	protected String message;
 	private boolean extractableData = false;
 	protected T data;
+	private String view;
 //	final protected Class<?> builderClass;
 //	private T data;
 	
@@ -33,6 +34,10 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	}
 	public B error(String message){
 		return code(AbstractDataResult.ERROR, message);
+	}
+	public B view(String view){
+		this.view = view;
+		return (B) this;
 	}
 	
 	/****
@@ -94,7 +99,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 
 	public ModelAndView buildModelAndView(){
 		SimpleDataResult<T> rs = buildResult();
-		return MvcUtils.createModelAndView("", rs);
+		return MvcUtils.createModelAndView(view, rs);
 	}
 	
 	/*public SimpleDataResult<?> buildResult(){

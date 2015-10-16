@@ -140,10 +140,10 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		this.dispatcherParamter = parameters.stream().filter(p->{
 								if(p.hasParameterAnnotation(Dispatcher.class)){
 									if(p.getParameterIndex()!=0){
-										throw new FileNamedQueryException("QuerySwitch must be first parameter but actual index is " + (p.getParameterIndex()+1));
-									}else if(p.getParameterType()!=String.class){
-										throw new FileNamedQueryException("QuerySwitch must be must be a String!");
-									}
+										throw new FileNamedQueryException("Dispatcher must be first parameter but actual index is " + (p.getParameterIndex()+1));
+									}/*else if(p.getParameterType()!=String.class){
+										throw new FileNamedQueryException("Dispatcher must be must be a String!");
+									}*/
 									return true;
 								}
 								return false;

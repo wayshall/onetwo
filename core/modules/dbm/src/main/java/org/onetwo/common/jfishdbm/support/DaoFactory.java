@@ -10,12 +10,12 @@ final public class DaoFactory {
 	}
 	
 
-	public static JFishDao newDao(DataSource dataSource){
+	public static DbmDao newDao(DataSource dataSource){
 		return newDao(dataSource, null);
 	}
 	
-	public static JFishDao newDao(DataSource dataSource, Validator validator){
-		JFishDaoImpl dao = new JFishDaoImpl(dataSource);
+	public static DbmDao newDao(DataSource dataSource, Validator validator){
+		DbmDaoImpl dao = new DbmDaoImpl(dataSource);
 		dao.setServiceRegistry(createServiceRegistry(dataSource, validator));
 		dao.initialize();
 		return dao;

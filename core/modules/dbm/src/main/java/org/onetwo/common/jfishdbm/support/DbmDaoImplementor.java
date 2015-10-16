@@ -17,7 +17,7 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-public interface JFishDaoImplementor extends JFishDao {
+public interface DbmDaoImplementor extends DbmDao {
 
 	public MappedEntryManager getMappedEntryManager();
 	
