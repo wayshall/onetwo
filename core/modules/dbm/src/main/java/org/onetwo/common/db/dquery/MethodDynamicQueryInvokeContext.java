@@ -7,6 +7,7 @@ import java.util.Map;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.util.Assert;
 
 public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext {
 
@@ -28,6 +29,7 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 		Object dispatcher = getQueryMatcherValue();
 		String queryName = dynamicMethod.getQueryName();
 		if(dispatcher!=null){
+			Assert.notNull(dispatcher, "dispatcher can not be null!");
 			return queryName + "(" + dispatcher+")";
 		}
 		return queryName;

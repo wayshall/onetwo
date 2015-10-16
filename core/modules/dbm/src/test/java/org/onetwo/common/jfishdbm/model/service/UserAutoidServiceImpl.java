@@ -10,7 +10,7 @@ import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao;
 import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao2;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
-import org.onetwo.common.jfishdbm.support.JFishDao;
+import org.onetwo.common.jfishdbm.support.DbmDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -27,7 +27,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	@Resource
 	private DataSource dataSource;
 	@Resource
-	private JFishDao jfishDao;
+	private DbmDao jfishDao;
 	
 	@Resource
 	private UserAutoidDao userAutoidDao;

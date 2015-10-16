@@ -15,10 +15,10 @@ import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.jfishdbm.support.DaoFactory;
-import org.onetwo.common.jfishdbm.support.JFishDaoImpl;
-import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
-import org.onetwo.common.jfishdbm.support.JFishEntityManager;
-import org.onetwo.common.jfishdbm.support.JFishEntityManagerImpl;
+import org.onetwo.common.jfishdbm.support.DbmDaoImpl;
+import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
+import org.onetwo.common.jfishdbm.support.DbmEntityManager;
+import org.onetwo.common.jfishdbm.support.DbmEntityManagerImpl;
 import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
@@ -76,9 +76,9 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	}
 	
 	@Bean
-	public JFishEntityManager jfishEntityManager() {
-		JFishEntityManagerImpl jem = new JFishEntityManagerImpl();
-		jem.setJfishDao(jfishDao());
+	public DbmEntityManager jfishEntityManager() {
+		DbmEntityManagerImpl jem = new DbmEntityManagerImpl();
+		jem.setDbmDao(jfishDao());
 		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
@@ -108,8 +108,8 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	
 	@Bean
 	@Autowired
-	public JFishDaoImplementor jfishDao() {
-		JFishDaoImpl jfishDao = new JFishDaoImpl(dataSource);
+	public DbmDaoImplementor jfishDao() {
+		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());
 		jfishDao.setDataBaseConfig(defaultDataBaseConfig());

@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.utils;
 
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
-import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
+import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -25,8 +25,8 @@ final public class JFishSpringUtils {
 		return getJFishDao(applicationContext).getDialect();
 	}
 	
-	public static JFishDaoImplementor getJFishDao(ApplicationContext applicationContext){
-		JFishDaoImplementor dao = SpringUtils.getHighestOrder(applicationContext, JFishDaoImplementor.class);
+	public static DbmDaoImplementor getJFishDao(ApplicationContext applicationContext){
+		DbmDaoImplementor dao = SpringUtils.getHighestOrder(applicationContext, DbmDaoImplementor.class);
 		return dao;
 	}
 	

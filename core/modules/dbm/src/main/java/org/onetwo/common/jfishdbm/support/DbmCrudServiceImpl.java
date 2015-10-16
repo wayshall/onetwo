@@ -17,23 +17,23 @@ import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
 import org.springframework.transaction.annotation.Transactional;
 
-abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends BaseCrudServiceImpl<T, PK> {
+abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends BaseCrudServiceImpl<T, PK> {
 
-	private JFishEntityManager baseEntityManager;
+	private DbmEntityManager baseEntityManager;
 	
-	public JFishCrudServiceImpl(){
+	public DbmCrudServiceImpl(){
 	}
 	
 	protected String serviceQName(String methodName){
 		return this.getClass().getSimpleName() + "." + methodName;
 	}
 	@Resource
-	public void setBaseEntityManager(JFishEntityManager baseEntityManager) {
+	public void setBaseEntityManager(DbmEntityManager baseEntityManager) {
 		this.baseEntityManager = baseEntityManager;
 	}
 
 	@Override
-	public JFishEntityManager getBaseEntityManager() {
+	public DbmEntityManager getBaseEntityManager() {
 		return baseEntityManager;
 	}
 
@@ -152,7 +152,7 @@ abstract public class JFishCrudServiceImpl<T, PK extends Serializable> extends B
 
 	
 	protected JFishMappedEntry getMappedEntry(){
-		return this.getBaseEntityManager().getJfishDao().getMappedEntryManager().getEntry(entityClass);
+		return this.getBaseEntityManager().getDbmDao().getMappedEntryManager().getEntry(entityClass);
 	}
 	
 	protected JFishQueryBuilder createQueryBuilder(){

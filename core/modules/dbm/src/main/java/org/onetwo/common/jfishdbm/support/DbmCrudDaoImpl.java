@@ -7,21 +7,21 @@ import javax.annotation.Resource;
 import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
 
-abstract public class JFishCrudDaoImpl<T, PK extends Serializable> extends BaseCrudServiceImpl<T, PK> {
+abstract public class DbmCrudDaoImpl<T, PK extends Serializable> extends BaseCrudServiceImpl<T, PK> {
 
-	private JFishEntityManager baseEntityManager;
+	private DbmEntityManager baseEntityManager;
 	
-	public JFishCrudDaoImpl(){
+	public DbmCrudDaoImpl(){
 	}
 	
 	@Resource
-	public void setBaseEntityManager(JFishEntityManager baseEntityManager) {
+	public void setBaseEntityManager(DbmEntityManager baseEntityManager) {
 		this.baseEntityManager = baseEntityManager;
 	}
 
 
 	@Override
-	public JFishEntityManager getBaseEntityManager() {
+	public DbmEntityManager getBaseEntityManager() {
 		return baseEntityManager;
 	}
 	
