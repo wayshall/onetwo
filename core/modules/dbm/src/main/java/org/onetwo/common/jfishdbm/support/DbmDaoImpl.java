@@ -53,7 +53,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao {
+public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 
 	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
@@ -77,12 +77,12 @@ public class JFishDaoImpl extends JdbcDao implements JFishEventSource, JFishDao 
 	/*public JFishDaoImpl(){
 	}*/
 
-	public JFishDaoImpl(DataSource dataSource){
+	public DbmDaoImpl(DataSource dataSource){
 		Assert.notNull(dataSource);
 		this.setDataSource(dataSource);
 	}
 
-	public JFishDaoImpl(DataSource dataSource, DBDialect dialect){
+	public DbmDaoImpl(DataSource dataSource, DBDialect dialect){
 		Assert.notNull(dataSource);
 		Assert.notNull(dialect);
 		this.setDataSource(dataSource);

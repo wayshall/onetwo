@@ -8,8 +8,8 @@ import java.util.Map;
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.DbmQueryValue;
+import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -29,9 +29,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 //@SuppressWarnings({"rawtypes", "unchecked"})
-public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements JFishEntityManager, InitializingBean , DisposableBean {
+public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements DbmEntityManager, InitializingBean , DisposableBean {
 
-	private JFishDaoImplementor jfishDao;
+	private DbmDaoImplementor dbmDao;
 //	private EntityManagerOperationImpl entityManagerWraper;
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 //	private ApplicationContext applicationContext;
@@ -40,13 +40,13 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 //	private boolean watchSqlFile = false;
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
-	public JFishEntityManagerImpl(){
+	public DbmEntityManagerImpl(){
 	}
 	
 	
 	@Override
 	public void update(Object entity) {
-		int rs = this.jfishDao.update(entity);
+		int rs = this.dbmDao.update(entity);
 		throwIfEffectiveCountError("update", 1, rs);
 	}
 
@@ -59,7 +59,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public DataBase getDataBase() {
-		return jfishDao.getDialect().getDbmeta().getDataBase();
+		return dbmDao.getDialect().getDbmeta().getDataBase();
 	}
 
 
@@ -72,7 +72,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		//不在set方法里设置，避免循环依赖
 //		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 		
-		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(jfishDao.getDataBaseConfig().isWatchSqlFile());
+		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(dbmDao.getDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 		fq.setQueryProvideManager(this);
 		this.fileNamedQueryManager = fq;
@@ -92,7 +92,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 	
 	public <T> List<T> findAll(Class<T> entityClass){
-		return jfishDao.findAll(entityClass);
+		return dbmDao.findAll(entityClass);
 	}
 	
 	@Override
@@ -107,12 +107,12 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public <T> T findById(Class<T> entityClass, Serializable id) {
-		return getJfishDao().findById(entityClass, id);
+		return getDbmDao().findById(entityClass, id);
 	}
 
 	@Override
 	public <T> T save(T entity) {
-		int rs = getJfishDao().save(entity);
+		int rs = getDbmDao().save(entity);
 		throwIfEffectiveCountError("save", 1, rs);
 		return entity;
 	}
@@ -124,27 +124,27 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public void persist(Object entity) {
-		int rs = getJfishDao().insert(entity);
+		int rs = getDbmDao().insert(entity);
 		throwIfEffectiveCountError("persist", 1, rs);
 	}
 
 	@Override
 	public void remove(Object entity) {
-		int rs = getJfishDao().delete(entity);
+		int rs = getDbmDao().delete(entity);
 		throwIfEffectiveCountError("remove", 1, rs);
 	}
 
 	@Override
 	public int removeAll(Class<?> entityClass) {
-		return getJfishDao().deleteAll(entityClass);
+		return getDbmDao().deleteAll(entityClass);
 	}
 
 	@Override
 	public <T> T removeById(Class<T> entityClass, Serializable id) {
-		T entity = getJfishDao().findById(entityClass, id);
+		T entity = getDbmDao().findById(entityClass, id);
 		if(entity==null)
 			return null;
-		int rs = getJfishDao().delete(entity);
+		int rs = getDbmDao().delete(entity);
 		throwIfEffectiveCountError("removeById", 1, rs);
 		return entity;
 	}
@@ -164,21 +164,21 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	 */
 	@Override
 	public <T> T merge(T entity) {
-		int rs = getJfishDao().dymanicUpdate(entity);
+		int rs = getDbmDao().dymanicUpdate(entity);
 		throwIfEffectiveCountError("merge", 1, rs);
 		return entity;
 	}
 
 	@Override
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
-		JFishQuery jq = getJfishDao().createJFishQuery(sqlString, entityClass);
+		JFishQuery jq = getDbmDao().createJFishQuery(sqlString, entityClass);
 		DataQuery query = new JFishDataQuery(jq);
 		return query;
 	}
 
 	
 	protected DataQuery createQuery(SelectExtQuery extQuery){
-		return getJfishDao().createAsDataQuery(extQuery);
+		return getDbmDao().createAsDataQuery(extQuery);
 	}
 
 	@Override
@@ -206,7 +206,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 	
 	public SQLSymbolManager getSQLSymbolManager(){
-		return this.jfishDao.getSqlSymbolManager();
+		return this.dbmDao.getSqlSymbolManager();
 	}
 	
 	
@@ -216,12 +216,12 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 		return jfishDao.getSequenceNameManager();
 	}*/
 
-	public JFishDaoImplementor getJfishDao() {
-		return jfishDao;
+	public DbmDaoImplementor getDbmDao() {
+		return dbmDao;
 	}
 
-	public void setJfishDao(JFishDaoImplementor jFishDao) {
-		this.jfishDao = jFishDao;
+	public void setDbmDao(DbmDaoImplementor jFishDao) {
+		this.dbmDao = jFishDao;
 	}
 
 /*
@@ -236,7 +236,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public SequenceNameManager getSequenceNameManager(){
-		return jfishDao.getSequenceNameManager();
+		return dbmDao.getSequenceNameManager();
 	}
 	
 	@Override
@@ -279,17 +279,17 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public DataQuery createQuery(String sql, Map<String, Object> values) {
-		return jfishDao.createAsDataQuery(sql, values);
+		return dbmDao.createAsDataQuery(sql, values);
 	}
 
 	@Override
 	public void findPage(Class<?> entityClass, Page<?> page, Object... properties) {
-		jfishDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
+		dbmDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
 	}
 
 	@Override
 	public <T> void findPageByProperties(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
-		jfishDao.findPageByProperties(entityClass, page, properties);
+		dbmDao.findPageByProperties(entityClass, page, properties);
 	}
 
 	/*public <T> void removeList(Collection<T> entities) {
@@ -299,26 +299,26 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}*/
 	
 	public <T> List<T> findList(DbmQueryValue queryValue) {
-		return getJfishDao().findList(queryValue);
+		return getDbmDao().findList(queryValue);
 	}
 	
 	public <T> T findUnique(DbmQueryValue queryValue) {
-		return getJfishDao().findUnique(queryValue);
+		return getDbmDao().findUnique(queryValue);
 	}
 	
 	public <T> void findPage(Page<T> page, DbmQueryValue squery) {
-		getJfishDao().findPage(page, squery);
+		getDbmDao().findPage(page, squery);
 	}
 
 	/****
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties) {
-		return jfishDao.findUniqueByProperties(entityClass, properties);
+		return dbmDao.findUniqueByProperties(entityClass, properties);
 	}
 
 	public <T> T findUnique(String sql, Object... values) {
-		DataQuery dq = jfishDao.createAsDataQuery(sql, (Class<?>)null);
+		DataQuery dq = dbmDao.createAsDataQuery(sql, (Class<?>)null);
 		dq.setParameters(values);
 		return dq.getSingleResult();
 	}
@@ -333,7 +333,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	 * 返回结果不为null
 	 */
 	public <T> List<T> findListByProperties(Class<T> entityClass, Map<Object, Object> properties) {
-		return jfishDao.findByProperties(entityClass, properties);
+		return dbmDao.findByProperties(entityClass, properties);
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
@@ -347,7 +347,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 	}
 
 	public Number countRecordByProperties(Class<?> entityClass, Map<Object, Object> properties) {
-		return jfishDao.countByProperties(entityClass, properties);
+		return dbmDao.countByProperties(entityClass, properties);
 	}
 
 	/*@Override
@@ -358,7 +358,7 @@ public class JFishEntityManagerImpl extends BaseEntityManagerAdapter implements 
 
 	@Override
 	public <T> T getRawManagerObject() {
-		return (T)jfishDao;
+		return (T)dbmDao;
 	}
 
 	@Override

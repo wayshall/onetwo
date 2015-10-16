@@ -99,7 +99,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		this.enabledEntithyValidator = annotationInfo.hasAnnotation(DbmValidatorEnabled.class);
 		if(enabledEntithyValidator){
 			this.entityValidator = serviceRegistry.getEntityValidator();
-			Assert.notNull(entityValidator, "no entity validator found!");
+			Assert.notNull(entityValidator, "no entity validator config!");
 		}
 	}
 

@@ -10,7 +10,7 @@ import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.utils.Page;
 
-public interface JFishDao {
+public interface DbmDao {
 
 	/*****
 	 * 保存对象和关联属性的对象到数据库，<br/>
