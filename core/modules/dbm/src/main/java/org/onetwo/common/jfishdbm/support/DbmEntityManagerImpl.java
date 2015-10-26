@@ -17,12 +17,12 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.DisposableBean;
@@ -118,8 +118,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 	
 	private void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
-		if(effectiveCount<expectCount)
-			throw new DbmException(operation + " error, expect effective: " + expectCount+", but actual effective: " + effectiveCount);
+		DbmUtils.throwIfEffectiveCountError(operation + " error.", expectCount, effectiveCount);
 	}
 
 	@Override
