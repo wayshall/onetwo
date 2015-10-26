@@ -26,8 +26,12 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Lists;
 
 final public class DbmUtils {
-	private DbmUtils(){
+	
+	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
+		if(effectiveCount!=expectCount)
+			throw new DbmException(errorMsg + " expect effective: " + expectCount+", but actual effective: " + effectiveCount);
 	}
+	
 	public static List<DbmEntityFieldListener> initDbmEntityFieldListeners(DbmFieldListeners listenersAnntation){
 		Assert.notNull(listenersAnntation);
 		Class<? extends DbmEntityFieldListener>[] flClasses = listenersAnntation.value();
@@ -119,5 +123,7 @@ final public class DbmUtils {
 			return ((Enum<?>)value).name();
 		}
 		return value;
+	}
+	private DbmUtils(){
 	}
 }
