@@ -6,9 +6,9 @@ import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.context.ApplicationContext;
 
-final public class JFishSpringUtils {
+final public class DbmSpringUtils {
 
-	private JFishSpringUtils(){
+	private DbmSpringUtils(){
 	}
 	
 	/*public static DBDialect getMatchDBDiaclet(ApplicationContext applicationContext, DBMeta dbmeta){
