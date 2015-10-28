@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import javax.annotation.Resource;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.PluginBaseController;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.common.exception.NotLoginException;
@@ -21,9 +20,6 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 
 	@Resource
 	private MenuItemRepository<T> menuItemRepository;
-	
-	@Resource
-	private BootSiteConfig bootSiteConfig;
 	
 //	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.GET)
@@ -42,7 +38,7 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 			menus = menuItemRepository.findUserMenus(userDetail);
 		}
 		
-		return pluginMv("/permission/admin", "menus", menus, "adminTitle", bootSiteConfig.getAppName());
+		return pluginMv("/permission/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());
 	}
 	
 }

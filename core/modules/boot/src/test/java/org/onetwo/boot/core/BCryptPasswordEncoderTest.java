@@ -1,15 +1,32 @@
 package org.onetwo.boot.core;
 
 import org.junit.Test;
+import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.utils.Langs;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 public class BCryptPasswordEncoderTest {
 	
 	@Test
 	public void test(){
+		String pwd = "13333333333";
+		StandardPasswordEncoder def = new StandardPasswordEncoder();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String str = encoder.encode("13333333333");
-		System.out.println("str:" + str);
+		
+		TimeCounter time = new TimeCounter("sha");
+		int times = 100;
+		time.start();
+		Langs.repeatRun(times, ()->{
+			def.encode(pwd);
+		});
+		time.stop();
+		
+		time.restart("bcrypt");
+		Langs.repeatRun(times, ()->{
+			encoder.encode(pwd);
+		});
+		time.stop();
 	}
 
 }

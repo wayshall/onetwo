@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
-import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -38,9 +37,9 @@ public class BaseInitFilter extends IgnoreFiler {
 	public static final String SITE_CONFIG_NAME = "siteConfig";
 	public static final String WEB_CONFIG_NAME = "webConfig";
 	
-	public static final String PREVENT_XSS_REQUEST = "prevent.xss.request";//xss
+	public static final String PREVENT_XSS_REQUEST = "security.preventXssRequest";//xss
+	public static final String TIME_PROFILER = "profile.timeit";
 	public static final String COOKIE_P3P = "cookie.p3p";
-	public static final String TIME_PROFILER = "time.profiler";
 
 //	public static final String START_TIME_KEY = "org.onetwo.logger.request.startTime";
 //	public static final String END_TIME_KEY = "org.onetwo.logger.request.endTime";
@@ -57,7 +56,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
 	
 	private boolean preventXssRequest = false;
-	private AppConfig siteConfig;
+	private SiteConfig siteConfig;
 
 	protected void initApplication(FilterConfig config) {
 		
@@ -72,9 +71,9 @@ public class BaseInitFilter extends IgnoreFiler {
 //		SpringApplication.initApplication(app);
 		SpringApplication.initApplicationIfNotInitialized(app);
 		
-		AppConfigProvider webConfigProvider = SpringUtils.getBean(app, AppConfigProvider.class);
+		SiteConfigProvider<?> webConfigProvider = SpringUtils.getBean(app, SiteConfigProvider.class);
 		if(webConfigProvider!=null){
-			siteConfig = webConfigProvider.createAppConfig(config);
+			siteConfig = webConfigProvider.createConfig(config);
 			Assert.notNull(siteConfig);
 			context.setAttribute(SITE_CONFIG_NAME, siteConfig);
 //			context.setAttribute(WEB_CONFIG_NAME, webConfigProvider.createWebConfig(config));
@@ -82,7 +81,7 @@ public class BaseInitFilter extends IgnoreFiler {
 			
 			this.initOnAppConfig(siteConfig);
 		}else{
-			siteConfig = AppConfig.create(true);
+//			siteConfig = AppConfig.create(true);
 			logger.info("no webConfigProvider found.");
 		}
 		
@@ -102,10 +101,10 @@ public class BaseInitFilter extends IgnoreFiler {
 	protected void initWithWebApplicationContext(FilterConfig config, WebApplicationContext app){
 	}
 	
-	protected void initOnAppConfig(AppConfig appConfig){
+	protected void initOnAppConfig(SiteConfig appConfig){
 		//xss
-		this.preventXssRequest = appConfig.getBoolean(PREVENT_XSS_REQUEST, false);
-		UtilTimerStack.active(appConfig.getBoolean(TIME_PROFILER, appConfig.isDev()));
+		this.preventXssRequest = appConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
+		UtilTimerStack.active(appConfig.getConfig(TIME_PROFILER, false, boolean.class));
 	}
 
 	/*public String[] getWebFilters(FilterConfig config){
@@ -131,13 +130,13 @@ public class BaseInitFilter extends IgnoreFiler {
 		}
 	}
 	
-	protected void reloadConfigIfNecessary(HttpServletRequest request){
+	/*protected void reloadConfigIfNecessary(HttpServletRequest request){
 		boolean reloadSiteConfig = RELOAD.equals(request.getParameter(SITE_CONFIG_NAME));
 		if(reloadSiteConfig){
 			siteConfig.reload();
 			this.initOnAppConfig(siteConfig);
 		}
-	}
+	}*/
 
 
 	public void doFilterInternal(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -150,8 +149,8 @@ public class BaseInitFilter extends IgnoreFiler {
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 		try {
-			this.reloadConfigIfNecessary(request);
-			if(siteConfig.getBoolean(COOKIE_P3P, false))
+//			this.reloadConfigIfNecessary(request);
+			if(siteConfig.getConfig(COOKIE_P3P, false, boolean.class))
 				addP3P(response);
 			processLocale(request, response);
 			

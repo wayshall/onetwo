@@ -64,7 +64,7 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		Properties mediaTypes = jfishBootConfig.getMediaTypes();
+		Properties mediaTypes = jfishBootConfig.getMvc().getMediaTypes();
 		if (!CollectionUtils.isEmpty(mediaTypes)) {
 			for (Entry<Object, Object> entry : mediaTypes.entrySet()) {
 				String extension = ((String)entry.getKey()).toLowerCase(Locale.ENGLISH);

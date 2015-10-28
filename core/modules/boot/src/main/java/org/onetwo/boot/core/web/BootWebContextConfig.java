@@ -6,10 +6,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
+import org.onetwo.boot.core.config.BootBussinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootJFishConfig.StoreType;
-import org.onetwo.boot.core.config.BootJFishConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
+import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
+import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
+@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBussinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
 public class BootWebContextConfig {
@@ -63,15 +67,18 @@ public class BootWebContextConfig {
 	@Autowired
 	private BootJFishConfig bootJfishConfig;
 	
+	@Autowired
+	private BootSiteConfig bootSiteConfig;
+	
 	@PostConstruct
 	public void init(){
 		SpringApplication.initApplicationIfNotInitialized(applicationContext);
 	}
 	
-	@Bean
+	/*@Bean
 	public BootSiteConfig bootSiteConfig(){
-		return BootSiteConfig.getInstance();
-	}
+		return bootSiteConfig;
+	}*/
 	
 	/****
 	 * CorsFilter 须在所有filter之前，包括security的filter
@@ -91,7 +98,7 @@ public class BootWebContextConfig {
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)
 	public FileStorer<?> fileStorer(){
-		UploadConfig config = bootJfishConfig.getUpload();
+		UploadConfig config = bootSiteConfig.getUpload();
 		StoreType type = config.getStoreType();
 		
 		if(type==StoreType.LOCAL){
@@ -164,7 +171,7 @@ public class BootWebContextConfig {
 	@Bean
 	public BootJsonView bootJsonView(){
 		BootJsonView jv = new BootJsonView();
-		jv.setPrettyPrint(bootJfishConfig.getJson().isPrettyPrint());
+		jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
 		return jv;
 	}
 	
@@ -208,7 +215,7 @@ public class BootWebContextConfig {
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(bootJfishConfig.getUpload().getMaxUploadSize());
+		resolver.setMaxUploadSize(bootSiteConfig.getUpload().getMaxUploadSize());
 		return resolver;
 	}
 

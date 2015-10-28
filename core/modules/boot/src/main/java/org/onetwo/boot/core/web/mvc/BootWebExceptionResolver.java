@@ -276,7 +276,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		Class<?> eclass = ex.getClass();
 		String viewName = null;
 		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
-			viewName = bootSiteConfig.getProperty(eclass.getName());
+			viewName = bootSiteConfig.getConfig(eclass.getName(), "");
 			if(StringUtils.isNotBlank(viewName))
 				return viewName;
 			if(eclass.getSuperclass()!=null){
