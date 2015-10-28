@@ -284,7 +284,7 @@ abstract public class AbstractBaseController {
 		return clazz.cast(user);
 	}
 
-	public BootSiteConfig getBootSiteConfig() {
+	protected BootSiteConfig getBootSiteConfig() {
 		return bootSiteConfig;
 	}
 

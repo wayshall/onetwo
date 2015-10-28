@@ -1,6 +1,6 @@
 package org.onetwo.common.propconf;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 
 public enum Env {
 	PRODUCT("生产环境"),
@@ -33,7 +33,7 @@ public enum Env {
 			String value = convert(envstr.toUpperCase());
 			env = valueOf(value);
 		} catch (Exception e) {
-			MyLoggerFactory.getLogger(Env.class).error("no env found: " + envstr, e);
+			JFishLoggerFactory.getLogger(Env.class).error("no env found: " + envstr, e);
 			env = DEV;
 		}
 		return env;
