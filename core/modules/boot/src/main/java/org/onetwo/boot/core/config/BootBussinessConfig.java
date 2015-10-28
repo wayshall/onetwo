@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /***
  * 需要使用到的bussiness的配置
+ * 继承JFishProperties，使用map
  * @author way
  *
  */

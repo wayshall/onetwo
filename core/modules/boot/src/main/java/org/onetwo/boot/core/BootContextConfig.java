@@ -4,6 +4,7 @@ import javax.validation.Validator;
 
 import org.onetwo.boot.core.config.BootBussinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
@@ -19,7 +20,7 @@ import org.springframework.util.ClassUtils;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBussinessConfig.class})
+@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBussinessConfig.class, BootSiteConfig.class})
 public class BootContextConfig {
 	
 	public static final String BEAN_EXCEPTION_MESSAGE = "exceptionMessage";
