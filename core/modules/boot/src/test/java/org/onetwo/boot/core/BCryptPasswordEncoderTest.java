@@ -2,7 +2,7 @@ package org.onetwo.boot.core;
 
 import org.junit.Test;
 import org.onetwo.common.profiling.TimeCounter;
-import org.onetwo.common.utils.Langs;
+import org.onetwo.common.utils.LangOps;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
@@ -17,13 +17,13 @@ public class BCryptPasswordEncoderTest {
 		TimeCounter time = new TimeCounter("sha");
 		int times = 100;
 		time.start();
-		Langs.repeatRun(times, ()->{
+		LangOps.repeatRun(times, ()->{
 			def.encode(pwd);
 		});
 		time.stop();
 		
 		time.restart("bcrypt");
-		Langs.repeatRun(times, ()->{
+		LangOps.repeatRun(times, ()->{
 			encoder.encode(pwd);
 		});
 		time.stop();

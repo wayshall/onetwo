@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.Langs;
+import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.ConversionNotSupportedException;
 
 public class CopyUtilsTest {
@@ -323,11 +323,11 @@ public class CopyUtilsTest {
 		srcBean.setCreateTime(createTime);
 		
 		int count = 100000;
-		Langs.repeatRun("copyFrom", count, ()->{
+		LangOps.repeatRun("copyFrom", count, ()->{
 			CopyUtils.copyFrom(srcBean).toNewInstance();
 		});
 		
-		Langs.repeatRun("deepClone", count, ()->{
+		LangOps.repeatRun("deepClone", count, ()->{
 			CopyUtils.deepClone(srcBean);
 		});
 		
@@ -343,11 +343,11 @@ public class CopyUtilsTest {
 		srcBean.setDatas(datas);
 		
 
-		Langs.repeatRun("copyFrom", count, ()->{
+		LangOps.repeatRun("copyFrom", count, ()->{
 			CopyUtils.copyFrom(srcBean).toNewInstance();
 		});
 		
-		Langs.repeatRun("deepClone", count, ()->{
+		LangOps.repeatRun("deepClone", count, ()->{
 			CopyUtils.deepClone(srcBean);
 		});
 	}

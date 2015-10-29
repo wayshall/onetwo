@@ -15,7 +15,7 @@ import org.onetwo.common.utils.func.Closure;
  * @author way
  *
  */
-final public class Langs {
+final public class LangOps {
 	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
@@ -46,6 +46,6 @@ final public class Langs {
 	
 //	public static long sum(Iterable<T>)
 	
-	private Langs(){}
+	private LangOps(){}
 
 }
