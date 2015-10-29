@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
-import org.onetwo.boot.core.config.BootBussinessConfig;
+import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBussinessConfig.class, BootSiteConfig.class})
+@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
 public class BootWebContextConfig {

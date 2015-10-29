@@ -7,7 +7,14 @@ import org.junit.Test;
 import org.junit.Assert;
 
 public class RegularExpTest {
-
+	
+	/*@Test
+	public void tesetGroup1(){
+		Pattern pattern = Pattern.compile("^$");
+		String input = "findUserByStatus(NORMAL||DELETE)";
+		Matcher matcher = pattern.matcher(input);
+	}
+*/
 	@Test
 	public void testGroup() {
 		/****

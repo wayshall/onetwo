@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.Langs;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.func.IndexableClosure;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
@@ -24,7 +24,7 @@ public class RestAssuredBaseTests {
 	
 
 	protected <T> List<T> createObjects(int size, Class<T> clazz, IndexableClosure<T> mapper){
-		List<T> estatelist = Langs.generateList(size, i->{
+		List<T> estatelist = LangOps.generateList(size, i->{
 			T obj = ReflectUtils.newInstance(clazz);
 			mapper.execute(obj, i);
 			return  obj;
