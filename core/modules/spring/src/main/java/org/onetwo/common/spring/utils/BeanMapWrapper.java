@@ -14,6 +14,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.core.convert.TypeDescriptor;
@@ -133,14 +134,14 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 						propValue.set(token.listIndex, ele);
 					}
 					
-					BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
+					BeanWrapper bw = newBeanWrapper(ele);
 					bw.setPropertyValue(token.propertyPath, value);
 				}else{
 					propValue.set(token.listIndex, value);
 				}
 			}else if(token.hasPropertyPath()){
 				Object rs = data.get(token.key);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
+				BeanWrapper bw = newBeanWrapper(rs);
 				bw.setPropertyValue(token.propertyPath, value);
 			}else{
 				data.put(propertyName, value);
@@ -172,13 +173,13 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				List<Object> value = (List<Object>)data.get(token.key);
 				Object indexValue = value.get(token.listIndex);
 				if(token.hasPropertyPath()){
-					BeanWrapper bw = SpringUtils.newBeanWrapper(indexValue);
+					BeanWrapper bw = newBeanWrapper(indexValue);
 					return bw.getPropertyValue(token.propertyPath);
 				}
 				return indexValue;
 			}else if(token.hasPropertyPath()){
 				Object rs = data.get(token.key);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
+				BeanWrapper bw = newBeanWrapper(rs);
 				return bw.getPropertyValue(token.propertyPath);
 			}else{
 				return data.get(propertyName);
@@ -213,7 +214,7 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				if(token.hasPropertyPath()){
 					Class<?> eType = ReflectUtils.getGenricType(propValue, 0);
 					Object ele = this.createListElement(token, eType);
-					BeanWrapper bw = SpringUtils.newBeanWrapper(ele);
+					BeanWrapper bw = newBeanWrapper(ele);
 					return bw.isReadableProperty(token.propertyPath);
 				}
 				
@@ -225,7 +226,7 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				
 //				Class<?> eType = ReflectUtils.getGenricType(rs, 0);
 //				Object ele = this.createListElement(token, eType);
-				BeanWrapper bw = SpringUtils.newBeanWrapper(rs);
+				BeanWrapper bw = newBeanWrapper(rs);
 				return bw.isReadableProperty(token.propertyPath);
 			}else{
 				return data.containsKey(propertyName);
@@ -235,6 +236,9 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 		}
 	}
 
+	protected BeanWrapper newBeanWrapper(Object obj){
+		return SpringUtils.newBeanMapWrapper(obj);
+	}
 
 	@Override
 	public boolean isWritableProperty(String propertyName) {

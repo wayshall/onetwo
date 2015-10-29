@@ -224,6 +224,7 @@ abstract public class AbstractBaseController {
 	
 	protected void download(HttpServletResponse response, InputStream input, String filename){
 		try {
+			response.setContentLength(input.available());
 			response.setContentType(DEFAULT_CONTENT_TYPE); 
 			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment;filename=" + name);
