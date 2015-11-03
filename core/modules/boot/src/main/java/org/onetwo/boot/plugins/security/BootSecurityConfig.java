@@ -28,6 +28,8 @@ public class BootSecurityConfig implements WebContextConfigProvider {
 	private CasConfig cas = new CasConfig();
 //	private boolean csrf = true;
 	
+	private RememberMeConfig rememberMe = new RememberMeConfig();
+	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
 		if(isCasEnabled()){
@@ -49,6 +51,12 @@ public class BootSecurityConfig implements WebContextConfigProvider {
 	@Override
 	public Object getWebConfig(FilterConfig config) {
 		return this;
+	}
+
+	@Data
+	public class RememberMeConfig {
+		private String key = "adf#$%^&*()_+)(*&^hr";
+		private int tokenValiditySeconds = 60*60*24*30;
 	}
 
 

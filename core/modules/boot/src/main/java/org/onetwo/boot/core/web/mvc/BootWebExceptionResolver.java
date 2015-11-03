@@ -168,7 +168,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			errorArgs = codeMark.getArgs();
 //			errorMsg = ex.getMessage();
 			
-			findMsgByCode = StringUtils.isNotBlank(errorCode) && !codeMark.isDefaultErrorCode();
+			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !bootSiteConfig.isProduct();
 		}else if(DbmException.class.isInstance(ex)){
 			defaultViewName = ExceptionView.UNDEFINE;

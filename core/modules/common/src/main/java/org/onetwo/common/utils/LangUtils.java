@@ -1709,6 +1709,12 @@ public class LangUtils {
 		}
 	}
 	
+
+	public static boolean isNumberObject(Object val){
+		if(val==null)
+			return false;
+		return isNumberType(val.getClass());
+	}
 	public static boolean isNumberType(Class<?> clazz){
 		if(clazz==null)
 			return false;

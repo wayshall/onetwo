@@ -1,7 +1,6 @@
 package org.onetwo.boot.plugins.security.config;
 
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
-import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.boot.plugins.security.mvc.args.SecurityArgumentResolver;

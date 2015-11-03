@@ -7,10 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,6 +26,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, AuthenticationSuccessHandler, InitializingBean {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
+	public static final String ERROR_CODE_KEY = AuthenticationException.class.getName() + ".error_code";
 	
 //	private String authenticationFailureUrl;
 	private AuthenticationFailureHandler failureHandler;
@@ -86,14 +90,27 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
             ServletException {
 		logger.error("login error", exception);
 		if(BootWebUtils.isAjaxRequest(request)){
-			SimpleDataResult<?> rs = WebResultCreator.creator().error(exception.getMessage()+": 找不到用户或密码错误！")
-														.buildResult();
+			SimpleResultBuilder builder = WebResultCreator.creator().error("验证失败："+exception.getMessage());
+			
+			SimpleDataResult<?> rs = buildErrorCode(builder, request, exception).buildResult();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{
 			this.failureHandler.onAuthenticationFailure(request, response, exception);
 		}
     }
+	
+	private SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, AuthenticationException exception){
+		if(ExceptionCodeMark.class.isInstance(exception)){
+			String code = ((ExceptionCodeMark)exception).getCode();
+			builder.code(code);
+		}else{
+			Object codeValue = request.getAttribute(ERROR_CODE_KEY);
+			if(codeValue!=null)
+				builder.code(codeValue.toString());
+		}
+		return builder;
+	}
 	
 	public void setAuthenticationFailureUrl(String authenticationFailureUrl) {
 		this.authenticationFailureUrl = authenticationFailureUrl;
