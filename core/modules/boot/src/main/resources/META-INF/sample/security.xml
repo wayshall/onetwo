@@ -34,6 +34,9 @@
             <!-- 如果使用同一个账号重复登录，则后面登录的用户登录时会抛出异常 -->
             <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
         </session-management>
+        
+        <!-- 一周 -->
+        <!-- <remember-me key="FGHYR$%&()L<NGGJURW#$%^&&*(=-=)" token-validity-seconds="604800"/> -->
     </http>
     
     <authentication-manager>

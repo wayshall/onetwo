@@ -3,6 +3,10 @@ package org.onetwo.boot.plugins.security.utils;
 import org.onetwo.boot.core.matcher.MatcherUtils;
 import org.onetwo.boot.core.matcher.MutipleRequestMatcher;
 import org.onetwo.boot.plugins.security.CommonReadMethodMatcher;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 final public class SecurityUtils {
@@ -18,5 +22,10 @@ final public class SecurityUtils {
 		MutipleRequestMatcher mutiple = MatcherUtils.matchAntPaths(paths);
 		mutiple.addMatchers(READ_METHOD_MATCHER);
 		return mutiple;
+	}
+	
+	public static FormLoginConfigurer<HttpSecurity> hackFormLoginAuthFilter(FormLoginConfigurer<HttpSecurity> formLoginConfig, AbstractAuthenticationProcessingFilter filter){
+		ReflectUtils.getIntro(FormLoginConfigurer.class).setFieldValue(formLoginConfig, "authFilter", filter);
+		return formLoginConfig;
 	}
 }

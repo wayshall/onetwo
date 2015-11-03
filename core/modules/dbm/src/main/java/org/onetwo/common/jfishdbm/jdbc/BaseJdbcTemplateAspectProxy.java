@@ -1,16 +1,21 @@
 package org.onetwo.common.jfishdbm.jdbc;
 
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.expr.HolderCharsScanner;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+
+import com.google.common.collect.Lists;
 
 public class BaseJdbcTemplateAspectProxy {
 	
@@ -77,7 +82,14 @@ public class BaseJdbcTemplateAspectProxy {
 		}
 	}
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(BaseJdbcTemplateAspectProxy.class);
+	protected final Logger logger = JFishLoggerFactory.getLogger(BaseJdbcTemplateAspectProxy.class);
+	protected final HolderCharsScanner holder = HolderCharsScanner.holder("?");
+//	private static boolean printRelacedSql = true;
+	
+	
+	/*public static void setPrintRelacedSql(boolean _printRelacedSql) {
+		printRelacedSql = _printRelacedSql;
+	}*/
 
 	protected void afterProceed(Context context, ProceedingJoinPoint pjp){
 		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());
@@ -117,12 +129,31 @@ public class BaseJdbcTemplateAspectProxy {
 					}
 				}
 				logMsg.append("sql: ").append(sql).append("\nsql args: ").append(LangUtils.toString(mArgs)).append("\n");
+				
+				List<?> argList = convertAsList(mArgs);
+				String parseArgSql = holder.parse(sql, index->{
+					Object val = argList.get(index);
+					return LangUtils.isNumberObject(val)?val.toString():"'"+val.toString()+"'";
+				});
+				logMsg.append("replaced arg sql:").append(parseArgSql).append("\n");
+				
 				logMsg.append(context).append("\n");
 				logger.info(logMsg.toString());
 			}
 			
 		} catch (Throwable e) {
 			logger.error("log jdbc error : " + e.getMessage(), e);
+		}
+	}
+	
+	protected List<?> convertAsList(Object args){
+		if(Iterable.class.isInstance(args)){
+			return Lists.newArrayList((Iterable<?>)args);
+		}else if(Map.class.isInstance(args)){
+			Map<?, ?> map = (Map<?, ?>) args;
+			return Lists.newArrayList(map.values());
+		}else{
+			return CUtils.tolist(args, false);
 		}
 	}
 	

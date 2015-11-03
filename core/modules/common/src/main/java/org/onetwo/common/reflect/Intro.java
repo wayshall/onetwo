@@ -270,25 +270,37 @@ public class Intro<T> {
 	
 
 	
-	public Object getFieldValue(String fieldName, boolean parent) {
+	public Object getStaticFieldValue(String fieldName, boolean parent) {
 		Field f = checkField(fieldName, parent);
 		return ReflectUtils.getFieldValue(f, clazz, true);
 	}
 	
 	
+
+	public Object getFieldValue(Object obj, String fieldName) {
+		return getFieldValue(obj, fieldName, true);
+	}
 	public Object getFieldValue(Object obj, String fieldName, boolean parent) {
 		Assert.isInstanceOf(clazz, obj);
 		Field f = checkField(fieldName, parent);
 		return ReflectUtils.getFieldValue(f, obj, true);
 	}
 	
-	
+
+	public void setFieldValue(Object obj, String fieldName, Object value) {
+		setFieldValue(obj, fieldName, value, true);
+	}
 	public void setFieldValue(Object obj, String fieldName, Object value, boolean parent) {
 		Assert.isInstanceOf(clazz, obj);
 		Field field = checkField(fieldName, parent);
 		ReflectUtils.setFieldValue(field, obj, value);
 	}
-	public void setFieldValue(String fieldName, Object value, boolean parent) {
+	
+
+	public void setStaticFieldValue(Object value, String fieldName) {
+		setStaticFieldValue(value, fieldName, true);
+	}
+	public void setStaticFieldValue(Object value, String fieldName, boolean parent) {
 		Field field = checkField(fieldName, parent);
 		ReflectUtils.setFieldValue(field, clazz, value);
 	}

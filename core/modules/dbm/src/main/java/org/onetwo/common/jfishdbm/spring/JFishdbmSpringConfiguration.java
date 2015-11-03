@@ -7,6 +7,7 @@ import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
+import org.onetwo.common.jfishdbm.jdbc.BaseJdbcTemplateAspectProxy;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplateAspectProxy;

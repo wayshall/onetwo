@@ -26,7 +26,17 @@ final public class LangOps {
 										.map(mapper)
 										.collect(Collectors.toList());
 	}
-	
+
+
+	public static void timeIt(String tag, Closure closure){
+		TimeCounter tc = new TimeCounter(tag);
+		tc.start();
+		try {
+			closure.execute();
+		} finally{
+			tc.stop();
+		}
+	}
 
 	public static void repeatRun(Integer times, Closure closure){
 		repeatRun(null, times, closure);
