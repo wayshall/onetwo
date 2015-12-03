@@ -15,7 +15,7 @@ public class BCryptPasswordEncoderTest {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
 		TimeCounter time = new TimeCounter("sha");
-		int times = 100;
+		int times = 1;
 		time.start();
 		LangOps.repeatRun(times, ()->{
 			def.encode(pwd);
@@ -24,7 +24,8 @@ public class BCryptPasswordEncoderTest {
 		
 		time.restart("bcrypt");
 		LangOps.repeatRun(times, ()->{
-			encoder.encode(pwd);
+			String str = encoder.encode(pwd);
+			System.out.println(str.length()+":"+str);
 		});
 		time.stop();
 	}

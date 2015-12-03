@@ -20,11 +20,16 @@
   </properties>
 
   <dependencies>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-spring</artifactId>
-	</dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-common</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-spring</artifactId>
+    </dependency>
 	
 	<dependency>
 	  <groupId>javax.persistence</groupId>
@@ -60,6 +65,11 @@
         <artifactId>mysql-connector-java</artifactId>
         <scope>test</scope>
     </dependency> 
+    
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+    </dependency>
 	
   </dependencies>
   
