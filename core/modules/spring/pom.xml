@@ -24,6 +24,7 @@
 	<dependency>
 	  <groupId>org.onetwo</groupId>
 	  <artifactId>onetwo-jackson</artifactId>
+	  <scope>provided</scope>
 	</dependency>
 	
 	<dependency>
