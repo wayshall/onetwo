@@ -18,6 +18,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /***
  * 兼容以前siteConfig的配置
+ * TODO: 可再包一层读取远程配置
  * 	  name: testName
  * 	  code: testCode
  * @author way
@@ -30,16 +31,21 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String APP_NAME = "name";
 	public static final String APP_CODE = "code";*/
 
-	public static final String PATH_JS = "path.js";
+	/*public static final String PATH_JS = "path.js";
 	public static final String PATH_RS = "path.resources";
 	public static final String PATH_CSS = "path.css";
-	public static final String PATH_IMAGE = "path.image";
+	public static final String PATH_IMAGE = "path.image";*/
 	
 	private String contextPath;
 	private String contextRealPath;
 	private String name;
 	private String code;
 	private String baseURL;
+	
+	private String jsPath;
+	private String cssPath;
+	private String imagePath;
+	private String resourcePath;
 
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
@@ -99,30 +105,27 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	 */
 	public String getJsPath(){
 //		return getContextPath()+getProperty(PATH_JS, "/js");
-		String jspath = getProperty(PATH_JS);
-		if(StringUtils.isNotBlank(jspath))
-			return getContextPath()+jspath;
+		if(StringUtils.isNotBlank(jsPath)){
+			return jsPath;
+		}
 		return getBaseURL() + "/js";
 	}
 	
 	public String getRsPath(){
-		String csspath = getProperty(PATH_RS);
-		if(StringUtils.isNotBlank(csspath))
-			return getContextPath()+csspath;
+		if(StringUtils.isNotBlank(resourcePath))
+			return resourcePath;
 		return getBaseURL()+ "/resources";
 	}
 	
 	public String getCssPath(){
-		String csspath = getProperty(PATH_CSS);
-		if(StringUtils.isNotBlank(csspath))
-			return getContextPath()+csspath;
+		if(StringUtils.isNotBlank(cssPath))
+			return cssPath;
 		return getBaseURL()+ "/css";
 	}
 	
 	public String getImagePath(){
-		String imgpath = getProperty(PATH_IMAGE);
-		if(StringUtils.isNotBlank(imgpath))
-			return getContextPath()+imgpath;
+		if(StringUtils.isNotBlank(imagePath))
+			return imagePath;
 		return getBaseURL()+"/images";
 	}
 
