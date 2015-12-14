@@ -19,6 +19,7 @@
 	  <profile>
     	<id>modules</id>
     	<modules>
+				<module>bom</module>
 				<module>parent</module>
 				<module>common</module>
 				<module>jackson</module>
