@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.SimpleExpression;
 import org.onetwo.common.expr.ValueProvider;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.util.Assert;
 
@@ -26,11 +27,12 @@ public class UrlResourceInfoParser {
 		if(StringUtils.isBlank(source))
 			return Lists.newArrayList();
 		
-		return Splitter.on(",")
-				.trimResults()
-				.omitEmptyStrings()
-				.splitToList(source)
-				.stream()
+		Iterable<String> it = Splitter.on(",")
+										.trimResults()
+										.omitEmptyStrings()
+										.split(source);
+		
+		return CUtils.iterableToList(it).stream()
 				.map(str->parseToUrlResourceInfo(str))
 				.collect(Collectors.toList());
 	}
