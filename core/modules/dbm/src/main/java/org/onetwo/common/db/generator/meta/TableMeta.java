@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -110,7 +111,8 @@ public class TableMeta {
 	}
 	
 	public List<String> getComments() {
-		return Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(comment);
+		Iterable<String> it = Splitter.on('\n').trimResults().omitEmptyStrings().split(comment);
+		return CUtils.iterableToList(it);
 	}
 
 	public String getStripPrefix() {
