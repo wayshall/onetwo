@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.generator.mapping.ColumnMapping;
 import org.onetwo.common.db.generator.utils.DbGeneratorUtills;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import com.google.common.base.Splitter;
@@ -51,7 +52,7 @@ public class ColumnMeta {
 	}
 	
 	public List<String> getComments() {
-		return Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(comment);
+		return CUtils.iterableToList(Splitter.on('\n').trimResults().omitEmptyStrings().split(comment));
 	}
 	
 	public Map<String, String> getCommentsInfo() {

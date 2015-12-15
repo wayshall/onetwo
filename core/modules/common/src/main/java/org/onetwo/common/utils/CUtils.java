@@ -615,6 +615,12 @@ final public class CUtils {
 		return list.stream().map(mapper).collect(Collectors.toList());
 	}
 	
+	public static <T> List<T> iterableToList(Iterable<T> it){
+		List<T> list = new ArrayList<T>();
+		it.forEach(e->list.add(e));
+		return Collections.unmodifiableList(list);
+	}
+	
 	private CUtils(){
 	}
 
