@@ -39,10 +39,11 @@ public class UrlResourceInfoParser {
 	
 	private UrlResourceInfo parseToUrlResourceInfo(String source){
 		Assert.hasText(source);
-		List<String> strList = Splitter.on("|")
+		Iterable<String> it = Splitter.on("|")
 								.trimResults()
 								.omitEmptyStrings()
-								.splitToList(source);
+								.split(source);
+		List<String> strList = CUtils.iterableToList(it);
 		if(strList.size()==1){
 			return new UrlResourceInfo(strList.get(0));
 		}else{
