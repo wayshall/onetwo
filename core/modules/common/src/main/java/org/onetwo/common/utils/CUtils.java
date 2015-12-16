@@ -612,10 +612,14 @@ final public class CUtils {
 	}
 
 	public static <T, R> List<R> map(Collection<T> list, Function<? super T, ? extends R> mapper){
+		Assert.notNull(list);
+		Assert.notNull(mapper);
 		return list.stream().map(mapper).collect(Collectors.toList());
 	}
 	
 	public static <T> List<T> iterableToList(Iterable<T> it){
+		if(it==null)
+			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>();
 		it.forEach(e->list.add(e));
 		return Collections.unmodifiableList(list);
