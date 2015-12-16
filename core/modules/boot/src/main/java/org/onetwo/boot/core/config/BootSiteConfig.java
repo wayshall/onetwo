@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author way
  *
  */
-@ConfigurationProperties(prefix="website")
+@ConfigurationProperties(prefix="siteConfig")
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {
 	/*public static final String BASEURL = "baseURL";
