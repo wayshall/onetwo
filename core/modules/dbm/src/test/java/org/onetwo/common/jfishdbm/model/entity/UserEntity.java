@@ -80,6 +80,10 @@ public class UserEntity {
 	 * 
 	 */
 	protected Date birthday;
+
+	private Integer age;
+	private Float height;
+
 	
 	//系统代码
 	protected String appCode;
@@ -212,6 +216,16 @@ public class UserEntity {
 	}
 
 
+	public Integer getAge() {
+		return age;
+	}
+
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+
 	public String getAppCode() {
 		return appCode;
 	}
@@ -226,6 +240,16 @@ public class UserEntity {
 		this.status = status;
 	}
 	
+
+	public Float getHeight() {
+		return height;
+	}
+
+
+	public void setHeight(Float height) {
+		this.height = height;
+	}
+
 
 	public static enum UserStatus {
 		NORMAL("正常"),
