@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu1;
 import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu1.SubTestMenu11;
 import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu1.SubTestMenu11.SubTestMenu111;

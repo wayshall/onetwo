@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.common.jackson.UserEntity;
+import org.onetwo.common.jfishdbm.model.entity.UserEntity;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -32,7 +32,7 @@ public class JFishEntityManagerTest extends SpringBaseJUnitTestCase {
 	public void testSave() {
 		user = new UserEntity();
 		user.setUserName("JdbcTest");
-		user.setBirthDay(DateUtil.now());
+		user.setBirthday(DateUtil.now());
 		user.setEmail("username@qq.com");
 		user.setHeight(3.3f);
 		user.setAge(28);
@@ -65,9 +65,9 @@ public class JFishEntityManagerTest extends SpringBaseJUnitTestCase {
 		Assert.assertEquals(uuser.getUserName(), quser.getUserName());
 
 		Assert.assertNull(quser.getAge());
-		Assert.assertNull(quser.getBirthDay());
+		Assert.assertNull(quser.getBirthday());
 		Assert.assertFalse(user.getAge().equals(quser.getAge()));
-		Assert.assertFalse(user.getBirthDay().equals(quser.getBirthDay()));
+		Assert.assertFalse(user.getBirthday().equals(quser.getBirthday()));
 	}
 	
 	@Test
