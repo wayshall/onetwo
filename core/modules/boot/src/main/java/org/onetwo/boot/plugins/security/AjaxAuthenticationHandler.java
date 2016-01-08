@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
@@ -27,7 +26,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	public static final String ERROR_CODE_KEY = AuthenticationException.class.getName() + ".error_code";
+//	public static final String ERROR_CODE_KEY = AuthenticationException.class.getSimpleName() + ".error_code";
 	
 //	private String authenticationFailureUrl;
 	private AuthenticationFailureHandler failureHandler;
@@ -101,7 +100,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
     }
 	
 	private SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, AuthenticationException exception){
-		if(ExceptionCodeMark.class.isInstance(exception)){
+		/*if(ExceptionCodeMark.class.isInstance(exception)){
 			String code = ((ExceptionCodeMark)exception).getCode();
 			builder.code(code);
 		}else{
@@ -109,7 +108,8 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 			if(codeValue!=null)
 				builder.code(codeValue.toString());
 		}
-		return builder;
+		return builder;*/
+		return BootWebUtils.buildErrorCode(builder, request, exception);
 	}
 	
 	public void setAuthenticationFailureUrl(String authenticationFailureUrl) {

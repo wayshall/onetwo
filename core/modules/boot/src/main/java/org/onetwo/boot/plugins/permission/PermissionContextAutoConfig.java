@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnBean(PermissionConfig.class)
-public class PermissionContextConfig {
+public class PermissionContextAutoConfig {
 	
 	@Bean
 	public PermissionController permissionController(){

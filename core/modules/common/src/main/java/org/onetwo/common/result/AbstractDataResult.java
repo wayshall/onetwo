@@ -10,8 +10,10 @@ import org.onetwo.common.utils.StringUtils;
 @SuppressWarnings("serial")
 abstract public class AbstractDataResult<T> implements Result<String, T>{
 	public static final String SUCCESS = "SUCCESS";
+	
 	public static final String ERROR = "ERROR";
 	public static final String ERR = "ERR";
+	public static final String EXCEPTION_POSTFIX = "Exception";
 	
 	private String code = SUCCESS;//0,1;
 	private String message;//
@@ -46,10 +48,13 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 	}
 
 	public boolean isError(){
-		if(code!=null && code.toUpperCase().startsWith(ERR) || code.toUpperCase().startsWith(ERROR))
-			return true;
-		else
+		if(code!=null){
+			return code.endsWith(EXCEPTION_POSTFIX) || 
+					code.toUpperCase().startsWith(ERR) || 
+					code.toUpperCase().startsWith(ERROR);
+		}else{
 			return false;
+		}
 	}
 	
 	public boolean isExtractableData() {

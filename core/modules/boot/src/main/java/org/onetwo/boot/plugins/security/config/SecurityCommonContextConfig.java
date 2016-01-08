@@ -1,6 +1,7 @@
 package org.onetwo.boot.plugins.security.config;
 
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
+import org.onetwo.boot.plugins.security.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.boot.plugins.security.mvc.args.SecurityArgumentResolver;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 /****
@@ -68,6 +70,11 @@ public class SecurityCommonContextConfig {
 	public BCryptPasswordEncoder bcryptEncoder(){
 		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
 		return coder;
+	}
+	
+	@Bean
+	public AccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
+		return new AjaxSupportedAccessDeniedHandler();
 	}
 
 }

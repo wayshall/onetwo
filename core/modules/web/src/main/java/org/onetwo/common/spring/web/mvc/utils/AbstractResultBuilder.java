@@ -42,6 +42,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	
 	/****
 	 * 如果表示错误，以 {@linkplain AbstractDataResult#ERROR ERROR} 为前缀
+	 * {@linkplain AbstractDataResult#EXCEPTION_POSTFIX EXCEPTION_POSTFIX}  为后缀
 	 * @param code
 	 * @param message
 	 * @return
