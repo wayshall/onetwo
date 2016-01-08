@@ -17,7 +17,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.ClassUtils;
 
 /****
@@ -178,7 +178,8 @@ public class SpringApplication {
 		if(map==null || map.isEmpty())
 			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>(map.values());
-		OrderComparator.sort(list);
+//		OrderComparator.sort(list);
+		AnnotationAwareOrderComparator.sort(list);
 		return list;
 	}
 	

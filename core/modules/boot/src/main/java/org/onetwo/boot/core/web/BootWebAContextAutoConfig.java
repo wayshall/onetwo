@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
-public class BootWebContextConfig {
+public class BootWebAContextAutoConfig {
 	
 	@Autowired
 	private ApplicationContext applicationContext;
