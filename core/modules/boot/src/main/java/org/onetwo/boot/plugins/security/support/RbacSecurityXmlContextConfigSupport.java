@@ -38,4 +38,6 @@ public class RbacSecurityXmlContextConfigSupport {
 	public FixSecurityFilterBugServletContextInitializer fixSecurityFilterBugServletContextInitializer(){
 		return new FixSecurityFilterBugServletContextInitializer();
 	}
+	
+	
 }

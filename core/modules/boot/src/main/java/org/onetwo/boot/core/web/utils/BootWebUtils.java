@@ -5,12 +5,14 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.file.FileUtils;
@@ -20,6 +22,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.utils.MvcUtils;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
@@ -373,5 +376,17 @@ public final class BootWebUtils {
 		if(LangUtils.isNotEmpty(modules))
 			mapper.registerModules(modules);
 		return mapper;
+	}
+	
+	public static SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, Exception exception){
+		if(ExceptionCodeMark.class.isInstance(exception)){
+			String code = ((ExceptionCodeMark)exception).getCode();
+			builder.code(code);
+		}else{
+			String key =  exception.getClass().getSimpleName();
+			Object codeValue = Optional.ofNullable(request.getAttribute(key)).orElse(key);
+			builder.code(codeValue.toString());
+		}
+		return builder;
 	}
 }
