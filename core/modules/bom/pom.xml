@@ -4,7 +4,8 @@
 
   	<groupId>org.onetwo</groupId>
 	<artifactId>onetwo-bom</artifactId>
-	<!-- 4.1.x for boot -->
+	<!-- 4.1.x for boot 1.2.4.RELEASE -->
+	<!-- 4.2.x for boot 1.3.1.RELEASE -->
 	<version>4.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 

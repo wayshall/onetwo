@@ -1,11 +1,5 @@
 package org.onetwo.common.utils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.annotation.AnnotationUtils;
@@ -14,7 +8,11 @@ import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu1.SubTest
 import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu1.SubTestMenu11.SubTestMenu111;
 import org.onetwo.common.utils.AnnotationUtilsTest.TestMenu.SubTestMenu2;
 
-import test.entity.UserEntity;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 
 public class AnnotationUtilsTest {
 	

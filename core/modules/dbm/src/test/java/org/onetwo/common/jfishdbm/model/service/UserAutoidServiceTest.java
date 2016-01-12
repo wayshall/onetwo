@@ -54,7 +54,7 @@ public class UserAutoidServiceTest extends AppBaseTest {
 		Assert.assertEquals(count, userlist.size());
 		
 		final String newUserNamePrefix = "update-user-name";
-		userlist.stream().forEach(e->( e.setUserName(newUserNamePrefix)));
+		userlist.stream().forEach(e->  e.setUserName(newUserNamePrefix) );
 		count = userAutoidServiceImpl.update(userlist);
 		Assert.assertEquals(count, userlist.size());
 		

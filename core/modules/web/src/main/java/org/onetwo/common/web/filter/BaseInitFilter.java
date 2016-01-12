@@ -119,7 +119,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		return request;
 	}
 	
-	protected void printRequestTime(boolean push, HttpServletRequest request){
+	private void printRequestTime(boolean push, HttpServletRequest request){
 		if(!timeProfiler)
 			return ;
 		String url = request.getMethod() + "|" + request.getRequestURI();
