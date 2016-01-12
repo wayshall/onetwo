@@ -5,7 +5,7 @@ package org.onetwo.common.jfishdbm;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.dquery.spring.DbmDQueryEnabled;
+import org.onetwo.common.db.dquery.spring.DynamicQueryEnabled;
 import org.onetwo.common.jfishdbm.spring.JFishdbmEnabled;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
@@ -30,7 +30,7 @@ public class AppBaseTest extends SpringBaseJUnitTestCase {
 	@JFishProfile
 	@ImportResource("classpath:conf/applicationContext-test.xml")
 	@JFishdbmEnabled
-	@DbmDQueryEnabled
+	@DynamicQueryEnabled
 	@ComponentScan(basePackageClasses=AppBaseTest.class)
 	public static class JFishOrmTestInnerContextConfig {
 
