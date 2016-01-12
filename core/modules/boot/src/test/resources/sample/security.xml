@@ -43,6 +43,9 @@
         <beans:property name="defaultTargetUrl" value="/plugins/permission/admin"/>
     </beans:bean>
     
+    <!-- <beans:bean id="ajaxSupportedAccessDeniedHandler" class="org.onetwo.boot.plugins.security.AjaxSupportedAccessDeniedHandler">
+    </beans:bean> -->
+    
     <beans:bean id="csrfMatcher" class="org.onetwo.boot.plugins.security.CsrfRequestUrlMatcher">
         <beans:property name="excludeUrls" value="/login*"></beans:property>
     </beans:bean>
