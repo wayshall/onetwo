@@ -6,7 +6,7 @@
 	<artifactId>onetwo-bom</artifactId>
 	<!-- 4.1.x for boot 1.2.4.RELEASE -->
 	<!-- 4.2.x for boot 1.3.1.RELEASE -->
-	<version>4.1.0-SNAPSHOT</version>
+	<version>4.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -16,7 +16,7 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>4.1.0-SNAPSHOT</onetwo.version>
+	<onetwo.version>4.2.0-SNAPSHOT</onetwo.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.3</common-codec.version>
@@ -61,7 +61,7 @@
         Import dependency management from Spring Boot
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>1.2.4.RELEASE</version>
+        <version>1.3.1.RELEASE</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency> -->
@@ -320,7 +320,7 @@
 	<dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-dependencies</artifactId>
-         <version>1.2.4.RELEASE</version>
+         <version>1.3.1.RELEASE</version>
          <type>pom</type>
          <scope>import</scope>
      </dependency>
