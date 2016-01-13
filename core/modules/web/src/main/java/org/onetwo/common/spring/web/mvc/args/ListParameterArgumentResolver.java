@@ -10,6 +10,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.annotation.ListParameter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestWrapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -60,7 +61,8 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 				}
 			}
 
-			if(webRequest.getNativeRequest() instanceof MultipartRequest){
+			Object req = RequestWrapper.unwrapRequest(webRequest.getNativeRequest());
+			if(req instanceof MultipartRequest){
 				MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
 				mrequest.getFileNames().forEachRemaining(fn->{
 					if(fn.startsWith(attrName) && bw.isWritableProperty(fn)){
