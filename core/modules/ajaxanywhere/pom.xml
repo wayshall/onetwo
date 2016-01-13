@@ -2,14 +2,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 	
-    <parent>
+    <!-- <parent>
         <groupId>org.onetwo</groupId>
         <artifactId>onetwo-parent</artifactId>
         <version>4.2.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
-    </parent>
+    </parent> -->
 	
+  <groupId>org.onetwo</groupId>
   <artifactId>onetwo-ajaxanywhere</artifactId>
+  <version>4.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>onetwo-ajaxanywhere</name>
@@ -17,7 +19,21 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <onetwo.version>4.2.0-SNAPSHOT</onetwo.version>
   </properties>
+  
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+             <groupId>org.onetwo</groupId>
+             <artifactId>onetwo-bom</artifactId>
+             <version>${onetwo.version}</version>
+             <type>pom</type>
+             <scope>import</scope>
+         </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 	
