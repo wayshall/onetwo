@@ -285,7 +285,7 @@ final public class CUtils {
 		return new LinkedHashMap<K, V>();
 	}
 
-	public static List aslist(Object... array) {
+	public static <T> List<T> aslist(T... array) {
 		return tolist(array, true);
 	}
 	public static List tolist(Object object, boolean trimNull) {
