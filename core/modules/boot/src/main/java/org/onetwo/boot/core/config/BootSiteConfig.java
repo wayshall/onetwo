@@ -42,10 +42,13 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String code;
 	private String baseURL;
 	
+	//static resouce path config
 	private String jsPath;
 	private String cssPath;
 	private String imagePath;
-	private String resourcePath;
+	
+	//uploaded file access path
+	private String uploadImageAccessPath;
 
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
@@ -111,11 +114,6 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		return getBaseURL() + "/js";
 	}
 	
-	public String getRsPath(){
-		if(StringUtils.isNotBlank(resourcePath))
-			return resourcePath;
-		return getBaseURL()+ "/resources";
-	}
 	
 	public String getCssPath(){
 		if(StringUtils.isNotBlank(cssPath))
@@ -141,6 +139,15 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		return baseURL;
 	}
 	
+
+	public String getUploadImageAccessPath() {
+		return uploadImageAccessPath;
+	}
+
+	public void setUploadImageAccessPath(String uploadImageAccessPath) {
+		this.uploadImageAccessPath = uploadImageAccessPath;
+	}
+
 
 	@Data
 	public class UploadConfig {
