@@ -268,8 +268,6 @@ public class BootWebAContextAutoConfig {
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
 		
-		logger.info("init encoding fileter: {}", this.httpEncodingProperties.getCharset().name());
-		logger.info("init encoding fileter: {}", this.httpEncodingProperties.isForce());
 		return filter;
 	}
 
