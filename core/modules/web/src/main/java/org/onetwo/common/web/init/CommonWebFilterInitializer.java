@@ -10,8 +10,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.ajaxanywhere.AAFilter;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.slf4j.Logger;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
@@ -23,6 +25,8 @@ import com.google.common.collect.ImmutableMap;
  *
  */
 public class CommonWebFilterInitializer {
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
@@ -33,26 +37,12 @@ public class CommonWebFilterInitializer {
 
 		//systemFilter
 		registeredInitFilter(servletContext, BaseInitFilter.class);
-		/*Optional.ofNullable(getInitFilterClass()).ifPresent(cls->{
-			Dynamic initfr = servletContext.addFilter("systemFilter", cls);
-			initfr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-			initfr.setAsyncSupported(true);
-			initfr.setInitParameter("filterSuffix", "true");
-		});*/
 
 		//hiddenHttpMethodFilter
 		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
-		/*fr = servletContext.addFilter("hiddenHttpMethodFilter", HiddenHttpMethodFilter.class);
-		fr.setAsyncSupported(true);
-//		fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-		fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, AbstractDispatcherServletInitializer.DEFAULT_SERVLET_NAME);*/
-//						.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
 		//ajaxAnywhere
 		registeredAjaxAnywhere(servletContext, AAFilter.class);
-		/*fr = servletContext.addFilter("ajaxAnywhere", AAFilter.class);
-		fr.setAsyncSupported(true);
-		fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");*/
 		
 		
 	}
@@ -64,6 +54,7 @@ public class CommonWebFilterInitializer {
 				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
 				frconfig.setAsyncSupported(true);
 				frconfig.setInitParameters(ImmutableMap.of("encoding", "UTF-8", "forceEncoding", "true"));
+				logger.info("FilterInitializer: {} has bean registered!", encodingFilterClass.getClass().getSimpleName());
 			});
 		});
 	}
@@ -74,6 +65,7 @@ public class CommonWebFilterInitializer {
 			Optional.ofNullable(fr).ifPresent(frconfig->{
 				frconfig.setAsyncSupported(true);
 				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+				logger.info("FilterInitializer: {} has bean registered!", multipartFilterClass.getClass().getSimpleName());
 			});
 		});
 	}
@@ -84,6 +76,7 @@ public class CommonWebFilterInitializer {
 			initfr.addMappingForUrlPatterns(this.getAllDispatcherTypes(), true, "/*");
 			initfr.setAsyncSupported(true);
 			initfr.setInitParameter("filterSuffix", "true");
+			logger.info("FilterInitializer: {} has bean registered!", initFilterClass.getClass().getSimpleName());
 		});
 	}
 	
@@ -96,6 +89,7 @@ public class CommonWebFilterInitializer {
 				fr.setAsyncSupported(true);
 				fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
 	//							.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+				logger.info("FilterInitializer: {} has bean registered!", hiddenFilterClass.getClass().getSimpleName());
 			});
 			
 		});
@@ -106,6 +100,7 @@ public class CommonWebFilterInitializer {
 			Dynamic fr = servletContext.addFilter("ajaxAnywhere", AAFilter.class);
 			fr.setAsyncSupported(true);
 			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+			logger.info("FilterInitializer: {} has bean registered!", ajaxFilterClass.getClass().getSimpleName());
 		});
 	}
 	
