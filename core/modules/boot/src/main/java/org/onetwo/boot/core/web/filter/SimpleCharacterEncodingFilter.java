@@ -19,7 +19,8 @@ public class SimpleCharacterEncodingFilter extends OrderedCharacterEncodingFilte
 	protected void doFilterInternal(
 			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		logger.info("=================>>>> set encoding: " + request.getRequestURL());
+		logger.info("=================>>>> set encoding: {}, {}", request.getCharacterEncoding(), request.getRequestURL());
 		super.doFilterInternal(request, response, filterChain);;
+		logger.info("=================>>>> after set encoding: {}", request.getCharacterEncoding());
 	}
 }
