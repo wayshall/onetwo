@@ -30,7 +30,7 @@ public class CommonWebFilterInitializer {
 
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
-		registeredEncodingFilter(servletContext, CharacterEncodingFilter.class);
+//		registeredEncodingFilter(servletContext, CharacterEncodingFilter.class);
 		
 		//multipartFilter
 		registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
@@ -47,7 +47,7 @@ public class CommonWebFilterInitializer {
 		
 	}
 	
-	protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
+	/*protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
 		Optional.ofNullable(encodingFilterClass).ifPresent(cls->{
 			Dynamic fr = servletContext.addFilter("encodingFilter", encodingFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
@@ -57,7 +57,7 @@ public class CommonWebFilterInitializer {
 				logger.info("FilterInitializer: {} has bean registered!", encodingFilterClass.getClass().getSimpleName());
 			});
 		});
-	}
+	}*/
 	
 	protected void registeredMultipartFilter(ServletContext servletContext, Class<? extends Filter> multipartFilterClass){
 		Optional.ofNullable(multipartFilterClass).ifPresent(cls->{
