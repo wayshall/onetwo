@@ -22,6 +22,7 @@ public class StoringFileContext {
 	private String module;
 	private StoreFilePathStrategy storeFilePathStrategy = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
 	
+	
 	public StoringFileContext(String module, InputStream inputStream, String fileName) {
 		super();
 		this.inputStream = inputStream;

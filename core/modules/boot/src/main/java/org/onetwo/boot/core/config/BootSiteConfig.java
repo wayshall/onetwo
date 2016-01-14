@@ -153,7 +153,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public class UploadConfig {
 		private StoreType storeType = StoreType.LOCAL;
 		private String fileStorePath;
-		private String keepContextPath;
+		private String appContextDir;
 		private int maxUploadSize = 1024*1024*50; //50m
 		
 		//ftp

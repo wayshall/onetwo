@@ -8,28 +8,28 @@ import org.onetwo.common.utils.StringUtils;
 
 public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
-	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, ctx)->{
+	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, appContextDir, ctx)->{
 		NiceDate now = NiceDate.New();
 		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
 		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 
-		//sotreDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String baseDir = StoreFilePathStrategy.getModuleDir(storeBaseDir, ctx);
+		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+		String baseDir = StoreFilePathStrategy.getModuleDir(storeBaseDir, appContextDir, ctx);
 		return baseDir + now.formatAsDate()+"/"+newfn;
 	};
 	
 //	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
 	private String storeBaseDir;
-	private String keepContextPath;
+	private String appContextDir;
 	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
 		String storePath = getStoreDir(context);
 		doStoring(storePath, context);
 		String returnPath = StringUtils.substringAfter(storePath, storeBaseDir);
-		if(StringUtils.isNotBlank(keepContextPath)){
-			returnPath = StringUtils.trimEndWith(keepContextPath, "/") + returnPath;
-		}
+		/*if(StringUtils.isNotBlank(appContextDir)){
+			returnPath = StringUtils.trimEndWith(appContextDir, "/") + returnPath;
+		}*/
 		return new SimpleFileStoredMeta(returnPath);
 	}
 	
@@ -46,7 +46,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		if(strategy==null){
 			strategy = SIMPLE_STORE_STRATEGY;
 		}
-		String storePath = strategy.getStoreFilePath(storeBaseDir, context);
+		String storePath = strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
 		return storePath;
 	}
 
@@ -54,13 +54,12 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		this.storeBaseDir = storeDir;
 	}
 
-	public void setKeepContextPath(String keepContextPath) {
-		this.keepContextPath = keepContextPath;
+	public String getAppContextDir() {
+		return appContextDir;
 	}
 
-	public String getKeepContextPath() {
-		return keepContextPath;
+	public void setAppContextDir(String appContextDir) {
+		this.appContextDir = appContextDir;
 	}
 
-	
 }

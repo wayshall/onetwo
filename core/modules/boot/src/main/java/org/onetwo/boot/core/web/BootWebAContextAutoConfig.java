@@ -104,7 +104,7 @@ public class BootWebAContextAutoConfig {
 		if(type==StoreType.LOCAL){
 			SimpleFileStorer fs = new SimpleFileStorer();
 			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setKeepContextPath(config.getKeepContextPath());
+			fs.setAppContextDir(config.getAppContextDir());
 			return fs;
 		}else if(type==StoreType.FTP){
 			FtpConfig ftpConfig = new FtpConfig();
@@ -116,7 +116,7 @@ public class BootWebAContextAutoConfig {
 			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
 //			fs.setStoreBaseDir(config.getFtpBaseDir());
 			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setKeepContextPath(config.getKeepContextPath());
+			fs.setAppContextDir(config.getAppContextDir());
 			return fs;
 		}
 		throw new IllegalArgumentException("type: " + type);

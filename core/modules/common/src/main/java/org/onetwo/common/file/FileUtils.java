@@ -502,6 +502,8 @@ public class FileUtils {
 	}
 	
 	public static String convertDir(String path){
+		if(StringUtils.isBlank(path))
+			return LangUtils.EMPTY_STRING;
 		String dir = replaceBackSlashToSlash(path);
 		int index = dir.indexOf(COLON_DB_SLASH_HEAD);
 		if(index==-1){
