@@ -23,5 +23,9 @@ public class SimpleCharacterEncodingFilter extends OrderedCharacterEncodingFilte
 		logger.info("=================>>>> set encoding: {}, {}", request.getCharacterEncoding(), request.getRequestURL());
 		super.doFilterInternal(request, response, filterChain);;
 		logger.info("=================>>>> after set encoding: {}", request.getCharacterEncoding());
+		if("true".equalsIgnoreCase(request.getParameter("debug"))){
+			RuntimeException re = new RuntimeException();
+			logger.error("SimpleCharacterEncodingFilter debug", re);
+		}
 	}
 }
