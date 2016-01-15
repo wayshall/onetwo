@@ -29,15 +29,19 @@ import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.web.filter.SimpleCharacterEncodingFilter;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.WebHolderManager;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,6 +51,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
@@ -61,7 +66,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
 public class BootWebAContextAutoConfig {
-//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -258,13 +263,15 @@ public class BootWebAContextAutoConfig {
 		return new BootFirstInterceptor();
 	}*/
 	
-	/*@Bean
-	public CharacterEncodingFilter characterEncodingFilter(){
-		CharacterEncodingFilter filter = new SimpleCharacterEncodingFilter();
+	@Bean
+	@ConditionalOnProperty(prefix="deploy", name="server", havingValue="glassfish", matchIfMissing=false)
+	public CharacterEncodingFilter fixGlassfishOrderedCharacterEncodingFilter(){
+		SimpleCharacterEncodingFilter filter = new SimpleCharacterEncodingFilter();
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
+		filter.setOrder(Ordered.LOWEST_PRECEDENCE);
 		
 		return filter;
-	}*/
+	}
 
 }

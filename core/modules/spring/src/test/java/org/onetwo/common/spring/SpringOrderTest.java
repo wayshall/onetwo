@@ -12,9 +12,9 @@ public class SpringOrderTest {
 	
 	@Test
 	public void testOrder(){
-		List<?> list = Arrays.asList(new Bean1(), new Bean2(), new BeanHigh());
+		List<?> list = Arrays.asList(new Bean1(), new Bean2(), new BeanNullOrder(), new BeanLow(), new BeanHigh());
 		AnnotationAwareOrderComparator.sort(list);
-		System.out.println("list:"+list);
+		list.forEach(System.out::println);
 	}
 	
 	@Order(1)
@@ -27,6 +27,13 @@ public class SpringOrderTest {
 	
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public static class BeanHigh {
+	}
+	
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public static class BeanLow {
+	}
+	
+	public static class BeanNullOrder {
 	}
 
 }
