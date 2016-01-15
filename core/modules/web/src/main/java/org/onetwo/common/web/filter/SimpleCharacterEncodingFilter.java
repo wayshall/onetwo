@@ -9,11 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.core.Ordered;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-public class SimpleCharacterEncodingFilter extends CharacterEncodingFilter {
+public class SimpleCharacterEncodingFilter extends CharacterEncodingFilter implements Ordered {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 	
 	public SimpleCharacterEncodingFilter(){
 		this.setEncoding("UTF-8");
@@ -32,5 +35,14 @@ public class SimpleCharacterEncodingFilter extends CharacterEncodingFilter {
 			RuntimeException re = new RuntimeException();
 			logger.error("SimpleCharacterEncodingFilter debug", re);
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
 }
