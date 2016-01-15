@@ -53,7 +53,7 @@ public class BaseInitFilter extends IgnoreFiler {
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = RequestUtils.REQUEST_URI;
-	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
+	private boolean timeProfiler = true;//BaseSiteConfig.getInstance().isTimeProfiler();
 	
 	private boolean preventXssRequest = false;
 	private SiteConfig siteConfig;
