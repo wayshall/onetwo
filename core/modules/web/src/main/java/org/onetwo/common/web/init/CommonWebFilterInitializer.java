@@ -27,6 +27,15 @@ import com.google.common.collect.ImmutableMap;
 public class CommonWebFilterInitializer {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
+	/****
+	 * last
+	 * 
+	 * isMatchAfter true if the given filter mapping should be matched
+     * after any declared filter mappings, and false if it is supposed to
+     * be matched before any declared filter mappings of the ServletContext
+	 */
+	private boolean isMatchAfter = true;
 
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
@@ -38,10 +47,10 @@ public class CommonWebFilterInitializer {
 		//systemFilter
 		registeredInitFilter(servletContext, BaseInitFilter.class);
 
-		//hiddenHttpMethodFilter
+		//hiddenHttpMethodFilter second
 		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
 
-		//ajaxAnywhere
+		//ajaxAnywhere first
 		registeredAjaxAnywhere(servletContext, AAFilter.class);
 		
 		
@@ -64,7 +73,7 @@ public class CommonWebFilterInitializer {
 			Dynamic fr = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
 				frconfig.setAsyncSupported(true);
-				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), isMatchAfter, "/*");
 				logger.info("FilterInitializer: {} has bean registered!", multipartFilterClass.getClass().getSimpleName());
 			});
 		});
@@ -73,7 +82,7 @@ public class CommonWebFilterInitializer {
 	protected void registeredInitFilter(ServletContext servletContext, Class<? extends Filter> initFilterClass){
 		Optional.ofNullable(initFilterClass).ifPresent(cls->{
 			Dynamic initfr = servletContext.addFilter("systemFilter", cls);
-			initfr.addMappingForUrlPatterns(this.getAllDispatcherTypes(), true, "/*");
+			initfr.addMappingForUrlPatterns(this.getAllDispatcherTypes(), isMatchAfter, "/*");
 			initfr.setAsyncSupported(true);
 			initfr.setInitParameter("filterSuffix", "true");
 			logger.info("FilterInitializer: {} has bean registered!", initFilterClass.getClass().getSimpleName());
@@ -87,7 +96,7 @@ public class CommonWebFilterInitializer {
 	//			fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 //				fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, AbstractDispatcherServletInitializer.DEFAULT_SERVLET_NAME);
 				fr.setAsyncSupported(true);
-				fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
+				fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), isMatchAfter, "/*");
 	//							.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 				logger.info("FilterInitializer: {} has bean registered!", hiddenFilterClass.getClass().getSimpleName());
 			});
@@ -99,7 +108,7 @@ public class CommonWebFilterInitializer {
 		Optional.ofNullable(ajaxFilterClass).ifPresent(cls->{
 			Dynamic fr = servletContext.addFilter("ajaxAnywhere", AAFilter.class);
 			fr.setAsyncSupported(true);
-			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), isMatchAfter, "/*");
 			logger.info("FilterInitializer: {} has bean registered!", ajaxFilterClass.getClass().getSimpleName());
 		});
 	}
