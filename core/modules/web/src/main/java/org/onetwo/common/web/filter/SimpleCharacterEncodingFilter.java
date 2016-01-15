@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.filter;
+package org.onetwo.common.web.filter;
 
 import java.io.IOException;
 
@@ -9,11 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
-import org.springframework.boot.context.web.OrderedCharacterEncodingFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
-public class SimpleCharacterEncodingFilter extends OrderedCharacterEncodingFilter {
+public class SimpleCharacterEncodingFilter extends CharacterEncodingFilter {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
+	public SimpleCharacterEncodingFilter(){
+		this.setEncoding("UTF-8");
+		this.setForceEncoding(true);
+	}
 
 	@Override
 	protected void doFilterInternal(

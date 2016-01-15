@@ -29,17 +29,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.slf4j.Logger;
-
 /**
  * Date: 23 juil. 2005
  * Time: 21:02:45
  */
 public class AAFilter implements Filter {
 
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
     public String preSendHandlerClassName;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -56,12 +51,6 @@ public class AAFilter implements Filter {
             return;
         }
         
-        if("aa".equalsIgnoreCase(request.getParameter("debug"))){
-			RuntimeException re = new RuntimeException();
-			logger.error("AAFilter debug", re);
-		}
-
-
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/xml;charset=utf-8");
 

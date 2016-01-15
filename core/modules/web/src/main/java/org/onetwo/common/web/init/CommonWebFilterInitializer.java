@@ -13,8 +13,8 @@ import org.ajaxanywhere.AAFilter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.filter.SimpleCharacterEncodingFilter;
 import org.slf4j.Logger;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 
@@ -29,17 +29,18 @@ public class CommonWebFilterInitializer {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	/****
-	 * last
 	 * 
 	 * isMatchAfter true if the given filter mapping should be matched
      * after any declared filter mappings, and false if it is supposed to
      * be matched before any declared filter mappings of the ServletContext
 	 */
-	private boolean isMatchAfter = true;
+	private boolean isMatchAfter = false;
 
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
-//		registeredEncodingFilter(servletContext, CharacterEncodingFilter.class);
+		registeredEncodingFilter(servletContext, SimpleCharacterEncodingFilter.class);
+		//hiddenHttpMethodFilter second
+		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
 		
 		//multipartFilter
 		registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
@@ -47,26 +48,22 @@ public class CommonWebFilterInitializer {
 		//systemFilter
 		registeredInitFilter(servletContext, BaseInitFilter.class);
 
-		//hiddenHttpMethodFilter second
-		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
-
 		//ajaxAnywhere first
 		registeredAjaxAnywhere(servletContext, AAFilter.class);
 		
-		
 	}
 	
-	/*protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
+	protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
 		Optional.ofNullable(encodingFilterClass).ifPresent(cls->{
-			Dynamic fr = servletContext.addFilter("encodingFilter", encodingFilterClass);
+			Dynamic fr = servletContext.addFilter("characterEncodingFilter", encodingFilterClass);
 			Optional.ofNullable(fr).ifPresent(frconfig->{
-				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
+				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), isMatchAfter, "/*");
 				frconfig.setAsyncSupported(true);
 				frconfig.setInitParameters(ImmutableMap.of("encoding", "UTF-8", "forceEncoding", "true"));
 				logger.info("FilterInitializer: {} has bean registered!", encodingFilterClass.getClass().getSimpleName());
 			});
 		});
-	}*/
+	}
 	
 	protected void registeredMultipartFilter(ServletContext servletContext, Class<? extends Filter> multipartFilterClass){
 		Optional.ofNullable(multipartFilterClass).ifPresent(cls->{
