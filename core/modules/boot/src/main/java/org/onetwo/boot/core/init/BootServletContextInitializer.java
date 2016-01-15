@@ -14,7 +14,15 @@ public class BootServletContextInitializer extends CommonWebFilterInitializer im
 		this.onServletContextStartup(servletContext);
     }
 
+
+	/*protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
+		//boot会自动注册
+	}*/
 	protected void registeredHiddenMethodFilter(ServletContext servletContext, Class<? extends Filter> initFilterClass){
 		//boot会自动注册
+	}
+	
+	protected void registeredAjaxAnywhere(ServletContext servletContext, Class<? extends Filter> ajaxFilterClass){
+		//不需要。。。。
 	}
 }
