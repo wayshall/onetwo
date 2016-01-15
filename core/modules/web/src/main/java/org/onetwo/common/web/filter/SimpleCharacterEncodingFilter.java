@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -28,6 +30,12 @@ public class SimpleCharacterEncodingFilter extends CharacterEncodingFilter imple
 			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		logger.info("request: {}", request.getClass());
+		ServletRequest req = request;
+		while(req instanceof HttpServletRequestWrapper){
+			HttpServletRequestWrapper reqWrapper = (HttpServletRequestWrapper) req;
+			req = reqWrapper.getRequest();
+			logger.info("req: {}", req.getClass());
+		}
 		logger.info("=================>>>> set encoding: {}, {}", request.getCharacterEncoding(), request.getRequestURL());
 		super.doFilterInternal(request, response, filterChain);;
 		logger.info("=================>>>> after set encoding: {}", request.getCharacterEncoding());
