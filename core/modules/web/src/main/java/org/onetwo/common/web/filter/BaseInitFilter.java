@@ -144,6 +144,11 @@ public class BaseInitFilter extends IgnoreFiler {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 		HttpSession session = request.getSession();
 		
+		if("init".equalsIgnoreCase(request.getParameter("debug"))){
+			RuntimeException re = new RuntimeException();
+			logger.error("BaseInitFilter debug", re);
+		}
+		
 
 //		WebContextUtils.initRequestInfo(request);
 		this.printRequestTime(true, request);
