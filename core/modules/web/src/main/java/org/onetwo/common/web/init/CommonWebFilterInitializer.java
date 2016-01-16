@@ -13,6 +13,7 @@ import org.ajaxanywhere.AAFilter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
+import org.onetwo.common.web.filter.SimpleCharacterEncodingFilter;
 import org.slf4j.Logger;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
@@ -37,7 +38,7 @@ public class CommonWebFilterInitializer {
 
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
-//		registeredEncodingFilter(servletContext, SimpleCharacterEncodingFilter.class);
+		registeredEncodingFilter(servletContext, SimpleCharacterEncodingFilter.class);
 		//hiddenHttpMethodFilter 
 		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
 		

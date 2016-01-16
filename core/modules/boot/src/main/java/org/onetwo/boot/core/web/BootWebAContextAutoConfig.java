@@ -269,6 +269,9 @@ public class BootWebAContextAutoConfig {
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
 		filter.setOrder(Ordered.LOWEST_PRECEDENCE);
+
+		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.getCharset().name());
+		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.isForce());
 		
 		return filter;
 	}
