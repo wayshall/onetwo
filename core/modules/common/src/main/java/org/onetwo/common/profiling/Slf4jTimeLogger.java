@@ -4,19 +4,17 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 
-public class Log4jTimeLogger implements JFishLogger {
-//	private static final Logger logger = MyLoggerFactory.getLogger(PROFILE_LOGGER);
-	
+public class Slf4jTimeLogger implements JFishLogger {
 	private JFishLogger outer = new TimerOutputer();
 	private final Logger logger;
 	
 
-	public Log4jTimeLogger() {
+	public Slf4jTimeLogger() {
 //		this.logger = null;
-		logger = JFishLoggerFactory.getLogger(Log4jTimeLogger.class);
+		logger = JFishLoggerFactory.getLogger(Slf4jTimeLogger.class);
 	}
 	
-	public Log4jTimeLogger(Logger logger) {
+	public Slf4jTimeLogger(Logger logger) {
 		super();
 		this.logger = logger;
 	}

@@ -35,7 +35,7 @@ public class UtilTimerStack
     static {
     	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
         active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
-		timeLogger = new Log4jTimeLogger(logger);
+		timeLogger = new Slf4jTimeLogger(logger);
     }
 
     

@@ -51,7 +51,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
@@ -265,7 +264,7 @@ public class BootWebAContextAutoConfig {
 	
 	@Bean
 	@ConditionalOnProperty(prefix="deploy", name="server", havingValue="glassfish", matchIfMissing=false)
-	public CharacterEncodingFilter fixGlassfishOrderedCharacterEncodingFilter(){
+	public SimpleCharacterEncodingFilter fixGlassfishOrderedCharacterEncodingFilter(){
 		SimpleCharacterEncodingFilter filter = new SimpleCharacterEncodingFilter();
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
