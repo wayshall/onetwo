@@ -29,8 +29,8 @@
 				<module>web</module>
 				<module>boot</module>
 	  	</modules>
-	  	
 	  </profile>
+	  
 	</profiles>
 
 	<build>
