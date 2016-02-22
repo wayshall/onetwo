@@ -144,7 +144,6 @@ public class BaseInitFilter extends IgnoreFiler {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 		HttpSession session = request.getSession();
 		
-
 //		WebContextUtils.initRequestInfo(request);
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));

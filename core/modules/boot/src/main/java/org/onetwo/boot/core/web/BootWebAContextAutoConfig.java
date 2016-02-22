@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -56,10 +57,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
+@EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
 public class BootWebAContextAutoConfig {
+//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -69,6 +71,9 @@ public class BootWebAContextAutoConfig {
 	
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
+	
+	@Autowired
+	private HttpEncodingProperties httpEncodingProperties;
 	
 	@PostConstruct
 	public void init(){
@@ -104,7 +109,7 @@ public class BootWebAContextAutoConfig {
 		if(type==StoreType.LOCAL){
 			SimpleFileStorer fs = new SimpleFileStorer();
 			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setKeepContextPath(config.getKeepContextPath());
+			fs.setAppContextDir(config.getAppContextDir());
 			return fs;
 		}else if(type==StoreType.FTP){
 			FtpConfig ftpConfig = new FtpConfig();
@@ -116,7 +121,7 @@ public class BootWebAContextAutoConfig {
 			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
 //			fs.setStoreBaseDir(config.getFtpBaseDir());
 			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setKeepContextPath(config.getKeepContextPath());
+			fs.setAppContextDir(config.getAppContextDir());
 			return fs;
 		}
 		throw new IllegalArgumentException("type: " + type);
@@ -251,6 +256,20 @@ public class BootWebAContextAutoConfig {
 	/*@Bean
 	public BootFirstInterceptor bootFirstInterceptor(){
 		return new BootFirstInterceptor();
+	}*/
+	
+	/*@Bean
+	@ConditionalOnProperty(prefix="deploy", name="server", havingValue="glassfish", matchIfMissing=false)
+	public SimpleCharacterEncodingFilter fixGlassfishOrderedCharacterEncodingFilter(){
+		SimpleCharacterEncodingFilter filter = new SimpleCharacterEncodingFilter();
+		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
+		filter.setForceEncoding(this.httpEncodingProperties.isForce());
+		filter.setOrder(Ordered.LOWEST_PRECEDENCE);
+
+		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.getCharset().name());
+		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.isForce());
+		
+		return filter;
 	}*/
 
 }
