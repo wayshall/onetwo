@@ -60,8 +60,9 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 				}
 			}
 
-			if(webRequest.getNativeRequest() instanceof MultipartRequest){
-				MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+//			Object req = getMultipartRequest(webRequest.getNativeRequest());
+			MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+			if(mrequest!=null){
 				mrequest.getFileNames().forEachRemaining(fn->{
 					if(fn.startsWith(attrName) && bw.isWritableProperty(fn)){
 						bw.setPropertyValue(fn, mrequest.getFile(fn));
@@ -73,5 +74,18 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 		
 		return list;
 	}
+	
+	/*private static MultipartRequest getMultipartRequest(Object requestObj){
+		if(requestObj instanceof MultipartRequest){
+			return (MultipartRequest) requestObj;
+		}
+		while(requestObj instanceof HttpServletRequestWrapper){
+			requestObj = ((HttpServletRequestWrapper)requestObj).getRequest();
+			if(requestObj instanceof MultipartRequest){
+				return (MultipartRequest) requestObj;
+			}
+		}
+		return null;
+	}*/
 
 }
