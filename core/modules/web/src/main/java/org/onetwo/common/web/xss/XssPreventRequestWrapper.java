@@ -3,27 +3,24 @@ package org.onetwo.common.web.xss;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.onetwo.common.web.utils.RequestWrapper;
-
-public class XssPreventRequestWrapper extends HttpServletRequestWrapper implements RequestWrapper {
+public class XssPreventRequestWrapper extends HttpServletRequestWrapper {
 
 	public XssPreventRequestWrapper(HttpServletRequest request) {
 		super(request);
 	}
 	
 
-	@Override
+	/*@Override
 	public ServletRequest getNativeRequest() {
 		ServletRequest req =  super.getRequest();
 		while(req instanceof RequestWrapper){
 			req = ((RequestWrapper)req).getNativeRequest();
 		}
 		return req;
-	}
+	}*/
 
 
 
