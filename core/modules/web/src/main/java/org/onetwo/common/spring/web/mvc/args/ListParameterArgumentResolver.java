@@ -10,7 +10,6 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.annotation.ListParameter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.utils.RequestWrapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -61,9 +60,9 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 				}
 			}
 
-			Object req = RequestWrapper.unwrapRequest(webRequest.getNativeRequest());
-			if(req instanceof MultipartRequest){
-				MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+//			Object req = getMultipartRequest(webRequest.getNativeRequest());
+			MultipartRequest mrequest = webRequest.getNativeRequest(MultipartRequest.class);
+			if(mrequest!=null){
 				mrequest.getFileNames().forEachRemaining(fn->{
 					if(fn.startsWith(attrName) && bw.isWritableProperty(fn)){
 						bw.setPropertyValue(fn, mrequest.getFile(fn));
@@ -75,5 +74,18 @@ public class ListParameterArgumentResolver implements HandlerMethodArgumentResol
 		
 		return list;
 	}
+	
+	/*private static MultipartRequest getMultipartRequest(Object requestObj){
+		if(requestObj instanceof MultipartRequest){
+			return (MultipartRequest) requestObj;
+		}
+		while(requestObj instanceof HttpServletRequestWrapper){
+			requestObj = ((HttpServletRequestWrapper)requestObj).getRequest();
+			if(requestObj instanceof MultipartRequest){
+				return (MultipartRequest) requestObj;
+			}
+		}
+		return null;
+	}*/
 
 }
