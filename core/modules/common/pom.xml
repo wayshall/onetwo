@@ -2,14 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.onetwo</groupId>
-		<artifactId>onetwo-boot-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-		<relativePath>../boot-parent</relativePath>
-	</parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.1.3-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 	
   <artifactId>onetwo-common</artifactId>
-  <version>4.1.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>onetwo-common</name>
