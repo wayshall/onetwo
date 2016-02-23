@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   	<groupId>org.onetwo</groupId>
 	<artifactId>onetwo-bom</artifactId>
 	<!-- 4.1.x for boot 1.2.4.RELEASE -->
 	<!-- 4.2.x for boot 1.3.1.RELEASE -->
-	<version>4.1.0-SNAPSHOT</version>
+	<version>4.1.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -16,7 +15,7 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>4.1.0-SNAPSHOT</onetwo.version>
+	<onetwo.version>4.1.3-SNAPSHOT</onetwo.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.3</common-codec.version>
