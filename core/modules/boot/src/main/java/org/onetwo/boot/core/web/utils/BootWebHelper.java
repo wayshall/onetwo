@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
@@ -71,7 +70,8 @@ public class BootWebHelper {
 	}
 
     public boolean isAaRequest() {
-    	return AAUtils.isAjaxRequest(this.request);
+//    	return AAUtils.isAjaxRequest(this.request);
+    	return false;
     }
 
 	public String getQueryString(){
