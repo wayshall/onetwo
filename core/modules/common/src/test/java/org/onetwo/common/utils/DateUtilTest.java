@@ -15,6 +15,7 @@ import org.onetwo.common.date.DateRangeStaticFacotry;
 import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.date.DateUtil.DateType;
 import org.onetwo.common.date.NiceDate;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.log.MyLoggerFactory;
 
 public class DateUtilTest {
@@ -117,12 +118,12 @@ public class DateUtilTest {
 	
 	@Test
 	public void testParse(){
-		MyLoggerFactory.getLogger(this.getClass()).info("test{}, test2{}", "aa", 1);
+		JFishLoggerFactory.getLogger(this.getClass()).info("test{}, test2{}", "aa", 1);
 		Date test = new Date(1367078400000L);
 		System.out.println("test: " + test.toLocaleString());
 		
-		Date now = DateUtil.date(":now");
-		System.out.println("now: " + now.getTime());
+		/*Date now = DateUtil.date(":now");
+		System.out.println("now: " + now.getTime())*/;
 		
 		Date today = DateUtil.date(":today");
 		System.out.println("today: " + today);
