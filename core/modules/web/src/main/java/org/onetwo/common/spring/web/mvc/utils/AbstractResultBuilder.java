@@ -72,7 +72,8 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	}
 	public B code(Enum<?> code){
 		this.code = code.name();
-		this.message = code.toString();
+		if(message==null)
+			this.message = code.toString();
 		return (B) this;
 	}
 
