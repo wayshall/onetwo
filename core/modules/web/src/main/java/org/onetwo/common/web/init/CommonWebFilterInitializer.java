@@ -9,7 +9,6 @@ import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.ajaxanywhere.AAFilter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
@@ -49,7 +48,7 @@ public class CommonWebFilterInitializer {
 		registeredInitFilter(servletContext, BaseInitFilter.class);
 
 		//ajaxAnywhere 
-		registeredAjaxAnywhere(servletContext, AAFilter.class);
+//		registeredAjaxAnywhere(servletContext, AAFilter.class);
 		
 	}
 	
@@ -101,14 +100,14 @@ public class CommonWebFilterInitializer {
 		});
 	}
 
-	protected void registeredAjaxAnywhere(ServletContext servletContext, Class<? extends Filter> ajaxFilterClass){
+	/*protected void registeredAjaxAnywhere(ServletContext servletContext, Class<? extends Filter> ajaxFilterClass){
 		Optional.ofNullable(ajaxFilterClass).ifPresent(cls->{
 			Dynamic fr = servletContext.addFilter("ajaxAnywhere", AAFilter.class);
 			fr.setAsyncSupported(true);
 			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), isMatchAfter, "/*");
 			logger.info("FilterInitializer: {} has bean registered!", ajaxFilterClass.getClass().getSimpleName());
 		});
-	}
+	}*/
 	
 	protected EnumSet<DispatcherType> getAllDispatcherTypes(){
 		return EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);

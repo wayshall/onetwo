@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.onetwo</groupId>
@@ -15,7 +14,6 @@
   </properties>
   
 	<profiles>
-	  
 	  <profile>
     	<id>modules</id>
     	<modules>
@@ -24,38 +22,46 @@
 				<module>common</module>
 				<module>jackson</module>
 				<module>spring</module>
-				<module>dbm</module>
-				<module>ajaxanywhere</module>
+                <module>dbm</module>
+                <module>poi</module>
 				<module>web</module>
 				<module>boot</module>
 	  	</modules>
 	  </profile>
-	  
 	</profiles>
+	
+	<scm>
+	    <url>https://github.com/wayshall/onetwo</url>
+	    <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+	    <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+  </scm>
 
 	<build>
 		<plugins>
-	    <plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-source-plugin</artifactId>
-		</plugin>
-		
-		
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<configuration>
-				<source>1.8</source>
-				<target>1.8</target>
-				<compilerVersion>1.8</compilerVersion>
-				<showWarnings>true</showWarnings>
-				<encoding>utf-8</encoding>
-				<compilerArgs>
-					<arg>-parameters</arg>
-				</compilerArgs>
-			</configuration>
-		</plugin>
-  	</plugins>
+		    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<compilerVersion>1.8</compilerVersion>
+					<showWarnings>true</showWarnings>
+					<encoding>utf-8</encoding>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+	        <plugin>  
+	            <groupId>org.apache.maven.plugins</groupId>  
+	            <artifactId>maven-release-plugin</artifactId>  
+	            <version>2.5.2</version>  
+	        </plugin>
+  	    </plugins>
 	</build>
 
 </project>

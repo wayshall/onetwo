@@ -3,9 +3,9 @@ package org.onetwo.common.excel;
 import java.io.FileInputStream;
 import java.util.Map;
 
+import org.onetwo.common.excel.interfaces.TemplateGenerator;
+import org.onetwo.common.excel.interfaces.XmlTemplateGeneratorFactory;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.interfaces.TemplateGenerator;
-import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
 import org.springframework.core.io.Resource;
 
 import com.thoughtworks.xstream.XStream;
