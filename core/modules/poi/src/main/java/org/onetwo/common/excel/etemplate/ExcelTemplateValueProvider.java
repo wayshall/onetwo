@@ -6,11 +6,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.etemplate.RowForeachDirectiveModel.ForeachRowInfo;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.ValueProvider;
 import org.slf4j.Logger;
 
 public class ExcelTemplateValueProvider implements ValueProvider {
@@ -20,7 +21,7 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 	final private ETemplateContext templateContext;
 	private List<CellRangeAddress> cellRangeList;
 	private boolean debug = false;
-	private final Expression expression = Expression.DOLOR;
+	private final Expression expression = ExpressionFacotry.DOLOR;
 	
 	public ExcelTemplateValueProvider(ETemplateContext context) {
 		super();
