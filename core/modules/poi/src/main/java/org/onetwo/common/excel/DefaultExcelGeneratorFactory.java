@@ -3,7 +3,7 @@ package org.onetwo.common.excel;
 import java.util.Map;
 
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.excel.interfaces.TemplateGenerator;
 
 /******
  * excel生成器工厂类

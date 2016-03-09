@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.convert.Types;
 import org.slf4j.Logger;
 
 import com.google.common.cache.CacheBuilder;
@@ -17,7 +17,7 @@ import com.google.common.cache.LoadingCache;
 
 public class DefaultPropertyStringParser implements PropertyStringParser {
 	
-	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private LoadingCache<String, Map<Integer, Short>> columnwidthCaches = CacheBuilder.newBuilder()
 																				.maximumSize(100)
