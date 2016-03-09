@@ -3,7 +3,7 @@ package org.onetwo.common.excel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.onetwo.common.interfaces.XmlTemplateGeneratorFactory;
+import org.onetwo.common.excel.interfaces.XmlTemplateGeneratorFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
