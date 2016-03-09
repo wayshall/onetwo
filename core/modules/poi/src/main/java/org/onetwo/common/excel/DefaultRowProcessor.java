@@ -12,10 +12,10 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -320,7 +320,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		Object actualValue;
 		if(value instanceof Date){
 			if(StringUtils.isBlank(dataFormat)){
-				dataFormat = DateUtil.Date_Time;
+				dataFormat = DateUtil.DATE_TIME;
 				actualValue = DateUtil.format(dataFormat, (Date)value);
 //				actualValue = value;
 			}else{
