@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   	<groupId>org.onetwo</groupId>
@@ -47,6 +46,11 @@
 	<spring-security.version>3.2.7.RELEASE</spring-security.version>
 	
 	<jpa.version>2.0.0</jpa.version>
+	
+	<!-- poi -->
+    <ognl.version>3.0</ognl.version>
+    <commons-io.version>2.4</commons-io.version>
+    <poi.version>3.6</poi.version>
 	
 	<!-- for test -->
     <assertj.version>1.7.0</assertj.version>
@@ -126,6 +130,40 @@
 		<version>${guava.version}</version>
 	</dependency>
 	
+	<dependency>
+	   <groupId>ognl</groupId>
+	   <artifactId>ognl</artifactId>
+	   <version>${ognl.version}</version>
+	</dependency>
+	
+	<dependency>
+	   <groupId>org.apache.poi</groupId>
+	   <artifactId>poi</artifactId>
+	   <version>${poi.version}</version>
+	   <exclusions>
+	       <exclusion>
+	           <groupId>commons-logging</groupId>
+	       </exclusion>
+	   </exclusions>
+	</dependency>
+	
+	<dependency>
+	   <groupId>org.apache.poi</groupId>
+	   <artifactId>poi-ooxml</artifactId>
+	   <version>${poi.version}</version>
+	</dependency>
+	
+	<dependency>
+	   <groupId>javassist</groupId>
+	   <artifactId>javassist</artifactId>
+	   <version>3.9.0.GA</version>
+	</dependency>
+	
+	<dependency>
+	   <groupId>commons-io</groupId>
+	   <artifactId>commons-io</artifactId>
+	   <version>${commons-io.version}</version>
+	</dependency>
 	
 	<dependency>
 	  <groupId>org.samba.jcifs</groupId>

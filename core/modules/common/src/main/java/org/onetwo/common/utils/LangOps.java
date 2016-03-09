@@ -1,8 +1,6 @@
 package org.onetwo.common.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,6 +19,11 @@ final public class LangOps {
 	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T, R> R[] toArray(List<T> list, Function<? super T, ? extends R> mapper){
+		return (R[])list.stream().map(mapper).collect(Collectors.toList()).toArray();
 	}
 	
 	public static <R> List<R> generateList(Integer count, Function<Integer, ? extends R> mapper){

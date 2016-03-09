@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.ajaxanywhere.AAUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
@@ -82,7 +81,8 @@ public final class RequestUtils {
 	}
 	
 	public static boolean isAaXmlRequest(HttpServletRequest request){
-		return AAUtils.isAjaxRequest(request);
+//		return AAUtils.isAjaxRequest(request);
+		return false;
 	}
 	
 	public static String getOSByAgent(String userAgent){
