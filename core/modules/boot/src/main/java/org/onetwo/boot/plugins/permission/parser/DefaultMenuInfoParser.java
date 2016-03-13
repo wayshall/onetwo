@@ -21,9 +21,10 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.type.classreading.MetadataReader;
 
-public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfoParser<P> {
+public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfoParser<P>, InitializingBean {
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 	private static final String CODE_SEPRATOR = "_";
@@ -41,13 +42,21 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 	private PermissionConfig<P> permissionConfig;
 	private int sortStartIndex = 1000;
 	
+	private boolean parsed = false;
+	
 	
 	
 	public DefaultMenuInfoParser(PermissionConfig<P> permissionConfig) {
 	    super();
 	    this.permissionConfig = permissionConfig;
     }
+	
+	
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.parseTree();
+	}
 	public Map<String, P> getPermissionMap() {
 		return Collections.unmodifiableMap(permissionMap);
 	}
@@ -66,8 +75,12 @@ public class DefaultMenuInfoParser<P extends IPermission<P>> implements MenuInfo
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseTree()
 	 */
 	@Override
-	public P parseTree(){
+	public synchronized P parseTree(){
 		Assert.notNull(permissionConfig);
+		
+		if(parsed){
+			return rootMenu;
+		}
 		
 		this.clear();
 		

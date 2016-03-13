@@ -9,20 +9,22 @@ import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.PropertySource;
 
 final public class BootUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootUtils.class);
 	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
-	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
+//	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
 
 	private BootUtils(){
 	}
 	
 	public static Locale getDefaultLocale(){
-		return DEFAULT_LOCAL;
+//		return DEFAULT_LOCAL;
+		return LocaleContextHolder.getLocale();
 	}
 
 	public static String getMessage(MessageSource exceptionMessage, String code, Object[] args) {

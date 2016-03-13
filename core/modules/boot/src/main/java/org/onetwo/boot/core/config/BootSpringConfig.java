@@ -24,7 +24,7 @@ public class BootSpringConfig {
     public boolean isEnv(Env env){
 		return Optional.ofNullable(profiles.getActive())
 						.orElse(Collections.EMPTY_LIST)
-						.contains(env.name());
+						.contains(env.name().toLowerCase());
 	}
 	
 	public boolean isProduct(){
