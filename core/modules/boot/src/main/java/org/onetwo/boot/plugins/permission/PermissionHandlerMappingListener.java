@@ -78,14 +78,22 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 		
 		if(urlPattterns.size()==1){
 			String url = urlPattterns.stream().findFirst().orElse("");
-			infos.add(new UrlResourceInfo(url, getFirstMethod(entry.getKey())));
+			infos.add(new UrlResourceInfo(appendStarPostfix(url), getFirstMethod(entry.getKey())));
 			
 		}else{
 			//超过一个url映射的，不判断方法
-			urlPattterns.stream().forEach(url->infos.add(new UrlResourceInfo(url)));
+			urlPattterns.stream().forEach(url->infos.add(new UrlResourceInfo(appendStarPostfix(url))));
 		}
 		String urls = this.urlResourceInfoParser.parseToString(infos);
 		perm.setResourcesPattern(urls);
+	}
+	
+	private String appendStarPostfix(String url){
+		url = StringUtils.trimEndWith(url, "/");
+		if(!url.contains(".")){
+			url += ".*";
+		}
+		return url;
 	}
 	
 	private String getFirstMethod(RequestMappingInfo info){

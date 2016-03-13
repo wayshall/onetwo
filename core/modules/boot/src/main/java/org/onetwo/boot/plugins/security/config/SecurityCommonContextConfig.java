@@ -1,8 +1,10 @@
 package org.onetwo.boot.plugins.security.config;
 
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
+import org.onetwo.boot.plugins.security.AjaxAuthenticationHandler;
 import org.onetwo.boot.plugins.security.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
+import org.onetwo.boot.plugins.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.boot.plugins.security.mvc.args.SecurityArgumentResolver;
 import org.onetwo.boot.plugins.security.utils.SecuritySessionUserManager;
@@ -77,4 +79,11 @@ public class SecurityCommonContextConfig {
 		return new AjaxSupportedAccessDeniedHandler();
 	}
 
+	@Bean
+	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler();
+		handler.setDefaultTargetUrl(DefaultMethodSecurityConfigurer.TARGET_PATH_AFTER_LOGIN);
+		handler.setAuthenticationFailureUrl(DefaultMethodSecurityConfigurer.LOGIN_PATH);
+		return handler;
+	}
 }

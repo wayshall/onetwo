@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.security.support;
+package org.onetwo.boot.plugins.security.url;
 
 import org.onetwo.boot.plugins.security.DatabaseSecurityMetadataSource;
 import org.springframework.beans.BeansException;

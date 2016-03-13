@@ -1,10 +1,9 @@
-package org.onetwo.boot.plugins.security.support;
+package org.onetwo.boot.plugins.security.config;
 
 import javax.sql.DataSource;
 
 import org.onetwo.boot.core.init.FixSecurityFilterBugServletContextInitializer;
 import org.onetwo.boot.plugins.security.DatabaseSecurityMetadataSource;
-import org.onetwo.boot.plugins.security.config.SecurityCommonContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -24,13 +23,8 @@ public class RbacSecurityXmlContextConfigSupport {
 		return ms;
 	}
 	
-	@Bean
-	public SecurityBeanPostProcessor securityBeanPostProcessor(){
-		return new SecurityBeanPostProcessor();
-	}
-	
 	/****
-	 * boot 不启动security的autoconfig时，有bug，会自动注册不受控的filter
+	 * boot1.2.x 不启动security的autoconfig时，有bug，会自动注册不受控的filter
 	 * @return
 	 */
 	@Bean
