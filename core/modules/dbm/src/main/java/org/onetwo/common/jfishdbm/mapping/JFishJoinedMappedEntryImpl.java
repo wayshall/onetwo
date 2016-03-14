@@ -13,10 +13,10 @@ import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
  */
 public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
-	private EntrySQLBuilder staticInsertSqlBuilder;
-	private EntrySQLBuilder staticFetchSqlBuilder;
-	private EntrySQLBuilder staticDeleteSqlBuilder;
-	private EntrySQLBuilder staticFetchAllSqlBuilder;
+	private EntrySQLBuilderImpl staticInsertSqlBuilder;
+	private EntrySQLBuilderImpl staticFetchSqlBuilder;
+	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
+	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
 	
 	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
@@ -53,17 +53,17 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticInsertSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticInsertSqlBuilder() {
 		return staticInsertSqlBuilder;
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticUpdateSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticUpdateSqlBuilder() {
 		throw new UnsupportedOperationException("the joined entity unsupported this operation!");
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticDeleteSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticDeleteSqlBuilder() {
 		return staticDeleteSqlBuilder;
 	}
 
@@ -74,7 +74,7 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticFetchSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticFetchSqlBuilder() {
 		return staticFetchSqlBuilder;
 	}
 
