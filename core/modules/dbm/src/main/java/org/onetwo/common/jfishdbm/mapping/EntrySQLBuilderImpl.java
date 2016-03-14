@@ -12,8 +12,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-@Deprecated
-public class TableSQLBuilder {
+public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 
 	public static final String VAR_SEQ_NAME = "seqName";
 	public static final String SQL_MYSQL_PK = "select max(${id}) from ${tableName}";
@@ -30,11 +29,11 @@ public class TableSQLBuilder {
 	public static final String QMARK = "?";
 
 	protected String alias = "this_";
+	protected JFishMappedEntryMeta entry;
 	protected String tableName;
-	protected String seqName;
-	protected PrimaryKey primaryKey;
-	protected Collection<BaseColumnInfo> columns = new ArrayList<BaseColumnInfo>();
-	protected Collection<BaseColumnInfo> whereCauseColumns = new ArrayList<BaseColumnInfo>();
+	protected DbmMappedField identifyField;
+	protected List<DbmMappedField> fields = LangUtils.newArrayList();
+	protected List<DbmMappedField> whereCauseFields = LangUtils.newArrayList();
 	
 	private boolean debug;
 //	private String placeHoder;
@@ -45,11 +44,13 @@ public class TableSQLBuilder {
 	
 	private DBDialect dialet;
 	
-	TableSQLBuilder(String table, String alias, boolean namedPlaceHoder, SqlBuilderType type){
-		this.tableName = table;
+	EntrySQLBuilderImpl(JFishMappedEntryMeta entry, String alias, boolean namedPlaceHoder, SqlBuilderType type){
+		this.entry = entry;
 		this.alias = alias;
 		this.namedPlaceHoder = namedPlaceHoder;
 		this.type = type;
+		this.identifyField = entry.getIdentifyField();
+		this.tableName = entry.getTableInfo().getName();
 	}
 	
 	public DBDialect getDialet() {
@@ -68,35 +69,43 @@ public class TableSQLBuilder {
 		return getAlias() + "." + alias;
 	}
 	
-	public TableSQLBuilder append(BaseColumnInfo column){
-		this.columns.add(column);
+	public EntrySQLBuilder append(DbmMappedField column){
+		if(column!=null)
+			this.fields.add(column);
 		return this;
 	}
 	
-	public TableSQLBuilder appendWhere(BaseColumnInfo column){
-		this.whereCauseColumns.add(column);
+	public EntrySQLBuilder appendWhere(DbmMappedField column){
+		if(column!=null)
+			this.whereCauseFields.add(column);
 		return this;
 	}
 	
-	public void setSeqName(String seqName){
-		this.seqName = seqName;
-	}
-	
-	public TableSQLBuilder append(Collection<? extends BaseColumnInfo> columns){
-		this.columns.addAll(columns);
+	public EntrySQLBuilder append(Collection<? extends DbmMappedField> columns){
+		if(columns!=null)
+			this.fields.addAll(columns);
 		return this;
 	}
 	
-	public TableSQLBuilder appendWhere(Collection<? extends BaseColumnInfo> columns){
-		this.whereCauseColumns.addAll(columns);
+	public EntrySQLBuilder appendWhere(Collection<? extends DbmMappedField> columns){
+		if(columns!=null)
+			this.whereCauseFields.addAll(columns);
 		return this;
 	}
 	
-	public String buildSeq(){
-		sql = "select " + seqName + ".nextval from dual";
+	protected String getSeqName(){
+		return entry.getTableInfo().getSeqName();
+	}
+	
+	private String buildSeq(){
+		sql = "select " + getSeqName() + ".nextval from dual";
 		return sql;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder#build()
+	 */
+	@Override
 	public String build(){
 		if(StringUtils.isNotBlank(sql))
 			return sql;
@@ -120,12 +129,12 @@ public class TableSQLBuilder {
 	}
 
 	
-	public String buildInsert(){
-		Assert.notEmpty(columns);
+	private String buildInsert(){
+		Assert.notEmpty(fields);
 //		List<String> fields = sqlBuildable.getFieldNames(entityClass);
 		String insertSql = "";
-		List<String> insertFields = nameToString(columns, false);
-		List<String> namedFields = javaNameToNamedString(columns, false);
+		List<String> insertFields = nameToString(fields, false);
+		List<String> namedFields = javaNameToNamedString(fields, false);
 		insertSql = PARSER.parse(SQL_INSERT, 
 				"tableName", tableName, 
 				"insertFields", StringUtils.join(insertFields, ", "),
@@ -135,13 +144,13 @@ public class TableSQLBuilder {
 		return insertSql;
 	}
 	
-	public String buildUpdate(){
-		Assert.notEmpty(columns);
-		Assert.notEmpty(whereCauseColumns);
+	private String buildUpdate(){
+		Assert.notEmpty(fields);
+		Assert.notEmpty(whereCauseFields);
 //		List<String> fields = sqlBuildable.getFieldNames(entityClass);
 		String update = "";
-		List<String> updateFields = toWhereString(columns, false);
-		List<String> whereColumns = toWhereString(whereCauseColumns, false);
+		List<String> updateFields = toWhereString(fields, false);
+		List<String> whereColumns = toWhereString(whereCauseFields, false);
 		update = PARSER.parse(SQL_UPDATE, 
 				"tableName", tableName, 
 				"updateFields", StringUtils.join(updateFields, ", "),
@@ -151,25 +160,25 @@ public class TableSQLBuilder {
 		return update;
 	}
 	
-	public String buildPrimaryKey(){
-		String pkSql = PARSER.parse(SQL_MYSQL_PK, "id", this.primaryKey.getJavaName(), "tableName", this.tableName);
+	private String buildPrimaryKey(){
+		String pkSql = PARSER.parse(SQL_MYSQL_PK, "id", this.identifyField.getColumn().getJavaName(), "tableName", this.tableName);
 		if(isDebug())
 			LangUtils.println("build Primary sql : ${0}", pkSql);
 		return pkSql;
 	}
 
-	public String buildDelete(){
+	private String buildDelete(){
 //		Assert.notEmpty(whereCauseColumns);
 //		List<String> fields = sqlBuildable.getFieldNames(entityClass);
 		String deleteSql = "";
 
 		String deleteTemplate = SQL_DELETE;
 //		Assert.notEmpty(whereCauseFields);
-		if(LangUtils.isNotEmpty(whereCauseColumns)){
+		if(LangUtils.isNotEmpty(whereCauseFields)){
 			deleteTemplate += " " + SQL_QUERY_CAUSE;
 		}
 		
-		List<String> whereColumns = toWhereString(whereCauseColumns, false);
+		List<String> whereColumns = toWhereString(whereCauseFields, false);
 		deleteSql = PARSER.parse(deleteTemplate, 
 				"tableName", tableName, 
 //				"alias", alias,
@@ -179,20 +188,20 @@ public class TableSQLBuilder {
 		return deleteSql;
 	}
 	
-	public String buildQuery(){
+	private String buildQuery(){
 //		Assert.notEmpty(columns);
 		String selectStr = "*";
-		if(!columns.isEmpty()){
-			selectStr = StringUtils.join(nameToString(columns, true), ", ");
+		if(!fields.isEmpty()){
+			selectStr = StringUtils.join(nameToString(fields, true), ", ");
 		}
 		String queryTemplate = SQL_QUERY;
 //		Assert.notEmpty(whereCauseFields);
-		if(LangUtils.isNotEmpty(whereCauseColumns)){
+		if(LangUtils.isNotEmpty(whereCauseFields)){
 			queryTemplate += " " + SQL_QUERY_CAUSE;
 		}
 //		List<String> fields = sqlBuildable.getFieldNames(entityClass);
 		String querySql = "";
-		List<String> whereColumns = toWhereString(whereCauseColumns, true);
+		List<String> whereColumns = toWhereString(whereCauseFields, true);
 		querySql = PARSER.parse(queryTemplate, 
 				"tableName", tableName, 
 				"alias", alias, 
@@ -212,18 +221,18 @@ public class TableSQLBuilder {
 		this.debug = debug;
 	}
 
-	protected List<String> toWhereString(List<BaseColumnInfo> columns){
+	protected List<String> toWhereString(List<DbmMappedField> columns){
 		return toWhereString(columns, true);
 	}
 	
-	protected List<String> toWhereString(Collection<BaseColumnInfo> columns, boolean alias){
+	protected List<String> toWhereString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
 		String namedStr = QMARK;
 		String fstr = null;
-		for(BaseColumnInfo field : columns){
-			fstr = alias?field.getNameWithAlias():field.getName();
+		for(DbmMappedField field : columns){
+			fstr = alias?field.getColumn().getNameWithAlias():field.getColumn().getName();
 			if(namedPlaceHoder){
-				namedStr = alias?field.getNamedPlaceHolderWithAlias():field.getNamedPlaceHolder();
+				namedStr = alias?field.getColumn().getNamedPlaceHolderWithAlias():field.getColumn().getNamedPlaceHolder();
 				strs.add(fstr+" = " + namedStr);
 			}else{
 				strs.add(fstr+" = "+namedStr);
@@ -233,14 +242,14 @@ public class TableSQLBuilder {
 	}
 	
 
-	protected List<String> nameToString(Collection<BaseColumnInfo> columns){
+	protected List<String> nameToString(Collection<DbmMappedField> columns){
 		return this.nameToString(columns, true);
 	}
 	
-	protected List<String> nameToString(Collection<BaseColumnInfo> columns, boolean alias){
+	protected List<String> nameToString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
-		for(BaseColumnInfo field : columns){
-			strs.add(alias?field.getNameWithAlias():field.getName());
+		for(DbmMappedField field : columns){
+			strs.add(alias?field.getColumn().getNameWithAlias():field.getColumn().getName());
 		}
 		return strs;
 	}
@@ -253,39 +262,42 @@ public class TableSQLBuilder {
 		return strs;
 	}
 	
-	protected List<String> javaNameToNamedString(Collection<BaseColumnInfo> columns, boolean alias){
+	protected List<String> javaNameToNamedString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
-		for(BaseColumnInfo field : columns){
+		for(DbmMappedField field : columns){
 			if(namedPlaceHoder)
-				strs.add(alias?field.getNamedPlaceHolderWithAlias():field.getNamedPlaceHolder());
+				strs.add(alias?field.getColumn().getNamedPlaceHolderWithAlias():field.getColumn().getNamedPlaceHolder());
 			else
 				strs.add(QMARK);
 		}
 		return strs;
 	}
 
-	public PrimaryKey getPrimaryKey() {
-		return primaryKey;
+	public DbmMappedField getIdentifyField() {
+		return identifyField;
 	}
-
-	public void setPrimaryKey(PrimaryKey primaryKey) {
-		this.primaryKey = primaryKey;
-	}
-	
+	/* (non-Javadoc)
+	 * @see org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder#getSql()
+	 */
+	@Override
 	public String getSql() {
 		return sql;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder#getType()
+	 */
+	@Override
 	public SqlBuilderType getType() {
 		return type;
 	}
 
-	public Collection<BaseColumnInfo> getColumns() {
-		return columns;
+	public List<DbmMappedField> getFields() {
+		return fields;
 	}
 
-	public Collection<BaseColumnInfo> getWhereCauseColumns() {
-		return whereCauseColumns;
+	public List<DbmMappedField> getWhereCauseFields() {
+		return whereCauseFields;
 	}
 
 	public boolean isNamedPlaceHoder() {
@@ -295,4 +307,14 @@ public class TableSQLBuilder {
 	public void setNamedPlaceHoder(boolean namedPlaceHoder) {
 		this.namedPlaceHoder = namedPlaceHoder;
 	}
+	
+	public Object getVersionValue(Object[] updateValues){
+		int valueIndex = fields.indexOf(entry.getVersionField());
+		return updateValues[valueIndex];
+	}
+
+	public JFishMappedEntryMeta getEntry() {
+		return entry;
+	}
+	
 }

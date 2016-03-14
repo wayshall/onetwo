@@ -6,6 +6,7 @@ import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.AbstractJFishMappedEntryImpl;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
+import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilderImpl;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedType;
 import org.onetwo.common.jfishdbm.mapping.TableInfo;
@@ -14,7 +15,7 @@ import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 
 public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
-	private EntrySQLBuilder staticFetchSqlBuilder;
+	private EntrySQLBuilderImpl staticFetchSqlBuilder;
 	
 
 	public JFishQueryableMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
@@ -54,17 +55,17 @@ public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl 
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticInsertSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticInsertSqlBuilder() {
 		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticUpdateSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticUpdateSqlBuilder() {
 		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticDeleteSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticDeleteSqlBuilder() {
 		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
 	}
 
@@ -77,7 +78,7 @@ public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl 
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticFetchSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticFetchSqlBuilder() {
 		return staticFetchSqlBuilder;
 	}
 
