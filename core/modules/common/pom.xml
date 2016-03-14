@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.1.4-SNAPSHOT</version>
+        <version>4.2.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -17,7 +17,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <onetwo.version>4.1.4-SNAPSHOT</onetwo.version>
+    <onetwo.version>4.2.0-SNAPSHOT</onetwo.version>
   </properties>
   
   <dependencyManagement>

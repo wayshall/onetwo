@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,6 +71,8 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
 	
+	private MessageSourceAccessor exceptionMessageAccessor;
+	
 //	protected String defaultRedirect;
 	
 	public BootWebExceptionResolver(){
@@ -79,6 +82,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
+		exceptionMessageAccessor = new MessageSourceAccessor(exceptionMessage);
 	}
 	
 	protected void initResolver(){
@@ -89,7 +93,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		return BootWebUtils.isAjaxRequest(request);
 	}
 	
-	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex){
+	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
 	}
 
 	@Override
@@ -290,7 +294,8 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		if(this.exceptionMessage==null)
 			return "";
 		try {
-			return this.exceptionMessage.getMessage(code, args, defaultMessage, locale);
+//			return this.exceptionMessage.getMessage(code, args, defaultMessage, locale);
+			return this.exceptionMessageAccessor.getMessage(code, args, defaultMessage, locale);
 		} catch (Exception e) {
 			logger.error("getMessage error :" + e.getMessage(), e);
 		}
@@ -300,17 +305,20 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 	protected Locale getLocale(){
 //		return JFishWebUtils.getLocale();
 		return BootUtils.getDefaultLocale();
+//		return LocaleContextHolder.getLocale();
 	}
 
 	protected String getMessage(String code, Object[] args) {
 		if(this.exceptionMessage==null)
 			return "";
 		try {
-			return this.exceptionMessage.getMessage(code, args, getLocale());
+//			return this.exceptionMessage.getMessage(code, args, getLocale());
+			return this.exceptionMessageAccessor.getMessage(code, args);
 		} catch (Exception e) {
 			logger.error("getMessage error :" + e.getMessage(), e);
 		}
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+		
 	}
 
 	protected MessageSource getExceptionMessage() {
