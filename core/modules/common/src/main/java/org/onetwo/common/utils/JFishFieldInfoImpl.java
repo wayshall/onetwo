@@ -5,7 +5,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.reflect.Intro;
+import org.onetwo.common.reflect.ReflectUtils;
 
 public class JFishFieldInfoImpl extends AbstractJFishProperty {
 

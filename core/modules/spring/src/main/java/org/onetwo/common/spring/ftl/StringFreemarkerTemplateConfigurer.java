@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 
 import freemarker.cache.TemplateLoader;

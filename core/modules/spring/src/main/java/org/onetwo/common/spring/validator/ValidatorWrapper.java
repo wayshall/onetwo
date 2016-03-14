@@ -6,11 +6,13 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 
 public class ValidatorWrapper {
 	
 	public static ValidatorWrapper wrap(Validator validator){
+		Assert.notNull(validator);
 		return new ValidatorWrapper(validator);
 	}
 

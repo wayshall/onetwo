@@ -3,7 +3,7 @@ package org.onetwo.common.jfishdbm.event;
 
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.utils.LangUtils;
@@ -31,7 +31,7 @@ public class JFishBatchInsertEventListener extends JFishInsertEventListener{
 	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
 		Object entity = event.getObject();
 		if(!LangUtils.isMultiple(entity)){
-			throw new JFishOrmException("batch insert's args must be a Collection or Array!");
+			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}
 		JFishEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);

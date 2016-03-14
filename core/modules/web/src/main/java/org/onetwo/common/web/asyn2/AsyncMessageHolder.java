@@ -1,18 +1,17 @@
 package org.onetwo.common.web.asyn2;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.asyn.AsyncMessageTunnel;
 import org.slf4j.Logger;
 
+@SuppressWarnings("serial")
 abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessage> {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	protected int totalCount = 0;
 //	protected Map<Integer, TaskState> asynStates = new LinkedHashMap<Integer, TaskState>();

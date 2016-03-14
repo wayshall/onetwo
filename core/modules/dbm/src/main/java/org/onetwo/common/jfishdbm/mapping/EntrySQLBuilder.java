@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.Expression;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -22,7 +23,7 @@ public class EntrySQLBuilder {
 	public static final String SQL_QUERY = "select ${selectFields} from ${tableName} ${alias}";
 	public static final String SQL_QUERY_CAUSE = "where ${whereCause}";
 
-	public static final Expression PARSER = Expression.DOLOR;
+	public static final Expression PARSER = ExpressionFacotry.DOLOR;
 
 	
 	public static final String QMARK = "?";
@@ -30,9 +31,9 @@ public class EntrySQLBuilder {
 	protected String alias = "this_";
 	protected JFishMappedEntryMeta entry;
 	protected String tableName;
-	protected JFishMappedField identifyField;
-	protected List<JFishMappedField> fields = LangUtils.newArrayList();
-	protected List<JFishMappedField> whereCauseFields = LangUtils.newArrayList();
+	protected DbmMappedField identifyField;
+	protected List<DbmMappedField> fields = LangUtils.newArrayList();
+	protected List<DbmMappedField> whereCauseFields = LangUtils.newArrayList();
 	
 	private boolean debug;
 //	private String placeHoder;
@@ -68,25 +69,25 @@ public class EntrySQLBuilder {
 		return getAlias() + "." + alias;
 	}
 	
-	public EntrySQLBuilder append(JFishMappedField column){
+	public EntrySQLBuilder append(DbmMappedField column){
 		if(column!=null)
 			this.fields.add(column);
 		return this;
 	}
 	
-	public EntrySQLBuilder appendWhere(JFishMappedField column){
+	public EntrySQLBuilder appendWhere(DbmMappedField column){
 		if(column!=null)
 			this.whereCauseFields.add(column);
 		return this;
 	}
 	
-	public EntrySQLBuilder append(Collection<? extends JFishMappedField> columns){
+	public EntrySQLBuilder append(Collection<? extends DbmMappedField> columns){
 		if(columns!=null)
 			this.fields.addAll(columns);
 		return this;
 	}
 	
-	public EntrySQLBuilder appendWhere(Collection<? extends JFishMappedField> columns){
+	public EntrySQLBuilder appendWhere(Collection<? extends DbmMappedField> columns){
 		if(columns!=null)
 			this.whereCauseFields.addAll(columns);
 		return this;
@@ -216,15 +217,15 @@ public class EntrySQLBuilder {
 		this.debug = debug;
 	}
 
-	protected List<String> toWhereString(List<JFishMappedField> columns){
+	protected List<String> toWhereString(List<DbmMappedField> columns){
 		return toWhereString(columns, true);
 	}
 	
-	protected List<String> toWhereString(Collection<JFishMappedField> columns, boolean alias){
+	protected List<String> toWhereString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
 		String namedStr = QMARK;
 		String fstr = null;
-		for(JFishMappedField field : columns){
+		for(DbmMappedField field : columns){
 			fstr = alias?field.getColumn().getNameWithAlias():field.getColumn().getName();
 			if(namedPlaceHoder){
 				namedStr = alias?field.getColumn().getNamedPlaceHolderWithAlias():field.getColumn().getNamedPlaceHolder();
@@ -237,13 +238,13 @@ public class EntrySQLBuilder {
 	}
 	
 
-	protected List<String> nameToString(Collection<JFishMappedField> columns){
+	protected List<String> nameToString(Collection<DbmMappedField> columns){
 		return this.nameToString(columns, true);
 	}
 	
-	protected List<String> nameToString(Collection<JFishMappedField> columns, boolean alias){
+	protected List<String> nameToString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
-		for(JFishMappedField field : columns){
+		for(DbmMappedField field : columns){
 			strs.add(alias?field.getColumn().getNameWithAlias():field.getColumn().getName());
 		}
 		return strs;
@@ -257,9 +258,9 @@ public class EntrySQLBuilder {
 		return strs;
 	}
 	
-	protected List<String> javaNameToNamedString(Collection<JFishMappedField> columns, boolean alias){
+	protected List<String> javaNameToNamedString(Collection<DbmMappedField> columns, boolean alias){
 		List<String> strs = new ArrayList<String>();
-		for(JFishMappedField field : columns){
+		for(DbmMappedField field : columns){
 			if(namedPlaceHoder)
 				strs.add(alias?field.getColumn().getNamedPlaceHolderWithAlias():field.getColumn().getNamedPlaceHolder());
 			else
@@ -268,7 +269,7 @@ public class EntrySQLBuilder {
 		return strs;
 	}
 
-	public JFishMappedField getIdentifyField() {
+	public DbmMappedField getIdentifyField() {
 		return identifyField;
 	}
 	public String getSql() {
@@ -279,11 +280,11 @@ public class EntrySQLBuilder {
 		return type;
 	}
 
-	public List<JFishMappedField> getFields() {
+	public List<DbmMappedField> getFields() {
 		return fields;
 	}
 
-	public List<JFishMappedField> getWhereCauseFields() {
+	public List<DbmMappedField> getWhereCauseFields() {
 		return whereCauseFields;
 	}
 

@@ -4,6 +4,8 @@ build.xml
 .settings
 .svn
 pom.properties
+.idea
+*.iml
 
 .class
 .jar

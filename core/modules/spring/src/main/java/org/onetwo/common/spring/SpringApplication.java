@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -17,7 +17,8 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.ClassUtils;
 
 /****
  * 可通过这个类手动获取spring容器里注册的bean
@@ -35,7 +36,7 @@ public class SpringApplication {
 	
 	private boolean initialized;
 	
-	private BaseEntityManager baseEntityManager;
+//	private BaseEntityManager baseEntityManager;
 	
 	private ValidatorWrapper validatorWrapper;
 	
@@ -61,7 +62,7 @@ public class SpringApplication {
 	public static void initApplication(ApplicationContext webappContext) {
 		instance.appContext = webappContext;
 		instance.initialized = true;
-//		instance.printBeanNames();
+		instance.printBeanNames();
 		try {
 			if(ConfigurableApplicationContext.class.isInstance(webappContext))
 				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
@@ -88,7 +89,7 @@ public class SpringApplication {
 	}
 	
 	public Object getBean(String beanName) {
-		return getBean(beanName, false);
+		return getBean(beanName, true);
 	}
 
 	public Object getBean(String beanName, boolean throwIfError) {
@@ -103,9 +104,11 @@ public class SpringApplication {
 		try {
 			bean = getAppContext().getBean(beanName);
 		} catch (Exception e) {
-//			logger.error("get bean["+beanName+"] from spring error! ");
-			if(throwIfError)
+			if(throwIfError){
 				throw new BaseException("get bean["+beanName+"] from spring error! ", e);
+			}else{
+				logger.info("get bean["+beanName+"] from spring error! ");
+			}
 		}
 		return bean;
 	}
@@ -120,6 +123,18 @@ public class SpringApplication {
 
 	public <T> T getBeanByDefaultName(Class<T> clazz) {
 		return (T)getBean(StringUtils.uncapitalize(clazz.getSimpleName()));
+	}
+
+
+	public Object getBeanByClassName(String className) {
+		if(ClassUtils.isPresent(className, ClassUtils.getDefaultClassLoader())){
+			return getBean(ReflectUtils.loadClass(className), false);
+		}
+		return null;
+	}
+
+	public boolean containsClassBean(String className) {
+		return getBeanByClassName(className)!=null;
 	}
 
 
@@ -163,7 +178,8 @@ public class SpringApplication {
 		if(map==null || map.isEmpty())
 			return Collections.EMPTY_LIST;
 		List<T> list = new ArrayList<T>(map.values());
-		OrderComparator.sort(list);
+//		OrderComparator.sort(list);
+		AnnotationAwareOrderComparator.sort(list);
 		return list;
 	}
 	
@@ -206,13 +222,13 @@ public class SpringApplication {
 		System.out.println("=================================== spring beans ===================================");
 		int index = 0;
 		for (String bn : beanNames) {
-			Object obj = SpringApplication.getInstance().getBean(bn);
-			System.out.println("["+(++index)+"]" + bn + ":" + (obj != null ? obj.getClass() : "null"));
+//			Object obj = SpringApplication.getInstance().getBean(bn, false);
+			System.out.println("["+(++index)+"]" + bn );
 		}
 		System.out.println("=================================== spring beans ===================================");
 	}
 
-	public BaseEntityManager getBaseEntityManager() {
+	/*public BaseEntityManager getBaseEntityManager() {
 		BaseEntityManager be = baseEntityManager;
 		if(be==null){
 			be = getBean(BaseEntityManager.class);
@@ -220,7 +236,7 @@ public class SpringApplication {
 		}
 		return be;
 	}
-	
+	*/
 
 	public ValidatorWrapper getValidator(){
 		if(this.validatorWrapper!=null)

@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.event;
 
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.LangUtils;
 
 public class JFishEvent {
 //	private static final String RELATED_FIELD_PROPERTY_SYMBOL = ".";
@@ -19,7 +20,7 @@ public class JFishEvent {
 		super();
 		this.object = object;
 		if(object!=null){
-			this.entityClass = ReflectUtils.getObjectClass(object);
+			this.entityClass = ReflectUtils.getObjectClass(LangUtils.getFirst(object));
 		}
 		this.action = action;
 		this.eventSource = eventSource;

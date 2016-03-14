@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	
+    <!-- <parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.2.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent> -->
+	
+  <groupId>org.onetwo</groupId>
+  <artifactId>onetwo-ajaxanywhere</artifactId>
+  <version>4.2.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>onetwo-ajaxanywhere</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <onetwo.version>4.2.0-SNAPSHOT</onetwo.version>
+  </properties>
+  
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+             <groupId>org.onetwo</groupId>
+             <artifactId>onetwo-bom</artifactId>
+             <version>${onetwo.version}</version>
+             <type>pom</type>
+             <scope>import</scope>
+         </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+	
+	<dependency>
+		<groupId>javax.servlet.jsp</groupId>
+		<artifactId>jsp-api</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>javax.servlet-api</artifactId>
+	</dependency>
+	 
+	<dependency>
+		<groupId>javax.faces</groupId>
+		<artifactId>jsf-api</artifactId>
+	</dependency>
+	
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-common</artifactId>
+    </dependency>
+	
+  </dependencies>
+  
+  <build>
+  	<plugins>
+	    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+		</plugin>
+		
+  	</plugins>
+  </build>
+  
+</project>

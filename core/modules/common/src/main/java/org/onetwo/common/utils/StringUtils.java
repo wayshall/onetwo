@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.func.ReturnableClosure;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class StringUtils {
 
@@ -138,18 +142,18 @@ public abstract class StringUtils {
 	}
 
 	public static String toPropertyName(String str) {
-		return toJavaName(str, false);
+		return toCamel(str, false);
 	}
 
 	public static String toClassName(String str) {
-		return toJavaName(str, true);
+		return toCamel(str, true);
 	}
 
-	public static String toJavaName(String str, boolean isFirstUpper) {
-		return toJavaName(str, '_', isFirstUpper);
+	public static String toCamel(String str, boolean isFirstUpper) {
+		return toCamel(str, '_', isFirstUpper);
 	}
 
-	public static String toJavaName(String str, char op, boolean isFirstUpper) {
+	public static String toCamel(String str, char op, boolean isFirstUpper) {
 		if (str.indexOf(op) == -1) {
 			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
@@ -186,10 +190,12 @@ public abstract class StringUtils {
 	}
 
 	public static String convert2UnderLineName(String name) {
-		return convert2UnderLineName(name, "_");
+		return convertWithSeperator(name, "_");
 	}
 
-	public static String convert2UnderLineName(String name, String op) {
+	public static String convertWithSeperator(String name, String op) {
+		if(name==null)
+			return "";
 		StringBuffer table = new StringBuffer();
 		char[] chars = name.toCharArray();
 		table.append(Character.toLowerCase(chars[0]));
@@ -217,6 +223,12 @@ public abstract class StringUtils {
 		Class<?> cls = ReflectUtils.getObjectClass(obj);
 		return uncapitalize(cls.getSimpleName());
 	}
+	
+	/*
+	 * from apache common org.apache.commons.lang3.StringUtils 
+	 * 
+	 * 
+	 */
 
 	public static String[] split(String str, char separatorChar) {
 		return splitWorker(str, separatorChar, false);
@@ -540,7 +552,7 @@ public abstract class StringUtils {
 		return join(array, separator, 0, array.length);
 	}
 
-	public static String join(Object[] array, String separator, SimpleBlock<Object, String> it) {
+	public static String join(Object[] array, String separator, ReturnableClosure<Object, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}
@@ -551,7 +563,7 @@ public abstract class StringUtils {
 		return join(iterator, separator, null);
 	}
 
-	public static String join(Iterator iterator, String separator, SimpleBlock<Object, String> it) {
+	public static String join(Iterator iterator, String separator, ReturnableClosure<Object, String> it) {
 
 		// handle null, zero and one elements before building a buffer
 		if (iterator == null) {
@@ -596,7 +608,7 @@ public abstract class StringUtils {
 		return join(collection.iterator(), separator);
 	}
 
-	public static String join(Collection collection, String separator, SimpleBlock<Object, String> it) {
+	public static String join(Collection collection, String separator, ReturnableClosure<Object, String> it) {
 		if (collection == null) {
 			return EMPTY;
 		}
@@ -607,7 +619,7 @@ public abstract class StringUtils {
 		return join(array, separator, startIndex, endIndex, null);
 	}
 
-	public static String join(Object[] array, String separator, int startIndex, int endIndex, SimpleBlock<Object, String> it) {
+	public static String join(Object[] array, String separator, int startIndex, int endIndex, ReturnableClosure<Object, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}
@@ -733,12 +745,13 @@ public abstract class StringUtils {
 	}
 
 	public static String trimStartWith(String path, String prefix) {
-		if (path == null)
+		/*if (path == null)
 			path = EMPTY;
-		if (path.startsWith(prefix)) {
-			return path.substring(prefix.length(), path.length());
+		while (path.startsWith(prefix)) {
+			path = path.substring(prefix.length(), path.length());
 		}
-		return path;
+		return path;*/
+		return trimLeft(path, prefix);
 	}
 
 	public static String surroundWith(String path, String prefix) {
@@ -777,14 +790,19 @@ public abstract class StringUtils {
 		newString = appendEndWith(newString, appendString);
 		return newString;
 	}
+	public static String getSqlLikeString(final String str) {
+		return StringUtils.appendArroundWith(str, "%");
+	}
 
 	public static String trimEndWith(String path, String postfix) {
-		if (path == null)
+		/*if (path == null)
 			path = EMPTY;
-		if (path.endsWith(postfix)) {
-			return path.substring(0, path.length() - postfix.length());
+		while (path.endsWith(postfix)) {
+//			return path.substring(0, path.length() - postfix.length());
+			path = path.substring(0, path.length() - postfix.length());
 		}
-		return path;
+		return path;*/
+		return trimRight(path, postfix);
 	}
 
 	public static String ellipsis(String source, int size, String ellipsisStr) {
@@ -972,6 +990,49 @@ public abstract class StringUtils {
         }
 
         return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
+    }
+	
+
+    public static final int INDEX_NOT_FOUND = -1;
+    public static String stripStart(final String str, final String stripChars) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+        int start = 0;
+        if (stripChars == null) {
+            while (start != strLen && Character.isWhitespace(str.charAt(start))) {
+                start++;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
+                start++;
+            }
+        }
+        return str.substring(start);
+    }
+    
+
+    public static String stripEnd(final String str, final String stripChars) {
+        int end;
+        if (str == null || (end = str.length()) == 0) {
+            return str;
+        }
+
+        if (stripChars == null) {
+            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
     }
 
 	public static void main(String[] args) {

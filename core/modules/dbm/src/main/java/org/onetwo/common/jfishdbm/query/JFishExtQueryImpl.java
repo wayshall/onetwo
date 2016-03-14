@@ -3,9 +3,10 @@ package org.onetwo.common.jfishdbm.query;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.SelectExtQueryImpl;
+import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.db.sqlext.SelectExtQueryImpl;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -15,11 +16,17 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 
 	JFishMappedEntry entry;
 	
-	@SuppressWarnings("rawtypes")
-	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map params, SQLSymbolManager symbolManager) {
+	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
 		this.entry = entry;
 	}
+
+	public JFishExtQueryImpl(JFishMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+		super(entityClass, alias, params, symbolManager, listeners);
+		this.entry = entry;
+	}
+
+
 
 	@Override
 	public void initQuery(){
@@ -52,6 +59,12 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 			return entry.getIdentifyField().getColumn().getName();
 		}
 		return "*";
+	}
+	
+	@Override
+	public String getSelectFieldName(String f) {
+		String fname = getFieldName(f);
+		return super.getSelectFieldName(fname);
 	}
 
 	@Override
@@ -96,12 +109,12 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 			joinBuf.append(joinWord).append(hasParentheses?"(":" ").append(joinTableName).append(hasParentheses?") ":" ");
 		fjoin.remove(0);
 		if(fjoin.isEmpty()){
-			throw new JFishOrmException("join table without on cause, check it!");
+			throw new DbmException("join table without on cause, check it!");
 		}
 		joinBuf.append("on (");
 		for (int i=0; i<fjoin.size(); i++) {
 			if(!fjoin.get(i).getClass().isArray())
-				throw new JFishOrmException("join cause must be a array");
+				throw new DbmException("join cause must be a array");
 			if(i!=0)
 				joinBuf.append(" and ");
 			Object[] onsArray = (Object[]) fjoin.get(i);

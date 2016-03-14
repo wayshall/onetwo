@@ -76,7 +76,8 @@ sourceSets {
 	}
 }
 
-ext.onetwoVersion = "3.5.0-SNAPSHOT";
+//ext.onetwoVersion = "3.5.0-SNAPSHOT";
+ext.onetwoVersion = "4.0.4-SNAPSHOT";
 ext.commonsioVersion = "2.4"
 ext.javaeeVersion = "6.0-3"
 ext.mysqlConnectorVersion = "5.1.35"

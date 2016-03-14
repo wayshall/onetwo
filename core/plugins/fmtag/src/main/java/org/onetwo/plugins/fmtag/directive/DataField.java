@@ -3,10 +3,10 @@ package org.onetwo.plugins.fmtag.directive;
 import java.util.Collections;
 import java.util.List;
 
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
