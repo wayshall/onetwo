@@ -745,12 +745,13 @@ public abstract class StringUtils {
 	}
 
 	public static String trimStartWith(String path, String prefix) {
-		if (path == null)
+		/*if (path == null)
 			path = EMPTY;
-		if (path.startsWith(prefix)) {
-			return path.substring(prefix.length(), path.length());
+		while (path.startsWith(prefix)) {
+			path = path.substring(prefix.length(), path.length());
 		}
-		return path;
+		return path;*/
+		return trimLeft(path, prefix);
 	}
 
 	public static String surroundWith(String path, String prefix) {
@@ -794,12 +795,14 @@ public abstract class StringUtils {
 	}
 
 	public static String trimEndWith(String path, String postfix) {
-		if (path == null)
+		/*if (path == null)
 			path = EMPTY;
-		if (path.endsWith(postfix)) {
-			return path.substring(0, path.length() - postfix.length());
+		while (path.endsWith(postfix)) {
+//			return path.substring(0, path.length() - postfix.length());
+			path = path.substring(0, path.length() - postfix.length());
 		}
-		return path;
+		return path;*/
+		return trimRight(path, postfix);
 	}
 
 	public static String ellipsis(String source, int size, String ellipsisStr) {

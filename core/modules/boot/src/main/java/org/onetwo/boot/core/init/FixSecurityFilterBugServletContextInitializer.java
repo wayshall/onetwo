@@ -43,16 +43,22 @@ public class FixSecurityFilterBugServletContextInitializer implements ServletCon
 	@Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 		Dynamic fr = servletContext.addFilter("org.springframework.security.web.access.intercept.FilterSecurityInterceptor#0", EmptyFilter.class);
-		fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
-		fr.setAsyncSupported(true);
+		if(fr!=null){
+			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
+			fr.setAsyncSupported(true);
+		}
 		
 		fr = servletContext.addFilter("org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter#0", EmptyFilter.class);
-		fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
-		fr.setAsyncSupported(true);
+		if(fr!=null){
+			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
+			fr.setAsyncSupported(true);
+		}
 		
 		fr = servletContext.addFilter("casFilter", EmptyFilter.class);
-		fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
-		fr.setAsyncSupported(true);
+		if(fr!=null){
+			fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/fuckSpringBootFilterSecurityInterceptor");
+			fr.setAsyncSupported(true);
+		}
     }
 
 }
