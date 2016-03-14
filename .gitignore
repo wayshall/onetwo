@@ -33,3 +33,4 @@ work/Tomcat
 release-pom.xml
 .releaseBackup
 pom.xml.releaseBackup
+*.orig
