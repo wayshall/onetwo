@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.dialet;
 
 import java.util.List;
 
-import org.onetwo.common.db.JFishQueryValue;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
@@ -16,6 +16,7 @@ public interface DBDialect extends Initializable {
 //	public MappedEntryManager getMappedEntryManager();
 	
 //	public void initialize();
+//	public DataBase getDbmeta();
 	public DBMeta getDbmeta();
 
 	public SQLBuilderFactory getSqlBuilderFactory();
@@ -34,7 +35,7 @@ public interface DBDialect extends Initializable {
 	
 	public String getLimitStringWithNamed(String sql, String firstName, String maxResultName);
 	
-	public void addLimitedValue(JFishQueryValue params, String firstName, int firstResult, String maxName, int maxResults);
+	public void addLimitedValue(DbmQueryValue params, String firstName, int firstResult, String maxName, int maxResults);
 //	public boolean isPrintSql();
 //	public DataBaseConfig getDataBaseConfig();
 }

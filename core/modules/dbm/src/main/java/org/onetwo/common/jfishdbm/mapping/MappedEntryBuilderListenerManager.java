@@ -21,7 +21,7 @@ public class MappedEntryBuilderListenerManager {
 		}
 	}
 	
-	public void notifyAfterBuildMappedField(JFishMappedEntry entry, JFishMappedField mfield){
+	public void notifyAfterBuildMappedField(JFishMappedEntry entry, DbmMappedField mfield){
 		if(LangUtils.isEmpty(mappedEntryBuilderListener))
 			return ;
 		for(MappedEntryBuilderListener l : mappedEntryBuilderListener){

@@ -5,6 +5,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.common.reflect.Intro;
+
 public interface JFishProperty {
 
 	public void setValue(Object entity, Object value);

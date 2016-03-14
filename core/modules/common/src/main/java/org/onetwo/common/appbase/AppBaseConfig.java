@@ -2,8 +2,8 @@ package org.onetwo.common.appbase;
 
 import java.util.Collection;
 
+import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.utils.AppConstant;
-import org.onetwo.common.utils.propconf.AppConfig;
 
 @Deprecated
 public class AppBaseConfig extends AppConfig {

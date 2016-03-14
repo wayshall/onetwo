@@ -13,10 +13,10 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.onetwo.common.db.ExtQueryUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
@@ -228,9 +228,9 @@ public class MyUtils {
 	}
 	
 
-	public static String getLikeString(String str) {
+	/*public static String getLikeString(String str) {
 		return ExtQueryUtils.getLikeString(str);
-	}
+	}*/
 
 	public static String appendPathSeparator(String path) {
 		if (!path.endsWith(String.valueOf(File.separatorChar)))

@@ -3,13 +3,17 @@ package org.onetwo.common.utils.map;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.MyUtils;
 
 @SuppressWarnings("serial")
 public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	
-	public BaseMap(){super();};
+	public BaseMap(){super();}
+	
+	public BaseMap(int initialCapacity) {
+		super(initialCapacity);
+	}
 	
 	public BaseMap(Map<K, V> map){
 		super(map);
@@ -71,7 +75,8 @@ public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	}
 	
 	protected <T> T convert(Object val, Class<T> toType, T def){
-		return MyUtils.simpleConvert(val, toType, def);
+//		return MyUtils.simpleConvert(val, toType, def);
+		return Types.convertValue(val, toType, def);
 	}
 	
 	public Integer getInteger(String key){

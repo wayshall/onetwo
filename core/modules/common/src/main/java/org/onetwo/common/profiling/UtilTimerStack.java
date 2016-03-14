@@ -35,7 +35,7 @@ public class UtilTimerStack
     static {
     	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
         active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
-		timeLogger = new Log4jTimeLogger(logger);
+		timeLogger = new Slf4jTimeLogger(logger);
     }
 
     
@@ -163,9 +163,8 @@ public class UtilTimerStack
      * @see #active()
      * @param active
      */
-    @Deprecated
     public static void setActive(boolean active) {
-    	//ignore
+    	active(active);
     }
     /**
      * Turn profiling on or off.

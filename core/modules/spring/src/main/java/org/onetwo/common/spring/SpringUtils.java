@@ -12,16 +12,16 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.propconf.PropUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.PropUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -78,7 +78,7 @@ final public class SpringUtils {
 		setProfiles(newProfiles);
 	}
 
-	public static <T> List<T> getBeans(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
 			return Collections.EMPTY_LIST;
@@ -92,7 +92,7 @@ final public class SpringUtils {
 		return beanMaps;
 	}
 	
-	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> T getBean(ListableBeanFactory appContext, Class<T> clazz) {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
 	}
@@ -162,8 +162,8 @@ final public class SpringUtils {
 		return prop;
 	}
 	
-	public static JFishProperties loadAsJFishProperties(String classpath){
-		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpath);
+	public static JFishProperties loadAsJFishProperties(String... classpaths){
+		PropertiesFactoryBean pfb = createPropertiesBySptring(classpaths);
     	try {
 			pfb.afterPropertiesSet();
 			JFishProperties properties = (JFishProperties)pfb.getObject();
@@ -309,7 +309,13 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
-	public static BeanWrapper newBeanWrapper(Object obj, Object...listElementTypes){
+	public static BeanWrapper newBeanWrapper(Object obj){
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		bw.setAutoGrowNestedPaths(true);
+		return bw;
+	}
+	
+	public static BeanWrapper newBeanMapWrapper(Object obj, Object...listElementTypes){
 		BeanWrapper bw = null;
 		if(Map.class.isInstance(obj)){
 			bw = new BeanMapWrapper(obj, listElementTypes);

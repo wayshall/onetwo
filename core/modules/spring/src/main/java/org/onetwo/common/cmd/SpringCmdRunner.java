@@ -1,13 +1,13 @@
 package org.onetwo.common.cmd;
 
+import org.onetwo.common.commandline.CmdRunner;
+import org.onetwo.common.commandline.CommandManager;
+import org.onetwo.common.commandline.DefaultCommandManager;
+import org.onetwo.common.commandline.HelpCommand;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.spring.context.SpringConfigApplicationContext;
-import org.onetwo.common.utils.commandline.CmdRunner;
-import org.onetwo.common.utils.commandline.CommandManager;
-import org.onetwo.common.utils.commandline.DefaultCommandManager;
-import org.onetwo.common.utils.commandline.HelpCommand;
+import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 
-public class SpringCmdRunner extends CmdRunner {
+abstract public class SpringCmdRunner extends CmdRunner {
 	
 	protected void loadCommand(String[] args) {
 		cmdManager = new DefaultCommandManager();
@@ -20,9 +20,12 @@ public class SpringCmdRunner extends CmdRunner {
 	protected void loadUserCommand(CommandManager cmdManager){
 	}
 	
+	abstract protected AbstractRefreshableConfigApplicationContext createApplicationContext();
+	
 	@Override
 	protected void startAppContext(String[] args) {
-		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
+//		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
+		AbstractRefreshableConfigApplicationContext context = createApplicationContext();
 //		context.setConfigLocation("");
 		SpringApplication.initApplication(context);
 		initApplicationContext(context);
@@ -30,10 +33,10 @@ public class SpringCmdRunner extends CmdRunner {
 		this.afterInitApplicationContext(context);
 	}
 	
-	protected void initApplicationContext(SpringConfigApplicationContext context){
+	protected void initApplicationContext(AbstractRefreshableConfigApplicationContext context){
 	}
 	
-	protected void afterInitApplicationContext(SpringConfigApplicationContext context){
+	protected void afterInitApplicationContext(AbstractRefreshableConfigApplicationContext context){
 		SpringApplication.getInstance().printBeanNames();
 	}
 

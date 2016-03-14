@@ -6,9 +6,9 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.excel.data.WorkbookData;
+import org.onetwo.common.excel.interfaces.TemplateGenerator;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.interfaces.TemplateGenerator;
-import org.onetwo.common.utils.FileUtils;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractWorkbookExcelGenerator implements TemplateGenerator {

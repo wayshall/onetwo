@@ -3,6 +3,7 @@ package org.onetwo.common.web.asyn2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+@SuppressWarnings("serial")
 abstract public class ListMessageHolder extends AsyncMessageHolder {
 	
 	private List<SimpleMessage> messages = new ArrayList<SimpleMessage>();
@@ -37,7 +38,7 @@ abstract public class ListMessageHolder extends AsyncMessageHolder {
 		return simpleMessages;
 	}
 
-	public List<SimpleMessage> getMessages() {
+	protected List<SimpleMessage> getMessages() {
 		return messages;
 	}
 

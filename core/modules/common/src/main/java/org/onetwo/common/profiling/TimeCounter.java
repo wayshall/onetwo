@@ -2,7 +2,7 @@ package org.onetwo.common.profiling;
 
 import java.util.Date;
 
-import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 
 public class TimeCounter {
@@ -42,6 +42,11 @@ public class TimeCounter {
 		long start = System.currentTimeMillis();
 		this.start = new Date(start);
 		return this.start;
+	}
+
+	public TimeCounter startIt() {
+		start();
+		return this;
 	}
 	
 

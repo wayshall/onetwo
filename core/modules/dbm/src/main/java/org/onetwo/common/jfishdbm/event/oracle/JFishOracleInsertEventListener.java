@@ -52,7 +52,7 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 	
 	public Long fetchIdentifyBeforeInsert(JFishInsertEvent event, JFishMappedEntry entry){
 		JFishEventSource es = event.getEventSource();
-		Long id = es.getJFishJdbcTemplate().queryForLong(entry.getStaticSeqSql());
+		Long id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
 		return id;
 	}
 

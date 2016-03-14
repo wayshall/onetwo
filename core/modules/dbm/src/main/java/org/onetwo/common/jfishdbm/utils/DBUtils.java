@@ -24,19 +24,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.DBException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.QueryException;
 import org.onetwo.common.jfishdbm.mapping.DBValueHanlder;
 import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
 import org.onetwo.common.jfishdbm.mapping.SqlTypeFactory;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.common.utils.map.NonCaseMap;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.SqlTypeValue;
 
 
 @SuppressWarnings("unchecked")
@@ -276,7 +277,7 @@ public class DBUtils {
 	private DBUtils(){
 	}
 	
-	public static final int TYPE_UNKNOW = Integer.MIN_VALUE;
+	public static final int TYPE_UNKNOW = SqlTypeValue.TYPE_UNKNOWN;
 	
 	public static DBValueHanlder getValueHandler(Class<?> clazz){
 		if(!DBVALUE_HANDLERS.containsKey(clazz)){
@@ -590,7 +591,7 @@ public class DBUtils {
 				}
 			}
 		}catch(Exception e){
-			throw new DBException("set bean property ["+colName+"] error!", e);
+			throw new DbmException("set bean property ["+colName+"] error!", e);
 		}
 	}
 	
@@ -608,7 +609,7 @@ public class DBUtils {
 				}
 			}
 		}catch(Exception e){
-			throw new DBException("set bean property ["+colName+"] error!", e);
+			throw new DbmException("set bean property ["+colName+"] error!", e);
 		}
 	}
 
@@ -659,7 +660,7 @@ public class DBUtils {
 		List<BaseMap> datas = new ArrayList<BaseMap>();
 		
 		try {
-			NonCaseMap<String, Object> rowMap = null;
+			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
 				rowMap = toMap(rs, false, mapper);
 				if(rowMap!=null)
@@ -675,8 +676,8 @@ public class DBUtils {
 	}
 	
 
-	public static NonCaseMap toMap(ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
-		NonCaseMap rowMap = new NonCaseMap();
+	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
+		CaseInsensitiveMap rowMap = new CaseInsensitiveMap();
 		try {
 			rowMap = mapper.map(rs, rowMap);
 		} catch (Exception e) {
@@ -692,14 +693,14 @@ public class DBUtils {
 		List<Map> datas = new ArrayList<Map>();
 		
 		try {
-			NonCaseMap<String, Object> rowMap = null;
+			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
 				rowMap = toMap(rs, false, names);
 				if(rowMap!=null)
 					datas.add(rowMap);
 			}
 		} catch (Exception e) {
-			handleDBException(e);
+			handleDbmException(e);
 		} finally{
 			if(autoClose)
 				closeResultSet(rs);
@@ -707,7 +708,7 @@ public class DBUtils {
 		return datas;
 	}
 	
-	public static void handleDBException(Exception e){
+	public static void handleDbmException(Exception e){
 		LangUtils.throwBaseException(e);
 	}
 	
@@ -717,12 +718,12 @@ public class DBUtils {
 	 * @param names
 	 * @return
 	 */
-	public static NonCaseMap toMap(ResultSet rs, String...names) {
+	public static CaseInsensitiveMap toMap(ResultSet rs, String...names) {
 		return toMap(rs, false, names);
 	}
 	
-	public static NonCaseMap toMap(ResultSet rs, boolean autoClose, String...names) {
-		NonCaseMap rowMap = new NonCaseMap<String, Object>();
+	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, String...names) {
+		CaseInsensitiveMap rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){
 				Map<String, Integer> columnNames = getColumnMeta(rs);
@@ -752,7 +753,7 @@ public class DBUtils {
 				}
 			}
 		} catch (Exception e) {
-			handleDBException(e);
+			handleDbmException(e);
 		} finally{
 			if(autoClose)
 				closeResultSet(rs);
@@ -763,7 +764,7 @@ public class DBUtils {
 	public static Map<String, Integer> getColumnMeta(ResultSet rs) throws SQLException{
 		ResultSetMetaData rsMeta = rs.getMetaData();
 		int colCount = rsMeta.getColumnCount();
-		Map<String, Integer> column = new NonCaseMap<String, Integer>();
+		Map<String, Integer> column = new CaseInsensitiveMap<String, Integer>();
 		for(int i=1; i<=colCount; i++){
 			column.put(rsMeta.getColumnName(i), i-1);
 		}
@@ -780,18 +781,18 @@ public class DBUtils {
 		return rsMeta.getColumnType(columnIndex);
 	}
 
-	public static DBException asDBException(String msg){
-		return asDBException(msg, null);
+	public static DbmException asDbmException(String msg){
+		return asDbmException(msg, null);
 	}
 	
-	public static DBException asDBException(String msg, Exception e){
-		if(e instanceof DBException)
-			return (DBException) e;
-		DBException dbe = null;
+	public static DbmException asDbmException(String msg, Exception e){
+		if(e instanceof DbmException)
+			return (DbmException) e;
+		DbmException dbe = null;
 		if(msg==null)
-			dbe = new DBException(e.getMessage(), e);
+			dbe = new DbmException(e.getMessage(), e);
 		else
-			dbe = new DBException(msg, e);
+			dbe = new DbmException(msg, e);
 		return dbe;
 	}
 	public static QueryException asQueryException(String msg){
@@ -809,11 +810,11 @@ public class DBUtils {
 		return qe;
 	}
 	
-	public static void throwDBException(String msg){
-		throw asDBException(msg);
+	public static void throwDbmException(String msg){
+		throw asDbmException(msg);
 	}
-	public static void throwDBException(String msg, Exception e){
-		throw asDBException(msg, e);
+	public static void throwDbmException(String msg, Exception e){
+		throw asDbmException(msg, e);
 	}
 	
 	public static void throwQueryException(String msg){

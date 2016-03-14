@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.onetwo.common.utils.LangUtils;
 
+@SuppressWarnings("serial")
 public class DataChangedContext implements Serializable {
 
 	private final Collection<EntityState> changedList = LangUtils.newArrayList();

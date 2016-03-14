@@ -7,14 +7,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.RoleDetail;
 import org.onetwo.common.utils.SessionStorer;
 import org.onetwo.common.utils.SsoTokenable;
 import org.onetwo.common.utils.UserDetail;
 import org.onetwo.common.web.s2.security.SecurityTarget;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
 import org.springframework.web.method.HandlerMethod;
 
@@ -24,7 +24,7 @@ public class SpringSecurityTarget implements SecurityTarget {
 		return new SpringSecurityTarget(sessionStorer, request, response);
 	}
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	final protected HandlerMethod handler;
 	final protected HttpServletRequest request;
@@ -97,12 +97,12 @@ public class SpringSecurityTarget implements SecurityTarget {
 
 	@Override
 	public void removeCookieToken() {
-		ResponseUtils.removeHttpOnlyCookie(response, tokenKey);
+		JFishWebUtils.removeHttpOnlyCookie(response, tokenKey);
 	}
 
 	@Override
 	public void setCookieToken(String token) {
-		ResponseUtils.setHttpOnlyCookie(response, tokenKey, token);
+		JFishWebUtils.setHttpOnlyCookie(response, tokenKey, token);
 	}
 
 	public List<String> getRoles() {

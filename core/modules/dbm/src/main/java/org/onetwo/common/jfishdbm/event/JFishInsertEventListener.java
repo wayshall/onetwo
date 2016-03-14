@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.event;
 
 import java.util.List;
 
-import org.onetwo.common.jdbc.SimpleArgsPreparedStatementCreator;
+import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.utils.LangUtils;

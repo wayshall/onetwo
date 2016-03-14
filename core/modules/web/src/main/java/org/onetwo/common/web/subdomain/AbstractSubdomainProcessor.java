@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.Expression;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.SimpleExpression;
-import org.onetwo.common.utils.ValueProvider;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ abstract public class AbstractSubdomainProcessor implements SubdomainProcessor{
 	
 	protected List<SubdomainRule> rules;
 
-	protected Expression se = SimpleExpression.WELL_INSTANCE;;
+	protected Expression se = ExpressionFacotry.WELL;
 	
 	protected String configFile = "subdomain.xml";
 	

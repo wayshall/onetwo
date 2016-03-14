@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dictionary>
+<dictionary scanEnumPackages="">
 	<dictType code="BOOL" name="是否(true,false)" >
 		<dicts>
 			<dict code="BOOL_TRUE" name="是" value="true"/>

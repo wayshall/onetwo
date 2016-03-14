@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.ftl.directive.DirectiveRender;
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.view.ftl.DirectiveRender;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

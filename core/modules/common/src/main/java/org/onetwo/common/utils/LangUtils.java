@@ -36,14 +36,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.annotation.BeanOrder;
+import org.onetwo.common.convert.Types;
+import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.encrypt.MDFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.annotation.BeanOrder;
-import org.onetwo.common.utils.convert.Types;
-import org.onetwo.common.utils.encrypt.MDFactory;
-import org.onetwo.common.utils.map.NonCaseMap;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.func.ArgsReturnableClosure;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class LangUtils {
@@ -529,7 +535,7 @@ public class LangUtils {
 		return asBaseException(msg, null);
 	}
 	
-	public static BaseException asBaseException(String msg, Exception e){
+	public static BaseException asBaseException(String msg, Throwable e){
 		if(e==null){
 			return new BaseException(msg);
 		}else if(e instanceof BaseException){
@@ -550,7 +556,7 @@ public class LangUtils {
 	}
 
 	
-	public static <T> T block(Block block, Object...objects){
+	public static <T> T block(ArgsReturnableClosure block, Object...objects){
 		T result = null;
 		try {
 			result = block.execute(objects);
@@ -1403,7 +1409,7 @@ public class LangUtils {
 	public static Map mapListToMap(List<? extends Map> datas, String keyName, String valueName){
 		if(datas==null)
 			return null;
-		Map map = new NonCaseMap();
+		Map map = new CaseInsensitiveMap();
 		for(Map row : datas){
 			map.put(row.get(keyName), row.get(valueName));
 		}
@@ -1547,7 +1553,7 @@ public class LangUtils {
 		Object actualValue;
 		if(value instanceof Date){
 			if(StringUtils.isBlank(dataFormat))
-				dataFormat = DateUtil.Date_Time;
+				dataFormat = DateUtil.DATE_TIME;
 			actualValue = DateUtil.format(dataFormat, (Date)value);
 		}else if(value instanceof Number && dataFormat != null) {
 			NumberFormat nf = new DecimalFormat(dataFormat);
@@ -1701,5 +1707,29 @@ public class LangUtils {
 		} finally{
 			lock.unlock();
 		}
+	}
+	
+
+	public static boolean isNumberObject(Object val){
+		if(val==null)
+			return false;
+		return isNumberType(val.getClass());
+	}
+	public static boolean isNumberType(Class<?> clazz){
+		if(clazz==null)
+			return false;
+		if(clazz.isPrimitive()){
+			return int.class==clazz || long.class==clazz || short.class==clazz || float.class==clazz || double.class==clazz;
+		}
+		return Number.class.isAssignableFrom(clazz);
+	}
+	
+	public static boolean isIntegralType(Class<?> clazz){
+		if(clazz==null)
+			return false;
+		if(clazz.isPrimitive()){
+			return int.class==clazz || long.class==clazz || short.class==clazz;
+		}
+		return Integer.class==clazz || Long.class==clazz || Short.class==clazz;
 	}
 }

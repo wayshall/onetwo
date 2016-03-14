@@ -9,8 +9,6 @@ import java.util.Map;
 import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.ftl.DataComponent;
-import org.onetwo.common.ftl.directive.AbstractDirective;
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
@@ -21,6 +19,8 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.BaseMap;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 

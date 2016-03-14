@@ -16,14 +16,18 @@ Copyright 2005  Vitaliy Shevchuk (shevit@users.sourceforge.net)
 */
 package org.ajaxanywhere;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Map;
-import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Date: 23 juil. 2005
@@ -46,8 +50,7 @@ public class AAFilter implements Filter {
             filterChain.doFilter(servletRequest, response);
             return;
         }
-
-
+        
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/xml;charset=utf-8");
 

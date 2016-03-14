@@ -2,7 +2,7 @@ package org.onetwo.common.jfishdbm.exception;
 
 
 @SuppressWarnings("serial")
-public class QueryException extends DBException {
+public class QueryException extends DbmException {
 
 	private static final String DefaultMsg = "query error";
 	

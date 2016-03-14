@@ -2,8 +2,9 @@ package org.onetwo.common.jfishdbm.mapping;
 
 import java.util.Collection;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 
 /****
  * 连接表映射？
@@ -17,8 +18,8 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	private EntrySQLBuilder staticDeleteSqlBuilder;
 	private EntrySQLBuilder staticFetchAllSqlBuilder;
 	
-	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
-		super(annotationInfo, tableInfo);
+	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	
 	protected void buildStaticSQL(TableInfo tableInfo){
@@ -68,7 +69,8 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 
 	@Override
 	public MappedType getMappedType() {
-		return MappedType.JOINED;
+//		return MappedType.JOINED;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
