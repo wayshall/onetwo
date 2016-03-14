@@ -1,10 +1,9 @@
 package org.onetwo.common.spring.ftl;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -24,13 +23,15 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		INSTANCE.setSimpleMapWrapper(true);
 	}
 
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private Configuration configuration;
 	
 	private String encoding = CharsetUtils.UTF_8;
 	
 	private Map<String, Object> freemarkerVariables;
+	
+	private boolean initialized;
 
 	
 	public AbstractFreemarkerTemplateConfigurer(){
@@ -47,14 +48,21 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		return this;
 	}
 	
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	/****
 	 * must be invoke after contruction
 	 */
 	public void initialize() {
+		if(isInitialized())
+			return ;
+		
 		TemplateLoader loader = getTempateLoader();
 		Assert.notNull(loader);
 		try {
-			this.configuration = new Configuration();
+			this.configuration = new Configuration(Configuration.VERSION_2_3_0);
 			this.configuration.setObjectWrapper(getBeansWrapper());
 			this.configuration.setOutputEncoding(this.encoding);
 			//设置默认不自动格式化数字……以防sb……
@@ -75,6 +83,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 			this.configuration.setTemplateLoader(loader);
 			
 			this.buildConfigration(this.configuration);
+			
+			initialized = true;
 		} catch (Exception e) {
 			throw new BaseException("create freemarker template error : " + e.getMessage(), e);
 		}
@@ -89,9 +99,9 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		try {
 			template = getConfiguration().getTemplate(name);
 		}catch (ParseException e) {
-			throw new BaseException("sql tempalte syntax error : " + e.getMessage());
-		} catch (IOException e) {
-			throw new BaseException("get tempalte error : " + e.getMessage(), e);
+			throw new BaseException("sql tempalte["+name+"] syntax error : " + e.getMessage());
+		} catch (Exception e) {
+			throw new BaseException("get tempalte["+name+"] error : " + e.getMessage(), e);
 		}
 		return template;
 	}

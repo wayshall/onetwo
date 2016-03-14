@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 import org.onetwo.common.utils.LangUtils;
 
 public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
@@ -20,23 +21,23 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	private EntrySQLBuilder staticSeqSqlBuilder;
 	private EntrySQLBuilder staticSelectVersionSqlBuilder;
 	
-	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
-		super(annotationInfo, tableInfo);
+	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 
 
-	protected Collection<JFishMappedField> getInsertableFields(){
-		List<JFishMappedField> insertables = new ArrayList<JFishMappedField>();
-		for(JFishMappedField field : getMappedColumns().values()){
+	protected Collection<DbmMappedField> getInsertableFields(){
+		List<DbmMappedField> insertables = new ArrayList<DbmMappedField>();
+		for(DbmMappedField field : getMappedColumns().values()){
 			if(field.getColumn().isInsertable())
 				insertables.add(field);
 		}
 		return insertables;
 	}
 	
-	public List<JFishMappedField> getUpdateableFields(){
-		List<JFishMappedField> updatables = new ArrayList<JFishMappedField>();
-		for(JFishMappedField col : getMappedColumns().values()){
+	public List<DbmMappedField> getUpdateableFields(){
+		List<DbmMappedField> updatables = new ArrayList<DbmMappedField>();
+		for(DbmMappedField col : getMappedColumns().values()){
 			if(col.getColumn().isUpdatable())
 				updatables.add(col);
 		}
@@ -44,9 +45,9 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	}
 	
 
-	public Collection<JFishMappedField> getSelectableField() {
-		List<JFishMappedField> cols = LangUtils.newArrayList();
-		for(JFishMappedField col : this.getMappedColumns().values()){
+	public Collection<DbmMappedField> getSelectableField() {
+		List<DbmMappedField> cols = LangUtils.newArrayList();
+		for(DbmMappedField col : this.getMappedColumns().values()){
 			if(col.getColumn().isLazy())
 				continue;
 			cols.add(col);
@@ -76,7 +77,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 		staticSeqSqlBuilder.setNamedPlaceHoder(false);
 		staticSeqSqlBuilder.build();
 
-		Collection<JFishMappedField> columns = getSelectableField();
+		Collection<DbmMappedField> columns = getSelectableField();
 		staticFetchSqlBuilder = createSQLBuilder(SqlBuilderType.query);
 		staticFetchSqlBuilder.setNamedPlaceHoder(false);
 		staticFetchSqlBuilder.append(columns);

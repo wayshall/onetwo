@@ -3,10 +3,10 @@ package org.onetwo.plugins.fmtag.directive;
 import java.io.IOException;
 import java.util.Map;
 
-import org.onetwo.common.ftl.directive.AbstractDirective;
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
@@ -15,7 +15,6 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
 @SuppressWarnings("rawtypes")
-@Deprecated
 public class TokenDirective extends AbstractDirective implements TemplateDirectiveModel {
 
 	public static final String DIRECTIVE_NAME = "token";

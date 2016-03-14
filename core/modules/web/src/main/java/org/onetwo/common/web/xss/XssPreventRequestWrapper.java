@@ -11,6 +11,18 @@ public class XssPreventRequestWrapper extends HttpServletRequestWrapper {
 	public XssPreventRequestWrapper(HttpServletRequest request) {
 		super(request);
 	}
+	
+
+	/*@Override
+	public ServletRequest getNativeRequest() {
+		ServletRequest req =  super.getRequest();
+		while(req instanceof RequestWrapper){
+			req = ((RequestWrapper)req).getNativeRequest();
+		}
+		return req;
+	}*/
+
+
 
 	@Override
 	public String getParameter(String name) {
@@ -26,17 +38,18 @@ public class XssPreventRequestWrapper extends HttpServletRequestWrapper {
     }
 
 	@Override
-	public Map getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		Map<String, String[]> params = super.getParameterMap();
 		return new XssEscapeMapWrapper(params);
 	}
 
+	@SuppressWarnings("serial")
 	public static class XssEscapeMapWrapper extends HashMap<String, String[]> {
-		private final Map<String, String[]> params;
+//		private final Map<String, String[]> params;
 
-		public XssEscapeMapWrapper(Map params) {
-			super();
-			this.params = params;
+		public XssEscapeMapWrapper(Map<String, String[]> params) {
+			super(params);
+//			this.params = params;
 		}
 
 		@Override

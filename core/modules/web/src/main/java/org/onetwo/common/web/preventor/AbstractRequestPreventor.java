@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.view.jsp.TagUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 
 abstract public class AbstractRequestPreventor implements RequestPreventor {
 
@@ -132,7 +132,7 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 	public String processSafeUrl(String url, HttpServletRequest request, HttpServletResponse response){
 		String safeUrl = url;
 		RequestToken token = generateToken(request, response);
-		safeUrl = TagUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue(getTokenValueGenerator()));
+		safeUrl = RequestUtils.appendParam(safeUrl, token.getFieldName(), token.getGeneratedValue(getTokenValueGenerator()));
 		return safeUrl;
 	}
 	

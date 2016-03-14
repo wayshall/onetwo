@@ -3,7 +3,7 @@ package org.onetwo.common.jfishdbm.event.oracle;
 import java.util.List;
 
 import org.onetwo.common.jfishdbm.event.JFishInsertEvent;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.profiling.TimeCounter;
@@ -39,7 +39,7 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 	@Override
 	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
 		if(!LangUtils.isMultiple(event.getObject())){
-			throw new JFishOrmException("batch insert's args must be a Collection or Array!");
+			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}
 		
 		this.beforeDoInsert(event, entry);

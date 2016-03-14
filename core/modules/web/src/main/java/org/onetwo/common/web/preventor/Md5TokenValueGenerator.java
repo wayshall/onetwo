@@ -1,7 +1,7 @@
 package org.onetwo.common.web.preventor;
 
-import org.onetwo.common.utils.encrypt.MDEncrypt;
-import org.onetwo.common.utils.encrypt.MDFactory;
+import org.onetwo.common.encrypt.MDEncrypt;
+import org.onetwo.common.encrypt.MDFactory;
 
 public class Md5TokenValueGenerator implements TokenValueGenerator {
 

@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.fish.utils.ContextHolder;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;

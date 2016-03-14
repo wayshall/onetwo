@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.SystemErrorCode.LoginErrorCode;
-import org.onetwo.common.spring.web.mvc.CodeMessager;
+import org.onetwo.common.outer.CodeMessager;
 
 public class MessageTest extends AppBaseTest {
 	

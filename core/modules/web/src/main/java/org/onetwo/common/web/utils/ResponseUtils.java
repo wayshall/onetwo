@@ -13,18 +13,17 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.DateUtil;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
 
 abstract public class ResponseUtils {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(ResponseUtils.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(ResponseUtils.class);
 
 	public static final String TEXT_TYPE = "text/plain; charset=UTF-8";
 	public static final String JSON_TYPE = "application/json; charset=UTF-8";
@@ -32,18 +31,20 @@ abstract public class ResponseUtils {
 	public static final String HTML_TYPE = "text/html; charset=UTF-8";
 	public static final String JS_TYPE = "text/javascript";
 	
-	public static final String COOKIE_PATH;
-	public static final String COOKIE_DOMAIN;
+//	public static final String COOKIE_PATH;
+//	public static final String COOKIE_DOMAIN;
 	// public static final String COOKIE_DOMAIN =
 	// "";//BaseSiteConfig.getInstance().getCookieDomain();
 
 	public static final DateFormat COOKIE_DATA_FORMAT;
+	private static final JsonMapper JSON_MAPPER = JsonMapper.IGNORE_NULL;
+	
 	static {
 		DateFormat df = new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US);
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		COOKIE_DATA_FORMAT = df;
 
-		String domain = "";
+		/*String domain = "";
 		String path = "";
 		try {
 			domain = BaseSiteConfig.getInstance().getCookieDomain();
@@ -53,7 +54,7 @@ abstract public class ResponseUtils {
 			logger.error("use default domain,  because read domain path error : "+e.getMessage());
 		}
 		COOKIE_DOMAIN = domain;
-		COOKIE_PATH = path;
+		COOKIE_PATH = path;*/
 	}
 
 	/****
@@ -77,47 +78,6 @@ abstract public class ResponseUtils {
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
-	}
-
-	public static void setCookie(HttpServletResponse response, String name, String value, String path, int maxage, String domain, boolean escape) {
-		if (escape)
-			value = Escape.escape(value);
-		Cookie cookie = new Cookie(name, value);
-		if (StringUtils.isBlank(path))
-			cookie.setPath(COOKIE_PATH);
-		else
-			cookie.setPath(path);
-		if (maxage > 0)
-			cookie.setMaxAge(maxage);
-		if (StringUtils.isNotBlank(domain)) {
-			cookie.setDomain(domain);
-		}
-		response.addCookie(cookie);
-	}
-
-	public static void setCookie(HttpServletResponse response, String name, String value) {
-		setCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN, false);
-	}
-	/**********
-	 * path = / domain siteconfig['cookie.domain']
-	 * 
-	 * @param response
-	 * @param name
-	 * @param value
-	 */
-	public static void setHttpOnlyCookie(HttpServletResponse response, String name, String value) {
-		setHttpOnlyCookie(response, name, value, COOKIE_PATH, -1, COOKIE_DOMAIN);
-	}
-
-	/**********
-	 * 
-	 * path = / domain siteconfig['cookie.domain']
-	 * 
-	 * @param response
-	 * @param name
-	 */
-	public static void removeHttpOnlyCookie(HttpServletResponse response, String name) {
-		setHttpOnlyCookie(response, name, "", COOKIE_PATH, 0, COOKIE_DOMAIN);//删除不能传-1，否则删除不了
 	}
 
 	/**
@@ -197,11 +157,6 @@ abstract public class ResponseUtils {
 	 * cookies){ if(name.equals(ck.getName())){ ck.setMaxAge(0);
 	 * response.addCookie(ck); } } }
 	 */
-
-	public static void removeCookie(HttpServletResponse response, String name) {
-		removeCookie(response, name, COOKIE_PATH, COOKIE_DOMAIN);
-	}
-
 	public static void removeCookie(HttpServletResponse response, String name, String path, String domain) {
 		Cookie ck = new Cookie(name, "");
 		ck.setMaxAge(0);
@@ -252,6 +207,15 @@ abstract public class ResponseUtils {
 	
 	public static void renderJs(HttpServletResponse response, String text){
 		render(response, text, JS_TYPE, true);
+	}
+	
+	public static void renderJson(HttpServletResponse response, String text){
+		render(response, text, JSON_TYPE, true);
+	}
+	
+	public static void renderObjectAsJson(HttpServletResponse response, Object data){
+		String text = JSON_MAPPER.toJson(data);
+		render(response, text, JSON_TYPE, true);
 	}
 	
 	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){

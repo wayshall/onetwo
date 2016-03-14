@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.ReflectUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.TheFunction;
 

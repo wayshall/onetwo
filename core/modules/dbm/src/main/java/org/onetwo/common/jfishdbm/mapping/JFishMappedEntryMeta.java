@@ -2,14 +2,14 @@ package org.onetwo.common.jfishdbm.mapping;
 
 import java.util.Collection;
 
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.annotation.AnnotationInfo;
 
 public interface JFishMappedEntryMeta {
 
 	public Collection<AbstractMappedField> getFields();
 	public Collection<AbstractMappedField> getFields(JFishMappedFieldType... type);
 	
-	public JFishMappedField getField(String fieldName);
+	public DbmMappedField getField(String fieldName);
 	
 	public AnnotationInfo getAnnotationInfo();
 
@@ -18,7 +18,7 @@ public interface JFishMappedEntryMeta {
 	public boolean containsColumn(String col);
 
 
-	public JFishMappedField getFieldByColumnName(String columnName);
+	public DbmMappedField getFieldByColumnName(String columnName);
 
 
 	public JFishMappedEntryMeta addMappedField(AbstractMappedField field);
@@ -29,7 +29,7 @@ public interface JFishMappedEntryMeta {
 
 	public TableInfo getTableInfo();
 
-	public JFishMappedField getIdentifyField();
+	public DbmMappedField getIdentifyField();
 	
 	public MappedType getMappedType();
 
@@ -38,7 +38,7 @@ public interface JFishMappedEntryMeta {
 	
 	public boolean isInstance(Object entity);
 	
-	public JFishMappedField getVersionField();
+	public DbmMappedField getVersionField();
 	
 	public boolean isVersionControll();
 	

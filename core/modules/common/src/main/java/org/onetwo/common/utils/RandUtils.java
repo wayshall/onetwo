@@ -17,9 +17,9 @@ public abstract class RandUtils {
 	public static String randomString(Integer length){
 		if(length==null || length<1)
 			return LangUtils.EMPTY_STRING;
-		int end = (int)Math.pow(10d, (length).doubleValue());
+		int end = Double.valueOf(Math.pow(10d, length.doubleValue())).intValue();
 		int rs = randomGenerator.nextInt(end);
-		String str = MyUtils.append(String.valueOf(rs), length, "0");
+		String str = LangUtils.padLeft(String.valueOf(rs), length, "0");
 		return str.toString();
 	}
 

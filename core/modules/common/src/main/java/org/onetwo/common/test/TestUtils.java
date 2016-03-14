@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.ReflectUtils;
 
 @SuppressWarnings("rawtypes")
 public abstract class TestUtils {

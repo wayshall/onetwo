@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.db.ExtQuery;
-import org.onetwo.common.db.SelectExtQuery;
 import org.onetwo.common.db.exception.NotUniqueResultException;
+import org.onetwo.common.db.sqlext.ExtQuery;
+import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.jfishdbm.event.JFishExtQueryEvent.ExtQueryType;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
@@ -27,11 +27,11 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 		SelectExtQuery extQuery = es.createExtQuery(extEvent.getEntityClass(), props);
 		
 		if(extEvent.getExtQueryType()==ExtQueryType.UNIQUE){
-			extQuery.setMaxResults(1);//add: support unique
+			extQuery.setMaxResults(2);//防止数据量过大
 			extQuery.build();
 			List<?> list = es.createAsDataQuery(extQuery).getResultList();
 			Object rs = null;
-			if(LangUtils.hasElement(list)){
+			if(!LangUtils.isEmpty(list)){
 				if(list.size()>1){
 					logger.warn(list.size() + " entity["+extEvent.getEntityClass()+"] found when findUnique");
 					throw new NotUniqueResultException(list.size());
@@ -44,7 +44,7 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 		}else if(extEvent.getExtQueryType()==ExtQueryType.PAGINATION){
 			extQuery.build();
 			if(!Page.class.isInstance(extEvent.getObject()))
-				throw new JFishOrmException("not a page object");
+				throw new DbmException("not a page object");
 			Page<Object> page = (Page<Object>)extEvent.getObject();
 			
 			if (Page.ASC.equals(page.getOrder()) && StringUtils.isNotBlank(page.getOrderBy())) {
@@ -58,14 +58,18 @@ public class JFishExtQueryEventListener extends AbstractJFishEventListener {
 			if (page.isAutoCount()) {
 //				Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 				Long totalCount = 0l;
-				if(extQuery.isSqlQuery()){
+				
+				/*if(extQuery.isSqlQuery()){
 					DataQuery countQuery = es.createAsDataQuery(extQuery.getCountSql(), Long.class);
 					countQuery.setParameters((List<Object>)extQuery.getParamsValue().getValues());
 					totalCount = (Long)countQuery.getSingleResult();
 				}else{
 					Number countNumber = (Number)es.findUnique(extQuery.getCountSql(), (Map<String, ?>)extQuery.getParamsValue().getValues(), Number.class);
 					totalCount = countNumber.longValue();
-				}
+				}*/
+				Number countNumber = (Number)es.findUnique(extQuery.getCountSql(), (Map<String, ?>)extQuery.getParamsValue().getValues(), Number.class);
+				totalCount = countNumber.longValue();
+				
 				page.setTotalCount(totalCount);
 				if(page.getTotalCount()<1){
 					return ;

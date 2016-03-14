@@ -4,17 +4,18 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.DateUtil;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -28,13 +29,20 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
+
+/********
+ * http://wiki.fasterxml.com/JacksonHowToCustomSerializers
+ * 
+ * @author way
+ *
+ */
 public class JsonMapper {
 	
 	public static String DEFAULT_JSONP_NAME = "callback";
@@ -82,7 +90,7 @@ public class JsonMapper {
 	public JsonMapper(Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-		setDateFormat(DateUtil.Date_Time);
+		setDateFormat(DateUtil.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
@@ -100,7 +108,8 @@ public class JsonMapper {
 		return this;
 	}*/
 	
-	public JsonMapper defaultFiler(BeanPropertyFilter bpf){
+	public JsonMapper defaultFiler(PropertyFilter bpf){
+//		this.filterProvider.setDefaultFilter(bpf);
 		this.filterProvider.setDefaultFilter(bpf);
 		return this;
 	}
@@ -171,7 +180,13 @@ public class JsonMapper {
 			policies.put(key, value)
 		}
 	};*/
-	
+	/*****
+	 * 
+	 * @param json
+	 * @param type
+	 * @param params propertyName, propertyType
+	 * @return
+	 */
 	public <T> T fromJsonWith(String json, Class<?> type, Object...params){
 		if(StringUtils.isBlank(json))
 			return null;
@@ -185,7 +200,7 @@ public class JsonMapper {
 			throw new JsonException("parse json to "+type+" error : " + json, e);
 		}
 	}
-	
+
 	public <T> T fromJson(String json, Type objType){
 		if(StringUtils.isBlank(json))
 			return null;
@@ -199,13 +214,32 @@ public class JsonMapper {
 		return obj;
 	}
 	
+	/****
+	 * 多级泛型可通过TypeReference传入，比如：new TypeReference<List<User<Integer>>(){}
+	 * @param json
+	 * @param valueTypeRef
+	 * @return
+	 */
+	public <T> T fromJson(String json, TypeReference<T> valueTypeRef){
+		if(StringUtils.isBlank(json))
+			return null;
+		Assert.notNull(valueTypeRef);
+		T obj = null;
+		try {
+			obj = this.objectMapper.readValue(json, valueTypeRef);
+		} catch (Exception e) {
+			throw new JsonException("parse json to "+valueTypeRef+" error : " + json, e);
+		}
+		return obj;
+	}
+	
 	public JavaType constructJavaType(Type objType){
 		JavaType javaType = null;
 		if(objType instanceof ParameterizedType){
 			ParameterizedType ptype = (ParameterizedType) objType;
 			Class<?> objClass = ReflectUtils.loadClass(ptype.getRawType().getTypeName());
 			List<Class<?>> classes = Stream.of(ptype.getActualTypeArguments()).map(type->(Class<?>)type).collect(Collectors.toList());
-			javaType = typeFactory.constructParametricType(objClass, classes.toArray(new Class[classes.size()]));
+			javaType = typeFactory.constructParametrizedType(objClass, objClass, classes.toArray(new Class[classes.size()]));
 			
 		}else{
 			Class<?> objClass = (Class<?>) objType;
@@ -232,7 +266,7 @@ public class JsonMapper {
 		return obj;
 	}
 	
-	public <T> List<T> fromJsonAsList(String json, Class<T> objClass){
+	/*public <T> List<T> fromJsonAsList(String json, Class<T> objClass){
 		Assert.notNull(objClass);
 		if(StringUtils.isBlank(json))
 			return null;
@@ -241,9 +275,9 @@ public class JsonMapper {
 		} catch (Exception e) {
 			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
 		}
-	}
+	}*/
 	
-	public <T> T[] fromJsonAsArray(String json, Class<T[]> objClass){
+	/*public <T> T[] fromJsonAsArray(String json, Class<T[]> objClass){
 		Assert.notNull(objClass);
 		if(StringUtils.isBlank(json))
 			return null;
@@ -254,9 +288,9 @@ public class JsonMapper {
 		} catch (Exception e) {
 			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
 		}
-	}
+	}*/
 	
-	public <T> T[] fromJsonAsElementArray(String json, Class<T> objClass){
+	public <T> T[] fromJsonAsArray(String json, Class<T> objClass){
 		Assert.notNull(objClass);
 		if(StringUtils.isBlank(json))
 			return null;
@@ -267,16 +301,11 @@ public class JsonMapper {
 		}
 	}
 	
-	public <T> List<T> fromJsonAsList(String json){
+	@SuppressWarnings("unchecked")
+    public <T> List<T> fromJsonAsList(String json){
 		if(StringUtils.isBlank(json))
-			return null;
-		List<T> obj = null;
-		try {
-			obj = this.objectMapper.readValue(json, new TypeReference<List<T>>(){});
-		} catch (Exception e) {
-			throw new JsonException("parse json to List error : " + json, e);
-		}
-		return obj;
+			return Collections.EMPTY_LIST;
+		return fromJson(json, new TypeReference<List<T>>(){});
 	}
 	
 	public <T> T update(String jsonString, T object) {

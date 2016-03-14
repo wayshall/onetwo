@@ -5,13 +5,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.jdbc.JdbcUtils;
-import org.onetwo.common.jdbc.SimpleArgsPreparedStatementCreator;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
+import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryMeta;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
@@ -58,13 +58,13 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	protected void throwIfMultiple(Object parent, Object entity){
 		if(LangUtils.isMultiple(entity)){
 			String msg = "element of "+(parent==null?"container":parent)+" can not be a multiple object, element: " + entity;
-			throw new JFishOrmException(msg);
+			throw new DbmException(msg);
 		}
 	}
 
 	
-	protected <T extends JFishMappedField> void processRelatedField(String[] relatedFields, Collection<? extends JFishMappedField> mappedFields, MappedFieldProcessor<T> processor){
-		for(JFishMappedField field : mappedFields){
+	protected <T extends DbmMappedField> void processRelatedField(String[] relatedFields, Collection<? extends DbmMappedField> mappedFields, MappedFieldProcessor<T> processor){
+		for(DbmMappedField field : mappedFields){
 			if(ArrayUtils.contains(relatedFields, field.getName())){
 				processor.execute((T)field);
 			}
@@ -125,7 +125,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	}
 	
 
-	protected void executeJFishEntityListener(boolean before, JFishEvent jfishEvent, Object entities, List<JFishEntityListener> listeners){
+	protected void executeJFishEntityListener(boolean before, JFishEvent jfishEvent, Object entities, List<DbmEntityListener> listeners){
 		if(LangUtils.isMultiple(entities)){
 			List<?> list = LangUtils.asList(entities);
 			for(Object entity : list){
@@ -136,28 +136,28 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 		}
 	}
 
-	protected void executeJFishEntityListenerForSingle(boolean before, JFishEvent jfishEvent, Object entity, List<JFishEntityListener> listeners){
+	protected void executeJFishEntityListenerForSingle(boolean before, JFishEvent jfishEvent, Object entity, List<DbmEntityListener> listeners){
 		if(LangUtils.isEmpty(listeners))
 			return ;
 		if(before){
 			if(jfishEvent.getAction()==JFishEventAction.insert){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.beforeInsert(entity);
 				}
 			}
 			else if(jfishEvent.getAction()==JFishEventAction.update){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.beforeUpdate(entity);
 				}
 			}
 		}else{
 			if(jfishEvent.getAction()==JFishEventAction.insert){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.afterInsert(entity);
 				}
 			}
 			else if(jfishEvent.getAction()==JFishEventAction.update){
-				for(JFishEntityListener jel : listeners){
+				for(DbmEntityListener jel : listeners){
 					jel.afterUpdate(entity);
 				}
 			}

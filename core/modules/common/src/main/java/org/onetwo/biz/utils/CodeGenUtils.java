@@ -3,10 +3,10 @@ package org.onetwo.biz.utils;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.propconf.AppConfig;
 
 abstract public class CodeGenUtils {
 

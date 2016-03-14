@@ -7,8 +7,8 @@ import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.utils.NoResultBlock;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 import org.springframework.web.servlet.support.RequestContext;
 
 import freemarker.core.Environment;

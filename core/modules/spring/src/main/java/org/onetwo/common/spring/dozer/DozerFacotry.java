@@ -3,10 +3,10 @@ package org.onetwo.common.spring.dozer;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
-import org.onetwo.common.utils.ReflectUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.util.ClassUtils;

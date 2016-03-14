@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.ReflectUtils;
 
 @SuppressWarnings({"rawtypes"})
 public class BaseTest {
