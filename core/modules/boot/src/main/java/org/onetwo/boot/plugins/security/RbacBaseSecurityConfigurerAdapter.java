@@ -13,7 +13,8 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 
 /***
- * 
+ * sample
+ * not used
  * @author way
  *
  */

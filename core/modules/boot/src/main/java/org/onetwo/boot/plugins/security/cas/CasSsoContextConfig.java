@@ -2,7 +2,7 @@ package org.onetwo.boot.plugins.security.cas;
 
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
-import org.onetwo.boot.plugins.security.support.RbacSecurityXmlContextConfigSupport;
+import org.onetwo.boot.plugins.security.config.RbacSecurityXmlContextConfigSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

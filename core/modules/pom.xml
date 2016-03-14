@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>4.1.4-SNAPSHOT</version>
+  <version>4.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
