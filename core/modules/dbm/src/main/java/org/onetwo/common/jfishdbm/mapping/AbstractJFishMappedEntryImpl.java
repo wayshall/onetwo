@@ -10,22 +10,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.IBaseEntity;
+import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.common.db.TimeRecordableEntity;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jfishdbm.annotation.JFishEntityListeners;
-import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
-import org.onetwo.common.jfishdbm.event.JFishEntityListener;
+import org.onetwo.common.jfishdbm.annotation.DbmEntityListeners;
+import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
+import org.onetwo.common.jfishdbm.annotation.DbmValidatorEnabled;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
-import org.onetwo.common.jfishdbm.exception.JFishOrmException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
+import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.AnnotationInfo;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -50,8 +52,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	private Map<String, AbstractMappedField> mappedFields = new LinkedHashMap<String, AbstractMappedField>();
 	private Map<String, AbstractMappedField> mappedColumns = new HashMap<String, AbstractMappedField>();
-	private JFishMappedField identifyField;
-	private JFishMappedField versionField;
+	private DbmMappedField identifyField;
+	private DbmMappedField versionField;
 	
 	private SQLBuilderFactory sqlBuilderFactory;
 	
@@ -59,35 +61,46 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	private boolean freezing;
 	
-	private List<JFishEntityListener> entityListeners = Collections.EMPTY_LIST;
-	private List<JFishEntityFieldListener> fieldListeners;
+	private List<DbmEntityListener> entityListeners = Collections.EMPTY_LIST;
+	private List<DbmEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
+
+	private final boolean enabledEntithyValidator;
+//	private final SimpleDbmInnserServiceRegistry serviceRegistry;
+	private EntityValidator entityValidator;
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
+	/*public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
-	}
+	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo) {
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
+//		this.serviceRegistry = serviceRegistry;
 		this.entityName = this.entityClass.getName();
 		this.tableInfo = tableInfo;
 		if(Map.class.isAssignableFrom(entityClass)){
 			this.setDynamic(true);
 		}
-		JFishEntityListeners listenersAnntation = annotationInfo.getAnnotation(JFishEntityListeners.class);
+		DbmEntityListeners listenersAnntation = annotationInfo.getAnnotation(DbmEntityListeners.class);
 		if(listenersAnntation!=null){
-			Class<? extends JFishEntityListener>[] listenerClasses = listenersAnntation.value();
+			Class<? extends DbmEntityListener>[] listenerClasses = listenersAnntation.value();
 			entityListeners = LangUtils.newArrayList(listenerClasses.length);
-			for(Class<? extends JFishEntityListener> lcs : listenerClasses){
+			for(Class<? extends DbmEntityListener> lcs : listenerClasses){
 				if(lcs==null)
 					continue;
-				JFishEntityListener listener = ReflectUtils.newInstance(lcs);
+				DbmEntityListener listener = ReflectUtils.newInstance(lcs);
 				entityListeners.add(listener);
 			}
 		}
 
-		JFishFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(JFishFieldListeners.class);
-		this.fieldListeners = JFishdbUtils.initJFishEntityFieldListeners(fieldListenersAnntation);
+		DbmFieldListeners fieldListenersAnntation = annotationInfo.getAnnotation(DbmFieldListeners.class);
+		if(fieldListenersAnntation!=null)
+			this.fieldListeners = DbmUtils.initDbmEntityFieldListeners(fieldListenersAnntation);
+		this.enabledEntithyValidator = annotationInfo.hasAnnotation(DbmValidatorEnabled.class);
+		if(enabledEntithyValidator){
+			this.entityValidator = serviceRegistry.getEntityValidator();
+			Assert.notNull(entityValidator, "no entity validator config!");
+		}
 	}
 
 	public Collection<AbstractMappedField> getFields(){
@@ -139,10 +152,10 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 	
 	@Override
-	public JFishMappedField getField(String fieldName){
-		JFishMappedField field = mappedFields.get(fieldName);
+	public DbmMappedField getField(String fieldName){
+		DbmMappedField field = mappedFields.get(fieldName);
 		if(field==null)
-			throw new JFishOrmException(getEntityName()+" no field mapped : " + fieldName);
+			throw new DbmException(getEntityName()+" no field mapped : " + fieldName);
 		return field;
 	}
 	
@@ -163,11 +176,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 	
 	@Override
-	public JFishMappedField getFieldByColumnName(String columnName){
+	public DbmMappedField getFieldByColumnName(String columnName){
 		columnName = columnName.toLowerCase();
-		JFishMappedField field = mappedColumns.get(columnName);
+		DbmMappedField field = mappedColumns.get(columnName);
 		if(field==null)
-			throw new JFishOrmException(getEntityName() + " no column mapped : " + columnName);
+			throw new DbmException(getEntityName() + " no column mapped : " + columnName);
 		return field;
 	}
 	
@@ -246,7 +259,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			this.identifyField = field;
 		}else if(field.isVersionControll()){
 			if(versionField!=null)
-				throw new JFishOrmException("a version field has already exist : " + versionField.getName());
+				throw new DbmException("a version field has already exist : " + versionField.getName());
 			this.versionField = field;
 		}
 
@@ -316,12 +329,12 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 
 	@Override
-	public JFishMappedField getIdentifyField() {
+	public DbmMappedField getIdentifyField() {
 		return identifyField;
 	}
 
 	@Override
-	public JFishMappedField getVersionField() {
+	public DbmMappedField getVersionField() {
 		return versionField;
 	}
 
@@ -364,7 +377,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	@Override
 	public JdbcStatementContext<Object[]> makeSelectVersion(Object object){
 		if(LangUtils.isMultiple(object)){
-			throw new JFishOrmException("not a entity: " + object);
+			throw new DbmException("not a entity: " + object);
 		}
 		EntrySQLBuilder sqlb = getStaticSelectVersionSqlBuilder();
 		sqlb.build();
@@ -409,12 +422,14 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 				return null;
 			for(Object en : list){
 				this.processIBaseEntity(en, true);
+				this.vailidateEntity(en);
 //				dsb.setColumnValuesFromEntity(en).addBatch();
 //				doEveryMappedFieldInStatementContext(dsb, en).addBatch();
 				dsb.processColumnValues(en).addBatch();
 			}
 		}else{
 			this.processIBaseEntity(entity, true);
+			this.vailidateEntity(entity);
 //			dsb.setColumnValuesFromEntity(entity);
 			dsb.processColumnValues(entity);
 		}
@@ -424,36 +439,21 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return dsb;
 	}
 	
-/*	private JdbcStatementContextBuilder doEveryMappedFieldInStatementContext(JdbcStatementContextBuilder statement, Object entity){
-		Assert.notNull(entity);
-		Object val = null;
-		EntrySQLBuilder builder = statement.getSqlBuilder();
-		for(JFishMappedField field : builder.getFields()){
-			val = field.getColumnValueWithJFishEventAction(entity, statement.getEventAction());
-			if(field.isVersionControll()){
-				if(JFishEventAction.insert==statement.getEventAction()){
-					val = field.getVersionValule(val);
-					field.setValue(entity, val);//write the version value into the entity
-				}else if(JFishEventAction.update==statement.getEventAction()){
-					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + getEntityName());
-					val = field.getVersionValule(val);
-					field.setValue(entity, val);a
-				}
-			}
-			statement.putColumnValue(field, val);
+	private void vailidateEntity(Object entity){
+		if(this.entityValidator!=null){
+			this.entityValidator.validate(entity);
 		}
-		return statement;
-	}*/
+	}
 	
 	private void processIBaseEntity(Object entity, boolean create){
-		if(!(entity instanceof IBaseEntity))
+		if(!(entity instanceof TimeRecordableEntity))
 			return ;
 		Date now = new Date();
-		IBaseEntity ib = (IBaseEntity) entity;
+		TimeRecordableEntity ib = (TimeRecordableEntity) entity;
 		if(create){
-			ib.setCreateTime(now);
+			ib.setCreateAt(now);
 		}
-		ib.setLastUpdateTime(now);
+		ib.setUpdateAt(now);
 	}
 	
 	@Override
@@ -505,6 +505,9 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			for(Object en : list){
 				this.checkIdValue(en);
 				this.processIBaseEntity(en, false);
+				
+				this.vailidateEntity(entity);
+				
 //				dsb.setColumnValuesFromEntity(en)
 				dsb.processColumnValues(en)
 					.processWhereCauseValuesFromEntity(en)
@@ -513,6 +516,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}else{
 			this.checkIdValue(entity);
 			this.processIBaseEntity(entity, false);
+			
+			this.vailidateEntity(entity);
 //			dsb.setColumnValuesFromEntity(entity);
 			dsb.processColumnValues(entity);
 			dsb.processWhereCauseValuesFromEntity(entity);
@@ -526,7 +531,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	
 	protected void checkIdValue(Object entity){
 		if(!hasIdentifyValue(entity))
-			throw new JFishOrmException("entity["+entity+"] id can not be null");
+			throw new DbmException("entity["+entity+"] id can not be null");
 	}
 	
 	@Override
@@ -546,10 +551,10 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
 		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(JFishEventAction.update, this, sb);
 		Object val = null;
-		for(JFishMappedField mfield : this.mappedColumns.values()){
+		for(DbmMappedField mfield : this.mappedColumns.values()){
 			
 //			val = mfield.getColumnValue(entity);
-			val = mfield.getColumnValueWithJFishEventAction(entity, JFishEventAction.update);
+			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
 			if(mfield.isIdentify()){
 				Assert.notNull(val, "id can not be null : " + entity);
 				sqlBuilder.appendWhere(mfield, val);
@@ -565,31 +570,6 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}
 		return sqlBuilder;
 	}
-/*
-	public Object getColumnValueWithJFishEventAction(JFishMappedField field, Object entity, JFishEventAction eventAction){
-		Object oldValue = field.getColumnValue(entity);
-		Object newValue = oldValue;
-		boolean doListener = false;
-		if(JFishEventAction.insert==eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					newValue = fl.beforeFieldInsert(field.getName(), newValue);
-					doListener = true;
-				}
-			}
-		}else if(JFishEventAction.update==eventAction){
-			if(!field.getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : field.getFieldListeners()){
-					newValue = fl.beforeFieldUpdate(field.getName(), newValue);
-					doListener = true;
-				}
-			}
-		}
-		if(doListener){
-			field.setColumnValue(entity, newValue);
-		}
-		return newValue;
-	}*/
 	
 	@Override
 	public Map<String, AbstractMappedField> getMappedFields() {
@@ -613,7 +593,8 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	@Override
 	public boolean isJoined() {
-		return getMappedType()==MappedType.JOINED;
+//		return getMappedType()==MappedType.JOINED;
+		return false;
 	}
 
 	@Override
@@ -630,7 +611,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 
 	public void freezing() {
-		for(JFishMappedField field : mappedFields.values()){
+		for(DbmMappedField field : mappedFields.values()){
 			field.freezing();
 		}
 		freezing = true;
@@ -663,11 +644,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return LangUtils.append(getEntityName());
 	}
 
-	public List<JFishEntityListener> getEntityListeners() {
+	public List<DbmEntityListener> getEntityListeners() {
 		return entityListeners;
 	}
 
-	public List<JFishEntityFieldListener> getFieldListeners() {
+	public List<DbmEntityFieldListener> getFieldListeners() {
 		return fieldListeners;
 	}
 

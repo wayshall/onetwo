@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.ReflectUtils;
 
 @SuppressWarnings({"rawtypes"})
 public class BaseTest {
@@ -34,17 +34,12 @@ public class BaseTest {
 	}
 	
 	public <T> List<T> times(String method, int count, boolean printTime){
-		boolean old = UtilTimerStack.isActive();
 		if(printTime){
-			UtilTimerStack.setActive(printTime);
 			UtilTimerStack.push(method);
-			UtilTimerStack.setActive(old);
 		}
 		List<T> result = ReflectUtils.times(this, method, count, false);
 		if(printTime){
-			UtilTimerStack.setActive(printTime);
 			UtilTimerStack.pop(method);
-			UtilTimerStack.setActive(old);
 		}
 		return result;
 	}

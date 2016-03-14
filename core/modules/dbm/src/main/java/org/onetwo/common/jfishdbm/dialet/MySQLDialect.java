@@ -1,10 +1,12 @@
 package org.onetwo.common.jfishdbm.dialet;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.utils.StringUtils;
 
 public class MySQLDialect extends AbstractDBDialect {
 
 	public MySQLDialect(){
+		super(DBMeta.create(DataBase.MySQL));
 	}
 
 

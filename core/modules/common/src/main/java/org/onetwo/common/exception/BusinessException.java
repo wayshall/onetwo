@@ -23,7 +23,7 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 
 	public static final String DEFAULT_MESSAGE = "[business error 业务错误]:";
 
-	protected String code = BusinessErrorCode.BASE_CODE;
+	protected String code = ServiceErrorCode.BASE_CODE;
 	private Object[] args;
 
 	public BusinessException(String msg, String code) {
@@ -68,11 +68,11 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 	}
 	
 	protected String getBaseCode(){
-		return BusinessErrorCode.BASE_CODE;
+		return ServiceErrorCode.BASE_CODE;
 	}
 
 	public boolean isDefaultErrorCode(){
-		return BusinessErrorCode.BASE_CODE.equals(getCode());
+		return ServiceErrorCode.BASE_CODE.equals(getCode());
 	}
 
 	public String appendBaseCode(String code){

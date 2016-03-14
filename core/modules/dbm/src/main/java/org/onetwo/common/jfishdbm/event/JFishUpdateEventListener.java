@@ -3,10 +3,10 @@ package org.onetwo.common.jfishdbm.event;
 import java.util.Collection;
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.exception.JFishEntityNotFoundException;
-import org.onetwo.common.jfishdbm.exception.JFishEntityVersionException;
+import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
+import org.onetwo.common.jfishdbm.exception.EntityVersionException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
+import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -53,7 +53,7 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 	}
 
 	/*********
-	 * 更新单个实体，如果更新条数少于1，则表示更新失败，抛出{@link JFishEntityNotFoundException JFishEntityNotFoundException}
+	 * 更新单个实体，如果更新条数少于1，则表示更新失败，抛出{@link EntityNotFoundException JFishEntityNotFoundException}
 	 * @param dymanic
 	 * @param es
 	 * @param entry
@@ -64,14 +64,14 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 		Object currentTransactionVersion = null;
 
 		if(entry.isVersionControll()){
-			JFishMappedField versionField = entry.getVersionField();
+			DbmMappedField versionField = entry.getVersionField();
 			JdbcStatementContext<Object[]> versionContext = entry.makeSelectVersion(singleEntity);
 			//因为在同一个事务里，实际上得到的version还是旧的，只是防止程序员自己修改version字段
 			currentTransactionVersion = es.getJFishJdbcTemplate().queryForObject(versionContext.getSql(), versionField.getColumnType(), entry.getId(singleEntity));
 			Object entityVersion = entry.getVersionField().getValue(singleEntity);
 			
 			if(!versionField.getVersionableType().isEquals(entityVersion, currentTransactionVersion)){
-				throw new JFishEntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
+				throw new EntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
 			}
 		}
 		
@@ -82,9 +82,9 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 			if(currentTransactionVersion!=null){
 //				Object entityVersion = update.getSqlBuilder().getVersionValue(update.getValue().get(0));
 //				Object entityVersion = entry.getVersionField().getValue(singleEntity);
-				throw new JFishEntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
+				throw new EntityVersionException(entry.getEntityClass(), entry.getId(singleEntity), currentTransactionVersion);
 			}else{
-				throw new JFishEntityNotFoundException("update count is " + count + ".", singleEntity.getClass(), entry.getId(singleEntity));
+				throw new EntityNotFoundException("update count is " + count + ".", singleEntity.getClass(), entry.getId(singleEntity));
 			}
 		}
 		

@@ -1,8 +1,10 @@
 package org.onetwo.common.spring;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,21 +12,24 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.propconf.PropUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.propconf.JFishProperties;
-import org.onetwo.common.utils.propconf.PropUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -73,7 +78,7 @@ final public class SpringUtils {
 		setProfiles(newProfiles);
 	}
 
-	public static <T> List<T> getBeans(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
 			return Collections.EMPTY_LIST;
@@ -87,7 +92,7 @@ final public class SpringUtils {
 		return beanMaps;
 	}
 	
-	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
+	public static <T> T getBean(ListableBeanFactory appContext, Class<T> clazz) {
 		List<T> beans = getBeans(appContext, clazz);
 		return (T)LangUtils.getFirst(beans);
 	}
@@ -157,8 +162,8 @@ final public class SpringUtils {
 		return prop;
 	}
 	
-	public static JFishProperties loadAsJFishProperties(String classpath){
-		PropertiesFactoryBean pfb = SpringUtils.createPropertiesBySptring(classpath);
+	public static JFishProperties loadAsJFishProperties(String... classpaths){
+		PropertiesFactoryBean pfb = createPropertiesBySptring(classpaths);
     	try {
 			pfb.afterPropertiesSet();
 			JFishProperties properties = (JFishProperties)pfb.getObject();
@@ -227,10 +232,10 @@ final public class SpringUtils {
 	}
 	
 
-	public static <T> T registerBean(ApplicationContext context, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
-	public static <T> T registerBean(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
 		if(bean==null)
@@ -239,20 +244,22 @@ final public class SpringUtils {
 	}
 	
 
-	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
 	}
 	
 
-	public static BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context, boolean throwIfNull){
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(BeanFactory context, boolean throwIfNull){
 		BeanDefinitionRegistry bdr = null;
-		if(!BeanDefinitionRegistry.class.isInstance(context)){
-			BeanFactory bf = context.getAutowireCapableBeanFactory();
+		if(ApplicationContext.class.isInstance(context)){
+			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
 			if(BeanDefinitionRegistry.class.isInstance(bf))
 				bdr = (BeanDefinitionRegistry) bf;
-		}else{
+		}else if(BeanDefinitionRegistry.class.isInstance(context)){
 			bdr = (BeanDefinitionRegistry) context;
+		}else{
+			//
 		}
 
 		if(bdr==null && throwIfNull)
@@ -282,20 +289,19 @@ final public class SpringUtils {
 	 * @param applicationContext
 	 * @return
 	 */
-	public static SingletonBeanRegistry getSingletonBeanRegistry(ApplicationContext applicationContext){
-		BeanFactory bf = null;
+	public static SingletonBeanRegistry getSingletonBeanRegistry(Object applicationContext){
+		Object bf = applicationContext;
 		if(applicationContext instanceof AbstractApplicationContext){
 			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
 		if(bf==null || !SingletonBeanRegistry.class.isInstance(bf)){
 			return null;
 		}
-		
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		return sbr;
 	}
 	
-	public static void registerSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
 	}
 	
@@ -303,7 +309,13 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
-	public static BeanWrapper newBeanWrapper(Object obj, Object...listElementTypes){
+	public static BeanWrapper newBeanWrapper(Object obj){
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		bw.setAutoGrowNestedPaths(true);
+		return bw;
+	}
+	
+	public static BeanWrapper newBeanMapWrapper(Object obj, Object...listElementTypes){
 		BeanWrapper bw = null;
 		if(Map.class.isInstance(obj)){
 			bw = new BeanMapWrapper(obj, listElementTypes);
@@ -335,5 +347,28 @@ final public class SpringUtils {
 		BeanMapWrapper bw = new BeanMapWrapper(obj);
 		return bw;
 	}*/
+	
+
+	public static Map<String, Object> beansOfAnnotationIncludingAncestors(ListableBeanFactory lbf, Class<? extends Annotation> annotationType)
+			throws BeansException {
+
+		Assert.notNull(lbf, "ListableBeanFactory must not be null");
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		result.putAll(lbf.getBeansWithAnnotation(annotationType));
+		if (lbf instanceof HierarchicalBeanFactory) {
+			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
+			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
+				Map<String, Object> parentResult = beansOfAnnotationIncludingAncestors(
+						(ListableBeanFactory) hbf.getParentBeanFactory(), annotationType);
+				for (Map.Entry<String, Object> entry : parentResult.entrySet()) {
+					String beanName = entry.getKey();
+					if (!result.containsKey(beanName) && !hbf.containsLocalBean(beanName)) {
+						result.put(beanName, entry.getValue());
+					}
+				}
+			}
+		}
+		return result;
+	}
 	
 }

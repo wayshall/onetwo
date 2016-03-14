@@ -1,6 +1,6 @@
 package org.onetwo.plugins.fmtag.directive;
 
-import org.onetwo.common.ftl.directive.DirectivesUtils;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;

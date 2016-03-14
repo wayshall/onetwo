@@ -5,9 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.AnnotationUtils;
-import org.onetwo.common.web.config.BaseSiteConfig;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.common.web.utils.RequestUtils;
 
@@ -42,7 +41,7 @@ public class DefaultPreventRequestInfoManager implements PreventRequestInfoManag
 	
 //	private ConcurrentHashMap<String, RequestValidateInfo> caches = new ConcurrentHashMap<String, RequestValidateInfo>();
 	private Cache<String, RequestPreventInfo> caches = CacheBuilder.newBuilder().build();
-	
+	private boolean preventRepeateSubmitDefault = false;
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.web.preventor.PreventRequestInfoManager#getRequestPreventInfo(java.lang.reflect.Method, javax.servlet.http.HttpServletRequest)
 	 */
@@ -69,7 +68,8 @@ public class DefaultPreventRequestInfoManager implements PreventRequestInfoManag
 				else
 					preventRequestInfo = NO_REPEATESUBMIT_CSRF;*/
 //				return REPEATESUBMIT_CSRF;
-				if(BaseSiteConfig.getInstance().isPreventRepeateSubmitDefault()){
+//				if(BaseSiteConfig.getInstance().isPreventRepeateSubmitDefault()){
+				if(preventRepeateSubmitDefault){
 					return REPEATESUBMIT_CSRF;
 				}else{
 					return NO_REPEATESUBMIT_CSRF;

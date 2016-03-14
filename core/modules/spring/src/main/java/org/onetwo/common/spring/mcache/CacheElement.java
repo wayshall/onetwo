@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.DateUtil;
 import org.onetwo.common.utils.LangUtils;
 
 public class CacheElement {

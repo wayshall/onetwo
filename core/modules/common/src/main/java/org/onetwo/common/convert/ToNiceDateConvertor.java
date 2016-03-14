@@ -1,0 +1,27 @@
+package org.onetwo.common.convert;
+
+import java.util.Date;
+
+import org.onetwo.common.date.NiceDate;
+
+public class ToNiceDateConvertor extends AbstractTypeConvert<NiceDate> {
+	
+	protected ToNiceDateConvertor() {
+		super(NiceDate.New(new Date(0)));
+	}
+
+	@Override
+	public NiceDate doConvert(Object value, Class<?> componentType) {
+//		if(value==null)
+//			return null;
+		Class<?> vtype = value.getClass();
+		NiceDate date = null;
+		if(Date.class.isAssignableFrom(vtype)){
+			date = NiceDate.New((Date)value);
+		}else{
+			throw new IllegalArgumentException("only support convert Date to NiceDate");
+		}
+		return date;
+	}
+
+}

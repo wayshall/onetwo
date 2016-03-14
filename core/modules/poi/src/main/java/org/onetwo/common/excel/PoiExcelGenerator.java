@@ -2,7 +2,7 @@ package org.onetwo.common.excel;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.interfaces.TemplateGenerator;
+import org.onetwo.common.excel.interfaces.TemplateGenerator;
 
 public interface PoiExcelGenerator extends TemplateGenerator {
 	public PropertyStringParser getPropertyStringParser();

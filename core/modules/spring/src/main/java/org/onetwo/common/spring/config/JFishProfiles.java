@@ -1,18 +1,17 @@
 package org.onetwo.common.spring.config;
 
+import org.onetwo.common.propconf.Environment;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.propconf.Environment;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@ImportResource({"classpath:webconf/applicationContext-base.xml"})
+//@ImportResource({"classpath:conf/applicationContext-base.xml"})
 public class JFishProfiles {
-	private static final String APP_CONFIG_BASE_PATH = "webconf/";
+	private static final String APP_CONFIG_BASE_PATH = "conf/";
 	private static final String APP_CONFIG_NAME =  "application";
 	private static final String CONFIG_POSTFIX = ".properties";
 	
@@ -33,7 +32,7 @@ public class JFishProfiles {
 
     @Configuration
     @Profile(Environment.PRODUCT)
-//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-product.properties"})
+//        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-product.properties"})
     static class ProductConcfig {
 
             @Bean(name=APP_CONFIG_BEAN_NAME)
@@ -45,7 +44,7 @@ public class JFishProfiles {
 
     @Configuration
     @Profile(Environment.TEST)
-//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-test.properties"})
+//        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-test.properties"})
     static class TestConcfig {
 
         	@Bean(name=APP_CONFIG_BEAN_NAME)
@@ -56,7 +55,7 @@ public class JFishProfiles {
 
     @Configuration
     @Profile(Environment.TEST_LOCAL)
-//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-test-local.properties"})
+//        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-test-local.properties"})
     static class TestLocalConcfig {
 
         	@Bean(name=APP_CONFIG_BEAN_NAME)
@@ -68,7 +67,7 @@ public class JFishProfiles {
 
     @Configuration
     @Profile(Environment.DEV)
-//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-dev.properties"})
+//        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-dev.properties"})
     static class DevConcfig {
 
         	@Bean(name=APP_CONFIG_BEAN_NAME)
@@ -81,7 +80,7 @@ public class JFishProfiles {
 
     @Configuration
     @Profile(Environment.DEV_LOCAL)
-//        @PropertySource(name=APP_CONFIG_NAME, value={"webconf/application.properties", "webconf/application-dev-local.properties"})
+//        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-dev-local.properties"})
     static class DevLocalConcfig {
 
         	@Bean(name=APP_CONFIG_BEAN_NAME)

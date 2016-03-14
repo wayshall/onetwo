@@ -2,10 +2,10 @@ package org.onetwo.common.spring.context;
 
 import javax.validation.Validator;
 
+import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.dozer.DozerBeanFactoryBean;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.onetwo.common.utils.propconf.AppConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;

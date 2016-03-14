@@ -9,11 +9,12 @@ import java.util.Map;
 import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.cache.Cacheable;
 import org.onetwo.common.cache.FlushCache;
-import org.onetwo.common.utils.Expression;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.expr.VProviderFactory;
+import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.VProviderFactory;
-import org.onetwo.common.utils.ValueProvider;
 import org.springframework.beans.factory.InitializingBean;
 
 public class CacheModelManager implements InitializingBean {
@@ -22,7 +23,7 @@ public class CacheModelManager implements InitializingBean {
 	
 	protected CacheKeyGenerator keyGenerator;
 	
-	protected Expression expr = Expression.DOLOR;
+	protected Expression expr = ExpressionFacotry.DOLOR;
 	
 	public CacheModelManager(){
 		this.cacheModels = new HashMap<Serializable, CacheModel>();

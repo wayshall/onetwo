@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.onetwo.common.ftl.directive.DirectivesUtils;
 import org.onetwo.common.jfishdbm.mapping.AbstractMappedField;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedField;
@@ -14,6 +13,7 @@ import org.onetwo.common.spring.web.utils.JFishWebUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.config.BaseSiteConfig;
+import org.onetwo.common.web.view.ftl.DirectivesUtils;
 import org.onetwo.plugins.fmtag.JFieldShowable;
 import org.onetwo.plugins.fmtagext.service.JFishDataDelegateService;
 

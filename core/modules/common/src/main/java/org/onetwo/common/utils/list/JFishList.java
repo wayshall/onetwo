@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ReflectUtils;
-import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.convert.Types;
+import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.utils.map.ListMap;
 
 
@@ -58,7 +58,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 	
 
-	public static <T> JFishList<T> wrap(Collection<?> list, SimpleBlock<Object, T> block){
+	public static <T> JFishList<T> wrap(Collection<?> list, ReturnableClosure<Object, T> block){
 		if(list==null)
 			return newList();
 		return new JFishList<T>(list, block);
@@ -216,7 +216,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		list.addAll(col);
 	}
 	
-	public JFishList(Collection<?> col, SimpleBlock<Object, E> block){
+	public JFishList(Collection<?> col, ReturnableClosure<Object, E> block){
 		Assert.notNull(col);
 		Assert.notNull(block);
 		list = new ArrayList<E>(col.size()+5);
@@ -227,7 +227,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		}
 	}
 	
-	public JFishList<E> addWith(Object obj, SimpleBlock<Object, E> block){
+	public JFishList<E> addWith(Object obj, ReturnableClosure<Object, E> block){
 		E e = block.execute(obj);
 		if(e!=null){
 			add(e);
@@ -355,7 +355,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		
 	}
 	
-	public String join(final String joiner, final SimpleBlock<E, String> block){
+	public String join(final String joiner, final ReturnableClosure<E, String> block){
 		final StringBuilder str = new StringBuilder();
 		each(new It<E>() {
 
@@ -373,7 +373,7 @@ public class JFishList<E> implements List<E>, Serializable {
 
 	public String join(final String joiner, String prop){
 		final String propName = StringUtils.isBlank(prop)?SELF_KEY:prop;
-		return join(joiner, new SimpleBlock<E, String>() {
+		return join(joiner, new ReturnableClosure<E, String>() {
 
 			@Override
 			public String execute(E object) {
@@ -384,7 +384,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		});
 	}
 	
-	public Double sum(final SimpleBlock<E, Double> block){
+	public Double sum(final ReturnableClosure<E, Double> block){
 		final SumResult total = new SumResult();
 		each(new NoIndexIt<E>() {
 
@@ -400,7 +400,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 	
 	public Double sum(final String propName){
-		return sum(new SimpleBlock<E, Double>() {
+		return sum(new ReturnableClosure<E, Double>() {
 
 			@Override
 			public Double execute(E object) {
@@ -433,7 +433,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return maps;
 	}
 	
-	public <K> ListMap<K, E> groupBy(final SimpleBlock<E, K> block){
+	public <K> ListMap<K, E> groupBy(final ReturnableClosure<E, K> block){
 		final ListMap<K, E> maps = ListMap.newLinkedListMap();
 		each(new NoIndexIt<E>() {
 
@@ -451,7 +451,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 	
 	public <K> ListMap<K, E> groupBy(final String propName){
-		return groupBy(new SimpleBlock<E, K>() {
+		return groupBy(new ReturnableClosure<E, K>() {
 
 			@Override
 			public K execute(E object) {

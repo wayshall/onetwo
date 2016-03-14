@@ -9,7 +9,7 @@ VALUES
 INSERT INTO admin_role
    (`id`, `create_time`, `last_update_time`, `app_code`, `name`, `remark`, `code`, `status`)
 VALUES
-   (1, NULL, NULL, NULL, '系统管理员', '拥有所有权限的角色，一般用作维护。', 'COMMON	', 'NORMAL');
+   (1, NULL, NULL, NULL, 'ROOT', '拥有所有权限的角色，一般用作维护。', 'ROOT', 'NORMAL');
 
 
    

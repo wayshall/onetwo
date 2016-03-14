@@ -87,7 +87,7 @@ public class JFishDataQuery extends AbstractDataQuery {
 
 	@Override
 	public <T> T getRawQuery(Class<T> clazz) {
-		return (T)jfishQuery;
+		return clazz.cast(jfishQuery);
 	}
 
 	@Override

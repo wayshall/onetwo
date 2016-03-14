@@ -29,3 +29,8 @@ work/Tomcat
 /core/projects/appweb/.gradle
 /core/projects/appweb-admin/.gradle
 /core/projects/appweb-admin/.externalToolBuilders
+/core/modules/ajaxanywhere/.groovy/*.xdsl
+release-pom.xml
+.releaseBackup
+pom.xml.releaseBackup
+*.orig

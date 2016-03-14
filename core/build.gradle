@@ -1,6 +1,9 @@
 buildscript {
 	repositories {
 		maven { url 'http://repo.spring.io/plugins-release' }
+		jcenter()
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
 	}
 	dependencies {
 		//配置下面的propdeps插件
@@ -30,20 +33,29 @@ configure(allprojects){ project ->
 	//from 3.2.11
 	//for orm 3.3.1
 	//for rest 3.4.x
-	version = "3.4.4-SNAPSHOT"
+	//add json rpc 3.5.x
+	//for boot 4.x spring:4.1.6.RELEASE 4.2.0.RC1
+	version = "4.0.14-SNAPSHOT"
+	
+	//boot relatvie
+	ext.freemarkerVersion = "2.3.22"//boot 2.3.22
 	
 	ext.commonsnetVersion = "2.0"
 	ext.commonsUploadVersion = "1.3.1"
 	ext.commonsLangVersion = "2.6"
+	ext.commonsLang3Version = "3.3.2" //
+	ext.commonsCollectionsVersion = "3.2.1"
+	ext.commonsBeanutilsVersion = "1.8.3"
 	
 	ext.junitVersion = "4.10"
 	ext.javaeeVersion = "6.0-3"
-	ext.springVersion = "3.2.11.RELEASE"
+	ext.springVersion = "4.1.6.RELEASE"
 	ext.javassistVersion = "3.9.0.GA"
 	ext.jpaVersion = "2.0.0"
 	ext.servletVersion = "3.0.1"
 	ext.tomcatjdbcVersion = "7.0.53"
-	ext.guavaVersion = "14.0.1"
+//	ext.guavaVersion = "14.0.1"
+	ext.guavaVersion = "16.0.1"
 	ext.jodatimeVersion = "2.1"
 	
 	ext.hibernateValidatorVersion = "4.3.0.Final"
@@ -56,7 +68,9 @@ configure(allprojects){ project ->
 	ext.servletVersion = "3.0.1"
 	ext.validationVersion = "1.0.0.GA"
 	
-	ext.logbackVersion = "0.9.29"
+	ext.logbackVersion = "1.1.3"
+	
+	ext.onetwoMvnVersioin = "4.0.14-SNAPSHOT"
 	
 	compileJava {
 		sourceCompatibility=1.8
@@ -84,11 +98,11 @@ configure(allprojects){ project ->
 	
 	repositories {
 		//if want ide download the sources, move to the top
-		mavenLocal()
-		maven { url "http://218.16.141.15:8888/nexus/content/repositories/snapshots" }
-		maven { url "http://218.16.141.15:8888/nexus/content/groups/public" }
-		maven { url "http://218.16.141.15:8888/nexus/content/repositories/thirdparty" }
 		mavenCentral()
+		mavenLocal()
+		maven { url "http://172.20.81.220:8088/nexus/content/repositories/snapshots" }
+		maven { url "http://172.20.81.220:8088/nexus/content/groups/public" }
+		maven { url "http://172.20.81.220:8088/nexus/content/repositories/thirdparty" }
 		//embedeed-redis : http://clojars.org/repo
 		maven { url "http://clojars.org/repo" }
 //		maven { url "http://192.168.104.217:8888/nexus/content/groups/public" }
@@ -106,7 +120,7 @@ configure(subprojects){ subproject ->
 		compile("org.slf4j:slf4j-log4j12:1.6.2")
 		compile("log4j:log4j:1.2.16")
 		compile("org.slf4j:slf4j-api:1.6.2")*/
-		compile("org.slf4j:jcl-over-slf4j:1.6.2")
+		compile("org.slf4j:jcl-over-slf4j:1.7.12")
 		compile("ch.qos.logback:logback-core:${logbackVersion}")
 		compile("ch.qos.logback:logback-classic:${logbackVersion}")
 		testCompile("junit:junit:${junitVersion}")
@@ -168,9 +182,31 @@ def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
 def projectEjb = "${projectPrefix}ejb"
 def projectTomcat = "${projectPrefix}tomcat"
+def projectTomcatMini = "${projectPrefix}tomcat-mini"
+def projectJsonrpc = "${projectPrefix}jsonrpc"
 
 
-project("${projectCommon}"){
+/*project("${projectCommon}"){
+	description = "onetwo common"
+	
+	ext.antVersion = "1.9.3"
+	ext.sambaVersion = "1.2.19"
+	dependencies {
+		compile("commons-codec:commons-codec:1.3")
+		compile("com.thoughtworks.xstream:xstream:1.3.1")
+		compile("net.sf.dozer:dozer:5.4.0"){
+			exclude group: "org.slf4j", module: "*"
+		}
+		compile("com.google.guava:guava:$guavaVersion")
+		compile("joda-time:joda-time:$jodatimeVersion")
+		compile("org.apache.commons:commons-lang:$commonsLang3Version")
+		compile("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
+		compile("commons-collections:commons-collections:$commonsCollectionsVersion")
+		compile("org.apache.ant:ant:$antVersion")
+		compile("org.samba.jcifs:jcifs:$sambaVersion")
+	}
+}*/
+/*project("${projectCommon}"){
 	description = "onetwo common"
 	
 	ext.commonsCollectionsVersion = "3.2.1"
@@ -180,23 +216,23 @@ project("${projectCommon}"){
 	dependencies {
 		compile("commons-codec:commons-codec:1.3")
 		compile("com.thoughtworks.xstream:xstream:1.3.1")
-		/*compile("net.sf.dozer:dozer:5.4.0"){
+		compile("net.sf.dozer:dozer:5.4.0"){
 			exclude group: "org.slf4j", module: "*"
-		}*/
+		}
 		compile("com.google.guava:guava:$guavaVersion")
 		compile("joda-time:joda-time:$jodatimeVersion")
-		compile("commons-lang:commons-lang:$commonsLangVersion")
+		compile("org.apache.commons:commons-lang:$commonsLang3Version")
 		compile("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
 		compile("commons-collections:commons-collections:$commonsCollectionsVersion")
 		compile("org.apache.ant:ant:$antVersion")
 		compile("org.samba.jcifs:jcifs:$sambaVersion")
 	}
-}
+}*/
 
-project("${projectJackson}"){
+/*project("${projectJackson}"){
 	description = "onetwo jackson"
 	
-	ext.jacksonVersion = "2.1.4"
+	ext.jacksonVersion = "2.5.4"
 	
 	dependencies {
 		compile(project(":${projectCommon}"))
@@ -206,15 +242,14 @@ project("${projectJackson}"){
 		compile("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 	}
 	
-}
+}*/
 
-project("${projectSpring}"){
+/*project("${projectSpring}"){
 	description = "onetwo spring"
 	
 	ext.aspectjweaverVersion = "1.6.12"
 	ext.dozerVersion = "5.4.0"
 	ext.javatuplesVersion = "1.2"
-	ext.freemarkerVersion = "2.3.19"
 	ext.ehcacheVersion = "2.6.0"
 	
 	ext.httpClientVersion = "4.3.5"
@@ -253,9 +288,9 @@ project("${projectSpring}"){
 		}
 	}
 }
+*/
 
-
-project("${projectAjaxanywhere}"){
+/*project("${projectAjaxanywhere}"){
 	description = "onetwo Ajaxanywhere"
 	
 	ext.jacksonVersion = "2.1.4"
@@ -266,9 +301,9 @@ project("${projectAjaxanywhere}"){
 		compile("javax.faces:jsf-api:${jsfVersion}")
 	}
 	
-}
+}*/
 
-project("${projectWeb}"){
+/*project("${projectWeb}"){
 	description = "onetwo web"
 	
 	ext.freemarkerVersion = "2.3.19"
@@ -277,11 +312,17 @@ project("${projectWeb}"){
 	ext.jstlVersion = "1.2"
 	
 	dependencies {
-		compile(project(":${projectCommon}"))
-		compile(project(":${projectSpring}"))
-		compile(project(":${projectAjaxanywhere}"))
+//		compile(project(":${projectCommon}"))
+		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
+//		compile(project(":${projectSpring}"))
+		compile("org.onetwo:onetwo-spring:${onetwoMvnVersioin}")
+//		compile(project(":${projectAjaxanywhere}"))
+		compile("org.onetwo:onetwo-ajaxanywhere:${onetwoMvnVersioin}")
 		
 		compile("org.springframework:spring-webmvc:${springVersion}")
+		compile("org.springframework:spring-web:${springVersion}")
+		
+		compile("commons-fileupload:commons-fileupload:${commonsUploadVersion}")
 		
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -291,11 +332,11 @@ project("${projectWeb}"){
 		compile("commons-net:commons-net:${commonsnetVersion}")
 		compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
 		compile("net.htmlparser.jericho:jericho-html:${jerichoVersion}")
-		compile("org.tuckey:urlrewritefilter:${urlrewriteVersion}")
+//		compile("org.tuckey:urlrewritefilter:${urlrewriteVersion}")
 		
 //		provided embedTomcat()
 	}
-}
+}*/
 	
 	
 project("${projectSecurity}"){
@@ -304,9 +345,12 @@ project("${projectSecurity}"){
 	ext.jacksonVersion = "2.1.4"
 	
 	dependencies {
-		compile(project(":${projectCommon}"))
-		compile(project(":${projectSpring}"))
-		compile(project(":${projectWeb}"))
+//		compile(project(":${projectCommon}"))
+		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
+//		compile(project(":${projectSpring}"))
+		compile("org.onetwo:onetwo-spring:${onetwoMvnVersioin}")
+//		compile(project(":${projectWeb}"))
+		compile("org.onetwo:onetwo-web:${onetwoMvnVersioin}")
 		
 		compile("javax.servlet:javax.servlet-api:${servletVersion}")
 		
@@ -322,9 +366,11 @@ project("${projectPoi}"){
 	ext.javassistVersion = "3.9.0.GA"
 			
 	dependencies {
-		compile(project(":${projectCommon}"))
-		compile(project(":${projectSpring}"))
-		compile(project(":${projectJackson}"))
+//		compile(project(":${projectCommon}"))
+//		compile(project(":${projectSpring}"))
+		compile("org.onetwo:onetwo-spring:${onetwoMvnVersioin}")
+//		compile(project(":${projectJackson}"))
+		compile("org.onetwo:onetwo-jackson:${onetwoMvnVersioin}")
 		
 		compile("javax.servlet:javax.servlet-api:${servletVersion}")
 		compile("commons-io:commons-io:${commonsioVersion}") {
@@ -348,8 +394,9 @@ project("$projectDbm"){
 	description = "onetwo dbm"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile("org.onetwo:onetwo-spring:${onetwoMvnVersioin}")
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
 	}
@@ -360,20 +407,19 @@ project("$projectJfish") {
 	
 	
 	dependencies {
-		compile(project(":$projectCommon"))
+		/*compile(project(":$projectCommon"))
 		compile(project(":$projectSpring"))
 		compile(project(":$projectWeb"))
+		compile(project(":$projectJackson"))*/
+		compile("org.onetwo:onetwo-web:${onetwoMvnVersioin}")
+		compile("org.onetwo:onetwo-jackson:${onetwoMvnVersioin}")
+		
 		compile(project(":$projectSecurity"))
-		compile(project(":$projectJackson"))
 		compile(project(":$projectPoi"))
 		compile(project(":${projectTomcat}"))
 		
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
-		compile("org.springframework:spring-webmvc:${springVersion}")
 		compile("org.springframework:spring-oxm:${springVersion}")
-		compile("org.springframework:spring-web:${springVersion}")
-		
-		compile("commons-fileupload:commons-fileupload:${commonsUploadVersion}")
 		
 		provided embedTomcat()
 	}
@@ -386,7 +432,8 @@ project("$projectEjb"){
 	ext.openJpaVersion = "1.2.0"
 		
 	dependencies {
-		compile(project(":$projectCommon"))
+//		compile(project(":$projectCommon"))
+		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
 		compile("org.apache.openejb:javaee-api:${javaeeVersion}")
 		compile("org.apache.openjpa:openjpa:${openJpaVersion}")
 		
@@ -401,8 +448,11 @@ project("${projectTomcat}"){
 	ext.jstlVersion = "1.2"
 	
 	dependencies {
-		compile(project(":${projectCommon}"))
-		compile(project(":${projectWeb}"))
+//		compile(project(":${projectCommon}"))
+		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
+//		compile(project(":${projectWeb}"))
+//		compile(project(":${projectJfish}"))
+		provided("org.springframework:spring-core:${springVersion}")
 		
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -413,6 +463,48 @@ project("${projectTomcat}"){
 	}
 }
 
+
+project("${projectTomcatMini}"){
+	description = "onetwo tomcat mini"
+	
+	version = "4.0.15-SNAPSHOT"
+	
+	compileJava {
+		sourceCompatibility=1.6
+		targetCompatibility=1.6
+		options.encoding = 'UTF-8'
+		options.compilerArgs << '-parameters'
+	}
+	
+	ext.jstlVersion = "1.2"
+	
+	dependencies {
+//		compile(project(":${projectCommon}"))
+		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
+		provided("org.apache.commons:commons-lang:$commonsLang3Version")
+		provided("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
+		provided("commons-collections:commons-collections:$commonsCollectionsVersion")
+		
+		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
+		provided("javax.servlet:javax.servlet-api:${servletVersion}")
+		provided("javax.faces:jsf-api:${jsfVersion}")
+		compile("javax.servlet:jstl:${jstlVersion}")
+		
+		provided embedTomcat()
+	}
+}
+
+
+project("${projectJsonrpc}"){
+	description = "${projectJsonrpc}"
+	
+	dependencies {
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
+	}
+	
+}
 
 def embedTomcat() {
 	def tomcatVersion = "7.0.59";
@@ -432,8 +524,9 @@ project("${projectJetty}"){
 	ext.jettyVersion = "8.1.9.v20130131"
 	
 	dependencies {
-		compile(project(":${projectCommon}"))
-		compile(project(":${projectWeb}"))
+//		compile(project(":${projectCommon}"))
+//		compile(project(":${projectWeb}"))
+		compile("org.onetwo:onetwo-web:${onetwoMvnVersioin}")
 		
 		/*provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -508,8 +601,8 @@ project("${pluginSession}"){
 	ext.jedisVersion = "2.4.2"
 		
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$projectJfish"))
 		compile(project(":$projectSecurity"))
 		compile("org.springframework.session:spring-session:${springSessionVersion}")
@@ -529,7 +622,7 @@ project("${pluginSecurity}"){
 		
 	dependencies {
 		compile(project(":$projectJfish"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$projectSecurity"))
 		compile(project(":$pluginSession"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -544,8 +637,9 @@ project("${pluginHibernate}"){
 	ext.hibernateVersion = "4.2.3.Final"
 		
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
 		compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
 		compile("org.hibernate:hibernate-core:${hibernateVersion}")
 		compile("org.hibernate:hibernate-ehcache:${hibernateVersion}")
@@ -574,8 +668,9 @@ project("${pluginDq}"){
 	description = "${pluginDq}"
 		
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
 //		testCompile(project(":$pluginHibernate"))
 		
 	}
@@ -643,9 +738,10 @@ project("${pluginBatch}"){
 	
 	dependencies {
 		compile(project(":$projectPoi"))
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$pluginHibernate"))
+		compile(project(":$projectJfish"))
 		compile("org.springframework.batch:spring-batch-core:${batchVersion}")
 		provided("javax.servlet.jsp:jsp-api:${jspVersion}")
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -661,8 +757,9 @@ project("${pluginEmail}"){
 	ext.mailVersion = "1.4.5"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
 		compile("javax.mail:mail:${mailVersion}")
 		
 		
@@ -689,7 +786,7 @@ project("${pluginJasper}"){
 	ext.jasperreportsVersion = "5.5.0"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
+//		compile(project(":$projectCommon"))
 		compile(project(":$projectJfish"))
 		compile(project(":$pluginPermission"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -718,15 +815,16 @@ project("${pluginMonitor}"){
 	ext.insightVersion = "1.2.0.Beta4"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectWeb"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectWeb"))
+		compile(project(":$projectJfish"))
 		compile("org.sonatype.aether:aether-impl:${aetherVersion}")
 		compile("org.sonatype.aether:aether-connector-file:${aetherVersion}")
 		compile("org.sonatype.aether:aether-connector-wagon:${aetherVersion}")
 		compile("commons-fileupload:commons-fileupload:${commonsUploadVersion}")
 		
 		//compile("org.apache.commons:com.springsource.org.apache.commons.httpclient:${httpClientVersion}")
-		compile("commons-lang:commons-lang:$commonsLangVersion")
+		compile("org.apache.commons:commons-lang:$commonsLang3Version")
 		
 		compile("io.hawt:hawtio-core:${hawtioVersion}")
 		compile("io.hawt:hawtio-git:${hawtioVersion}")
@@ -782,6 +880,8 @@ project("${pluginRest}"){
 		compile(project(":$projectJfish"))
 		provided("javax.servlet:javax.servlet-api:${servletVersion}")
 		
+		compile("javax.ws.rs:javax.ws.rs-api:2.0")
+		
 	}
 }
 
@@ -791,10 +891,11 @@ project("${pluginTaskCore}"){
 			
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$pluginEmail"))
 		compile(project(":$pluginHibernate"))
+		compile(project(":$projectJfish"))
 		compile("javax.persistence:com.springsource.javax.persistence:${jpaVersion}")
 		
 		
@@ -807,10 +908,11 @@ project("${pluginTaskClient}"){
 			
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$pluginEmail"))
 		compile(project(":$pluginTaskCore"))
+		compile(project(":$projectJfish"))
 		
 		
 	}
@@ -822,7 +924,7 @@ project("${pluginTaskWebclient}"){
 			
 	
 	dependencies {
-		compile(project(":$projectCommon"))
+//		compile(project(":$projectCommon"))
 		compile(project(":$projectJfish"))
 		compile(project(":$pluginTaskCore"))
 		compile(project(":$pluginTaskClient"))
@@ -840,8 +942,8 @@ project("${pluginMelody}"){
 	description = "${pluginMelody}"
 	
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
 		compile(project(":$projectJfish"))
 		compile("javax.servlet:javax.servlet-api:${servletVersion}")
 		
@@ -857,9 +959,55 @@ project("${pluginFtlTemplate}"){
 	description = "${pluginFtlTemplate}"
 		
 	dependencies {
-		compile(project(":$projectCommon"))
-		compile(project(":$projectSpring"))
+//		compile(project(":$projectCommon"))
+//		compile(project(":$projectSpring"))
+		compile(project(":$projectJfish"))
 	}
 }
 
+def pluginZkclient = "${pluginPrefix}zkclient"
+project("${pluginZkclient}"){
+	description = "${pluginZkclient}"
+	
+	ext.curatorVersion = "2.8.0"
+	
+	dependencies {
+//		compile(project(":$projectCommon"))
+		compile(project(":$projectJfish"))
+		
+//		compile("org.apache.zookeeper:zookeeper:3.4.6")
+		compile("org.apache.curator:curator-framework:${curatorVersion}")
+		compile("org.apache.curator:curator-recipes:${curatorVersion}")
+		testCompile("org.apache.curator:curator-test:2.8.0")
+		
+	}
+	
+}
+
+
+def pluginJsonrpcServer = "${pluginPrefix}jsonrpc-server"
+project("${pluginJsonrpcServer}"){
+	description = "${pluginJsonrpcServer}"
+	
+	dependencies {
+		compile(project(":$projectJsonrpc"))
+		compile(project(":$projectJfish"))
+		
+		compile(project(":${pluginZkclient}"))
+	}
+	
+}
+
+def pluginJsonrpcClient = "${pluginPrefix}jsonrpc-client"
+project("${pluginJsonrpcClient}"){
+	description = "${pluginJsonrpcClient}"
+	
+	dependencies {
+		compile(project(":$projectJsonrpc"))
+		compile(project(":$projectJfish"))
+		
+		compile(project(":${pluginZkclient}"))
+	}
+	
+}
 

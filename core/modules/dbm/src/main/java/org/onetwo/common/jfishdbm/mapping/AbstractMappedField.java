@@ -4,19 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.annotation.JFishFieldListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
-import org.onetwo.common.jfishdbm.event.JFishEntityFieldListener;
+import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
-import org.onetwo.common.jfishdbm.utils.JFishdbUtils;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractMappedField implements JFishMappedField{
+abstract public class AbstractMappedField implements DbmMappedField{
 	
 	private final JFishMappedEntry entry;
 	
@@ -35,7 +40,7 @@ abstract public class AbstractMappedField implements JFishMappedField{
 	
 	private boolean freezing;
 	
-	private List<JFishEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
+	private List<DbmEntityFieldListener> fieldListeners = Collections.EMPTY_LIST;
 	
 	private VersionableType<? extends Object> versionableType;
 	
@@ -45,12 +50,12 @@ abstract public class AbstractMappedField implements JFishMappedField{
 		this.propertyInfo = propertyInfo;
 		this.name = propertyInfo.getName();
 		
-		JFishFieldListeners listenersAnntation = propertyInfo.getAnnotation(JFishFieldListeners.class);
+		DbmFieldListeners listenersAnntation = propertyInfo.getAnnotation(DbmFieldListeners.class);
 		if(listenersAnntation!=null){
-			fieldListeners = JFishdbUtils.initJFishEntityFieldListeners(listenersAnntation);
+			fieldListeners = DbmUtils.initDbmEntityFieldListeners(listenersAnntation);
 		}else{
 			if(!entry.getFieldListeners().isEmpty()){
-				this.fieldListeners = new ArrayList<JFishEntityFieldListener>(entry.getFieldListeners());
+				this.fieldListeners = new ArrayList<DbmEntityFieldListener>(entry.getFieldListeners());
 			}
 		}
 	}
@@ -66,50 +71,91 @@ abstract public class AbstractMappedField implements JFishMappedField{
 		propertyInfo.setValue(entity, value);
 	}
 	
+	/****
+	 * 根据实体的属性做一定的类型转换
+	 * @param value
+	 * @return
+	 
+	protected Object convertPropertyValue(Object value){
+		return DbmUtils.convertPropertyValue(propertyInfo, value);
+	}*/
+	/***
+	 * 转成spring jdbc sql parameter 参数
+	 * @param value
+	 * @return
+	 */
+	protected SqlParameterValue convertSqlParameterValue(Object value){
+		return DbmUtils.convertSqlParameterValue(propertyInfo, value);
+	}
+	
 	@Override
 	public Object getValue(Object entity){
 		return propertyInfo.getValue(entity);
 	}
 	
 	@Override
-	public void setColumnValue(Object entity, Object value){
-		propertyInfo.setValue(entity, value);
+	public void setValueFromJdbc(Object entity, Object value){
+//		Object newValue = convertPropertyValue(value);
+		setValue(entity, value);
 	}
 	
 
+	/****
+	 * 获取sql参数值
+	 */
 	@Override
-	public Object getColumnValue(Object entity){
-		return propertyInfo.getValue(entity);
+	public SqlParameterValue getValueForJdbc(Object entity){
+		SqlParameterValue sqlValue = convertSqlParameterValue(propertyInfo.getValue(entity));
+		return sqlValue;
 	}
 	
-
-	public Object getColumnValueWithJFishEventAction(Object entity, JFishEventAction eventAction){
-		Object oldValue = getColumnValue(entity);
-		Object newValue = oldValue;
+	@Override
+	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction){
+//		Object oldValue = getColumnValue(entity);
+		Object fieldValue = getValue(entity);
+//		Object newValue = null;
 		boolean doListener = false;
 		if(JFishEventAction.insert==eventAction){
 			if(!getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldInsert(getName(), newValue);
+				for(DbmEntityFieldListener fl : getFieldListeners()){
+					fieldValue = fl.beforeFieldInsert(propertyInfo, fieldValue);
 					doListener = true;
 				}
 			}
 		}else if(JFishEventAction.update==eventAction){
 			if(!getFieldListeners().isEmpty()){
-				for(JFishEntityFieldListener fl : getFieldListeners()){
-					newValue = fl.beforeFieldUpdate(getName(), newValue);
+				for(DbmEntityFieldListener fl : getFieldListeners()){
+					fieldValue = fl.beforeFieldUpdate(propertyInfo, fieldValue);
 					doListener = true;
 				}
 			}
 		}
 		if(doListener){
-			setColumnValue(entity, newValue);
+//			setValueFromJdbc(entity, newValue);
+			setValue(entity, fieldValue);
 		}
-		return newValue;
+//		return getValueForJdbc(entity);
+		return convertSqlParameterValue(fieldValue);
 	}
 	
 	public Class<?> getColumnType(){
-		return propertyInfo.getType();
+		Class<?> actualType = propertyInfo.getType();
+		if(Enum.class.isAssignableFrom(actualType)){
+			Enumerated enumerated = propertyInfo.getAnnotation(Enumerated.class);
+			if(enumerated!=null){
+				EnumType etype = enumerated.value();
+				if(etype==EnumType.ORDINAL){
+					actualType = int.class;
+				}else if(etype==EnumType.STRING){
+					actualType = String.class;
+				}else{
+					throw new DbmException("error enum type: " + etype);
+				}
+			}else{
+				actualType = String.class;
+			}
+		}
+		return actualType;
 	}
 	
 	@Override
@@ -240,7 +286,7 @@ abstract public class AbstractMappedField implements JFishMappedField{
 		return LangUtils.append(getName());
 	}
 
-	public List<JFishEntityFieldListener> getFieldListeners() {
+	public List<DbmEntityFieldListener> getFieldListeners() {
 		return fieldListeners;
 	}
 

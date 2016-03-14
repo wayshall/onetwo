@@ -18,11 +18,19 @@ import java.util.Map.Entry;
 import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.onetwo.common.reflect.Ignore;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.func.IndexableReturnableClosure;
+import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.ListMap;
+
+import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -161,15 +169,15 @@ final public class CUtils {
 			return null;
 	}
 	
-	public static Map bean2Map(Object obj, Object... ignores) {
+	public static Map<String, Object> bean2Map(Object obj, Object... ignores) {
 		Assert.notNull(obj);
-		if(Map.class.isInstance(obj))
-			return (Map)obj;
+		/*if(Map.class.isInstance(obj))
+			return (Map)obj;*/
 		Ignore ig = null;
 		if(LangUtils.hasElement(ignores))
 			ig = Ignore.create(ignores);
 		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-		Map propMap = LangUtils.newHashMap();
+		Map<String, Object> propMap = LangUtils.newHashMap();
 		Object val = null;
 		
 		for(PropertyDescriptor prop : props){
@@ -183,7 +191,7 @@ final public class CUtils {
 	}
 	public static <T extends Map> T arrayIntoMap(T properties, Object... params) {
 		if (params.length % 2 == 1)
-			throw new IllegalArgumentException("参数个数必须是偶数个！ ");
+			throw new IllegalArgumentException("参数不是key, value形式！ ");
 
 		int index = 0;
 		Object name = null;
@@ -277,7 +285,7 @@ final public class CUtils {
 		return new LinkedHashMap<K, V>();
 	}
 
-	public static List aslist(Object... array) {
+	public static <T> List<T> aslist(T... array) {
 		return tolist(array, true);
 	}
 	public static List tolist(Object object, boolean trimNull) {
@@ -464,7 +472,7 @@ final public class CUtils {
 		return list;
 	}
 	
-	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, SimpleBlock<V, K> block){
+	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	
@@ -576,15 +584,45 @@ final public class CUtils {
 	}
 	
 
-	public static List toList(Map map) {
+	
+	public static Map<Integer, Object> toMap(List<?> list){
+		return toMap(list, (e, index)->index);
+	}
+	
+	public static <K> Map<K, Object> toMap(List<?> list, IndexableReturnableClosure<Object, K> keyMap){
+		Map<K, Object> map = Maps.newHashMap();
+		int index = 0;
+		for(Object e : list){
+			K key = keyMap.execute(e, index);
+			map.put(key, e);
+			index++;
+		}
+		return map;
+	}
+
+	public static List<Object> toList(Map<?, ?> map) {
 		if(map==null)
 			return NULL_LIST;
-		List list = new ArrayList(map.size()*2);
-		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
+		List<Object> list = new ArrayList(map.size()*2);
+		for(Map.Entry<?, ?> entry : map.entrySet()){
 			list.add(entry.getKey());
 			list.add(entry.getValue());
 		}
 		return list;
+	}
+
+	public static <T, R> List<R> map(Collection<T> list, Function<? super T, ? extends R> mapper){
+		Assert.notNull(list);
+		Assert.notNull(mapper);
+		return list.stream().map(mapper).collect(Collectors.toList());
+	}
+	
+	public static <T> List<T> iterableToList(Iterable<T> it){
+		if(it==null)
+			return Collections.EMPTY_LIST;
+		List<T> list = new ArrayList<T>();
+		it.forEach(e->list.add(e));
+		return Collections.unmodifiableList(list);
 	}
 	
 	private CUtils(){

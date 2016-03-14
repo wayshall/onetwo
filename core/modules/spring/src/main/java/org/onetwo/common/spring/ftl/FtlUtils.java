@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
@@ -28,6 +28,7 @@ import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.DateModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.ext.beans.StringModel;
+import freemarker.template.Configuration;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
@@ -38,8 +39,8 @@ import freemarker.template.TemplateNumberModel;
 
 final public class FtlUtils {
 
-	private static final Logger logger = MyLoggerFactory.getLogger(FtlUtils.class);
-	public static final BeansWrapper BEAN_WRAPPER = new BeansWrapper();
+	private static final Logger logger = JFishLoggerFactory.getLogger(FtlUtils.class);
+	public static final BeansWrapper BEAN_WRAPPER = new BeansWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 	
 	public static final String CONFIG_CLASSIC_COMPATIBLE = "classic_compatible";
 

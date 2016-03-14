@@ -5,12 +5,11 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import org.onetwo.common.annotation.JInfo;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.SimpleBlock;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.func.ReturnableClosure;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 
@@ -50,11 +49,11 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 			JFishProperty jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), true);
 			if(jp==null)
 				jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), false);
-			JInfo jfm = jp.getAnnotation(JInfo.class);
+			FieldName jfm = jp.getAnnotation(FieldName.class);
 			if(jfm==null){
 				fmsg = LangUtils.append(fe.getField(), fe.getDefaultMessage());
 			}else{
-				fmsg = LangUtils.append(jfm.label(), fe.getDefaultMessage());
+				fmsg = LangUtils.append(jfm.value(), fe.getDefaultMessage());
 			}
 		}else{
 			fmsg = fe.getDefaultMessage();
@@ -62,7 +61,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 		return fmsg;
 	}
 
-	public String getFieldErrorMessage(FieldError fe, SimpleBlock<FieldError, String> block){
+	public String getFieldErrorMessage(FieldError fe, ReturnableClosure<FieldError, String> block){
 		String fmsg = "";
 		if(block!=null){
 			fmsg = block.execute(fe);
@@ -73,7 +72,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 		return fmsg;
 	}
 	
-	public List<String> getFieldErrorMessages(SimpleBlock<FieldError, String> block){
+	public List<String> getFieldErrorMessages(ReturnableClosure<FieldError, String> block){
 		List<FieldError> fieldErrors = getFieldErrors();
 		List<String> msgs = LangUtils.newArrayList(fieldErrors.size());
 		for(FieldError fe : fieldErrors){
@@ -89,7 +88,7 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 			msgs.add(getFieldErrorMessage(fe, readFieldMeta));
 		}
 		return msgs;*/
-		return getFieldErrorMessages(new SimpleBlock<FieldError, String>() {
+		return getFieldErrorMessages(new ReturnableClosure<FieldError, String>() {
 
 			@Override
 			public String execute(FieldError fe) {
@@ -103,11 +102,11 @@ public class ValidationBindingResult extends BeanPropertyBindingResult {
 					JFishProperty jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), true);
 					if(jp==null)
 						jp = JFishPropertyFactory.create(getTarget().getClass(), fe.getField(), false);
-					JInfo jfm = jp.getAnnotation(JInfo.class);
+					FieldName jfm = jp.getAnnotation(FieldName.class);
 					if(jfm==null){
 						fmsg = LangUtils.append(fe.getField(), fe.getDefaultMessage());
 					}else{
-						fmsg = LangUtils.append(jfm.label(), fe.getDefaultMessage());
+						fmsg = LangUtils.append(jfm.value(), fe.getDefaultMessage());
 					}
 				}else{
 					fmsg = fe.getDefaultMessage();

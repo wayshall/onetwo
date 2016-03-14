@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.common.db.JFishQueryValue;
-import org.onetwo.common.db.ParamValues.PlaceHolder;
+import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.jfishdbm.dialet.DBDialect;
-import org.onetwo.common.jfishdbm.support.JFishDaoImplementor;
+import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
@@ -24,11 +23,11 @@ public class JFishQueryImpl implements JFishQuery {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private JFishDaoImplementor JFishDaoImplementor;
+	private DbmDaoImplementor JFishDaoImplementor;
 	private DBDialect dbDialect;
 	private String sqlString;
 //	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
-	private JFishQueryValue parameters = null;
+	private DbmQueryValue parameters = null;
 	
 	private Class<?> resultClass;
 	
@@ -38,13 +37,13 @@ public class JFishQueryImpl implements JFishQuery {
 	private RowMapper<?> rowMapper;
 //	private QType qtype;
 
-	public JFishQueryImpl(JFishDaoImplementor jFishDao, String sqlString, Class<?> resultClass) {
+	public JFishQueryImpl(DbmDaoImplementor jFishDao, String sqlString, Class<?> resultClass) {
 		super();
 		this.JFishDaoImplementor = jFishDao;
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
 		this.sqlString = sqlString;
 		this.resultClass = resultClass;
-		this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
+		this.parameters = DbmQueryValue.create(null);
 	}
 	
 	/**********
@@ -91,7 +90,7 @@ public class JFishQueryImpl implements JFishQuery {
 		UtilTimerStack.push(fname);
 		
 		String sql = getSqlString();
-		JFishQueryValue params = this.getActualParameters(sql);
+		DbmQueryValue params = this.getActualParameters(sql);
 		T result = null;
 		
 		if(rowMapper!=null){
@@ -104,17 +103,22 @@ public class JFishQueryImpl implements JFishQuery {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.onetwo.common.fish.JFishQuery#getResultList()
+	/****
+	 * 返回结果集，返回值不为null
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> getResultList(){
+		return (List<T>)getResultList(rowMapper);
+	}
+	
+	public <T> List<T> getResultList(RowMapper<T> rowMapper){
 		String fname = this.getClass().getSimpleName()+".getResultList";
 		UtilTimerStack.push(fname);
 		
 		List<T> result = null;
 		String sql = getSqlString();
-		JFishQueryValue params = this.getActualParameters(sql);
+		DbmQueryValue params = this.getActualParameters(sql);
 		
 		if(rowMapper!=null){
 			result = (List<T>)this.JFishDaoImplementor.findList(params, rowMapper);
@@ -126,30 +130,11 @@ public class JFishQueryImpl implements JFishQuery {
 		return result;
 	}
 	
-	/*protected void createParameterIfNull(){
-		if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(PlaceHolder.NAMED, null);
-		}
-		Assert.notNull(holder);
-		if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(holder, null);
-		}else if(parameters.getHolder() != holder){
-			LangUtils.throwBaseException("the query["+this.parameters.getHolder()+"] cant not support : " + holder);
-		}
-	}*/
 
 	public String getSqlString() {
-		//check parameters
-		/*if(this.parameters==null){
-			this.parameters = JFishQueryValue.create(PlaceHolder.POSITION, null);
-		}*/
-//		this.createParameterIfNull();
 		String sql = sqlString;
-		if(needSetRange()){
-			if(this.parameters.isNamed())
-				sql = dbDialect.getLimitStringWithNamed(sqlString, FIRST_RESULT_NAME, MAX_RESULT_NAME);
-			else
-				sql = dbDialect.getLimitString(sqlString);
+		if(isLimitedQuery()){
+			sql = dbDialect.getLimitStringWithNamed(sqlString, FIRST_RESULT_NAME, MAX_RESULT_NAME);
 		}
 		if(UtilTimerStack.isActive()){
 			this.logger.info("sql:"+sql);
@@ -157,14 +142,14 @@ public class JFishQueryImpl implements JFishQuery {
 		return sql;
 	}
 
-	public JFishDaoImplementor getJFishDaoImplementor() {
+	public DbmDaoImplementor getJFishDaoImplementor() {
 		return JFishDaoImplementor;
 	}
 
-	public JFishQueryValue getActualParameters(String sql) {
+	public DbmQueryValue getActualParameters(String sql) {
 		this.parameters.setResultClass(resultClass);
 		this.parameters.setSql(sql);
-		if(!needSetRange()){
+		if(!isLimitedQuery()){
 			return this.parameters;
 		}
 		/*if(!params.containsKey(FIRST_RESULT_NAME))
@@ -181,7 +166,7 @@ public class JFishQueryImpl implements JFishQuery {
 		return this.parameters;
 	}
 
-	public boolean needSetRange(){
+	public boolean isLimitedQuery(){
 		return this.getFirstResult()>INVALID_VALUE && this.getMaxResults()>INVALID_VALUE_MAX_RESULTS;
 	}
 
@@ -225,7 +210,7 @@ public class JFishQueryImpl implements JFishQuery {
 	public int executeUpdate(){
 		int result = 0;
 		String sql = getSqlString();
-		JFishQueryValue params = getActualParameters(sql);
+		DbmQueryValue params = getActualParameters(sql);
 		result = JFishDaoImplementor.executeUpdate(params);
 		return result;
 	}

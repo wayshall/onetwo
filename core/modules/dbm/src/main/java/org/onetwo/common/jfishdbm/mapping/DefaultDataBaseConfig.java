@@ -1,10 +1,13 @@
 package org.onetwo.common.jfishdbm.mapping;
 
-import org.onetwo.common.db.FileNamedQueryFactory;
+import org.onetwo.common.propconf.AppConfig;
+import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
-import org.onetwo.common.spring.context.ApplicationConfigKeys;
 
 public class DefaultDataBaseConfig implements DataBaseConfig {
+	public static final String JFISH_BASE_PACKAGES = AppConfig.JFISH_BASE_PACKAGES;
+	public static final String JFISH_DBM_SQL_LOG = "jfish.dbm.sql.log";
+	public static final String JFISH_DBM_SQL_WATCH = "jfish.dbm.sql.watch";
 	
 	private int useBatchThreshold = 50;
 	private int processSizePerBatch = 10000;
@@ -18,9 +21,13 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 	}
 	
 	public DefaultDataBaseConfig(JFishPropertyPlaceholder configHolder){
-		this.modelBasePackages = configHolder.getPropertiesWraper().getStringArray(ApplicationConfigKeys.BASE_PACKAGE, ",");
-		this.watchSqlFile = configHolder.getPropertiesWraper().getBoolean(FileNamedQueryFactory.WATCH_SQL_FILE);
-		this.logSql = configHolder.getPropertiesWraper().getBoolean(JFISHDB_LOG_SQL, true);
+		this(configHolder.getPropertiesWraper());
+	}
+	
+	public DefaultDataBaseConfig(JFishProperties config){
+		this.modelBasePackages = config.getStringArray(JFISH_BASE_PACKAGES, ",");
+		this.watchSqlFile = config.getBoolean(JFISH_DBM_SQL_LOG);
+		this.logSql = config.getBoolean(JFISH_DBM_SQL_WATCH, true);
 	}
 
 	public DefaultDataBaseConfig(boolean batchEnabled, 

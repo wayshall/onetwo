@@ -1,6 +1,5 @@
 package org.onetwo.common.utils;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,17 +21,12 @@ final public class EnumUtils {
 		return ints;
 	}
 	
-	public static Enum<? extends Enum<?>>[] asEnums(Class<? extends Enum<?>> clazz, String...strings){
-		Enum<? extends Enum<?>>[] enums = new Enum<?>[strings.length];
+	public static <T extends Enum<T>> List<T> asEnumList(Class<T> clazz, String...strings){
+		List<T> enums = LangUtils.newArrayList(strings.length);
 		for (int i = 0; i < strings.length; i++) {
-			enums[i] = Enum.valueOf((Class)clazz, strings[i]);
+			enums.add(Enum.valueOf(clazz, strings[i]));
 		}
 		return enums;
-	}
-	
-	public static List<? extends Enum<?>> asEnumList(Class<? extends Enum<?>> clazz, String...strings){
-		Enum<? extends Enum<?>>[] enums = asEnums(clazz, strings);
-		return Arrays.asList(enums);
 	}
 	
 	private EnumUtils(){

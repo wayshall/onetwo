@@ -14,7 +14,7 @@ public class JFishDeleteEventListener extends AbstractJFishEventListener {
 		JFishDeleteEvent deleteEvent = (JFishDeleteEvent) event;
 		Object entity = event.getObject();
 		JFishEventSource es = event.getEventSource();
-		JFishMappedEntry entry = es.getMappedEntryManager().findEntry(event.getEntityClass());
+		JFishMappedEntry entry = es.getMappedEntryManager().findEntry(entity!=null?entity:event.getEntityClass());
 		if(entry==null)
 			entry = es.getMappedEntryManager().findEntry(entity);
 		Assert.notNull(entry, "can not find entry : " + event.getEntityClass()+"");
