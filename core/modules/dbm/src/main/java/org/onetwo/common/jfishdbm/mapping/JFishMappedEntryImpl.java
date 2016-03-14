@@ -12,14 +12,14 @@ import org.onetwo.common.utils.LangUtils;
 public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	
 
-	private EntrySQLBuilder staticInsertSqlBuilder;
-	private EntrySQLBuilder staticUpdateSqlBuilder;
-	private EntrySQLBuilder staticFetchAllSqlBuilder;
-	private EntrySQLBuilder staticFetchSqlBuilder;
-	private EntrySQLBuilder staticDeleteSqlBuilder;
-	private EntrySQLBuilder staticDeleteAllSqlBuilder;
-	private EntrySQLBuilder staticSeqSqlBuilder;
-	private EntrySQLBuilder staticSelectVersionSqlBuilder;
+	private EntrySQLBuilderImpl staticInsertSqlBuilder;
+	private EntrySQLBuilderImpl staticUpdateSqlBuilder;
+	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
+	private EntrySQLBuilderImpl staticFetchSqlBuilder;
+	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
+	private EntrySQLBuilderImpl staticDeleteAllSqlBuilder;
+	private EntrySQLBuilderImpl staticSeqSqlBuilder;
+	private EntrySQLBuilderImpl staticSelectVersionSqlBuilder;
 	
 	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
@@ -121,23 +121,23 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticInsertSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticInsertSqlBuilder() {
 		return staticInsertSqlBuilder;
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticUpdateSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticUpdateSqlBuilder() {
 		return staticUpdateSqlBuilder;
 	}
 
 	@Override
-	protected EntrySQLBuilder getStaticDeleteSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticDeleteSqlBuilder() {
 		return staticDeleteSqlBuilder;
 	}
 
 
 	@Override
-	protected EntrySQLBuilder getStaticFetchSqlBuilder() {
+	protected EntrySQLBuilderImpl getStaticFetchSqlBuilder() {
 		return staticFetchSqlBuilder;
 	}
 

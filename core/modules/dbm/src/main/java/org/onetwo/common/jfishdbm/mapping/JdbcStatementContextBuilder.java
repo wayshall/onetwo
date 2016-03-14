@@ -17,19 +17,19 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		SQLBuilder sb = sqlBuilderFactory.createQMark(entry.getTableInfo().getName(), entry.getTableInfo().getAlias(), dtype);
 		return create(entry, sb);
 	}*/
-	public static JdbcStatementContextBuilder create(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilder sqlBuilder){
+	public static JdbcStatementContextBuilder create(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder){
 		JdbcStatementContextBuilder dsql = new JdbcStatementContextBuilder(eventAction, entry, sqlBuilder);
 		return dsql;
 	}
 	
 	private AbstractJFishMappedEntryImpl entry;
-	private EntrySQLBuilder sqlBuilder;
+	private EntrySQLBuilderImpl sqlBuilder;
 	private Map<DbmMappedField, Object> columnValues = CUtils.newLinkedHashMap();
 	private List<Object> causeValues = new ArrayList<Object>(5);
 	private List<Object[]> values;
 	private final JFishEventAction eventAction;
 
-	private JdbcStatementContextBuilder(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilder sqlBuilder) {
+	private JdbcStatementContextBuilder(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder) {
 		super();
 		this.entry = entry;
 		this.sqlBuilder = sqlBuilder;
@@ -56,7 +56,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 	public JdbcStatementContextBuilder processColumnValues(Object entity){
 		Assert.notNull(entity);
 		Object val = null;
-		EntrySQLBuilder builder = getSqlBuilder();
+		EntrySQLBuilderImpl builder = getSqlBuilder();
 		for(DbmMappedField field : builder.getFields()){
 			val = field.getValueForJdbcAndFireDbmEventAction(entity, getEventAction());
 			if(field.isVersionControll()){
@@ -138,7 +138,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		return entry;
 	}
 
-	public EntrySQLBuilder getSqlBuilder() {
+	public EntrySQLBuilderImpl getSqlBuilder() {
 		return sqlBuilder;
 	}
 
