@@ -33,7 +33,7 @@
 	
 	<validation.version>1.1.0.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
-	<lombok.version>1.16.4</lombok.version>
+	<lombok.version>1.16.8</lombok.version>
 	<mail.version>1.4.5</mail.version>
 	
 	<shiro.version>1.2.3</shiro.version>
@@ -46,6 +46,9 @@
 	<spring-security.version>3.2.7.RELEASE</spring-security.version>
 	
 	<jpa.version>2.0.0</jpa.version>
+	
+	<ojdbc.version>11.2.0.3.0</ojdbc.version>
+	<slf4j.version>1.7.13</slf4j.version>
 	
 	<!-- poi -->
     <ognl.version>3.0</ognl.version>
@@ -105,12 +108,23 @@
 	  <artifactId>onetwo-web</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-boot</artifactId>
-	  <version>${onetwo.version}</version>
-	</dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-boot</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-security</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-api</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
 	
 	<dependency>
 	  <groupId>commons-codec</groupId>
@@ -278,6 +292,7 @@
     </dependency>
     
     
+    
     <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
@@ -352,6 +367,13 @@
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis-spring</artifactId>
       <version>${mybatis.spring.version}</version>
+    </dependency>
+    
+    <!-- jdbc driver -->
+    <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc16</artifactId>
+        <version>${ojdbc.version}</version>
     </dependency>
 	
 	<!-- Import dependency management from Spring Boot -->

@@ -19,13 +19,15 @@
     	<modules>
 				<module>bom</module>
 				<module>parent</module>
-				<module>common</module>
+                <module>api</module>
+                <module>common</module>
 				<module>jackson</module>
 				<module>spring</module>
                 <module>dbm</module>
                 <module>poi</module>
 				<module>web</module>
-				<module>boot</module>
+                <module>boot</module>
+                <module>security</module>
 	  	</modules>
 	  </profile>
 	</profiles>
