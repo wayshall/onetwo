@@ -32,10 +32,10 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 				throw new NotLoginException();*/
 			throw new NotLoginException();
 		}else if(userDetail.isSystemRootUser()){
-			menus = menuItemRepository.findAllMenus();
+			menus = menuItemRepository.findAllMenus().get(0).getChildren();
 //			throw new UnsupportedOperationException("not implements yet!");
 		}else{
-			menus = menuItemRepository.findUserMenus(userDetail);
+			menus = menuItemRepository.findUserMenus(userDetail).get(0).getChildren();
 		}
 		
 		return pluginMv("/permission/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());

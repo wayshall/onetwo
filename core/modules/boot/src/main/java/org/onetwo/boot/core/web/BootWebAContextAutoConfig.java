@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -60,6 +61,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
 //@Import({BootContextConfig.class})
+@ConditionalOnProperty(prefix="jfish", name="autoConfig", havingValue="true", matchIfMissing=true)
 public class BootWebAContextAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -172,6 +174,11 @@ public class BootWebAContextAutoConfig {
 	public BootFirstInterceptor bootFirstInterceptor(){
 		return new BootFirstInterceptor();
 	}
+
+	@Bean
+	public UploadValidateInterceptor uploadValidateInterceptor(){
+		return new UploadValidateInterceptor();
+	}
 	
 	@Bean
 	public BootJsonView bootJsonView(){
@@ -228,11 +235,6 @@ public class BootWebAContextAutoConfig {
 	@ConditionalOnMissingBean(SessionUserManager.class)
 	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new BootSessionUserManager();
-	}
-
-	@Bean
-	public UploadValidateInterceptor uploadValidateInterceptor(){
-		return new UploadValidateInterceptor();
 	}
 	
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)

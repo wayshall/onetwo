@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.onetwo.boot.core.web.BootWebAContextAutoConfig,\
-org.onetwo.boot.plugins.permission.PermissionContextAutoConfig

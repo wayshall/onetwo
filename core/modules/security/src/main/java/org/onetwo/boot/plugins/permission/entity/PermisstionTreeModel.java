@@ -36,6 +36,10 @@ public class PermisstionTreeModel extends AbstractTreeModel<PermisstionTreeModel
 	public String toJson(){
 		return JsonMapper.IGNORE_NULL.toJson(Arrays.asList(this));
 	}
+	
+	public String childrenToJson(){
+		return JsonMapper.IGNORE_NULL.toJson(Arrays.asList(this.getChildren()));
+	}
 
 	public String getUrl() {
 		return url;
@@ -43,10 +47,6 @@ public class PermisstionTreeModel extends AbstractTreeModel<PermisstionTreeModel
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-	
-	public void setSort(Comparable<?> sort){
-		this.sort = sort;
 	}
 	
 }

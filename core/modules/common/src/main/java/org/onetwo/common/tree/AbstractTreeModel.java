@@ -136,6 +136,10 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 	public T getParent() {
 		return parent;
 	}
+	
+	public void setSort(Comparable<?> sort){
+		this.sort = sort;
+	}
 
 	public void setParent(T parent) {
 		this.parent = parent;

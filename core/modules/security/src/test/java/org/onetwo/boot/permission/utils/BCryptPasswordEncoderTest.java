@@ -1,4 +1,4 @@
-package org.onetwo.boot.core;
+package org.onetwo.boot.permission.utils;
 
 import org.junit.Test;
 import org.onetwo.common.profiling.TimeCounter;
