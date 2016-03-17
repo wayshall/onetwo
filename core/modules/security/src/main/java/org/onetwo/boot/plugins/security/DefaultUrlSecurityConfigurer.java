@@ -15,7 +15,9 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 
 	protected void webConfigure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-			.antMatchers(LOGIN_PATH, LOGIN_PROCESS_PATH, LOGOUT_PATH)
+			.antMatchers(getSecurityConfig().getLoginUrl(), 
+							getSecurityConfig().getLoginProcessUrl(), 
+							getSecurityConfig().getLogoutUrl())
 			.permitAll()
 			.anyRequest()
 			.fullyAuthenticated();

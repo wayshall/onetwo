@@ -19,10 +19,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-	public static final String LOGIN_PATH = "/login";
-	public static final String LOGIN_PROCESS_PATH = "/dologin";
-	public static final String LOGOUT_PATH = "/logout";
-	public static final String TARGET_PATH_AFTER_LOGIN = "/plugins/permission/admin";
 
 	@Getter
 	@Autowired
@@ -75,16 +71,16 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
 			http
 				.formLogin()
-				.loginPage(LOGIN_PATH)
-				.loginProcessingUrl(LOGIN_PROCESS_PATH)
+				.loginPage(securityConfig.getLoginUrl())
+				.loginProcessingUrl(securityConfig.getLoginProcessUrl())
 				.usernameParameter("username")
 				.passwordParameter("password")
-				.failureUrl(LOGIN_PATH+"?error=true")
+				.failureUrl(securityConfig.getLoginUrl()+"?error=true")
 				.failureHandler(ajaxAuthenticationHandler)
 				.successHandler(ajaxAuthenticationHandler)
 			.and()
 				.logout()
-				.logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_PATH))
+				.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
 			.and()
 				.httpBasic()
 				.disable()

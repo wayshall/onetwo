@@ -4,13 +4,13 @@ import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.plugins.security.AjaxAuthenticationHandler;
 import org.onetwo.boot.plugins.security.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
-import org.onetwo.boot.plugins.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.boot.plugins.security.mvc.args.SecurityArgumentResolver;
 import org.onetwo.boot.plugins.security.utils.SecuritySessionUserManager;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 @EnableConfigurationProperties({BootSecurityConfig.class})
 @Configuration
 public class SecurityCommonContextConfig {
+
+	@Autowired
+	private BootSecurityConfig securityConfig;
 	
 	@Bean
 	public HandlerMethodArgumentResolver securityArgumentResolver(){
@@ -81,9 +84,8 @@ public class SecurityCommonContextConfig {
 
 	@Bean
 	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler();
-		handler.setDefaultTargetUrl(DefaultMethodSecurityConfigurer.TARGET_PATH_AFTER_LOGIN);
-		handler.setAuthenticationFailureUrl(DefaultMethodSecurityConfigurer.LOGIN_PATH);
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(securityConfig.getLoginUrl(), 
+																			securityConfig.getAfterLoginUrl());
 		return handler;
 	}
 }

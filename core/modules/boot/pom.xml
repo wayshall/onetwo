@@ -48,11 +48,16 @@
           <groupId>org.onetwo</groupId>
           <artifactId>onetwo-dbm</artifactId>
         </dependency>
-		
-		<dependency>
-		  <groupId>org.onetwo</groupId>
-		  <artifactId>onetwo-web</artifactId>
-		</dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-web</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-api</artifactId>
+        </dependency>
 		
 	    <!-- <dependency>
 	        <groupId>org.springframework.boot</groupId>
@@ -129,18 +134,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>	
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-taglibs</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -148,11 +141,6 @@
             <scope>provided</scope>
         </dependency>
     
-	    <dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-cas</artifactId>
-            <scope>provided</scope>
-	    </dependency>
 	    
 	    <!-- mybatis -->
 	    <dependency>

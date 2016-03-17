@@ -1,6 +1,5 @@
 package org.onetwo.boot.plugins.permission.service.impl;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -23,9 +22,10 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	private AbstractPermissionConfig<? extends AbstractPermission<?>> permissionConfig;
 	
 	@Override
-    public Collection<PermisstionTreeModel> findAllMenus() {
+    public List<PermisstionTreeModel> findAllMenus() {
 		List<? extends AbstractPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
-	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
+	    return createMenuTreeBuilder(permissions).buidTree();
+//	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
     }
 	
 	protected TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends AbstractPermission<?>> permissions){
@@ -33,9 +33,10 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	}
 
 	@Override
-	public Collection<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
+	public List<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
 		List<? extends AbstractPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
-	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
+	    return createMenuTreeBuilder(permissions).buidTree();
+//	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
 	}
 
 

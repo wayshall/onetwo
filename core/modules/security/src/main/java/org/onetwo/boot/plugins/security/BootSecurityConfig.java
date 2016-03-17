@@ -21,10 +21,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ToString
 public class BootSecurityConfig implements WebContextConfigProvider {
+	public static final String LOGIN_PATH = "/login";
+	public static final String LOGIN_PROCESS_PATH = "/dologin";
+	public static final String LOGOUT_PATH = "/logout";
+	public static final String TARGET_PATH_AFTER_LOGIN = "/plugins/permission/admin";
 	
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
-	private String logoutUrl;
+	private String logoutUrl = LOGOUT_PATH;
+	private String loginUrl = LOGIN_PATH;
+	private String loginProcessUrl = LOGIN_PROCESS_PATH;
+	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
 	private CasConfig cas = new CasConfig();
 //	private boolean csrf = true;
 	

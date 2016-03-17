@@ -1,10 +1,10 @@
-package org.onetwo.boot.core.matcher;
+package org.onetwo.boot.plugins.security.matcher;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.boot.core.matcher.MutipleRequestMatcher.NotRequestMatcher;
+import org.onetwo.boot.plugins.security.matcher.MutipleRequestMatcher.NotRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
