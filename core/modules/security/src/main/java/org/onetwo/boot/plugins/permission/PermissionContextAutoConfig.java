@@ -5,7 +5,6 @@ import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.boot.plugins.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.boot.plugins.permission.service.impl.DefaultMenuItemRepository;
-import org.onetwo.boot.plugins.permission.web.controller.AdminController;
 import org.onetwo.boot.plugins.permission.web.controller.PermissionController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,7 +40,7 @@ public class PermissionContextAutoConfig {
 	}
 	
 	@Bean
-	@ConditionalOnBean(AdminController.class)
+//	@ConditionalOnBean(AdminController.class)
 	@ConditionalOnMissingBean(MenuItemRepository.class)
 	public MenuItemRepository<PermisstionTreeModel> menuItemRepository(){
 		DefaultMenuItemRepository menuItemRepository = new DefaultMenuItemRepository();
