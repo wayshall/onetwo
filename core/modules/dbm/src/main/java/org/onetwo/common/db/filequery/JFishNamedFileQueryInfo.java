@@ -33,7 +33,7 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 //	private DataBase dataBaseType;
 	private String mappedEntity;
 	private String countSql;
-	private FileSqlParserType parser = FileSqlParserType.NONE;
+	private FileSqlParserType parser = FileSqlParserType.TEMPLATE;
 	
 	
 	private Class<?> mappedEntityClass;
