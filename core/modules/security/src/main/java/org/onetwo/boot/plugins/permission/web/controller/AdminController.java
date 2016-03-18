@@ -1,6 +1,6 @@
 package org.onetwo.boot.plugins.permission.web.controller;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -24,7 +24,7 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 //	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView index(UserDetail userDetail){
-		Collection<T> menus = null;
+		List<T> menus = null;
 		if(userDetail==null){
 			/*if(bootSiteConfig.isDev())
 				menus = menuItemRepository.findAllMenus();
@@ -32,11 +32,12 @@ public class AdminController<T extends TreeModel<T>> extends PluginBaseControlle
 				throw new NotLoginException();*/
 			throw new NotLoginException();
 		}else if(userDetail.isSystemRootUser()){
-			menus = menuItemRepository.findAllMenus().get(0).getChildren();
+			menus = menuItemRepository.findAllMenus();
 //			throw new UnsupportedOperationException("not implements yet!");
 		}else{
-			menus = menuItemRepository.findUserMenus(userDetail).get(0).getChildren();
+			menus = menuItemRepository.findUserMenus(userDetail);
 		}
+		menus = menus.get(0).getChildren();
 		
 		return pluginMv("/permission/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());
 	}

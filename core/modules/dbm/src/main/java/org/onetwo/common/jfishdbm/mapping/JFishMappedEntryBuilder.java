@@ -265,7 +265,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	
 	protected String buildSeqName(AnnotationInfo entry, TableInfo tableInfo){
 //		String sname = entry.getEntityClass().getSimpleName();
-		String sname = "SEQ_" + tableInfo.getName().toLowerCase();
+		String sname = "SEQ_" + tableInfo.getName().toUpperCase();
 		return sname;
 	}
 	

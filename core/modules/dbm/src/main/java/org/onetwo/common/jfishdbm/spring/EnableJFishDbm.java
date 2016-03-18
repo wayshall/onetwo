@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Documented
 @Import(JFishdbmSpringConfiguration.class)
-public @interface JFishdbmEnabled {
+public @interface EnableJFishDbm {
 
 }

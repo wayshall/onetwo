@@ -7,6 +7,11 @@ import javax.servlet.ServletException;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 
+/****
+ * 注册自定义的filter
+ * @author way
+ *
+ */
 public class BootServletContextInitializer extends CommonWebFilterInitializer implements ServletContextInitializer {
 
 	@Override
