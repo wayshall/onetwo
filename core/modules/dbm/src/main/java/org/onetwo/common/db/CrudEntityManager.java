@@ -25,6 +25,7 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	public void removes(Collection<T> entities);
 
 	public T removeById(PK id);
+	public List<T> removeByIds(PK[] id);
 
 	public Collection<T> removeByIds(Class<T> entityClass, PK[] ids);
 

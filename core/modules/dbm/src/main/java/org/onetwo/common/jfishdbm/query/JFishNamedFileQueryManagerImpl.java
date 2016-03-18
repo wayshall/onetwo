@@ -1,7 +1,6 @@
 package org.onetwo.common.jfishdbm.query;
 
 import java.util.List;
-import java.util.Map;
 
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
@@ -10,7 +9,6 @@ import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 

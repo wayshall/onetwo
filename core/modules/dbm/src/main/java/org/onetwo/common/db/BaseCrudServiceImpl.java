@@ -1,9 +1,11 @@
 package org.onetwo.common.db;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -86,6 +88,11 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	@Override
 	public T removeById(PK id) {
 		return (T)getBaseEntityManager().removeById(entityClass, id);
+	}
+	public List<T> removeByIds(PK[] ids){
+		List<T> list = new ArrayList<>(ids.length);
+		Stream.of(ids).forEach(id->list.add(removeById(id)));
+		return list;
 	}
 
 	/*@Override
