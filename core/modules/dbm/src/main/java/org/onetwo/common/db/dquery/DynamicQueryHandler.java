@@ -198,7 +198,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 				}
 				if(paramBean.isReadableProperty(parameter.getProperty())){
 					value = parameter.getParamterValue(paramBean);
-					value = DbmUtils.convertSqlParameterValue(paramBean.getPropertyDescriptor(parameter.getProperty()), value);
+					value = DbmUtils.convertSqlParameterValue(paramBean.getPropertyDescriptor(parameter.getProperty()), value, em.getSqlTypeMapping());
 				}else{
 					if(!paramsContextBean.isReadableProperty(parameter.getProperty()))
 						throw new BaseException("batch execute parameter["+parameter.getProperty()+"] not found in bean["+val+"]'s properties or params");

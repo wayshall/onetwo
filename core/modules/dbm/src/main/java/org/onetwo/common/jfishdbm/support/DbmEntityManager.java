@@ -1,7 +1,7 @@
 package org.onetwo.common.jfishdbm.support;
 
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
+import org.onetwo.common.db.builder.QueryBuilder;
 
 public interface DbmEntityManager extends BaseEntityManager {
 	
@@ -12,6 +12,6 @@ public interface DbmEntityManager extends BaseEntityManager {
 	
 	public DbmDaoImplementor getDbmDao();
 	
-	public JFishQueryBuilder createQueryBuilder(Class<?> entityClass);
+	public QueryBuilder createQueryBuilder(Class<?> entityClass);
 	
 }

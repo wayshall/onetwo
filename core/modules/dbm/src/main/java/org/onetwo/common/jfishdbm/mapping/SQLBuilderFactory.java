@@ -11,7 +11,8 @@ public interface SQLBuilderFactory {
 		primaryKey,
 //		createTable,
 //		dropTable,
-		seq
+		seq,
+		createSeq
 	}
 	
 	public EntrySQLBuilder createNamed(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);

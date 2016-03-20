@@ -19,6 +19,7 @@ import org.onetwo.common.jfishdbm.event.JFishUpdateEventListener;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.mapping.DefaultSQLBuilderFactory;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory;
+import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
 
 
 abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
@@ -36,6 +37,8 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 	
 	private SQLBuilderFactory sqlBuilderFactory;
 	
+	private SqlTypeMapping sqlTypeMapping;
+	
 //	protected ApplicationContext applicationContext;
 //	private boolean printSql = false;
 	
@@ -43,7 +46,16 @@ abstract public class AbstractDBDialect implements InnerDBDialet, DBDialect {
 	public AbstractDBDialect(DBMeta dbmeta) {
 		super();
 		this.dbmeta = dbmeta;
+		this.sqlTypeMapping = new SqlTypeMapping();
 //		this.dataBaseConfig = dataBaseConfig;
+	}
+
+	final protected void setSqlTypeMapping(SqlTypeMapping sqlTypeMapping) {
+		this.sqlTypeMapping = sqlTypeMapping;
+	}
+
+	public SqlTypeMapping getSqlTypeMapping() {
+		return sqlTypeMapping;
 	}
 
 	@PostConstruct

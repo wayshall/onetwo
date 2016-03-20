@@ -10,6 +10,8 @@ import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.builder.QueryBuilder;
+import org.onetwo.common.db.builder.QueryBuilderFactory;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -18,10 +20,10 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
+import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
-import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
@@ -194,8 +196,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	
 
 	@Override
-	public JFishQueryBuilder createQueryBuilder(Class<?> entityClass) {
-		JFishQueryBuilder query = JFishQueryBuilder.from(this, entityClass);
+	public QueryBuilder createQueryBuilder(Class<?> entityClass) {
+		QueryBuilder query = QueryBuilderFactory.from(this, entityClass);
 		return query;
 	}
 	
@@ -377,6 +379,12 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	public void setSqlParamterPostfixFunctionRegistry(
 			SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry) {
 		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
+	}
+
+
+	@Override
+	public SqlTypeMapping getSqlTypeMapping() {
+		return this.dbmDao.getDialect().getSqlTypeMapping();
 	}
 
 }

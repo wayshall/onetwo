@@ -9,9 +9,9 @@ import javax.annotation.Resource;
 import javax.validation.ValidationException;
 
 import org.onetwo.common.db.BaseCrudServiceImpl;
+import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.query.JFishQueryBuilder;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
@@ -155,7 +155,7 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 		return this.getBaseEntityManager().getDbmDao().getMappedEntryManager().getEntry(entityClass);
 	}
 	
-	protected JFishQueryBuilder createQueryBuilder(){
+	protected QueryBuilder createQueryBuilder(){
 		return this.getBaseEntityManager().createQueryBuilder(entityClass);
 	}
 }

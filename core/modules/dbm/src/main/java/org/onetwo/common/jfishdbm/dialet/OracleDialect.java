@@ -6,6 +6,7 @@ import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleBatchInsertEventListener;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleInsertEventListener;
+import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping.OracleSqlTypeMapping;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -14,6 +15,7 @@ public class OracleDialect extends AbstractDBDialect {
 
 	public OracleDialect() {
 		super(DBMeta.create(DataBase.Oracle));
+		this.setSqlTypeMapping(new OracleSqlTypeMapping());
 	}
 
 	public void registerIdStrategy(){
@@ -80,6 +82,7 @@ public class OracleDialect extends AbstractDBDialect {
 
 	@Override
 	protected void onDefaultDbEventListenerManager(JFishdbEventListenerManager listMg){
+		super.onDefaultDbEventListenerManager(listMg);
 		listMg.register(JFishEventAction.insert, LangUtils.newArrayList(new JFishOracleInsertEventListener()));
 		listMg.register(JFishEventAction.batchInsert, LangUtils.newArrayList(new JFishOracleBatchInsertEventListener()));
 	}

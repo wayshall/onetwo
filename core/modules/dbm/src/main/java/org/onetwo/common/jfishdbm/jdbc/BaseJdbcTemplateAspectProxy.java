@@ -133,6 +133,9 @@ public class BaseJdbcTemplateAspectProxy {
 				List<?> argList = convertAsList(mArgs);
 				String parseArgSql = holder.parse(sql, index->{
 					Object val = argList.get(index);
+					val = DbmArgumentPreparedStatementSetter.getActualValue(val);
+					if(val==null)
+						return "NULL";
 					return LangUtils.isNumberObject(val)?val.toString():"'"+val.toString()+"'";
 				});
 				logMsg.append("replaced arg sql:").append(parseArgSql).append("\n");

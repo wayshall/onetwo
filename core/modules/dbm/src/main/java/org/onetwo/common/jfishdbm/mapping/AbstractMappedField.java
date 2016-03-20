@@ -35,7 +35,6 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	private StrategyType strategyType;
 	private final JFishProperty propertyInfo;
 	
-
 //	private DataHolder<String, Object> dataHolder = new DataHolder<String, Object>();
 	
 	private boolean freezing;
@@ -85,7 +84,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	 * @return
 	 */
 	protected SqlParameterValue convertSqlParameterValue(Object value){
-		return DbmUtils.convertSqlParameterValue(propertyInfo, value);
+		return DbmUtils.convertSqlParameterValue(propertyInfo, value, entry.getSqlTypeMapping());
 	}
 	
 	@Override
