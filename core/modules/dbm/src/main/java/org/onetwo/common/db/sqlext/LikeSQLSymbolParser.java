@@ -38,7 +38,7 @@ public class LikeSQLSymbolParser extends CommonSQLSymbolParser {
 
 	protected void process(String field, String symbol, int index, Object value, StringBuilder sqlScript, ParamValues paramValues){
 		if(!(value instanceof String))
-			throw new ServiceException("the symbol is [like], the value must a string type!");
+			throw new ServiceException("the symbol is [like], the value must a string type, but " + value);
 		value = ExtQueryUtils.getLikeString(value.toString());
 		super.process(field, symbol, index, value, sqlScript, paramValues);
 	}

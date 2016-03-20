@@ -1,7 +1,6 @@
 package org.onetwo.common.db.sqlext;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -92,8 +91,9 @@ public abstract class ExtQueryUtils {
 			}else if(ifNull==IfNull.Throw){
 				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
 			}else {//calm
-				valueList = new ArrayList();
-				valueList.add(values);
+				/*valueList = new ArrayList();
+				valueList.add(values);*/
+				valueList = LangUtils.asList(values);
 			}
 		}else{
 			valueList = LangUtils.asList(values, trimNull);

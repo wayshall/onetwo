@@ -124,7 +124,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	@Override
-	public void persist(Object entity) {
+	public <T> void persist(T entity) {
 		int rs = getDbmDao().insert(entity);
 		throwIfEffectiveCountError("persist", 1, rs);
 	}
