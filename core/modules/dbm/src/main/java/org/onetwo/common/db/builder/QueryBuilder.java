@@ -1,11 +1,12 @@
 package org.onetwo.common.db.builder;
 
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ParamValues;
+import org.onetwo.common.utils.Page;
 
 /***
- * TODO 需重构
  * @author way
  *
  */
@@ -53,4 +54,11 @@ public interface QueryBuilder {
 	public String getSql();
 	
 
+	public <T> T one();
+
+	public <T> List<T> list();
+	
+	public <T> Page<T> page(Page<T> page);
+	
+//	public int execute();
 }

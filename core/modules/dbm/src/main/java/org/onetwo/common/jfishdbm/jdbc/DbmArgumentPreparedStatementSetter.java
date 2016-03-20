@@ -29,8 +29,10 @@ public class DbmArgumentPreparedStatementSetter extends ArgumentPreparedStatemen
 		}
 	}
 	
-	private Object getActualValue(Object value){
-		if(Enum.class.isInstance(value)){
+	public static Object getActualValue(Object value){
+		if(SqlParameterValue.class.isInstance(value)){
+			return ((SqlParameterValue)value).getValue();
+		}else if(Enum.class.isInstance(value)){
 			return ((Enum<?>)value).name();
 		}else if(value instanceof LocalDate){
 			final LocalDate localDate = (LocalDate) value;

@@ -223,4 +223,11 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 			this.remove(entity);
 		}
 	}
+
+	@Override
+	public <T> T narrowAs(Class<T> entityManagerClass) {
+		return entityManagerClass.cast(this);
+	}
+	
+	
 }

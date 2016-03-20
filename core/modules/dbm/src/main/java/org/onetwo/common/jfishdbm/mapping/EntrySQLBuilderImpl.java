@@ -101,6 +101,10 @@ public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 		sql = "select " + getSeqName() + ".nextval from dual";
 		return sql;
 	}
+	private String buildCreateSeq(){
+		sql = "create sequence "+getSeqName()+" minvalue 1 maxvalue 9999999999999999999999999999 start with 1 increment by 1 cache 20";
+		return sql;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder#build()
@@ -122,6 +126,8 @@ public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 			this.sql = this.buildPrimaryKey();
 		}else if(SqlBuilderType.seq==type){
 			this.sql = this.buildSeq();
+		}else if(SqlBuilderType.createSeq==type){
+			this.sql = this.buildCreateSeq();
 		}else{
 			LangUtils.throwBaseException("unsupported type: " + type);
 		}

@@ -8,15 +8,7 @@ public class ColumnInfo extends BaseColumnInfo {
 	protected TableInfo table;
 	protected int sqlType = Integer.MIN_VALUE;
 	
-	public ColumnInfo(){
-	}
-	
-	public ColumnInfo(String name, int sqlType) {
-		super(name);
-		this.sqlType = sqlType;
-	}
-	
-	public ColumnInfo(TableInfo tableInfo, String name) {
+	public ColumnInfo(TableInfo tableInfo, String name, int sqlType) {
 		super(name);
 		this.table = tableInfo;
 	}
@@ -25,15 +17,15 @@ public class ColumnInfo extends BaseColumnInfo {
 		if(javaType!=null){
 			return javaType;
 		}
-		if(sqlType!=Integer.MIN_VALUE){
+		/*if(sqlType!=Integer.MIN_VALUE){
 			javaType = SqlTypeFactory.getJavaType(sqlType); 
-		}
+		}*/
 		return javaType;
 	}
 
 	public void setJavaType(Class javaType) {
 		this.javaType = javaType;
-		this.sqlType = SqlTypeFactory.getType(javaType); 
+//		this.sqlType = SqlTypeFactory.getType(javaType); 
 	}
 	
 	public int getSqlType() {

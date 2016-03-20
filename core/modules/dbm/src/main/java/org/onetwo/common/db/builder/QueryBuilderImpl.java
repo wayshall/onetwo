@@ -6,13 +6,12 @@ import java.util.Map;
 
 import org.onetwo.common.db.RawSqlWrapper;
 import org.onetwo.common.db.sqlext.ExtQuery;
+import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ParamValues;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
-import org.onetwo.common.db.sqlext.ExtQuery.K;
-import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 
 /*********
@@ -21,13 +20,33 @@ import org.onetwo.common.utils.StringUtils;
  * @author wayshall
  *
  */
-public class QueryBuilderImpl implements QueryBuilder {
+abstract public class QueryBuilderImpl implements QueryBuilder {
 	
 	public static class SubQueryBuilder extends QueryBuilderImpl {
 
 		public SubQueryBuilder() {
 			super();
 		}
+
+		@Override
+		public <T> T one() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <T> List<T> list() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <T> Page<T> page(Page<T> page) {
+			throw new UnsupportedOperationException();
+		}
+
+		/*@Override
+		public int execute() {
+			throw new UnsupportedOperationException();
+		}*/
 		
 	}
 
@@ -36,12 +55,13 @@ public class QueryBuilderImpl implements QueryBuilder {
 		return q;
 	}*/
 
-	public static QueryBuilder from(Class<?> entityClass){
+	/*public static QueryBuilder<QueryBuilderImpl> from(Class<?> entityClass){
 		return QueryBuilderCreator.from(entityClass);
-	}
+	}*/
 
 	public static SubQueryBuilder sub(){
-		return QueryBuilderCreator.sub();
+		SubQueryBuilder q = new SubQueryBuilder();
+		return q;
 	}
 	
 	protected String alias;
@@ -69,18 +89,22 @@ public class QueryBuilderImpl implements QueryBuilder {
 	public Class<?> getEntityClass() {
 		return entityClass;
 	}
+	
+	protected QueryBuilderImpl self(){
+		return (QueryBuilderImpl)this;
+	}
 
 	@Override
-	public QueryBuilder debug(){
+	public QueryBuilderImpl debug(){
 		this.params.put(K.DEBUG, true);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder or(QueryBuilder subQuery){
+	public QueryBuilderImpl or(QueryBuilder subQuery){
 		this.checkSubQuery(subQuery);
 		this.params.put(K.OR, subQuery.getParams());
-		return this;
+		return self();
 	}
 	
 	protected void checkSubQuery(QueryBuilder subQuery){
@@ -90,70 +114,71 @@ public class QueryBuilderImpl implements QueryBuilder {
 	}
 	
 	@Override
-	public QueryBuilder and(QueryBuilder subQuery){
+	public QueryBuilderImpl and(QueryBuilder subQuery){
 		this.checkSubQuery(subQuery);
 		this.params.put(K.AND, subQuery.getParams());
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder ignoreIfNull(){
+	public QueryBuilderImpl ignoreIfNull(){
 		this.params.put(K.IF_NULL, K.IfNull.Ignore);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder throwIfNull(){
+	public QueryBuilderImpl throwIfNull(){
 		this.params.put(K.IF_NULL, K.IfNull.Throw);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder calmIfNull(){
+	public QueryBuilderImpl calmIfNull(){
 		this.params.put(K.IF_NULL, K.IfNull.Calm);
-		return this;
+		return self();
 	}
 	
 	@Override
 	public DefaultQueryBuilderField field(String...fields){
+		this.throwIfHasBuild();
 		return new DefaultQueryBuilderField(this, fields);
 	}
 	
 	@Override
-	public QueryBuilder select(String...fields){
+	public QueryBuilderImpl select(String...fields){
 		this.params.put(K.SELECT, fields);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder limit(int first, int size){
+	public QueryBuilderImpl limit(int first, int size){
 		this.params.put(K.FIRST_RESULT, first);
 		this.params.put(K.MAX_RESULTS, size);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder asc(String...fields){
+	public QueryBuilderImpl asc(String...fields){
 		this.params.put(K.ASC, fields);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder desc(String...fields){
+	public QueryBuilderImpl desc(String...fields){
 		this.params.put(K.DESC, fields);
-		return this;
+		return self();
 	}
 	
 	@Override
-	public QueryBuilder distinct(String...fields){
+	public QueryBuilderImpl distinct(String...fields){
 		this.params.put(K.DISTINCT, fields);
-		return this;
+		return self();
 	}
 
 	@Override
-	public QueryBuilder addField(QueryBuilderField field){
+	public QueryBuilderImpl addField(QueryBuilderField field){
 		this.params.put(field.getOPFields(), field.getValues());
-		return this;
+		return self();
 	}
 
 	@Override
@@ -188,12 +213,10 @@ public class QueryBuilderImpl implements QueryBuilder {
 	}
 
 	@Override
-	public QueryBuilder build(){
-		if(this.extQuery!=null){
-			throw new BaseException("query has built, don't repeate build the query.");
-		}
+	public QueryBuilderImpl build(){
+		this.throwIfHasBuild();
 		this.extQuery = this.buildAsExtQuery();
-		return this;
+		return self();
 	}
 	
 	public ParamValues getParamValues(){
@@ -228,33 +251,24 @@ public class QueryBuilderImpl implements QueryBuilder {
 		return getSQLSymbolManager().createSelectQuery(entityClass, alias, properties);
 	}
 
-	/*@Override
-	public <T> T one() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <T> List<T> list() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public int execute() {
-		throw new UnsupportedOperationException();
-	}
-	public <T> void page(Page<T> page){
-		throw new UnsupportedOperationException();
-	}*/
-
 	public String getAlias() {
 		return alias;
 	}
 
 	public ExtQuery getExtQuery() {
-		if(extQuery==null){
-			throw new BaseException("query has not build!");
-		}
+		throwIfHasNotBuild();
 		return extQuery;
+	}
+
+	protected void throwIfHasBuild(){
+		if(extQuery!=null){
+			throw new UnsupportedOperationException("query has build!");
+		}
+	}
+	protected void throwIfHasNotBuild(){
+		if(extQuery==null){
+			throw new UnsupportedOperationException("query has not build!");
+		}
 	}
 	
 }

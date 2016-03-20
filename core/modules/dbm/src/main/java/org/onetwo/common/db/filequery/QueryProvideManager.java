@@ -2,6 +2,7 @@ package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
 
 public interface QueryProvideManager {
 
@@ -12,4 +13,6 @@ public interface QueryProvideManager {
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
 	
 	public DataBase getDataBase();
+	
+	public SqlTypeMapping getSqlTypeMapping();
 }
