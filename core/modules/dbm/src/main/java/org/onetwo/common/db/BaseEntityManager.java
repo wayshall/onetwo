@@ -25,7 +25,7 @@ public interface BaseEntityManager extends QueryProvideManager {
 	public <T> T save(T entity);
 	public <T> Collection<T> saves(Collection<T> entities);
 	
-	public void persist(Object entity);
+	public <T> void persist(T entity);
 	
 	/****
 	 * 根据id把实体的所有字段更新到数据库
