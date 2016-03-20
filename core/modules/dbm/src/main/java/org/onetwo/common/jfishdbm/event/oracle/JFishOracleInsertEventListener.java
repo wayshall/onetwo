@@ -1,13 +1,17 @@
 package org.onetwo.common.jfishdbm.event.oracle;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.jfishdbm.event.JFishEventSource;
 import org.onetwo.common.jfishdbm.event.JFishInsertEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertEventListener;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.jdbc.BadSqlGrammarException;
 
 public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 
@@ -52,7 +56,20 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 	
 	public Long fetchIdentifyBeforeInsert(JFishInsertEvent event, JFishMappedEntry entry){
 		JFishEventSource es = event.getEventSource();
-		Long id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
+		Long id = null;
+		try {
+			id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
+		} catch (BadSqlGrammarException e) {
+			//ORA-02289: 序列不存在
+			SQLException sqe = e.getSQLException();
+			int vendorCode = Types.convertValue(ReflectUtils.getFieldValue(sqe, "vendorCode"), int.class);
+			if(vendorCode==2289){
+				es.getJFishJdbcTemplate().execute(entry.getStaticCreateSeqSql());
+				id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
+				if(id==null)
+					throw e;
+			}
+		}
 		return id;
 	}
 

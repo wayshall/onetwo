@@ -30,7 +30,7 @@
 		
         <dependency>
           <groupId>org.onetwo</groupId>
-          <artifactId>onetwo-common</artifactId>
+          <artifactId>onetwo-boot</artifactId>
         </dependency>
         
         <dependency>

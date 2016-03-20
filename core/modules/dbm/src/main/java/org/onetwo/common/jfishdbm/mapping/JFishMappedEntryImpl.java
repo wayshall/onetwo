@@ -19,10 +19,11 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
 	private EntrySQLBuilderImpl staticDeleteAllSqlBuilder;
 	private EntrySQLBuilderImpl staticSeqSqlBuilder;
+	private EntrySQLBuilderImpl staticCreateSeqSqlBuilder;
 	private EntrySQLBuilderImpl staticSelectVersionSqlBuilder;
 	
-	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
-		super(annotationInfo, tableInfo, serviceRegistry);
+	public JFishMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+		super(sqlTypeMapping, annotationInfo, tableInfo, serviceRegistry);
 	}
 
 
@@ -76,6 +77,10 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 		staticSeqSqlBuilder = createSQLBuilder(SqlBuilderType.seq);
 		staticSeqSqlBuilder.setNamedPlaceHoder(false);
 		staticSeqSqlBuilder.build();
+		
+		staticCreateSeqSqlBuilder = createSQLBuilder(SqlBuilderType.createSeq);
+		staticCreateSeqSqlBuilder.setNamedPlaceHoder(false);
+		staticCreateSeqSqlBuilder.build();
 
 		Collection<DbmMappedField> columns = getSelectableField();
 		staticFetchSqlBuilder = createSQLBuilder(SqlBuilderType.query);
@@ -121,6 +126,11 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	}
 
 	@Override
+	public String getStaticCreateSeqSql() {
+		return staticCreateSeqSqlBuilder.getSql();
+	}
+
+	@Override
 	protected EntrySQLBuilderImpl getStaticInsertSqlBuilder() {
 		return staticInsertSqlBuilder;
 	}
@@ -154,6 +164,11 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	@Override
 	protected EntrySQLBuilder getStaticSelectVersionSqlBuilder() {
 		return staticSelectVersionSqlBuilder;
+	}
+
+
+	public EntrySQLBuilderImpl getStaticCreateSeqSqlBuilder() {
+		return staticCreateSeqSqlBuilder;
 	}
 	
 }

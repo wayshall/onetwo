@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.Page;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,6 +18,13 @@ public class EasyPage<T> {
 	}
 	public static <E> EasyPage<E> create(List<E> rows){
 		EasyPage<E> page = new EasyPage<>(rows);
+		return page;
+	}
+	public static <E> EasyPage<E> create(Page<E> p){
+		EasyPage<E> page = new EasyPage<>(p.getResult());
+		page.setPage(p.getPageNo());
+		page.setPageSize(p.getPageSize());
+		page.setTotal(p.getTotalCount());
 		return page;
 	}
 
@@ -35,6 +43,22 @@ public class EasyPage<T> {
 	public EasyPage(List<T> rows) {
 		super();
 		setRows(rows);
+	}
+	
+	public <E> Page<E> toPage(){
+		Page<E> pageObj = Page.create();
+		pageObj.setPageNo(page);
+		pageObj.setPageSize(pageSize);
+		pageObj.setPagination(pagination);
+		return pageObj;
+	}
+	
+	public EasyPage<T> fromPage(Page<T> p){
+		setPage(p.getPageNo());
+		setPageSize(p.getPageSize());
+		setTotal(p.getTotalCount());
+		setRows(p.getResult());
+		return this;
 	}
 
 	/*public int getFirst() {

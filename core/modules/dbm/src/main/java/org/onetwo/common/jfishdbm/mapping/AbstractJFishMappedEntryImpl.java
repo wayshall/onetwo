@@ -68,13 +68,16 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 //	private final SimpleDbmInnserServiceRegistry serviceRegistry;
 	private EntityValidator entityValidator;
 	
+	private SqlTypeMapping sqlTypeMapping;
+	
 	/*public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public AbstractJFishMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
+		this.sqlTypeMapping = sqlTypeMapping;
 //		this.serviceRegistry = serviceRegistry;
 		this.entityName = this.entityClass.getName();
 		this.tableInfo = tableInfo;
@@ -101,6 +104,20 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			this.entityValidator = serviceRegistry.getEntityValidator();
 			Assert.notNull(entityValidator, "no entity validator config!");
 		}
+	}
+
+
+	@Override
+	public String getStaticSeqSql() {
+		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
+	}
+	@Override
+	public String getStaticCreateSeqSql() {
+		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
+	}
+	
+	public SqlTypeMapping getSqlTypeMapping() {
+		return sqlTypeMapping;
 	}
 
 	public Collection<AbstractMappedField> getFields(){
