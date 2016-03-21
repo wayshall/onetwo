@@ -9,7 +9,7 @@ import org.onetwo.boot.plugins.permission.AbstractPermissionConfig;
 import org.onetwo.boot.plugins.permission.DataFrom;
 import org.onetwo.boot.plugins.permission.PermissionType;
 import org.onetwo.boot.plugins.permission.annotation.MenuMapping;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.type.classreading.MetadataReader;
 
-public class DefaultMenuInfoParser<P extends AbstractPermission<P>> implements MenuInfoParser<P>, InitializingBean {
+public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements MenuInfoParser<P>, InitializingBean {
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 	private static final String CODE_SEPRATOR = "_";

@@ -3,9 +3,9 @@ package org.onetwo.boot.plugins.permission.parser;
 import java.util.Map;
 
 import org.onetwo.boot.plugins.permission.AbstractPermissionConfig;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 
-public interface MenuInfoParser<P extends AbstractPermission<P>> {
+public interface MenuInfoParser<P extends DefaultIPermission<P>> {
 	
 	public AbstractPermissionConfig<P> getMenuInfoable();
 	

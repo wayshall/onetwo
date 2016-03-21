@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.controller.PluginBaseController;
 import org.onetwo.boot.plugins.permission.PermissionManager;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.common.web.userdetails.UserDetail;
@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndViewDefiningException;
 public class PermissionController extends PluginBaseController {
 
 	@Resource
-	private PermissionManager<? extends AbstractPermission<?>> permissionManager;
+	private PermissionManager<? extends DefaultIPermission<?>> permissionManager;
 	
 //	@Resource
 //	private SpringBootConfig springBootConfig;
@@ -34,7 +34,7 @@ public class PermissionController extends PluginBaseController {
 	@RequestMapping(value="index")
 	public ModelAndView index(UserDetail userDetail) throws ModelAndViewDefiningException{
 		this.checkAvailable(userDetail);
-		AbstractPermission<?> menu = this.permissionManager.getMemoryRootMenu();
+		DefaultIPermission<?> menu = this.permissionManager.getMemoryRootMenu();
 		logger.info("menu:\n {}", menu.toTreeString("\n"));
 		return pluginMv("/permission/index", "menu", menu, "menuHtml", menu.toTreeString("<br/>"));
 	}
@@ -45,7 +45,7 @@ public class PermissionController extends PluginBaseController {
 		this.checkAvailable(userDetail);
 //		permissionManager.build();
 		this.permissionManager.syncMenuToDatabase();
-		AbstractPermission<?> menu = this.permissionManager.getMemoryRootMenu();
+		DefaultIPermission<?> menu = this.permissionManager.getMemoryRootMenu();
 		return pluginMv("/permission/index", "menu", menu, "menuHtml", menu.toTreeString("<br/>"), MESSAGE, "同步成功！");
 	}
 }

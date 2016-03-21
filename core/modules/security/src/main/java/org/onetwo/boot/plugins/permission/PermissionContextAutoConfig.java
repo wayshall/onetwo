@@ -1,6 +1,6 @@
 package org.onetwo.boot.plugins.permission;
 
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.boot.plugins.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
@@ -34,7 +34,7 @@ public class PermissionContextAutoConfig {
 	
 	@Bean
 	@Autowired
-	public <T extends AbstractPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(AbstractPermissionConfig<T> permissionConfig){
+	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(AbstractPermissionConfig<T> permissionConfig){
 		DefaultMenuInfoParser<T> parser = new DefaultMenuInfoParser<T>(permissionConfig);
 		return parser;
 	}
