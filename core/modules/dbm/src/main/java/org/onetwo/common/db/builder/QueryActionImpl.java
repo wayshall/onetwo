@@ -1,8 +1,8 @@
 package org.onetwo.common.db.builder;
 
 import java.util.List;
+import java.util.Map;
 
-import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.InnerBaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery;
@@ -13,59 +13,33 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-/*********
- * 提供简易有明确api的查询构造器
- * 
- * @author wayshall
- *
- */
-public class EntityQueryBuilderImpl extends QueryBuilderImpl{ 
+public class QueryActionImpl implements QueryAction {
 
-	/*public static EntityQueryBuilder where(){
-		EntityQueryBuilder q = new EntityQueryBuilder(null, null);
-		return q;
-	}
-*/
-	/*public static EntityQueryBuilder where(Class<?> entityClass){
-		EntityQueryBuilder q = new EntityQueryBuilder(null, entityClass);
-		return q;
-	}*/
 	protected InnerBaseEntityManager baseEntityManager;
-	
-//	private List<SQField> fields = new ArrayList<SQField>();
-	
+	private SelectExtQuery extQuery;
 
-	protected EntityQueryBuilderImpl(InnerBaseEntityManager baseEntityManager, Class<?> entityClass){
-		super(entityClass);
+	public QueryActionImpl(InnerBaseEntityManager baseEntityManager, Class<?> entityClass, String alias, Map<Object, Object> properties){
 		this.baseEntityManager = baseEntityManager;
+		extQuery = getSQLSymbolManager().createSelectQuery(entityClass, alias, properties);
+		extQuery.build();
 	}
 	
-	
-	protected void checkOperation(){
-		if(this.baseEntityManager==null)
-			throw new UnsupportedOperationException("no entityManager");
-		this.build();
-	}
-
-	protected BaseEntityManager getBaseEntityManager() {
-		return baseEntityManager;
+	public SelectExtQuery getExtQuery() {
+//		throwIfHasNotBuild();
+		return extQuery;
 	}
 
 	protected SQLSymbolManager getSQLSymbolManager(){
-		return getBaseEntityManager().getSQLSymbolManager();
+//		SQLSymbolManager symbolManager = SQLSymbolManagerFactory.getInstance().getJdbc();
+		return this.baseEntityManager.getSQLSymbolManager();
 	}
 
-	@Override
-	public EntityQueryBuilderImpl build(){
-		super.build();
-		return this;
+	protected void checkOperation(){
+		if(this.baseEntityManager==null)
+			throw new UnsupportedOperationException("no entityManager");
+//		this.build();
 	}
-
-	@Override
-	public SelectExtQuery getExtQuery(){
-		return (SelectExtQuery)super.getExtQuery();
-	}
-
+	
 	@Override
 	public <T> T one(){
 		checkOperation();
@@ -97,17 +71,21 @@ public class EntityQueryBuilderImpl extends QueryBuilderImpl{
 		
 		return qv;
 	}
-	public <T> T queryAs(ResultSetExtractor<T> rse){
+	public <T> T extractAs(ResultSetExtractor<T> rse){
 		T res = this.getDbmEntityManager().getDbmDao().find(convertAsDbmQueryValue(getExtQuery()), rse);
 		return res;
 	}
 	
-	public <T> List<T> listAs(RowMapper<T> rowMapper){
+	public <T> List<T> listWith(RowMapper<T> rowMapper){
 		List<T> res = this.getDbmEntityManager().getDbmDao().findList(convertAsDbmQueryValue(getExtQuery()), rowMapper);
 		return res;
 	}
 	protected DbmEntityManager getDbmEntityManager(){
 		return (DbmEntityManager) getBaseEntityManager();
+	}
+
+	public InnerBaseEntityManager getBaseEntityManager() {
+		return baseEntityManager;
 	}
 	
 }

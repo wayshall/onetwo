@@ -133,7 +133,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		return entity;
 	}
 
-	public void selectPage(Page<?> page, SelectExtQuery extQuery){
+	public <T> void selectPage(Page<T> page, SelectExtQuery extQuery){
 		if (page.isAutoCount()) {
 //			Long totalCount = (Long)this.findUnique(extQuery.getCountSql(), (Map)extQuery.getParamsValue().getValues());
 			Long totalCount = 0l;
