@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.parser.MenuInfoParser;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
 
-abstract public class AbstractPermissionManager<P extends AbstractPermission<P>> implements PermissionManager<P> {
+abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>> implements PermissionManager<P> {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -30,7 +30,7 @@ abstract public class AbstractPermissionManager<P extends AbstractPermission<P>>
 	@Override
 	public void build(){
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
-		AbstractPermission<?> rootMenu = menuInfoParser.parseTree();
+		DefaultIPermission<?> rootMenu = menuInfoParser.parseTree();
 		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
 		this.menuNodeMap = menuInfoParser.getPermissionMap();
 	}

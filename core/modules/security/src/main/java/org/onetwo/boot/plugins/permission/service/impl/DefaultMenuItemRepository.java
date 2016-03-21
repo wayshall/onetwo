@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.boot.plugins.permission.AbstractPermissionConfig;
 import org.onetwo.boot.plugins.permission.PermissionManager;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
@@ -16,25 +16,25 @@ import org.onetwo.common.web.userdetails.UserDetail;
 public class DefaultMenuItemRepository implements MenuItemRepository<PermisstionTreeModel> {
 	
 	@Resource
-	private PermissionManager<? extends AbstractPermission<?>> permissionManager;
+	private PermissionManager<? extends DefaultIPermission<?>> permissionManager;
 
 	@Resource
-	private AbstractPermissionConfig<? extends AbstractPermission<?>> permissionConfig;
+	private AbstractPermissionConfig<? extends DefaultIPermission<?>> permissionConfig;
 	
 	@Override
     public List<PermisstionTreeModel> findAllMenus() {
-		List<? extends AbstractPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
+		List<? extends DefaultIPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
 	    return createMenuTreeBuilder(permissions).buidTree();
 //	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
     }
 	
-	protected TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends AbstractPermission<?>> permissions){
+	protected TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions){
 	    return PermissionUtils.createMenuTreeBuilder(permissions);
 	}
 
 	@Override
 	public List<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
-		List<? extends AbstractPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
+		List<? extends DefaultIPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
 	    return createMenuTreeBuilder(permissions).buidTree();
 //	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
 	}
