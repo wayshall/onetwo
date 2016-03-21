@@ -1,10 +1,8 @@
 package org.onetwo.common.db.builder;
 
-import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ParamValues;
-import org.onetwo.common.utils.Page;
 
 /***
  * @author way
@@ -46,19 +44,14 @@ public interface QueryBuilder {
 	
 	public QueryBuilderJoin leftJoin(String table, String alias);
 
-	public QueryBuilder build();
+//	public QueryBuilder build();
+	public QueryAction toQuery();
 	
 	public Map<Object, Object> getParams();
 	
-	public ParamValues getParamValues();
-	public String getSql();
+//	public ParamValues getParamValues();
+//	public String getSql();
 	
-
-	public <T> T one();
-
-	public <T> List<T> list();
-	
-	public <T> Page<T> page(Page<T> page);
 	
 //	public int execute();
 }
