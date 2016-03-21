@@ -10,7 +10,7 @@ public interface InnerBaseEntityManager extends BaseEntityManager {
 	public <T> List<T> select(SelectExtQuery extQuery);
 	public <T> T selectUnique(SelectExtQuery extQuery);
 	public <T> T selectOne(SelectExtQuery extQuery);
-	public void selectPage(Page<?> page, SelectExtQuery extQuery);
+	public <T> void selectPage(Page<T> page, SelectExtQuery extQuery);
 	
 
 	public <T> List<T> findList(DbmQueryValue queryValue);

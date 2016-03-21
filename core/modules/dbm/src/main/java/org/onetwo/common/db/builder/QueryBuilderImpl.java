@@ -4,14 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.InnerBaseEntityManager;
 import org.onetwo.common.db.RawSqlWrapper;
 import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
-import org.onetwo.common.db.sqlext.ParamValues;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManagerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 
 /*********
@@ -20,7 +19,7 @@ import org.onetwo.common.utils.StringUtils;
  * @author wayshall
  *
  */
-abstract public class QueryBuilderImpl implements QueryBuilder {
+public class QueryBuilderImpl implements QueryBuilder {
 	
 	public static class SubQueryBuilder extends QueryBuilderImpl {
 
@@ -28,26 +27,6 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 			super();
 		}
 
-		@Override
-		public <T> T one() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public <T> List<T> list() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public <T> Page<T> page(Page<T> page) {
-			throw new UnsupportedOperationException();
-		}
-
-		/*@Override
-		public int execute() {
-			throw new UnsupportedOperationException();
-		}*/
-		
 	}
 
 	/*public static QueryBuilderImpl where(){
@@ -63,7 +42,8 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 		SubQueryBuilder q = new SubQueryBuilder();
 		return q;
 	}
-	
+
+	protected InnerBaseEntityManager baseEntityManager;
 	protected String alias;
 	protected Map<Object, Object> params = new LinkedHashMap<Object, Object>();
 	protected Class<?> entityClass;
@@ -72,13 +52,15 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 //	private ExtQuery extQuery;
 	
 //	private List<SQField> fields = new ArrayList<SQField>();
-	private ExtQuery extQuery;
-
+//	private ExtQuery extQuery;
+	
 	protected QueryBuilderImpl(){
 	}
-	protected QueryBuilderImpl(Class<?> entityClass){
+
+	protected QueryBuilderImpl(InnerBaseEntityManager baseEntityManager, Class<?> entityClass){
 		this.entityClass = entityClass;
 		this.alias = StringUtils.uncapitalize(entityClass.getSimpleName());
+		this.baseEntityManager = baseEntityManager;
 	}
 	
 	@Override
@@ -140,7 +122,7 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 	
 	@Override
 	public DefaultQueryBuilderField field(String...fields){
-		this.throwIfHasBuild();
+//		this.throwIfHasBuild();
 		return new DefaultQueryBuilderField(this, fields);
 	}
 	
@@ -213,28 +195,29 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 	}
 
 	@Override
-	public QueryBuilderImpl build(){
-		this.throwIfHasBuild();
-		this.extQuery = this.buildAsExtQuery();
-		return self();
+	public QueryAction toQuery(){
+//		this.throwIfHasBuild();
+		return createQueryAction();
 	}
 	
-	public ParamValues getParamValues(){
+	/*public ParamValues getParamValues(){
 		return extQuery.getParamsValue();
 	}
 	
 	public String getSql(){
 		return extQuery.getSql();
-	}
+	}*/
 	
-	protected ExtQuery buildAsExtQuery(){
+	protected QueryAction createQueryAction(){
 		String leftJoinSql = buildLeftJoin();
 		if(StringUtils.isNotBlank(leftJoinSql)){
 			params.put(K.SQL_JOIN, RawSqlWrapper.wrap(leftJoinSql));
 		}
-		ExtQuery extQuery = null;//new ExtQueryImpl(entityClass, null, params, getSQLSymbolManager());
+		/*ExtQuery extQuery = null;//new ExtQueryImpl(entityClass, null, params, getSQLSymbolManager());
 		extQuery = createExtQuery(entityClass, alias, params);
-		extQuery.build();
+		extQuery.build();*/
+		
+		QueryActionImpl queryAction = new QueryActionImpl(baseEntityManager, entityClass, leftJoinSql, params);
 		
 		/*JFishQueryValue qv = JFishQueryValue.create(getSQLSymbolManager().getPlaceHolder(), extQuery.getSql());
 		qv.setResultClass(extQuery.getEntityClass());
@@ -244,7 +227,7 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 			qv.setValue(extQuery.getParamsValue().asMap());
 		}*/
 		
-		return extQuery;
+		return queryAction;
 	}
 	
 	protected ExtQuery createExtQuery(Class<?> entityClass, String alias, Map<Object, Object> properties){
@@ -255,20 +238,21 @@ abstract public class QueryBuilderImpl implements QueryBuilder {
 		return alias;
 	}
 
-	public ExtQuery getExtQuery() {
+	/*protected void throwIfHasBuild(){
+		if(extQuery!=null){
+			throw new UnsupportedOperationException("query has build!");
+		}
+	}*/
+
+	/*public ExtQuery getExtQuery() {
 		throwIfHasNotBuild();
 		return extQuery;
 	}
 
-	protected void throwIfHasBuild(){
-		if(extQuery!=null){
-			throw new UnsupportedOperationException("query has build!");
-		}
-	}
 	protected void throwIfHasNotBuild(){
 		if(extQuery==null){
 			throw new UnsupportedOperationException("query has not build!");
 		}
-	}
+	}*/
 	
 }
