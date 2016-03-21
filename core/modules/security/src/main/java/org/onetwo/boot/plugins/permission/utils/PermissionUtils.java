@@ -4,35 +4,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.permission.PermissionType;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.utils.func.Closure1;
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
-		public void execute(StringBuilder str, AbstractPermission<?> perm);
+		public void execute(StringBuilder str, DefaultIPermission<?> perm);
 	}
 
-	public static <T extends AbstractPermission<T>> void buildString(StringBuilder str, T node, String sp){
+	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp){
 		buildString(str, node, sp, null);
 	}
 	
-	public static boolean isFunction(AbstractPermission<?> node){
+	public static boolean isFunction(DefaultIPermission<?> node){
 		return getPermissionType(node)==PermissionType.FUNCTION;
 	}
 	
-	public static boolean isMenu(AbstractPermission<?> node){
+	public static boolean isMenu(DefaultIPermission<?> node){
 		return getPermissionType(node)==PermissionType.MENU;
 	}
 	
-	public static PermissionType getPermissionType(AbstractPermission<?> node){
+	public static PermissionType getPermissionType(DefaultIPermission<?> node){
 		/*if(node==null)
 			return PermissionType.RESOURCE;
 		return PermissionType.of(node.getPtype());*/
 		return node.getPermissionType();
 	}
-	public static <T extends AbstractPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure1<T> block){
+	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure1<T> block){
 		if(block!=null){
 			block.execute(node);
 		}else{
@@ -59,7 +59,7 @@ final public class PermissionUtils {
 		}
 	}
 	
-	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends AbstractPermission<?>> permissions){
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions){
 		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
 			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 			pm.setSort(p.getSort());

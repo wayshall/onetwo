@@ -6,13 +6,13 @@ import javax.annotation.Resource;
 
 import org.onetwo.boot.plugins.permission.AbstractPermissionConfig;
 import org.onetwo.boot.plugins.permission.PermissionManager;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.web.userdetails.UserDetail;
 
-abstract public class AbstractMenuItemRepository<T extends TreeModel<T>, P extends AbstractPermission<P>> implements MenuItemRepository<T> {
+abstract public class AbstractMenuItemRepository<T extends TreeModel<T>, P extends DefaultIPermission<P>> implements MenuItemRepository<T> {
 	
 	@Resource
 	private PermissionManager<P> permissionManager;

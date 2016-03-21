@@ -2,10 +2,10 @@ package org.onetwo.boot.plugins.permission;
 
 import java.util.List;
 
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.common.web.userdetails.UserDetail;
 
-public interface PermissionManager<P extends AbstractPermission<P>> {
+public interface PermissionManager<P extends DefaultIPermission<P>> {
 
 	void build();
 

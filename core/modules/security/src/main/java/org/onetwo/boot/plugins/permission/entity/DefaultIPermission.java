@@ -1,12 +1,13 @@
 package org.onetwo.boot.plugins.permission.entity;
 
+import org.onetwo.boot.plugins.permission.IPermission;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
 import org.onetwo.common.utils.func.Closure1;
 
 
-abstract public class AbstractPermission<T extends AbstractPermission<T>> implements org.onetwo.boot.plugins.permission.IPermission<T> {
+public interface DefaultIPermission<T extends DefaultIPermission<T>> extends IPermission<T> {
 	
-	public String toTreeString(String spliter){
+	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();
 		PermissionUtils.buildString(str, (T)this, "--", new Closure1<T>() {
 			

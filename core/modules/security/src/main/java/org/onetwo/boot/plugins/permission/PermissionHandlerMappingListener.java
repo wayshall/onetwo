@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.plugins.permission.annotation.ByFunctionClass;
 import org.onetwo.boot.plugins.permission.annotation.ByMenuClass;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.utils.PermissionUtils;
 import org.onetwo.boot.plugins.permission.utils.UrlResourceInfo;
 import org.onetwo.boot.plugins.permission.utils.UrlResourceInfoParser;
@@ -38,12 +38,12 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 			return;
 		}
 		
-		AbstractPermission<?> perm = this.permissionManager.getPermission(codeClass);
+		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
 		if(perm==null || !PermissionUtils.isMenu(perm)){
 //			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
 			throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
 		}
-		AbstractPermission<?> menu = perm;
+		DefaultIPermission<?> menu = perm;
 		
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
 		String url = getFirstUrl(entry.getKey());
@@ -69,7 +69,7 @@ public class PermissionHandlerMappingListener implements HandlerMappingListener 
 			return;
 		}
 		
-		AbstractPermission<?> perm = this.permissionManager.getPermission(codeClass);
+		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
 		if(perm==null){
 			throw new BaseException("can not found IPermission for code class: " + codeClass);
 		}

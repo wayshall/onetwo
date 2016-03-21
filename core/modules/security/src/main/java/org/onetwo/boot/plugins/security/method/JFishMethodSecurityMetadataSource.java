@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.boot.plugins.permission.annotation.ByFunctionClass;
 import org.onetwo.boot.plugins.permission.annotation.ByMenuClass;
-import org.onetwo.boot.plugins.permission.entity.AbstractPermission;
+import org.onetwo.boot.plugins.permission.entity.DefaultIPermission;
 import org.onetwo.boot.plugins.permission.parser.MenuInfoParser;
 import org.onetwo.boot.plugins.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;
 import org.onetwo.boot.plugins.security.utils.SecurityUtils;
@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
  */
 public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSecurityMetadataSource {
 	@Resource
-	private MenuInfoParser<? extends AbstractPermission<?>> menuInfoParser;
+	private MenuInfoParser<? extends DefaultIPermission<?>> menuInfoParser;
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
 	
