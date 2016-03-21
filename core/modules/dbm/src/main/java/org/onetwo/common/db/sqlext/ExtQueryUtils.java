@@ -1,6 +1,7 @@
 package org.onetwo.common.db.sqlext;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +18,7 @@ import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -93,7 +95,12 @@ public abstract class ExtQueryUtils {
 			}else {//calm
 				/*valueList = new ArrayList();
 				valueList.add(values);*/
-				valueList = LangUtils.asList(values);
+				if(LangUtils.isMultiple(values)){
+					valueList = CUtils.tolist(values, false);
+				}else{
+					valueList = new ArrayList();
+					valueList.add(values);
+				}
 			}
 		}else{
 			valueList = LangUtils.asList(values, trimNull);

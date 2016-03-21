@@ -1,5 +1,6 @@
 package org.onetwo.common.db.sqlext;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -76,7 +77,8 @@ public class ParamValues {
 	 * @return
 	 */
 	public Map<String, Object> getValues(){
-		return ImmutableMap.copyOf(values);
+//		return ImmutableMap.copyOf(values);
+		return Collections.unmodifiableMap(values);
 	}
 	public Map<String, Object> asMap(){
 		return (Map) getValues();
