@@ -250,7 +250,7 @@ public final class RequestUtils {
 		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
 		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
 		
-		return "json".equals(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+		return "json".equalsIgnoreCase(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
 	}
 
 	public static String getRequestExtension(HttpServletRequest request) {
