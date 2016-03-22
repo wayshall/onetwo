@@ -20,10 +20,16 @@ public class IgnoreCsrfProtectionRequestUrlMatcher implements RequestMatcher {
     }
 
     public boolean matches(HttpServletRequest request) {
-    	return !isRequestMatche(request);
+    	return !isIgnoreMatche(request);
     }
     
-    protected boolean isRequestMatche(HttpServletRequest request){
+    /****
+     * 
+     * @param request
+     * @return true 表示匹配请求，会被忽略csrf验证，false表示需要验证
+     */
+    protected boolean isIgnoreMatche(HttpServletRequest request){
+    	//如果为null，返回false，表示全部请求都要匹配验证
     	if(requestMatcher==null)
     		return false;
     	return requestMatcher.matches(request);
