@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -620,9 +621,11 @@ final public class CUtils {
 	public static <T> List<T> iterableToList(Iterable<T> it){
 		if(it==null)
 			return Collections.EMPTY_LIST;
-		List<T> list = new ArrayList<T>();
+		/*List<T> list = new ArrayList<T>();
 		it.forEach(e->list.add(e));
-		return Collections.unmodifiableList(list);
+		return Collections.unmodifiableList(list);*/
+		return StreamSupport.stream(it.spliterator(), false)
+							.collect(Collectors.toList());
 	}
 	
 	private CUtils(){

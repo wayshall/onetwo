@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.Assert;
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
@@ -30,7 +31,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	private PasswordEncoder passwordEncoder;
 
 	@Getter
-	@Autowired(required=false)
+	@Autowired
 	private UserDetailsService userDetailsService;
 
 	@Getter
@@ -39,6 +40,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		Assert.notNull(userDetailsService, "no userDetailsService found!");
 		/*auth
 			.inMemoryAuthentication()
 				.withUser("test")
