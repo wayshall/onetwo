@@ -52,6 +52,12 @@
         
         <dependency>
           <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-security</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
           <artifactId>onetwo-web</artifactId>
         </dependency>
         
