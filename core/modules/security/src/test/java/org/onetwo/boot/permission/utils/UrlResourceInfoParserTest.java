@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.boot.plugins.permission.utils.UrlResourceInfo;
-import org.onetwo.boot.plugins.permission.utils.UrlResourceInfoParser;
+import org.onetwo.ext.permission.utils.UrlResourceInfo;
+import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 
 public class UrlResourceInfoParserTest {
 	
