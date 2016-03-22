@@ -58,7 +58,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	 * @param deletes
 	 * @param updates
 	 */
-	abstract protected void updatePermissions(Set<P> adds, Set<P> deletes, Set<P> updates);
+	abstract protected void updatePermissions(P rootPermission, Set<P> adds, Set<P> deletes, Set<P> updates);
 	
 	/****
 	 * 同步菜单
@@ -66,18 +66,18 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
-		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
+//		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		String rootCode = parseCode(rootMenuClass);
+		P rootPermission = this.menuInfoParser.getRootMenu();
 //		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
-		Set<P> dbPermissions = findExistsSyncPermission(rootCode);
+		Set<P> dbPermissions = findExistsSyncPermission(rootPermission.getCode());
 		Set<P> memoryPermissions = new HashSet<P>(menuNodeMap.values());
 
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
 		
-		this.updatePermissions(adds, deletes, intersections);
+		this.updatePermissions(rootPermission, adds, deletes, intersections);
 	}
 	
 

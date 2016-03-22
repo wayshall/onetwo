@@ -3,41 +3,32 @@ package org.onetwo.boot.plugins.security.config;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
-import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.security.AjaxAuthenticationHandler;
-import org.onetwo.ext.security.AjaxSupportedAccessDeniedHandler;
-import org.onetwo.ext.security.mvc.args.SecurityArgumentResolver;
-import org.onetwo.ext.security.utils.SecuritySessionUserManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 /****
- * security的通用配置
+ * boot security的通用配置
  * @author way
  *
  */
 @EnableConfigurationProperties({BootSecurityConfig.class})
 @Configuration
-public class SecurityCommonContextConfig {
+public class BootSecurityCommonContextConfig{
 
-	@Autowired
-	private BootSecurityConfig securityConfig;
+	/*@Autowired
+	private BootSecurityConfig bootSecurityConfig;
 	
-	@Bean
-	public HandlerMethodArgumentResolver securityArgumentResolver(){
-		return new SecurityArgumentResolver();
-	}
-	
+	@Override
+	public SecurityConfig getSecurityConfig() {
+		return bootSecurityConfig;
+	}*/
+
 	@Bean
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
@@ -64,28 +55,4 @@ public class SecurityCommonContextConfig {
 		return new SecurityWebExceptionResolver();
 	}
 	
-	@Bean
-	@ConditionalOnMissingBean(SecuritySessionUserManager.class)
-	public SessionUserManager<UserDetail> sessionUserManager(){
-		return new SecuritySessionUserManager();
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean(BCryptPasswordEncoder.class)
-	public BCryptPasswordEncoder bcryptEncoder(){
-		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
-		return coder;
-	}
-	
-	@Bean
-	public AccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
-		return new AjaxSupportedAccessDeniedHandler();
-	}
-
-	@Bean
-	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(securityConfig.getLoginUrl(), 
-																			securityConfig.getAfterLoginUrl());
-		return handler;
-	}
 }

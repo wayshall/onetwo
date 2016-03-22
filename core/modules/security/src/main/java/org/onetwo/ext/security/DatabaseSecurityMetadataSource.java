@@ -63,7 +63,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 										+ "perm.resources_pattern as resources_pattern "
 										+ "FROM admin_permission perm "
 										+ "WHERE perm.resources_pattern is not null "
-										+ "and perm.resources_pattern!='' order by perm.sort";
+//										+ "and perm.resources_pattern!='' " //oracle里是个坑
+										+ "order by perm.sort";
 			}
 		}
 		

@@ -1,9 +1,10 @@
-package org.onetwo.boot.plugins.security.config;
+package org.onetwo.boot.plugins.security.url;
 
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
+import org.onetwo.boot.plugins.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.method.JFishMethodSecurityMetadataSource;
 import org.onetwo.ext.security.url.SecurityBeanPostProcessor;
+import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,23 +14,23 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@Import({RbacSecurityXmlContextConfigSupport.class})
-public class UrlSecurityConfig {
-
-	/***
+@Import(BootSecurityCommonContextConfig.class)
+public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
+	
+	/*** 
 	 * 如果不是基于方法拦截（即url匹配），需要用后处理器重新配置SecurityMetadataSource
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean(JFishMethodSecurityMetadataSource.class)
 	public SecurityBeanPostProcessor securityBeanPostProcessor(){
-		return new SecurityBeanPostProcessor();
+		return super.securityBeanPostProcessor();
 	}
 
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
-		return new DefaultUrlSecurityConfigurer();
+		return super.defaultSecurityConfigurer();
 	}
 }
