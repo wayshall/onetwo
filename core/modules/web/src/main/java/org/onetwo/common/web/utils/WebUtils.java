@@ -1,5 +1,12 @@
 package org.onetwo.common.web.utils;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.onetwo.common.exception.ExceptionCodeMark;
+import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
+
 
 final public class WebUtils {
 
@@ -34,6 +41,18 @@ final public class WebUtils {
 			return REDIRECT_KEY + path;
 		}
 		return path;
+	}
+	
+	public static SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, Exception exception){
+		if(ExceptionCodeMark.class.isInstance(exception)){
+			String code = ((ExceptionCodeMark)exception).getCode();
+			builder.code(code);
+		}else{
+			String key =  exception.getClass().getSimpleName();
+			Object codeValue = Optional.ofNullable(request.getAttribute(key)).orElse(key);
+			builder.code(codeValue.toString());
+		}
+		return builder;
 	}
 	
 }
