@@ -27,11 +27,6 @@
 	</properties>
 
 	<dependencies>
-		
-        <dependency>
-          <groupId>org.onetwo</groupId>
-          <artifactId>onetwo-boot</artifactId>
-        </dependency>
         
         <dependency>
           <groupId>org.onetwo</groupId>
@@ -48,29 +43,26 @@
 	        <artifactId>lombok</artifactId>
 	        <scope>provided</scope>
 	    </dependency>
-	
+		    
+	    <dependency>
+	        <groupId>javax.servlet</groupId>
+	        <artifactId>javax.servlet-api</artifactId>
+	    </dependency>
+        
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
         </dependency>
         
         <dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-taglibs</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-freemarker</artifactId>
-            <scope>provided</scope>
-        </dependency>
     
 	    <dependency>
 	        <groupId>org.springframework.security</groupId>
 	        <artifactId>spring-security-cas</artifactId>
-            <scope>provided</scope>
 	    </dependency>
 	    
 	    

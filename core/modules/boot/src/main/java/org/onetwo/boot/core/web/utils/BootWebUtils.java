@@ -5,14 +5,12 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.file.FileUtils;
@@ -29,6 +27,7 @@ import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
+import org.onetwo.common.web.utils.WebUtils;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -379,14 +378,6 @@ public final class BootWebUtils {
 	}
 	
 	public static SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, Exception exception){
-		if(ExceptionCodeMark.class.isInstance(exception)){
-			String code = ((ExceptionCodeMark)exception).getCode();
-			builder.code(code);
-		}else{
-			String key =  exception.getClass().getSimpleName();
-			Object codeValue = Optional.ofNullable(request.getAttribute(key)).orElse(key);
-			builder.code(codeValue.toString());
-		}
-		return builder;
+		return WebUtils.buildErrorCode(builder, request, exception);
 	}
 }
