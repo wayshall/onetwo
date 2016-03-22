@@ -3,7 +3,7 @@ package org.onetwo.ext.security.method;
 import lombok.Getter;
 
 import org.onetwo.ext.security.AjaxAuthenticationHandler;
-import org.onetwo.ext.security.CsrfRequestUrlMatcher;
+import org.onetwo.ext.security.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -84,7 +84,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 				.httpBasic()
 				.disable()
 				.csrf()
-				.requireCsrfProtectionMatcher(CsrfRequestUrlMatcher.excludeUrls("/login*"))
+				.requireCsrfProtectionMatcher(IgnoreCsrfProtectionRequestUrlMatcher.ignoreUrls("/login*"))
 			.and()
 				.headers()
 					.frameOptions()
