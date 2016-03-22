@@ -38,11 +38,6 @@ public class UrlBasedSecurityConfig {
 	}
 	
 	@Bean
-	public SecurityCommonContextConfig securityCommonContextConfig(){
-		return new SecurityCommonContextConfig();
-	}
-
-	@Bean
 //	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 //	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
