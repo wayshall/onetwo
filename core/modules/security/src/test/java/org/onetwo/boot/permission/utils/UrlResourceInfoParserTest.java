@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
+import org.springframework.util.AntPathMatcher;
 
 public class UrlResourceInfoParserTest {
 	
@@ -34,6 +35,13 @@ public class UrlResourceInfoParserTest {
 		
 		parsedResourceInfo = parser.parseToUrlResourceInfos(pasedString);
 		Assert.assertEquals(urlResourceInfo, parsedResourceInfo);
+	}
+	
+	@Test
+	public void testAntMatcher(){
+		AntPathMatcher path = new AntPathMatcher();
+		boolean rs = path.match("/user.*", "/user.json?aaa=bbb&cc=ddd");
+		Assert.assertTrue(rs);
 	}
 
 }
