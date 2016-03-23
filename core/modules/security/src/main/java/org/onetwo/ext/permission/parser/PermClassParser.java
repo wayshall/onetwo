@@ -4,13 +4,13 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
-import org.onetwo.boot.plugins.permission.PermissionType;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.ext.permission.annotation.MenuMapping;
-import org.onetwo.ext.permission.annotation.ProxyMenu;
+import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.ext.permission.api.annotation.MenuMapping;
+import org.onetwo.ext.permission.api.annotation.ProxyMenu;
 
 public class PermClassParser {
 	public static final String APP_CODE = "appCode";
