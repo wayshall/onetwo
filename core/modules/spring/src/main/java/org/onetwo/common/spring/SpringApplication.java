@@ -53,7 +53,7 @@ public class SpringApplication {
 	}
 
 
-	public static void initApplicationIfNotInitialized(ApplicationContext webappContext) {
+	synchronized public static void initApplicationIfNotInitialized(ApplicationContext webappContext) {
 		if(instance.initialized){
 			return ;
 		}
@@ -63,12 +63,8 @@ public class SpringApplication {
 		instance.appContext = webappContext;
 		instance.initialized = true;
 		instance.printBeanNames();
-		try {
-			if(ConfigurableApplicationContext.class.isInstance(webappContext))
-				((ConfigurableApplicationContext)webappContext).registerShutdownHook();
-		} catch (Exception e) {
-			logger.error("can not find the BaseEntityManager, ignore it: " + e.getMessage());
-		}
+		if(ConfigurableApplicationContext.class.isInstance(webappContext))
+			((ConfigurableApplicationContext)webappContext).registerShutdownHook();
 	}
 
 	public ApplicationContext getAppContext() {

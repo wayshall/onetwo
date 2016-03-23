@@ -73,7 +73,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		
 		SiteConfigProvider<?> webConfigProvider = SpringUtils.getBean(app, SiteConfigProvider.class);
 		if(webConfigProvider!=null){
-			siteConfig = webConfigProvider.createConfig(config);
+			siteConfig = webConfigProvider.initWebConfig(config.getServletContext());
 			Assert.notNull(siteConfig);
 			context.setAttribute(SITE_CONFIG_NAME, siteConfig);
 //			context.setAttribute(WEB_CONFIG_NAME, webConfigProvider.createWebConfig(config));
