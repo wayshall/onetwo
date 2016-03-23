@@ -1,7 +1,7 @@
 package org.onetwo.ext.permission.entity;
 
-import org.onetwo.boot.plugins.permission.IPermission;
 import org.onetwo.common.utils.func.Closure1;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 
 

@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.permission;
+package org.onetwo.ext.permission.api;
 
 import java.util.stream.Stream;
 

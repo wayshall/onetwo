@@ -33,11 +33,6 @@
           <artifactId>onetwo-web</artifactId>
         </dependency>
         
-        <dependency>
-          <groupId>org.onetwo</groupId>
-          <artifactId>onetwo-api</artifactId>
-        </dependency>
-        
 	    <dependency>
 	        <groupId>org.projectlombok</groupId>
 	        <artifactId>lombok</artifactId>

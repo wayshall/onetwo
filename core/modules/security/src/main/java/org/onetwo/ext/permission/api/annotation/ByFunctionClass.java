@@ -1,13 +1,13 @@
-package org.onetwo.boot.plugins.permission.annotation;
+package org.onetwo.ext.permission.api.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ByMenuClass {
+public @interface ByFunctionClass {
 
 	Class<?>[] value();
 }

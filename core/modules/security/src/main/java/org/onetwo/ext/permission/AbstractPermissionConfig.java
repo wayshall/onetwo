@@ -7,7 +7,7 @@ import org.onetwo.ext.permission.entity.DefaultIPermission;
 
 
 
-abstract public class AbstractPermissionConfig<P extends DefaultIPermission<P>> implements org.onetwo.boot.plugins.permission.PermissionConfig<P> {
+abstract public class AbstractPermissionConfig<P extends DefaultIPermission<P>> implements org.onetwo.ext.permission.api.PermissionConfig<P> {
 
 	@Override
 	public String getAppCode(){

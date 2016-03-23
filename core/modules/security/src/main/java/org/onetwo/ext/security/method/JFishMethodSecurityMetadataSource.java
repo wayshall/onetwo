@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
-import org.onetwo.ext.permission.annotation.ByFunctionClass;
-import org.onetwo.ext.permission.annotation.ByMenuClass;
+import org.onetwo.ext.permission.api.annotation.ByFunctionClass;
+import org.onetwo.ext.permission.api.annotation.ByMenuClass;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;

@@ -19,7 +19,6 @@
     	<modules>
 				<module>bom</module>
 				<module>parent</module>
-                <module>api</module>
                 <module>common</module>
 				<module>jackson</module>
 				<module>spring</module>
