@@ -153,18 +153,18 @@ final public class FtlUtils {
 		return val;
 	}
 
-	public static String getRequiredParameterByString(Map params, String name){
+	public static String getRequiredParameterByString(Map<?, ?> params, String name){
 		TemplateModel val = getParameter(params, name, true);
 		return val.toString();
 	}
-	public static String getParameterByString(Map params, String name, String def){
+	public static String getParameterByString(Map<?, ?> params, String name, String def){
 		TemplateModel attr = getParameter(params, name, false);
 		if(attr!=null)
 			return attr.toString();
 		return def;
 	}
 	
-	public static boolean getParameterByBoolean(Map params, String name, boolean def){
+	public static boolean getParameterByBoolean(Map<?, ?> params, String name, boolean def){
 		TemplateModel attr = getParameter(params, name, false);
 		if(attr!=null){
 			try {
@@ -179,7 +179,7 @@ final public class FtlUtils {
 		}
 		return def;
 	}
-	public static int getParameterByInt(Map params, String name, int def){
+	public static int getParameterByInt(Map<?, ?> params, String name, int def){
 		TemplateModel attr = getParameter(params, name, false);
 		if(attr!=null){
 			try {
@@ -195,21 +195,21 @@ final public class FtlUtils {
 		return def;
 	}
 
-	public static TemplateModel getRequiredParameter(Map params, String name){
+	public static TemplateModel getRequiredParameter(Map<?, ?> params, String name){
 		return getParameter(params, name, true);
 	}
 	
-	public static String getParameter(Map params, String name, String defVal){
+	public static String getParameter(Map<?, ?> params, String name, String defVal){
 		TemplateModel val = getParameter(params, name, false);
 		if(val==null)
 			return defVal;
 		return val.toString();
 	}
 	
-	public static <T> T getParameter(Map params, String name, boolean throwIfNotExist){
+	public static <T> T getParameter(Map<?, ?> params, String name, boolean throwIfNotExist){
 		if(!params.containsKey(name)){
 			if(throwIfNotExist)
-				throw LangUtils.asBaseException("freemarker template error : the param["+name+"] has not be given.");
+				throw new BaseException("freemarker template error : the param["+name+"] has not be given.");
 			else
 				return null;
 		}
