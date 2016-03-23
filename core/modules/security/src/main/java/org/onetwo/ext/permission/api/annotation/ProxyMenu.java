@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.permission.annotation;
+package org.onetwo.ext.permission.api.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
 package org.onetwo.boot.permission.parser;
 
-import org.onetwo.boot.plugins.permission.PermissionType;
+import org.onetwo.ext.permission.api.PermissionType;
 
 public interface AdminModule {
 	String name = "全局用户角色权限管理";

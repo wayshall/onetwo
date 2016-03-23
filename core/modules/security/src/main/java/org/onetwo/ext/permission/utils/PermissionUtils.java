@@ -3,9 +3,9 @@ package org.onetwo.ext.permission.utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.boot.plugins.permission.PermissionType;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.utils.func.Closure1;
+import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 
