@@ -2,7 +2,6 @@ package org.onetwo.boot.core.config;
 
 import java.util.stream.Stream;
 
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
 import lombok.Data;
@@ -58,8 +57,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	
 
     @Override
-    public BootSiteConfig createConfig(FilterConfig config) {
-    	ServletContext servletContext = config.getServletContext();
+    public BootSiteConfig initWebConfig(ServletContext servletContext) {
+//    	ServletContext servletContext = config.getServletContext();
     	this.contextPath = servletContext.getContextPath();
 		this.contextRealPath = servletContext.getRealPath("");
 		

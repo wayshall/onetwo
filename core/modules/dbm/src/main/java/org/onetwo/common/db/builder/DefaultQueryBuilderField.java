@@ -52,6 +52,13 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		});
 	}
 	
+	public QueryBuilder isNull(boolean isNull) {
+		return this.doWhenPredicate(()->{
+			this.op = FieldOP.is_null;
+			this.values = new Object[]{isNull};
+		});
+	}
+	
 	protected QueryBuilder doWhenPredicate(Closure whenAction){
 		boolean rs = whenPredicate==null?true:Optional.ofNullable(whenPredicate.get()).orElse(false);
 		if(rs){

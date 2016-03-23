@@ -25,8 +25,11 @@ public class SecurityArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		Object result = null;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if(auth==null)
+			return null;
+		
+		Object result = null;
 		if(Authentication.class.isAssignableFrom(parameter.getParameterType())){
 			result = auth;
 		}else if(User.class.isAssignableFrom(parameter.getParameterType())){

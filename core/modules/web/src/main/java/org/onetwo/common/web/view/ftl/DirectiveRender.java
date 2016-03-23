@@ -1,6 +1,6 @@
 package org.onetwo.common.web.view.ftl;
 
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.exception.BaseException;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
@@ -31,7 +31,7 @@ public class DirectiveRender {
 		try {
 			body.render(env.getOut());
 		} catch (Exception e) {
-			LangUtils.throwBaseException("render tempalte["+tag+"] error : "+e.getMessage(), e);
+			throw new BaseException("render tempalte["+tag+"] error : "+e.getMessage(), e);
 		} 
 	}
 	
