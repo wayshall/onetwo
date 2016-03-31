@@ -23,7 +23,8 @@ public class SecurityBeanPostProcessor implements BeanPostProcessor {
 		if(FilterSecurityInterceptor.class.isInstance(bean)){
 			FilterSecurityInterceptor fsi = (FilterSecurityInterceptor) bean;
 			if(databaseSecurityMetadataSource!=null){
-				fsi.setSecurityMetadataSource(databaseSecurityMetadataSource.convertTo(fsi.getSecurityMetadataSource()));
+				databaseSecurityMetadataSource.setFilterSecurityInterceptor(fsi);
+				databaseSecurityMetadataSource.buildSecurityMetadataSource();
 			}
 //			fsi.setSecurityMetadataSource(securityMetadataSource);
 			

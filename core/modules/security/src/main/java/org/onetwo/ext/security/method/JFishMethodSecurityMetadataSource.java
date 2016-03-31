@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
-import org.onetwo.ext.permission.api.annotation.ByFunctionClass;
-import org.onetwo.ext.permission.api.annotation.ByMenuClass;
+import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
+import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;
@@ -43,11 +43,11 @@ public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSec
 	@Override
 	protected Collection<ConfigAttribute> findAttributes(Method method, Class<?> targetClass) {
 		List<ConfigAttribute> permlist = Lists.newArrayList();
-		ByMenuClass byMenu = AnnotationUtils.findAnnotation(method, ByMenuClass.class);
+		ByPermissionClass byMenu = AnnotationUtils.findAnnotation(method, ByPermissionClass.class);
 		if(byMenu!=null){
 			permlist.addAll(extractAttributes(byMenu.value()));
 		}
-		ByFunctionClass byFunc = AnnotationUtils.findAnnotation(method, ByFunctionClass.class);
+		ByPermissionClass byFunc = AnnotationUtils.findAnnotation(method, ByPermissionClass.class);
 		if(byFunc!=null){
 			permlist.addAll(extractAttributes(byFunc.value()));
 		}

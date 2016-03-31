@@ -71,7 +71,8 @@ public class CasSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter  
 					@Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O object) {
 						if(databaseSecurityMetadataSource!=null){
-							object.setSecurityMetadataSource(databaseSecurityMetadataSource.convertTo(object.getSecurityMetadataSource()));
+							databaseSecurityMetadataSource.setFilterSecurityInterceptor(object);
+							databaseSecurityMetadataSource.buildSecurityMetadataSource();
 						}
 	                    return object;
                     }

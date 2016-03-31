@@ -63,7 +63,9 @@ public class RbacBaseSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
 							object.setSecurityMetadataSource(securityMetadataSource);
 						}*/
 						if(databaseSecurityMetadataSource!=null){
-							object.setSecurityMetadataSource(databaseSecurityMetadataSource.convertTo(object.getSecurityMetadataSource()));
+//							object.setSecurityMetadataSource(databaseSecurityMetadataSource.convertTo(object.getSecurityMetadataSource()));
+							databaseSecurityMetadataSource.setFilterSecurityInterceptor(object);
+							databaseSecurityMetadataSource.buildSecurityMetadataSource();
 						}
 	                    return object;
                     }

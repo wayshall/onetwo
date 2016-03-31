@@ -30,6 +30,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	
 	private static final String CODE_SEPRATOR = "_";
 	public static final Class<?> ROOT_MENU_TAG = Object.class;
+	private static final int DEFAULT_SORT = 10000;
 
 	private final int INIT_SIZE = 300;
 	private final Map<String, P> permissionMap;
@@ -41,7 +42,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 
 //	@Resource
 	private AbstractPermissionConfig<P> permissionConfig;
-	private int sortStartIndex = 1000;
+//	private int sortStartIndex = 1000;
 	
 	private boolean parsed = false;
 	
@@ -207,10 +208,6 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 			System.out.println("test");
 		}*/
 		
-		Number sort = parser.getSort();
-		if(sort==null){
-			sort = sortStartIndex++;
-		}
 		String name = parser.getName();
 		P perm = (P)ReflectUtils.newInstance(this.permissionConfig.getIPermissionClass());
 		perm.setDataFrom(DataFrom.SYNC);
@@ -224,13 +221,17 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 			parser.setOptionFieldValue(menu, PermClassParser.MENU_SHOW_PROPS, String.class, "");
 			perm = menu;
 		}
+		
+		perm.setResourcesPattern(parser.getResourcesPattern());
 		perm.setName(name);
 		String code = parseCode(parser);
 		/*if(code.endsWith("EstateUnitMgr")){
 			System.out.println("test");
 		}*/
 		perm.setCode(code);
-		perm.setSort(sort.intValue());
+		//数字越小，排序越靠前
+		Number sort = parser.getSort();
+		perm.setSort(sort==null?DEFAULT_SORT:sort.intValue());
 		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
 

@@ -96,31 +96,37 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	private Result<?, ?> wrapAsDataResultIfNeed(Object result){
 		if(Result.class.isInstance(result)){
 			return (Result<?, ?>)result;
-		}else if(Map.class.isInstance(result)){
-			Map<String, Object> map = (Map<String, Object>) result;
-			MapResultBuilder dataResult = WebResultCreator.creator().map().success();
-			for(Entry<String, Object> entry : map.entrySet()){
-				if(BindingResult.class.isInstance(entry.getValue())){
-					BindingResult br = (BindingResult) entry.getValue();
-					if(br.hasErrors()){
-						dataResult.error();
-					}
-					
-				}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.success(entry.getValue().toString());
-					
-				}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
-					dataResult.error(entry.getValue().toString());
-					
-				}else{
-					dataResult.put(entry.getKey(), entry.getValue());
-				}
-			}
+		}
+		if(Map.class.isInstance(result)){
+			@SuppressWarnings("unchecked")
+			MapResultBuilder dataResult = createMapResultBuilder((Map<String, Object>) result);
 			return dataResult.buildResult();
 		}else{
 			SimpleDataResult<Object> dataResult = SimpleDataResult.success("", result);
 			return dataResult;
 		}
+	}
+	
+	private MapResultBuilder createMapResultBuilder(Map<String, Object> map){
+		MapResultBuilder dataResult = WebResultCreator.creator().map().success();
+		for(Entry<String, Object> entry : map.entrySet()){
+			if(BindingResult.class.isInstance(entry.getValue())){
+				BindingResult br = (BindingResult) entry.getValue();
+				if(br.hasErrors()){
+					dataResult.error();
+				}
+				
+			}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
+				dataResult.success(entry.getValue().toString());
+				
+			}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
+				dataResult.error(entry.getValue().toString());
+				
+			}else{
+				dataResult.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return dataResult;
 	}
 	
 	protected Object delegateSpringFilterModel(Map<String, Object> model) {

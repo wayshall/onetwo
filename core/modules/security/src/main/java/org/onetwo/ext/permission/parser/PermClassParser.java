@@ -17,6 +17,8 @@ public class PermClassParser {
 	public static final String SORT = "sort";
 	public static final String PERMISSION_TYPE = "permissionType";
 	public static final String HIDDEN = "hidden";
+	public static final String URL = "url";
+	public static final String RESOURCES_PATTERN = "resourcesPattern";
 	public static final String PARAMS = "params";
 	public static final String NAME = "name";
 	public static final String CHILDREN = "children";
@@ -139,6 +141,12 @@ public class PermClassParser {
 	
 	public Boolean isHidden(){
 		return getFieldValue(HIDDEN, Boolean.class, false);
+	}
+	public String getUrl(){
+		return getFieldValue(URL, String.class, null);
+	}
+	public String getResourcesPattern(){
+		return getFieldValue(RESOURCES_PATTERN, String.class, null);
 	}
 	
 	public String getMenuCssClass(){

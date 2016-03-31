@@ -38,6 +38,10 @@ final public class Dates {
 		return localDate.format(DATE_ONLY);
 	}
 	
+	public static LocalDateTime parseDateTime(String dateTimeStr){
+		return LocalDateTime.parse(dateTimeStr, DATE_TIME);
+	}
+	
 	public static Date toDate(LocalDate localDate){
 		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
