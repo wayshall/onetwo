@@ -8,11 +8,8 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.ext.permission.api.annotation.ByFunctionClass;
-import org.onetwo.ext.permission.api.annotation.ByMenuClass;
+import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
@@ -23,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import com.google.common.collect.Lists;
 
 public class PermissionHandlerMappingListener implements InitializingBean {
 	
@@ -43,23 +42,16 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		this.onHandlerMethodsInitialized(handlerMethods);
 	}
 
-	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry){
-		if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null){
-//			continue;
-			return;
-		}
-		
-		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
-		if(perm==null || !PermissionUtils.isMenu(perm)){
-//			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
-			throw new BaseException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
-		}
+	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
 		DefaultIPermission<?> menu = perm;
 		
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
-		String url = getFirstUrl(entry.getKey());
+		String url = null;
 		if(StringUtils.isNotBlank(menu.getUrl())){
-			url = RequestUtils.appendParamString(url, menu.getUrl());
+			//如果自定义了，忽略自动解释
+			url = menu.getUrl();
+		}else{
+			url = getFirstUrl(entry.getKey());
 		}
 		menu.setUrl(url);
 //		Iterator<RequestMethod> it = entry.getKey().getMethodsCondition().getMethods().iterator();
@@ -75,16 +67,18 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		}*/
 	}
 	
-	private void setResourcePatternByRequestMappingInfo(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry){
-		if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null){
-			return;
+	private void setResourcePatternByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
+		//如果自定义了，忽略自动解释
+		if(perm.getResourcesPattern()!=null){
+			List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
+			if(!infos.isEmpty()){
+				String urls = this.urlResourceInfoParser.parseToString(infos);
+				perm.setResourcesPattern(urls);
+			}
+			return ;
 		}
 		
-		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
-		if(perm==null){
-			throw new BaseException("can not found IPermission for code class: " + codeClass);
-		}
-		List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
+		List<UrlResourceInfo> infos = Lists.newArrayList();
 		Set<String> urlPattterns = entry.getKey().getPatternsCondition().getPatterns();
 		
 		if(urlPattterns.size()==1){
@@ -117,25 +111,32 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		return info.getPatternsCondition().getPatterns().stream().findFirst().orElse("");
 	}
 	
-//	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		this.permissionManager.build();
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
-			if(entry.getValue().getMethodAnnotation(ByMenuClass.class)!=null){
-				ByMenuClass menuClass = entry.getValue().getMethodAnnotation(ByMenuClass.class);
-				for(Class<?> codeClass : menuClass.value()){
-					this.setMenuUrlByRequestMappingInfo(codeClass, entry);
-					this.setResourcePatternByRequestMappingInfo(codeClass, entry);
-				}
-			}else if(entry.getValue().getMethodAnnotation(ByFunctionClass.class)!=null){
-				ByFunctionClass funcClass = entry.getValue().getMethodAnnotation(ByFunctionClass.class);
-				for(Class<?> codeClass : funcClass.value()){
-					this.setResourcePatternByRequestMappingInfo(codeClass, entry);
-				}
+			ByPermissionClass menuClass = entry.getValue().getMethodAnnotation(ByPermissionClass.class);
+			if(menuClass==null){
+				continue ;
+			}
+			for(Class<?> codeClass : menuClass.value()){
+				this.autoConifgPermission(codeClass, entry);
 			}
 		}
-
-//		logger.info("rootMenu:\n" + permissionManagerImpl.getRootMenu());
+	}
+	
+	private void autoConifgPermission(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry){
+		if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null){
+			return;
+		}
+		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
+		if(perm==null){
+//			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
+			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
+		}
+		if(PermissionUtils.isMenu(perm)){
+			this.setMenuUrlByRequestMappingInfo(codeClass, perm, entry);
+		}
+		this.setResourcePatternByRequestMappingInfo(codeClass, perm, entry);
 	}
 	
 }

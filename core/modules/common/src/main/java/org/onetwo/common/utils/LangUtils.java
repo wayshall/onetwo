@@ -1575,37 +1575,39 @@ public class LangUtils {
 	}
 
 	/*****
-	 * 填充字符串，如果s的长度少于alength，则在左边填充(aleng-s.length)个append
+	 * 填充字符串，如果s的长度少于taotalLength，则在左边填充(aleng-s.length)个append
 	 * @param s 
-	 * @param alength
+	 * @param taotalLength
 	 * @param append
 	 * @return
 	 */
-	public static String padLeft(String s, int alength, String append){
-		return pad(s, alength, append.charAt(0), true);
+	public static String padLeft(String s, int taotalLength, String append){
+		return pad(s, taotalLength, append.charAt(0), true);
 	}
-	public static String padRight(String s, int alength, String append){
-		return pad(s, alength, append.charAt(0), false);
+	public static String padRight(String s, int taotalLength, String append){
+		return pad(s, taotalLength, append.charAt(0), false);
 	}
 	
-	public static String pad(String s, int alength, char append, boolean padLeft){
+	public static String pad(String s, int taotalLength, char append, boolean padLeft){
+		Assert.isTrue(taotalLength>0, "total length must be >0");
 		if(s==null){
 			return s;
 		}
-		int length = Math.abs(alength);
+		int length = Math.abs(taotalLength);
 		if(s.length()==length)
 			return s;
 		StringBuilder str = new StringBuilder(s);
 		if(str.length()<length){
 			int lack = length-str.length();
-			for(int i=0; i<lack; i++){
-				if(padLeft)
-					str.insert(0, append);
-				else
-					str.append(append);
+			char[] appendChars = new char[lack];
+			Arrays.fill(appendChars, append);
+			if(padLeft){
+				str.insert(0, appendChars);
+			}else{
+				str.append(appendChars);
 			}
 		}else{
-			if(alength>0)
+			if(taotalLength>0)
 				str.delete(length, str.length());
 			else
 				str.delete(0, str.length()-length);

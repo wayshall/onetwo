@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
@@ -26,7 +30,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -39,11 +43,14 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	private static final String AUTHORITY_RESOURCE_SQL_FILE = "/plugins/security/authority_resource.sql";
 
 	private String resourceQuery;
+//	private String appCode;// ??
 	
 	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
 	
+
+	private FilterSecurityInterceptor filterSecurityInterceptor;
 	// from WebSecurityExpressionRoot
 //	private Set<String> keywords = ImmutableSet.of("permitAll", "denyAll", "is", "has");
 	
@@ -60,7 +67,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 			}else{
 				this.resourceQuery = "SELECT "
 										+ "perm.code as authority, "
-										+ "perm.resources_pattern as resources_pattern "
+										+ "perm.resources_pattern as resources_pattern, "
+										+ "perm.sort "
 										+ "FROM admin_permission perm "
 										+ "WHERE perm.resources_pattern is not null "
 //										+ "and perm.resources_pattern!='' " //oracle里是个坑
@@ -77,31 +85,41 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	/****
 	 * fetch all permissions from database
 	 */
-	@PostConstruct
+//	@PostConstruct
 	public void buildRequestMap(){
 		List<AuthorityResource> authorities = fetchAuthorityResources();
-		final LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> resouceMap = new LinkedHashMap<>(authorities.size());
+		final Map<SortableAntPathRequestMatcher, Collection<ConfigAttribute>> resouceMap = new HashMap<>(authorities.size());
 		authorities.forEach(auth->{
 			auth.getUrlResourceInfo().forEach(r->{
 				//根据httpmethod和url映射权限标识，url拦截时也是根据这个matcher找到对应的权限SecurityConfig
-				AntPathRequestMatcher matcher = new AntPathRequestMatcher(r.getUrl(), r.getMethod());
+//				AntPathRequestMatcher matcher = new AntPathRequestMatcher(r.getUrl(), r.getMethod());
+				SortableAntPathRequestMatcher matcher = new SortableAntPathRequestMatcher(new AntPathRequestMatcher(r.getUrl(), r.getMethod()), auth.getSort());
 				if(resouceMap.containsKey(matcher)){
 //					resouceMap.get(matcher).add(new SecurityConfig(auth.getAuthority()));
-					throw new BaseException("Expected a single expression attribute for " + matcher);
+					throw new RuntimeException("Expected a single expression attribute for " + matcher);
 				}else{
 					resouceMap.put(matcher, Lists.newArrayList(createSecurityConfig(auth.getAuthority())));
 				}
 			});
 		});
-		this.requestMap = resouceMap;
-		/*mapping.execute().stream()
-			.collect(Collectors.toMap(r->{
-				AntPathRequestMatcher matcher = new AntPathRequestMatcher(r.getUrl(), r.getMethod());
-				return matcher;
-			}, r->{
-				ConfigAttribute attr = new SecurityConfig(r.getAuthority());
-				return attr;
-			}));*/
+		
+		//first sorted by sort field, then sorted by pattern
+		//数字越小，越靠前
+		List<SortableAntPathRequestMatcher> keys = resouceMap.keySet()
+													.stream()
+													.sorted((o1, o2)->{
+														int rs = o1.getSort().compareTo(o2.getSort());
+														if(rs!=0)
+															return rs;
+														return -o1.getPathMatcher().getPattern().compareTo(o2.getPathMatcher().getPattern());
+													})
+													.collect(Collectors.toList());
+//		Collections.reverse(keys);
+		this.requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
+		keys.forEach(k->{
+//			System.out.println("url:"+k.getPathMatcher()+", value:"+resouceMap.get(k));
+			this.requestMap.put(k.getPathMatcher(), resouceMap.get(k));
+		});
 	}
 	
 	protected SecurityConfig createSecurityConfig(String authString){
@@ -123,29 +141,16 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	 * @param source
 	 * @return
 	 */
-	public ExpressionBasedFilterInvocationSecurityMetadataSource convertTo(FilterInvocationSecurityMetadataSource source){
-		/*if(DefaultFilterInvocationSecurityMetadataSource.class.isInstance(source)){
-			LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> existRequestMap = (LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>)ReflectUtils.getFieldValue(source, "requestMap");
-			requestMap.putAll(existRequestMap);
-			existRequestMap.clear();
-			existRequestMap.putAll(requestMap);
-			for(Entry<RequestMatcher, Collection<ConfigAttribute>> entry : existRequestMap.entrySet()){
-				Collection<ConfigAttribute> configs = Collections2.transform(entry.getValue(), new Function<ConfigAttribute, ConfigAttribute>() {
-
-					@Override
-					public ConfigAttribute apply(ConfigAttribute input) {
-						return new SecurityConfig(input.toString());
-					}
-					
-				});
-				this.requestMap.put(entry.getKey(), configs);
-			}
-			return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
-			
-		}else{
-			return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
-		}*/
-		return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
+	public void buildSecurityMetadataSource(){
+		Assert.notNull(filterSecurityInterceptor);
+		this.buildRequestMap();
+		ExpressionBasedFilterInvocationSecurityMetadataSource ms = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
+		this.filterSecurityInterceptor.setSecurityMetadataSource(ms);
+	}
+	
+	
+	public void setFilterSecurityInterceptor(FilterSecurityInterceptor filterSecurityInterceptor) {
+		this.filterSecurityInterceptor = filterSecurityInterceptor;
 	}
 	
 	/*@Override
@@ -178,6 +183,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 			List<UrlResourceInfo> urlResourceInfo = urlResourceInfoParser.parseToUrlResourceInfos(rp);
 			authoricty.setUrlResourceInfo(urlResourceInfo);
 			authoricty.setAuthority(rs.getString("authority"));
+			authoricty.setSort(rs.getInt("sort"));
 	        return authoricty;
         }
 		
@@ -188,7 +194,15 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		//权限标识
 		private String authority;
 		private List<UrlResourceInfo> urlResourceInfo;
+		private Integer sort;
 	}
-	
+
+	@Data
+	@EqualsAndHashCode
+	@AllArgsConstructor
+	static class SortableAntPathRequestMatcher {
+		private AntPathRequestMatcher pathMatcher;
+		private Integer sort;
+	}
 
 }
