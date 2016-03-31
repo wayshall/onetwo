@@ -36,9 +36,6 @@ import org.springframework.util.Assert;
 public class CopyUtils {
     public static final PropertyDescriptor[] EMPTY_PROPERTIES_ARRAY = new PropertyDescriptor[0];
     
-    
-
-
     public static class ObjectCopierBuilder extends SimpleCopierBuilder<Object, ObjectCopierBuilder> {
     	public static ObjectCopierBuilder newBuilder(){
     		return new ObjectCopierBuilder();
@@ -159,7 +156,7 @@ public class CopyUtils {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	public static <T extends Collection<?>> T newCollections(Class<?> clazz){
 		if(!Collection.class.isAssignableFrom(clazz))
 			throw new RuntimeException("class must be a Collection type: " + clazz);

@@ -1340,7 +1340,7 @@ public class ReflectUtils {
 			return f.get(obj);
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw LangUtils.asBaseException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
+				throw new BaseException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
 			else
 				return null;
 		}
