@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -19,6 +20,7 @@ import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -284,6 +286,20 @@ final public class SpringUtils {
 		return bd;
 	}
 	
+	public static void registerBean(ApplicationContext configurableApplicationContext, String beanName, Class<?> beanClass, Object[] constructorArg, Object...params){
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry)configurableApplicationContext.getAutowireCapableBeanFactory();
+		
+		Map<String, Object> props = LangOps.arrayToMap(params);
+		BeanDefinitionBuilder bdb = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
+		for(Entry<String, Object> entry : props.entrySet()){
+			bdb.addPropertyValue(entry.getKey(), entry.getValue());
+		}
+		if(constructorArg!=null){
+			Stream.of(constructorArg).forEach(arg->bdb.addConstructorArgValue(arg));
+		}
+		registry.registerBeanDefinition(beanName, bdb.getBeanDefinition());
+	}
+	
 	/*****
 	 * 获取SingletonBeanRegistry
 	 * @param applicationContext
@@ -303,6 +319,11 @@ final public class SpringUtils {
 	
 	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
+	}
+	
+	public static void registerAndInitSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
+		injectAndInitialize(applicationContext, singletonObject);
 	}
 	
 	public static Resource classpath(String path){

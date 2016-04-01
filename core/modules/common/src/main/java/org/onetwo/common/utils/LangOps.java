@@ -17,7 +17,7 @@ import org.onetwo.common.utils.func.Closure;
  */
 final public class LangOps {
 	
-	public static <K, V> Map<K, V> arrayToMap(Object[] arrays){
+	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
 		 return Stream.iterate(0, i->i+2)
 				 .limit(arrays.length/2)
 				 .map(i->new Object[]{arrays[i], arrays[i+1]})
