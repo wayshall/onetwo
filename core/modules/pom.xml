@@ -29,6 +29,14 @@
                 <module>security</module>
 	  	</modules>
 	  </profile>
+	  
+	  <profile>
+	    <id>tomcat</id>
+	    <modules>
+           <module>bom</module>
+	       <module>tomcat</module>
+	    </modules>
+	  </profile>
 	</profiles>
 	
 	<scm>
