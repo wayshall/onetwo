@@ -22,7 +22,7 @@ final public class ExceptionUtils {
 	}
 	
 	public static class ExceptionView {
-		public static final String AUTHENTIC = "error_authentic";
+//		public static final String AUTHENTIC = "error_authentic";
 //		public static final String BUSINESS = "error_business";
 //		public static final String SERVICE = "error_service";
 		public static final String CODE_EXCEPTON = "message";

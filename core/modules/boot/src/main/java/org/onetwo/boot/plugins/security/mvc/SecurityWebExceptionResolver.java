@@ -9,7 +9,6 @@ import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.web.method.HandlerMethod;
 
 public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 
@@ -17,7 +16,7 @@ public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 	private AuthenticationFailureHandler authenticationFailureHandler;
 	
 	@Override
-	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex){
+	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex){
 		if(ex instanceof AuthenticationException){
 			if(authenticationFailureHandler!=null){
 				try {
