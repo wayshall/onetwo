@@ -59,6 +59,9 @@
     <assertj.version>1.7.0</assertj.version>
     <mockito.version>1.10.8</mockito.version>
     <rest-assured.version>2.4.0</rest-assured.version>
+    
+    
+    <embededTomcat.version>8.0.30</embededTomcat.version>
         
   </properties> 
 	
@@ -131,6 +134,18 @@
 	  <artifactId>commons-codec</artifactId>
 	  <version>${common-codec.version}</version>
 	</dependency>
+	
+	<!-- other dependency is managed by spring boot 
+	<dependency>
+	  <groupId>org.apache.tomcat.embed</groupId>
+	  <artifactId>tomcat-embed-logging-log4j</artifactId>
+     <version>${embededTomcat.version}</version>
+	</dependency>
+   <dependency>
+     <groupId>org.apache.tomcat.embed</groupId>
+     <artifactId>tomcat-embed-jasper</artifactId>
+     <version>7.0.68</version>
+   </dependency>-->
 	
 	<dependency>
 		<groupId>com.thoughtworks.xstream</groupId>
@@ -218,7 +233,7 @@
 	<dependency>
 		<groupId>javax.servlet.jsp</groupId>
 		<artifactId>jsp-api</artifactId>
-		<version>2.2.1-b03</version>
+		<version>2.1</version>
 		<scope>provided</scope>
 	</dependency>
 	

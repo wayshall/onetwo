@@ -34,17 +34,15 @@ public class CorsFilter implements Filter {
 			httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type, authorization");
 			
 			//1. 允许接收从任何来源发来的请求
-//			httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+			httpResponse.setHeader("Access-Control-Allow-Origin", "*");
 			
 			//2. 跨越cookies，client side: RestangularProvider.setDefaultHttpFields({withCredentials: true});
-			httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
-			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+			/*httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
+			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");*/
 		}else{
-			if(!headers.isEmpty()){
-				headers.entrySet().forEach(e->{
-					httpResponse.setHeader(e.getKey(), e.getValue());
-				});
-			}
+			headers.entrySet().forEach(e->{
+				httpResponse.setHeader(e.getKey(), e.getValue());
+			});
 		}
 	}
 	

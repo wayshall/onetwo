@@ -28,7 +28,6 @@ import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.exception.ExceptionUtils.ExceptionView;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,9 +36,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 /************
  * 异常处理
@@ -47,7 +45,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionRes
  * @author wayshall
  *
  */
-public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionResolver implements InitializingBean {
+public class BootWebExceptionResolver extends SimpleMappingExceptionResolver implements InitializingBean {
 //	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
 
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
@@ -93,11 +91,11 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		return BootWebUtils.isAjaxRequest(request);
 	}
 	
-	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
+	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 	}
 
 	@Override
-	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
+	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
 		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
@@ -113,7 +111,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
-			return createModelAndView(null, model, request);
+			return createModelAndView(null, model, request, response, ex);
 		}
 		
 		String msg = errorMessage.getMesage();
@@ -122,7 +120,7 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			model.put(AbstractBaseController.MESSAGE_TYPE, AbstractBaseController.MESSAGE_TYPE_ERROR);
 		}
 		if(BootWebUtils.isRedirect(errorMessage.getViewName())){
-			return this.createModelAndView(errorMessage.getViewName(), model, request);
+			return this.createModelAndView(errorMessage.getViewName(), model, request, response, ex);
 		}
 
 		String eInfo = "";
@@ -138,18 +136,18 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		model.put(EXCEPTION_STATCK_KEY, eInfo);
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
 		
-		return createModelAndView(errorMessage.getViewName(), model, request);
+		return createModelAndView(errorMessage.getViewName(), model, request, response, ex);
 	}
 
 	protected String getUnknowError(){
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
-	protected ErrorMessage getErrorMessage(HttpServletRequest request, HandlerMethod handlerMethod, ModelMap model, Exception ex){
+	protected ErrorMessage getErrorMessage(HttpServletRequest request, Object handlerMethod, ModelMap model, Exception ex){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;
 		
-		String defaultViewName = ExceptionView.UNDEFINE;
+//		String defaultViewName = ExceptionView.UNDEFINE;
 		boolean detail = true;
 //		boolean authentic = false;
 		ErrorMessage error = new ErrorMessage(ex);
@@ -161,10 +159,10 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 //			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
 		}else */
 		if(ex instanceof LoginException){
-			defaultViewName = ExceptionView.AUTHENTIC;
+//			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
 		}else if(ex instanceof AuthenticationException){
-			defaultViewName = ExceptionView.AUTHENTIC;
+//			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
 		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
@@ -175,12 +173,12 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !bootSiteConfig.isProduct();
 		}else if(DbmException.class.isInstance(ex)){
-			defaultViewName = ExceptionView.UNDEFINE;
+//			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = JFishErrorCode.ORM_ERROR;
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(ex instanceof BaseException){
-			defaultViewName = ExceptionView.UNDEFINE;
+//			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
@@ -219,19 +217,20 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
 			}
 //			defaultViewName = ExceptionView.CODE_EXCEPTON;
-			defaultViewName = ExceptionView.UNDEFINE;
+//			defaultViewName = ExceptionView.UNDEFINE;
 		}
 		
 		if(StringUtils.isBlank(errorMsg)){
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
 		
-		String viewName = null;
+		/*String viewName = null;
 		
 		if(StringUtils.isBlank(viewName)){
 			viewName = findInSiteConfig(ex); 
 			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
-		}
+		}*/
+		String viewName = determineViewName(ex, request);
 		
 		//always true if not production
 		detail = bootSiteConfig.isProduct()?detail:true;
@@ -261,11 +260,21 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		return preurl;
 	}
 	
-	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request){
-		return new ModelAndView(viewName, model);
+	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request, HttpServletResponse response, Exception ex){
+//		return new ModelAndView(viewName, model);
+		if (viewName != null) {
+			// Apply HTTP status code for error views, if specified.
+			// Only apply it if we're processing a top-level request.
+			Integer statusCode = determineStatusCode(request, viewName);
+			if (statusCode != null) {
+				applyStatusCodeIfPossible(request, response, statusCode);
+			}
+			return getModelAndView(viewName, ex, request);
+		}
+		return null;
 	}
 	
-	protected void doLog(HttpServletRequest request, HandlerMethod handlerMethod, Exception ex, boolean detail){
+	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
 		String msg = RequestUtils.getServletPath(request);
 		if(detail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
@@ -276,16 +285,15 @@ public class BootWebExceptionResolver extends AbstractHandlerMethodExceptionReso
 		}
 	}
 	
-	public String findInSiteConfig(Exception ex){
+	@Deprecated
+	private String findInSiteConfig(Exception ex){
 		Class<?> eclass = ex.getClass();
 		String viewName = null;
 		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
 			viewName = bootSiteConfig.getConfig(eclass.getName(), "");
 			if(StringUtils.isNotBlank(viewName))
 				return viewName;
-			if(eclass.getSuperclass()!=null){
-				eclass = eclass.getSuperclass();
-			}
+			eclass = eclass.getSuperclass();
 		} 
 		return viewName;
 	}

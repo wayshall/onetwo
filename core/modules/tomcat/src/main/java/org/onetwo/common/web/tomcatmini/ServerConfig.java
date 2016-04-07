@@ -2,10 +2,7 @@ package org.onetwo.common.web.tomcatmini;
 
 import java.io.File;
 import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
-import org.onetwo.common.utils.ClassUtils;
-import org.onetwo.common.utils.LangUtils;
+import java.util.HashSet;
 
 public class ServerConfig {
 	public static final String SLASH = "/";
@@ -19,7 +16,7 @@ public class ServerConfig {
 	private int redirectPort = 8443;
 	
 	private WebappConfig defaultWebappConfig;
-	private final Collection<WebappConfig> webapps = LangUtils.newHashSet();
+	private final Collection<WebappConfig> webapps = new HashSet<WebappConfig>();
 
 	public int getPort() {
 		return port;
@@ -76,7 +73,7 @@ public class ServerConfig {
 	}
 
 	public String getAppName() {
-		if(StringUtils.isBlank(appName)){
+		if(Utils.isBlank(appName)){
 			appName = getProjectDir().getName();
 		}
 		return appName;
@@ -112,7 +109,7 @@ public class ServerConfig {
 	}
 
 	public String getServerBaseDir() {
-		if(StringUtils.isBlank(serverBaseDir))
+		if(Utils.isBlank(serverBaseDir))
 			return getProjectDir().getPath() + "/target";
 		if(serverBaseDir.startsWith("/")){
 			return serverBaseDir;
@@ -153,7 +150,7 @@ public class ServerConfig {
 			//ignore
 		}
 		if(cld==null){
-			cld = ClassUtils.class.getClassLoader();
+			cld = ServerConfig.class.getClassLoader();
 		}
 		return cld;
 	}
