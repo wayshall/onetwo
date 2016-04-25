@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
@@ -36,6 +37,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements FactoryBean<FilterInvocationSecurityMetadataSource>*/ {
@@ -45,10 +47,11 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	private String resourceQuery;
 //	private String appCode;// ??
 	
-	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap;
+	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = Maps.newLinkedHashMap();
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
-	
+
+	private boolean allowManyPermissionMapToOneUrl = true;
 
 	private FilterSecurityInterceptor filterSecurityInterceptor;
 	// from WebSecurityExpressionRoot
@@ -96,7 +99,13 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 				SortableAntPathRequestMatcher matcher = new SortableAntPathRequestMatcher(new AntPathRequestMatcher(r.getUrl(), r.getMethod()), auth.getSort());
 				if(resouceMap.containsKey(matcher)){
 //					resouceMap.get(matcher).add(new SecurityConfig(auth.getAuthority()));
-					throw new RuntimeException("Expected a single expression attribute for " + matcher);
+					Collection<ConfigAttribute> attrs = resouceMap.get(matcher);
+//					throw new RuntimeException("Expected a single expression attribute for " + matcher);
+					if(allowManyPermissionMapToOneUrl){
+						attrs.add(createSecurityConfig(auth.getAuthority()));
+					}else{
+						throw new RuntimeException("permission conflict, don't allow many permission map to one url. exist: " + attrs + ", new: "+auth.getAuthority());
+					}
 				}else{
 					resouceMap.put(matcher, Lists.newArrayList(createSecurityConfig(auth.getAuthority())));
 				}
@@ -115,7 +124,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 													})
 													.collect(Collectors.toList());
 //		Collections.reverse(keys);
-		this.requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
+//		this.requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
+		requestMap.clear();
 		keys.forEach(k->{
 //			System.out.println("url:"+k.getPathMatcher()+", value:"+resouceMap.get(k));
 			this.requestMap.put(k.getPathMatcher(), resouceMap.get(k));
@@ -190,6 +200,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	}
 	
 	@Data
+	@ToString
 	public static class AuthorityResource {
 		//权限标识
 		private String authority;
@@ -200,6 +211,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	@Data
 	@EqualsAndHashCode
 	@AllArgsConstructor
+	@ToString
 	static class SortableAntPathRequestMatcher {
 		private AntPathRequestMatcher pathMatcher;
 		private Integer sort;

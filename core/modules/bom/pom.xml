@@ -24,7 +24,7 @@
 	<commons-net.version>3.3</commons-net.version>
 	
 	<xstream.version>1.4.8</xstream.version>
-	<guava.version>16.0.1</guava.version>
+	<guava.version>19.0</guava.version>
 	<ant.version>1.9.3</ant.version>
 	<jcifs.version>1.2.19</jcifs.version>
 	

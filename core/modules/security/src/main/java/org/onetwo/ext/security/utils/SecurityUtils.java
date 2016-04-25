@@ -6,8 +6,12 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.security.CommonReadMethodMatcher;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.matcher.MutipleRequestMatcher;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -46,5 +50,18 @@ final public class SecurityUtils {
 	protected static boolean isKeyword(String authority){
 		return KEYWORDS.stream().filter(key->authority.startsWith(key))
 						.findAny().isPresent();
+	}
+	
+	public static LoginUserDetails getCurrentLoginUser(){
+		return (LoginUserDetails)getCurrentLoginUser(SecurityContextHolder.getContext());
+	}
+	public static LoginUserDetails getCurrentLoginUser(SecurityContext context){
+		Authentication auth = context.getAuthentication();
+		return (LoginUserDetails)getCurrentLoginUser(auth);
+	}
+	public static LoginUserDetails getCurrentLoginUser(Authentication auth){
+		if(auth==null || AnonymousAuthenticationToken.class.isInstance(auth))
+			return null;
+		return (LoginUserDetails)auth.getPrincipal();
 	}
 }
