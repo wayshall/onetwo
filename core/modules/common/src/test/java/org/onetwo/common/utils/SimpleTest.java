@@ -1,20 +1,22 @@
 package org.onetwo.common.utils;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.stream.Stream;
-
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 public class SimpleTest {
 	
 	@Test
 	public void test(){
-		Method[] methods = Serializable.class.getDeclaredMethods();
-		Stream.of(methods).map(m->m.getName()).forEach(System.out::println);
+		int val = 0xffff_ffff;
+		System.out.println("val:"+val);
+		short sval = (short)65535;
+		System.out.println("sval:"+sval);
 		
-		methods = Iterable.class.getDeclaredMethods();
-		Stream.of(methods).map(m->m.getName()).forEach(System.out::println);
+		DateTime now = DateTime.now();
+		now = now.millisOfDay().withMinimumValue();
+		System.out.println(now.toString("yyyy-MM-dd HH:mm:ss SSS"));
+		now = now.plusDays(1);
+		System.out.println(now.toString("yyyy-MM-dd HH:mm:ss SSS"));
 	}
 
 }

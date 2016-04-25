@@ -1,6 +1,5 @@
 package org.onetwo.common.web.tomcatmini;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -15,11 +14,12 @@ public class TomcatConfig {
 	public static final String SERVER_BASE_DIR = "server.base.dir";
 	
 
-
-	private static TomcatConfig instance = new TomcatConfig();
+	private static class TomcatConfigHolder {
+		final private static TomcatConfig instance = new TomcatConfig();
+	}
 	
 	public static TomcatConfig getInstance() {
-		return instance;
+		return TomcatConfigHolder.instance;
 	}
 	
 	private Properties config;
@@ -82,6 +82,8 @@ public class TomcatConfig {
 			InputStream in = null;
 			try {
 				in = TomcatConfig.class.getResourceAsStream(srcpath);
+				if(in==null)
+					throw new RuntimeException("can load resource as stream with : " +srcpath );
 				config.load(in);
 			} catch (Exception e1) {
 				throw new RuntimeException("load config error: " + srcpath, e);
@@ -93,10 +95,10 @@ public class TomcatConfig {
 	}
 	
 	public static Properties loadProperties(String configName) {
+		InputStream inStream = TomcatConfig.class.getClassLoader().getResourceAsStream(configName);
+		if(inStream==null)
+			throw new RuntimeException("can load as stream with : " +configName );
 		try {
-			InputStream inStream = TomcatConfig.class.getClassLoader().getResourceAsStream(configName);
-			if(inStream==null)
-				throw new IOException("can load as stream with : " +configName );
 			Properties properties = new Properties();
 			properties.load(inStream);
 			return properties;

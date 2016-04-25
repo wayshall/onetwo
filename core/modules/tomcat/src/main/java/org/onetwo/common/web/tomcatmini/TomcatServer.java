@@ -18,7 +18,8 @@ public class TomcatServer {
 		try {
 			config = TomcatConfig.getInstance().asServerConfig();
 		} catch (Throwable e) {
-			System.out.println(e.getMessage());
+			System.out.println("load config error: "+e.getMessage());
+			System.out.println("use default config...");
 			config = new ServerConfig();
 		}
 		return create(config);
@@ -93,6 +94,7 @@ public class TomcatServer {
 	}
 	
 	protected void addWebapps() throws ServletException{
+		logger.info("add defulat webapp {}, path {} ", webConfig.getContextPath(), webConfig.getWebappDir());
 		tomcat.addWebapp(webConfig.getContextPath(), webConfig.getWebappDir());
 		for(WebappConfig webapp : webConfig.getWebapps()){
 			logger.info("add webapp : {} ", webapp);

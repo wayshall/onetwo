@@ -367,5 +367,12 @@ public class LangUtilsTest {
 	 System.out.println(padRight("Howto", 20) + "*");
 	 System.out.println(padLeft("Howto", 20) + "*");
 	}
+	
+	@Test
+	public void testFormat(){
+		String label = "订单满%s元立减%s元";
+		String res = String.format(label, 100, 50, 30);
+		System.out.println("res:"+res);
+	}
 }
 

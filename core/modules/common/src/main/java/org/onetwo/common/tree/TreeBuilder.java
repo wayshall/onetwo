@@ -2,20 +2,25 @@ package org.onetwo.common.tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("unchecked")
 public class TreeBuilder<TM extends TreeModel<TM>> {
-
+	
+	public static interface ParentNodeNotFoundAction<Node> {
+		Node onParentNodeNotFound(Node currentNode);
+	}
+	
 	public static interface RootNodeFunc<T extends TreeModel<T>> {
 		
 		public boolean isRootNode(T node);
@@ -36,7 +41,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		
 	}
 	
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final Comparator<TM> comparator = new Comparator<TM>() {
 		@Override
@@ -55,11 +60,27 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		}
 	};
 	
+
+	public final ParentNodeNotFoundAction<TM> THROW_ERROR = node->{
+		throw new RuntimeException("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
+	};
+	public final ParentNodeNotFoundAction<TM> IGNORE = node->{
+		logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
+		return null;
+	};
+	
 	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
 	private List<TM> rootNodes = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
 //	private List<?> rootIds;
 	private RootNodeFunc<TM> rootNodeFunc;
+	
+	private Set<Object> notFoundParentIds = Sets.newHashSet();
+	public final ParentNodeNotFoundAction<TM> STORE_NOT_FOUND_PARENTS = node->{
+		logger.info("add node[{}]'s parent node id: {}", node, node.getParentId());
+		notFoundParentIds.add(node.getParentId());
+		return null;
+	};
 
 	public TreeBuilder(List<TM> datas) {
 		Collections.sort(datas, comparator);
@@ -114,16 +135,20 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	}
 	
 	public List<TM> buidTree() {
-		return this.buidTree(false);
+		return this.buidTree(THROW_ERROR);
 	}
-
-	public List<TM> buidTree(boolean ignoreNoParentLeafe) {
+	
+	public List<TM> buidTree(ParentNodeNotFoundAction<TM> notFoundAction) {
 		if (leafages.isEmpty())
 			return Collections.EMPTY_LIST;
 
-		Collection<TM> treeModels = (Collection<TM>) leafages.values();
+		List<TM> treeModels = (List<TM>) new ArrayList<>(leafages.values());
 
-		for (TM node : treeModels) {
+		
+//		for (TM node : treeModels) {
+		//这个循环比较特殊，会动态修改list，所以采用这种循环方式
+		for (int i = 0; i < treeModels.size(); i++) {
+			TM node = treeModels.get(i);
 			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node)) {
 				addRoot(node);
 				continue;
@@ -139,14 +164,24 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			if (isExistsRootNode(node))
 				continue;
 			TM p = leafages.get(node.getParentId());
-			if (p == null) {
+			/*if (p == null) {
 				if (ignoreNoParentLeafe)
 					logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
 				else
-					throw new ServiceException("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
+					throw new RuntimeException("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
 			} else {
 				p.addChild(node);
 //				node.setParent(p);
+			}*/
+			if(p==null){
+				p = notFoundAction.onParentNodeNotFound(node);
+				if(p!=null){
+					leafages.put(p.getId(), p);
+					treeModels.add(p);
+				}
+			}
+			if(p!=null){
+				p.addChild(node);
 			}
 		}
 
@@ -171,6 +206,13 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		return null;
 	}
 
+	public Set<Object> getNotFoundParentIds() {
+		return notFoundParentIds;
+	}
+	
+	public List<TM> getRootNodes() {
+		return rootNodes;
+	}
 	public static void main(String[] args) {
 		DefaultTreeModel t1 = new DefaultTreeModel(1, "t1");
 
@@ -186,7 +228,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new SimpleTreeModelCreator());
 		tb.rootIds(1, 4);
-		List<DefaultTreeModel> t = tb.buidTree(true);
+		List<DefaultTreeModel> t = tb.buidTree(tb.IGNORE);
 		System.out.println(t.get(0));
 		System.out.println(tb.getBranch(4));
 	}

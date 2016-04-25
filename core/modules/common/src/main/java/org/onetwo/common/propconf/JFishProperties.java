@@ -157,17 +157,18 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		boolean succeed = false;
 		String filepath = srcpath;
 		try {
-			if (filepath.indexOf(".")==-1)
-				filepath += PropUtils.CONFIG_POSTFIX;
+			/*if (filepath.indexOf(".")==-1)
+				filepath += PropUtils.CONFIG_POSTFIX;*/
 			file = new File(filepath);
-			if (!file.exists()) {
+			/*if (!file.exists()) {
 				if (filepath.indexOf(':') == -1) {
 					filepath = FileUtils.getResourcePath(this.getClass().getClassLoader(), filepath);
 					file = new File(filepath);
 				}
-			}
-			if(file==null || !file.exists()){
+			}*/
+			if(!file.exists()){
 				logger.info("1. file not exist : " + (file==null?"null":file.getPath()));
+				filepath = FileUtils.getResourcePath(this.getClass().getClassLoader(), filepath);
 				InputStream fin = getInputStream(filepath);
 				if(fin==null){
 					throw new FileNotFoundException("no stream: " + filepath);
