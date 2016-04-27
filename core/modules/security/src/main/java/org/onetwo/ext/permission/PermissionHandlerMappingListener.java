@@ -21,8 +21,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import com.google.common.collect.Lists;
-
 public class PermissionHandlerMappingListener implements InitializingBean {
 	
 	private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
@@ -68,17 +66,17 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	}
 	
 	private void setResourcePatternByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
-		//如果自定义了，忽略自动解释
-		if(perm.getResourcesPattern()!=null){
+		/*if(perm.getResourcesPattern()!=null){
 			List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
+			//如果自定义了，忽略自动解释
 			if(!infos.isEmpty()){
 				String urls = this.urlResourceInfoParser.parseToString(infos);
 				perm.setResourcesPattern(urls);
 			}
 			return ;
-		}
+		}*/
+		List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
 		
-		List<UrlResourceInfo> infos = Lists.newArrayList();
 		Set<String> urlPattterns = entry.getKey().getPatternsCondition().getPatterns();
 		
 		if(urlPattterns.size()==1){
@@ -114,17 +112,17 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		this.permissionManager.build();
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
-			ByPermissionClass menuClass = entry.getValue().getMethodAnnotation(ByPermissionClass.class);
-			if(menuClass==null){
+			ByPermissionClass permClassInst = entry.getValue().getMethodAnnotation(ByPermissionClass.class);
+			if(permClassInst==null){
 				continue ;
 			}
-			for(Class<?> codeClass : menuClass.value()){
-				this.autoConifgPermission(codeClass, entry);
+			for(Class<?> codeClass : permClassInst.value()){
+				this.autoConifgPermission(codeClass, entry, permClassInst);
 			}
 		}
 	}
 	
-	private void autoConifgPermission(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry){
+	private void autoConifgPermission(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry, ByPermissionClass permClassInst){
 		if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null){
 			return;
 		}
@@ -133,7 +131,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 //			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
 			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
 		}
-		if(PermissionUtils.isMenu(perm)){
+		if(PermissionUtils.isMenu(perm) && permClassInst.overrideMenuUrl()){
 			this.setMenuUrlByRequestMappingInfo(codeClass, perm, entry);
 		}
 		this.setResourcePatternByRequestMappingInfo(codeClass, perm, entry);

@@ -17,6 +17,9 @@ public class SimpleTest {
 		System.out.println(now.toString("yyyy-MM-dd HH:mm:ss SSS"));
 		now = now.plusDays(1);
 		System.out.println(now.toString("yyyy-MM-dd HH:mm:ss SSS"));
+		
+		String res = Integer.toString(35, 36);
+		System.out.println("res:"+res);
 	}
 
 }

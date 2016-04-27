@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface ByPermissionClass {
 
 	Class<?>[] value();
+	boolean overrideMenuUrl() default true;
 }
