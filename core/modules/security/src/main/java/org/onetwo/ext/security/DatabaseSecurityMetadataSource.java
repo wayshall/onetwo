@@ -25,12 +25,13 @@ import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.expression.Expression;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.object.MappingSqlQuery;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -102,12 +103,12 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 					Collection<ConfigAttribute> attrs = resouceMap.get(matcher);
 //					throw new RuntimeException("Expected a single expression attribute for " + matcher);
 					if(allowManyPermissionMapToOneUrl){
-						attrs.add(createSecurityConfig(auth.getAuthority()));
+						attrs.add(createSecurityConfig(auth));
 					}else{
 						throw new RuntimeException("permission conflict, don't allow many permission map to one url. exist: " + attrs + ", new: "+auth.getAuthority());
 					}
 				}else{
-					resouceMap.put(matcher, Lists.newArrayList(createSecurityConfig(auth.getAuthority())));
+					resouceMap.put(matcher, Lists.newArrayList(createSecurityConfig(auth)));
 				}
 			});
 		});
@@ -132,13 +133,10 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		});
 	}
 	
-	protected SecurityConfig createSecurityConfig(String authString){
-		/*if(isKeyword(authString)){
-			return new SecurityConfig(authString);
-		}
-		StringBuilder str = new StringBuilder("hasAuthority('");
-		str.append(authString).append("')");*/
-		return new SecurityConfig(SecurityUtils.createSecurityExpression(authString));
+	protected SecurityConfig createSecurityConfig(AuthorityResource auth){
+		String exp = SecurityUtils.createSecurityExpression(auth.getAuthority());
+		Expression authorizeExpression = this.securityExpressionHandler.getExpressionParser().parseExpression(exp);
+		return new CodeSecurityConfig(auth, authorizeExpression);
 	}
 	
 	/*protected boolean isKeyword(String authority){
@@ -154,8 +152,10 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	public void buildSecurityMetadataSource(){
 		Assert.notNull(filterSecurityInterceptor);
 		this.buildRequestMap();
-		ExpressionBasedFilterInvocationSecurityMetadataSource ms = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
-		this.filterSecurityInterceptor.setSecurityMetadataSource(ms);
+		//这个内置实现不支持一个url映射到多个表达式
+//		ExpressionBasedFilterInvocationSecurityMetadataSource fism = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
+		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
 	}
 	
 	
@@ -194,6 +194,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 			authoricty.setUrlResourceInfo(urlResourceInfo);
 			authoricty.setAuthority(rs.getString("authority"));
 			authoricty.setSort(rs.getInt("sort"));
+			authoricty.setAuthorityName(rs.getString("authority_name"));
 	        return authoricty;
         }
 		
@@ -206,6 +207,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		private String authority;
 		private List<UrlResourceInfo> urlResourceInfo;
 		private Integer sort;
+		private String authorityName;
 	}
 
 	@Data
@@ -217,4 +219,26 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		private Integer sort;
 	}
 
+	@SuppressWarnings("serial")
+	public static class CodeSecurityConfig extends SecurityConfig {
+		private final AuthorityResource auth;
+		private final Expression authorizeExpression;
+		
+		public CodeSecurityConfig(AuthorityResource auth, Expression authorizeExpression) {
+			super(SecurityUtils.createSecurityExpression(auth.getAuthority()));
+			this.auth = auth;
+			this.authorizeExpression = authorizeExpression;
+		}
+		public String getAuthorityName() {
+			return auth.getAuthorityName();
+		}
+		
+		public String getCode(){
+			return auth.getAuthority();
+		}
+
+		public Expression getAuthorizeExpression() {
+			return authorizeExpression;
+		}
+	}
 }

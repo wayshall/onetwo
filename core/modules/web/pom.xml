@@ -65,6 +65,19 @@
 		<artifactId>jsf-api</artifactId>
 	</dependency>
 	
+	<!-- <dependency>
+	  <groupId>org.apache.struts</groupId>
+	  <artifactId>struts2-core</artifactId>
+	  <version>2.3.20</version>
+	</dependency> 
+	
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-core</artifactId>
+      <version>2.3.15.2</version>
+    </dependency>
+    -->
+
   </dependencies>
   
   <build>
