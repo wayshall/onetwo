@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,57 +15,75 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
+import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
-public class ExcelTemplateGenerator {
+import com.google.common.collect.Maps;
+
+
+public class ExcelTemplateEngineer {
 	
 	protected final Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 //	final private String templatePath;
-	final private File templateFile;
+//	final private File templateFile;
 //	private ExcelVisitor visitor;
 //	private List<ExcelObject> nodes;
 //	private final Expression expression = Expression.DOLOR;
 	
-	private RowForeachDirective rowForeachDirective = new RowForeachDirective();
+//	private ETDirective rowForeachDirective = new RowForeachDirective();
+	private Map<String, ETRowDirective> rowDirectives = Maps.newHashMap();
 
-	public ExcelTemplateGenerator(String templatePath) {
+	public ExcelTemplateEngineer() {
 		super();
-		this.templateFile = new File(templatePath);
+		addDirective(new RowForeachDirective());
 	}
 
-	public ExcelTemplateGenerator(File templateFile) {
-		super();
-		this.templateFile = templateFile;
+	final void addDirective(ETRowDirective directive){
+		addDirective(directive, false);
 	}
-
-
-	/*public Object parseCellValue(Cell cell, final ExcelTemplateValueProvider provider){
-		Object cellValue = ExcelUtils.getCellValue(cell);
-		if(cellValue==null)
-			return null;
-		String cellText = cellValue.toString();
-		if(expression.isExpresstion(cellText)){
-			final String text = expression.parseByProvider(cellText, provider);
-//			ExcelUtils.setCellValue(cell, text);
-			if(provider.isDebug())
-				logger.info("parse [{}] as [{}]", cellText, text);
-			return text;
+	final void addDirective(ETRowDirective directive, boolean override){
+		if(rowDirectives.containsKey(directive.getName())){
+			if(override){
+				rowDirectives.put(directive.getName(), directive);
+			}else{
+				throw new RuntimeException("directive already exists: " + directive.getName());
+			}
 		}else{
-			return cellValue;
+			rowDirectives.put(directive.getName(), directive);
 		}
-	}*/
-	
+	}
+
 	public Object getCellValue(Cell cell){
 		return ExcelUtils.getCellValue(cell);
 	}
 	
+	protected int parse(ETSheetContext sheetContext, Row row){
+		for(ETRowDirective d : rowDirectives.values()){
+			ETRowContext rowContext = sheetContext.new ETRowContext(row);
+			if(d.isMatch(rowContext) && d.excecute(rowContext)){
+				return rowContext.getLastRownumbAfterExecuteTag();
+			}
+		}
+		ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
+		int cellNumbs = row.getPhysicalNumberOfCells();
+		for (int cellIndex = 0; cellIndex < cellNumbs; cellIndex++) {
+			Cell cell = row.getCell(cellIndex);
+			Object cellValue = getCellValue(cell);
+			if(cellValue==null)
+				continue;
+			
+			Object newCellValue = provider.parseCellValue(cell, provider);
+			ExcelUtils.setCellValue(cell, newCellValue);
+		}
+		return row.getRowNum();
+	}
 
-	public int parse(final Row row, final ExcelTemplateValueProvider provider){
+	/*protected int parse(final Row row, final ExcelTemplateValueProvider provider){
 		RowForeachDirectiveModel forModel = rowForeachDirective.matchStart(row);
 		if(forModel!=null){
 			Row nextRow = row.getSheet().getRow(row.getRowNum()+1);
@@ -89,9 +108,11 @@ public class ExcelTemplateGenerator {
 			}
 		}
 		return row.getRowNum();
-	}
+	}*/
 
-	public void parse(Sheet sheet, final ExcelTemplateValueProvider provider){
+	protected void parse(ETSheetContext sheetContext){
+		Sheet sheet = sheetContext.getSheet();
+		final ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
 //		int rowNumbs = sheet.getPhysicalNumberOfRows();
 		List<CellRangeAddress> cellRangeList = LangUtils.newArrayList();
 		for(int i=0; i< sheet.getNumMergedRegions(); i++){
@@ -105,7 +126,7 @@ public class ExcelTemplateGenerator {
 			Row row = sheet.getRow(rowIndex);
 			if(row==null)
 				continue;
-			rowIndex = parse(row, provider);
+			rowIndex = parse(sheetContext, row);
 		}
 
 		/*for(int i=0; i< sheet.getNumMergedRegions(); i++){
@@ -114,16 +135,16 @@ public class ExcelTemplateGenerator {
 		}*/
 	}
 	
-	public void generate(final ETemplateContext context, String generatedPath){
+	public void generate(File templateFile, final ETemplateContext context, String generatedPath){
 		try {
 			FileUtils.makeDirs(generatedPath, true);
-			generate(context, new FileOutputStream(generatedPath));
+			generate(templateFile, context, new FileOutputStream(generatedPath));
 		} catch (FileNotFoundException e) {
 			throw new BaseException("write workbook to ["+generatedPath+"] error: " + e.getMessage());
 		}
 	}
 	
-	public void generate(final ETemplateContext context, OutputStream out){
+	public void generate(File templateFile, final ETemplateContext context, OutputStream out){
 //		File destFile = FileUtils.copyFile(templatePath, generatedPath);
 //		System.out.println("dest: " + destFile);
 		
@@ -133,7 +154,9 @@ public class ExcelTemplateGenerator {
 		ExcelTemplateValueProvider provider = new ExcelTemplateValueProvider(context);
 		for (int index = 0; index < sheetNumbs; index++) {
 			Sheet sheet = wb.getSheetAt(index);
-			parse(sheet, provider);
+			ETSheetContext directiveContext = new ETSheetContext(this, provider, context);
+			directiveContext.setSheet(sheet);
+			parse(directiveContext);
 		}
 		try {
 			wb.write(out);
