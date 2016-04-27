@@ -1,5 +1,6 @@
 package org.onetwo.common.excel.etemplate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -67,14 +68,15 @@ public class ExcelTemplateTest {
 		String templateName = "excel-template.xlsx";
 		String templatePath = FileUtils.getResourcePath(outputPath)+templateName;
 		String generatedPath = FileUtils.getResourcePath(outputPath)+"excel-template-generated.xlsx";
+		System.out.println("generatedPath:"+ generatedPath);
 		
-		ExcelTemplateGenerator g = new ExcelTemplateGenerator(templatePath);
+		ExcelTemplateEngineer g = new ExcelTemplateEngineer();
 		ETemplateContext context = new ETemplateContext();
 		context.put("year", NiceDate.New().format("yyyy"));
 		context.put("now", NiceDate.New());
 		context.put("datalist", list);
 		context.put("totalLabel", "合计");
-		g.generate(context, generatedPath);
+		g.generate(new File(templatePath), context, generatedPath);
 	}
 	
 

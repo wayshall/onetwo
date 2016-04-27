@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
+import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.common.excel.etemplate.RowForeachDirectiveModel.ForeachRowInfo;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -16,23 +17,39 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
-public class RowForeachDirective {
+public class RowForeachDirective implements ETRowDirective {
 		
 	public final static Pattern PATTERN_START = Pattern.compile("^(?i)\\[row:list\\s+([#]?[\\w]+)\\s+as\\s+(\\w+)\\s*(,\\s*([\\w]+)\\s*)?\\]$");
 	public final static Pattern PATTERN_END = Pattern.compile("^(?i)\\[/row:list\\s*\\]$");
 	
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 
-	public RowForeachDirectiveModel matchStart(Row row){
+	
+	@Override
+	public String getName() {
+		return "rowList";
+	}
+
+	@Override
+	public boolean isMatch(ETRowContext rowContext){
+		String cellString = getRowString(rowContext.getRow());
+		/*RowForeachDirectiveModel model =  matchStartDirectiveText(cellString);
+		if(model!=null)
+			model.setStartRow(row);
+		return model;*/
+		if(StringUtils.isBlank(cellString))
+			return false;
+		Matcher matcher = PATTERN_START.matcher(cellString);
+		return matcher.matches();
+	}
+	
+	protected String getRowString(Row row){
 		Cell cell = row.getCell(0);
 		Object cellValue = ExcelUtils.getCellValue(cell);
 		if(cellValue==null)
 			return null;
 		String cellString = cellValue.toString();
-		RowForeachDirectiveModel model =  matchStartDirectiveText(cellString);
-		if(model!=null)
-			model.setStartRow(row);
-		return model;
+		return cellString;
 	}
 
 	public boolean isMatchEnd(RowForeachDirectiveModel model, Row row){
@@ -50,12 +67,24 @@ public class RowForeachDirective {
 		return false;
 	}
 	
-	protected RowForeachDirectiveModel matchStartDirectiveText(String text){
+	/*protected RowForeachDirectiveModel matchStartDirectiveText(String text){
 		if(StringUtils.isBlank(text))
 			return null;
 		Matcher matcher = PATTERN_START.matcher(text);
 		if(!matcher.matches()){
 			return null;
+		}
+		RowForeachDirectiveModel model = new RowForeachDirectiveModel(text, matcher.group(1), matcher.group(2));
+		if(matcher.groupCount()>=4){
+			model.setIndexVar(matcher.group(4));
+		}
+		return model;
+	}*/
+	
+	protected RowForeachDirectiveModel createModelByDirectiveText(String text){
+		Matcher matcher = PATTERN_START.matcher(text);
+		if(!matcher.matches()){
+			throw new RuntimeException("error tag: " + text);
 		}
 		RowForeachDirectiveModel model = new RowForeachDirectiveModel(text, matcher.group(1), matcher.group(2));
 		if(matcher.groupCount()>=4){
@@ -71,7 +100,8 @@ public class RowForeachDirective {
 		return matcher.matches();
 	}
 	
-	protected boolean matchEnd(RowForeachDirectiveModel model, Row row){
+//	@Override
+	public boolean matchEnd(RowForeachDirectiveModel model, Row row){
 		Row lastRow = row;
 		Sheet sheet = row.getSheet();
 		while(!isMatchEnd(model, lastRow)){
@@ -109,13 +139,35 @@ public class RowForeachDirective {
 		}
 		ExcelUtils.clearRowValue(forModel.getEndRow());
 	}
+
+	@Override
+	public boolean excecute(ETRowContext rowContext){
+		Row row = rowContext.getRow();
+		String cellString = getRowString(rowContext.getRow());
+		RowForeachDirectiveModel forModel = createModelByDirectiveText(cellString);
+		forModel.setStartRow(row);
+		
+		Row nextRow = row.getSheet().getRow(row.getRowNum()+1);
+		if(matchEnd(forModel, nextRow)){
+			nextRow = row.getSheet().getRow(forModel.getEndRow().getRowNum()+1);
+			
+			excecute(rowContext, forModel);
+			
+			int lastRownumbAfterExecuteTag = nextRow.getRowNum()-1;
+//			return rownumb;
+			rowContext.setLastRownumbAfterExecuteTag(lastRownumbAfterExecuteTag);
+			return true;
+		}
+		return false;
+	}
 	
-	public void excecute(ExcelTemplateGenerator g, RowForeachDirectiveModel forModel, final ExcelTemplateValueProvider provider){
+	public void excecute(ETRowContext rowContext, RowForeachDirectiveModel forModel){
+		final ExcelTemplateValueProvider provider = rowContext.getSheetContext().getValueProvider();
+		
 		Row endRow = forModel.getEndRow();
 		Sheet sheet = endRow.getSheet();
 		List<ForeachRowInfo> foreachRows = forModel.getMatchRows();
 
-		
 		Object listObject = provider.parseValue(forModel.getDataSource());
 		if(!LangUtils.isMultiple(listObject)){
 			throw new BaseException("the ["+forModel.getDataSource()+"] must be a Collection or Array object");
