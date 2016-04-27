@@ -5,12 +5,14 @@ import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.method.JFishMethodSecurityMetadataSource;
 import org.onetwo.ext.security.url.SecurityBeanPostProcessor;
 import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
@@ -30,7 +32,8 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
-	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
-		return super.defaultSecurityConfigurer();
+	@Autowired
+	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
+		return super.defaultSecurityConfigurer(accessDecisionManager);
 	}
 }

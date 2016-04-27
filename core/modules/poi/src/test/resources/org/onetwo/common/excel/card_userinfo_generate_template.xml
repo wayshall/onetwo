@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template name="sheet" label="用户卡资料(广州测试)" datasource="#cardUserList">
+
+		<rows>
+			
+			<row name="element" type="iterator" datasource="#sheet.datasource" renderHeader="true" > 
+				<fields>
+					<field name=":id" label="id" />
+					<field name=":name" label="name" />
+					<field name=":idCard" label="idCard" />
+					<field name=":batchCode" label="batchCode" />
+					<field name=":boxCode" label="boxCode" />
+					<field name=":packageCode" label="packageCode" />
+					<field name=":countyName" label="countyName" />
+					<field name=":townName" label="townName" />
+					<field name=":villageName" label="villageName" />
+				</fields>
+			</row>
+			
+		</rows>
+
+</template>
