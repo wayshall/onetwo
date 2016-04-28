@@ -65,18 +65,21 @@ public class ExcelTemplateTest {
 	
 	@Test
 	public void testAll(){
-		String templateName = "excel-template.xlsx";
+//		String templateName = "excel-template.xlsx";
+		String templateName = "excel-template.xlsm";
 		String templatePath = FileUtils.getResourcePath(outputPath)+templateName;
-		String generatedPath = FileUtils.getResourcePath(outputPath)+"excel-template-generated.xlsx";
+		String generatedPath = FileUtils.getResourcePath(outputPath)+"excel-template-generated.xlsm";
 		System.out.println("generatedPath:"+ generatedPath);
 		
 		ExcelTemplateEngineer g = new ExcelTemplateEngineer();
-		ETemplateContext context = new ETemplateContext();
-		context.put("year", NiceDate.New().format("yyyy"));
-		context.put("now", NiceDate.New());
-		context.put("datalist", list);
-		context.put("totalLabel", "合计");
-		g.generate(new File(templatePath), context, generatedPath);
+		g.generate(new File(templatePath), generatedPath, new ETemplateContext(){
+			{
+				put("year", NiceDate.New().format("yyyy"));
+				put("now", NiceDate.New());
+				put("datalist", list);
+				put("totalLabel", "合计");
+			}
+		});
 	}
 	
 

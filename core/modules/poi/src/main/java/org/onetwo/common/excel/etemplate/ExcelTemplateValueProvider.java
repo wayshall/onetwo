@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
-import org.onetwo.common.excel.etemplate.RowForeachDirectiveModel.ForeachRowInfo;
+import org.onetwo.common.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.expr.ValueProvider;
@@ -53,6 +53,14 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 	public Object parseValue(String exp){
 		Object val = ExcelUtils.getValue(exp, templateContext.getDataContext(), templateContext.getRootObject());
 		return val;
+	}
+	
+	public <T> T parseValue(String exp, Class<T> clazz){
+		Object val = parseValue(exp);
+		if(!clazz.isInstance(val)){
+			throw new RuntimeException("the value must be " + clazz);
+		}
+		return clazz.cast(val);
 	}
 
 	public ETemplateContext getTemplateContext() {

@@ -16,6 +16,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
+import org.onetwo.common.excel.etemplate.directive.ETRowDirective;
+import org.onetwo.common.excel.etemplate.directive.ForeachRowDirective;
+import org.onetwo.common.excel.etemplate.directive.IfRowDirective;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -40,7 +43,8 @@ public class ExcelTemplateEngineer {
 
 	public ExcelTemplateEngineer() {
 		super();
-		addDirective(new RowForeachDirective());
+		addDirective(new ForeachRowDirective());
+		addDirective(new IfRowDirective());
 	}
 
 	final void addDirective(ETRowDirective directive){
@@ -62,10 +66,11 @@ public class ExcelTemplateEngineer {
 		return ExcelUtils.getCellValue(cell);
 	}
 	
-	protected int parse(ETSheetContext sheetContext, Row row){
+	public int parseRow(ETSheetContext sheetContext, Row row){
 		for(ETRowDirective d : rowDirectives.values()){
 			ETRowContext rowContext = sheetContext.new ETRowContext(row);
 			if(d.isMatch(rowContext) ){
+				logger.info("match directive[{}], executing...", d.getName());
 				try {
 					if(d.excecute(rowContext))
 						return rowContext.getLastRownumbAfterExecuteTag();
@@ -74,19 +79,11 @@ public class ExcelTemplateEngineer {
 				}
 			}
 		}
-		ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
-		int cellNumbs = row.getPhysicalNumberOfCells();
-		for (int cellIndex = 0; cellIndex < cellNumbs; cellIndex++) {
-			Cell cell = row.getCell(cellIndex);
-			Object cellValue = getCellValue(cell);
-			if(cellValue==null)
-				continue;
-			
-			Object newCellValue = provider.parseCellValue(cell, provider);
-			ExcelUtils.setCellValue(cell, newCellValue);
-		}
+		ExcelUtils.parseCommonRow(row, sheetContext.getValueProvider());
 		return row.getRowNum();
 	}
+	
+	
 
 	/*protected int parse(final Row row, final ExcelTemplateValueProvider provider){
 		RowForeachDirectiveModel forModel = rowForeachDirective.matchStart(row);
@@ -115,7 +112,7 @@ public class ExcelTemplateEngineer {
 		return row.getRowNum();
 	}*/
 
-	protected void parse(ETSheetContext sheetContext){
+	protected void parseSheet(ETSheetContext sheetContext){
 		Sheet sheet = sheetContext.getSheet();
 		final ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
 //		int rowNumbs = sheet.getPhysicalNumberOfRows();
@@ -131,7 +128,7 @@ public class ExcelTemplateEngineer {
 			Row row = sheet.getRow(rowIndex);
 			if(row==null)
 				continue;
-			rowIndex = parse(sheetContext, row);
+			rowIndex = parseRow(sheetContext, row);
 		}
 
 		/*for(int i=0; i< sheet.getNumMergedRegions(); i++){
@@ -140,16 +137,16 @@ public class ExcelTemplateEngineer {
 		}*/
 	}
 	
-	public void generate(File templateFile, final ETemplateContext context, String generatedPath){
+	public void generate(File templateFile, String generatedPath, final ETemplateContext context){
 		try {
 			FileUtils.makeDirs(generatedPath, true);
-			generate(templateFile, context, new FileOutputStream(generatedPath));
+			generate(templateFile, new FileOutputStream(generatedPath), context);
 		} catch (FileNotFoundException e) {
 			throw new BaseException("write workbook to ["+generatedPath+"] error: " + e.getMessage());
 		}
 	}
 	
-	public void generate(File templateFile, final ETemplateContext context, OutputStream out){
+	public void generate(File templateFile, OutputStream out, final ETemplateContext context){
 //		File destFile = FileUtils.copyFile(templatePath, generatedPath);
 //		System.out.println("dest: " + destFile);
 		
@@ -161,7 +158,7 @@ public class ExcelTemplateEngineer {
 			Sheet sheet = wb.getSheetAt(index);
 			ETSheetContext directiveContext = new ETSheetContext(this, provider, context);
 			directiveContext.setSheet(sheet);
-			parse(directiveContext);
+			parseSheet(directiveContext);
 		}
 		try {
 			wb.write(out);
