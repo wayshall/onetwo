@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<configuration>   
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">   
+    <encoder  class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">   
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} %L - %msg%n</pattern>   
+    </encoder >   
+  </appender>   
+  
+  <appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+  		<fileNamePattern>./test.%d{yyyy-MM-dd}.log</fileNamePattern>
+  		<!-- keep 30 days' worth of history -->
+      	<maxHistory>180</maxHistory>
+  	</rollingPolicy>
+  	<encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} %L - %msg%n</pattern>  
+    </encoder>
+  </appender>
+  
+  <!-- <appender name="accessAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+  		<fileNamePattern>logs/webapp_access.%d{yyyy-MM-dd}.log</fileNamePattern>
+  	</rollingPolicy>
+  	<encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} - %msg%n</pattern>  
+    </encoder>
+  </appender>
+  
+  
+  	<appender name="mail" class="ch.qos.logback.classic.net.SMTPAppender">
+	    <smtpHost>smtp.qq.com</smtpHost>
+	    <smtpPort>465</smtpPort>
+	    <SSL>true</SSL>
+	    <username>wayshall@qq.com</username>
+	    <password>udarlmvpprwsbbjh</password>
+	
+	    <to>pistols@qq.com</to>
+	    <from>wayshall@qq.com</from>
+	    <subject>zhiyetong-manager程序严重错误，请注意</subject>
+	    <layout class="ch.qos.logback.classic.PatternLayout">
+	    <pattern>%date %-5level %logger{35} - %message%n</pattern>
+	    </layout>
+	</appender>
+   <logger name="mailLogger" level="INFO">  
+       <appender-ref ref="mail" />   
+   </logger>  
+   
+   <logger name="accessLogger" level="INFO">  
+       <appender-ref ref="accessAppender" />   
+   </logger>   -->
+   
+   <!-- print mybatis sql 
+   <logger name="com.yooyo.zhiyetong" level="TRACE">  
+       <appender-ref ref="console" />   
+   </logger>  
+   -->
+     
+  <root level="INFO">   
+    <appender-ref ref="console" />   
+	<appender-ref ref="logFile" />
+  </root>   
+</configuration>

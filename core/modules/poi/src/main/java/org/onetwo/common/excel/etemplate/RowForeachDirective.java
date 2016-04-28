@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 
 public class RowForeachDirective implements ETRowDirective {
 		
-	public final static Pattern PATTERN_START = Pattern.compile("^(?i)\\[row:list\\s+([#]?[\\w]+)\\s+as\\s+(\\w+)\\s*(,\\s*([\\w]+)\\s*)?\\]$");
-	public final static Pattern PATTERN_END = Pattern.compile("^(?i)\\[/row:list\\s*\\]$");
+	public final static Pattern PATTERN_START = Pattern.compile("^(?i)\\[list\\s+([#]?[\\w]+)\\s+as\\s+(\\w+)\\s*(,\\s*([\\w]+)\\s*)?\\]$");
+	public final static Pattern PATTERN_END = Pattern.compile("^(?i)\\[/list\\s*\\]$");
 	
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 
@@ -32,7 +32,7 @@ public class RowForeachDirective implements ETRowDirective {
 
 	@Override
 	public boolean isMatch(ETRowContext rowContext){
-		String cellString = getRowString(rowContext.getRow());
+		String cellString = getRowString(rowContext.getTagRow());
 		/*RowForeachDirectiveModel model =  matchStartDirectiveText(cellString);
 		if(model!=null)
 			model.setStartRow(row);
@@ -142,8 +142,8 @@ public class RowForeachDirective implements ETRowDirective {
 
 	@Override
 	public boolean excecute(ETRowContext rowContext){
-		Row row = rowContext.getRow();
-		String cellString = getRowString(rowContext.getRow());
+		Row row = rowContext.getTagRow();
+		String cellString = getRowString(rowContext.getTagRow());
 		RowForeachDirectiveModel forModel = createModelByDirectiveText(cellString);
 		forModel.setStartRow(row);
 		
@@ -151,7 +151,12 @@ public class RowForeachDirective implements ETRowDirective {
 		if(matchEnd(forModel, nextRow)){
 			nextRow = row.getSheet().getRow(forModel.getEndRow().getRowNum()+1);
 			
-			excecute(rowContext, forModel);
+			try {
+				excecute(rowContext, forModel);
+			} catch (Exception e) {
+				throw ExcelUtils.wrapAsUnCheckedException(e);
+//				throw new RuntimeException("row:"+nextRow, e);
+			}
 			
 			int lastRownumbAfterExecuteTag = nextRow.getRowNum()-1;
 //			return rownumb;

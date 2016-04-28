@@ -65,8 +65,13 @@ public class ExcelTemplateEngineer {
 	protected int parse(ETSheetContext sheetContext, Row row){
 		for(ETRowDirective d : rowDirectives.values()){
 			ETRowContext rowContext = sheetContext.new ETRowContext(row);
-			if(d.isMatch(rowContext) && d.excecute(rowContext)){
-				return rowContext.getLastRownumbAfterExecuteTag();
+			if(d.isMatch(rowContext) ){
+				try {
+					if(d.excecute(rowContext))
+						return rowContext.getLastRownumbAfterExecuteTag();
+				} catch (Exception e) {
+					throw new RuntimeException("execute directive["+d.getName()+"] error:"+e.getMessage(), e);
+				}
 			}
 		}
 		ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
