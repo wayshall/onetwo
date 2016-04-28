@@ -1,6 +1,10 @@
 package org.onetwo.common.excel.etemplate;
 
+import java.util.List;
+
 import org.apache.poi.ss.usermodel.Row;
+import org.onetwo.common.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
+import org.onetwo.common.utils.LangUtils;
 
 public class AbstractDirectiveModel {
 
@@ -8,6 +12,7 @@ public class AbstractDirectiveModel {
 	private Row startRow;
 	private Row endRow;
 	private String directiveEnd;
+	private List<ForeachRowInfo> matchRows = LangUtils.newArrayList();
 	
 	public AbstractDirectiveModel(String directive) {
 		super();
@@ -37,6 +42,12 @@ public class AbstractDirectiveModel {
 
 	public void setDirectiveEnd(String directiveEnd) {
 		this.directiveEnd = directiveEnd;
+	}
+	public List<ForeachRowInfo> getMatchRows() {
+		return matchRows;
+	}
+	public void addMatchRow(Row row){
+		this.matchRows.add(new ForeachRowInfo(row));
 	}
 	
 }
