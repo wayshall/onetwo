@@ -13,9 +13,23 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
+    
+    <modules>
+            <module>bom</module>
+            <module>parent</module>
+            <module>common</module>
+            <module>jackson</module>
+            <module>spring</module>
+            <module>dbm</module>
+            <module>poi</module>
+            <module>web</module>
+            <module>boot</module>
+            <module>security</module>
+    </modules>
+    
 	<profiles>
 	  <profile>
-    	<id>modules</id>
+    	<id>all</id>
     	<modules>
 				<module>bom</module>
 				<module>parent</module>

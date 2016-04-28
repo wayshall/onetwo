@@ -52,7 +52,7 @@ public class RowForeachDirectiveTest {
 	public void testDirectiveModel(){
 		String directive = "[row:list #dataList as data]";
 		RowForeachDirective d = new RowForeachDirective();
-		RowForeachDirectiveModel model = d.matchStartDirectiveText(directive);
+		RowForeachDirectiveModel model = d.createModelByDirectiveText(directive);
 		Assert.assertNotNull(model);
 		Assert.assertEquals("#dataList", model.getDataSource());
 		Assert.assertEquals("data", model.getItemVar());
