@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.MyLoggerFactory;
@@ -285,7 +286,7 @@ abstract public class ExcelUtils {
 	public static void copyCellStyle(Cell source, Cell target){
 		CellStyle style = source.getCellStyle();
 		if(style!=null){
-			//可能会影响性能。。。
+			//TODO:会影响性能, 可缓存。。。
 			CellStyle newCellStyle = source.getRow().getSheet().getWorkbook().createCellStyle();
 			newCellStyle.cloneStyleFrom(style);
 			target.setCellStyle(style);
@@ -326,5 +327,79 @@ abstract public class ExcelUtils {
 		}
 		return (RuntimeException) e;
 	}
+	
+	public static void parseCommonRow(Row row, ExcelTemplateValueProvider provider){
+		int cellNumbs = row.getPhysicalNumberOfCells();
+		for (int cellIndex = 0; cellIndex < cellNumbs; cellIndex++) {
+			Cell cell = row.getCell(cellIndex);
+			Object cellValue = getCellValue(cell);
+			if(cellValue==null)
+				continue;
+			
+			Object newCellValue = provider.parseCellValue(cell, provider);
+			ExcelUtils.setCellValue(cell, newCellValue);
+		}
+	}
+	
+	public static void copyRow(Sheet worksheet, Row newRow, Row sourceRow) {
+		Workbook workbook = worksheet.getWorkbook();
+        for (int i = 0; i < sourceRow.getLastCellNum(); i++) {
+            Cell oldCell = sourceRow.getCell(i);
+            Cell newCell = newRow.createCell(i);
+
+            if (oldCell == null) {
+                newCell = null;
+                continue;
+            }
+
+            CellStyle newCellStyle = workbook.createCellStyle();
+            newCellStyle.cloneStyleFrom(oldCell.getCellStyle());
+            newCell.setCellStyle(newCellStyle);
+
+            if (oldCell.getCellComment() != null) {
+                newCell.setCellComment(oldCell.getCellComment());
+            }
+
+            if (oldCell.getHyperlink() != null) {
+                newCell.setHyperlink(oldCell.getHyperlink());
+            }
+
+            newCell.setCellType(oldCell.getCellType());
+
+            switch (oldCell.getCellType()) {
+                case Cell.CELL_TYPE_BLANK:
+                    newCell.setCellValue(oldCell.getStringCellValue());
+                    break;
+                case Cell.CELL_TYPE_BOOLEAN:
+                    newCell.setCellValue(oldCell.getBooleanCellValue());
+                    break;
+                case Cell.CELL_TYPE_ERROR:
+                    newCell.setCellErrorValue(oldCell.getErrorCellValue());
+                    break;
+                case Cell.CELL_TYPE_FORMULA:
+                    newCell.setCellFormula(oldCell.getCellFormula());
+                    break;
+                case Cell.CELL_TYPE_NUMERIC:
+                    newCell.setCellValue(oldCell.getNumericCellValue());
+                    break;
+                case Cell.CELL_TYPE_STRING:
+                    newCell.setCellValue(oldCell.getRichStringCellValue());
+                    break;
+            }
+        }
+
+        for (int i = 0; i < worksheet.getNumMergedRegions(); i++) {
+            CellRangeAddress cellRangeAddress = worksheet.getMergedRegion(i);
+            if (cellRangeAddress.getFirstRow() == sourceRow.getRowNum()) {
+                CellRangeAddress newCellRangeAddress = new CellRangeAddress(newRow.getRowNum(),
+                        (newRow.getRowNum() +
+                                (cellRangeAddress.getLastRow() - cellRangeAddress.getFirstRow()
+                                        )),
+                        cellRangeAddress.getFirstColumn(),
+                        cellRangeAddress.getLastColumn());
+                worksheet.addMergedRegion(newCellRangeAddress);
+            }
+        }
+    }
 	
 }

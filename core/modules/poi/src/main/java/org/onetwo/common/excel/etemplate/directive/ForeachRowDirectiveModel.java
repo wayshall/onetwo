@@ -1,25 +1,26 @@
-package org.onetwo.common.excel.etemplate;
+package org.onetwo.common.excel.etemplate.directive;
 
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Row;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.excel.etemplate.AbstractDirectiveModel;
 
-public class RowForeachDirectiveModel extends AbstractDirectiveModel {
+public class ForeachRowDirectiveModel extends AbstractDirectiveModel {
 
 	final private String dataSource;
 	final private String itemVar;
 	private String indexVar;
-	private List<ForeachRowInfo> matchRows = LangUtils.newArrayList();
 	
-	public RowForeachDirectiveModel(String directive, String dataSource, String itemVar) {
+	private List<?> dataList;
+	
+	public ForeachRowDirectiveModel(String directive, String dataSource, String itemVar) {
 		super(directive);
 		this.dataSource = dataSource;
 		this.itemVar = itemVar;
 	}
 	
 	public int getLength(){
-		return matchRows.size()+2;
+		return getMatchRows().size()+2;
 	}
 
 	public String getDataSource() {
@@ -28,12 +29,6 @@ public class RowForeachDirectiveModel extends AbstractDirectiveModel {
 	public String getItemVar() {
 		return itemVar;
 	}
-	public List<ForeachRowInfo> getMatchRows() {
-		return matchRows;
-	}
-	public void addMatchRow(Row row){
-		this.matchRows.add(new ForeachRowInfo(row));
-	}
 	
 	public String getIndexVar() {
 		return indexVar;
@@ -41,6 +36,14 @@ public class RowForeachDirectiveModel extends AbstractDirectiveModel {
 
 	public void setIndexVar(String indexVar) {
 		this.indexVar = indexVar;
+	}
+
+	public List<?> getDataList() {
+		return dataList;
+	}
+
+	public void setDataList(List<?> dataList) {
+		this.dataList = dataList;
 	}
 
 
