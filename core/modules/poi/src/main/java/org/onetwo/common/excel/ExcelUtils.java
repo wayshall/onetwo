@@ -320,4 +320,11 @@ abstract public class ExcelUtils {
 		}
 	}
 	
+	public static RuntimeException wrapAsUnCheckedException(Exception e){
+		if(!RuntimeException.class.isInstance(e)){
+			return new RuntimeException("error: " + e.getMessage(), e);
+		}
+		return (RuntimeException) e;
+	}
+	
 }

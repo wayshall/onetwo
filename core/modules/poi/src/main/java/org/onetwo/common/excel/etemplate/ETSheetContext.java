@@ -41,20 +41,22 @@ public class ETSheetContext {
 	}
 	
 	public class ETRowContext {
-		private Row row;
+		private Row tagRow;
+//		private Row currentRow;
+//		private Row currentRownumb;
 		private int lastRownumbAfterExecuteTag;
 		
 		public ETRowContext(Row currentRow) {
 			super();
-			this.row = currentRow;
+			this.tagRow = currentRow;
 		}
 
 		public ETSheetContext getSheetContext(){
 			return ETSheetContext.this;
 		}
 
-		public Row getRow() {
-			return row;
+		public Row getTagRow() {
+			return tagRow;
 		}
 
 		public int getLastRownumbAfterExecuteTag() {
@@ -63,6 +65,7 @@ public class ETSheetContext {
 		public void setLastRownumbAfterExecuteTag(int lastRownumbAfterExecuteTag) {
 			this.lastRownumbAfterExecuteTag = lastRownumbAfterExecuteTag;
 		}
+
 
 	}
 	
