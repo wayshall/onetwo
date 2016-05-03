@@ -1,7 +1,6 @@
 package org.onetwo.common.guava;
 
 import org.junit.Test;
-import org.onetwo.common.exception.BaseException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

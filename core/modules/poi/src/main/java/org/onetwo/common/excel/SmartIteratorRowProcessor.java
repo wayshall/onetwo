@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.onetwo.common.excel.data.CellContextData;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.excel.exception.ExcelException;
 
 public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
@@ -43,7 +43,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 	private Cell createSingleCell(CellContextData cellContext, int rowCount, int cellIndex, Object cellValue){
 		Cell cell = null;
 		if(cellContext==null)
-			throw new BaseException("the cell of row has not created yet : " + cellContext.getFieldModel().getName());
+			throw new ExcelException("the cell of row has not created yet : " + cellContext.getFieldModel().getName());
 
 		CellContextData subCellContext = createCellContext(cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
 		cell = createCell(subCellContext);

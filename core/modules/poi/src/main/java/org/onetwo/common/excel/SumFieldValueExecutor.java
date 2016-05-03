@@ -1,10 +1,10 @@
 package org.onetwo.common.excel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.excel.data.CellContextData;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
@@ -12,7 +12,7 @@ public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
 	public static final String SUM_VALUE_FIELD = "sumValueField";
 	public static final String SUM_VALUE_CONDITION = "sumValueCondition";
 
-	private static final Logger logger = MyLoggerFactory.getLogger(SumFieldValueExecutor.class);
+	private static final Logger logger = LoggerFactory.getLogger(SumFieldValueExecutor.class);
 
 	@Override
 	public boolean apply(CellContextData cellContext, ExecutorModel executorModel) {
@@ -37,7 +37,7 @@ public class SumFieldValueExecutor extends AbstractFieldValueExecutor {
 //			fieldvalue = cellContext.getParser().parseValue(sumValueField, cellContext.getObjectValue(), null);
 			CellContextData sumFieldCellContext = cellContext.getRowContext().getCellContext(sumValueField);
 			if(sumFieldCellContext==null)
-				throw new BaseException("not found cell for name: " + sumValueField);
+				throw new ExcelException("not found cell for name: " + sumValueField);
 			fieldvalue = sumFieldCellContext.getFieldValue();
 		}else{
 			fieldvalue = cellContext.getFieldValue().toString();

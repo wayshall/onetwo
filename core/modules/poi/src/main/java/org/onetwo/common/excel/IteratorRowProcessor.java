@@ -3,12 +3,11 @@ package org.onetwo.common.excel;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.excel.data.RowContextData;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.profiling.JFishLogger;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
 @SuppressWarnings("unchecked")
 public class IteratorRowProcessor extends DefaultRowProcessor {
@@ -37,7 +36,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		
 		Object dataSourceValue = rowContext.parseValue(iterator.getDatasource());
 //		Object dataSourceValue = rowContext.getSheetDatas();
-		Iterator it = LangUtils.convertIterator(dataSourceValue);
+		Iterator it = ExcelUtils.convertIterator(dataSourceValue);
 		if(it==null)
 			return 0;
 
@@ -49,7 +48,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		for (Object ele = null; it.hasNext(); index++) {
 //			UtilTimerStack.push(iterator.getName());
 			if(index%1000==0)
-				JFishLogger.INSTANCE.log(this, "create row " + index);
+				logger.info("create row " + index);
 			
 
 //			String pname = "pre-field-"+index;
@@ -75,7 +74,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //					UtilTimerStack.pop(name);
 				}
 			} catch (Exception e) {
-				throw new BaseException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);
+				throw new ExcelException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);
 			}finally{
 				rowContext.setCurrentRow(null);
 				rowContext.setCurrentRowObject(null);
@@ -87,7 +86,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 
 //			UtilTimerStack.pop(iterator.getName());
 		}
-		int size = LangUtils.size(dataSourceValue);
+		int size = ExcelUtils.size(dataSourceValue);
 		return size;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.onetwo.common.utils.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,8 +94,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	}
 
 	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
-		if (datas == null || datas.isEmpty())
-			return;
+		Assert.notEmpty(datas);
 
 		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 

@@ -5,8 +5,7 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
 public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> {
 	private Map<String, CellValueConvertor> convertors;
@@ -40,7 +39,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 			Row titleRow = sheet.getRow(0);
 			return ExcelUtils.getRowValues(titleRow);
 		} catch (Exception e) {
-			throw new ServiceException("mapTitleRow error" , e);
+			throw ExcelUtils.wrapAsUnCheckedException("mapTitleRow error" , e);
 		}
 	}
 	
@@ -59,7 +58,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 			}
 			return (T)c.convert(row.getCell(cellnum));
 		} catch (Exception e) {
-			throw new ServiceException("获取excel列[row" +row.getRowNum()+", cell"+ cellnum+"]值出错：" + e.getMessage());
+			throw ExcelUtils.wrapAsUnCheckedException("获取excel列[row" +row.getRowNum()+", cell"+ cellnum+"]值出错：" + e.getMessage(), e);
 		}
 	}
 
@@ -71,7 +70,7 @@ public abstract class AbstractSSFRowMapperAdapter<T> implements SSFRowMapper<T> 
 	public CellValueConvertor getCellValueConvertor(String type) {
 		if(convertors==null || convertors.isEmpty())
 			return null;
-		if(StringUtils.isBlank(type))
+		if(ExcelUtils.isBlank(type))
 			return null;
 		return convertors.get(type.toLowerCase());
 	}
