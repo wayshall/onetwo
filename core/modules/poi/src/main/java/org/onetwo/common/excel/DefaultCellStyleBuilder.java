@@ -8,10 +8,8 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.onetwo.common.excel.data.CellContextData;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.utils.ClassIntroManager;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.springframework.beans.BeanWrapper;
 
 public class DefaultCellStyleBuilder {
@@ -37,19 +35,19 @@ public class DefaultCellStyleBuilder {
 		
 		String styleString = getStyle(field);
 		String fontString = getFont(field);
-		if(StringUtils.isBlank(field.getDataFormat()) && StringUtils.isBlank(styleString) && StringUtils.isBlank(fontString)){
+		if(ExcelUtils.isBlank(field.getDataFormat()) && ExcelUtils.isBlank(styleString) && ExcelUtils.isBlank(fontString)){
 			return null;
 		}
 		
-		if(StringUtils.isNotBlank(styleString) && styleString.startsWith("#")){
+		if(!ExcelUtils.isBlank(styleString) && styleString.startsWith("#")){
 			styleString = (String)cellContext.parseValue(styleString);
 		}
 
-		if(StringUtils.isNotBlank(field.getDataFormat())){
+		if(!ExcelUtils.isBlank(field.getDataFormat())){
 			styleString += ";dataFormat:"+HSSFDataFormat.getBuiltinFormat(field.getDataFormat());
 		}
 		
-		if(StringUtils.isNotBlank(fontString) && fontString.startsWith("#")){
+		if(!ExcelUtils.isBlank(fontString) && fontString.startsWith("#")){
 			fontString = (String)cellContext.parseValue(fontString);
 		}
 		
@@ -61,7 +59,7 @@ public class DefaultCellStyleBuilder {
 		}
 		
 		cstyle = this.generator.getWorkbook().createCellStyle();
-		BeanWrapper bw = SpringUtils.newBeanWrapper(cstyle);
+		BeanWrapper bw = ExcelUtils.newBeanWrapper(cstyle);
 		
 		Map<String, String> styleMap = this.generator.getPropertyStringParser().parseStyle(styleString);
 		try {
@@ -75,7 +73,7 @@ public class DefaultCellStyleBuilder {
 				bw.setPropertyValue(entry.getKey(), getStyleValue(entry.getValue()));
 			}
 		} catch (Exception e) {
-			throw new BaseException("" + cellContext.getLocation()+" buildCellStyle error: " + e.getMessage(), e);
+			throw ExcelUtils.wrapAsUnCheckedException(cellContext.getLocation()+" buildCellStyle error: " + e.getMessage(), e);
 		}
 		
 		Font font = buildCellFont(cellContext, fontString);
@@ -92,7 +90,7 @@ public class DefaultCellStyleBuilder {
 		if(value.startsWith("@")){
 			return true;
 		}
-		return ReflectUtils.getIntro(clazz).containsField(value, true);
+		return ClassIntroManager.getInstance().getIntro(clazz).containsField(value, true);
 	}
 	protected String getStaticField(String value){
 		if(value.startsWith("@"))
@@ -102,7 +100,7 @@ public class DefaultCellStyleBuilder {
 	
 	protected Object getFontValue(String value){
 		if(isStaticField(Font.class, value)){
-			Object fontValue = ReflectUtils.getStaticFieldValue(Font.class, getStaticField(value));
+			Object fontValue = ClassIntroManager.getInstance().getIntro(Font.class).getFieldValue(Font.class, getStaticField(value));
 			return fontValue;
 		}else{
 			//extends : map.get(value);
@@ -111,20 +109,14 @@ public class DefaultCellStyleBuilder {
 	}
 	
 	protected Font buildCellFont(CellContextData cellContext, String fontString){
-		if(StringUtils.isBlank(fontString))
+		if(ExcelUtils.isBlank(fontString))
 			return null;
 		
 		Font font = this.generator.getWorkbook().createFont();
-		BeanWrapper bw = SpringUtils.newBeanWrapper(font);
+		BeanWrapper bw = ExcelUtils.newBeanWrapper(font);
 
 		Map<String, String> fontMap = this.generator.getPropertyStringParser().parseStyle(fontString);
 		for(Entry<String, String> entry : fontMap.entrySet()){
-			/*if(isStaticField(Font.class, entry.getValue())){
-				Object styleValue = ReflectUtils.getStaticFieldValue(Font.class, getStaticField(entry.getValue()));
-				ReflectUtils.setProperty(font, entry.getKey(), styleValue);
-			}else{
-				bw.setPropertyValue(entry.getKey(), entry.getValue());
-			}*/
 			bw.setPropertyValue(entry.getKey(), getFontValue(entry.getValue()));
 		}
 		return font;
@@ -133,7 +125,7 @@ public class DefaultCellStyleBuilder {
 
 	protected Object getStyleValue(String value){
 		if(isStaticField(CellStyle.class, value)){
-			Object fontValue = ReflectUtils.getStaticFieldValue(CellStyle.class, getStaticField(value));
+			Object fontValue = ClassIntroManager.getInstance().getIntro(CellStyle.class).getFieldValue(CellStyle.class, getStaticField(value));
 			return fontValue;
 		}else{
 			//extends : map.get(value);

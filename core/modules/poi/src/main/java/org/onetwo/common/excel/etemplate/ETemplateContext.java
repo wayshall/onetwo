@@ -3,13 +3,14 @@ package org.onetwo.common.excel.etemplate;
 import java.util.Collections;
 import java.util.Map;
 
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.TheFunction;
+import org.onetwo.common.excel.utils.TheFunction;
+
+import com.google.common.collect.Maps;
 
 public class ETemplateContext {
 	
-	private Map<String, Object> rootObject = LangUtils.newHashMap();
-	private Map<String, Object> dataContext = LangUtils.newHashMap();
+	private Map<String, Object> rootObject = Maps.newHashMap();
+	private Map<String, Object> dataContext = Maps.newHashMap();
 //	private Object rootObject;
 	
 	public ETemplateContext(){

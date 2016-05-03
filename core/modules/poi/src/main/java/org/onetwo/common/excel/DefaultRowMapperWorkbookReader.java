@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.springframework.util.Assert;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implements WorkbookReader {
@@ -80,7 +80,7 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 			
 			return readData(workbook);
 		} catch (Exception e) {
-			throw new ServiceException("read excel file error.", e);
+			throw ExcelUtils.wrapAsUnCheckedException("read excel file error.", e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 			
 			return readData(workbook, startSheet, readCount);
 		} catch (Exception e) {
-			throw new ServiceException("read excel file error.", e);
+			throw ExcelUtils.wrapAsUnCheckedException("read excel file error.", e);
 		}
 	}
 

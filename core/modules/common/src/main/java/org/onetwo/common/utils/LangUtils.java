@@ -64,8 +64,6 @@ public class LangUtils {
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Class[] Empty_CLASSES = new Class[0];
 	
-	public static DecimalFormat DF_TWO_SCALE = new DecimalFormat("0.00");
-	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 
 	public static final Consoler CONSOLE;
@@ -1571,7 +1569,7 @@ public class LangUtils {
 	}
 	
 	public static String format(Number num) {
-		return DF_TWO_SCALE.format(num);
+		return new DecimalFormat("0.00").format(num);
 	}
 
 	/*****

@@ -12,11 +12,6 @@ public interface TemplateGenerator {
 	 * @return
 	 */
 	public int generateIt();
-	/***
-	 * 生产到指定路径
-	 * @param path
-	 */
-	public File generateTo(String path);
 
 	public void write(OutputStream out);
 

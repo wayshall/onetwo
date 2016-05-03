@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.onetwo.common.excel.data.ExcelValueParser;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.TheFunction;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ClassIntroManager;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.onetwo.common.excel.utils.TheFunction;
 
 public class DefaultExcelValueParser implements ExcelValueParser {
 	public static final Pattern IS_DIGIT = ExcelUtils.IS_DIGIT;
@@ -59,7 +59,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 	}*/
 
 	public Object parseValue(String expr, Object root, Map<String, Object> context){
-		if(StringUtils.isBlank(expr))
+		if(ExcelUtils.isBlank(expr))
 			return "";
 		Object fieldValue = null;
 		Map<String, Object> vcontext = context==null?this.context:context;
@@ -106,10 +106,10 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 			return null;
 		String symbol = getSymbol(value);
 		try {
-			Object v = ReflectUtils.getProperty(obj, symbol, false);
+			Object v = ClassIntroManager.getInstance().getIntro(obj.getClass()).getPropertyValue(obj, symbol);
 			return v;
 		} catch (Exception e) {
-			throw new ServiceException("parseSymbol error on["+obj+"] : "+ value);
+			throw new ExcelException("parseSymbol error on["+obj+"] : "+ value);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class DefaultExcelValueParser implements ExcelValueParser {
 	}
 
 	public int parseIntValue(String expr, Object root) {
-		if(StringUtils.isBlank(expr)){
+		if(ExcelUtils.isBlank(expr)){
 			return 0;
 		}
 		

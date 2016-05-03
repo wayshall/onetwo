@@ -3,12 +3,13 @@ package org.onetwo.common.excel;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-@JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
+//@JsonFilter(ExcelUtils.JSON_FILTER_TEMPLATE)
 public class TemplateModel implements PoiModel{
 	public static final int DEFAULT_SIZE_PER_SHEET = 60000;
 	private static final String DEFAULLT_VARNAME = "_sheet";
@@ -70,12 +71,12 @@ public class TemplateModel implements PoiModel{
 	}
 	
 	public boolean isEmpty(){
-		return LangUtils.isEmpty(rows);
+		return ExcelUtils.isEmpty(rows);
 	}
 	
 	public TemplateModel addRow(RowModel row){
 		if(this.rows==null)
-			this.rows = LangUtils.newArrayList();
+			this.rows = Lists.newArrayList();
 		this.rows.add(row);
 		return this;
 	}
@@ -89,7 +90,7 @@ public class TemplateModel implements PoiModel{
 	public String getVarName(){
 		if(StringUtils.isBlank(varname))
 			varname = name;
-		if(StringUtils.isBlank(varname) || !LangUtils.isWord(varname))
+		if(StringUtils.isBlank(varname) || !ExcelUtils.isWord(varname))
 			varname = DEFAULLT_VARNAME;
 		return varname;
 	}
@@ -140,7 +141,7 @@ public class TemplateModel implements PoiModel{
 	
 	public void setAutoSizeColumn(short col, boolean useMerged){
 		if(autoSizeColumnMap==null){
-			autoSizeColumnMap = LangUtils.newHashMap();
+			autoSizeColumnMap = Maps.newHashMap();
 		}
 		this.autoSizeColumnMap.put(col, useMerged);
 	}
