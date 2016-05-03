@@ -22,19 +22,26 @@
   <dependencies>
        
     <dependency>
-      <groupId>org.onetwo</groupId>
-      <artifactId>onetwo-common</artifactId>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId> 
     </dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-jackson</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-spring</artifactId>
-	</dependency>
+    
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+    </dependency>
 	
 	<dependency>
 	  <groupId>commons-io</groupId>
@@ -44,6 +51,16 @@
     <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
     </dependency>
 	
 	<!-- excel begin -->
@@ -62,11 +79,28 @@
 	  <groupId>ognl</groupId>
 	  <artifactId>ognl</artifactId>
 	</dependency>
-	
-	<dependency>
-	  <groupId>org.apache.poi</groupId>
-	  <artifactId>poi-ooxml</artifactId>
-	</dependency>
+    
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <!-- <exclusions>
+        <exclusion>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-ooxml-schemas</artifactId>
+        </exclusion>
+      </exclusions> -->
+    </dependency>
+    
+    <!-- <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>ooxml-schemas</artifactId>
+    </dependency> -->
+    <!-- 
+     <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+    </dependency>
+     -->
 	<!-- excel end -->
 	
 	<dependency>

@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class MapedBeanRowMapper<T> extends BeanRowMapper<T> {
 
-	private Map<String, String> nameMap = LangUtils.newHashMap();
+	private Map<String, String> nameMap = Maps.newHashMap();
 	
 	public MapedBeanRowMapper(Class<T> clazz) {
 		super(clazz, WorkbookReaderFactory.convertors);
@@ -21,10 +23,10 @@ public class MapedBeanRowMapper<T> extends BeanRowMapper<T> {
 	}
 	public List<String> mapTitleRow(int sheetIndex, Sheet sheet) {
 		List<String> names = super.mapTitleRow(sheetIndex, sheet);
-		List<String> mappedNames = LangUtils.newArrayList();
+		List<String> mappedNames = Lists.newArrayList();
 		for(String name : names){
 			if(!nameMap.containsKey(name))
-				throw new BaseException("no mapped name found: " + name);
+				throw new ExcelException("no mapped name found: " + name);
 			mappedNames.add(nameMap.get(name));
 		}
 		return mappedNames;

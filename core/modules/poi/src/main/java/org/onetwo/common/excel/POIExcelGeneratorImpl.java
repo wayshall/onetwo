@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -13,12 +14,11 @@ import org.onetwo.common.excel.data.ExcelValueParser;
 import org.onetwo.common.excel.data.RowContextData;
 import org.onetwo.common.excel.data.SheetData;
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.utils.ExcelPage;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 /****
  * 单sheet生成器
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
  */
 public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implements PoiExcelGenerator{
 	
-	private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected TemplateModel tempalte;
 	// protected Object root;
@@ -114,10 +114,10 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		if(obj==null)
 			return false;
 		Object mobj = obj;
-		if(Page.class.isInstance(obj)){
-			mobj = LangUtils.cast(obj, Page.class).getResult();
+		if(ExcelPage.class.isInstance(obj)){
+			mobj = ((ExcelPage)obj).getResult();
 		}
-		return LangUtils.isMultipleAndNotEmpty(mobj);
+		return ExcelUtils.isMultipleAndNotEmpty(mobj);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			if(dsObj instanceof SheetDatasource){
 				ds = (SheetDatasource<?>) dsObj;
 			}else{
-				List<?> datalist = LangUtils.asList(dsObj);
+				List<?> datalist = ExcelUtils.tolist(dsObj);
 				ds = new ListExportDatasource(this.workbookData, tempalte, datalist);
 			}
 		}
@@ -156,13 +156,13 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			while((dataObject = ds.getSheetDataList(i))!=null && isMultipleAndNotEmpty(dataObject) ){
 				sdata.setSheetIndexOfSheets(i);
 				List<?> datalist = null;
-				if(Page.class.isInstance(dataObject)){
-					Page<?> page = (Page<?>) dataObject;
+				if(ExcelPage.class.isInstance(dataObject)){
+					ExcelPage page = (ExcelPage) dataObject;
 					datalist = page.getResult();
 					if(i==0)
 						sdata.setTotalSheet(page.getTotalPages());
 				}else{
-					datalist = LangUtils.asList(dataObject);
+					datalist = ExcelUtils.tolist(dataObject);
 				}
 				logger.info("{} sheet, data size: {}", i, datalist.size());
 				sdata.setDatasource(datalist);
@@ -219,7 +219,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			columnWidth = (String)sdata.parseValue(columnWidth);
 		}
 		Map<Integer, Short> columnMap = this.propertyStringParser.parseColumnwidth(columnWidth);
-		if(LangUtils.isNotEmpty(columnMap)){
+		if(!ExcelUtils.isEmpty(columnMap)){
 			for(Entry<Integer, Short> entry : columnMap.entrySet()){
 				sdata.getSheet().setColumnWidth(entry.getKey(), entry.getValue()*256);
 			}
@@ -237,7 +237,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			}
 		}else{
 			Map<Short, Boolean> columSize = sdata.getSheetModel().getAutoSizeColumnMap();
-			if(LangUtils.isEmpty(columSize))
+			if(ExcelUtils.isEmpty(columSize))
 				return ;
 			for(Entry<Short, Boolean> entry : columSize.entrySet()){
 				sheet.autoSizeColumn(entry.getKey(), entry.getValue());

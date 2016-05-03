@@ -2,8 +2,10 @@ package org.onetwo.common.excel;
 
 import java.util.List;
 
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
+
+import com.google.common.collect.Lists;
 
 public class WorkbookModel implements PoiModel {
 	private String listener;
@@ -30,7 +32,7 @@ public class WorkbookModel implements PoiModel {
 	}
 	public void addSheet(TemplateModel sheet){
 		if(sheets==null)
-			sheets = LangUtils.newArrayList();
+			sheets = Lists.newArrayList();
 		this.sheets.add(sheet);
 	}
 	public TemplateModel getSheet(int index){
@@ -46,7 +48,7 @@ public class WorkbookModel implements PoiModel {
 	}
 
 	public List<VarModel> getVars() {
-		return LangUtils.emptyIfNull(vars);
+		return ExcelUtils.emptyIfNull(vars);
 	}
 
 	public void setVars(List<VarModel> vars) {

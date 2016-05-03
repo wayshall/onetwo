@@ -316,17 +316,6 @@ final public class CUtils {
 		List list = null;
 		if (List.class.isInstance(object)) {
 			list = (List) object;
-			/*if (List.class.isInstance(object))
-				list = (List) object;
-			else {
-				Collection col = (Collection) object;
-				if(col.isEmpty()){
-					list = new ArrayList(5);
-				}else{
-					list = new ArrayList(col.size());
-					list.addAll(col);
-				}
-			}*/
 		} else if(Iterable.class.isInstance(object)){
 			list = new ArrayList();
 			for(Object obj : (Iterable<?>)object){

@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.excel.exception.ExcelException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 	
-	private static final Logger logger = MyLoggerFactory.getLogger(RowMapperSheetBufferReader.class);
+	private static final Logger logger = LoggerFactory.getLogger(RowMapperSheetBufferReader.class);
 	
 	private Sheet sheet;
 	private int sheetIndex = 0;
@@ -52,7 +52,7 @@ public class RowMapperSheetBufferReader<T> implements ExcelBufferReader<T> {
 	@Override
 	public T read(){
 		if(!initialized)
-			throw new BaseException("buffer has not initialized!");
+			throw new ExcelException("buffer has not initialized!");
 		
 		if(!isEnd()) {
 			Row row = sheet.getRow(currentRowNumber);

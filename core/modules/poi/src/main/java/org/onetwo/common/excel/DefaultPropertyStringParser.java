@@ -1,15 +1,16 @@
 package org.onetwo.common.excel;
 
+import java.sql.Types;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.onetwo.common.convert.Types;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -17,7 +18,7 @@ import com.google.common.cache.LoadingCache;
 
 public class DefaultPropertyStringParser implements PropertyStringParser {
 	
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private LoadingCache<String, Map<Integer, Short>> columnwidthCaches = CacheBuilder.newBuilder()
 																				.maximumSize(100)
@@ -26,21 +27,21 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 																					@Override
 																					public Map<Integer, Short> load(String columnWidth) throws Exception {
 																						String[] attrs = StringUtils.split(columnWidth, ";");
-																						Map<Integer, Short> columnWidthMap = LangUtils.newHashMap(attrs.length);
+																						Map<Integer, Short> columnWidthMap = new HashMap<Integer, Short>(attrs.length);
 																						int index = 0;
 																						for(String attr : attrs){
 																							String[] av = StringUtils.split(attr.trim(), ":");
-																							if(LangUtils.isEmpty(av))
+																							if(ExcelUtils.isEmpty(av))
 																								continue;
 																							try {
 																								if(av.length==1){
-																									columnWidthMap.put(index, Types.convertValue(av[0], Short.class));
+																									columnWidthMap.put(index, Short.parseShort(av[0]));
 																								}else if(av.length==2){
-																									index = Types.convertValue(av[0], Integer.class);
-																									columnWidthMap.put(index, Types.convertValue(av[1], Short.class));
+																									index = Integer.parseInt(av[0]);
+																									columnWidthMap.put(index, Short.parseShort(av[1]));
 																								}
 																							} catch (Exception e) {
-																								throw new ServiceException("parse sheet coluomnWidth error", e);
+																								throw new ExcelException("parse sheet coluomnWidth error", e);
 																							}
 																							index++;
 																						}
@@ -57,14 +58,14 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 																					@Override
 																					public Map<String, String> load(String styleString) throws Exception {
 																						String[] attrs = StringUtils.split(styleString, ";");
-																						Map<String, String> styleMap = LangUtils.newHashMap(attrs.length);
+																						Map<String, String> styleMap = new HashMap<String, String>(attrs.length);
 																						for(String attr : attrs){
 																							String[] av = StringUtils.split(attr.trim(), ":");
 																							if(av!=null && av.length==2){
 																								try {
 																									styleMap.put(av[0], av[1]);
 																								} catch (Exception e) {
-																									throw new ServiceException("set ["+StringUtils.join(av, ":")+"] style error", e);
+																									throw new ExcelException("set ["+StringUtils.join(av, ":")+"] style error", e);
 																								}
 																							}
 																						}
@@ -76,7 +77,7 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 	@Override
 	public Map<Integer, Short> parseColumnwidth(String columnWidth) {
 		try {
-			if(StringUtils.isNotBlank(columnWidth))
+			if(!ExcelUtils.isBlank(columnWidth))
 				return columnwidthCaches.get(columnWidth);
 		} catch (ExecutionException e) {
 			logger.error("parseColumnwidth error : " + e.getMessage());
@@ -86,7 +87,7 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 	
 	public Map<String, String> parseStyle(String styleString){
 		try {
-			if(StringUtils.isNotBlank(styleString))
+			if(!ExcelUtils.isBlank(styleString))
 				return styleCaches.get(styleString);
 		} catch (ExecutionException e) {
 			logger.error("parseStyle error : " + e.getMessage());
