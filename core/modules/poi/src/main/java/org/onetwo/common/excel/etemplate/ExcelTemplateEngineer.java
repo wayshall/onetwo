@@ -14,31 +14,23 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.common.excel.etemplate.directive.ETRowDirective;
 import org.onetwo.common.excel.etemplate.directive.ForeachRowDirective;
 import org.onetwo.common.excel.etemplate.directive.IfRowDirective;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
 public class ExcelTemplateEngineer {
 	
-	protected final Logger logger = JFishLoggerFactory.logger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-//	final private String templatePath;
-//	final private File templateFile;
-//	private ExcelVisitor visitor;
-//	private List<ExcelObject> nodes;
-//	private final Expression expression = Expression.DOLOR;
-	
-//	private ETDirective rowForeachDirective = new RowForeachDirective();
 	private Map<String, ETRowDirective> rowDirectives = Maps.newHashMap();
 
 	public ExcelTemplateEngineer() {
@@ -116,7 +108,7 @@ public class ExcelTemplateEngineer {
 		Sheet sheet = sheetContext.getSheet();
 		final ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
 //		int rowNumbs = sheet.getPhysicalNumberOfRows();
-		List<CellRangeAddress> cellRangeList = LangUtils.newArrayList();
+		List<CellRangeAddress> cellRangeList = Lists.newArrayList();
 		for(int i=0; i< sheet.getNumMergedRegions(); i++){
 			CellRangeAddress cellRange = sheet.getMergedRegion(i);
 			cellRangeList.add(cellRange);
@@ -139,10 +131,10 @@ public class ExcelTemplateEngineer {
 	
 	public void generate(File templateFile, String generatedPath, final ETemplateContext context){
 		try {
-			FileUtils.makeDirs(generatedPath, true);
+			ExcelUtils.makeDirs(generatedPath, true);
 			generate(templateFile, new FileOutputStream(generatedPath), context);
 		} catch (FileNotFoundException e) {
-			throw new BaseException("write workbook to ["+generatedPath+"] error: " + e.getMessage());
+			throw new ExcelException("write workbook to ["+generatedPath+"] error: " + e.getMessage());
 		}
 	}
 	
@@ -163,7 +155,7 @@ public class ExcelTemplateEngineer {
 		try {
 			wb.write(out);
 		} catch (Exception e) {
-			throw new BaseException("write workbook error: " + e.getMessage());
+			throw new ExcelException("write workbook error: " + e.getMessage());
 		}
 	}
 	
@@ -172,7 +164,7 @@ public class ExcelTemplateEngineer {
 		try {
 			in = new FileInputStream(destFile);
 		} catch (FileNotFoundException e) {
-			throw new BaseException("create file inpustream error: " + e.getMessage(), e);
+			throw new ExcelException("create file inpustream error: " + e.getMessage(), e);
 		}
 		Workbook wb = ExcelUtils.createWorkbook(in);
 		return wb;

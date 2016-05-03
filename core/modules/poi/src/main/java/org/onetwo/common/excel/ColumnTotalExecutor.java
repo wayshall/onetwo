@@ -2,7 +2,7 @@ package org.onetwo.common.excel;
 
 import java.util.Map;
 
-import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
 @SuppressWarnings("unchecked")
 public class ColumnTotalExecutor {
@@ -15,7 +15,7 @@ public class ColumnTotalExecutor {
 			total = 0;
 			context.put(key, total);
 		}
-		String exp = MyUtils.append("#", key, "+", "#", field.getValue());
+		String exp = ExcelUtils.strings("#", key, "+", "#", field.getValue());
 		try{
 			total = (Number) ExcelUtils.getValue(exp, context, null);
 		}catch(Exception e){

@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
-import org.onetwo.common.convert.Types;
-import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.excel.ListRowMapper.StringListRowMapper;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.onetwo.common.excel.utils.TheFunction;
 
 
 @SuppressWarnings("unchecked")
@@ -129,14 +129,14 @@ public abstract class WorkbookReaderFactory {
 			int type = cell.getCellType();
 			Date value = null;
 			if(Cell.CELL_TYPE_STRING==type){
-				value = DateUtil.parse(cell.getStringCellValue());
+				value = TheFunction.parseDateTime(cell.getStringCellValue());
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getDateCellValue();
 			}else if(Cell.CELL_TYPE_FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
-				value = cv==null?null:Types.convertValue(cv.getStringValue(), Date.class);
+				value = cv==null?null:TheFunction.parseDateTime(cv.getStringValue());//Types.convertValue(cv.getStringValue(), Date.class);
 			}else {
-				value = DateUtil.parse(getAsString(cell));
+				value = TheFunction.parseDateTime(getAsString(cell));
 			}
 			return value;
 		}

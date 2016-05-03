@@ -2,13 +2,14 @@ package org.onetwo.common.excel.etemplate;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.onetwo.common.excel.utils.TheFunction;
 
 public class ExcelTemplateTest {
 	
@@ -67,15 +68,15 @@ public class ExcelTemplateTest {
 	public void testAll(){
 //		String templateName = "excel-template.xlsx";
 		String templateName = "excel-template.xlsm";
-		String templatePath = FileUtils.getResourcePath(outputPath)+templateName;
-		String generatedPath = FileUtils.getResourcePath(outputPath)+"excel-template-generated.xlsm";
+		String templatePath = ExcelUtils.class.getClassLoader().getResource("").getPath()+outputPath+templateName;
+		String generatedPath = ExcelUtils.class.getClassLoader().getResource("").getPath()+outputPath+"excel-template-generated.xlsm";
 		System.out.println("generatedPath:"+ generatedPath);
 		
 		ExcelTemplateEngineer g = new ExcelTemplateEngineer();
 		g.generate(new File(templatePath), generatedPath, new ETemplateContext(){
 			{
-				put("year", NiceDate.New().format("yyyy"));
-				put("now", NiceDate.New());
+				put("year", TheFunction.format("yyyy", new Date()));
+				put("now", new Date());
 				put("datalist", list);
 				put("totalLabel", "合计");
 			}

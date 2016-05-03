@@ -2,14 +2,14 @@ package org.onetwo.common.excel;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.excel.exception.ExcelException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 	
-	private static final Logger logger = MyLoggerFactory.getLogger(RowMapperWorkbookBufferReader.class);
+	private static final Logger logger = LoggerFactory.getLogger(RowMapperWorkbookBufferReader.class);
 	
 //	private Sheet sheet;
 	private Workbook workbook;
@@ -84,7 +84,7 @@ public class RowMapperWorkbookBufferReader<T> implements ExcelBufferReader<T> {
 	@Override
 	public T read(){
 		if(!initialized)
-			throw new BaseException("buffer has not initialized!");
+			throw new ExcelException("buffer has not initialized!");
 
 		if(this.currentSheetReader==null)
 			return null;
