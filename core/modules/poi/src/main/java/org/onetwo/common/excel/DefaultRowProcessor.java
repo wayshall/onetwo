@@ -7,19 +7,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.excel.data.CellContextData;
 import org.onetwo.common.excel.data.RowContextData;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.onetwo.common.excel.utils.TheFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultRowProcessor implements RowProcessor {
+	
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected PoiExcelGenerator generator;
 	private DefaultCellStyleBuilder cellStyleBuilder;
@@ -84,7 +88,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		if(iterator.hasFieldProcessor()){
 			Object fv = ExcelUtils.getValue(iterator.getFieldProcessor(), context, null);
 			if(!(fv instanceof FieldProcessor)){
-				throw new BaseException(iterator.getName()+" is not a FieldProcessor");
+				throw new ExcelException(iterator.getName()+" is not a FieldProcessor");
 			}
 			fieldProcessor = (FieldProcessor) fv;
 		}
@@ -149,7 +153,7 @@ public class DefaultRowProcessor implements RowProcessor {
 			for(ExecutorModel model : field.getValueExecutors()){
 				FieldValueExecutor executor = cellContext.getRowContext().getSheetData().getFieldValueExecutor(model);
 				if(executor==null)
-					throw new BaseException("not found executor: " + model.getExecutor());
+					throw new ExcelException("not found executor: " + model.getExecutor());
 				if(!executor.apply(cellContext, model))
 					continue;
 				Object preValue = sheetContext.get(model.getName());
@@ -271,7 +275,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		}else{
 //			String name = "root processField";
 //			UtilTimerStack.push(name);
-			List<Object> rootList = LangUtils.asList(root);
+			List<Object> rootList = ExcelUtils.tolist(root);
 
 			int rowCount = row.getRowNum();
 //			for(Object val : rootList){
@@ -320,11 +324,11 @@ public class DefaultRowProcessor implements RowProcessor {
 		Object actualValue;
 		if(value instanceof Date){
 			if(StringUtils.isBlank(dataFormat)){
-				dataFormat = DateUtil.DATE_TIME;
-				actualValue = DateUtil.format(dataFormat, (Date)value);
+				dataFormat = TheFunction.DATE_TIME;
+				actualValue = TheFunction.format(dataFormat, (Date)value);
 //				actualValue = value;
 			}else{
-				actualValue = DateUtil.format(dataFormat, (Date)value);
+				actualValue = TheFunction.format(dataFormat, (Date)value);
 			}
 		}else if(value instanceof Number && StringUtils.isNotBlank(dataFormat)) {
 			NumberFormat nf = new DecimalFormat(dataFormat);

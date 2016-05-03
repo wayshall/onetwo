@@ -3,8 +3,8 @@ package org.onetwo.common.excel;
 import java.util.List;
 
 import org.onetwo.common.excel.data.WorkbookData;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.springframework.util.Assert;
 
 public class ListExportDatasource implements ExportDatasource {
 //	public static final Expression EXT_EXP = ExpressionFacotry.PERCENT;
@@ -53,7 +53,7 @@ public class ListExportDatasource implements ExportDatasource {
 		if(ExcelUtils.isExpr(label)){
 			label = ExcelUtils.getExpr(label);
 			Object val = workbookData.parseValue(label);
-			label = StringUtils.emptyIfNull(val);
+			label = val==null?"":val.toString();
 		}
 		Assert.hasText(label, "sheetName must not be null, empty, or blank. label:"+tempalte.getLabel());
 		if(tempalte.isMultiSheet()){
