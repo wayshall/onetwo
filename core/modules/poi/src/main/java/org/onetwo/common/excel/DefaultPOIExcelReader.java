@@ -12,11 +12,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
+import org.springframework.util.Assert;
 
 public class DefaultPOIExcelReader implements ExcelReader {
 	
@@ -71,7 +69,7 @@ public class DefaultPOIExcelReader implements ExcelReader {
 					String name = sheet.getSheetName();
 					if(sheet.getPhysicalNumberOfRows()<1)
 						continue;
-					if(StringUtils.isBlank(name))
+					if(ExcelUtils.isBlank(name))
 						name = "" + i;
 					T extractData = extractor.extractData(sheet, i);
 					datas.put(name, extractData);
@@ -80,20 +78,13 @@ public class DefaultPOIExcelReader implements ExcelReader {
 				}
 			}
 			return datas;
-		}catch (ServiceException e) {
-			throw e;
 		}catch (Exception e) {
-			throw new BaseException("read excel file error.", e);
+			throw ExcelUtils.wrapAsUnCheckedException("read excel file error.", e);
 		}
 	}
 	
 	protected Workbook createWorkbook(String path){
-		File file = new File(path);
-		if(!file.exists()){
-			path = FileUtils.getResourcePath(path);
-			file = new File(path);
-		}
-		Workbook workbook = createWorkbook(file);
+		Workbook workbook = createWorkbook(this.getClass().getResourceAsStream(path));
 		return workbook;
 	}
 	
@@ -103,10 +94,8 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		try {
 			in = new FileInputStream(file);
 			workbook = createWorkbook(in);
-		} catch (ServiceException e) {
-			throw e;
 		} catch (Exception e) {
-			throw new BaseException("read excel error : " + file.getPath(), e);
+			throw new ExcelException("read excel error : " + file.getPath(), e);
 		}finally{
 			IOUtils.closeQuietly(in);
 		}

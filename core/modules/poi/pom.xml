@@ -39,19 +39,9 @@
     </dependency>
     
     <dependency>
-      <groupId>org.onetwo</groupId>
-      <artifactId>onetwo-common</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
     </dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-jackson</artifactId>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-spring</artifactId>
-	</dependency>
 	
 	<dependency>
 	  <groupId>commons-io</groupId>
@@ -61,6 +51,16 @@
     <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
     </dependency>
 	
 	<!-- excel begin -->

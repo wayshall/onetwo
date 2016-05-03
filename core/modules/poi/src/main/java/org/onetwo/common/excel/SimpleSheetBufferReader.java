@@ -2,8 +2,8 @@ package org.onetwo.common.excel;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.Assert;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.springframework.util.Assert;
 
 public class SimpleSheetBufferReader implements ExcelBufferReader<Row> {
 	
@@ -33,7 +33,7 @@ public class SimpleSheetBufferReader implements ExcelBufferReader<Row> {
 	@Override
 	public Row read(){
 		if(!initialized)
-			throw new BaseException("buffer has not initialized!");
+			throw new ExcelException("buffer has not initialized!");
 		
 		if(!isEnd()) {
 			Row row = sheet.getRow(currentRowNumber);

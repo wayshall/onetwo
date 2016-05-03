@@ -7,11 +7,8 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.springframework.beans.BeanWrapper;
 
 import com.google.common.collect.Maps;
@@ -51,8 +48,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	}
 	public BeanRowMapper(int dataRowStartIndex, Class<T> clazz, Object...propertyMapper) {
 		this(dataRowStartIndex, clazz, WorkbookReaderFactory.convertors);
-		if(!LangUtils.isEmpty(propertyMapper)){
-			this.propertyMapper = LangUtils.asMap(propertyMapper);
+		if(!ExcelUtils.isEmpty(propertyMapper)){
+			this.propertyMapper = ExcelUtils.asMap(propertyMapper);
 		}
 		this.dataRowStartIndex = dataRowStartIndex;
 	}
@@ -100,8 +97,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		for(int i=0; i<cellCount; i++){
 			cell = row.getCell(i);
 			cellValue = ExcelUtils.getCellValue(cell);
-			String label = StringUtils.trimToEmpty(cellValue);
-			if(StringUtils.isBlank(label)){
+			String label = ExcelUtils.trimToEmpty(cellValue);
+			if(ExcelUtils.isBlank(label)){
 				//if title is empty (region column), get the previous title name
 				label = rowValues.get(i-1);
 			}
@@ -111,7 +108,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	}
 	
 	private MapperType autoMapperType(List<String> titleNames){
-		if(LangUtils.isEmpty(propertyMapper)){
+		if(ExcelUtils.isEmpty(propertyMapper)){
 			mapperType = MapperType.NAME;
 			for(String name : titleNames)
 				this.propertyMapper.put(name, name);
@@ -136,8 +133,9 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	}
 
 	protected T newBean(){
-		return ReflectUtils.newInstance(clazz);
+		return ExcelUtils.newInstance(clazz);
 	}
+	
 
 	@Override
 	public T mapDataRow(List<String> names, Row row, int rowIndex) {
@@ -147,7 +145,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		int cellCount = row.getLastCellNum();
 		
 		T bean = newBean();
-		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
+		BeanWrapper bw = ExcelUtils.newBeanWrapper(bean);
 		
 		String titleLable = null;
 		String propertyName;
@@ -156,7 +154,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			Cell cell = null;
 			switch (mapperType) {
 				case NAME://列名映射到对象属性
-					if(LangUtils.isNotEmpty(names) && cellIndex<names.size())
+					if(!ExcelUtils.isEmpty(names) && cellIndex<names.size())
 						titleLable = names.get(cellIndex);
 					
 					if(cellIndex<=cellCount){
@@ -236,7 +234,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	 * @param cellValue
 	 */
 	protected void setBeanProperty(BeanWrapper bw, String name, Cell cell, Object cellValue){
-		if(StringUtils.isBlank(name))
+		if(ExcelUtils.isBlank(name))
 			return ;
 		Object value = null;
 		try {
@@ -254,10 +252,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			}else{
 				value = cellValue;
 			}
-			if(value!=null && (!String.class.isInstance(value) || StringUtils.isNotBlank((String)value)))
+			if(value!=null && (!String.class.isInstance(value) || !ExcelUtils.isBlank((String)value)))
 				bw.setPropertyValue(name, value);
 		} catch (Exception e) {
-			throw new BaseException("row:"+cell.getRowIndex()+",set property["+name+"] error, value: "+value, e);
+			throw new ExcelException("row:"+cell.getRowIndex()+",set property["+name+"] error, value: "+value, e);
 		}
 	}
 

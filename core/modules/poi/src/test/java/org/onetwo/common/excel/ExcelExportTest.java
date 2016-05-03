@@ -1,6 +1,5 @@
 package org.onetwo.common.excel;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,21 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.excel.interfaces.TemplateGenerator;
-import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.common.excel.utils.ExcelUtils;
+
+import com.google.common.collect.Lists;
 
 public class ExcelExportTest {
 	
 	public static class CardBeanTool {
 		public List<String> getCardPwd(List<Integer> cardNos, List<String> passwords){
-			List<String> list = LangUtils.newArrayList();
+			List<String> list = Lists.newArrayList();
 			for(int i=0; i<cardNos.size(); i++){
 				String str = cardNos.get(i) + "--test--" + passwords.get(i);
 				list.add(str);
@@ -38,7 +34,7 @@ public class ExcelExportTest {
 	
 	@Before
 	public void setup(){
-		this.context = new HashMap();
+		this.context = new HashMap<>();
 		int count = 10;
 		List<CardEntity> cards = new ArrayList<CardEntity>();
 		for(int i=0; i<count; i++){
@@ -46,7 +42,7 @@ public class ExcelExportTest {
 			card.setId(Long.valueOf(i+1));
 			card.setCardNo("test_card_no_"+i);
 			card.setCardPwd("test password in row "+i);
-			card.setStartTime(DateUtil.now());
+			card.setStartTime(new Date());
 			card.setProperties(Arrays.asList("card--aa", "card--bb"));
 			
 			for(int j=0; j<5; j++){
@@ -55,7 +51,7 @@ public class ExcelExportTest {
 				cb.setPassword("pwd-"+j);
 				cb.setCardNo(j);
 				
-				cb.setBeans(JFishList.wrap(cb));
+				cb.setBeans(Arrays.asList(cb));
 				card.addCardBean(cb);
 //				card.setProperties(Arrays.asList("aa", "bb"));
 			}
@@ -68,59 +64,18 @@ public class ExcelExportTest {
 
 	@Test
 	public void testExport() {
-		String path = FileUtils.getResourcePath("org/onetwo/common/excel/export_test.xls");
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test.xls");
 //		PoiExcelGenerator g = ExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test.xml", context);
 		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test.xml", context);
-		g.generateIt();
 		g.write(path);
 	}
 
 	@Test
 	public void testExport2() {
 //		System.out.println("style:"+ReflectUtils.getStaticFieldValue(CellStyle.class, "ALIGN_LEFT"));
-		String path = FileUtils.getResourcePath("org/onetwo/common/excel/export_test2.xls");
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test2.xls");
 		TemplateGenerator g = DefaultExcelGeneratorFactory.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
-		g.generateIt();
 		g.write(path);
 	}
 
-	@Test
-	public void testExportByJsonTemplate() {
-//		System.out.println("style:"+ReflectUtils.getStaticFieldValue(CellStyle.class, "ALIGN_LEFT"));
-		
-		Date startTest = new Date();
-		String path = FileUtils.getResourcePath("");
-		path += "org/onetwo/common/excel/export_test_json.xls";
-		System.out.println("path: " + path);
-		
-		String templatePath = FileUtils.getResourcePath("org/onetwo/common/excel/jsonTemplate.js");
-		String jsonTemplate = FileUtils.readAsString(templatePath);
-		WorkbookModel workbook = JsonMapper.IGNORE_EMPTY.fromJson(jsonTemplate, WorkbookModel.class);
-		Assert.assertNotNull(workbook);
-		TemplateGenerator g = DefaultExcelGeneratorFactory.createWorkbookGenerator(workbook, context);
-		g.generateTo(path);
-		
-		File gfile = new File(path);
-		Assert.assertTrue(gfile.exists());
-		Assert.assertTrue(gfile.lastModified()>startTest.getTime());
-	}
-
-	@Test
-	public void testOgnl(){
-		Object val = ExcelUtils.getValue("#data[0].cardBeans", context, null);
-		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
-		Assert.assertEquals(5, LangUtils.size(val));
-		//大括号把结果放到一个列表里
-		val = ExcelUtils.getValue("#data[0].{cardBeans}", context, null);
-		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
-		Assert.assertEquals(1, LangUtils.size(val));
-		
-		val = ExcelUtils.getValue("#data[0].cardBeans[0].{name}", context, null);
-		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
-		Assert.assertEquals(1, LangUtils.size(val));
-		
-		val = ExcelUtils.getValue("#data[0].{cardBeans}[0].{name}", context, null);
-		System.out.println("size:"+LangUtils.size(val)+" val: " + val);
-		Assert.assertEquals(5, LangUtils.size(val));
-	}
 }

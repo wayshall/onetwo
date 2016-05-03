@@ -6,20 +6,19 @@ import java.util.regex.Pattern;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.etemplate.AbstractDirectiveModel;
 import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.common.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.common.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 abstract public class AbstractRowDirective<T extends AbstractDirectiveModel> implements ETRowDirective {
 
-	protected final Logger logger = JFishLoggerFactory.logger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private final Pattern startTag;
 	private final Pattern endTag;
@@ -57,7 +56,7 @@ abstract public class AbstractRowDirective<T extends AbstractDirectiveModel> imp
 		if(model!=null)
 			model.setStartRow(row);
 		return model;*/
-		if(StringUtils.isBlank(cellString))
+		if(ExcelUtils.isBlank(cellString))
 			return false;
 		Matcher matcher = startTag.matcher(cellString);
 		return matcher.matches();
@@ -96,7 +95,7 @@ abstract public class AbstractRowDirective<T extends AbstractDirectiveModel> imp
 	}
 	
 	protected boolean isMatchEndDirectiveText(String text){
-		if(StringUtils.isBlank(text))
+		if(ExcelUtils.isBlank(text))
 			return false;
 		Matcher matcher = getEndTag().matcher(text);
 		return matcher.matches();
@@ -110,7 +109,7 @@ abstract public class AbstractRowDirective<T extends AbstractDirectiveModel> imp
 			model.addMatchRow(lastRow);
 			
 			if(lastRow.getRowNum()+1>sheet.getPhysicalNumberOfRows())
-				throw new BaseException("not end tag matched for: " + model.getDirectiveStart());
+				throw new ExcelException("not end tag matched for: " + model.getDirectiveStart());
 			
 			lastRow = row.getSheet().getRow(lastRow.getRowNum()+1);
 		}

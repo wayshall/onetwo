@@ -7,14 +7,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.onetwo.common.excel.ExcelUtils;
 import org.onetwo.common.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.common.excel.etemplate.ETemplateContext;
 import org.onetwo.common.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.common.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.exception.ExcelException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
 public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiveModel> {
 		
@@ -33,7 +31,7 @@ public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiv
 	}
 	
 	protected boolean isMatchEndDirectiveText(String text){
-		if(StringUtils.isBlank(text))
+		if(ExcelUtils.isBlank(text))
 			return false;
 		Matcher matcher = getEndTag().matcher(text);
 		return matcher.matches();
@@ -47,13 +45,13 @@ public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiv
 		List<ForeachRowInfo> foreachRows = forModel.getMatchRows();
 
 		Object listObject = provider.parseValue(forModel.getDataSource());
-		if(!LangUtils.isMultiple(listObject)){
-			throw new BaseException("the ["+forModel.getDataSource()+"] must be a Collection or Array object");
+		if(!ExcelUtils.isMultiple(listObject)){
+			throw new ExcelException("the ["+forModel.getDataSource()+"] must be a Collection or Array object");
 		}
 
-		List<?> datalist = LangUtils.asList(listObject);
+		List<?> datalist = ExcelUtils.tolist(listObject);
 		forModel.setDataList(datalist);
-		if(LangUtils.isEmpty(datalist)){
+		if(datalist.isEmpty()){
 			return ;
 		}
 		

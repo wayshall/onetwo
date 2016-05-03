@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.onetwo.common.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
-import org.onetwo.common.utils.LangUtils;
+
+import com.google.common.collect.Lists;
 
 public class AbstractDirectiveModel {
 
@@ -12,7 +13,7 @@ public class AbstractDirectiveModel {
 	private Row startRow;
 	private Row endRow;
 	private String directiveEnd;
-	private List<ForeachRowInfo> matchRows = LangUtils.newArrayList();
+	private List<ForeachRowInfo> matchRows = Lists.newArrayList();
 	
 	public AbstractDirectiveModel(String directive) {
 		super();

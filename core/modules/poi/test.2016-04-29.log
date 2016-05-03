@@ -2397,3 +2397,24 @@
 2016-04-29 00:32:05.284 INFO [main] ForeachRowDirective 109 - find diretive[rowList] list row: 7
 2016-04-29 00:32:05.284 INFO [main] ForeachRowDirective 109 - find diretive[rowList] list row: 8
 2016-04-29 00:32:05.284 INFO [main] ForeachRowDirective 92 - find diretive[rowList] end tag row: 9
+2016-04-29 13:33:57.019 INFO [main] ExcelTemplateEngineer 65 - match directive[rowList], executing...
+2016-04-29 13:33:57.024 INFO [main] ForeachRowDirective 108 - find diretive[rowList] list row: 6
+2016-04-29 13:33:57.025 INFO [main] ForeachRowDirective 108 - find diretive[rowList] list row: 7
+2016-04-29 13:33:57.025 INFO [main] ForeachRowDirective 108 - find diretive[rowList] list row: 8
+2016-04-29 13:33:57.025 INFO [main] ForeachRowDirective 91 - find diretive[rowList] end tag row: 9
+2016-04-29 15:09:18.517 INFO [main] ExcelUtils 272 - [id] getValue error : source is null for getProperty(null, "id")
+2016-04-29 15:09:18.520 INFO [main] ExcelUtils 272 - [cardNo] getValue error : source is null for getProperty(null, "cardNo")
+2016-04-29 15:09:18.521 INFO [main] ExcelUtils 272 - [cardPwd] getValue error : source is null for getProperty(null, "cardPwd")
+2016-04-29 15:09:18.526 INFO [main] ExcelUtils 272 - [#f.format(startTime, 'yy:MM:dd')] getValue error : source is null for getProperty(null, "startTime")
+2016-04-29 15:09:18.526 INFO [main] SmartIteratorRowProcessor 50 - create row 0
+2016-04-29 15:09:18.537 INFO [main] ExcelUtils 272 - [id] getValue error : source is null for getProperty(null, "id")
+2016-04-29 15:09:18.538 INFO [main] ExcelUtils 272 - [cardNo] getValue error : source is null for getProperty(null, "cardNo")
+2016-04-29 15:09:18.538 INFO [main] ExcelUtils 272 - [cardPwd] getValue error : source is null for getProperty(null, "cardPwd")
+2016-04-29 15:09:18.539 INFO [main] ExcelUtils 272 - [#f.format(startTime, 'yy:MM:dd')] getValue error : source is null for getProperty(null, "startTime")
+2016-04-29 15:09:18.539 INFO [main] SmartIteratorRowProcessor 50 - create row 0
+2016-04-29 15:09:18.829 INFO [main] ExcelUtils 272 - [主键] getValue error : source is null for getProperty(null, "主键")
+2016-04-29 15:09:18.830 INFO [main] ExcelUtils 272 - [卡号] getValue error : source is null for getProperty(null, "卡号")
+2016-04-29 15:09:18.831 INFO [main] ExcelUtils 272 - [密码] getValue error : source is null for getProperty(null, "密码")
+2016-04-29 15:09:18.831 INFO [main] ExcelUtils 272 - [properties] getValue error : source is null for getProperty(null, "properties")
+2016-04-29 15:09:18.832 INFO [main] ExcelUtils 272 - [carbean] getValue error : source is null for getProperty(null, "carbean")
+2016-04-29 15:09:18.832 INFO [main] SmartIteratorRowProcessor 50 - create row 0

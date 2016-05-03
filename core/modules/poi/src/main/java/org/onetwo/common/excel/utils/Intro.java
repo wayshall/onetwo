@@ -1,9 +1,8 @@
-package org.onetwo.common.reflect;
+package org.onetwo.common.excel.utils;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,28 +12,21 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.convert.Types;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.JFishFieldInfoImpl;
-import org.onetwo.common.utils.JFishProperty;
-import org.onetwo.common.utils.JFishPropertyInfoImpl;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.TypeJudge;
-import org.onetwo.common.utils.list.It;
-import org.onetwo.common.utils.list.JFishList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class Intro<T> {
+
+	private final static Logger logger = LoggerFactory.getLogger(Intro.class);
 	
 	public static <E> Intro<E> wrap(Class<E> clazz){
 		Intro<E> intro = new Intro<E>(clazz);
@@ -74,7 +66,7 @@ public class Intro<T> {
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz, Object.class);
 		} catch (Exception e) {
-			throw new BaseException(e);
+			throw new RuntimeException(e);
 		}
 		PropertyDescriptor[] props = beanInfo.getPropertyDescriptors();
 		
@@ -89,33 +81,12 @@ public class Intro<T> {
 	public List<Field> getAllFields() {
 		_loadAllFields();
 		
-		return JFishList.wrap(_allFieldMap.values());
+		return ImmutableList.copyOf(_allFieldMap.values());
 	}
 	
 	public List<String> getAllPropertyNames() {
-		return JFishList.wrap(propertyDescriptors.keySet());
+		return ImmutableList.copyOf(propertyDescriptors.keySet());
 	}
-	
-
-	public List<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
-		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
-	}
-	
-	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
-		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
-			
-			@Override
-			public boolean doIt(PropertyDescriptor element, int index) {
-				for(Class<? extends Annotation> anno : ignoreAnnotations){
-					if(element.getReadMethod().getAnnotation(anno)!=null){
-						return false;
-					}
-				}
-				return true;
-			}
-		});
-	}
-	
 	public Map<String, Field> getAllFieldMap() {
 		_loadAllFields();
 		return _allFieldMap;
@@ -192,33 +163,38 @@ public class Intro<T> {
 	public PropertyDescriptor getProperty(String propName){
 		return propertyDescriptors.get(propName);
 	}
+	
+	public Method getReadMethod(String propName) {
+		PropertyDescriptor pd = checkProperty(propName);
+		
+		Method readMethod;
+//		if (Serializable.class.equals(pd.getPropertyType())) {
+		if (pd.getReadMethod()==null || pd.getReadMethod().isBridge()) {
+			String rmethodName = getReadMethodName(pd.getName(), pd.getPropertyType());
+			readMethod = findPublicMethod(clazz, rmethodName);
+		} else {
+			readMethod = pd.getReadMethod();
+		}
+		return readMethod;
+	}
+	
+	public Object getPropertyValue(Object element, String propName) {
+		Method readMethod = getReadMethod(propName);
+		if(readMethod==null)
+			throw new NoSuchElementException("no read method found, class:"+element.getClass()+", property:"+propName);
+		return invokeMethod(true, readMethod, element);
+	}
 
 	public PropertyDescriptor checkProperty(String propName){
 		PropertyDescriptor pd = getProperty(propName);
 		if(pd==null)
-			throw new BaseException("no property found: " + propName);
+			throw new RuntimeException("no property found: " + propName);
 		return pd;
 	}
 
 	public boolean hasProperty(String propName){
 		return propertyDescriptors.containsKey(propName);
 	}
-	
-	public JFishProperty getJFishProperty(String propName, boolean isField){
-		if(isField){
-			Field field = getField(propName);
-			return new JFishFieldInfoImpl(clazz, field);
-		}else{
-			PropertyDescriptor pd = getProperty(propName);
-			return new JFishPropertyInfoImpl(clazz, pd);
-		}
-	}
-	
-	/*public JFishProperty getJFishProperty(String propName){
-		this._loadProperties();
-		PropertyDescriptor prop = propCaches.get(propName);
-		return new JFishPropertyInfoImpl(this, prop);
-	}*/
 	
 	public Collection<Field> getFields(){
 		return getFieldMaps().values();
@@ -265,7 +241,7 @@ public class Intro<T> {
 	public Field checkField(String fieldName, boolean parent){
 		Field f = getField(fieldName, parent);
 		if(f==null)
-			throw new BaseException("no field found: " + fieldName);
+			throw new RuntimeException("no field found: " + fieldName);
 		return f;
 	}
 	
@@ -295,7 +271,7 @@ public class Intro<T> {
 		try {
 			if (!f.isAccessible())
 				f.setAccessible(true);
-			f.set(obj, value==null?null:Types.convertValue(value, f.getType()));
+			f.set(obj, value);
 		} catch (Exception ex) {
 			throw new RuntimeException("invoke method error: " + ex.getMessage(), ex);
 		}
@@ -309,12 +285,13 @@ public class Intro<T> {
 		}
 		return instance;
 	}
+	
 
 	public Object getFieldValue(Object obj, String fieldName) {
 		return getFieldValue(obj, fieldName, true);
 	}
 	public Object getFieldValue(Object obj, String fieldName, boolean parent) {
-		Assert.isInstanceOf(clazz, obj);
+//		Assert.isInstanceOf(clazz, obj);
 		Field f = checkField(fieldName, parent);
 		return getFieldValue(f, obj, true);
 	}
@@ -345,110 +322,6 @@ public class Intro<T> {
 	
 	
 	
-	public T newInstance(Map<String, ?> propValues, TypeJudge typeJudge){
-		T bean = newInstance();
-		Collection<PropertyDescriptor> props = getProperties();
-		Object val = null;
-		for(PropertyDescriptor prop : props){
-			val = propValues.get(prop.getName());
-			if(typeJudge!=null){
-				val = LangUtils.judgeType(val, prop.getPropertyType(), typeJudge);
-			}
-			ReflectUtils.setProperty(bean, prop, val);
-		}
-		return bean;
-	}
-	
-	/********
-	 * 遍历map
-	 * @param propValues
-	 * @return
-	 */
-	public T newBy(Map<String, ?> propValues){
-		T bean = newInstance();
-		for(Entry<String, ?> entry : propValues.entrySet()){
-			ReflectUtils.setExpr(bean, entry.getKey(), entry.getValue());
-		}
-		return bean;
-	}
-	
-	/***************
-	 * 遍历字段和属性
-	 * @param propValues
-	 * @return
-	 */
-	public T newFrom(Map<?, ?> propValues){
-		T bean = newInstance();
-
-		Collection<String> fieldNames = ReflectUtils.findInstanceFieldNames(clazz, Set.class);
-		Collection<String> propNames = ReflectUtils.desribPropertiesName(clazz, Set.class);
-		propNames.addAll(fieldNames);
-		Object val = null;
-		for(String name : propNames){
-			val = propValues.get(name);
-			if(val!=null)
-				ReflectUtils.setExpr(bean, name, val);
-		}
-		
-		return bean;
-	}
-	
-	public Object setPropertyValue(Object element, String propName, Object value) {
-		Method writeMthod = getWriteMethod(propName);
-		if(writeMthod==null)
-			throw new NoSuchElementException("no write method found, class:"+element.getClass()+", property:"+propName);
-		return ReflectUtils.invokeMethod(writeMthod, element, value);
-	}
-	
-	public Object setPropertyValue(Object element, PropertyDescriptor pd, Object value) {
-		Method writeMthod = pd.getWriteMethod();
-		if(writeMthod==null)
-			throw new NoSuchElementException("no write method found, class:"+element.getClass()+", property:"+pd.getName());
-		return ReflectUtils.invokeMethod(writeMthod, element, value);
-	}
-	
-	public Object getPropertyValue(Object element, String propName) {
-		Method readMethod = getReadMethod(propName);
-		if(readMethod==null)
-			throw new NoSuchElementException("no read method found, class:"+element.getClass()+", property:"+propName);
-		return ReflectUtils.invokeMethod(readMethod, element);
-	}
-	
-	public Object getPropertyValue(Object element, PropertyDescriptor pd) {
-		Method readMethod = pd.getReadMethod();
-		if(readMethod==null)
-			throw new NoSuchElementException("no read method found, class:"+element.getClass()+", property:"+pd.getName());
-		return ReflectUtils.invokeMethod(readMethod, element);
-	}
-	
-	public Method getReadMethod(String propName) {
-		PropertyDescriptor pd = checkProperty(propName);
-		
-		Method readMethod;
-//		if (Serializable.class.equals(pd.getPropertyType())) {
-		if (pd.getReadMethod()==null || pd.getReadMethod().isBridge()) {
-			String rmethodName = getReadMethodName(pd.getName(), pd.getPropertyType());
-			readMethod = ReflectUtils.findPublicMethod(clazz, rmethodName);
-		} else {
-			readMethod = pd.getReadMethod();
-		}
-		return readMethod;
-	}
-
-
-	public Method getWriteMethod(String propName) {
-		PropertyDescriptor pd = checkProperty(propName);
-		
-		Method writeMethod;
-		if (pd.getWriteMethod()==null || pd.getWriteMethod().isBridge()) {
-			String wmethodName = getWriteMethodName(pd.getName());
-			writeMethod = ReflectUtils.findPublicMethod(clazz, wmethodName);
-		} else {
-			writeMethod = pd.getWriteMethod();
-		}
-		return writeMethod;
-	}
-	
 	public static String getReadMethodName(String propName, Class<?> returnType) {
 		String getMethod = StringUtils.capitalize(propName);
 		if (returnType!=null && Boolean.class.equals(returnType) || boolean.class.equals(returnType)) {
@@ -476,14 +349,6 @@ public class Intro<T> {
 		return Map.class.isAssignableFrom(clazz);
 	}
 	
-	public void copy(Object source, Object target, PropertyCopyer<PropertyDescriptor> copyer){
-		Collection<String> sourceProperties = ReflectUtils.getIntro(source.getClass()).desribPropertyNames();
-		for(PropertyDescriptor targetProperty : this.propertyDescriptors.values()){//propertyDescriptors is target
-			if(sourceProperties.contains(targetProperty.getName()))
-				copyer.copy(source, target, targetProperty);
-		}
-	}
-	
 	public List<Class<?>> findSuperClasses() {
 		return findSuperClasses(Object.class);
 	}
@@ -498,27 +363,54 @@ public class Intro<T> {
 		return classes;
 	}
 
-	public Collection<Field> getNotStaticAndTransientFields(boolean parent) {
-		Collection<Field> fields = getFieldList(false);
-		Collection<Field> rsfields = LangUtils.newArrayList();
-		for (Field f : fields) {
-			if(Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()))
-				continue;
-			rsfields.add(f);
+	public static List<Method> findPublicMethods(Class objClass, String name, Class... paramTypes) {
+		Assert.notNull(objClass, "objClass must not be null");
+		Assert.notNull(name, "Method name must not be null");
+		List<Method> methodList = new ArrayList<Method>();
+		try {
+			Method[] methods = objClass.getMethods();
+			for (int i = 0; i < methods.length; i++) {
+				Method method = methods[i];
+				if (!method.isBridge() && name.equals(method.getName()) && (ExcelUtils.isEmpty(paramTypes) || matchParameterTypes(paramTypes, method.getParameterTypes())) ) {
+					methodList.add(method);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("findPublicMethods ["+name+"] method error : "+e.getMessage());
 		}
-		return rsfields;
+		return methodList;
 	}
 	
-	public <E extends Annotation> E getAnnotationWithParent(Class<E> annotationClass) {
-		return AnnotationUtils.findAnnotationWithParent(clazz, annotationClass);
+	public static Method findPublicMethod(Class objClass, String name, Class... paramTypes) {
+		try {
+			return findPublicMethods(objClass, name, paramTypes).get(0);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
-
-	public <E extends Annotation> E getAnnotationWithSupers(Class<E> annotationClass) {
-		return AnnotationUtils.findAnnotationWithSupers(clazz, annotationClass);
+	
+	public static boolean matchParameterTypes(Class[] sourceTypes, Class[] targetTypes) {
+		if (sourceTypes.length != targetTypes.length)
+			return false;
+		int index = 0;
+		for (Class cls : targetTypes) {
+			if (!cls.isAssignableFrom(sourceTypes[index]))
+				return false;
+			index++;
+		}
+		return true;
 	}
-
-	public <E extends Annotation> E getAnnotationWithInterfaces(Class<E> annotationClass) {
-		return AnnotationUtils.findAnnotationWithInterfaces(clazz, annotationClass);
+	public static Object invokeMethod(boolean throwIfError, Method method, Object target, Object... args) {
+		try {
+			if (!method.isAccessible())
+				method.setAccessible(true);
+			return method.invoke(target, args);
+		} catch (Exception ex) {
+			if (throwIfError)
+				throw new RuntimeException("invoke target["+target+"] method[" + method + "] error: " + ex.getMessage(), ex);
+			else
+				return null;
+		}
 	}
 	
 	public String toString(){

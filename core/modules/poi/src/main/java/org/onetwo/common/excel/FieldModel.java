@@ -3,13 +3,12 @@ package org.onetwo.common.excel;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.excel.data.CellContextData;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.excel.utils.ExcelUtils;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.common.collect.Lists;
 
-@JsonFilter(ExcelUtils.JSON_FILTER_FIELD)
 public class FieldModel implements PoiModel {
 
 	private String label;
@@ -54,7 +53,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public void initModel(){
-		if(StringUtils.isNotBlank(sumValueAs)){
+		if(ExcelUtils.isNotBlank(sumValueAs)){
 			ExecutorModel model = new ExecutorModel();
 			model.setName(sumValueAs);
 			model.setExecutor(sumValueAs);
@@ -75,7 +74,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getValue() {
-		/*if(StringUtils.isBlank(value)){
+		/*if(ExcelUtils.isBlank(value)){
 			value = getName();
 		}*/
 		return value;
@@ -87,7 +86,7 @@ public class FieldModel implements PoiModel {
 	
 	public String getVar(){
 		String var = "";
-//		if(StringUtils.isNotBlank(getValue())){
+//		if(ExcelUtils.isNotBlank(getValue())){
 		if(getValue()!=null){
 			var = getValue();
 		}else{
@@ -142,7 +141,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getLabel() {
-		if(StringUtils.isBlank(label))
+		if(ExcelUtils.isBlank(label))
 			this.label = name==null?"":name;
 		return label;
 	}
@@ -161,7 +160,7 @@ public class FieldModel implements PoiModel {
 			return colspanValue;*/
 		
 //		int value = 1;
-		if(StringUtils.isNotBlank(colspan)){
+		if(ExcelUtils.isNotBlank(colspan)){
 			if(ExcelUtils.IS_DIGIT.matcher(colspan).matches()){
 				colspanValue = colspanValue!=null?colspanValue:Integer.parseInt(colspan);
 			}else if(context!=null){
@@ -186,7 +185,7 @@ public class FieldModel implements PoiModel {
 			return rowspanValue;*/
 		
 //		int value = 1;
-		if(StringUtils.isNotBlank(rowspan)){
+		if(ExcelUtils.isNotBlank(rowspan)){
 			/*if(IS_DIGIT.matcher(rowspan).matches())
 				rowspanValue = Integer.parseInt(rowspan);
 			else */
@@ -223,7 +222,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getStyle() {
-		return StringUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");
+		return ExcelUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");
 	}
 
 	public void setStyle(String style) {
@@ -231,7 +230,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getFont() {
-		return StringUtils.defaultValues(font, getParentRow()==null?"":getParentRow().getFieldFont(), "");
+		return ExcelUtils.defaultValues(font, getParentRow()==null?"":getParentRow().getFieldFont(), "");
 	}
 
 	public void setFont(String font) {
@@ -239,7 +238,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getHeaderFont() {
-		return StringUtils.defaultValues(headerFont, getParentRow()==null?"":getParentRow().getFieldHeaderFont(), "");
+		return ExcelUtils.defaultValues(headerFont, getParentRow()==null?"":getParentRow().getFieldHeaderFont(), "");
 	}
 
 	public void setHeaderFont(String headerFont) {
@@ -247,7 +246,7 @@ public class FieldModel implements PoiModel {
 	}
 
 	public String getHeaderStyle() {
-		return StringUtils.defaultValues(headerStyle, getParentRow()==null?"":getParentRow().getFieldHeaderStyle(), "");
+		return ExcelUtils.defaultValues(headerStyle, getParentRow()==null?"":getParentRow().getFieldHeaderStyle(), "");
 	}
 
 	public void setHeaderStyle(String headerStyle) {

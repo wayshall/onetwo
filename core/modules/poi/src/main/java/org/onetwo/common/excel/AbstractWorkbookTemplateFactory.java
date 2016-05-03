@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.onetwo.common.excel.interfaces.TemplateGenerator;
 import org.onetwo.common.excel.interfaces.XmlTemplateGeneratorFactory;
-import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.excel.utils.ExcelUtils;
 import org.springframework.core.io.Resource;
 
 import com.thoughtworks.xstream.XStream;
@@ -51,7 +51,7 @@ abstract public class AbstractWorkbookTemplateFactory implements XmlTemplateGene
 				m = (PoiModel)xstream.fromXML(config.getInputStream());
 			}
 		} catch (Exception e) {
-			throw new ServiceException("读取模板["+config+"]配置出错：" + e.getMessage(), e);
+			throw ExcelUtils.wrapAsUnCheckedException("读取模板["+config+"]配置出错：" + e.getMessage(), e);
 		}
 		
 		WorkbookModel model = null;
