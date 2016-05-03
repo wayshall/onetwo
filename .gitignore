@@ -6,11 +6,11 @@ build.xml
 pom.properties
 .gitignore.sublime-workspace
 
-.class
+*.class
 *.jar
-.war
-.ear
-.log
+*.war
+*.ear
+*.log
 
 tomcat.8080
 build
