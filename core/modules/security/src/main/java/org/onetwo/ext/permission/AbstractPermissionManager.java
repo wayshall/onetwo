@@ -50,7 +50,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	 * @param rootCode
 	 * @return
 	 */
-	abstract protected Set<P> findExistsSyncPermission(String rootCode);
+	abstract protected Map<String, P> findExistsPermission(String rootCode);
 	
 	/***
 	 * syncMenuToDatabase菜单同步方法调用时，通过对比内存和数据库检测需要变更的数据
@@ -58,7 +58,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	 * @param deletes
 	 * @param updates
 	 */
-	abstract protected void updatePermissions(P rootPermission, Set<P> adds, Set<P> deletes, Set<P> updates);
+	abstract protected void updatePermissions(P rootPermission, Map<String, P> dbPermissionMap, Set<P> adds, Set<P> deletes, Set<P> updates);
 	
 	/****
 	 * 同步菜单
@@ -70,14 +70,16 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
 		P rootPermission = this.menuInfoParser.getRootMenu();
 //		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
-		Set<P> dbPermissions = findExistsSyncPermission(rootPermission.getCode());
+//		Set<P> dbPermissions = findExistsPermission(rootPermission.getCode());
+		Map<String, P> dbPermissionMap = findExistsPermission(rootPermission.getCode());
 		Set<P> memoryPermissions = new HashSet<P>(menuNodeMap.values());
 
+		Set<P> dbPermissions = new HashSet<>(dbPermissionMap.values());
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
 		
-		this.updatePermissions(rootPermission, adds, deletes, intersections);
+		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections);
 	}
 	
 

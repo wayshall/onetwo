@@ -158,7 +158,7 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		
 		private T fromObject;
 
-		public B copy(T from){
+		public B from(T from){
 			this.fromObject = from;
 			return (B)this;
 		}
