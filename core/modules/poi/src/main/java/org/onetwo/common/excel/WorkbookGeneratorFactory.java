@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.excel.interfaces.XmlTemplateGeneratorFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class WorkbookGeneratorFactory extends AbstractWorkbookTemplateFactory implements XmlTemplateGeneratorFactory, ModelGeneratorFactory {
@@ -28,8 +29,8 @@ public class WorkbookGeneratorFactory extends AbstractWorkbookTemplateFactory im
 	
 	protected Resource getResource(String path){
 		Resource res = new ClassPathResource(path);
-		if(!res.isReadable()){
-			return null;
+		if(!res.isReadable() || !res.exists()){
+			res = new FileSystemResource(path);
 		}
 		return res;
 	}

@@ -169,12 +169,12 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		perm.setChildrenSize(childClasses.length);
 		//如果是function类型，忽略解释children
 //		if(perm instanceof IFunction)
-		if(!PermissionUtils.isMenu(perm)){
+		/*if(!PermissionUtils.isMenu(perm)){
 			if(childClasses.length>0){
 				throw new BaseException("the node with children must be a menu class: " + parser.getPermissionClass());
 			}
 			return perm;
-		}
+		}*/
 
 		P menu = perm;
 //		Arrays.sort(childClasses);

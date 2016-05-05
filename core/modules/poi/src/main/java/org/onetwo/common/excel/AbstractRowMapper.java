@@ -7,32 +7,17 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.excel.utils.ExcelUtils;
 
-public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
-	private Map<String, CellValueConvertor> convertors;
+public abstract class AbstractRowMapper<T> extends AbstractSSFRowMapperAdapter<T> {
 
-	public SSFRowMapper<T> register(String type, CellValueConvertor convertor){
-		this.convertors.put(type, convertor);
-		return this;
+	public AbstractRowMapper() {
+		super();
 	}
-	
-	public SSFRowMapper<T> register(Map<String, CellValueConvertor> convertors){
-		this.convertors.putAll(convertors);
-		return this;
-	}
-	
-	public AbstractRowMapper(){
-		this(WorkbookReaderFactory.convertors);
-	}
-	
-	public AbstractRowMapper(Map<String, CellValueConvertor> convertors){
-		this.convertors = convertors;
-	}
-	
 
-//	@Override
-	public String getMapperName() {
-		return this.getClass().getName();
+
+	public AbstractRowMapper(Map<String, CellValueConvertor> convertors) {
+		super(convertors);
 	}
+
 
 	@Override
 	public T mapDataRow(Sheet sheet, List<String> names, Row row, int rowIndex){
@@ -65,14 +50,5 @@ public abstract class AbstractRowMapper<T> implements SSFRowMapper<T> {
 	public int getDataRowStartIndex() {
 		return 1;
 	}
-
-//	@Override
-	public CellValueConvertor getCellValueConvertor(String type) {
-		if(convertors==null || convertors.isEmpty())
-			return null;
-		if(ExcelUtils.isBlank(type))
-			return null;
-		return convertors.get(type.toLowerCase());
-	}
 	
-};
+}

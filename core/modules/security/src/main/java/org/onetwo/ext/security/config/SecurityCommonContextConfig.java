@@ -59,6 +59,11 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 	
 	@Bean
+	public BCryptPasswordEncoder passwordEncoder(){
+		return bcryptEncoder();
+	}
+	
+	@Bean
 	public AccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
 		return new AjaxSupportedAccessDeniedHandler();
 	}

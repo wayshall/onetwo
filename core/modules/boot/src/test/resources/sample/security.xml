@@ -35,7 +35,7 @@
     
     <authentication-manager>
         <authentication-provider user-service-ref="zytUserDetailServiceImpl">
-        <password-encoder ref="bcryptEncoder"/>
+        <password-encoder ref="passwordEncoder"/>
         </authentication-provider>
     </authentication-manager>
     
