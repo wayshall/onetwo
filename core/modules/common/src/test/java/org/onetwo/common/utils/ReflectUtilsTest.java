@@ -229,7 +229,8 @@ public class ReflectUtilsTest {
 
 		user = new User();
 		user.setHeight(11);
-		ReflectUtils.copy(map, user, CopyConfig.create().ignoreNull().ignoreBlank().ignoreFields("age"));
+//		ReflectUtils.copy(map, user, CopyConfig.create().ignoreNull().ignoreBlank().ignoreFields("age"));
+		ReflectUtils.copyIgnoreBlank(map, user, "age");
 		Assert.assertEquals("namevalu", user.getUserName());
 		Assert.assertEquals(0, user.getAge());
 		Assert.assertEquals(Integer.valueOf(11), user.getHeight());
