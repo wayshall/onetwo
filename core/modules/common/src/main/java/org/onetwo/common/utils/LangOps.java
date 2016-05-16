@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,15 @@ final public class LangOps {
 	}
 	
 //	public static long sum(Iterable<T>)
+	
+	public static <T> BigDecimal sumBigDecimal(List<T> datas, Function<T, BigDecimal> mapper){
+		if(datas==null)
+			return BigDecimal.valueOf(0.0);
+		return datas.stream().map(mapper).reduce((n1, n2)->{
+			return n1.add(n2);
+		})
+		.orElse(BigDecimal.valueOf(0.0));
+	}
 	
 	private LangOps(){}
 
