@@ -17,17 +17,17 @@
     </encoder>
   </appender>
   
-  <appender name="accessAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <!-- <appender name="accessAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
   	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
   		<fileNamePattern>logs/webapp_access.%d{yyyy-MM-dd}.log</fileNamePattern>
   	</rollingPolicy>
   	<encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} - %msg%n</pattern>  
     </encoder>
-  </appender>
+  </appender> -->
   
   
-  	<appender name="mail" class="ch.qos.logback.classic.net.SMTPAppender">
+  	<!-- <appender name="mail" class="ch.qos.logback.classic.net.SMTPAppender">
 	    <smtpHost>smtp.qq.com</smtpHost>
 	    <smtpPort>465</smtpPort>
 	    <SSL>true</SSL>
@@ -43,11 +43,11 @@
 	</appender>
    <logger name="mailLogger" level="INFO">  
        <appender-ref ref="mail" />   
-   </logger>  
+   </logger>   -->
    
-   <logger name="accessLogger" level="INFO">  
+  <!--  <logger name="accessLogger" level="INFO">  
        <appender-ref ref="accessAppender" />   
-   </logger>  
+   </logger>   -->
    
    <!-- print mybatis sql 
    <logger name="com.yooyo.zhiyetong" level="TRACE">  
