@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.io.Closeable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -119,17 +120,40 @@ public class Java78Test {
 		
 		StringBuilder sb = new StringBuilder("[");
 		StringBuilder sb2 = all.stream().reduce(sb, (str, user)-> {
-														if(str.length()>1) str.append(","); return str.append(user.getUserName());}, 
+															System.out.println("str:"+str);
+															if(str.length()>1) 
+																str.append(","); 
+															return str.append(user.getUserName());
+														}, 
 														(str1, str2)->{
-															System.out.println("str1:"+str1);
-															System.out.println("str2:"+str2);
-															return str1.append(str2);
+															throw new RuntimeException("never invoke this method");
 														});
+		
+		//change to parallelStream, the combiner will be invoked
+		/*System.out.println("------------third reduce");
+		sb = new StringBuilder("[");
+		sb2 = all.parallelStream().reduce(sb, (str, user)-> {
+															if(str.length()>1) 
+																str.append(","); 
+															StringBuilder res = new StringBuilder(user.getUserName());
+															System.out.println(Thread.currentThread().getName()+" ---> accumulator str:"+str+", res:"+res);
+															return res;
+														}, 
+														(str1, str2)->{
+															System.out.println(Thread.currentThread().getName()+" combiner str1:"+str1);
+															System.out.println(Thread.currentThread().getName()+" combiner str2:"+str2);
+															str1.append(str2);
+															System.out.println(Thread.currentThread().getName()+" combiner append:"+str1);
+															return str1;
+														});
+
+		System.out.println("---------sb2: " + sb2);
 		Assert.assertEquals(sb, sb2);
 		sb2.append("]");
 		System.out.println("sb2: " + sb2);
-		Assert.assertEquals("[aa,aa,aa,bb,cc,cc]", sb2.toString());
+		Assert.assertEquals("[aa,aa,aa,bb,cc,cc]", sb2.toString());*/
 		
+
 		List<BigDecimal> datas = Lists.newArrayList();
 		datas.add(BigDecimal.valueOf(2.3));
 		datas.add(BigDecimal.valueOf(1.7));
@@ -380,5 +404,41 @@ public class Java78Test {
 		System.out.println("list:"+list);
 		Assert.assertEquals("[3, 2, 1, 0]", list.toString());
 	}
+	
+	@Test
+	public void testAutoCloseable(){
+		AutoCloseableObject holder = null;
+		try(AutoCloseableObject autoclose = new AutoCloseableObject()){
+			Assert.assertFalse(autoclose.closed);
+			System.out.println("testAutoCloseable");
+			holder = autoclose;
+		}
+		Assert.assertTrue(holder.closed);
+		
 
+		CloseableObject closeholder = null;
+		try(CloseableObject autoclose = new CloseableObject()){
+			Assert.assertFalse(autoclose.closed);
+			System.out.println("testAutoCloseable");
+			closeholder = autoclose;
+		}
+		Assert.assertTrue(closeholder.closed);
+	}
+
+	class CloseableObject implements Closeable{
+		boolean closed;
+		@Override
+		public void close(){
+			System.out.println("AutoCloseable");
+			closed = true;
+		}
+	}
+	class AutoCloseableObject implements AutoCloseable{
+		boolean closed;
+		@Override
+		public void close(){
+			System.out.println("AutoCloseable");
+			closed = true;
+		}
+	}
 }

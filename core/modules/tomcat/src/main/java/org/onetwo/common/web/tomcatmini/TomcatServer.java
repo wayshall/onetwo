@@ -62,7 +62,7 @@ public class TomcatServer {
    						redirectPort="8181" compression="500" 
   						compressableMimeType="text/html,text/xml,text/plain,application/octet-stream" />
 				 */
-				AbstractHttp11Protocol hp = (AbstractHttp11Protocol) protocol;
+				AbstractHttp11Protocol<?> hp = (AbstractHttp11Protocol<?>) protocol;
 				hp.setCompression("on");
 				hp.setCompressableMimeTypes("text/html,text/xml,text/plain,application/octet-stream");
 			}
