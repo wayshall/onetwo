@@ -30,7 +30,7 @@ public class VariableSupporterProvider implements ValueProvider {
 		if(StringUtils.isBlank(val)){
 			try {
 				//发现ongl性能非常一般，还是首先尝试通过反射来获取吧～
-				Object v = ReflectUtils.getProperty(variable, var);
+				Object v = ReflectUtils.getPropertyValue(variable, var);
 				if(v!=null)
 					val = v.toString();
 				else

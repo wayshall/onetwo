@@ -325,10 +325,10 @@ public class DefaultRowProcessor implements RowProcessor {
 		if(value instanceof Date){
 			if(StringUtils.isBlank(dataFormat)){
 				dataFormat = TheFunction.DATE_TIME;
-				actualValue = TheFunction.format(dataFormat, (Date)value);
+				actualValue = TheFunction.getInstance().formatDateByPattern(dataFormat, (Date)value);
 //				actualValue = value;
 			}else{
-				actualValue = TheFunction.format(dataFormat, (Date)value);
+				actualValue = TheFunction.getInstance().formatDateByPattern(dataFormat, (Date)value);
 			}
 		}else if(value instanceof Number && StringUtils.isNotBlank(dataFormat)) {
 			NumberFormat nf = new DecimalFormat(dataFormat);

@@ -1,13 +1,18 @@
 package org.onetwo.common;
 
 import org.junit.Test;
+import org.onetwo.common.utils.UserEntity;
 
 public class SimpleTest {
 	
 	@Test
 	public void test(){
 		String str = "test";
-		String str2 = new String("bbbbbbbbbbbbb");
+		System.out.println("hc:"+str.hashCode());
+		System.out.println("hc:"+Integer.valueOf(222222222).hashCode());
+		UserEntity u = new UserEntity();
+		u.setUserName("test");
+		System.out.println("u hc:"+u.hashCode());
 	}
 
 }
