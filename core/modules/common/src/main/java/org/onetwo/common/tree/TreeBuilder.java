@@ -70,7 +70,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		return null;
 	};
 	
-	private Map<Object, TM> leafages = new LinkedHashMap<Object, TM>();
+	final private Map<Object, TM> nodeMap = new LinkedHashMap<Object, TM>();
 	private List<TM> rootNodes = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
 //	private List<?> rootIds;
@@ -86,7 +86,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	public TreeBuilder(List<TM> datas) {
 		Collections.sort(datas, comparator);
 		for(TM tm : datas){
-			this.leafages.put(tm.getId(), tm);
+			this.nodeMap.put(tm.getId(), tm);
 		}
 	}
 	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
@@ -115,7 +115,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			if (data == null)
 				continue;
 			TM node = tnc.createTreeModel(data);
-			leafages.put(node.getId(), node);
+			nodeMap.put(node.getId(), node);
 		}
 	}
 
@@ -139,10 +139,10 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	}
 	
 	public List<TM> buidTree(ParentNodeNotFoundAction<TM> notFoundAction) {
-		if (leafages.isEmpty())
+		if (nodeMap.isEmpty())
 			return Collections.EMPTY_LIST;
 
-		List<TM> treeModels = (List<TM>) new ArrayList<>(leafages.values());
+		List<TM> treeModels = (List<TM>) new ArrayList<>(nodeMap.values());
 
 		
 //		for (TM node : treeModels) {
@@ -163,7 +163,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			}*/
 			if (isExistsRootNode(node))
 				continue;
-			TM p = leafages.get(node.getParentId());
+			TM p = nodeMap.get(node.getParentId());
 			/*if (p == null) {
 				if (ignoreNoParentLeafe)
 					logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
@@ -176,7 +176,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			if(p==null){
 				p = notFoundAction.onParentNodeNotFound(node);
 				if(p!=null){
-					leafages.put(p.getId(), p);
+					nodeMap.put(p.getId(), p);
 					treeModels.add(p);
 				}
 			}
@@ -212,6 +212,11 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	public List<TM> getRootNodes() {
 		return rootNodes;
+	}
+	
+	
+	public Map<Object, TM> getNodeMap() {
+		return nodeMap;
 	}
 	public static void main(String[] args) {
 		DefaultTreeModel t1 = new DefaultTreeModel(1, "t1");

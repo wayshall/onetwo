@@ -29,7 +29,7 @@ abstract public class SignedParam {
 		List<String> pnames = ReflectUtils.getIntro(this.getClass()).getPropertyNames(SignedIgnore.class);
 		StringBuilder str = new StringBuilder();
 		for(String p : pnames){
-			Object val = ReflectUtils.getProperty(this, p);
+			Object val = ReflectUtils.getPropertyValue(this, p);
 			str.append(StringUtils.emptyIfNull(val));
 		}
 		return str.toString();

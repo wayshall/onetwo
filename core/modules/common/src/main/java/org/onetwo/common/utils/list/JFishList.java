@@ -252,8 +252,8 @@ public class JFishList<E> implements List<E>, Serializable {
 	public JFishList<E> sortByProperty(final String property){
 		Collections.sort(this, new Comparator<E>() {
 		    public int compare(E o1, E o2){
-		    	Comparable<Object> p1 = (Comparable<Object>) ReflectUtils.getProperty(o1, property);
-		    	Comparable<Object> p2 = (Comparable<Object>) ReflectUtils.getProperty(o2, property);
+		    	Comparable<Object> p1 = (Comparable<Object>) ReflectUtils.getPropertyValue(o1, property);
+		    	Comparable<Object> p2 = (Comparable<Object>) ReflectUtils.getPropertyValue(o2, property);
 		    	return p1.compareTo(p2);
 		    }
 		});
@@ -377,7 +377,7 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			public String execute(E object) {
-				Object value = SELF_KEY.equals(propName)?StringUtils.emptyIfNull(object):ReflectUtils.getProperty(object, propName);
+				Object value = SELF_KEY.equals(propName)?StringUtils.emptyIfNull(object):ReflectUtils.getPropertyValue(object, propName);
 				return value==null?"":value.toString();
 			}
 			
@@ -404,7 +404,7 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			public Double execute(E object) {
-				Object value = ReflectUtils.getProperty(object, propName);
+				Object value = ReflectUtils.getPropertyValue(object, propName);
 				return value==null?null:Types.convertValue(value, Double.class);
 			}
 			
@@ -421,11 +421,11 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			protected void doIt(E element) throws Exception {
-				K k = (K)(StringUtils.isBlank(keyProperty)?element:ReflectUtils.getProperty(element, keyProperty));
+				K k = (K)(StringUtils.isBlank(keyProperty)?element:ReflectUtils.getPropertyValue(element, keyProperty));
 				Assert.notNull(k);
 				if(throwIfRepeatKey && maps.containsKey(k))
 					throw new BaseException("key["+k+"] has exist, it's value : " + maps.get(k));
-				V v = (V)(StringUtils.isBlank(valueProperty)?element:ReflectUtils.getProperty(element, valueProperty));
+				V v = (V)(StringUtils.isBlank(valueProperty)?element:ReflectUtils.getPropertyValue(element, valueProperty));
 				maps.put(k, v);
 			}
 			
@@ -455,7 +455,7 @@ public class JFishList<E> implements List<E>, Serializable {
 
 			@Override
 			public K execute(E object) {
-				return (K)ReflectUtils.getProperty(object, propName);
+				return (K)ReflectUtils.getPropertyValue(object, propName);
 			}
 			
 		});

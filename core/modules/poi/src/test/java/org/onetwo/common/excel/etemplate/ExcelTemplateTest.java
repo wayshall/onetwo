@@ -75,7 +75,7 @@ public class ExcelTemplateTest {
 		ExcelTemplateEngineer g = new ExcelTemplateEngineer();
 		g.generate(new File(templatePath), generatedPath, new ETemplateContext(){
 			{
-				put("year", TheFunction.format("yyyy", new Date()));
+				put("year", TheFunction.formatDateByPattern("yyyy", new Date()));
 				put("now", new Date());
 				put("datalist", list);
 				put("totalLabel", "合计");

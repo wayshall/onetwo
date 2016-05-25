@@ -112,7 +112,7 @@ public class ReflectUtils {
 			while (srcIterator.hasNext()) {
 				T element = srcIterator.next();
 				Object id;
-				id = getProperty(element, idName);
+				id = getPropertyValue(element, idName);
 
 				if (!checkedIds.contains(id)) {
 					srcIterator.remove();
@@ -135,7 +135,7 @@ public class ReflectUtils {
 		Collection<T> values = new ArrayList<T>(elements.size());
 		T val = null;
 		for(Object obj : elements){
-			val = (T)getProperty(obj, propName);
+			val = (T)getPropertyValue(obj, propName);
 			values.add(val);
 		}
 		return values;
@@ -145,26 +145,26 @@ public class ReflectUtils {
 		Collection<T> values = new ArrayList<T>(elements.length);
 		T val = null;
 		for(Object obj : elements){
-			val = (T)getProperty(obj, propName);
+			val = (T)getPropertyValue(obj, propName);
 			values.add(val);
 		}
 		return values;
 	}
 
-	public static Object getProperty(Object element, String propName) {
-		return getProperty(element, propName, true);
+	public static Object getPropertyValue(Object element, String propName) {
+		return getPropertyValue(element, propName, true);
 	}
 	
 
-	public static Object getProperty(Object element, String propName, boolean throwIfError) {
-		return getProperty(element, propName, (p, e)->{
+	public static Object getPropertyValue(Object element, String propName, boolean throwIfError) {
+		return getPropertyValue(element, propName, (p, e)->{
 			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
 			if(throwIfError)
 				throw new BaseException("get ["+element+"] property["+propName+"] error", e);
 		});
 	}
 
-	public static  Object getProperty(Object element, String propName, Closure2<String, Exception> errorHandler) {
+	public static  Object getPropertyValue(Object element, String propName, Closure2<String, Exception> errorHandler) {
 		if (element instanceof Map) {
 			return getValue((Map) element, propName);
 		}
@@ -285,7 +285,7 @@ public class ReflectUtils {
 		if(bean instanceof Map){
 			return ((Map) bean).containsKey(propName);
 		}else{
-			return getProperty(bean, propName)!=null;
+			return getPropertyValue(bean, propName)!=null;
 		}
 	}
 
@@ -299,7 +299,7 @@ public class ReflectUtils {
 			for (Object obj : collection) {
 				if (obj == null)
 					continue;
-				list.add(getProperty(obj, propertyName));
+				list.add(getPropertyValue(obj, propertyName));
 			}
 		} catch (Exception e) {
 			handleReflectionException(e);
@@ -1736,7 +1736,7 @@ public class ReflectUtils {
 			if(hasIgnoredAnnotation(targetProperty))
 				return;
 			
-			Object val = ReflectUtils.getProperty(source, targetProperty.getName());
+			Object val = ReflectUtils.getPropertyValue(source, targetProperty.getName());
 			if(isIgnoreValue(val))
 				return ;
 			
@@ -1780,7 +1780,7 @@ public class ReflectUtils {
 		}
 		
 		private void copyValue(Object source, Object target, String prop){
-			Object value = getProperty(source, prop);
+			Object value = getPropertyValue(source, prop);
 			if(conf.isIgnoreNull() && value==null)
 				return;
 			if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))

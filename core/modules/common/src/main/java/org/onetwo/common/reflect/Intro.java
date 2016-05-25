@@ -69,7 +69,7 @@ public class Intro<T> {
 	
 	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
 		if(clazz==Object.class || clazz.isInterface() || clazz.isPrimitive())
-			return Collections.EMPTY_MAP;
+			return Collections.emptyMap();
 		BeanInfo beanInfo = null;
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz, Object.class);
@@ -97,10 +97,12 @@ public class Intro<T> {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public List<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
 		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
 		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
 			
@@ -157,7 +159,7 @@ public class Intro<T> {
 				return ;
 
 			if(clazz==Object.class || clazz.isPrimitive()){
-				_fieldMaps = Collections.EMPTY_MAP;
+				_fieldMaps = Collections.emptyMap();
 				return ;
 			}
 			Field[] fields = clazz.getDeclaredFields();

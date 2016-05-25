@@ -14,7 +14,6 @@ import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.reflect.CopyConfig;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.utils.list.UserEntity;
 
 public class ReflectUtilsTest {
 	
