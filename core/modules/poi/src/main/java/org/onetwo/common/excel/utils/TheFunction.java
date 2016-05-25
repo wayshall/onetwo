@@ -32,18 +32,18 @@ public class TheFunction {
 	}
 	
 	public String year(Date date){
-		return format("yyyy", date);
+		return formatDateByPattern("yyyy", date);
 	}
 	
 	public String month(Date date){
-		return format("MM", date);
+		return formatDateByPattern("MM", date);
 	}
 	
-	public String format(Date date, String pattern){
-		return format(pattern, date);
+	public String formatDate(Date date, String pattern){
+		return formatDateByPattern(pattern, date);
 	}
 	
-	public static String format(String pattern, Date date) {
+	public String formatDateByPattern(String pattern, Date date) {
 		SimpleDateFormat format = new SimpleDateFormat(pattern);
 		format.setTimeZone(TimeZone.getDefault());
 		Assert.notNull(format, "format can not be null");
@@ -58,38 +58,38 @@ public class TheFunction {
 		return rs;
 	}
 	
-	public static String dateTime(Date date){
-		return format(DATE_TIME, date);
+	public String dateTime(Date date){
+		return formatDateByPattern(DATE_TIME, date);
 	}
 	
-	public static String date(Date date){
-		return format(DATE_ONLY, date);
+	public String date(Date date){
+		return formatDateByPattern(DATE_ONLY, date);
 	}
 	
-	public static String time(Date date){
-		return format(TIME_ONLY, date);
+	public String time(Date date){
+		return formatDateByPattern(TIME_ONLY, date);
 	}
 	
-	public String format(Number num) {
+	public String formatNumber(Number num) {
 		return new DecimalFormat("0.00").format(num);
 	}
 
-	public static String format(Number num, String pattern) {
+	public String formatNumber(Number num, String pattern) {
 		NumberFormat format = new DecimalFormat(pattern);
 		return format.format(num);
 	}
 
-	public static Date parseDateTime(String dateStr) {
+	public Date parseDateTime(String dateStr) {
 		return parseDate(createDateFormat(DATE_TIME), dateStr);
 	}
-	public static SimpleDateFormat createDateFormat(String pattern){
+	public SimpleDateFormat createDateFormat(String pattern){
 		Assert.hasText(pattern);
 		SimpleDateFormat df = new SimpleDateFormat(pattern);
 		df.setTimeZone(TimeZone.getDefault());
 		return df;
 	}
 	
-	public static Date parseDate(SimpleDateFormat format, String dateStr) {
+	public Date parseDate(SimpleDateFormat format, String dateStr) {
 		Date date = null;
 		try {
 			date = format.parse(dateStr);

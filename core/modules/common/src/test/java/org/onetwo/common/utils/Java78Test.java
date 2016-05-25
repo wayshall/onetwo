@@ -34,6 +34,14 @@ public class Java78Test {
 	public List<UserEntity> createUserList(String userName, int count){
 		List<UserEntity> users = LangUtils.newArrayList(count);
 		for (int i = 0; i < count; i++) {
+			users.add(createUser(userName+i, i));
+		}
+		return users;
+	}
+	
+	public List<UserEntity> createSameNameUserList(String userName, int count){
+		List<UserEntity> users = LangUtils.newArrayList(count);
+		for (int i = 0; i < count; i++) {
 			users.add(createUser(userName, i));
 		}
 		return users;
@@ -235,9 +243,9 @@ public class Java78Test {
 	@Test
 	public void testList2Array(){
 		List<UserEntity> all = LangUtils.newArrayList();
-		List<UserEntity> aa = createUserList("aa", 3);
-		List<UserEntity> bb = createUserList("bb", 1);
-		List<UserEntity> cc = createUserList("cc", 2);
+		List<UserEntity> aa = createSameNameUserList("aa", 3);
+		List<UserEntity> bb = createSameNameUserList("bb", 1);
+		List<UserEntity> cc = createSameNameUserList("cc", 2);
 		all.addAll(aa);
 		all.addAll(bb);
 		all.addAll(cc);
@@ -250,9 +258,9 @@ public class Java78Test {
 	@Test
 	public void testListAsMap(){
 		List<UserEntity> all = LangUtils.newArrayList();
-		List<UserEntity> aa = createUserList("aa", 1);
-		List<UserEntity> bb = createUserList("bb", 1);
-		List<UserEntity> cc = createUserList("cc", 1);
+		List<UserEntity> aa = createSameNameUserList("aa", 1);
+		List<UserEntity> bb = createSameNameUserList("bb", 1);
+		List<UserEntity> cc = createSameNameUserList("cc", 1);
 		all.addAll(aa);
 		all.addAll(bb);
 		all.addAll(cc);
@@ -403,6 +411,28 @@ public class Java78Test {
 		Collections.sort(list, Comparator.comparingInt(o->-o));
 		System.out.println("list:"+list);
 		Assert.assertEquals("[3, 2, 1, 0]", list.toString());
+	}
+	
+	@Test
+	public void testGroupBy(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		List<UserEntity> aa = createSameNameUserList("aa", 3);
+		List<UserEntity> bb = createSameNameUserList("bb", 1);
+		List<UserEntity> cc = createSameNameUserList("cc", 2);
+		all.addAll(aa);
+		all.addAll(bb);
+		all.addAll(cc);
+		
+		Map<String, List<UserEntity>> userGroup = all.stream().collect(Collectors.groupingBy(u->u.getUserName()));
+		System.out.println("userGroup:" + userGroup);
+		Assert.assertEquals(3, userGroup.get("aa").size());
+		Assert.assertEquals(1, userGroup.get("bb").size());
+		Assert.assertEquals(2, userGroup.get("cc").size());
+		
+		Map<String, Long> counted = all.stream().collect(Collectors.groupingBy(u->u.getUserName(), Collectors.counting()));
+		Assert.assertEquals(3, counted.get("aa").intValue());
+		Assert.assertEquals(1, counted.get("bb").intValue());
+		Assert.assertEquals(2, counted.get("cc").intValue());
 	}
 	
 	@Test

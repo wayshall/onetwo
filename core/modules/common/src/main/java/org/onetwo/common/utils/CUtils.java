@@ -564,7 +564,7 @@ final public class CUtils {
 			@Override
 			public boolean apply(T e1, T e2) {
 				for(String p : properties){
-					if(!ReflectUtils.getProperty(e1, p).equals(ReflectUtils.getProperty(e2, p)))
+					if(!ReflectUtils.getPropertyValue(e1, p).equals(ReflectUtils.getPropertyValue(e2, p)))
 						return false;
 				}
 				return true;

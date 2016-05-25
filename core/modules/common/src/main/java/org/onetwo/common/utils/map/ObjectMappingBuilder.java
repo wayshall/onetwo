@@ -64,7 +64,7 @@ public class ObjectMappingBuilder<S, T> {
 	//			    	mappingObject.put(maping.getJsonFieldName(), maping.getAddMappingValueFunc().mapping(sourceObject));
 		    	ReflectUtils.setProperty(mappingObject, maping.getJsonFieldName(), maping.getAddMappingValueFunc().mapping(sourceObject));
 	    	}else{
-		    	Object value = ReflectUtils.getProperty(sourceObject, maping.getObjectFieldName());
+		    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.getObjectFieldName());
 	//			    	mappingObject.put(maping.getJsonFieldName(), value);
 		    	ReflectUtils.setProperty(mappingObject, maping.getJsonFieldName(), value);
 	    	}

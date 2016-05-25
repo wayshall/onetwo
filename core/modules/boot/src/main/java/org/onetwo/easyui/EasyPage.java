@@ -100,7 +100,7 @@ public class EasyPage<T> {
 	final public void setRows(List<T> rows) {
 		this.rows = rows;
 		if(MYBAITS_PAGE_SUPPORT.equals(rows.getClass().getName())){
-			this.total = Types.convertValue(ReflectUtils.getProperty(rows, "total"), long.class);
+			this.total = Types.convertValue(ReflectUtils.getPropertyValue(rows, "total"), long.class);
 		}else{
 			this.total = rows.size();
 		}

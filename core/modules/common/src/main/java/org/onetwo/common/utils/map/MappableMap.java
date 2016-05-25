@@ -94,7 +94,7 @@ public class MappableMap extends HashMap<String, Object>{
 //			    	mappingObject.put(maping.jsonFieldName, maping.addMappingValueFunc.mapping(sourceObject, maping));
 			    	mappingObject.put(maping.jsonFieldName, maping.addMappingValueFunc.mapping(sourceObject));
 		    	}else{
-			    	Object value = ReflectUtils.getProperty(sourceObject, maping.objectFieldName);
+			    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.objectFieldName);
 			    	mappingObject.put(maping.jsonFieldName, value);
 		    	}
 		    });
@@ -126,7 +126,7 @@ public class MappableMap extends HashMap<String, Object>{
 		
 		public MappableMap bindValues(){
 		    mappingInfos.stream().forEach(maping->{
-		    	Object value = ReflectUtils.getProperty(sourceObject, maping.jsonFieldName);
+		    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.jsonFieldName);
 		    	mappingObject.put(maping.objectFieldName, value);
 		    });
 		    return mappingObject;
