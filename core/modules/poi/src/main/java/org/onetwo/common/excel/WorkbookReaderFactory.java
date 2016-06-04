@@ -184,17 +184,17 @@ public abstract class WorkbookReaderFactory {
 			int type = cell.getCellType();
 			Date value = null;
 			if(Cell.CELL_TYPE_STRING==type){
-				value = TheFunction.parseDateTime(getStringValue(cell));
+				value = TheFunction.getInstance().parseDateTime(getStringValue(cell));
 			}else if(Cell.CELL_TYPE_NUMERIC==type){
 				value = cell.getDateCellValue();
 			}else if(Cell.CELL_TYPE_FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
-				value = cv==null?defaultValue:TheFunction.parseDateTime(cv.getStringValue());//Types.convertValue(cv.getStringValue(), Date.class);
+				value = cv==null?defaultValue:TheFunction.getInstance().parseDateTime(cv.getStringValue());//Types.convertValue(cv.getStringValue(), Date.class);
 			}else {
 				String strValue = getAsString(cell);
 				if(StringUtils.isBlank(strValue))
 					return defaultValue;
-				value = TheFunction.parseDateTime(strValue);
+				value = TheFunction.getInstance().parseDateTime(strValue);
 			}
 			return value;
 		}

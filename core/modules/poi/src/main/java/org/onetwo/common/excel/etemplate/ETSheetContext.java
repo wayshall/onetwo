@@ -1,6 +1,5 @@
 package org.onetwo.common.excel.etemplate;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -68,9 +67,4 @@ public class ETSheetContext {
 
 
 	}
-	
-	public class ETCellContext {
-		private Cell cell;
-	}
-
 }
