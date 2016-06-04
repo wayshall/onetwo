@@ -13,6 +13,11 @@ public class SimpleTest {
 		UserEntity u = new UserEntity();
 		u.setUserName("test");
 		System.out.println("u hc:"+u.hashCode());
+		
+
+		System.out.println("Integer:"+Integer.valueOf(20002).hashCode());
+		System.out.println("Long:"+Long.valueOf(20002).hashCode());
+		
 	}
 
 }

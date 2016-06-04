@@ -77,7 +77,7 @@ public class JFishResourcesScanner implements ResourcesScanner {
 	public <T> List<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan) {
 		Assert.notNull(filter);
 		if(LangUtils.isEmpty(packagesToScan))
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		
 		List<T> classesToBound = new ArrayList<T>();
 		try {

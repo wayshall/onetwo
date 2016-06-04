@@ -69,7 +69,7 @@ public class ReflectUtils {
 //	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
 //	private static WeakHashMap<Class, List<Field>> FIELDS_CACHE = new WeakHashMap<Class, List<Field>>();
 	
-	private static final ClassIntroManager introManager = new ClassIntroManager();
+	private static final ClassIntroManager introManager = ClassIntroManager.getInstance();
 	
 	public static final String READMETHOD_KEY = "get";
 	public static final String BOOLEAN_READMETHOD_KEY = "is";
@@ -181,7 +181,13 @@ public class ReflectUtils {
 		}
 		return null;
 	}
-
+	
+	public static boolean hasProperty(Object element, String propName) {
+    	return ClassIntroManager.getInstance()
+    							.getIntro(getObjectClass(element))
+    							.hasProperty(propName);
+    }
+	
 	public static Object getProperty(Object element, PropertyDescriptor prop) {
 		return invokeMethod(false, ReflectUtils.getReadMethod(element
 				.getClass(), prop), element);

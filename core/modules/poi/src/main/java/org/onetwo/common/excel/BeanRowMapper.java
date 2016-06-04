@@ -38,7 +38,11 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	//0-based
 	private int dataRowStartIndex = 1;
 	
-
+	/******
+	 * 
+	 * @param clazz
+	 * @param propertyMapper cellIndex1 | fieldName1OfMappedClass, titleLabel1, cellIndex2 | fieldName2OfMappedClass, titleLabel2
+	 */
 	public BeanRowMapper(Class<T> clazz, Object...propertyMapper) {
 		this(1, clazz, propertyMapper);
 	}
