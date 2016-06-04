@@ -6,6 +6,12 @@ import java.util.WeakHashMap;
 import org.onetwo.common.utils.StringUtils;
 
 public class ClassIntroManager {
+
+	private static final ClassIntroManager introManager = new ClassIntroManager();
+	
+	public static ClassIntroManager getInstance() {
+		return introManager;
+	}
 	
 	private Map<Class<?>, Intro<?>> introMaps = new WeakHashMap<Class<?>, Intro<?>>(500);
 	private Object lock = new Object();
