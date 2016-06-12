@@ -7,17 +7,10 @@ public class SimpleTest {
 	
 	@Test
 	public void test(){
-		String str = "test";
-		System.out.println("hc:"+str.hashCode());
-		System.out.println("hc:"+Integer.valueOf(222222222).hashCode());
-		UserEntity u = new UserEntity();
-		u.setUserName("test");
-		System.out.println("u hc:"+u.hashCode());
-		
-
-		System.out.println("Integer:"+Integer.valueOf(20002).hashCode());
-		System.out.println("Long:"+Long.valueOf(20002).hashCode());
-		
+		long b = 100000000000000000L;
+		int a = (int)100000000000000000L;
+		System.out.println("b:"+b);
+		System.out.println("a:"+a);
 	}
 
 }

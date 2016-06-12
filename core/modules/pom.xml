@@ -21,7 +21,6 @@
             <module>jackson</module>
             <module>spring</module>
             <module>dbm</module>
-            <module>poi</module>
             <module>web</module>
             <module>boot</module>
             <module>security</module>
@@ -37,7 +36,6 @@
 				<module>jackson</module>
 				<module>spring</module>
                 <module>dbm</module>
-                <module>poi</module>
 				<module>web</module>
                 <module>boot</module>
                 <module>security</module>
