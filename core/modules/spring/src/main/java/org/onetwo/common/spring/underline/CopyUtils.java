@@ -175,7 +175,7 @@ public class CopyUtils {
 		}
 	}
 	public static <K, V> Map<K, V> newMap(Class<? extends Map<K, V>> mapClass){
-		if(mapClass==Map.class)
+		if(Map.class.equals(mapClass))
 			return new HashMap<K, V>();
 		return (Map<K, V>)ReflectUtils.newInstance(mapClass);
 	}
