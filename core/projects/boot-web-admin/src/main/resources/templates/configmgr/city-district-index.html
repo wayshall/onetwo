@@ -1,0 +1,51 @@
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+               城市片区管理
+    </@override>
+    
+    <@override name="js">
+              
+    <script type="text/javascript">
+    function formatOper(val,row,index){  
+        return '<a href=${siteConfig.baseURL}/configmgr/cityDistrict/tree?cityCode='+row.ccode+'&cityName='+row.name+'>管理</a>';  
+    }  
+    </script>
+    </@override>
+    
+    <@override name="main-content">
+       
+       <table id="datagrid" class="easyui-datagrid" 
+            url="${siteConfig.baseURL}/configmgr/cityDistrict.json"
+            title="城市片区管理" iconCls=""
+            data-options="rownumbers:true,method:'get',toolbar:toolbar"
+            pageSize="20" pagination="true" singleSelect="true" checkOnSelect="true">
+        <thead>
+            <tr>
+                <th id="checkboxColumn" data-options="field:'ccode',checkbox:true"></th>
+                <th field="name" width="180">地区名称</th>
+                <th field="coordinate" >地理位置坐标</th>
+            </tr>
+        </thead>
+    </table>
+       
+    <script type="text/javascript">
+    
+     var toolbar = [{
+         text:'管理',
+         iconCls:'icon-add',
+         handler:function(){
+        	 var selected = $('#datagrid').datagrid('getSelected');
+        	 if(selected){
+        		 location.href = "${siteConfig.baseURL}/configmgr/cityDistrict/tree?cityCode="
+        			   +selected.ccode + "&cityName="+selected.name;
+        	 }
+        }
+     }];
+ </script>
+    </@override>
+</@extends>

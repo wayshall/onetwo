@@ -111,7 +111,7 @@ public class BaseJdbcTemplateAspectProxy {
 					}else if(mArgs==null && LangUtils.isMultiple(arg)){
 						mArgs = arg;
 					}else if(mArgs==null && Map.class.isInstance(arg)){
-						mArgs = (Map)arg;
+						mArgs = (Map<?, ?>)arg;
 					}else if(MapSqlParameterSource.class.isInstance(arg)){
 						MapSqlParameterSource c = (MapSqlParameterSource) arg;
 						mArgs = c.getValues();

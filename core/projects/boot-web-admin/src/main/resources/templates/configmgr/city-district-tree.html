@@ -1,0 +1,98 @@
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+               城市片区管理
+    </@override>
+    <@override name="main-content">
+       
+       <table id="cityTreeGrid" class="easyui-treegrid" title="${cityName} - 区域管理" style="">
+        <thead>
+            <tr>
+                <th field="ccode" >地区编码</th>
+                <th field="name" width="80" editor=text>地区名称</th>
+                <th field="coordinate" width="80" editor=text>地理位置坐标</th>
+            </tr>
+        </thead>
+    </table>
+       
+    <script type="text/javascript">
+    var editingId;
+    var toolbar = [
+        {
+	        text:'编辑',
+	        iconCls:'icon-edit',
+	        handler:function(){
+	            var selected = $('#cityTreeGrid').treegrid('getSelected');
+	            if(selected){
+	            	editingId = selected.id
+	                $('#cityTreeGrid').treegrid('beginEdit', editingId);
+	            }
+	       }
+        },
+
+        {
+            text:'保存',
+            iconCls:'icon-save',
+            handler:function(){
+            	if(!editingId){
+                    $.messager.alert('提示', '请先选择数据进行修改！' ,'warning');
+            		return ;
+            	}
+                $('#cityTreeGrid').treegrid('endEdit', editingId);
+                var selected = $('#cityTreeGrid').treegrid('getSelected');
+                
+                var updated = $('#cityTreeGrid').treegrid('getChanges', 'updated');
+                //alert(JSON.stringify(updated));
+                //alert(updated[0].ccode)
+                var url = '${siteConfig.baseURL}/configmgr/cityDistrict/'+selected.ccode+'.json';
+                var csrfParameter = $("meta[name='_csrf_parameter']").attr("content");
+                var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+                var csrfToken = $("meta[name='_csrf']").attr("content");
+                var data = updated[0];
+                if(!data){
+                    $.messager.alert('提示', '请先选择数据进行修改！' ,'warning');
+                    return ;
+                }
+                data[csrfParameter] = csrfToken;
+                data['_method'] = 'put';
+                $.ajax({
+                	type:'post',
+                	url: url,
+                	data: data,
+                	success: function(data){
+		                        //data = JSON.parse(data);
+		                        if(data.code==0){
+		                            $.messager.alert('修改出错！',data.message,'warning');
+		                        }else{
+		                            $.messager.alert('修改成功！',data.message,'info');
+		                        }
+		                        editingId = null;
+		                    }
+                });
+           }
+        }
+    ];
+    
+    $("#cityTreeGrid").treegrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        url: '${siteConfig.baseURL}/configmgr/cityDistrict/tree.json?cityCode=${cityCode}&cityName=${cityName}',
+        method: 'get',
+        idField: 'id',
+        toolbar: toolbar,
+        treeField: 'name',
+        onBeforeExpand:function(row){  
+            //动态设置展开查询的url  
+            var url = '${siteConfig.baseURL}/configmgr/cityDistrict/tree.json?cityCode='+row.ccode+'&cityName='+row.name;
+            $("#cityTreeGrid").treegrid("options").url = url;  
+            return true;      
+        }  
+    }); 
+ </script>
+    </@override>
+</@extends>

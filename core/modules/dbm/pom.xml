@@ -29,7 +29,42 @@
       <groupId>org.onetwo</groupId>
       <artifactId>onetwo-spring</artifactId>
     </dependency>
+    
+    <!-- <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+    </dependency> -->
 	
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    
 	<dependency>
 	  <groupId>javax.persistence</groupId>
 	  <artifactId>com.springsource.javax.persistence</artifactId>
@@ -70,6 +105,12 @@
         <artifactId>mysql-connector-java</artifactId>
         <scope>test</scope>
     </dependency> 
+    
+    <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc16</artifactId>
+        <scope>test</scope>
+    </dependency>
     
     <dependency>
         <groupId>junit</groupId>

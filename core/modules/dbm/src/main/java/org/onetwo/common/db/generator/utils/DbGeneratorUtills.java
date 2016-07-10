@@ -3,6 +3,7 @@ package org.onetwo.common.db.generator.utils;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.CUtils;
 
 import com.google.common.base.Joiner;
@@ -13,6 +14,8 @@ public class DbGeneratorUtills {
 	
 	public static Map<String, String> parse(String comment){
 		Map<String, String> commentInfo = Maps.newHashMap();
+		if(StringUtils.isBlank(comment))
+			return commentInfo;
 		List<String> contents = CUtils.iterableToList(Splitter.on('\n').trimResults().omitEmptyStrings().split(comment));
 		contents.stream().forEach(line->{
 			List<String> datas = CUtils.iterableToList(Splitter.on(':').trimResults().omitEmptyStrings().split(line));

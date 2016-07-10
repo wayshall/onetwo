@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.data.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.boot.core.web.controller.PluginBaseController;
+import org.onetwo.boot.plugin.web.PluginBaseController;
 import org.onetwo.boot.plugins.data.service.DictionaryService;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

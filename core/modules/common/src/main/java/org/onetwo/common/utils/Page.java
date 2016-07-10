@@ -40,6 +40,12 @@ public class Page<T> implements Serializable {
 		page.setPageNo(pageNo);
 		return page;
 	}
+	public static <E> Page<E> create(int pageNo, int pageSize){
+		Page<E> page = new Page<>();
+		page.setPageNo(pageNo);
+		page.setPageSize(pageSize);
+		return page;
+	}
 	public static final String PAGINATION_KEY = "pagination";
 	public static final String ASC = ":asc";
 	public static final String DESC = ":desc";

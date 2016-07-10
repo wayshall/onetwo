@@ -100,4 +100,3 @@ public final class SimpleMetaMapping extends BaseSqlTypeMapping {
 	}
 	
 }
-;

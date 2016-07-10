@@ -14,18 +14,18 @@ public class Timeit {
 		return new Timeit();
 	}
 	
-	public static final Timeit create(JFishLogger ouputer){
+	public static final Timeit create(TimeLogger ouputer){
 		return new Timeit(ouputer);
 	}
 	
 	private Map<String, Long> times = new LinkedHashMap<String, Long>();
 
-    private JFishLogger out;
+    private TimeLogger out;
     
 	private Timeit() {
 		this.out = new TimerOutputer();
 	}
-	private Timeit(JFishLogger ouputer) {
+	private Timeit(TimeLogger ouputer) {
 		super();
 		this.out = ouputer;
 	}

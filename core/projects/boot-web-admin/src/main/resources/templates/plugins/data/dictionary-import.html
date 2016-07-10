@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>字典数据同步</title>
+</head>
+<body>
+<div style="color:red">
+${message}
+</div>
+
+<form name="initForm" method="post" action="${siteConfig.baseURL}/plugins/data/dictionary/import">
+<@security.csrfInput/>
+<input name="" type="submit" value="同步菜单到数据库"/>
+</from>
+</body>

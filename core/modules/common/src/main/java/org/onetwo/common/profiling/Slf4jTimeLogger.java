@@ -4,8 +4,8 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
 
-public class Slf4jTimeLogger implements JFishLogger {
-	private JFishLogger outer = new TimerOutputer();
+public class Slf4jTimeLogger implements TimeLogger {
+	private TimeLogger outer = new TimerOutputer();
 	private final Logger logger;
 	
 

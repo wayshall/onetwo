@@ -46,9 +46,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
-		System.out.println("test");
     }
-
+	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new WebAttributeArgumentResolver());

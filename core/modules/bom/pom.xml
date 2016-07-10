@@ -116,6 +116,12 @@
     
     <dependency>
       <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-web-admin</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
       <artifactId>onetwo-boot</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
@@ -399,6 +405,18 @@
       <version>${mybatis.spring.version}</version>
     </dependency>
     
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.5.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.5.0</version>
+    </dependency>
+    
     <!-- jdbc driver -->
     <dependency>
         <groupId>com.oracle</groupId>
@@ -442,6 +460,8 @@
 	
   </dependencies>
 </dependencyManagement>
+
+
 
   
 </project>
