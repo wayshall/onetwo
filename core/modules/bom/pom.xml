@@ -47,7 +47,7 @@
 	
 	<jpa.version>2.0.0</jpa.version>
 	
-	<ojdbc.version>10.2.0.4.0/</ojdbc.version>
+	<ojdbc.version>10.2.0.4.0</ojdbc.version>
 	<slf4j.version>1.7.13</slf4j.version>
 	
 	<!-- poi -->
