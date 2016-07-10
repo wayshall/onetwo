@@ -107,8 +107,8 @@
     </dependency> 
     
     <dependency>
-		<groupId>ojdbc</groupId>
-		<artifactId>ojdbc</artifactId>
+		<groupId>com.oracle</groupId>
+		<artifactId>ojdbc14</artifactId>
         <scope>test</scope>
     </dependency>
     
