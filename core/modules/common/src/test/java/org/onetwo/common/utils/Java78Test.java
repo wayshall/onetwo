@@ -98,6 +98,7 @@ public class Java78Test {
 		Assert.assertEquals(JFishList.wrap(all).sum("age").intValue(), total);
 	}
 	
+
 	@Test
 	public void testReduce(){
 		List<UserEntity> all = LangUtils.newArrayList();
@@ -433,6 +434,22 @@ public class Java78Test {
 		Assert.assertEquals(3, counted.get("aa").intValue());
 		Assert.assertEquals(1, counted.get("bb").intValue());
 		Assert.assertEquals(2, counted.get("cc").intValue());
+	}
+	
+	@Test
+	public void testCollectMap(){
+		List<UserEntity> all = LangUtils.newArrayList();
+		UserEntity user = createUser("test", 111);
+		all.add(user);
+		user = createUser("test", 111);
+		all.add(user);
+		
+		try {
+			Map<String, UserEntity> userMap = all.stream().collect(Collectors.toMap(UserEntity::getUserName, u->u));
+			Assert.fail();
+		} catch (IllegalStateException e) {
+			Assert.assertTrue(e.getMessage().startsWith("Duplicate key"));
+		}
 	}
 	
 	@Test

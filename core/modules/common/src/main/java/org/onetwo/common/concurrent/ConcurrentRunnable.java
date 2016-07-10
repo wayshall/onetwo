@@ -8,13 +8,17 @@ import java.util.stream.Stream;
 import com.google.common.collect.Lists;
 
 public class ConcurrentRunnable {
+	public static ConcurrentRunnable create(){
+		return new ConcurrentRunnable();
+	}
+	
 	private CountDownLatch latch;
 	private CyclicBarrier barrier;
 	private volatile boolean started;
 	
 	private List<Runnable> runnables = Lists.newArrayList();
 	
-	public ConcurrentRunnable() {
+	private ConcurrentRunnable() {
 		super();
 	}
 	public ConcurrentRunnable repeate(int repeate, Runnable runnable){

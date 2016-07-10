@@ -25,6 +25,14 @@ public class TomcatServer {
 		return create(config);
 	}
 
+	public static TomcatServer create(int prot){
+		ServerConfig config = new ServerConfig();
+		config.setPort(prot);
+		TomcatServer tomcat = new TomcatServer(config);
+		tomcat.initialize();
+		return tomcat;
+	}
+
 	public static TomcatServer create(ServerConfig webConfig){
 		TomcatServer tomcat = new TomcatServer(webConfig);
 		tomcat.initialize();

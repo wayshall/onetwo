@@ -1,0 +1,229 @@
+
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       用户表
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+                <tr>
+                    <td>用户名:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="userName" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    <td>昵称:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="nickName" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    <td>电子邮件:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="email" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                   <td>&nbsp;</td>
+                   <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>手机:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="mobile" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    <td>性别:</td>
+                    <td>
+                        <input class="easyui-combobox searchFieldClass" type="text" name="gender" 
+                               data-options="required:false,
+                                             editable:false,
+                                             method: 'get',
+                                             url: '${siteConfig.baseURL}/configmgr/dictionary/combobox/SEX.json' "/>
+                               
+                    </td>
+                    <td>状态:</td>
+                    <td>
+                        <input class="easyui-combobox searchFieldClass" type="text" name="status" 
+                               data-options="required:false,
+		                                     editable:false,
+                                             loadFilter: helper.addEmptyOptionForComboboxFilter,
+		                                     data: [{value:'NORMAL', text:'正常'}, {value:'STOP', text:'停用'}] "/>
+                    </td>
+                   <td>&nbsp;</td>
+                    <td>
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="后台用户列表" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="userName" >用户名</th>
+                <th field="nickName" >昵称</th>
+                <th field="email" >电子邮件</th>
+                <th field="mobile" >手机</th>
+                <th field="gender" >性别</th>
+                <th field="status" >状态:</th>
+                <th field="birthday" >出生日期</th>
+                <th field="createAt" >创建时间</th>
+                <th field="updateAt" >最后更新时间</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/admin/admin-user-edit-form.html">
+    
+    <div id="assignRole" class="easyui-dialog" title="分配角色" 
+            style="width:50%;height:80%;padding:10px 20px"
+            data-options="closed:true, modal:true, buttons:'#assigRoleButtons'">
+	    <form id="assignForm" class="easyui-form" method="post">
+	        <input name="_method" value="put" type="hidden" />
+		         <select class="easyui-combobox" id="roleIds" name="roleIds" 
+		                   style="width:200px; height:100px;"
+		                   data-options="required:true, multiple:true,multiline:true, method:'get' " >
+		         </select>
+	        <@security.csrfInput/>
+	    </form>
+    </div>
+    <div id="assigRoleButtons" >
+        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="assignRoles();">保存</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="closeAssignRole();">取消</a>
+    </div>
+       
+                 
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/admin/adminUser.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+    
+
+    function closeAssignRole(){
+    	$('#assignRole').dialog('close');
+    }
+    
+    function assignRoles(){
+        //var param = $('#assignForm').serialize();
+       // alert("p:"+param);
+    	var row = $('#dataGrid').datagrid('getSelected');
+        var url = '${siteConfig.baseURL}/admin/userRole/'+row.id+'.json';
+        //$.post(url, param, helper.remoteMessageHandler());
+        $('#assignForm').form('submit',{
+        	url: url,
+            onSubmit:function(){
+                return $(this).form('enableValidation').form('validate');
+            },
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.code==0){
+                    $.messager.alert('分配角色出错！',data.message,'warning');
+                }else{
+                    $.messager.alert('分配角色成功！',data.message,'info');
+                    closeAssignRole();
+                }
+            }
+        });
+    };
+    
+    
+    var reqUrl = '${siteConfig.baseURL}/admin/adminUser.json';
+    var editingId;
+    var toolbar = [
+        {
+            text:'分配角色',
+            handler:helper.selectOneHandler('#dataGrid', function(row){
+                $('#assignRole').dialog('open');
+                
+                var url = '${siteConfig.baseURL}/admin/userRole/'+row.id+'.json';
+                $('#roleIds').combobox('reload', url);
+           })
+        },
+        
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+
+                $('#dataForm').reset();
+                var url = '${siteConfig.baseURL}/admin/adminUser.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                if(!$('#dataGrid').isSelectedOne()){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/admin/adminUser/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                        datagrid: '#dataGrid',
+                        url: '${siteConfig.baseURL}/admin/adminUser.json',
+                        idField: 'id',
+                        paramIdName: 'ids'
+                    })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+ </script>
+    </@override>
+</@extends>

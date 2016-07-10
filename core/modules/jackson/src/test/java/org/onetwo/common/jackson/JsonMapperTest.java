@@ -141,6 +141,7 @@ public class JsonMapperTest {
 		user.setBirthDay2(DateUtil.parse("1984-01-01 11:11:11"));
 		
 		String json = JsonMapper.defaultMapper().toJson(user);
+		Assert.assertTrue(json.contains("birthDay2"));
 		Assert.assertTrue(json.contains("1984-01-01"));
 		System.out.println("testJson: " + json);
 		
@@ -148,6 +149,15 @@ public class JsonMapperTest {
 		Assert.assertEquals(user.getId(), u2.getId());
 		Assert.assertEquals(user.getUserName(), u2.getUserName());
 		Assert.assertEquals(DateUtil.parse("1984-01-01"), u2.getBirthDay2());
+		
+		JsonMapper jsonMapper = JsonMapper.defaultMapper();
+		jsonMapper.getObjectMapper()
+				.setPropertyNamingStrategy(new SplitorPropertyStrategy());
+		json = jsonMapper.toJson(user);
+		Assert.assertTrue(json.contains("user_name"));
+		Assert.assertTrue(json.contains("birth_day2"));
+		Assert.assertTrue(json.contains("1984-01-01"));
+		System.out.println("testJson2: " + json);
 	}
 	
 	@Test

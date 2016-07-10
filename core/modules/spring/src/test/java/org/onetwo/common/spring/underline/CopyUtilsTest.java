@@ -23,6 +23,48 @@ public class CopyUtilsTest {
 		ParameterizedType ptype = (ParameterizedType)pd.getReadMethod().getGenericReturnType();
 		System.out.println("type: " + ptype.getActualTypeArguments()[0]);
 	}
+	
+	@Test
+	public void testClone(){
+		Date now = new Date();
+		Date createTime = new Date(now.getTime()+3600000);
+		String userName = "testName";
+		long id = 111333L;
+		
+		CapitalBean srcBean = new CapitalBean();
+		srcBean.setId(id);
+		srcBean.setUserName(userName);
+		srcBean.setBirthday(now);
+		srcBean.setCreateTime(createTime);
+		
+		CapitalBean srcBean2 = srcBean.clone();
+		Assert.assertTrue(srcBean!=srcBean2);
+		Assert.assertEquals(userName, srcBean2.getUserName());
+		Assert.assertEquals(id, srcBean2.getId());
+		Assert.assertEquals(createTime, srcBean2.getCreateTime());
+		Assert.assertEquals(now, srcBean2.getBirthday());
+		
+		long dataId = 2342332;
+		String subName = "subNameTest";
+		CapitalBean2 srcData = new CapitalBean2();
+		srcData.setId(dataId);
+		srcData.setSubName(subName);
+		srcData.setCreateTime(createTime);
+		
+		List<CapitalBean2> datas = new ArrayList<CopyUtilsTest.CapitalBean2>();
+		datas.add(srcData);
+		srcBean.setDatas(datas);
+		
+		srcBean2 = srcBean.clone();
+		Assert.assertTrue(srcBean2.getDatas()==datas);
+		
+		srcBean2 = CopyUtils.deepClone(srcBean);
+		Assert.assertTrue(srcBean2.getDatas()!=datas);
+		CapitalBean2 srcData2 = srcBean2.getDatas().get(0);
+		Assert.assertTrue(srcData2!=srcData);
+		Assert.assertEquals(srcData.getId(), srcData2.getId());
+		Assert.assertEquals(srcData.getSubName(), srcData2.getSubName());
+	}
 
 	@Test
 	public void testCopy(){
@@ -352,7 +394,7 @@ public class CopyUtilsTest {
 		});
 	}
 
-	public static class CapitalBean implements Serializable {
+	public static class CapitalBean implements Serializable, java.lang.Cloneable {
 		private long id;
 		private Integer age;
 		private String userName;
@@ -363,6 +405,14 @@ public class CopyUtilsTest {
 		@Cloneable
 		private List<CapitalBean2> datas;
 		
+		@Override
+		public CapitalBean clone()  {
+			try {
+				return (CapitalBean)super.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		public long getId() {
 			return id;
 		}

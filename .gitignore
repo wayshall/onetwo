@@ -34,3 +34,4 @@ release-pom.xml
 .releaseBackup
 pom.xml.releaseBackup
 *.orig
+/core/modules/dbm/src/test/resources/db/generator/emall/emall-jdbc.properties

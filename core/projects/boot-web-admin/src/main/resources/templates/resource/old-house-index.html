@@ -1,0 +1,164 @@
+
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       二手出售信息表
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+		        <tr>
+		           <td>标题:</td>
+		            <td>
+		                <input class="easyui-textbox searchFieldClass" type="text" name="title" 
+		                       data-options="required:false,
+		                                     validType:'length[0,100]' "/>
+		            </td>
+		           <td>装修情况:</td>
+		            <td>
+		                <input class="easyui-combobox searchFieldClass" name="fitment" 
+		                       data-options="required:false,
+		                                      method: 'get',
+		                                      editable: false,
+		                                      loadFilter: helper.addEmptyOptionForComboboxFilter,
+		                                      url: '${siteConfig.baseURL}/configmgr/dictionary/combobox/FITMENT_TYPE.json' "/>
+		                       
+		            </td>
+		       </tr>
+		       <tr>
+                   <td>&nbsp;</td>
+                    <td rowspan="5">
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="二手出售信息表" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="title" >标题</th>
+                <th field="districtName" >区域</th>
+                <th field="estateName" >所属小区</th>
+                <th field="mainPhotoPath" >主题图片</th>
+                <th field="hallCount" >户型（厅）</th>
+                <th field="roomCount" >户型（室）</th>
+                <th field="toiletCount" >户型（卫）</th>
+                <th field="fitment" >装修情况</th>
+                <th field="buildingNo" >楼栋</th>
+                <th field="storey" >楼层</th>
+                <th field="orientation" >朝向</th>
+                <th field="sellPrice" >售价（元）</th>
+                <th field="propertyRight" >产权性质</th>
+                <!-- <th field="houseDesc" >房源描述</th> -->
+                <th field="linkMan" >联系人</th>
+                <th field="linkPhone" >联系电话</th>
+                <th field="brokerId" >经纪人</th>
+                <th field="createAt" >创建时间</th>
+                <th field="updateAt" >更新时间</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/resource/old-house-edit-form.html">
+       
+                 
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/resource/oldHouse.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+    
+    var editingId;
+    var toolbar = [
+
+         {
+             text:'二手房图片管理',
+             handler:helper.selectOneHandler('#dataGrid', function(row){
+                         location.href="${siteConfig.baseURL}/resource/house/"+row.id+"/photo";
+                     })
+         },
+                   
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+
+                var url = '${siteConfig.baseURL}/resource/oldHouse.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                var selectedNodes = $('#dataGrid').datagrid('getSelections');
+                if(!selectedNodes || selectedNodes.length>1){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/resource/oldHouse/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                datagrid: '#dataGrid',
+                url: '${siteConfig.baseURL}/resource/oldHouse.json',
+                idField: 'id',
+                paramIdName: 'ids'
+            })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    var loadUrl = '${siteConfig.baseURL}/resource/oldHouse.json';
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: loadUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+ </script>
+    </@override>
+</@extends>

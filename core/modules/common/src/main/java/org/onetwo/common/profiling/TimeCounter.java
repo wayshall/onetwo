@@ -7,8 +7,9 @@ import org.onetwo.common.utils.LangUtils;
 
 public class TimeCounter {
 
-	public static TimeCounter create(Object target){
+	public static TimeCounter create(Object target, TimeLogger timeLogger){
 		TimeCounter t = new TimeCounter(target);
+		t.logger(timeLogger);
 		return t;
 	}
 	public static TimeCounter start(Object target){
@@ -23,7 +24,7 @@ public class TimeCounter {
 	private long costTime;
 	private boolean printMemory;
 	private StringBuilder message = new StringBuilder();
-    private JFishLogger timeLogger = JFishLogger.INSTANCE;
+    private TimeLogger timeLogger = TimeLogger.INSTANCE;
 
 
 	public TimeCounter(Object target) {
@@ -32,6 +33,12 @@ public class TimeCounter {
 	public TimeCounter(Object target, boolean printMemory) {
 		this.target = target;
 		this.printMemory = printMemory;
+	}
+
+	
+	public TimeCounter logger(TimeLogger timeLogger){
+		this.timeLogger = timeLogger;
+		return this;
 	}
 
 	public Date start() {

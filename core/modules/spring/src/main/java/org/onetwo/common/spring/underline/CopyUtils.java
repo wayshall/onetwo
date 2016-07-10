@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -173,7 +174,7 @@ public class CopyUtils {
 			return (T)newInstance(clazz);
 		}
 	}
-	public static <K, V> Map<K, V> newMap(Class<? extends Map> mapClass){
+	public static <K, V> Map<K, V> newMap(Class<? extends Map<K, V>> mapClass){
 		if(mapClass==Map.class)
 			return new HashMap<K, V>();
 		return (Map<K, V>)ReflectUtils.newInstance(mapClass);
@@ -267,7 +268,8 @@ public class CopyUtils {
 		if(Serializable.class.isInstance(datas)){
 			return (List<T>)deepClone((Serializable)datas);
 		}
-		throw new IllegalArgumentException("datas not serializable");
+		String clsName = datas.getClass().getName();
+		throw new IllegalArgumentException("datas not serializable", new NotSerializableException(clsName));
 	}
 	
 	private CopyUtils(){

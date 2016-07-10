@@ -34,6 +34,7 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 	@Override
 	protected AccessDecisionManager accessDecisionManager() {
 		AccessDecisionManager decisionManager = super.accessDecisionManager();
+		@SuppressWarnings("unchecked")
 		List<AccessDecisionVoter<? extends Object>> decisionVoters = (List<AccessDecisionVoter<? extends Object>>)ReflectUtils.getFieldValue(decisionManager, "decisionVoters");
 		decisionVoters.add(new MethodWebExpressionVoter());
 		return decisionManager;
