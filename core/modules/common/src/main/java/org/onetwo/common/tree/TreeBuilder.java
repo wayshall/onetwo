@@ -2,6 +2,7 @@ package org.onetwo.common.tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -10,9 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("unchecked")
@@ -125,7 +128,10 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 	public TreeBuilder<TM> rootIds(Object...objects) {
 //		this.rootIds = Arrays.asList(objects);
-		this.rootNodeFunc = new RootIdsFunc<TM>(objects);
+		Collection<?> ids = CUtils.stripNull(Lists.newArrayList(objects));
+		if(ids.isEmpty())
+			return this;
+		this.rootNodeFunc = new RootIdsFunc<TM>(ids);
 		return this;
 	}
 	

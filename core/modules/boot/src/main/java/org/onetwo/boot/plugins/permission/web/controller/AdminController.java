@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.onetwo.boot.core.web.controller.PluginBaseController;
+import org.onetwo.boot.plugin.web.PluginBaseController;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.web.userdetails.UserDetail;

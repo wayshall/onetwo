@@ -1,16 +1,14 @@
 package org.onetwo.common;
 
 import org.junit.Test;
-import org.onetwo.common.utils.UserEntity;
 
 public class SimpleTest {
 	
 	@Test
 	public void test(){
-		long b = 100000000000000000L;
-		int a = (int)100000000000000000L;
-		System.out.println("b:"+b);
-		System.out.println("a:"+a);
+		String str = "当前使用的币数[%s]超过了规则限制使用的币数[%s]！(%s)";
+		String res = String.format(str, 100, 100, 100);
+		System.out.println("res:"+res);
 	}
 
 }

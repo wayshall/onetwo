@@ -7,13 +7,18 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.generator.GlobalConfig.OutfilePathFunc;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.MysqlMetaDialet;
+import org.onetwo.common.db.generator.dialet.OracleMetaDialet;
 import org.onetwo.common.db.generator.mapping.ColumnMapping;
 import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc;
+import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
@@ -47,14 +52,27 @@ public class DbGenerator {
 		super();
 		this.dataSource = dataSource;
 		this.templateEngine = ftlGenerator;
+		DataBase db = JdbcUtils.getDataBase(dataSource);
+		if(db==DataBase.MySQL){
+			mysql();
+		}else if(db==DataBase.Oracle){
+			oracle();
+		}else{
+			throw new DbmException("unsupported database : " + db);
+		}
 	}
 	public DbGenerator templateEngine(TemplateEngine templateEngine){
 		this.templateEngine = templateEngine;
 		return this;
 	}
 	
-	public DbGenerator mysql(){
+	final public DbGenerator mysql(){
 		this.dialet = new MysqlMetaDialet(dataSource);
+		return this;
+	}
+	
+	final public DbGenerator oracle(){
+		this.dialet = new OracleMetaDialet(dataSource);
 		return this;
 	}
 	
@@ -172,11 +190,17 @@ public class DbGenerator {
 		
 		private String tableName;
 		private List<TableGeneratedConfig> generatedConfigs = Lists.newArrayList();
+		private TableMeta tableMeta = null;
 		
 
 		public DbTableGenerator(String tableName) {
 			super();
 			this.tableName = tableName;
+			this.tableMeta = dialet.getTableMeta(tableName);
+		}
+		
+		public TableMetaConfig meta(){
+			return new TableMetaConfig(tableMeta, this);
 		}
 		
 		public DbTableGenerator addGeneratedConfig(String templatePath, String outfilePath){
@@ -205,7 +229,7 @@ public class DbGenerator {
 										"/"+c.globalGeneratedConfig().getModuleName()+"/"+
 										tableShortName.replace('_', '-')+
 										"-"+FileUtils.getFileNameWithoutExt(templatePath);
-										return filePath;
+										return filePath.toLowerCase();
 									}
 								);
 			generatedConfigs.add(config);
@@ -232,11 +256,15 @@ public class DbGenerator {
 			return filePath;
 		}
 		
+
 		public DbTableGenerator controllerTemplate(String templatePath){
+			return controllerTemplate("web", templatePath);
+		}
+		public DbTableGenerator controllerTemplate(String controllerPackage, String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
 									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
-									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/web/"+
+									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/"+controllerPackage+"/"+
 									StringUtils.toClassName(tableShortName)+
 									FileUtils.getFileNameWithoutExt(templatePath);
 									return filePath;
@@ -346,6 +374,41 @@ public class DbGenerator {
 			});
 			return new GeneratedResult<String>(tableName, contents);
 		}
+		
+		public class TableMetaConfig {
+			final private TableMeta tableMeta;
+			final private DbTableGenerator tableGenerator;
+
+			public TableMetaConfig(TableMeta tableMeta, DbTableGenerator tableGenerator) {
+				super();
+				this.tableMeta = tableMeta;
+				this.tableGenerator = tableGenerator;
+			}
+			public ColumnMetaConfig column(String name){
+				ColumnMeta column = this.tableMeta.getColumn(name);
+				return new ColumnMetaConfig(column);
+			}
+			public DbTableGenerator end() {
+				return tableGenerator;
+			}
+			
+			public class ColumnMetaConfig {
+				private final ColumnMeta column;
+
+				public ColumnMetaConfig(ColumnMeta column) {
+					super();
+					this.column = column;
+				}
+				public ColumnMetaConfig javaType(Class<?> javaType){
+					this.column.getMapping().javaType(javaType);
+					return this;
+				}
+				public TableMetaConfig end() {
+					return TableMetaConfig.this;
+				}
+			}
+		}
+		
 
 		public class TableGeneratedConfig {
 			private String tableName;

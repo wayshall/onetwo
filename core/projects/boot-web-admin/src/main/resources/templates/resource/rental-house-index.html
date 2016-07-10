@@ -1,0 +1,154 @@
+
+
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+		        <tr>
+		           <td>房源标题:</td>
+		            <td>
+		                <input class="easyui-textbox formFieldClass" type="text" name="title" 
+		                       data-options="required:false,
+		                                     validType:'length[0,100]'
+		                                    "/>
+		            </td>
+		       </tr>
+                <tr>
+                   <td>&nbsp;</td>
+                    <td rowspan="5">
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%"> 
+       <table id="dataGrid"
+              title="" 
+              style="height:100%;">
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="title" >房源标题</th>
+                <th field="districtName" >区域</th>
+                <th field="estateName" >所属小区</th>
+                <th field="mainPhotoPath" >主题图片</th>
+                <th field="hallCount" >户型（厅）</th>
+                <th field="roomCount" >户型（室）</th>
+                <th field="toiletCount" >户型（卫）</th>
+                <th field="fitment" >装修情况</th>
+                <th field="buildingNo" >楼栋</th>
+                <th field="storey" >楼层</th>
+                <th field="rentalType" >出租类型</th>
+                <th field="shareType" >合租类型</th>
+                <th field="orientation" >朝向</th>
+                <th field="area" >平方米</th>
+                <th field="rentalPrice" >出租价（元）</th>
+                <th field="payType" >支付方式</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/resource/rental-house-edit-form.html">
+       
+                 
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/resource/rentalHouse.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+    
+    var editingId;
+    var toolbar = [
+
+         {
+             text:'出租房图片管理',
+             handler:helper.selectOneHandler('#dataGrid', function(row){
+                         location.href="${siteConfig.baseURL}/resource/house/"+row.id+"/photo";
+                     })
+         },
+                    
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+
+                var url = '${siteConfig.baseURL}/resource/rentalHouse.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                var selectedNodes = $('#dataGrid').datagrid('getSelections');
+                if(!selectedNodes || selectedNodes.length>1){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/resource/rentalHouse/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                datagrid: '#dataGrid',
+                url: '${siteConfig.baseURL}/resource/rentalHouse.json',
+                idField: 'id',
+                paramIdName: 'ids'
+            })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    var loadUrl = '${siteConfig.baseURL}/resource/rentalHouse.json';
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: loadUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+ </script>
+    </@override>
+</@extends>

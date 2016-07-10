@@ -17,7 +17,7 @@ public class UtilTimerStackObject{
     private boolean nanoTime;
     private long minTime = 0;
     
-    private JFishLogger timeLogger;
+    private TimeLogger timeLogger;
     
     public static UtilTimerStackObject createObject(){
     	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
@@ -25,23 +25,23 @@ public class UtilTimerStackObject{
     	return obj;
     }
     
-    public static UtilTimerStackObject createObject(JFishLogger timeLogger, long minTime){
+    public static UtilTimerStackObject createObject(TimeLogger timeLogger, long minTime){
     	UtilTimerStackObject obj = new UtilTimerStackObject(timeLogger);
     	obj.minTime = minTime;
     	return obj;
     }
 
-    public UtilTimerStackObject(JFishLogger timeLogger) {
+    public UtilTimerStackObject(TimeLogger timeLogger) {
 		super();
 		this.timeLogger = timeLogger;
 	}
 
 
-	public JFishLogger getOuputer() {
+	public TimeLogger getOuputer() {
 		return timeLogger;
 	}
 
-	public void setOuputer(JFishLogger ouputer) {
+	public void setOuputer(TimeLogger ouputer) {
 		this.timeLogger = ouputer;
 	}
 

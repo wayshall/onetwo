@@ -1,0 +1,169 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[新楼房源]信息<hr/>
+       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/resource/new_house.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
+           <input name="id" type="hidden"/>
+           <input name="districtCode" id="districtCode" type="hidden"/>
+           <table cellpadding="5">
+        <tr>
+           <td>标题（房号）:</td>
+            <td>
+                <input class="easyui-textbox formFieldClass" type="text" name="title" 
+                       data-options="required:false,
+                                     validType:'length[0,100]'
+                                    "/>
+            </td>
+       </tr>
+        <tr>
+           <td>总售价(元):</td>
+            <td>
+                <input class="easyui-numberbox formFieldClass" type="text" name="sellPrice" 
+                       data-options="required:false
+                                      "/>
+                       
+            </td>
+       </tr>
+       <tr>
+          <td>地区:</td>
+           <td>
+               <input class="" type="text" name="districtName" id="districtName" style="width:180px;"
+                       data-options="required:true"/>
+           </td>
+      </tr>
+        <tr>
+           <td>所属小区:</td>
+            <td>
+                <input class=" formFieldClass" type="text" name="estateId" id="estateId" 
+                       data-options="required:true, editable:false"/>
+                       
+            </td>
+       </tr>
+       <tr>
+          <td>户型（厅）:</td>
+           <td>
+               <input class="easyui-numberbox formFieldClass" type="text" name="hallCount" 
+                      data-options="required:true"/>
+           </td>
+      </tr>
+       <tr>
+          <td>户型（室）:</td>
+           <td>
+               <input class="easyui-numberbox formFieldClass" type="text" name="roomCount" 
+                      data-options="required:true"/>
+           </td>
+      </tr>
+       <tr>
+          <td>户型（卫）:</td>
+           <td>
+               <input class="easyui-numberbox formFieldClass" type="text" name="toiletCount" 
+                      data-options="required:true"/>
+           </td>
+      </tr>
+        <tr>
+           <td>面积(平方米):</td>
+            <td>
+                <input class="easyui-numberbox formFieldClass" type="text" name="buildArea" 
+                       data-options="required:false
+                                      "/>
+                       
+            </td>
+       </tr>
+        <tr>
+           <td>楼栋:</td>
+            <td>
+                <input class="easyui-textbox formFieldClass" type="text" name="buildingNo" 
+                       data-options="required:false,
+                                     validType:'length[0,50]'
+                                    "/>
+            </td>
+       </tr>
+        <tr>
+           <td>楼层:</td>
+            <td>
+                <input class="easyui-textbox formFieldClass" type="text" name="storey" 
+                       data-options="required:false,
+                                     validType:'length[0,50]'
+                                    "/>
+            </td>
+       </tr>
+        <tr>
+           <td>朝向:</td>
+            <td>
+                <input class="easyui-textbox formFieldClass" type="text" name="orientation" 
+                       data-options="required:false,
+                                     validType:'length[0,50]'
+                                    "/>
+            </td>
+       </tr>
+     </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+	$('#districtName').combotree({
+	    method: 'get',
+	    url : "${siteConfig.baseURL}/configmgr/cityDistrict/tree.json",  
+	    onBeforeExpand : function(row) {  
+	        var url = '${siteConfig.baseURL}/configmgr/cityDistrict/tree.json?cityCode='+row.id+'&cityName='+row.text;
+	        $("#districtName").combotree("tree").tree("options").url = url;  
+	        return true;      
+	    },
+	    onChange: function(newValue, oldValue){
+            //$('#estateId').combogrid('clear');
+            //$('#unitId').combobox('clear');
+	    	var url = '${siteConfig.baseURL}/configmgr/estate/combobox.json?districtCode='+$('#districtCode').val();
+            $('#estateId').combogrid('grid').datagrid('options').url = url;
+            $('#estateId').combogrid('grid').datagrid('reload');
+	    },
+        onSelect: function(node){
+            $('#districtCode').val(node.id);
+        }
+	});
+
+	$('#estateId').combogrid({
+	    panelWidth:500,
+        delay: 500,
+	    //url: '${siteConfig.baseURL}/configmgr/estate/combobox.json',
+	    method: 'get',
+	    idField:'id',
+	    textField:'name',
+	    mode:'remote',
+	    fitColumns:true,
+	    columns:[[
+	        {field:'id',title:'id',width:60},
+	        {field:'name',title:'名称',width:80}
+	    ]],
+	    //data:[{id:1, name:'test1'},  {id:2, name:'test3'}],
+	   /*  onChange: function(newValue, oldValue){
+	    	var url = '/configmgr/estateUnit/combobox/'+newValue+'.json';
+	    	$('#unitId').combobox('reload', url);
+	    } */
+	});
+
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', treegrid: '#dataGrid'});
+    }
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+</script>

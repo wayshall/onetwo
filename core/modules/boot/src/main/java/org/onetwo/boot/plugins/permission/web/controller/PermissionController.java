@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.permission.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.web.controller.PluginBaseController;
+import org.onetwo.boot.plugin.web.PluginBaseController;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.web.csrf.CsrfValid;
 import org.onetwo.common.web.userdetails.UserDetail;

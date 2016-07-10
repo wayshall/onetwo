@@ -1,0 +1,45 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[楼盘图片]信息<hr/>
+       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/resource/house/${house.id}/photo.json" method="post" enctype="multipart/form-data">
+            <input id="_method" name="_method" type="hidden" />
+           <input name="id" type="hidden"/>
+           <table cellpadding="5">
+                <tr>
+                    <td>选择文件:</td>
+                    <td>
+                        <input class="easyui-filebox formFieldClass" type="text" name="photos[0].file" 
+                               data-options="required:true,
+                                             editable:false "/>
+                    </td>
+                    
+                    <td><input class="" name="photos[0].mainPhoto" type="checkbox"/>主题图片</td>
+                </tr>
+           </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+</script>

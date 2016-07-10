@@ -14,6 +14,12 @@ public class CaseInsensitiveMap<K, V> extends BaseMap<K, V>{
 	
 
 	@Override
+	public boolean containsKey(Object key) {
+		return super.containsKey(convertKey(key));
+	}
+
+
+	@Override
 	public V get(Object key) {
 		key = convertKey(key);
 		return super.get(key);

@@ -1,0 +1,143 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[求租信息表]信息<hr/>
+       <form id="dataForm" class="" action="${siteConfig.baseURL}/resource/demand_rental.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
+           <input name="id" type="hidden"/>
+           <input name="districtCode" id="districtCode" type="hidden"/>
+           <table cellpadding="5">
+                <tr>
+                   <td>区域:</td>
+                   <td>
+                       <input class="" type="text" name="districtName" id="districtName" style="width:180px;"
+                               data-options="required:true"/>
+                   </td>
+               </tr>
+                <tr>
+                    <td>出租价（元）:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="expectPrice" 
+                               data-options="required:false
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>租赁方式:</td>
+                    <td>
+                        <input class="easyui-combobox formFieldClass" name="rentalType" 
+                               data-options="required:false,
+                                              method: 'get',
+                                              editable: false,
+                                              url: '${siteConfig.baseURL}/configmgr/dictionary/combobox/RENTAL_TYPE.json' "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>户型（厅）:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="hallCount" 
+                               data-options="required:false
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>户型（室）:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="roomCount" 
+                               data-options="required:false
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>户型（卫）:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="toiletCount" 
+                               data-options="required:false
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>标题:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="title" 
+                               data-options="required:false,
+                                             validType:'length[0,100]' "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>联系人:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="linkMan" 
+                               data-options="required:false,
+                                             validType:'length[0,20]' "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>联系电话:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="linkPhone" 
+                               data-options="required:false,
+                                             validType:'length[0,20]' "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="demandDesc" 
+                               style="width:185px;height:200px"
+                               data-options="required:false,
+                                             multiline:true, 
+                                             validType:'length[0,1000]' "/>
+                    </td>
+                </tr>
+           </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+
+	var dataForm = $('#dataForm');
+	var districtName = $(dataForm.find('input[name="districtName"]'));
+	$(districtName).combotree({
+	    method: 'get',
+	    url : "${siteConfig.baseURL}/configmgr/cityDistrict/tree.json",  
+	    onBeforeExpand : function(row) {  
+	        var url = '${siteConfig.baseURL}/configmgr/cityDistrict/tree.json?cityCode='+row.id+'&cityName='+row.text;
+	        $(districtName).combotree("tree").tree("options").url = url;  
+	        return true;      
+	    },
+	    onSelect: function(node){
+	        $(dataForm.find('input[name="districtCode"]')).val(node.id);
+	    }
+	});
+
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', treegrid: '#dataGrid'});
+    }
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+</script>

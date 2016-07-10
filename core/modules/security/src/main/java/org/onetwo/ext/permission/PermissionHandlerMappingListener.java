@@ -42,7 +42,13 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 
 	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
 		DefaultIPermission<?> menu = perm;
+
+		String method = getFirstMethod(entry.getKey());
+		if(!RequestMethod.GET.name().toLowerCase().equals(method)){
+			return ;
+		}
 		
+		menu.setMethod(method);
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
 		String url = null;
 		if(StringUtils.isNotBlank(menu.getUrl())){
@@ -54,8 +60,6 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		menu.setUrl(url);
 //		Iterator<RequestMethod> it = entry.getKey().getMethodsCondition().getMethods().iterator();
 
-		String method = getFirstMethod(entry.getKey());
-		menu.setMethod(method);
 		/*if(it.hasNext()){
 			//取第一个映射方法
 			String method = entry.getKey().getMethodsCondition().getMethods().iterator().next().toString();

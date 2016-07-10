@@ -108,6 +108,7 @@ public class SimpleBeanCopier {
 		return cloneable;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void setPropertyValue(BeanWrapper targetBeanWrapper, PropertyDescriptor toProperty, Object srcValue){
 		String propertyName = toProperty.getName();
 		if(srcValue==null){
@@ -129,7 +130,7 @@ public class SimpleBeanCopier {
 			this.copyCollection(targetBeanWrapper, (Class<? extends Collection<?>>)propertyType, cloneable, toProperty, (Collection<?>)srcValue);
 			
 		}else if(Map.class.isAssignableFrom(propertyType)){
-			this.copyMap(targetBeanWrapper, (Class<? extends Map>)propertyType, cloneable, toProperty, (Map<?, ?>)srcValue);
+			this.copyMap(targetBeanWrapper, (Class<? extends Map<Object, Object>>)propertyType, cloneable, toProperty, (Map<?, ?>)srcValue);
 			
 		}else{
 //			Object targetValue = newBeanCopier(toProperty.getPropertyType()).fromObject(srcValue);
@@ -161,7 +162,7 @@ public class SimpleBeanCopier {
 	
 
 	protected void copyCollection(BeanWrapper targetBeanWrapper, Class<? extends Collection<?>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Collection<?> srcValue){
-		Collection<Object> cols = CopyUtils.newCollections((Class<? extends Collection>)propertyType);
+		Collection<Object> cols = CopyUtils.newCollections((Class<? extends Collection<?>>)propertyType);
 		
 		if(isContainerValueCopyValueOrRef(cloneable)){
 			cols.addAll(srcValue);
@@ -187,7 +188,7 @@ public class SimpleBeanCopier {
 		targetBeanWrapper.setPropertyValue(toProperty.getName(), cols);
 	}
 	
-	protected void copyMap(BeanWrapper targetBeanWrapper, Class<? extends Map> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
+	protected void copyMap(BeanWrapper targetBeanWrapper, Class<? extends Map<Object, Object>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
 		Map<Object, Object> map = CopyUtils.newMap(propertyType);
 		if(isContainerKeyCopyValueOrRef(cloneable) && isContainerValueCopyValueOrRef(cloneable)){
 			map.putAll(srcValue);

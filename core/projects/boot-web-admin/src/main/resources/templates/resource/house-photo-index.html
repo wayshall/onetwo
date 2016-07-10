@@ -1,0 +1,118 @@
+
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       房源图片上传
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="房源[${house.title}]图片" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="houseType" >图片类型</th>
+                <th field="objectId" >所属房源</th>
+                <th field="photoPath" formatter="showImgLink">图片路径</th>
+                <th field="createAt" >上传时间</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+  
+  <div id="showImgDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true ">
+       <img id="imgShow" alt="" src="">
+</div>
+
+	<#include "/resource/house-photo-edit-form.html">
+       
+                 
+    <script type="text/javascript">
+    
+    showImgLink = function(value,row,index){
+        return '<a title="'+value+'" href="javascript:showImg(\''+value+'\');" target="blank">查看</a>';
+    }
+    
+    showImg = function(value,row,index){
+    	value = "${siteConfig.uploadImageAccessPath}"+value;
+        $('#imgShow').attr('src', value).resetImg(400, 300);
+        $('#showImgDialog').dialog('open').dialog('setTitle', '显示图片');
+       // $('#showImgDialog').dialog('open');
+        return false;
+    }
+    
+    var reqUrl = '${siteConfig.baseURL}/resource/house/${house.id}/photo.json';
+    
+    var editingId;
+    var toolbar = [
+		{
+		    text:'返回房源列表',
+		    handler:function(){
+		        location.href = '${siteConfig.baseURL}/resource/${houseTypeAsCamel}';
+		   }
+		},
+
+        {
+            text:'设置为主题图片',
+            iconCls:'icon-edit',
+            handler:helper.selectOneHandler({
+                datagrid: '#dataGrid',
+                url: function(row){
+                    return '${siteConfig.baseURL}/resource/house/${house.id}/photo/'+row.id+'/mainPhoto.json';
+                },
+                params: {
+                    _method: 'put'
+                }
+            })
+        },
+        
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+		                datagrid: '#dataGrid',
+		                url: reqUrl,
+		                idField: 'id',
+		                paramIdName: 'ids'
+		            })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+ </script>
+    </@override>
+</@extends>

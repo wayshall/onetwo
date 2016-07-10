@@ -1,0 +1,57 @@
+<@extends parent="application.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+                首页
+    </@override>
+    <@override name="main-content">
+        <div class="absoluteCenter">
+        <#if RequestParameters.error??>
+            <div><font color="red">${SPRING_SECURITY_LAST_EXCEPTION.message}</font></div>
+        </#if>
+		    <div class="easyui-panel" title="请先登录 ->" style="width:400px">
+		        <div style="padding:10px 60px 20px 60px">
+		        <form id="loginForm" class="easyui-form" action="${siteConfig.baseURL}/dologin?ajaxRequest=true" method="post" data-options="novalidate:true">
+		            <table cellpadding="5">
+		                <tr>
+		                    <td>用户:</td>
+		                    <td><input class="easyui-textbox" type="text" name="username" data-options="required:true"></input></td>
+		                </tr>
+		                <tr>
+		                    <td>密码:</td>
+		                    <td><input class="easyui-textbox" type="password" name="password" data-options="required:true"></input></td>
+		                </tr>
+		            </table>
+		            <@security.csrfInput/>
+		        </form>
+		        <div style="text-align:center;padding:5px">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="login()">&nbsp;登&nbsp;&nbsp;录&nbsp;</a>
+		        </div>
+		        </div>
+		    </div>
+		    <script>
+		        function login(){
+		            $('#loginForm').form('submit',{
+		                onSubmit:function(){
+		                    return $(this).form('enableValidation').form('validate');
+		                },
+		                success: function(data){
+		                	data = JSON.parse(data);
+		                	if(data.error){
+		                		//alert(data.message);
+		                		$.messager.alert('登录出错！',data.message,'warning');
+		                	}else{
+                                $.messager.alert('登录成功！',data.message,'info');
+		                		location.href="${siteConfig.baseURL}/plugins/permission/admin"
+		                	}
+		                }
+		            });
+		        }
+		        
+		    </script>
+        </div>
+    </@override>
+</@extends>

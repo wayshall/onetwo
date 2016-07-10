@@ -1,0 +1,94 @@
+<#assign security = JspTaglibs["http://www.springframework.org/security/tags"]/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${adminTitle}</title>
+    <link rel="stylesheet" type="text/css" href="${siteConfig.jsPath}/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${siteConfig.jsPath}/easyui/themes/icon.css">
+    <script type="text/javascript" src="${siteConfig.jsPath}/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="${siteConfig.jsPath}/easyui/jquery.easyui.min.js"></script>
+    <style type="text/css">  
+    html,body  
+    {  
+        height:100%;  
+        margin:0 auto;  
+    }  
+</style>
+
+<script>
+
+$(function(){
+    $('#logoutButton').click(function(){
+    	$.messager.confirm('系统提示！', '确定注销？', function(rs){
+            if(rs){
+                $("#logoutForm").submit();
+                return false;
+            }
+        });
+    });
+});
+</script>
+
+</head>
+<body>
+    <div class="easyui-layout" style="width:100%;height:100%;">
+        <div data-options="region:'north'" style="height:50px">
+            <div>${adminTitle}</div>
+            <div style="float:right; margin-right: 20px;">
+                <form id="logoutForm" action="${securityConfig.userLogoutUrl}" method="post">
+                    <@security.csrfInput/>
+                    <a id="logoutButton" href="javascript:void(0);" class="easyui-linkbutton" style="width:80px" >注&nbsp;销</a>
+                </form>
+            </div>
+        </div>
+        <!-- <div data-options="region:'east',split:true" title="East" style="width:180px;">
+            <ul class="easyui-tree" data-options="url:'tree_data1.json',method:'get',animate:true,dnd:true"></ul>
+        </div> -->
+        <div data-options="region:'west',split:true" title="菜单" style="width:20%;">
+            <div class="easyui-accordion" data-options="fit:true,border:false">
+                <#list menus as menu>
+                <div title="${menu.name}" style="padding:10px;">
+				        <ul id="menu_${menu.id}" class="easyui-tree">
+				        </ul>
+				    </div>
+                </#list>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'内容',iconCls:'icon-ok'">
+            <div id="mainContent" class="easyui-tabs" data-options="fit:true,border:false,plain:true">
+                <!-- <div title="首页" data-options="href:'${siteConfig.baseURL}/'" style="padding:10px"></div> -->
+                <div title="首页" style="padding:10px">欢迎使用置业通后台管理系统</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+function addTab(title, url){
+    if ($('#mainContent').tabs('exists', title)){
+        var tab = $('#mainContent').tabs('select', title);
+        //tab.find("iframe").get(0).contentDocument.location.reload();
+        tab.find("iframe").get(0).src = url;
+    } else {
+        var content = '<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
+        $('#mainContent').tabs('add',{
+            title:title,
+            content:content,
+            closable:true
+        });
+    }
+}
+
+<#list menus as menu>
+    $('#menu_${menu.id}').tree({
+        data: ${menu.toJson()},
+        onClick: function(node){
+        	addTab(node.name, '${siteConfig.baseURL}'+node.url);
+        }
+    });
+</#list>
+
+
+
+</script>
