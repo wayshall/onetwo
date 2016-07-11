@@ -1,4 +1,4 @@
-package com.yooyo.zhiyetong.utils;
+package org.onetwo.webapp.manager.utils;
 
 final public class Codes {
 

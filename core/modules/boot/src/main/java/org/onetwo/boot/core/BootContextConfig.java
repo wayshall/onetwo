@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
+import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.springframework.beans.BeanUtils;
@@ -15,10 +16,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.ClassUtils;
 
 @Configuration
+@Import(PluginContextConfig.class)
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 public class BootContextConfig {

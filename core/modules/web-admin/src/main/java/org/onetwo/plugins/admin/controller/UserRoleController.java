@@ -2,7 +2,6 @@ package org.onetwo.plugins.admin.controller;
 
 import java.util.List;
 
-import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.common.utils.map.MappableMap;
 import org.onetwo.easyui.EasyModel;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
@@ -21,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RequestMapping("/admin/userRole")
+@RequestMapping("userRole")
 @Controller
-public class UserRoleController extends AbstractBaseController {
+public class UserRoleController extends WebAdminBaseController {
 	@Autowired
 	private AdminUserServiceImpl adminUserServiceImpl;
 	@Autowired

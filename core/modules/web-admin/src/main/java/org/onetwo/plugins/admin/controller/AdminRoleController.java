@@ -2,8 +2,6 @@
 
 package org.onetwo.plugins.admin.controller;
 
-import org.onetwo.boot.core.web.controller.AbstractBaseController;
-import org.onetwo.boot.core.web.controller.DateInitBinder;
 import org.onetwo.common.utils.Page;
 import org.onetwo.easyui.EasyPage;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
@@ -18,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/admin/adminRole")
-public class AdminRoleController extends AbstractBaseController implements DateInitBinder {
+@RequestMapping("role")
+public class AdminRoleController extends WebAdminBaseController {
 
     @Autowired
     private AdminRoleServiceImpl adminRoleServiceImpl;

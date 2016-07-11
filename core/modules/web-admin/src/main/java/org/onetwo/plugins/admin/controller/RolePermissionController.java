@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.easyui.EasyChildrenTreeModel;
 import org.onetwo.easyui.EasyModel;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
@@ -20,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-@RequestMapping("/admin/rolePermission")
+@RequestMapping("rolePermission")
 @Controller
-public class RolePermissionController extends AbstractBaseController {
+public class RolePermissionController extends WebAdminBaseController {
 	@Resource
 	private AdminRoleServiceImpl adminRoleServiceImpl;
 	@Resource
