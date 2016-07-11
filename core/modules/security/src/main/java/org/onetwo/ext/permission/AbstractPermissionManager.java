@@ -30,8 +30,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	@Override
 	public void build(){
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
-		DefaultIPermission<?> rootMenu = menuInfoParser.parseTree();
-		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
+		menuInfoParser.parseTree();
 		this.menuNodeMap = menuInfoParser.getPermissionMap();
 	}
 	

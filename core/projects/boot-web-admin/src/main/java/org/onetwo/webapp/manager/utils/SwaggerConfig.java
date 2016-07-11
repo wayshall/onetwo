@@ -1,4 +1,4 @@
-package com.yooyo.zhiyetong.utils;
+package org.onetwo.webapp.manager.utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

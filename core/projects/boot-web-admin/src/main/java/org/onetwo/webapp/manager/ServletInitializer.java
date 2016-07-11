@@ -1,4 +1,4 @@
-package com.yooyo.zhiyetong;
+package org.onetwo.webapp.manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

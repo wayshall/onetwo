@@ -23,12 +23,38 @@
     <dependencies>
         <dependency>
           <groupId>org.onetwo</groupId>
-          <artifactId>onetwo-boot</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.onetwo</groupId>
           <artifactId>onetwo-web-admin</artifactId>
+	       <exclusions>
+	       	<exclusion>
+	       		<groupId>ch.qos.logback</groupId>
+	       		<artifactId>logback-core</artifactId>
+	       	</exclusion>
+	       	<exclusion>
+	       		<groupId>ch.qos.logback</groupId>
+	       		<artifactId>logback-classic</artifactId>
+	       	</exclusion>
+	       </exclusions>
         </dependency>
+        
+        
+	   <dependency>
+	       <groupId>ch.qos.logback</groupId>
+	       <artifactId>logback-core</artifactId>
+	       <version>1.1.6</version>
+	   </dependency>
+	
+	   <dependency>
+	       <groupId>ch.qos.logback</groupId>
+	       <artifactId>logback-classic</artifactId>
+	       <version>1.1.6</version>
+	      <exclusions>
+	      	<exclusion>
+	      		<groupId>ch.qos.logback</groupId>
+	      		<artifactId>logback-core</artifactId>
+	      	</exclusion>
+	      </exclusions>
+	   </dependency>
+	   
         <dependency>
           <groupId>org.onetwo</groupId>
           <artifactId>onetwo-security</artifactId>
@@ -73,11 +99,6 @@
             <scope>provided</scope>
         </dependency>
         
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        
         <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -94,27 +115,36 @@
         </dependency>
         
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-
-        <dependency>
           <groupId>org.springframework.data</groupId>
           <artifactId>spring-data-commons</artifactId>
+          <exclusions>
+          	<exclusion>
+          		<groupId>org.springframework.boot</groupId>
+          		<artifactId>spring-boot-starter-logging</artifactId>
+          	</exclusion>
+          </exclusions>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>org.springframework.boot</groupId>
+	          		<artifactId>spring-boot-starter-logging</artifactId>
+	          	</exclusion>
+	          </exclusions>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>org.springframework.boot</groupId>
+	          		<artifactId>spring-boot-starter-logging</artifactId>
+	          	</exclusion>
+	          </exclusions>
         </dependency>
     
         <dependency>
@@ -167,7 +197,7 @@
             <dependency>
                 <groupId>org.onetwo</groupId>
                 <artifactId>onetwo-bom</artifactId>
-                <version>4.2.1-SNAPSHOT</version>
+                <version>4.2.2-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

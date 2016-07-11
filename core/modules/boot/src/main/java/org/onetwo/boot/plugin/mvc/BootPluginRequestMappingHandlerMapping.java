@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.mvc;
+package org.onetwo.boot.plugin.mvc;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.boot.plugin.web.annotation.PluginContext;
+import org.onetwo.boot.plugin.mvc.annotation.PluginContext;
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.utils.CUtils;
 import org.springframework.core.OrderComparator;

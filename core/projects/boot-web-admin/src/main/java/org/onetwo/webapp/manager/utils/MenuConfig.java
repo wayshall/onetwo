@@ -1,4 +1,4 @@
-package com.yooyo.zhiyetong.utils;
+package org.onetwo.webapp.manager.utils;
 
 import org.onetwo.ext.permission.AbstractPermissionConfig;
 import org.onetwo.plugins.admin.entity.AdminPermission;

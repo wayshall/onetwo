@@ -24,6 +24,7 @@
             <module>web</module>
             <module>boot</module>
             <module>security</module>
+            <module>web-admin</module>
     </modules>
     
 	<profiles>
@@ -39,6 +40,7 @@
 				<module>web</module>
                 <module>boot</module>
                 <module>security</module>
+				<module>web-admin</module>
 	  	</modules>
 	  </profile>
 	  

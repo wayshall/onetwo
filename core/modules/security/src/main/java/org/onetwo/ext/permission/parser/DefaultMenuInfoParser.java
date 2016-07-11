@@ -112,8 +112,10 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		rootMenu = perm;
 		
 		String[] childMenuPackages = permissionConfig.getChildMenuPackages();
-		if(LangUtils.isEmpty(childMenuPackages))
+		if(LangUtils.isEmpty(childMenuPackages)){
+			this.printMenuInfo();
 			return rootMenu;
+		}
 		
 		List<PermClassParser> childMenuPackageMenus = scaner.scan(new ScanResourcesCallback<PermClassParser>(){
 
@@ -135,8 +137,10 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		}, childMenuPackages);
 		
 		childMenuParser.addAll(childMenuPackageMenus);
-		if(LangUtils.isEmpty(childMenuParser))
+		if(LangUtils.isEmpty(childMenuParser)){
+			this.printMenuInfo();
 			return rootMenu;
+		}
 		
 		for(PermClassParser childMc : childMenuParser){
 			P childPerm =  parseMenuClass(childMc, appCode);
@@ -147,8 +151,13 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 				rootMenu.addFunction((IFunction)childPerm);
 			}*/
 		}
-		
+
+		this.printMenuInfo();
 		return rootMenu;
+	}
+	
+	private void printMenuInfo(){
+		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
 	}
 	
 
