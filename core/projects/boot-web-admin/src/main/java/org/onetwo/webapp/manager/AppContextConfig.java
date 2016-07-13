@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableJFishDbm
 @EnableJFishMethodSecurity
-@Import(WebAdminContextConfig.class)
+@Import({WebAdminContextConfig.class})
 public class AppContextConfig {
 
 	@Bean
