@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.ftl;
+package org.onetwo.boot.ftl;
 
 import java.io.IOException;
 import java.util.ArrayList;
