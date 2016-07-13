@@ -113,7 +113,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		
 		String[] childMenuPackages = permissionConfig.getChildMenuPackages();
 		if(LangUtils.isEmpty(childMenuPackages)){
-			this.printMenuInfo();
+			this.afterParseTree();
 			return rootMenu;
 		}
 		
@@ -138,7 +138,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		
 		childMenuParser.addAll(childMenuPackageMenus);
 		if(LangUtils.isEmpty(childMenuParser)){
-			this.printMenuInfo();
+			this.afterParseTree();
 			return rootMenu;
 		}
 		
@@ -152,11 +152,12 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 			}*/
 		}
 
-		this.printMenuInfo();
+		this.afterParseTree();
 		return rootMenu;
 	}
 	
-	private void printMenuInfo(){
+	private void afterParseTree(){
+		this.parsed = true;
 		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
 	}
 	

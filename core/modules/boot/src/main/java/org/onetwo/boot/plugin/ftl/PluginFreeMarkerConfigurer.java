@@ -1,54 +1,34 @@
-package org.onetwo.common.spring.ftl;
+package org.onetwo.boot.plugin.ftl;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.fish.exception.JFishException;
-import org.onetwo.common.fish.plugin.JFishWebMvcPluginManager;
-import org.onetwo.common.fish.plugin.JFishPluginTemplateLoader;
-import org.onetwo.common.ftl.directive.AbstractDirective;
-import org.onetwo.common.ftl.directive.DefineDirective;
-import org.onetwo.common.ftl.directive.ExtendsDirective;
-import org.onetwo.common.ftl.directive.OverrideDirective;
-import org.onetwo.common.ftl.directive.ProfileDirective;
-import org.onetwo.common.spring.web.mvc.config.event.JFishMvcEventBus;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.ftl.FtlUtils;
+import org.onetwo.common.web.view.ftl.AbstractDirective;
+import org.onetwo.common.web.view.ftl.DefineDirective;
+import org.onetwo.common.web.view.ftl.ExtendsDirective;
+import org.onetwo.common.web.view.ftl.OverrideDirective;
+import org.onetwo.common.web.view.ftl.ProfileDirective;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import freemarker.cache.StatefulTemplateLoader;
-import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
-public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
+public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 	private Map<String, Object> fishFreemarkerVariables = new HashMap<String, Object>();
-	private JFishMvcEventBus jfishMvcEventBus;
-	private boolean freezing;
 	
-	private JFishWebMvcPluginManager jfishPluginManager;
-
-
-	public JFishFreeMarkerConfigurer(JFishMvcEventBus listenerManager) {
-		super();
-		this.jfishMvcEventBus = listenerManager;
-	}
-
-	public void setJfishPluginManager(JFishWebMvcPluginManager jfishPluginManager) {
-		this.jfishPluginManager = jfishPluginManager;
-	}
-
-	public JFishFreeMarkerConfigurer addDirective(AbstractDirective directive){
+	public PluginFreeMarkerConfigurer addDirective(AbstractDirective directive){
 		return addDirective(directive, false);
 	}
 
-	public JFishFreeMarkerConfigurer addDirective(AbstractDirective directive, boolean override){
-		this.checkFreezing("addDirective");
+	public PluginFreeMarkerConfigurer addDirective(AbstractDirective directive, boolean override){
 		if(!override && this.fishFreemarkerVariables.containsKey(directive.getDirectiveName()))
-			throw new JFishException("the freemarker directive name has exist : " + directive.getDirectiveName());
+			throw new BaseException("the freemarker directive name has exist : " + directive.getDirectiveName());
 		this.fishFreemarkerVariables.put(directive.getDirectiveName(), directive);
 		return this;
 	}
@@ -67,21 +47,11 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 		this.fishFreemarkerVariables.put(DataFieldDirective.DIRECTIVE_NAME, new DataFieldDirective());
 		this.fishFreemarkerVariables.put(DataComponentDirective.DIRECTIVE_NAME, new DataComponentDirective());*/
 
-		this.jfishMvcEventBus.postFreeMarkerConfigurer(jfishPluginManager, this, false);
-		
 		super.setFreemarkerVariables(this.fishFreemarkerVariables);
 		super.afterPropertiesSet();
 
-		this.jfishMvcEventBus.postFreeMarkerConfigurer(jfishPluginManager, this, true);
-		
-		this.freezing = true;
 	}
 	
-	private void checkFreezing(String op){
-		if(this.freezing){
-			throw new JFishException("the object is freezing on this operation: " + op);
-		}
-	}
 
 	public void setFreemarkerVariables(Map<String, Object> variables) {
 		this.fishFreemarkerVariables = variables;
@@ -98,33 +68,22 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 		return fishFreemarkerVariables;
 	}
 
-	/*public void addTemplateLoader(String templateLoaderPath) {
-		this.checkFreezing("addTemplateLoader");
-		final TemplateLoader loader = getConfiguration().getTemplateLoader();
-		final JFishPluginTemplateLoader jfishLoader = JFishPluginTemplateLoader.class.isInstance(loader)?(JFishPluginTemplateLoader)loader:null;
-		if(jfishLoader==null){
-			logger.error("not found JFishPluginTemplateLoader. ");
-		}
-		TemplateLoader pluginLoader = getTemplateLoaderForPath(templateLoaderPath);
-		jfishLoader.addTemplateLoader(pluginLoader);
-	}*/
-
-	public void addPluginTemplateLoader(String name, String templateLoaderPath) {
+	/*public void addPluginTemplateLoader(String name, String templateLoaderPath) {
 		this.checkFreezing("addPluginTemplateLoader");
 		final TemplateLoader loader = getConfiguration().getTemplateLoader();
 		final JFishPluginTemplateLoader jfishLoader = JFishPluginTemplateLoader.class.isInstance(loader)?(JFishPluginTemplateLoader)loader:null;
 		if(jfishLoader==null){
 //			logger.error("not found JFishPluginTemplateLoader. ");
-			throw new JFishException("not found JFishPluginTemplateLoader: " + name);
+			throw new BaseException("not found JFishPluginTemplateLoader: " + name);
 		}
 		if(jfishLoader.containsPluginTemplateLoader(name)){
-			throw new JFishException("the jfish has contains the plugin template loader: " + name);
+			throw new BaseException("the jfish has contains the plugin template loader: " + name);
 		}
 		TemplateLoader pluginLoader = getTemplateLoaderForPath(templateLoaderPath);
 		jfishLoader.addPluginTemplateLoader(name, pluginLoader);
-	}
+	}*/
 
-	protected TemplateLoader getAggregateTemplateLoader(List<TemplateLoader> templateLoaders) {
+	/*protected TemplateLoader getAggregateTemplateLoader(List<TemplateLoader> templateLoaders) {
 //		return super.getAggregateTemplateLoader(templateLoaders);
 		int loaderCount = templateLoaders.size();
 		switch (loaderCount) {
@@ -139,5 +98,5 @@ public class JFishFreeMarkerConfigurer extends FreeMarkerConfigurer {
 //				if(this.pluginManager!=null) this.pluginManager.onTemplateLoader();
 				return loader;
 		}
-	}
+	}*/
 }
