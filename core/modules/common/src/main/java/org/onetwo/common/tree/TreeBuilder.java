@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +96,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	}
 
 	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
-		Assert.notEmpty(datas);
+//		Assert.notEmpty(datas);
 
 		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 
@@ -111,8 +110,9 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 				return s1.compareTo(s2);
 			}
 		};
-		
-		Collections.sort(datas, comp);
+
+		if(datas!=null && !datas.isEmpty())
+			Collections.sort(datas, comp);
 
 		for (T data : datas) {
 			if (data == null)
