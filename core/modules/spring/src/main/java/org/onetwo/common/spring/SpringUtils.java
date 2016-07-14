@@ -23,7 +23,6 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -83,8 +82,8 @@ final public class SpringUtils {
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
-			return Collections.EMPTY_LIST;
-		List<T> list = new JFishList<T>(beanMaps.values());
+			return Collections.emptyList();
+		List<T> list = new ArrayList<T>(beanMaps.values());
 		OrderComparator.sort(list);
 		return list;
 	}

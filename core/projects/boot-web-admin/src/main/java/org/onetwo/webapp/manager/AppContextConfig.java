@@ -4,7 +4,7 @@ import org.onetwo.boot.plugins.permission.web.controller.AdminController;
 import org.onetwo.boot.plugins.security.method.EnableJFishMethodSecurity;
 import org.onetwo.common.jfishdbm.spring.EnableJFishDbm;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
-import org.onetwo.plugins.admin.WebAdminContextConfig;
+import org.onetwo.plugins.admin.WebAdminPluginContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableJFishDbm
 @EnableJFishMethodSecurity
-@Import({WebAdminContextConfig.class})
+@Import({WebAdminPluginContext.class})
 public class AppContextConfig {
 
 	@Bean

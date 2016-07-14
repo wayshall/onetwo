@@ -3,12 +3,14 @@ package org.onetwo.plugins.admin.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
+import org.onetwo.boot.plugin.mvc.annotation.PluginContext;
 import org.onetwo.plugins.admin.utils.Codes.ErrorCodes;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 //@Controller
+@PluginContext(contextPath="")
 @RequestMapping("login")
 public class LoginController extends AbstractBaseController {
 
