@@ -31,13 +31,21 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	private PermissionManager<?> permissionManager;
 	@Autowired
 	private RequestMappingHandlerMapping requestMappingHandlerMapping;
+	private boolean syncMenuDataEnable;
 	
-	
+	public void setSyncMenuDataEnable(boolean syncMenuDataEnable) {
+		this.syncMenuDataEnable = syncMenuDataEnable;
+	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(!syncMenuDataEnable){
+			return ;
+		}
 		Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
 		this.onHandlerMethodsInitialized(handlerMethods);
+
+		this.permissionManager.syncMenuToDatabase();
 	}
 
 	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
