@@ -7,7 +7,7 @@ import org.onetwo.easyui.EasyPage;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.AdminRoleMgr;
 import org.onetwo.plugins.admin.entity.AdminRole;
-import org.onetwo.plugins.admin.service.AdminRoleServiceImpl;
+import org.onetwo.plugins.admin.service.impl.AdminRoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +26,7 @@ public class AdminRoleController extends WebAdminBaseController {
     @ByPermissionClass(AdminRoleMgr.List.class)
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView index(EasyPage<AdminRole> easyPage, AdminRole adminRole){
-        return responsePageOrData("/admin/admin-role-index", ()->{
+        return responsePageOrData("/web-admin/admin-role-index", ()->{
         			Page<AdminRole> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
                     adminRoleServiceImpl.findPage(page, adminRole);
                     return EasyPage.create(page);

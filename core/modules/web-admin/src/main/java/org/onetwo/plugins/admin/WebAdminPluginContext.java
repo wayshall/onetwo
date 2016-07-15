@@ -20,5 +20,12 @@ public class WebAdminPluginContext {
 	public WebAdminPlugin webAdminPlugin(){
 		return new WebAdminPlugin();
 	}
+	
+	/*@Bean
+	@ConditionalOnBean(DictionaryService.class)
+	@ConditionalOnMissingBean(DictionaryImportController.class)
+	public DictionaryImportController dictionaryImportController(){
+		return new DictionaryImportController();
+	}*/
 
 }
