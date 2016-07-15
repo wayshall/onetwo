@@ -5,7 +5,7 @@ import org.onetwo.easyui.EasyPage;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.AdminUserMgr;
 import org.onetwo.plugins.admin.entity.AdminUser;
-import org.onetwo.plugins.admin.service.AdminUserServiceImpl;
+import org.onetwo.plugins.admin.service.impl.AdminUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +24,7 @@ public class AdminUserController extends WebAdminBaseController {
     @ByPermissionClass(AdminUserMgr.List.class)
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView index(EasyPage<AdminUser> easyPage, AdminUser adminUser){
-        return responsePageOrData("/admin/admin-user-index", ()->{
+        return responsePageOrData("/web-admin/admin-user-index", ()->{
         			Page<AdminUser> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
         			adminUserServiceImpl.findPage(page, adminUser);
                     return EasyPage.create(page);

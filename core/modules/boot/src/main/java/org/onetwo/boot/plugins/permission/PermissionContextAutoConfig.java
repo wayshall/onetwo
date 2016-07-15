@@ -1,6 +1,5 @@
 package org.onetwo.boot.plugins.permission;
 
-import org.onetwo.boot.plugins.permission.web.controller.PermissionController;
 import org.onetwo.ext.permission.AbstractPermissionConfig;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;
@@ -23,16 +22,11 @@ import org.springframework.context.annotation.Configuration;
  * @author way
  *
  */
-//@Configuration
+@Configuration
 @ConditionalOnBean(AbstractPermissionConfig.class)
 public class PermissionContextAutoConfig {
 	
 	public PermissionContextAutoConfig(){
-	}
-	
-	@Bean
-	public PermissionController permissionController(){
-		return new PermissionController();
 	}
 	
 	@Bean
@@ -51,9 +45,10 @@ public class PermissionContextAutoConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(value=PermissionHandlerMappingListener.class)
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
 		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
-		listener.setSyncMenuDataEnable(syncMenuDataEnable);
+		listener.setSyncMenuDataEnable(true);
 		return listener;
 	}
 	

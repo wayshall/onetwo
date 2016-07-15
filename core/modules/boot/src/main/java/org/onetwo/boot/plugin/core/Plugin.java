@@ -1,5 +1,7 @@
 package org.onetwo.boot.plugin.core;
 
+import org.onetwo.common.utils.StringUtils;
+
 public interface Plugin {
 	
 	public PluginMeta getPluginMeta();
@@ -10,6 +12,14 @@ public interface Plugin {
 	
 	default Class<?> getRootClass(){
 		return this.getClass();
+	}
+
+	default String getContextPath() {
+		return StringUtils.appendStartWith(getPluginMeta().getName(), "/");
+	}
+
+	default String getTemplatePath() {
+		return StringUtils.appendStartWith(getPluginMeta().getName(), "/");
 	}
 	
 }

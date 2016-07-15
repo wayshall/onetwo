@@ -50,7 +50,7 @@ public class BootPluginRequestMappingHandlerMapping extends RequestMappingHandle
 		}
 		Optional<Plugin> plugin = pluginManager.findPluginByElementClass(handlerType);
 		if(plugin.isPresent()){
-			return plugin.get().getPluginMeta().getContextPath();
+			return plugin.get().getContextPath();
 		}
 		return null;
 	}

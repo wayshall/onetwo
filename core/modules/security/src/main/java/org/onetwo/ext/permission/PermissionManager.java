@@ -15,7 +15,7 @@ public interface PermissionManager<P extends DefaultIPermission<P>> {
 
 	P getDatabaseMenuNode(Class<P> clazz);*/
 
-	public P getMemoryRootMenu();
+	public List<P> getMemoryRootMenu();
 	
 	/****
 	 * 同步菜单
@@ -24,7 +24,7 @@ public interface PermissionManager<P extends DefaultIPermission<P>> {
 
 	P findByCode(String code);
 
-	public String parseCode(Class<?> permClass);
+//	public String parseCode(Class<?> permClass);
 
 	List<P> findAppMenus(String appCode);
 	List<P> findUserAppMenus(String appCode, UserDetail userDetail);
