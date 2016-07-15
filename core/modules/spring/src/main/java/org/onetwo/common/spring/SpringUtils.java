@@ -42,6 +42,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.OrderComparator;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -79,12 +80,17 @@ final public class SpringUtils {
 		setProfiles(newProfiles);
 	}
 
+
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
 			return Collections.emptyList();
 		List<T> list = new ArrayList<T>(beanMaps.values());
 		OrderComparator.sort(list);
+		return list;
+	}
+	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<?> clazz, ParameterizedTypeReference<T> typeRef) {
+		List<T> list = (List<T>)getBeans(appContext, clazz);
 		return list;
 	}
 	

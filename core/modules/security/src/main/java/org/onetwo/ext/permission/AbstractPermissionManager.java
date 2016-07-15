@@ -1,16 +1,25 @@
 package org.onetwo.ext.permission;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
+import org.onetwo.ext.permission.utils.PermissionUtils;
+import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.google.common.collect.Sets;
 
@@ -18,30 +27,64 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	protected Map<String, P> menuNodeMap;
-
-	@Resource
-	protected MenuInfoParser<P> menuInfoParser;
+	/*@Resource
+	protected MenuInfoParser<P> menuInfoParser;*/
+	private List<MenuInfoParser<P>> parsers;
+	private DatabaseSecurityMetadataSource databaseSecurityMetadataSource;
 	
+	@Autowired
+	private ApplicationContext applicationContext;
+	
+	@PostConstruct
+	public void initParsers(){
+		if(parsers==null || parsers.isEmpty()){
+			this.parsers = SpringUtils.getBeans(applicationContext, MenuInfoParser.class, new ParameterizedTypeReference<MenuInfoParser<P>>(){});
+		}
+		Assert.notEmpty(parsers);
+	}
+
+
+	public void setParsers(List<MenuInfoParser<P>> parsers) {
+		this.parsers = parsers;
+	}
+
+
+	public List<P> getMemoryRootMenu() {
+		Assert.notNull(parsers);
+//	    return this.menuInfoParser.getRootMenu();
+	    return parsers.stream().map(parser->parser.getRootMenu()).collect(Collectors.toList());
+    }
 
 	/****
 	 * 根据menuClass构建菜单
 	 */
 	@Override
 	public void build(){
+		Assert.notNull(parsers);
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
-		menuInfoParser.parseTree();
-		this.menuNodeMap = menuInfoParser.getPermissionMap();
+		parsers.stream().forEach(parser->{
+			P rootMenu = parser.parseTree();
+			printRootMenu(rootMenu);
+		});
+	}
+	
+	protected void printRootMenu(P rootMenu){
+		final StringBuilder str = new StringBuilder();
+		PermissionUtils.buildString(str, rootMenu, "--");
+		logger.info("menu: {} \n", str);
 	}
 	
 
-	public P getMemoryRootMenu() {
-	    return this.menuInfoParser.getRootMenu();
-    }
-	
 	@Override
 	public P getPermission(Class<?> permClass){
-		return menuInfoParser.getPermission(permClass);
+		Assert.notNull(parsers);
+//		return menuInfoParser.getPermission(permClass);
+		for(MenuInfoParser<P> parser : parsers){
+			P perm = parser.getPermission(permClass);
+			if(perm!=null)
+				return perm;
+		}
+		return null;
 	}
 	
 	/***
@@ -65,13 +108,18 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
+		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
+		if(databaseSecurityMetadataSource!=null)
+			databaseSecurityMetadataSource.buildSecurityMetadataSource();
+	}
+	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		P rootPermission = this.menuInfoParser.getRootMenu();
+		P rootPermission = menuInfoParser.getRootMenu();
 //		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
 //		Set<P> dbPermissions = findExistsPermission(rootPermission.getCode());
 		Map<String, P> dbPermissionMap = findExistsPermission(rootPermission.getCode());
-		Set<P> memoryPermissions = new HashSet<P>(menuNodeMap.values());
+		Set<P> memoryPermissions = new HashSet<P>(menuInfoParser.getPermissionMap().values());
 
 		Set<P> dbPermissions = new HashSet<>(dbPermissionMap.values());
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
@@ -79,11 +127,13 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
 		
 		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections);
+
+		logger.info("menu data has synchronized to database...");
 	}
 	
 
-	@Override
+	/*@Override
 	public String parseCode(Class<?> permClass) {
 		return menuInfoParser.getCode(permClass);
-	}
+	}*/
 }

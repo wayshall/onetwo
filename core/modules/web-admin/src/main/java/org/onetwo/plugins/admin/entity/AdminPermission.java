@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -51,6 +52,7 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 
     private String resourcesPattern;
     
+    @Transient
 	private List<AdminPermission> childrenPermissions = LangUtils.newArrayList();
 
 
