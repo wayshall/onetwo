@@ -17,7 +17,6 @@ import org.onetwo.plugins.admin.dao.AdminPermissionDao;
 import org.onetwo.plugins.admin.dao.AdminRoleDao;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 import org.onetwo.plugins.admin.entity.AdminRole;
-import org.onetwo.plugins.admin.entity.AdminUser;
 import org.onetwo.plugins.admin.utils.Enums.CommonStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class AdminRoleServiceImpl {
     private AdminPermissionDao adminPermissionDao;
     
     public void findPage(Page<AdminRole> page, AdminRole adminRole){
-        baseEntityManager.findPage(AdminUser.class, page);
+        baseEntityManager.findPage(AdminRole.class, page);
     }
     
     public List<AdminRole> findByStatus(CommonStatus status, String appCode){

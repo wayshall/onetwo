@@ -44,15 +44,6 @@
                                data-options="required:false,
                                              validType:'length[0,50]' "/>
                     </td>
-                    <td>性别:</td>
-                    <td>
-                        <input class="easyui-combobox searchFieldClass" type="text" name="gender" 
-                               data-options="required:false,
-                                             editable:false,
-                                             method: 'get',
-                                             url: '${siteConfig.baseURL}/configmgr/dictionary/combobox/SEX.json' "/>
-                               
-                    </td>
                     <td>状态:</td>
                     <td>
                         <input class="easyui-combobox searchFieldClass" type="text" name="status" 
@@ -92,7 +83,7 @@
     
   </div>
         
-	<#include "/admin/admin-user-edit-form.html">
+	<#include "/web-admin/admin-user-edit-form.html">
     
     <div id="assignRole" class="easyui-dialog" title="分配角色" 
             style="width:50%;height:80%;padding:10px 20px"
@@ -116,7 +107,7 @@
     
     $('#btnSearch').bind('click', function(){
         var param = $('#searchForm').serialize();
-        var url = '${siteConfig.baseURL}/admin/adminUser.json?'+param;
+        var url = '${siteConfig.baseURL}/web-admin/user.json?'+param;
         $('#dataGrid').datagrid('options').url = url;
         $('#dataGrid').datagrid('reload');
     });
@@ -130,7 +121,7 @@
         //var param = $('#assignForm').serialize();
        // alert("p:"+param);
     	var row = $('#dataGrid').datagrid('getSelected');
-        var url = '${siteConfig.baseURL}/admin/userRole/'+row.id+'.json';
+        var url = '${siteConfig.baseURL}/web-admin/userRole/'+row.id+'.json';
         //$.post(url, param, helper.remoteMessageHandler());
         $('#assignForm').form('submit',{
         	url: url,
@@ -150,7 +141,7 @@
     };
     
     
-    var reqUrl = '${siteConfig.baseURL}/admin/adminUser.json';
+    var reqUrl = '${siteConfig.baseURL}/web-admin/user.json';
     var editingId;
     var toolbar = [
         {
@@ -158,7 +149,7 @@
             handler:helper.selectOneHandler('#dataGrid', function(row){
                 $('#assignRole').dialog('open');
                 
-                var url = '${siteConfig.baseURL}/admin/userRole/'+row.id+'.json';
+                var url = '${siteConfig.baseURL}/web-admin/userRole/'+row.id+'.json';
                 $('#roleIds').combobox('reload', url);
            })
         },
@@ -170,7 +161,7 @@
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
 
                 $('#dataForm').reset();
-                var url = '${siteConfig.baseURL}/admin/adminUser.json';
+                var url = '${siteConfig.baseURL}/web-admin/user.json';
                 $('#dataForm').attr('action', url);
                 $('#dataForm').find('input[name="_method"]').val('');
            }
@@ -190,7 +181,7 @@
                 
                 $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
                 
-                var url = '${siteConfig.baseURL}/admin/adminUser/'+selected.id+'.json';
+                var url = '${siteConfig.baseURL}/web-admin/user/'+selected.id+'.json';
                 dataForm.attr('action', url);
                 dataForm.find('input[name="_method"]').val('put');
                 dataForm.form('load', url);
@@ -202,7 +193,7 @@
             iconCls:'icon-remove',
             handler:helper.deleteHandler({
                         datagrid: '#dataGrid',
-                        url: '${siteConfig.baseURL}/admin/adminUser.json',
+                        url: '${siteConfig.baseURL}/web-admin/user.json',
                         idField: 'id',
                         paramIdName: 'ids'
                     })

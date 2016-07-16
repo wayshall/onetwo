@@ -51,7 +51,7 @@
     
   </div>
         
-	<#include "/admin/admin-role-edit-form.html">
+	<#include "/web-admin/admin-role-edit-form.html">
     
     <div id="assignPermission" class="easyui-dialog" title="分配角色" 
             style="width:50%;height:80%;padding:10px 20px"
@@ -72,7 +72,7 @@
     
     $('#btnSearch').bind('click', function(){
         var param = $('#searchForm').serialize();
-        var url = '${siteConfig.baseURL}/admin/adminRole.json?'+param;
+        var url = '${siteConfig.baseURL}/web-admin/role.json?'+param;
         $('#dataGrid').datagrid('options').url = url;
         $('#dataGrid').datagrid('reload');
     });
@@ -91,7 +91,7 @@
     
     function assignPermissions(){
         var row = $('#dataGrid').datagrid('getSelected');
-        var url = '${siteConfig.baseURL}/admin/rolePermission/'+row.id+'.json';
+        var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
         //$.post(url, param, helper.remoteMessageHandler());
         var param = helper.getCsrfParams();
         var permissionCodes = $('#permissionTree').tree('getAllCheckedIds') || [];
@@ -100,7 +100,7 @@
         $.post(url, param, helper.remoteMessageHandler());
     };
     
-    var reqUrl = '${siteConfig.baseURL}/admin/adminRole.json';
+    var reqUrl = '${siteConfig.baseURL}/web-admin/role.json';
     var editingId;
     var toolbar = [
         {
@@ -108,8 +108,11 @@
             handler:helper.selectOneHandler('#dataGrid', function(row){
                 $('#assignPermission').dialog('open');
                 
-                var url = '${siteConfig.baseURL}/admin/rolePermission/'+row.id+'.json';
-                $('#permissionTree').tree('options').url = url;
+                var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
+                $('#permissionTree').tree({
+	            	url: url,
+	            	cascadeCheck: false
+	            });
                 $('#permissionTree').tree('reload');
            })
         },
@@ -120,7 +123,7 @@
             handler:function(){
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
 
-                var url = '${siteConfig.baseURL}/admin/adminRole.json';
+                var url = '${siteConfig.baseURL}/web-admin/role.json';
                 $('#dataForm').attr('action', url);
                 $('#dataForm').find('input[name="_method"]').val('');
            }
@@ -140,7 +143,7 @@
                 
                 $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
                 
-                var url = '${siteConfig.baseURL}/admin/adminRole/'+selected.id+'.json';
+                var url = '${siteConfig.baseURL}/web-admin/role/'+selected.id+'.json';
                 dataForm.attr('action', url);
                 dataForm.find('input[name="_method"]').val('put');
                 dataForm.form('load', url);
@@ -152,7 +155,7 @@
             iconCls:'icon-remove',
             handler:helper.deleteHandler({
                         datagrid: '#dataGrid',
-                        url: '${siteConfig.baseURL}/admin/adminRole.json',
+                        url: '${siteConfig.baseURL}/web-admin/role.json',
                         idField: 'id',
                         paramIdName: 'ids'
                     })

@@ -3,17 +3,20 @@ package org.onetwo.ext.permission;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +28,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	
 	private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
 	
-//	private final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Resource
 	private PermissionManager<?> permissionManager;
@@ -51,12 +54,13 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
 		DefaultIPermission<?> menu = perm;
 
-		String method = getFirstMethod(entry.getKey());
-		if(!RequestMethod.GET.name().toLowerCase().equals(method)){
+		Optional<RequestMethod> method = getFirstMethod(entry.getKey());
+		if(method.isPresent() && RequestMethod.GET!=method.get()){
 			return ;
 		}
 		
-		menu.setMethod(method);
+//		menu.setMethod(method);
+		method.ifPresent(m->menu.setMethod(m.name()));
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
 		String url = null;
 		if(StringUtils.isNotBlank(menu.getUrl())){
@@ -93,27 +97,28 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		
 		if(urlPattterns.size()==1){
 			String url = urlPattterns.stream().findFirst().orElse("");
-			infos.add(new UrlResourceInfo(appendStarPostfix(url), getFirstMethod(entry.getKey())));
+			Optional<RequestMethod> method = getFirstMethod(entry.getKey());
+			infos.add(new UrlResourceInfo(url, method.isPresent()?method.get().name():null));
 			
 		}else{
 			//超过一个url映射的，不判断方法
-			urlPattterns.stream().forEach(url->infos.add(new UrlResourceInfo(appendStarPostfix(url))));
+			urlPattterns.stream().forEach(url->infos.add(new UrlResourceInfo(url)));
 		}
 		String urls = this.urlResourceInfoParser.parseToString(infos);
 		perm.setResourcesPattern(urls);
 	}
 	
-	private String appendStarPostfix(String url){
+	/*private String appendStarPostfix(String url){
 		url = StringUtils.trimEndWith(url, "/");
 		if(!url.contains(".")){
 			url += ".*";
 		}
 		return url;
-	}
+	}*/
 	
-	private String getFirstMethod(RequestMappingInfo info){
+	private Optional<RequestMethod> getFirstMethod(RequestMappingInfo info){
 		//取第一个映射方法
-		return info.getMethodsCondition().getMethods().stream().findFirst().orElse(RequestMethod.GET).name();
+		return info.getMethodsCondition().getMethods().stream().findFirst();
 	}
 	
 	private String getFirstUrl(RequestMappingInfo info){
@@ -132,6 +137,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 				this.autoConifgPermission(codeClass, entry, permClassInst);
 			}
 		}
+		this.permissionManager.getMemoryRootMenu().forEach(rootMenu->{
+			logger.info("menu:\n" + rootMenu.toTreeString("\n"));
+		});
 	}
 	
 	private void autoConifgPermission(Class<?> codeClass, Entry<RequestMappingInfo, HandlerMethod> entry, ByPermissionClass permClassInst){

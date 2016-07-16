@@ -12,7 +12,6 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
-import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,14 +63,11 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		parsers.stream().forEach(parser->{
 			P rootMenu = parser.parseTree();
-			printRootMenu(rootMenu);
+			afterParseTree(rootMenu);
 		});
 	}
 	
-	protected void printRootMenu(P rootMenu){
-		final StringBuilder str = new StringBuilder();
-		PermissionUtils.buildString(str, rootMenu, "--");
-		logger.info("menu: {} \n", str);
+	protected void afterParseTree(P rootMenu){
 	}
 	
 
@@ -119,9 +115,10 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 //		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
 //		Set<P> dbPermissions = findExistsPermission(rootPermission.getCode());
 		Map<String, P> dbPermissionMap = findExistsPermission(rootPermission.getCode());
-		Set<P> memoryPermissions = new HashSet<P>(menuInfoParser.getPermissionMap().values());
+		Map<String, P> menuNodeMap = menuInfoParser.getPermissionMap();
+		Set<P> memoryPermissions = new HashSet<>(menuNodeMap.values());
 
-		Set<P> dbPermissions = new HashSet<>(dbPermissionMap.values());
+		Set<P> dbPermissions = new HashSet<P>(dbPermissionMap.values());
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);

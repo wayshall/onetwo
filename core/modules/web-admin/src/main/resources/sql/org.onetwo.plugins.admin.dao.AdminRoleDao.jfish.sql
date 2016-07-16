@@ -43,18 +43,34 @@ where aur.user_id = :userId
  * @name: deleteRolePermisssion
  * @parser: template
  * 
- */
+ oracle:
     delete  admin_role_permission where (role_id, permission_code) in (
         select 
                arp.role_id, arp.permission_code 
         from admin_role_permission  arp     
         left join admin_permission ap on ap.code=arp.permission_code    
          where 
-         role_id=:roleId and ap.app_code=:appCode
-            [#if permissionCode?has_content>
-                and permission_code=:permissionCode
+         arp.role_id=:roleId 
+            [#if permissionCode?has_content]
+                and arp.permission_code=:permissionCode
             [/#if]
+		    [#if appCode?has_content]
+		    	and ap.app_code=:appCode
+		    [/#if]
    )
+    */
+    delete 
+        arp 
+    from 
+        admin_role_permission  arp
+    left join admin_permission ap on ap.code=arp.permission_code
+    where role_id=#{roleId} 
+    [#if permissionCode?has_content]
+        and arp.permission_code=:permissionCode
+    [/#if]
+    [#if appCode?has_content]
+    	and ap.app_code=:appCode
+    [/#if]
     
 /***
  * @name: findRolePermisssion
@@ -66,7 +82,10 @@ where aur.user_id = :userId
     from 
         admin_role_permission  arp
     left join admin_permission ap on ap.code=arp.permission_code
-    where role_id=:roleId and ap.app_code=:appCode
+    where role_id=:roleId 
+    [#if appCode?has_content]
+    	and ap.app_code=:appCode
+    [/#if]
     
     
     

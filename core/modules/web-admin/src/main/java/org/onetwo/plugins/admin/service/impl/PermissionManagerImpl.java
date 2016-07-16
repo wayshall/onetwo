@@ -10,13 +10,14 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
+import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.spring.underline.CopyUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.AbstractPermissionManager;
 import org.onetwo.ext.permission.api.DataFrom;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.plugins.admin.dao.AdminPermissionDao;
-import org.onetwo.plugins.admin.entity.AdminAppEntity;
+import org.onetwo.plugins.admin.entity.AdminApplication;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,9 +57,9 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 
 	@Override
 	protected void updatePermissions(AdminPermission rootPermission, Map<String, AdminPermission> dbPermissionMap, Set<AdminPermission> adds, Set<AdminPermission> deletes, Set<AdminPermission> updates) {
-		AdminAppEntity app = this.baseEntityManager.findById(AdminAppEntity.class, rootPermission.getAppCode());
+		AdminApplication app = this.baseEntityManager.findById(AdminApplication.class, rootPermission.getAppCode());
 		if(app==null){
-			app = new AdminAppEntity();
+			app = new AdminApplication();
 			app.setCode(rootPermission.getAppCode());
 			app.setName(rootPermission.getName());
 			app.setCreateAt(new Date());
@@ -70,19 +71,19 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 			this.baseEntityManager.update(app);
 		}
 		
-		logger.info("adds: {}", adds);
+		logger.info("adds[{}]: {}", adds.size(), adds);
 		adds.forEach(p->{
 			/*p.setCreateAt(new Date());
 			p.setUpdateAt(new Date());*/
 			this.baseEntityManager.persist(p);
 		});
 
-		logger.info("deletes: {}", deletes);
+		logger.info("deletes[{}]: {}", deletes.size(), deletes);
 		deletes.forEach(p->{
 			this.baseEntityManager.remove(p);
 		});
 
-		logger.info("updates: {}", updates);
+		logger.info("updates[{}]: {}", updates.size(), updates);
 		updates.forEach(p->{
 //			this.adminPermissionMapper.updateByPrimaryKey(p.getAdminPermission());
 			AdminPermission dbPermission = dbPermissionMap.get(p.getCode());
@@ -109,12 +110,15 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 //	@Override
 	@Transactional(readOnly=true)
 	public List<AdminPermission> findAppPermissions(String appCode){
-		return baseEntityManager.findList(AdminPermission.class, "appCode", appCode, K.ASC, "sort");
+		List<AdminPermission> permList = baseEntityManager.findList(AdminPermission.class, "appCode", appCode, K.IF_NULL, IfNull.Ignore, K.ASC, "sort");
+		if(permList.isEmpty())
+			throw new RuntimeException("没有任何权限……");
+		return permList;
 	}
 
 //	@Override
 	public List<AdminPermission> findPermissionByCodes(String appCode, String[] permissionCodes) {
-		return baseEntityManager.findList(AdminPermission.class, "appCode", appCode, "code:in", permissionCodes);
+		return baseEntityManager.findList(AdminPermission.class, "appCode", appCode, "code:in", permissionCodes,  K.IF_NULL, IfNull.Ignore);
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class AdminController extends WebAdminBaseController {
 		}
 		menus = menus.get(0).getChildren();
 		
-		return pluginMv("/permission/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());
+		return pluginMv("/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());
 	}
 	
 }
