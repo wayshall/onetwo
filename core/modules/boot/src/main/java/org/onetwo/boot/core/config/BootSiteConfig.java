@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -55,6 +56,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@Getter
 	private UploadConfig upload = new UploadConfig();
 	
+	@Getter
+	@Setter
+	private String webjarsPath = "/webjars";
+	
 
     @Override
     public BootSiteConfig initWebConfig(ServletContext servletContext) {
@@ -66,6 +71,14 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			baseURL = contextPath;
 		
 	    return this;
+    }
+    
+    public String getWebjarsStaticPath(){
+    	return getWebjarsPath()+"/static";
+    }
+    
+    public String getWebjarsJsPath(){
+    	return getWebjarsStaticPath()+"/js";
     }
 	
 	public boolean isDev(){

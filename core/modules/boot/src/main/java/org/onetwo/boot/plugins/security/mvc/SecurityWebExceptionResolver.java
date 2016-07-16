@@ -9,6 +9,7 @@ import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.web.servlet.ModelAndView;
 
 public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 
@@ -16,11 +17,13 @@ public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 	private AuthenticationFailureHandler authenticationFailureHandler;
 	
 	@Override
-	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex){
+	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		if(ex instanceof AuthenticationException){
 			if(authenticationFailureHandler!=null){
 				try {
 					authenticationFailureHandler.onAuthenticationFailure(request, response, new BadCredentialsException(ex.getMessage(), ex));
+					//处理后返回空的mv，如果返回null，dispatcher会认为异常没有被处理，抛出ex，见processHandlerException
+					return new ModelAndView();
 				} catch (Exception e) {
 					throw new BaseException("handle authentication failure error: " + e.getMessage(), e);
 				}
@@ -28,5 +31,6 @@ public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 				throw new org.springframework.security.authentication.BadCredentialsException(ex.getMessage());
 			}
 		}
+		return super.doResolveException(request, response, handlerMethod, ex);
 	}
 }

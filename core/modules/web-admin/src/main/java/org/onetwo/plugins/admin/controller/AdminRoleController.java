@@ -23,10 +23,10 @@ public class AdminRoleController extends WebAdminBaseController {
     private AdminRoleServiceImpl adminRoleServiceImpl;
     
     
-    @ByPermissionClass(AdminRoleMgr.List.class)
+    @ByPermissionClass(AdminRoleMgr.class)
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView index(EasyPage<AdminRole> easyPage, AdminRole adminRole){
-        return responsePageOrData("/web-admin/admin-role-index", ()->{
+        return responsePageOrData("/admin-role-index", ()->{
         			Page<AdminRole> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
                     adminRoleServiceImpl.findPage(page, adminRole);
                     return EasyPage.create(page);
@@ -39,7 +39,7 @@ public class AdminRoleController extends WebAdminBaseController {
         adminRoleServiceImpl.save(adminRole);
         return messageMv("保存成功！");
     }
-    @ByPermissionClass(AdminRoleMgr.List.class)
+    @ByPermissionClass(AdminRoleMgr.class)
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public ModelAndView show(@PathVariable("id") Long id){
         AdminRole adminRole = adminRoleServiceImpl.loadById(id);

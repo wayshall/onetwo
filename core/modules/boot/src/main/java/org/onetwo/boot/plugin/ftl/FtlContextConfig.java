@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 @Configuration
 public class FtlContextConfig {
-	public static final String WEBFTLS_PATH = "META-INF/resources/webftls";
+	public static final String WEBFTLS_PATH = "classpath:META-INF/resources/webftls";
 	
 	@Autowired
 	protected FreeMarkerProperties properties;

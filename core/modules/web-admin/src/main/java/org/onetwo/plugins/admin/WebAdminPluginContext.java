@@ -1,6 +1,13 @@
 package org.onetwo.plugins.admin;
 
+import javax.annotation.PostConstruct;
+
+import org.onetwo.ext.permission.entity.PermisstionTreeModel;
+import org.onetwo.ext.permission.service.MenuItemRepository;
+import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.plugins.admin.controller.LoginController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,6 +16,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
 public class WebAdminPluginContext {
+	
+	@Autowired
+	private SecurityConfig securityConfig;
+	
+	@PostConstruct
+	public void init(){
+		this.securityConfig.setAfterLoginUrl("/web-admin/index");
+	}
 	
 	@Bean
 	@ConditionalOnMissingBean(name="loginController")
@@ -19,6 +34,15 @@ public class WebAdminPluginContext {
 	@Bean
 	public WebAdminPlugin webAdminPlugin(){
 		return new WebAdminPlugin();
+	}
+	
+
+	@Bean
+//	@ConditionalOnBean(AdminController.class)
+	@ConditionalOnMissingBean(MenuItemRepository.class)
+	public MenuItemRepository<PermisstionTreeModel> menuItemRepository(){
+		DefaultMenuItemRepository menuItemRepository = new DefaultMenuItemRepository();
+		return menuItemRepository;
 	}
 	
 	/*@Bean

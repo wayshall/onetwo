@@ -38,7 +38,7 @@ public class RolePermissionController extends WebAdminBaseController {
 				 .mapText("name")
 				 .mapParentId("parentCode")
 				 .mapChecked(src->{
-					 return rolePerms.contains(src.getCode()) && Integer.valueOf(0).equals(src.getChildrenSize());
+					 return rolePerms.contains(src.getCode());
 				 })
 				 .mapIsStateOpen(src->true)
 				 .build(perms, null);

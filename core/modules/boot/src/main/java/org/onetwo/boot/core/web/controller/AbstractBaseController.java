@@ -344,7 +344,10 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.createModelAndView(viewName, DataWrapper.lazy(value));
+		return BootWebUtils.createModelAndView(getViewName(viewName), DataWrapper.lazy(value));
+	}
+	protected String getViewName(String viewName){
+		return viewName;
 	}
 	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
 		Assert.notNull(mv);

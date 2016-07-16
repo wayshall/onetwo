@@ -16,7 +16,7 @@ public class SecurityConfig {
 	public static final String LOGIN_PATH = "/login";
 	public static final String LOGIN_PROCESS_PATH = "/dologin";
 	public static final String LOGOUT_PATH = "/logout";
-	public static final String TARGET_PATH_AFTER_LOGIN = "/plugins/permission/admin";
+	public static final String TARGET_PATH_AFTER_LOGIN = "/admin";
 	
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
@@ -35,6 +35,9 @@ public class SecurityConfig {
 		return url;
 	}
 	
+	public void setAfterLoginUrl(String afterLoginUrl){
+		this.afterLoginUrl = afterLoginUrl;
+	}
 	public boolean isCasEnabled(){
 		return SpringApplication.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
 	}

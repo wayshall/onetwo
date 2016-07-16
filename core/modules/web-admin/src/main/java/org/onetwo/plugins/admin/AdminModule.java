@@ -8,11 +8,11 @@ public interface AdminModule {
 	public static interface AdminRoleMgr {
 		String name = "角色管理";
 		int sort =1;
-		public static interface List {
-			String name = "列表";
+/*		public static interface List {
+			String name = "角色列表";
 			int sort =1;
 		}
-
+*/
 		public static interface Create {
 			String name = "新增";
 			PermissionType permissionType = PermissionType.FUNCTION;
@@ -37,10 +37,10 @@ public interface AdminModule {
 	public static interface AdminUserMgr {
 		String name = "用户管理";
 		int sort =2;
-		public static interface List {
-			String name = "列表";
+		/*public static interface List {
+			String name = "用户列表";
 			int sort =1;
-		}
+		}*/
 
 		public static interface Create {
 			String name = "新增";

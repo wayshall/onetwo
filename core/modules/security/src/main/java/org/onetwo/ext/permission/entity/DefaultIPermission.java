@@ -7,6 +7,7 @@ import org.onetwo.ext.permission.utils.PermissionUtils;
 
 public interface DefaultIPermission<T extends DefaultIPermission<T>> extends IPermission<T> {
 	
+	@SuppressWarnings("unchecked")
 	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();
 		PermissionUtils.buildString(str, (T)this, "--", new Closure1<T>() {

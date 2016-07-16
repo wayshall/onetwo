@@ -21,10 +21,10 @@ public class AdminUserController extends WebAdminBaseController {
     private AdminUserServiceImpl adminUserServiceImpl;
     
     
-    @ByPermissionClass(AdminUserMgr.List.class)
+    @ByPermissionClass(AdminUserMgr.class)
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView index(EasyPage<AdminUser> easyPage, AdminUser adminUser){
-        return responsePageOrData("/web-admin/admin-user-index", ()->{
+        return responsePageOrData("/admin-user-index", ()->{
         			Page<AdminUser> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
         			adminUserServiceImpl.findPage(page, adminUser);
                     return EasyPage.create(page);
@@ -38,7 +38,7 @@ public class AdminUserController extends WebAdminBaseController {
         return messageMv("保存成功！");
     }
     
-    @ByPermissionClass(AdminUserMgr.List.class)
+    @ByPermissionClass(AdminUserMgr.class)
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public ModelAndView show(@PathVariable("id") Long id){
         AdminUser adminUser = adminUserServiceImpl.loadById(id);

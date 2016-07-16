@@ -12,7 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.permission.api.DataFrom;
@@ -24,7 +23,6 @@ import org.onetwo.ext.permission.utils.PermissionUtils;
 @Entity
 @Table(name="ADMIN_PERMISSION")
 @Data
-@EqualsAndHashCode
 public class AdminPermission implements Serializable, DefaultIPermission<AdminPermission> {
 	
 	@Id
@@ -96,7 +94,31 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 				.filter(p->!PermissionUtils.isMenu(p))
 				.collect(Collectors.toList());
 	}
-    
-    
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AdminPermission other = (AdminPermission) obj;
+		if (code == null) {
+			if (other.code != null)
+				return false;
+		} else if (!code.equals(other.code))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		return result;
+	}
+
 
 }
