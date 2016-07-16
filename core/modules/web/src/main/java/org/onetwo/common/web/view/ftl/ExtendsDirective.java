@@ -21,7 +21,10 @@ public class ExtendsDirective implements TemplateDirectiveModel {
 
 	@Override
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
-		String file = DEFAULT_LAYOUT_DIR+DirectivesUtils.getParameterByString(params, PARAMS_FILE, DEFAULT_LAYOUT);
+		String file = DirectivesUtils.getParameterByString(params, PARAMS_FILE, DEFAULT_LAYOUT);
+		if(!file.startsWith("/")){
+			file = DEFAULT_LAYOUT_DIR + file;
+		}
 		String template = env.toFullTemplateName("/", file);
 		if(!template.contains(".")){
 			template += FTL;

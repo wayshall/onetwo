@@ -22,8 +22,8 @@ import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.view.BootJsonView;
+import org.onetwo.boot.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
@@ -52,8 +52,6 @@ import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
@@ -190,10 +188,10 @@ public class BootWebAContextAutoConfig {
 	 * instead of boot mapper config by JacksonAutoConfiguration
 	 * @return
 	 */
-	@Bean
+	/*@Bean
 	public ObjectMapper objectMapper(){
 		return BootWebUtils.createObjectMapper(applicationContext);
-	}
+	}*/
 	
 	@Bean
 	public WebHolderManager webHolderManager() {
@@ -234,6 +232,11 @@ public class BootWebAContextAutoConfig {
 	@ConditionalOnMissingBean(SessionUserManager.class)
 	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new BootSessionUserManager();
+	}
+
+	@Bean
+	public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
+		return new BootJackson2ObjectMapperBuilder();
 	}
 	
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)

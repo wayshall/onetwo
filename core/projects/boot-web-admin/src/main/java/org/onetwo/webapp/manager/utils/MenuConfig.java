@@ -9,7 +9,7 @@ public class MenuConfig extends AbstractPermissionConfig<AdminPermission> {
 
 	@Override
     public Class<?> getRootMenuClass() {
-	    return AppPerms.class;
+	    return Apps.class;
     }
 
 	@Override

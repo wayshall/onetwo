@@ -66,7 +66,22 @@ public class UrlResourceInfoParser {
 		if(StringUtils.isBlank(info.getMethod())){
 			return url;
 		}
-		return info.getMethod() + "|" + url;
+		return info.getMethod() + "|" + appendStarPostfix(url);
 	}
+
+	private String appendStarPostfix(String url){
+		url = StringUtils.trimEndWith(url, "/");
+		if(!url.endsWith("*")){
+			url += "*";
+		}
+		return url;
+	}
+	/*private String appendStarPostfix2(String url){
+		url = StringUtils.trimEndWith(url, "/");
+		if(!url.contains(".")){
+			url += ".*";
+		}
+		return url;
+	}*/
 
 }

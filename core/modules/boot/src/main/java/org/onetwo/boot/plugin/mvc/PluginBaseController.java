@@ -13,7 +13,13 @@ abstract public class PluginBaseController extends AbstractBaseController {
 	abstract protected Plugin getPlugin();
 	
 	protected ModelAndView pluginMv(String viewName, Object... models){
-		String moduleMv = getPlugin().getTemplatePath() + StringUtils.appendStartWithSlash(viewName);
+		String moduleMv = getViewName(viewName);
 		return BootWebUtils.createModelAndView(moduleMv, models);
+	}
+
+	@Override
+	protected String getViewName(String viewName){
+		String moduleMv = getPlugin().getTemplatePath() + StringUtils.appendStartWithSlash(viewName);
+		return moduleMv;
 	}
 }

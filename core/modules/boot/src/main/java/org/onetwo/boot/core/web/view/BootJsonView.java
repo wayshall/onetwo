@@ -4,11 +4,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.result.Result;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.MapResultBuilder;
@@ -17,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BootJsonView extends MappingJackson2JsonView implements InitializingBean {
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
@@ -47,13 +44,14 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	public void afterPropertiesSet() throws Exception {
 		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
-		ObjectMapper mapper = SpringUtils.getBean(applicationContext, ObjectMapper.class);
+		/*ObjectMapper mapper = SpringUtils.getBean(applicationContext, ObjectMapper.class);
 		if(mapper!=null){
 			this.setObjectMapper(mapper);
 		}else{
 			mapper = BootWebUtils.createObjectMapper(applicationContext);
 			this.setObjectMapper(mapper);
-		}
+		}*/
+		this.setObjectMapper(JsonMapper.ignoreNull().getObjectMapper());
 	}
 
 	protected Object filterModel(Map<String, Object> model) {

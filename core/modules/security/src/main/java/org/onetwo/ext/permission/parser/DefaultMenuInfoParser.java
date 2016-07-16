@@ -158,7 +158,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	
 	private void afterParseTree(){
 		this.parsed = true;
-		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
+//		logger.info("menu:\n" + rootMenu.toTreeString("\n"));
 	}
 	
 
