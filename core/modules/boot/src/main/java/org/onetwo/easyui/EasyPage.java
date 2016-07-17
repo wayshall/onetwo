@@ -20,6 +20,13 @@ public class EasyPage<T> {
 		EasyPage<E> page = new EasyPage<>(rows);
 		return page;
 	}
+	public static <E, S> EasyPage<E> create(List<E> rows, Page<S> p){
+		EasyPage<E> epage = new EasyPage<>(rows);
+		epage.setPage(p.getPageNo());
+		epage.setPageSize(p.getPageSize());
+		epage.setTotal(p.getTotalCount());
+		return epage;
+	}
 	public static <E> EasyPage<E> create(Page<E> p){
 		EasyPage<E> page = new EasyPage<>(p.getResult());
 		page.setPage(p.getPageNo());

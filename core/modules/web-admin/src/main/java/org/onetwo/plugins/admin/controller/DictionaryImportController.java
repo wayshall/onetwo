@@ -4,7 +4,7 @@ package org.onetwo.plugins.admin.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.plugins.admin.service.DictionaryService;
+import org.onetwo.plugins.admin.service.DictionaryImportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class DictionaryImportController extends WebAdminBaseController {
 	 
 	@Autowired
-	private DictionaryService dictionaryService;
+	private DictionaryImportService dictionaryService;
 	private String dataXmlPath = "/plugins/data/dict.xml";
 	
 	public DictionaryImportController() {

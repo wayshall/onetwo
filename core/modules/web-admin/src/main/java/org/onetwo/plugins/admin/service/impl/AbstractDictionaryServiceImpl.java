@@ -9,7 +9,7 @@ import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.annotation.Dictionary;
-import org.onetwo.plugins.admin.service.DictionaryService;
+import org.onetwo.plugins.admin.service.DictionaryImportService;
 import org.onetwo.plugins.admin.utils.DataUtils;
 import org.onetwo.plugins.admin.utils.DictionaryEnum;
 import org.onetwo.plugins.admin.vo.DictInfo;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 //@Service
 @Transactional
-abstract public class AbstractDictionaryServiceImpl implements DictionaryService {
+abstract public class AbstractDictionaryServiceImpl implements DictionaryImportService {
 	
 	private final ResourcesScanner classScaner = ResourcesScanner.CLASS_CANNER;
 	
