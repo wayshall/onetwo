@@ -11,7 +11,33 @@ var helper = function () {
 			if(rs.code && rs.code==='NOT_LOGIN'){
 				$.messager.alert('提示！', rs.message, 'warning');
 			}
+			if(rs.error){
+				$.messager.alert('提示！', rs.error, 'warning');
+			}
 			return data;
+		},
+		/*error: function (request, textStatus, errorThrown){
+			alert(errorThrown)
+			console.dir(request)
+			console.dir(textStatus)
+			console.dir(errorThrown)
+		},*/
+		complete: function(request, textStatus) {
+			//textStatus : error
+		    this; // 调用本次AJAX请求时传递的options参数
+		    if(textStatus=='error'){
+		    	console.log('error:');
+		    	console.dir(this);
+				$.messager.alert('提示！', '请求['+this.url+']出错！', 'warning');
+		    }
+		},
+		statusCode: {
+			500: function(){
+				$.messager.alert('提示！', '服务器出错！', 'warning');
+			},
+			404: function(){
+				$.messager.alert('提示！', '找不到路径!', 'warning');
+			}
 		}
 	});
 
@@ -87,6 +113,11 @@ var helper = function () {
 				return '是';
 			}else{
 				return '否';
+			}
+		},
+		dictFormatter: function(val, row, index){
+			return function(code){
+				
 			}
 		},
 		
