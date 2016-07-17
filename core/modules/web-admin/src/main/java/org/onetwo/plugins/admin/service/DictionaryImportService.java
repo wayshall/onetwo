@@ -1,7 +1,7 @@
 package org.onetwo.plugins.admin.service;
 
 
-public interface DictionaryService {
+public interface DictionaryImportService {
 	public int importDatas(String dataPath);
 
 }

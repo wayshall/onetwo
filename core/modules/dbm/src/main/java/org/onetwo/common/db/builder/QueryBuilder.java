@@ -2,8 +2,6 @@ package org.onetwo.common.db.builder;
 
 import java.util.Map;
 
-import org.onetwo.common.db.sqlext.ParamValues;
-
 /***
  * @author way
  *

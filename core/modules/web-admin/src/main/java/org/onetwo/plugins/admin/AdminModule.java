@@ -62,4 +62,9 @@ public interface AdminModule {
 			PermissionType permissionType = PermissionType.FUNCTION;
 		}
 	}
+	
+
+	public interface DictMgr {
+		String name = "字典配置管理";
+	}
 }
