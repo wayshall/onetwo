@@ -27,6 +27,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -844,10 +845,17 @@ public class ReflectUtils {
 	}
 
 
-	public static Map toMap(Object obj) {
+	public static Map<String, Object> toMap(Object obj) {
 		return toMap(true, obj);
 	}
-	public static Map toMap(boolean ignoreNull, Object obj) {
+	public static Map<String, Object> toMap(boolean ignoreNull, Object obj) {
+		return toMap(obj, (p, v)->{
+			if(v!=null)
+				return true;
+			return !ignoreNull;
+		});
+	}
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
 		
@@ -860,15 +868,12 @@ public class ReflectUtils {
 		PropertyDescriptor[] props = desribProperties(obj.getClass());
 		if (props == null || props.length == 0)
 			return Collections.EMPTY_MAP;
-		Map rsMap = new HashMap();
+		Map<String, Object> rsMap = new HashMap();
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = getProperty(obj, prop);
-			if (val != null){
+			if (acceptor.apply(prop, val)){
 				rsMap.put(prop.getName(), val.toString());
-			}else{
-				if(!ignoreNull)
-					rsMap.put(prop.getName(), val);
 			}
 		}
 		return rsMap;
@@ -964,17 +969,21 @@ public class ReflectUtils {
 		
 	}
 
-	public static Map field2Map(Object obj) {
+
+	public static Map<String, Object> field2Map(Object obj) {
+		return field2Map(obj, (f, v)->v!=null);
+	}
+	public static Map<String, Object> field2Map(Object obj, BiFunction<Field, Object, Boolean> acceptor) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
 		Collection<Field> fields = findFieldsFilterStatic(obj.getClass());
 		if (fields == null || fields.isEmpty())
 			return Collections.EMPTY_MAP;
-		Map rsMap = new HashMap();
+		Map<String, Object> rsMap = new HashMap();
 		Object val = null;
 		for (Field field : fields) {
 			val = getFieldValue(field, obj, false);
-			if (val != null)
+			if (acceptor.apply(field, val))
 				rsMap.put(field.getName(), val);
 		}
 		return rsMap;

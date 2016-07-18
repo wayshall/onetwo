@@ -1,5 +1,6 @@
 package org.onetwo.common.db.builder;
 
+
 public interface WhereCauseBuilder {
 	public WhereCauseBuilder debug();
 
@@ -7,6 +8,9 @@ public interface WhereCauseBuilder {
 
 	public WhereCauseBuilder and(QueryBuilder subQuery);
 
+
+	public DefaultWhereCauseBuilder addFields(Object entity);
+	
 	public WhereCauseBuilder addField(WhereCauseBuilderField field);
 
 	public WhereCauseBuilder ignoreIfNull();

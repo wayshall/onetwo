@@ -63,6 +63,12 @@ public class QueryBuilderImpl implements QueryBuilder {
 		this.baseEntityManager = baseEntityManager;
 	}
 	
+	
+	
+	InnerBaseEntityManager getBaseEntityManager() {
+		return baseEntityManager;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T as(Class<T> queryClass){
