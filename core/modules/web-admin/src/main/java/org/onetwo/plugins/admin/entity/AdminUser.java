@@ -1,6 +1,7 @@
 package org.onetwo.plugins.admin.entity;
 
 import java.util.Date;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,10 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import org.onetwo.plugins.admin.utils.DataUtils;
+import org.onetwo.plugins.admin.utils.Enums.UserStatus;
+import org.onetwo.plugins.admin.utils.WebConstant.DictKeys;
 
 @Entity
 @Table(name="admin_user")
@@ -42,5 +47,14 @@ public class AdminUser {
     private Date updateAt;
 
     private String appCode;
+    
+    public String getGenderName(){
+    	Optional<DataDictionary> data = DataUtils.getDictionaryCachingService().findByValue(DictKeys.SEX, gender);
+    	return data.isPresent()?data.get().getName():"";
+    }
+    
+    public String getStatusName(){
+    	return UserStatus.of(status).getLabel();
+    }
 
 }

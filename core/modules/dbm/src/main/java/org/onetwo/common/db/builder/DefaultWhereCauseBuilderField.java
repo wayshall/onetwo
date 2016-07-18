@@ -8,7 +8,7 @@ import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.db.sqlext.SQLSymbolManager.FieldOP;
 import org.onetwo.common.utils.func.Closure;
 
-public class DefaultQueryBuilderField extends QueryBuilderField {
+public class DefaultWhereCauseBuilderField extends WhereCauseBuilderField {
 	
 	private String[] fields;
 	private String op;
@@ -16,26 +16,26 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	
 	private Supplier<Boolean> whenPredicate;
 
-	public DefaultQueryBuilderField(QueryBuilder squery, String... fields) {
+	public DefaultWhereCauseBuilderField(WhereCauseBuilder squery, String... fields) {
 		super(squery);
 		this.fields = fields;
 	}
 
-	public QueryBuilder like(String... values) {
+	public WhereCauseBuilder like(String... values) {
 		this.op = FieldOP.like;
 		this.values = values;
 		this.queryBuilder.addField(this);
 		return queryBuilder;
 	}
 
-	public QueryBuilder notLike(String... values) {
+	public WhereCauseBuilder notLike(String... values) {
 		this.op = FieldOP.not_like;
 		this.values = values;
 		this.queryBuilder.addField(this);
 		return queryBuilder;
 	}
 
-	public DefaultQueryBuilderField when(Supplier<Boolean> predicate) {
+	public DefaultWhereCauseBuilderField when(Supplier<Boolean> predicate) {
 		this.whenPredicate = predicate;
 		return this;
 	}
@@ -45,21 +45,21 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder equalTo(Object... values) {
+	public WhereCauseBuilder equalTo(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.eq;
 			this.values = values;
 		});
 	}
 	
-	public QueryBuilder isNull(boolean isNull) {
+	public WhereCauseBuilder isNull(boolean isNull) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.is_null;
 			this.values = new Object[]{isNull};
 		});
 	}
 	
-	protected QueryBuilder doWhenPredicate(Closure whenAction){
+	protected WhereCauseBuilder doWhenPredicate(Closure whenAction){
 		boolean rs = whenPredicate==null?true:Optional.ofNullable(whenPredicate.get()).orElse(false);
 		if(rs){
 			whenAction.execute();
@@ -74,7 +74,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder notEqualTo(Object... values) {
+	public WhereCauseBuilder notEqualTo(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.neq;
 			this.values = values;
@@ -86,7 +86,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder greaterThan(Object... values) {
+	public WhereCauseBuilder greaterThan(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.gt;
 			this.values = values;
@@ -98,7 +98,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		return queryBuilder;*/
 	}
 	
-	public QueryBuilder in(Object... values) {
+	public WhereCauseBuilder in(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.gt;
 			this.values = values;
@@ -110,7 +110,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		return queryBuilder;*/
 	}
 	
-	public QueryBuilder notIn(Object... values) {
+	public WhereCauseBuilder notIn(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.not_in;
 			this.values = values;
@@ -122,7 +122,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		return queryBuilder;*/
 	}
 	
-	public QueryBuilder dateIn(Date start, Date end) {
+	public WhereCauseBuilder dateIn(Date start, Date end) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.date_in;
 			this.values = new Date[]{start, end};
@@ -139,7 +139,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder greaterEqual(Object... values) {
+	public WhereCauseBuilder greaterEqual(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.ge;
 			this.values = values;
@@ -156,7 +156,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder lessThan(Object... values) {
+	public WhereCauseBuilder lessThan(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.lt;
 			this.values = values;
@@ -173,7 +173,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 	 * @param values
 	 * @return
 	 */
-	public QueryBuilder lessEqual(Object... values) {
+	public WhereCauseBuilder lessEqual(Object... values) {
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.le;
 			this.values = values;
@@ -185,7 +185,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		return queryBuilder;*/
 	}
 	
-	public QueryBuilder isNull(){
+	public WhereCauseBuilder isNull(){
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.is_null;
 			this.setValues(true);
@@ -197,7 +197,7 @@ public class DefaultQueryBuilderField extends QueryBuilderField {
 		return queryBuilder;*/
 	}
 	
-	public QueryBuilder isNotNull(){
+	public WhereCauseBuilder isNotNull(){
 		return this.doWhenPredicate(()->{
 			this.op = FieldOP.is_null;
 			this.setValues(false);

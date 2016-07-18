@@ -1,5 +1,9 @@
 var helper = function () {
 };
+helper.config = {
+	baseUrl: ''
+};
+
 (function($) {
 	
 	$.ajaxSetup({
@@ -108,16 +112,24 @@ var helper = function () {
 	//for helper.extendMethod()
 	helper.waitingMsgState = false;
 	$.extend(helper, {
+		gotoTopPage: function(){
+			var current = window;
+        	var url = location.href;
+        	var hasParent = false;
+        	while(current.parent!=null && current.parent!==current){
+        		current = current.parent;
+        		hasParent = true;
+        	}
+        	if(hasParent){
+	        	current.location.href = url;
+        	}
+		},
+		
 		booleanFormatter: function(val, row, index){
 			if(val===true || val=='true'){
 				return '是';
 			}else{
 				return '否';
-			}
-		},
-		dictFormatter: function(val, row, index){
-			return function(code){
-				
 			}
 		},
 		

@@ -1,15 +1,15 @@
 package org.onetwo.common.db.builder;
 
-abstract public class QueryBuilderField {
+abstract public class WhereCauseBuilderField {
 	
-	protected QueryBuilder queryBuilder;
+	protected WhereCauseBuilder queryBuilder;
 
-	public QueryBuilderField(QueryBuilder squery) {
+	public WhereCauseBuilderField(WhereCauseBuilder squery) {
 		super();
 		this.queryBuilder = squery;
 	}
 
-	protected QueryBuilder getQueryBuilder() {
+	protected WhereCauseBuilder getQueryBuilder() {
 		return queryBuilder;
 	}
 
