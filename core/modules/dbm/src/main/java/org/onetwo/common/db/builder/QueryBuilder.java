@@ -13,12 +13,16 @@ public interface QueryBuilder {
 	public <T> T as(Class<T> queryBuilderClass);
 
 	public Class<?> getEntityClass();
+	
+	public WhereCauseBuilder where();
 
-	public QueryBuilder debug();
+	/*public QueryBuilder debug();
 
 	public QueryBuilder or(QueryBuilder subQuery);
 
 	public QueryBuilder and(QueryBuilder subQuery);
+
+	public QueryBuilder addField(QueryBuilderField field);
 
 	public QueryBuilder ignoreIfNull();
 
@@ -26,7 +30,7 @@ public interface QueryBuilder {
 
 	public QueryBuilder calmIfNull();
 
-	public DefaultQueryBuilderField field(String... fields);
+	public DefaultQueryBuilderField field(String... fields);*/
 
 	public QueryBuilder select(String... fields);
 
@@ -37,8 +41,6 @@ public interface QueryBuilder {
 	public QueryBuilder desc(String... fields);
 
 	public QueryBuilder distinct(String... fields);
-
-	public QueryBuilder addField(QueryBuilderField field);
 	
 	public QueryBuilderJoin leftJoin(String table, String alias);
 

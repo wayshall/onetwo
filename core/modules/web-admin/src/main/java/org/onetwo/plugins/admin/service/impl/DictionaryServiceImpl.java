@@ -23,6 +23,18 @@ public class DictionaryServiceImpl {
 	@Autowired
 	private BaseEntityManager baseEntityManager;
 	
+	@Transactional(readOnly=true)
+	public List<DataDictionary> loadAll(){
+		List<DataDictionary> dictList = Querys.from(baseEntityManager, DataDictionary.class)
+												.where()
+													.field("valid").equalTo(true)
+												.end()
+												.asc("sort")
+												.toQuery()
+												.list();
+		return dictList;
+	}
+	
 	public Page<DataDictionary> findPage(Page<DataDictionary> page, String parentCode){
 		/*PageHelper.startPage(page.getPage(), page.getPageSize());	
 		DataDictionaryExample example = new DataDictionaryExample();
@@ -37,7 +49,10 @@ public class DictionaryServiceImpl {
 		page.setTotal(rows.getTotal());*/
 		
 		return Querys.from(baseEntityManager, DataDictionary.class)
-						.field("parentCode").equalTo(parentCode==null?"":parentCode)
+						.where()
+							.field("parentCode").equalTo(parentCode==null?"":parentCode)
+							.field("valid").equalTo(true)
+						.end()
 						.asc("sort")
 						.toQuery()
 						.page(page);
@@ -53,7 +68,10 @@ public class DictionaryServiceImpl {
 		List<DataDictionary> rows = dataDictionaryMapper.selectByExample(example);
 		return rows;*/
 		return Querys.from(baseEntityManager, DataDictionary.class)
+						.where()
 						.field("parentCode").equalTo(parentCode)
+						.field("valid").equalTo(true)
+						.end()
 						.asc("sort")
 						.toQuery()
 						.list();
@@ -82,7 +100,7 @@ public class DictionaryServiceImpl {
 		}
 	}
 	
-	public DataDictionary findByPrimaryKey(String code){
+	public DataDictionary findByCode(String code){
 		return baseEntityManager.findById(DataDictionary.class, code);
 	}
 	
@@ -93,14 +111,14 @@ public class DictionaryServiceImpl {
 		baseEntityManager.update(dictionary);
 	}
 	
-	public void deleteByPrimaryKeys(String... codes){
+	public void deleteByCodes(String... codes){
 		if(ArrayUtils.isEmpty(codes))
 			throw new ServiceException("请先选择数据！");
-		Stream.of(codes).forEach(code->deleteByPrimaryKey(code));
+		Stream.of(codes).forEach(code->deleteByCode(code));
 	}
 	
-	public void deleteByPrimaryKey(String code){
-		DataDictionary dict = findByPrimaryKey(code);
+	public void deleteByCode(String code){
+		DataDictionary dict = findByCode(code);
 		if(dict==null){
 			throw new ServiceException("找不到数据:" + code);
 		}
@@ -113,5 +131,14 @@ public class DictionaryServiceImpl {
 		}
 //		return dataDictionaryMapper.deleteByPrimaryKey(code);
 		baseEntityManager.removeById(DataDictionary.class, code);
+	}
+
+	@Transactional(readOnly=true)
+	public DataDictionary getByTypeAndValue(String parentCode, String value){
+		return Querys.from(baseEntityManager, DataDictionary.class)
+					  .where()
+					  .field("parentCode").equalTo(parentCode)
+					  .field("value").equalTo(value).end()
+					  .toQuery().one();
 	}
 }
