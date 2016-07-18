@@ -57,7 +57,7 @@ public class JFishLoggerFactory {
 		return instance;
 	}
 
-	private Collection<String> notifyThrowables = Collections.EMPTY_LIST;
+	private Collection<String> notifyThrowables = Collections.emptyList();
 
 	protected List<? extends Logger> getLoggerInsts(){
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -113,7 +113,8 @@ public class JFishLoggerFactory {
 	 * @return
 	 */
 	boolean mailIfNecessary(String msg, Throwable ex, Collection<String> notifyThrowables){
-		if(LangUtils.isEmpty(notifyThrowables))
+		Collection<String> notifyThrowableList = LangUtils.isEmpty(notifyThrowables)?this.notifyThrowables:notifyThrowables;
+		if(LangUtils.isEmpty(notifyThrowableList))
 			return false;
 		Logger mailLogger = findMailLogger();
 		if(mailLogger==null){

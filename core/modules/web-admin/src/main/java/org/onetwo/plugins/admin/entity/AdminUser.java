@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.utils.DataUtils;
 import org.onetwo.plugins.admin.utils.Enums.UserStatus;
 import org.onetwo.plugins.admin.utils.WebConstant.DictKeys;
@@ -49,11 +50,15 @@ public class AdminUser {
     private String appCode;
     
     public String getGenderName(){
+    	if(StringUtils.isBlank(gender))
+    		return "";
     	Optional<DataDictionary> data = DataUtils.getDictionaryCachingService().findByValue(DictKeys.SEX, gender);
     	return data.isPresent()?data.get().getName():"";
     }
     
     public String getStatusName(){
+    	if(StringUtils.isBlank(status))
+    		return "";
     	return UserStatus.of(status).getLabel();
     }
 

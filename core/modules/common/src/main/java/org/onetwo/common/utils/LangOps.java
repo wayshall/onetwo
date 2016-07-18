@@ -18,6 +18,7 @@ import org.onetwo.common.utils.func.Closure;
  */
 final public class LangOps {
 	
+	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
 		 return Stream.iterate(0, i->i+2)
 				 .limit(arrays.length/2)

@@ -6,10 +6,12 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.plugins.admin.entity.AdminUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +30,12 @@ public class AdminUserServiceImpl {
 
     
     public void findPage(Page<AdminUser> page, AdminUser adminUser){
-        baseEntityManager.findPage(AdminUser.class, page);
+        Querys.from(baseEntityManager, AdminUser.class)
+        		.where()
+        		.field("id").notEqualTo(LoginUserDetails.ROOT_USER_ID)
+        		.end()
+        		.toQuery()
+        		.page(page);
     }
     
     public void save(AdminUser adminUser){

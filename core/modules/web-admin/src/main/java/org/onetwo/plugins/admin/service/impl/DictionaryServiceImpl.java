@@ -77,6 +77,19 @@ public class DictionaryServiceImpl {
 						.list();
 	}
 	
+
+
+	public List<DataDictionary> findByValue(String value){
+		return Querys.from(baseEntityManager, DataDictionary.class)
+						.where()
+						.field("value").equalTo(value)
+						.field("valid").equalTo(true)
+						.end()
+						.asc("sort")
+						.toQuery()
+						.list();
+	}
+	
 	public void save(DataDictionary dictionary){
 		this.checkDataDictionary(dictionary);
 		Date now = new Date();

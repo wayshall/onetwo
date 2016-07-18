@@ -58,6 +58,19 @@ public class DictionaryCachingServiceImpl {
 											}
 											
 										});
+	
+	private LoadingCache<String, List<DataDictionary>> valueCaches 
+									= CacheBuilder.newBuilder()
+										.refreshAfterWrite(10, TimeUnit.MINUTES)
+										.build(new CacheLoader<String, List<DataDictionary>>(){
+
+											@Override
+											public List<DataDictionary> load(String value) throws Exception {
+												List<DataDictionary> list = dictionaryServiceImpl.findByValue(value);
+												return ImmutableList.copyOf(list);
+											}
+											
+										});
 
 	@PostConstruct
 	public void initCaches(){
@@ -69,8 +82,15 @@ public class DictionaryCachingServiceImpl {
 		dictGroups.entrySet().forEach(g->{
 			this.typeCaches.put(g.getKey(), g.getValue());
 		});
+
+		Map<String, List<DataDictionary>> valueGroups = dictList.stream().collect(Collectors.groupingBy(d->d.getValue()));
+		valueGroups.entrySet().forEach(g->{
+			this.valueCaches.put(g.getKey(), g.getValue());
+		});
 	}
 	public Optional<DataDictionary> findByCode(String code){
+		if(StringUtils.isBlank(code))
+			return Optional.ofNullable(null);
 		try {
 			DataDictionary data = codeCaches.get(code);
 			return Optional.of(CopyUtils.copy(DataDictionary.class, data));
@@ -79,6 +99,37 @@ public class DictionaryCachingServiceImpl {
 			return Optional.ofNullable(null);
 //			throw new ServiceException("find cache error: " + code, e);
 		}
+	}
+	
+
+	public Optional<DataDictionary> find(String kw){
+		Optional<DataDictionary> data = findByCode(kw);
+		if(data.isPresent())
+			return data;
+		data = findByValue(kw); 
+		return data;
+	}
+	
+
+	public String findName(String kw){
+		Optional<DataDictionary> dict = find(kw);
+		return dict.isPresent()?dict.get().getName():"";
+	}
+
+	public Optional<DataDictionary> findByValue(String value){
+		if(StringUtils.isBlank(value))
+			return Optional.ofNullable(null);
+		
+		List<DataDictionary> datas;
+		try {
+			datas = valueCaches.get(value);
+		} catch (ExecutionException e) {
+			log.error("find DataDictionary cache error, value: " + value, e);
+			return Optional.ofNullable(null);
+		}
+		if(LangUtils.isEmpty(datas))
+			return  Optional.ofNullable(null);
+		return Optional.of(datas.get(0));
 	}
 
 	public Optional<DataDictionary> findByValue(String typeCode, String value){
