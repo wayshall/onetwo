@@ -4,21 +4,41 @@ import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryBuilderImpl.SubQueryBuilder;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
+import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
+import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 
 public class DefaultWhereCauseBuilder implements WhereCauseBuilder {
-	final protected QueryBuilder queryBuilder;
+	final protected QueryBuilderImpl queryBuilder;
 	final protected Map<Object, Object> params;
 	
-	public DefaultWhereCauseBuilder(QueryBuilder queryBuilder) {
+	public DefaultWhereCauseBuilder(QueryBuilderImpl queryBuilder) {
 		super();
 		this.queryBuilder = queryBuilder;
 		this.params = queryBuilder.getParams();
 	}
-	
+
 	@Override
 	public DefaultWhereCauseBuilder addField(WhereCauseBuilderField field){
 		this.params.put(field.getOPFields(), field.getValues());
+		return self();
+	}
+
+	@Override
+	public DefaultWhereCauseBuilder addFields(Object entity){
+		DbmDaoImplementor dao = queryBuilder.getBaseEntityManager().getRawManagerObject(DbmDaoImplementor.class);
+		JFishMappedEntry entry = dao.getMappedEntryManager().getEntry(entity);
+		Map<String, Object> fieldMap = ReflectUtils.toMap(entity, (p, v)->{
+			return v!=null && entry.contains(p.getName());
+		});
+		fieldMap.entrySet().forEach(e->{
+			if(String.class.isInstance(e.getValue())){
+				field(e.getKey()).like(e.getValue().toString());
+			}else{
+				field(e.getKey()).equalTo(e.getValue());
+			}
+		});
 		return self();
 	}
 

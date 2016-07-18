@@ -66,6 +66,8 @@ $(function(){
 </html>
 <script>
 function addTab(title, url){
+	if(!url)
+		return ;
     if ($('#mainContent').tabs('exists', title)){
         var tab = $('#mainContent').tabs('select', title);
         //tab.find("iframe").get(0).contentDocument.location.reload();
