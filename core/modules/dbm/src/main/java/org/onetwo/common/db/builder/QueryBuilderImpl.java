@@ -63,6 +63,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 		this.baseEntityManager = baseEntityManager;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T as(Class<T> queryClass){
 		return (T) this;
@@ -75,8 +76,12 @@ public class QueryBuilderImpl implements QueryBuilder {
 	protected QueryBuilderImpl self(){
 		return (QueryBuilderImpl)this;
 	}
+	
+	public WhereCauseBuilder where(){
+		return new DefaultWhereCauseBuilder(this);
+	}
 
-	@Override
+	/*@Override
 	public QueryBuilderImpl debug(){
 		this.params.put(K.DEBUG, true);
 		return self();
@@ -87,7 +92,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 		this.checkSubQuery(subQuery);
 		this.params.put(K.OR, subQuery.getParams());
 		return self();
-	}
+	}*/
 	
 	protected void checkSubQuery(QueryBuilder subQuery){
 		if(!(subQuery instanceof SubQueryBuilder)){
@@ -95,7 +100,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 		}
 	}
 	
-	@Override
+	/*@Override
 	public QueryBuilderImpl and(QueryBuilder subQuery){
 		this.checkSubQuery(subQuery);
 		this.params.put(K.AND, subQuery.getParams());
@@ -118,13 +123,13 @@ public class QueryBuilderImpl implements QueryBuilder {
 	public QueryBuilderImpl calmIfNull(){
 		this.params.put(K.IF_NULL, K.IfNull.Calm);
 		return self();
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public DefaultQueryBuilderField field(String...fields){
 //		this.throwIfHasBuild();
 		return new DefaultQueryBuilderField(this, fields);
-	}
+	}*/
 	
 	@Override
 	public QueryBuilderImpl select(String...fields){
@@ -157,11 +162,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 		return self();
 	}
 
-	@Override
+	/*@Override
 	public QueryBuilderImpl addField(QueryBuilderField field){
 		this.params.put(field.getOPFields(), field.getValues());
 		return self();
-	}
+	}*/
 
 	@Override
 	public QueryBuilderJoin leftJoin(String table, String alias){

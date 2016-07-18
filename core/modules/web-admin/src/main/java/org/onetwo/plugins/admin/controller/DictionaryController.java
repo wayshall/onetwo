@@ -66,8 +66,8 @@ public class DictionaryController extends WebAdminBaseController implements Date
 	
 	@ByPermissionClass(DictMgr.class)
 	@RequestMapping(value="{code}", method=RequestMethod.GET)
-	public ModelAndView show(@PathVariable("code") String code){
-		DataDictionary dictionary = dictionaryServiceImpl.findByPrimaryKey(code);
+	public ModelAndView get(@PathVariable("code") String code){
+		DataDictionary dictionary = dictionaryServiceImpl.findByCode(code);
 		MappableMap dictMap = EasyModel.newSimpleBuilder(DataDictionary.class)
 				.addMapping("valid", src->{
 					return src.getValid()==null?"false":src.getValid().toString();
@@ -87,14 +87,14 @@ public class DictionaryController extends WebAdminBaseController implements Date
 	@ByPermissionClass(DictMgr.class)
 	@RequestMapping(value="{code}", method=RequestMethod.DELETE)
 	public ModelAndView delete(@PathVariable("code") String code){
-		dictionaryServiceImpl.deleteByPrimaryKey(code);
+		dictionaryServiceImpl.deleteByCode(code);
 		return messageMv("删除成功！");
 	}
 	
 	@ByPermissionClass(DictMgr.class)
 	@RequestMapping(method=RequestMethod.DELETE)
 	public ModelAndView deleteBatch(String[] code){
-		dictionaryServiceImpl.deleteByPrimaryKeys(code);
+		dictionaryServiceImpl.deleteByCodes(code);
 		return messageMv("批量删除成功！");
 	}
 
@@ -124,4 +124,11 @@ public class DictionaryController extends WebAdminBaseController implements Date
 												.build(datalist);
 		return districtMaps;
 	}
+	
+	@RequestMapping(value="getOne/{parentCode}/{value}")
+	@ResponseBody
+	public Object getOne(@PathVariable("parentCode") String parentCode, @PathVariable("value")String value){
+		return dictionaryServiceImpl.getByTypeAndValue(parentCode, value);
+	}
+	
 }
