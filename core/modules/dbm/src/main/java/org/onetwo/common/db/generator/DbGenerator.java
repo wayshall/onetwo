@@ -25,6 +25,7 @@ import org.onetwo.common.utils.StringUtils;
 import com.google.common.collect.Lists;
 
 public class DbGenerator {
+	//TableContextCreator
 	private static final String TABLE_CONTEXT_KEY = GlobalConfig.TABLE_CONTEXT_KEY;
 	private static final String TABLE_KEY = "table";
 	
@@ -189,7 +190,7 @@ public class DbGenerator {
 	public class DbTableGenerator {
 		
 		private String tableName;
-		private List<TableGeneratedConfig> generatedConfigs = Lists.newArrayList();
+		private List<TableGeneratedConfig> tableGeneratedConfig = Lists.newArrayList();
 		private TableMeta tableMeta = null;
 		
 
@@ -204,20 +205,20 @@ public class DbGenerator {
 		}
 		
 		public DbTableGenerator addGeneratedConfig(String templatePath, String outfilePath){
-			generatedConfigs.add(new TableGeneratedConfig(templatePath, outfilePath));
+			tableGeneratedConfig.add(new TableGeneratedConfig(templatePath, outfilePath));
 			return this;
 		}
 		
 		public TableGeneratedConfig template(String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return config;
 		}
 		
 		public TableGeneratedConfig template(String templatePath, OutfilePathFunc outFileNameFunc){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(outFileNameFunc);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return config;
 		}
 		
@@ -232,7 +233,7 @@ public class DbGenerator {
 										return filePath.toLowerCase();
 									}
 								);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
@@ -245,7 +246,7 @@ public class DbGenerator {
 										return filePath;
 									}
 								);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
@@ -263,6 +264,7 @@ public class DbGenerator {
 		public DbTableGenerator controllerTemplate(String controllerPackage, String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
+									c.setLocalPackage(controllerPackage);
 									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
 									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/"+controllerPackage+"/"+
 									StringUtils.toClassName(tableShortName)+
@@ -270,47 +272,63 @@ public class DbGenerator {
 									return filePath;
 								}
 							);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
 		public DbTableGenerator serviceImplTemplate(String templatePath){
+			return serviceImplTemplate("service.impl", templatePath);
+		}
+		public DbTableGenerator serviceImplTemplate(String servicePackage, String templatePath){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
 			config.outfilePathFunc(c->{
+									c.setLocalPackage(servicePackage);
 									String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
-									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+"/service/"+
+									String servicePath = servicePackage.replace('.', '/');
+									servicePath = StringUtils.appendArroundWith(servicePath, "/");
+									String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+servicePath+
 									StringUtils.toClassName(tableShortName)+
 									FileUtils.getFileNameWithoutExt(templatePath);
 									return filePath;
 								}
 							);
-			generatedConfigs.add(config);
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
 		public DbTableGenerator daoTemplate(String templatePath){
+			String localPackage = "dao";
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
-			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/dao", templatePath));
-			generatedConfigs.add(config);
+			config.setLocalPackage(localPackage);
+			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/"+localPackage, templatePath));
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
 		public DbTableGenerator entityTemplate(String templatePath){
-			return entityTemplate(templatePath, "entity");
+			return entityTemplate("entity", templatePath);
 		}
-		
-		public DbTableGenerator entityTemplate(String templatePath, String entitySubPackage){
+
+		public DbTableGenerator entityTemplate(String entitySubPackage, String templatePath){
+			return entityTemplate(entitySubPackage, templatePath, null);
+		}
+		public DbTableGenerator entityTemplate(String entitySubPackage, String templatePath, String fileNamePostfix){
 			TableGeneratedConfig config = new TableGeneratedConfig(tableName, templatePath);
-			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/"+entitySubPackage, templatePath));
-			generatedConfigs.add(config);
+			config.setLocalPackage(entitySubPackage);
+			config.outfilePathFunc(c->getJavaSrcOutfilePathByType(config, "/"+entitySubPackage, templatePath, fileNamePostfix));
+			tableGeneratedConfig.add(config);
 			return this;
 		}
 		
+
 		private String getJavaSrcOutfilePathByType(TableGeneratedConfig c, String typePath, String templatePath){
+			return getJavaSrcOutfilePathByType(c, typePath, templatePath, null);
+		}
+		
+		private String getJavaSrcOutfilePathByType(TableGeneratedConfig c, String typePath, String templatePath, String fileNamePostfix){
 			String tableShortName = c.tableNameStripStart(c.globalGeneratedConfig().getStripTablePrefix());
 			String filePath = c.globalGeneratedConfig().getFullModulePackagePath()+ typePath+ "/" + 
-			StringUtils.toClassName(tableShortName)+
-			FileUtils.getFileNameWithoutExt(templatePath);
+			StringUtils.toClassName(tableShortName)+ (fileNamePostfix==null?FileUtils.getFileNameWithoutExt(templatePath):fileNamePostfix);
 			return filePath;
 		}
 		
@@ -331,7 +349,7 @@ public class DbGenerator {
 			globalConfig.put(TABLE_KEY, tableMeta);
 			
 			List<File> files = Lists.newArrayList();
-			generatedConfigs.stream().forEach(config->{
+			tableGeneratedConfig.stream().forEach(config->{
 				Assert.hasText(config.templatePath);
 				
 //				Assert.hasText(config.outfilePath);
@@ -357,7 +375,7 @@ public class DbGenerator {
 			globalConfig.put(TABLE_KEY, tableMeta);
 			
 			List<String> contents = Lists.newArrayList();
-			generatedConfigs.stream().forEach(config->{
+			tableGeneratedConfig.stream().forEach(config->{
 				Assert.hasText(config.templatePath);
 				
 //				Assert.hasText(config.outfilePath);
@@ -414,6 +432,7 @@ public class DbGenerator {
 			private String tableName;
 			private String templatePath;
 			private OutfilePathFunc outfilePathFunc;
+			private String localPackage;
 			
 			public TableGeneratedConfig(String tableName, String templatePath) {
 				super();
@@ -436,6 +455,14 @@ public class DbGenerator {
 			public TableGeneratedConfig outfilePathFunc(OutfilePathFunc outFileNameFunc) {
 				this.outfilePathFunc = outFileNameFunc;
 				return this;
+			}
+			
+			public String getLocalPackage() {
+				return localPackage;
+			}
+
+			public void setLocalPackage(String localPackage) {
+				this.localPackage = localPackage;
 			}
 
 			public DbTableGenerator end() {

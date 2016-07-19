@@ -304,6 +304,10 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		ColumnInfo col = new ColumnInfo(tableInfo, colName, sqlType);
 		col.setJavaType(field.getPropertyInfo().getType());
 		col.setPrimaryKey(field.isIdentify());
+		if(field.isIdentify()){
+			col.setInsertable(!field.isIncreaseIdStrategy());
+			col.setUpdatable(!field.isIncreaseIdStrategy());
+		}
 		
 		return col;
 	}

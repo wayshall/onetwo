@@ -11,7 +11,6 @@
            填写[${(table.comments[0])!''}]信息<hr/>
        <form id="${dataFormName}" class="easyui-form" action="${'$'}{siteConfig.baseURL}${modulePath}.json" method="post" >
             <input id="_method" name="_method" type="hidden" />
-           <input name="${table.primaryKey.javaName}" type="hidden"/>
            <table cellpadding="5">
                 <@helper.generatedFormField table=table/>
            </table>
