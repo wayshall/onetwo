@@ -24,6 +24,7 @@ public class SecurityConfig {
 	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
 	private CasConfig cas = new CasConfig();
 //	private boolean csrf = true;
+	protected Boolean syncPermissionData;
 	
 	private RememberMeConfig rememberMe = new RememberMeConfig();
 	

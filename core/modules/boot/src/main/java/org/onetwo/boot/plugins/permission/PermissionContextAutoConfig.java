@@ -1,5 +1,6 @@
 package org.onetwo.boot.plugins.permission;
 
+import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.ext.permission.AbstractPermissionConfig;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;
@@ -26,6 +27,9 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(AbstractPermissionConfig.class)
 public class PermissionContextAutoConfig {
 	
+	@Autowired
+	private BootSecurityConfig bootSecurityConfig;
+	
 	public PermissionContextAutoConfig(){
 	}
 	
@@ -48,7 +52,7 @@ public class PermissionContextAutoConfig {
 	@ConditionalOnMissingBean(value=PermissionHandlerMappingListener.class)
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
 		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
-		listener.setSyncMenuDataEnable(true);
+		listener.setSyncPermissionData(bootSecurityConfig.getSyncPermissionData());
 		return listener;
 	}
 	

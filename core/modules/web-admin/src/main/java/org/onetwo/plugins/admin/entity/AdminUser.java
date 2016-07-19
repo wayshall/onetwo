@@ -12,10 +12,13 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.utils.DataUtils;
 import org.onetwo.plugins.admin.utils.Enums.UserStatus;
 import org.onetwo.plugins.admin.utils.WebConstant.DictKeys;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidAnyTime;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 
 @Entity
 @Table(name="admin_user")
@@ -26,11 +29,13 @@ public class AdminUser {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
+	
+	@NotBlank(groups=ValidAnyTime.class)
     private String userName;
 
     private String nickName;
 
+	@NotBlank(groups={ValidWhenNew.class})
     private String password;
 
     private String email;
