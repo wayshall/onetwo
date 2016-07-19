@@ -6,7 +6,7 @@
 <#assign modulePath="/${_globalConfig.getModuleName()}/${_tableContext.propertyName}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
 
-<${'@'}extends parent="application.html">
+<${'@'}extends parent="easyui-js.html">
     
     <${'@'}override name="charset">
         <meta charset="UTF-8">

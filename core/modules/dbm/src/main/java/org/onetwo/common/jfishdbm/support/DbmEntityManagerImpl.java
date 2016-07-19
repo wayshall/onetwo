@@ -26,6 +26,7 @@ import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -115,7 +116,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	@Override
 	public <T> T save(T entity) {
 		int rs = getDbmDao().save(entity);
-		throwIfEffectiveCountError("save", 1, rs);
+		int expectsize = LangUtils.size(entity);
+		throwIfEffectiveCountError("save", expectsize, rs);
 		return entity;
 	}
 	
@@ -126,13 +128,15 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	@Override
 	public <T> void persist(T entity) {
 		int rs = getDbmDao().insert(entity);
-		throwIfEffectiveCountError("persist", 1, rs);
+		int expectsize = LangUtils.size(entity);
+		throwIfEffectiveCountError("persist", expectsize, rs);
 	}
 
 	@Override
 	public void remove(Object entity) {
 		int rs = getDbmDao().delete(entity);
-		throwIfEffectiveCountError("remove", 1, rs);
+		int expectsize = LangUtils.size(entity);
+		throwIfEffectiveCountError("remove", expectsize, rs);
 	}
 
 	@Override
@@ -357,6 +361,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		return getFileNamedQueryFactory().findPage(nameInfo, page, params);
 	}*/
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getRawManagerObject() {
 		return (T)dbmDao;

@@ -31,6 +31,7 @@ public class DefaultTableContexts implements TableContextCreator {
 		context.put("shortTableName", tableNameWithoutPrefix);
 		context.put("className", className);
 		context.put("propertyName", propertyName);
+		context.put("localPackage", StringUtils.emptyIfNull(tableConfig.getLocalPackage()));
 		if(tableContexts!=null){
 			Map<String, Object> other = tableContexts.createContexts(tableConfig);
 			if(other!=null){
