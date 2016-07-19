@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.onetwo.common.db.builder.QueryBuilder;
@@ -29,6 +30,11 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	@Override
 	public T findById(PK id) {
 		return (T)getBaseEntityManager().findById(entityClass, id);
+	}
+	
+	@Override
+	public Optional<T> findOptionalById(PK id) {
+		return Optional.ofNullable(getBaseEntityManager().findById(entityClass, id));
 	}
 
 

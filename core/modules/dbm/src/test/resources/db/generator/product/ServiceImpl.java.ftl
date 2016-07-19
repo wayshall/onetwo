@@ -11,6 +11,8 @@
 
 package ${servicePackage};
 
+import java.util.Collection;
+
 import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
@@ -23,17 +25,11 @@ import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.en
 
 @Service
 @Transactional
-public class ${serviceImplClassName} extends BaseCrudServiceImpl<${_tableContext.className}, ${idType}> {
+public class ${serviceImplClassName} {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
-
     
-    @Override
-    public BaseEntityManager getBaseEntityManager() {
-		return baseEntityManager;
-	}
-	
     public void findPage(Page<${_tableContext.className}> page, ${_tableContext.className} ${_tableContext.propertyName}){
         Querys.from(baseEntityManager, ${_tableContext.className}.class)
         		.where()
@@ -44,4 +40,19 @@ public class ${serviceImplClassName} extends BaseCrudServiceImpl<${_tableContext
         		.page(page);
     }
     
+    public void save(${_tableContext.className} entity) {
+		baseEntityManager.persist(entity);
+	}
+
+	public void update(${_tableContext.className} entity) {
+		baseEntityManager.update(entity);
+	}
+    
+    public ${_tableContext.className} findById(${idType} id) {
+		return baseEntityManager.findById(${_tableContext.className}.class, id);
+	}
+
+	public Collection<${_tableContext.className}> removeByIds(${idType}... id) {
+		return baseEntityManager.removeByIds(${_tableContext.className}.class, id);
+	}
 }
