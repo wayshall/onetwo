@@ -24,6 +24,13 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
 	
+	public Boolean getSyncPermissionData(){
+		if(this.syncPermissionData==null){
+			return !bootSiteConfig.isProduct();
+		}
+		return this.syncPermissionData;
+	}
+	
 	public String getUserLogoutUrl(){
 		String url = this.getLogoutUrl();
 		if(isCasEnabled()){

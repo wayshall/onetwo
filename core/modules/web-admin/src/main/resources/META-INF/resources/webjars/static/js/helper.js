@@ -156,7 +156,7 @@ helper.config = {
 //                	 $.messager.progress('close');
 	            	 helper.closeWaitingMsg();
 	                 data = JSON.parse(data);
-	                 if(data.code==0){
+	                 if(!!!data.success){
 	                	 $.messager.alert('操作出错！',data.message,'warning');
 	                 }else{
 	                     $.messager.alert('操作成功！',data.message,'info');
@@ -217,7 +217,7 @@ helper.config = {
 	     processJsonDataResult: function(config, cb){
 	    	 var _config = config || {};
 	    	 return function(data){
-	             if(data.code==0){
+	             if(!!!data.success){
 	            	 $.messager.progress('close');
 	            	 $.messager.alert('操作出错！',data.message,'warning');
 	             }else{
@@ -235,7 +235,7 @@ helper.config = {
 	     
 	     remoteMessageHandler: function(cb){
 	    	 return function(data){
-	             if(data.code==0){
+	             if(!!!data.success){
 	            	 $.messager.progress('close');
 	            	 $.messager.alert('操作出错！',data.message,'warning');
 	             }else{
@@ -250,7 +250,7 @@ helper.config = {
 	     
 	     loadTreeErrorHandler: function(){
 	    	 return function(node, data){
-	    		 if(data.code==0){
+	    		 if(!!!data.success){
 	                 $.messager.alert('操作出错！',data.message,'warning');
 	 	    	 }
 	    	 }
@@ -258,7 +258,7 @@ helper.config = {
 	     
 	     loadGridErrorHandler: function(){
 	    	 return function(data){
-	    		 if(data.code==0){
+	    		 if(!!!data.success){
 	                 $.messager.alert('操作出错！',data.message,'warning');
 	 	    	 }
 	    	 }
