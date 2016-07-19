@@ -16,9 +16,9 @@ public class GlobalConfig {
 		String getOutFileName(TableGeneratedConfig tableConfig);
 	}
 
-	public static interface ControllerPathGenerator {
+	/*public static interface ControllerPathGenerator {
 		String getControllerPath(TableGeneratedConfig tableConfig);
-	}
+	}*/
 
 	public static interface TableContextCreator {
 		Map<String, Object> createContexts(TableGeneratedConfig tableConfig);
@@ -34,7 +34,7 @@ public class GlobalConfig {
 	private String pageFileBaseDir;
 	
 	private OutfilePathFunc outFileNameFunc;
-	private ControllerPathGenerator controllerPathGenerator;
+//	private ControllerPathGenerator controllerPathGenerator;
 	private DefaultTableContexts defaultTableContexts = new DefaultTableContexts(this);
 	
 	private final DbGenerator dbGenerator;
@@ -105,14 +105,14 @@ public class GlobalConfig {
 		return this;
 	}
 
-	public ControllerPathGenerator getControllerPathGenerator() {
+	/*public ControllerPathGenerator getControllerPathGenerator() {
 		return controllerPathGenerator;
 	}
 
 	public GlobalConfig controllerPathGenerator(ControllerPathGenerator controllerPathGenerator) {
 		this.controllerPathGenerator = controllerPathGenerator;
 		return this;
-	}
+	}*/
 
 	TableContextCreator getTableContextCreator() {
 		return defaultTableContexts;

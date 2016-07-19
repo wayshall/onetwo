@@ -10,12 +10,12 @@
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
 
 
-package com.yooyo.zhiyetong.${_globalConfig.getModuleName()}.web;
+package ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.${_tableContext.localPackage};
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.controller.DateInitBinder;
-import org.onetwo.boot.plugins.permission.annotation.ByFunctionClass;
-import org.onetwo.boot.plugins.permission.annotation.ByMenuClass;
+import org.onetwo.common.utils.Page;
+import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.common.utils.map.MappableMap;
 import org.onetwo.easyui.EasyModel;
 import org.onetwo.easyui.EasyPage;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
-import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service.${serviceImplClassName};
+import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service.impl.${serviceImplClassName};
 
 @Controller
 @RequestMapping("${requestPath}")
@@ -37,41 +37,42 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     private ${serviceImplClassName} ${serviceImplPropertyName};
     
     
-    @ByMenuClass(${_tableContext.className}Mgr.class)
+    @ByPermissionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.GET)
-    public ModelAndView index(EasyPage<${_tableContext.className}> page, ${_tableContext.className} ${_tableContext.propertyName}){
+    public ModelAndView index(EasyPage<${_tableContext.className}> easyPage, ${_tableContext.className} ${_tableContext.propertyName}){
         return responsePageOrData("${pagePath}-index", ()->{
+        			Page<${_tableContext.className}> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
                     ${serviceImplPropertyName}.findPage(page, ${_tableContext.propertyName});
-                    return page;
+                    return EasyPage.create(page);
                 });
     }
     
-    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @ByPermissionClass(${_tableContext.className}Mgr.Create.class)
     @RequestMapping(method=RequestMethod.POST)
     public ModelAndView create(${_tableContext.className} ${_tableContext.propertyName}){
         ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return messageMv("保存成功！");
     }
-    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @ByPermissionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(value="{${idName}}", method=RequestMethod.GET)
     public ModelAndView show(@PathVariable("${idName}") Long ${idName}){
-        ${_tableContext.className} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findByPrimaryKey(${idName});
+        ${_tableContext.className} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
         return responseData(${_tableContext.propertyName});
     }
     
-    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
     @RequestMapping(value="{${idName}}", method=RequestMethod.PUT)
     public ModelAndView update(@PathVariable("${idName}") Long ${idName}, ${_tableContext.className} ${_tableContext.propertyName}){
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
-        ${serviceImplPropertyName}.update(${_tableContext.propertyName});
+        ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return messageMv("更新成功！");
     }
     
     
-    @ByFunctionClass(${_tableContext.className}Mgr.class)
+    @ByPermissionClass(${_tableContext.className}Mgr.Delete.class)
     @RequestMapping(method=RequestMethod.DELETE)
     public ModelAndView deleteBatch(Long[] ${idName}s){
-        ${serviceImplPropertyName}.deleteByPrimaryKeys(${idName}s);
+        ${serviceImplPropertyName}.removeByIds(${idName}s);
         return messageMv("删除成功！");
     }
 }

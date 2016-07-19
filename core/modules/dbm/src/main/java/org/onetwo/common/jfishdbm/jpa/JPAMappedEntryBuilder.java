@@ -213,6 +213,11 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 			col.setFetchType(basic.fetch());
 		}
 		
+		if(field.isIdentify()){
+			col.setInsertable(!field.isIncreaseIdStrategy());
+			col.setUpdatable(!field.isIncreaseIdStrategy());
+		}
+		
 		return col;
 	}
 	
