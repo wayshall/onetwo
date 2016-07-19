@@ -111,7 +111,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
-			return createModelAndView(null, model, request, response, ex);
+//			return createModelAndView(null, model, request, response, ex);
+			ModelAndView mv = new ModelAndView("", model);
+			return mv;
 		}
 		
 		String msg = errorMessage.getMesage();

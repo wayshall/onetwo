@@ -873,7 +873,7 @@ public class ReflectUtils {
 		for (PropertyDescriptor prop : props) {
 			val = getProperty(obj, prop);
 			if (acceptor.apply(prop, val)){
-				rsMap.put(prop.getName(), val.toString());
+				rsMap.put(prop.getName(), val);
 			}
 		}
 		return rsMap;
