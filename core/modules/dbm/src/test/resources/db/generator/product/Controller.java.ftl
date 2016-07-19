@@ -26,6 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.onetwo.common.spring.validator.ValidatorUtils;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidAnyTime;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
+import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
+
 import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.entity.${_tableContext.className};
 import ${_globalConfig.getJavaBasePackage()}.${_globalConfig.getModuleName()}.service.impl.${serviceImplClassName};
 
@@ -49,7 +56,8 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     
     @ByPermissionClass(${_tableContext.className}Mgr.Create.class)
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView create(${_tableContext.className} ${_tableContext.propertyName}){
+    public ModelAndView create(@Validated({ValidAnyTime.class, ValidWhenNew.class}) ${_tableContext.className} ${_tableContext.propertyName}, BindingResult br){
+    	ValidatorUtils.throwIfHasErrors(br, true);
         ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return messageMv("保存成功！");
     }
@@ -62,7 +70,8 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     
     @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
     @RequestMapping(value="{${idName}}", method=RequestMethod.PUT)
-    public ModelAndView update(@PathVariable("${idName}") Long ${idName}, ${_tableContext.className} ${_tableContext.propertyName}){
+    public ModelAndView update(@PathVariable("${idName}") Long ${idName}, @Validated({ValidAnyTime.class, ValidWhenEdit.class}) ${_tableContext.className} ${_tableContext.propertyName}, BindingResult br){
+    	ValidatorUtils.throwIfHasErrors(br, true);
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
         ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return messageMv("更新成功！");

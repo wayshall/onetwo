@@ -36,11 +36,18 @@ public final class ValidatorUtils {
 	public static FieldName findValidationInfo(Class<?> objClass, String fieldName){
 		return AnnotationUtils.findFieldAnnotation(objClass, fieldName, FieldName.class);
 	}
+
+	public static void throwIfHasErrors(BindingResult br, boolean appendFieldname){
+		List<String> errors = asStringList(br, appendFieldname);
+		if(!errors.isEmpty()){
+			String msg = StringUtils.join(asStringList(br, appendFieldname), MESSAGE_SEPERATOR);
+			throw new ValidationException(msg);
+		}
+	}
 	
-	@SuppressWarnings("unchecked")
 	public static List<String> asStringList(BindingResult br, boolean appendFieldname){
 		if(br==null || !br.hasErrors())
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		List<String> msglist = new ArrayList<String>();
 		String msg = null;
 		for(ObjectError error : br.getAllErrors()){

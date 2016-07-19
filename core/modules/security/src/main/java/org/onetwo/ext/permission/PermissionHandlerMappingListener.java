@@ -34,15 +34,15 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	private PermissionManager<?> permissionManager;
 	@Autowired
 	private RequestMappingHandlerMapping requestMappingHandlerMapping;
-	private boolean syncMenuDataEnable;
+	private boolean syncPermissionData;
 	
-	public void setSyncMenuDataEnable(boolean syncMenuDataEnable) {
-		this.syncMenuDataEnable = syncMenuDataEnable;
+	public void setSyncPermissionData(boolean syncMenuDataEnable) {
+		this.syncPermissionData = syncMenuDataEnable;
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(!syncMenuDataEnable){
+		if(!syncPermissionData){
 			return ;
 		}
 		Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
