@@ -16,7 +16,9 @@ helper.config = {
 				$.messager.alert('提示！', rs.message, 'warning');
 			}
 			if(rs.error){
-				$.messager.alert('提示！', rs.error, 'warning');
+				console.log('错误提示:');
+				console.dir(rs);
+				$.messager.alert('错误提示！', rs.message, 'warning');
 			}
 			return data;
 		},
