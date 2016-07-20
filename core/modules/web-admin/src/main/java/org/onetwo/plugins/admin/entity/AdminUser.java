@@ -17,7 +17,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.utils.DataUtils;
 import org.onetwo.plugins.admin.utils.Enums.UserStatus;
 import org.onetwo.plugins.admin.utils.WebConstant.DictKeys;
-import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidAnyTime;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 
 @Entity
@@ -30,7 +29,7 @@ public class AdminUser {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 	
-	@NotBlank(groups=ValidAnyTime.class)
+	@NotBlank(groups=ValidWhenNew.class)
     private String userName;
 
     private String nickName;

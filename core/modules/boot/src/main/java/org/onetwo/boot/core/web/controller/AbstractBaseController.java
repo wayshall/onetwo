@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -283,6 +284,11 @@ abstract public class AbstractBaseController {
 			throw new NotLoginException();
 		}
 		return clazz.cast(user);
+	}
+	
+	@ModelAttribute(name=UserDetail.USER_DETAIL_KEY)
+	public UserDetail getCurrentLoginUser(){
+		return checkAndGetCurrentLoginUser(false);
 	}
 
 	protected BootSiteConfig getBootSiteConfig() {

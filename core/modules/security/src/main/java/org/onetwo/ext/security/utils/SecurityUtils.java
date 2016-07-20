@@ -64,4 +64,16 @@ final public class SecurityUtils {
 			return null;
 		return (LoginUserDetails)auth.getPrincipal();
 	}
+	
+	public static Runnable runInThread(Runnable runnable){
+		SecurityContext ctx = SecurityContextHolder.getContext();
+		try {
+			return ()->{
+				SecurityContextHolder.setContext(ctx);
+				runnable.run();
+			};
+		}finally{
+			SecurityContextHolder.clearContext();
+		}
+	}
 }
