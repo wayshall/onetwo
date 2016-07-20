@@ -40,6 +40,7 @@ public class EasyPage<T> {
 	protected int pageSize = 20;
 	protected long total = -1;
 	protected List<T> rows = new ArrayList<T>();
+	protected List<T> footer = new ArrayList<T>();
 	
 	protected boolean pagination = true;
 	
@@ -103,6 +104,18 @@ public class EasyPage<T> {
 	}
 	public List<T> getRows() {
 		return rows;
+	}
+	
+	public List<T> getFooter() {
+		return footer;
+	}
+	public void setFooter(List<T> footer) {
+		this.footer = footer;
+	}
+	public void addFooter(T footer) {
+		if(footer==null)
+			return;
+		this.footer.add(footer);
 	}
 	final public void setRows(List<T> rows) {
 		this.rows = rows;
