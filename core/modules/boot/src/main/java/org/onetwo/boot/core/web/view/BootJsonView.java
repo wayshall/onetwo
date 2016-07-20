@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.web.view;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -14,8 +15,11 @@ import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.MapResultBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.google.common.collect.Lists;
 
 public class BootJsonView extends MappingJackson2JsonView implements InitializingBean {
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
@@ -58,7 +62,8 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		model.remove(BootFirstInterceptor.NOW_KEY);
 		
 		Object result = null;
-		for(Map.Entry<String, Object> entry : model.entrySet()){
+		List<Entry<String, Object>> entryList = Lists.newArrayList(model.entrySet());
+		for(Map.Entry<String, Object> entry : entryList){
 			if(Result.class.isInstance(entry.getValue())){
 				result = entry.getValue();
 				processData(result);
@@ -67,6 +72,11 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 				result = ((DataWrapper)entry.getValue()).getValue();
 				processData(result);
 				return result;
+			}
+			
+			if(BindingResult.class.isInstance(entry.getValue()) ||
+					UserDetails.class.isInstance(entry.getValue())){
+				model.remove(entry.getKey());
 			}
 		}
 
