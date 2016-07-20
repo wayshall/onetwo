@@ -67,7 +67,7 @@ public class AdminRoleServiceImpl {
         Assert.notNull(adminRole.getId(), "参数不能为null");
         int count = this.baseEntityManager.countRecord(AdminRole.class, 
 													"name", adminRole.getName(), 
-													"id!=", adminRole.getId())
+													"id:!=", adminRole.getId())
 													.intValue();
 		if(count>0){
 			throw new ServiceException("更新失败：["+adminRole.getName()+"]的角色已存在，请检查！");
@@ -76,7 +76,7 @@ public class AdminRoleServiceImpl {
         AdminRole dbAdminRole = loadById(adminRole.getId());
         ReflectUtils.copyIgnoreBlank(adminRole, dbAdminRole);
         dbAdminRole.setUpdateAt(new Date());
-        baseEntityManager.update(adminRole);
+        baseEntityManager.update(dbAdminRole);
     }
     
     public void deleteByIds(Long...ids){

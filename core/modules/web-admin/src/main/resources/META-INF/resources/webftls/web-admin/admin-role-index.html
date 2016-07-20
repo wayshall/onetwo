@@ -112,6 +112,7 @@
                 $('#permissionTree').tree({
 	            	url: url,
 	            	cascadeCheck: false
+	            	//onlyLeafCheck: false
 	            });
                 $('#permissionTree').tree('reload');
            })
@@ -122,7 +123,8 @@
             iconCls:'icon-add',
             handler:function(){
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
-
+				
+                $('#id').val('');
                 var url = '${siteConfig.baseURL}/web-admin/role.json';
                 $('#dataForm').attr('action', url);
                 $('#dataForm').find('input[name="_method"]').val('');

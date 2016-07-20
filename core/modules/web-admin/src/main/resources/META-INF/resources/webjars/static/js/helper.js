@@ -169,9 +169,9 @@ helper.config = {
 	            	 helper.closeWaitingMsg();
 	                 data = JSON.parse(data);
 	                 if(!!!data.success){
-	                	 $.messager.alert('操作出错！',data.message,'warning');
+	                	 $.messager.alert('提交操作出错！',data.message,'warning');
 	                 }else{
-	                     $.messager.alert('操作成功！',data.message,'info');
+	                     $.messager.alert('提交操作成功！',data.message,'info');
 	                 }
 	                 if(_config.onSuccess){
                     	 _config.onSuccess(data);
@@ -244,13 +244,16 @@ helper.config = {
 	     
 	     remoteMessageHandler: function(cb){
 	    	 return function(data){
-	             if(!!!data.success){
-	            	 $.messager.progress('close');
-	            	 $.messager.alert('操作出错！',data.message,'warning');
-	             }else{
-	                 $.messager.progress('close');
-	                 $.messager.alert('操作成功！',data.message,'info');
-	             }
+	    		 if(data.success){
+	    			 if(data.success===true){
+		            	 $.messager.progress('close');
+		                 $.messager.alert('操作成功！',data.message,'info');
+		             }else{
+		                 $.messager.progress('close');
+		            	 $.messager.alert('操作出错！',data.message,'warning');
+		             }
+	    		 }
+	             
 	             if(cb){
 	            	 cb(data);
 	             }
@@ -259,17 +262,27 @@ helper.config = {
 	     
 	     loadTreeErrorHandler: function(){
 	    	 return function(node, data){
-	    		 if(!!!data.success){
-	                 $.messager.alert('操作出错！',data.message,'warning');
-	 	    	 }
+	    		 if(data.success){
+	    			 if(data.success===true){
+	    				 //
+		             }else{
+		                 $.messager.progress('close');
+		            	 $.messager.alert('操作出错！',data.message,'warning');
+		             }
+	    		 }
 	    	 }
 	     },
 	     
 	     loadGridErrorHandler: function(){
 	    	 return function(data){
-	    		 if(!!!data.success){
-	                 $.messager.alert('操作出错！',data.message,'warning');
-	 	    	 }
+	    		 if(data.success){
+	    			 if(data.success===true){
+	    				 //
+		             }else{
+		                 $.messager.progress('close');
+		            	 $.messager.alert('操作出错！',data.message,'warning');
+		             }
+	    		 }
 	    	 }
 	     },
 
