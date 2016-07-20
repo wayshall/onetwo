@@ -141,7 +141,19 @@ helper.config = {
 		},
 		
 		submitEasyForm: function(config){
-	    	 var _config = config || {};
+	    	 var _config = $.extend({}, {
+	    		 autoClear: true,
+	    		 onSuccess: function(data){
+	    			 if(data.success===true && !!_config.autoClear){
+	                     $(_config.dataForm).form('reset');
+	                     if(_config.dataDialog)
+	                    	 $(_config.dataDialog).dialog('close');
+
+	                     $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
+	                     $(_config.datagrid || _config.treegrid).easyGrid('reload');
+	    			 }
+	    		 }
+	    	 }, config);
 	         
 	    	 $(_config.dataForm).form('submit',{
 	    		 url: $(_config.dataForm).attr('action'),
@@ -160,13 +172,10 @@ helper.config = {
 	                	 $.messager.alert('操作出错！',data.message,'warning');
 	                 }else{
 	                     $.messager.alert('操作成功！',data.message,'info');
-	                     
-	                     $(_config.dataForm).form('reset');
-	                     if(_config.dataDialog)
-	                    	 $(_config.dataDialog).dialog('close');
-	                     $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
-	                     $(_config.datagrid || _config.treegrid).easyGrid('reload');
 	                 }
+	                 if(_config.onSuccess){
+                    	 _config.onSuccess(data);
+                     }
 	             }
 	         });
 	     },

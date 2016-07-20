@@ -2,6 +2,7 @@ package org.onetwo.ext.security.mvc.args;
 
 import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,17 +26,13 @@ public class SecurityArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if(auth==null)
-			return null;
-		
 		Object result = null;
 		if(Authentication.class.isAssignableFrom(parameter.getParameterType())){
-			result = auth;
+			result = SecurityContextHolder.getContext().getAuthentication();
 		}else if(User.class.isAssignableFrom(parameter.getParameterType())){
-			result = auth.getPrincipal();
-		}else if(UserDetail.class.isAssignableFrom(parameter.getParameterType()) && UserDetail.class.isInstance(auth.getPrincipal())){
-			result = (UserDetail)auth.getPrincipal();
+			result = SecurityUtils.getCurrentLoginUser();
+		}else if(UserDetail.class.isAssignableFrom(parameter.getParameterType())){
+			result = (UserDetail)SecurityUtils.getCurrentLoginUser();
 		}
 		return result;
 	}
