@@ -10,6 +10,8 @@ public interface QueryAction {
 
 //	public ExtQuery build(Class<?> entityClass, String alias, Map<Object, Object> properties);
 	
+	public <T> T unique();
+	
 	public <T> T one();
 
 	public <T> List<T> list();

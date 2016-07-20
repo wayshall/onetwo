@@ -13,6 +13,7 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
+@SuppressWarnings("unchecked")
 public class QueryActionImpl implements QueryAction {
 
 	protected InnerBaseEntityManager baseEntityManager;
@@ -42,6 +43,11 @@ public class QueryActionImpl implements QueryAction {
 	
 	@Override
 	public <T> T one(){
+		checkOperation();
+		return (T)baseEntityManager.selectOne(getExtQuery());
+	}
+	@Override
+	public <T> T unique(){
 		checkOperation();
 		return (T)baseEntityManager.selectUnique(getExtQuery());
 	}

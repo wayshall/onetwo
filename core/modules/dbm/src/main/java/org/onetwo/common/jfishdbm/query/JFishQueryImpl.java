@@ -13,6 +13,7 @@ import org.onetwo.common.utils.Assert;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 
+@SuppressWarnings("unchecked")
 public class JFishQueryImpl implements JFishQuery {
 	private static final int INVALID_VALUE = -1;
 	private static final int INVALID_VALUE_MAX_RESULTS = 0;
@@ -86,8 +87,8 @@ public class JFishQueryImpl implements JFishQuery {
 	 */
 	@Override
 	public <T> T getSingleResult(){
-		String fname = this.getClass().getSimpleName()+".getSingleResult";
-		UtilTimerStack.push(fname);
+		/*String fname = this.getClass().getSimpleName()+".getSingleResult";
+		UtilTimerStack.push(fname);*/
 		
 		String sql = getSqlString();
 		DbmQueryValue params = this.getActualParameters(sql);
@@ -99,14 +100,13 @@ public class JFishQueryImpl implements JFishQuery {
 			result = this.JFishDaoImplementor.findUnique(params);
 		}
 		
-		UtilTimerStack.pop(fname);
+//		UtilTimerStack.pop(fname);
 		return result;
 	}
 
 	/****
 	 * 返回结果集，返回值不为null
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> getResultList(){
 		return (List<T>)getResultList(rowMapper);

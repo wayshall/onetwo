@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -46,6 +47,12 @@ public class AdminRoleServiceImpl {
     }
     
     public void save(AdminRole adminRole){
+    	int count = this.baseEntityManager.countRecord(AdminRole.class, 
+						"name", adminRole.getName())
+						.intValue();
+		if(count>0){
+			throw new ServiceException("添加失败：["+adminRole.getName()+"]的角色已存在，请检查！");
+		}
         Date now = new Date();
         adminRole.setCreateAt(now);
         adminRole.setUpdateAt(now);
@@ -58,6 +65,14 @@ public class AdminRoleServiceImpl {
     
     public void update(AdminRole adminRole){
         Assert.notNull(adminRole.getId(), "参数不能为null");
+        int count = this.baseEntityManager.countRecord(AdminRole.class, 
+													"name", adminRole.getName(), 
+													"id!=", adminRole.getId())
+													.intValue();
+		if(count>0){
+			throw new ServiceException("更新失败：["+adminRole.getName()+"]的角色已存在，请检查！");
+		}
+
         AdminRole dbAdminRole = loadById(adminRole.getId());
         ReflectUtils.copyIgnoreBlank(adminRole, dbAdminRole);
         dbAdminRole.setUpdateAt(new Date());
@@ -86,7 +101,7 @@ public class AdminRoleServiceImpl {
     						 .collect(Collectors.toList());
     }
     
-    public void saveUserRoles(long userId, Long[] roleIds){
+    public void saveUserRoles(long userId, Long... roleIds){
     	this.adminRoleDao.deleteUserRoles(userId);
     	Stream.of(roleIds).forEach(roleId->adminRoleDao.insertUserRole(userId, roleId));
     }
@@ -114,6 +129,15 @@ public class AdminRoleServiceImpl {
     	
 		Set<String> deletes = Sets.difference(Sets.newHashSet(existsPermCodes), Sets.newHashSet(assignPerms));
 		deletes.stream().forEach(code->adminRoleDao.deleteRolePermisssion(null, roleId, code));
+    }
+    
+    public AdminRole findByName(String roleName){
+    	return Querys.from(baseEntityManager, AdminRole.class)
+    					.where()
+    					.field("name").equalTo(roleName)
+    					.end()
+    					.toQuery()
+    					.one();
     }
 	
 }

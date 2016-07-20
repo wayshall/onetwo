@@ -18,6 +18,7 @@ import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 
+@SuppressWarnings("unchecked")
 public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -144,7 +145,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 				return ;
 			}
 		}
-		List datalist = createQuery(extQuery).setPageParameter(page).getResultList();
+		List<T> datalist = createQuery(extQuery).setPageParameter(page).getResultList();
 		if(!page.isAutoCount()){
 			page.setTotalCount(datalist.size());
 		}
