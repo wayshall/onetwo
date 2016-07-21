@@ -106,11 +106,15 @@ public class DictionaryServiceImpl {
 				throw new ServiceException("字典编码必须以所属类别编码为前缀：" + dictionary.getCode());
 			}
 		}*/
-		if(StringUtils.isNotBlank(dictionary.getParentCode())){
-			dictionary.setCode(dictionary.getParentCode()+"_"+dictionary.getValue());
+		String code = null;
+		if(StringUtils.isNotBlank(dictionary.getCode())){
+			code = dictionary.getCode();
+		}else if(StringUtils.isNotBlank(dictionary.getParentCode())){
+			code = dictionary.getParentCode()+"_"+dictionary.getValue();
 		}else{
-			dictionary.setCode(dictionary.getValue());
+			code =  dictionary.getValue();
 		}
+		dictionary.setCode(code.toUpperCase());
 	}
 	
 	public DataDictionary findByCode(String code){
