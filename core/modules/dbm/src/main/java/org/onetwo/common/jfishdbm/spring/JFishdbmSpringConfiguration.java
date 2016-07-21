@@ -7,7 +7,6 @@ import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
-import org.onetwo.common.jfishdbm.jdbc.BaseJdbcTemplateAspectProxy;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplateAspectProxy;
@@ -21,10 +20,12 @@ import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
 import org.onetwo.common.jfishdbm.support.DbmEntityManager;
 import org.onetwo.common.jfishdbm.support.DbmEntityManagerImpl;
 import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.common.spring.SpringUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -79,10 +80,15 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	@Bean
 	public DbmEntityManager jfishEntityManager() {
 		DbmEntityManagerImpl jem = new DbmEntityManagerImpl();
-		jem.setDbmDao(jfishDao());
+		DbmDaoImplementor dbmDao = jfishDao();
+		jem.setDbmDao(dbmDao);
 		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
+
+		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
+		DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
+		this.applicationContext.publishEvent(event);
 		return jem;
 	}
 	

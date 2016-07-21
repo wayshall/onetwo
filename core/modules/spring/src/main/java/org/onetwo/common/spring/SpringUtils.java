@@ -321,6 +321,20 @@ final public class SpringUtils {
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		return sbr;
 	}
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object applicationContext){
+		if(BeanDefinitionRegistry.class.isInstance(applicationContext)){
+			return (BeanDefinitionRegistry) applicationContext;
+		}
+		Object bf = applicationContext;
+		if(applicationContext instanceof AbstractApplicationContext){
+			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
+		}
+		if(bf==null || !BeanDefinitionRegistry.class.isInstance(bf)){
+			return null;
+		}
+		BeanDefinitionRegistry sbr = (BeanDefinitionRegistry) bf;
+		return sbr;
+	}
 	
 	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);

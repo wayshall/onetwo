@@ -86,6 +86,7 @@ function addTab(title, url){
     $('#menu_${menu.id}').tree({
         data: ${menu.toJson()},
         onClick: function(node){
+        	console.dir(node);
         	addTab(node.name, '${siteConfig.baseURL}'+node.url);
         }
     });

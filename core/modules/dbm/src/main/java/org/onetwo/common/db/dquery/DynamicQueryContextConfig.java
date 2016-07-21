@@ -1,6 +1,5 @@
 package org.onetwo.common.db.dquery;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,9 +24,8 @@ public class DynamicQueryContextConfig  {
 	}*/
 
 	@Bean
-	@Autowired
-	public DynamicQueryObjectRegister queryObjectFactoryManager(){
-		DynamicQueryObjectRegister queryFactory = new DynamicQueryObjectRegister();
+	public DynamicQueryObjectRegisterPostProcessor queryObjectFactoryManager(){
+		DynamicQueryObjectRegisterPostProcessor queryFactory = new DynamicQueryObjectRegisterPostProcessor();
 		/*queryFactory.setQueryObjectFactory(queryObjectFactory());
 		queryFactory.setBaseEntityManager(baseEntityManager);
 		queryFactory.setFileNamedQueryFactory(fileNamedQueryFactory);*/
