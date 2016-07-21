@@ -53,7 +53,7 @@
         
 	<#include "/web-admin/admin-role-edit-form.html">
     
-    <div id="assignPermission" class="easyui-dialog" title="分配角色" 
+    <div id="assignPermission" class="easyui-dialog" title="分配权限" 
             style="width:50%;height:80%;padding:10px 20px"
             data-options="closed:true, modal:true, buttons:'#assigRoleButtons'">
         <form id="assignForm" class="easyui-form" method="post">
@@ -64,6 +64,7 @@
         </form>
     </div>
     <div id="assigRoleButtons" >
+    	<a href="#" id="btnCascadeCheck" class="easyui-linkbutton" iconCls="" onclick="">设置级联选中</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="assignPermissions();">保存</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="closeAssignRole();">取消</a>
     </div>   
@@ -179,6 +180,14 @@
         //idField: 'id',
         toolbar: toolbar
     }); 
+    
+    var cascadeCheck = false;
+    $('#btnCascadeCheck').click(function(){
+   	 	 cascadeCheck = !cascadeCheck;
+    	 $('#permissionTree').tree('options').cascadeCheck = cascadeCheck;
+    	 $(this).text(cascadeCheck?'取消级联选中':'设置级联选中');
+    });
+    
  </script>
     </@override>
 </@extends>
