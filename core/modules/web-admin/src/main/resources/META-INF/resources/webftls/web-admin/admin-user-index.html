@@ -160,7 +160,7 @@
             handler:function(){
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
 
-                $('#dataForm').reset();
+                $('#dataForm').form('reset');
                 var url = '${siteConfig.baseURL}/web-admin/user.json';
                 $('#dataForm').attr('action', url);
                 $('#dataForm').find('input[name="_method"]').val('');
