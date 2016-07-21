@@ -14,6 +14,8 @@ public interface ResourceAdapter<T> {
 	
 	public List<String> readAsList();
 	
+	public String getPostfix();
+	
 //	public boolean isURL();
 
 }
