@@ -72,6 +72,7 @@
             handler:function(){
                 $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
 
+				$('#${dataFormName}').form('reset');
                 var url = '${'$'}{siteConfig.baseURL}${modulePath}.json';
                 $('#${dataFormName}').attr('action', url);
                 $('#${dataFormName}').find('input[name="_method"]').val('');
