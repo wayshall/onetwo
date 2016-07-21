@@ -843,8 +843,8 @@ public class FileUtils {
 		return packageName;
 	}
 	
-	public static Class loadClass(File file){
-		Class clazz = null;
+	public static Class<?> loadClass(File file){
+		Class<?> clazz = null;
 		String className = getPackageName(file)+"."+getFileNameWithoutExt(file.getName());
 		try {
 			clazz = Class.forName(className);
@@ -1113,13 +1113,13 @@ public class FileUtils {
 		return new ResourceAdapterImpl<T>(resource);
 	}
 	
-	public static <T> ResourceAdapter<T>[] adapterResources(T[] resource){
+	public static <T> ResourceAdapter<T>[] adapterResources(T[] resource, String postfix){
 		if(LangUtils.isEmpty(resource))
 			return (ResourceAdapter<T>[])EMPTY_RESOURCES;
 		ResourceAdapterImpl<T>[] reslist = new ResourceAdapterImpl[resource.length];
 		int index = 0;
 		for(T obj : resource){
-			reslist[index++] = new ResourceAdapterImpl<T>(obj);
+			reslist[index++] = new ResourceAdapterImpl<T>(obj, postfix);
 		}
 		return reslist;
 	}

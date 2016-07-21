@@ -176,7 +176,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	protected Map<String, PropertiesNamespaceInfo<T>> parseSqlFiles(ResourceAdapter<?>[] sqlfileArray){
 		if(LangUtils.isEmpty(sqlfileArray)){
 			logger.info("no named sql file found.");
-			return Collections.EMPTY_MAP;
+			return Collections.emptyMap();
 		}
 		
 //		Map<String, PropertiesNamespaceInfo<T>> nsproperties = LangUtils.newHashMap(sqlfileArray.length);
@@ -237,10 +237,11 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	
 	protected String getFileNameNoJfishSqlPostfix(ResourceAdapter<?> f){
 		String fname = f.getName();
-		if(!fname.endsWith(SqlFileScanner.JFISH_SQL_POSTFIX)){
+		String postfix = f.getPostfix();
+		if(!fname.endsWith(postfix)){
 			return fname;
 		}else{
-			return fname.substring(0, fname.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());
+			return fname.substring(0, fname.length()-postfix.length());
 		}
 	}
 
@@ -404,7 +405,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		private ClassLoader classLoader = FileUtils.getClassLoader();
 		private Class<T> propertyBeanClass;
 		private boolean watchSqlFile;
-		private String postfix = SqlFileScanner.JFISH_SQL_POSTFIX;
+		private String postfix = SqlFileScanner.SQL_POSTFIX;
 		
 		/*public String getDir() {
 			return dir;

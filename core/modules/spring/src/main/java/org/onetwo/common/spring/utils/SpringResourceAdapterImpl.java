@@ -19,6 +19,10 @@ public class SpringResourceAdapterImpl extends ResourceAdapterImpl<Resource> {
 		super(resource);
 	}
 	
+	public SpringResourceAdapterImpl(Resource resource, String postfix) {
+		super(resource, postfix);
+	}
+
 	@Override
 	public List<String> readAsList(){
 		if(isSupportedToFile()){

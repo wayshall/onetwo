@@ -3,18 +3,33 @@ package org.onetwo.common.propconf;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.file.FileUtils;
 
 public class ResourceAdapterImpl<T> implements ResourceAdapter<T> {
 
 	protected final T resource;
+	protected String postfix;
 	
 	public ResourceAdapterImpl(T resource) {
 		super();
 		this.resource = resource;
 	}
-
 	
+	public ResourceAdapterImpl(T resource, String postfix) {
+		super();
+		this.resource = resource;
+		this.postfix = postfix;
+	}
+
+
+	public String getPostfix() {
+		if(StringUtils.isBlank(postfix)){
+			return FileUtils.getExtendName(getName());
+		}
+		return postfix;
+	}
+
 	@Override
 	public List<String> readAsList(){
 		if(isSupportedToFile())

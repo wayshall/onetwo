@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
+import org.onetwo.common.db.sqlext.ExtQuery.K;
+import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -43,7 +45,7 @@ public class AdminRoleServiceImpl {
     }
     
     public List<AdminRole> findByStatus(CommonStatus status, String appCode){
-    	return baseEntityManager.findList(AdminRole.class, "status", status, "appCode", appCode);
+    	return baseEntityManager.findList(AdminRole.class, "status", status, "appCode", appCode, K.IF_NULL, IfNull.Ignore);
     }
     
     public void save(AdminRole adminRole){
