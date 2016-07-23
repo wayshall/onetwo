@@ -290,6 +290,9 @@ abstract public class AbstractBaseController {
 	public UserDetail getCurrentLoginUser(){
 		return checkAndGetCurrentLoginUser(false);
 	}
+	public <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz){
+		return checkAndGetCurrentLoginUser(clazz, false);
+	}
 
 	protected BootSiteConfig getBootSiteConfig() {
 		return bootSiteConfig;

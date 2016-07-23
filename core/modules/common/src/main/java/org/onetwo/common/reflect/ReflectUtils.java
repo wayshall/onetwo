@@ -322,12 +322,12 @@ public class ReflectUtils {
 		return StringUtils.join(list, separator);
 	}
 
-	public static <T> Class<T> getSuperClassGenricType(final Class clazz) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz) {
 		return getSuperClassGenricType(clazz, Object.class);
 	}
 
-	public static <T> Class<T> getSuperClassGenricType(final Class clazz,
-			final Class stopClass) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz,
+			final Class<?> stopClass) {
 		return getSuperClassGenricType(clazz, 0, stopClass);
 	}
 
@@ -339,8 +339,8 @@ public class ReflectUtils {
 	 * @param stopClass
 	 * @return
 	 */
-	public static Class getSuperClassGenricType(final Class clazz,
-			final int index, final Class stopClass) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz,
+			final int index, final Class<?> stopClass) {
 		if(clazz.equals(stopClass))
 			return clazz;
 		
@@ -375,14 +375,14 @@ public class ReflectUtils {
 			return Object.class;
 		}
 
-		return (Class) params[index];
+		return (Class<?>) params[index];
 	}
 
 
-	public static Class getGenricType(final Object obj, final int index) {
+	public static Class<?> getGenricType(final Object obj, final int index) {
 		return getGenricType(obj, index, Object.class);
 	}
-	public static Class getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
+	public static Class<?> getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
 
 		Class clazz = getObjectClass(obj);
 		Type genType = null;

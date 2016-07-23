@@ -1,10 +1,10 @@
 
 package org.onetwo.common.watch;
 
-import java.io.File;
+import org.onetwo.common.propconf.ResourceAdapter;
 
 
 public interface FileChangeListener
 {
-	public void fileChanged(File file);
+	public void fileChanged(ResourceAdapter<?> file);
 }

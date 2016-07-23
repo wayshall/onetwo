@@ -20,7 +20,8 @@ import freemarker.template.TemplateException;
 public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
-	private Map<String, Object> fishFreemarkerVariables = new HashMap<String, Object>();
+	private Map<String, Object> freemarkerVariablesHoder;
+	private Map<String, Object> extFreemarkerVariables = new HashMap<String, Object>();
 //	private ResourceLoader classPathResourceLoader = new DefaultResourceLoader();
 	
 	public PluginFreeMarkerConfigurer addDirective(AbstractDirective directive){
@@ -28,34 +29,39 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	}
 
 	public PluginFreeMarkerConfigurer addDirective(AbstractDirective directive, boolean override){
-		if(!override && this.fishFreemarkerVariables.containsKey(directive.getDirectiveName()))
+		if(!override && this.freemarkerVariablesHoder.containsKey(directive.getDirectiveName()))
 			throw new BaseException("the freemarker directive name has exist : " + directive.getDirectiveName());
-		this.fishFreemarkerVariables.put(directive.getDirectiveName(), directive);
+		this.freemarkerVariablesHoder.put(directive.getDirectiveName(), directive);
 		return this;
 	}
 
 	public void afterPropertiesSet() throws IOException, TemplateException {
-		if(this.fishFreemarkerVariables==null)
-			this.fishFreemarkerVariables = new HashMap<String, Object>();
+		if(this.freemarkerVariablesHoder==null)
+			this.freemarkerVariablesHoder = new HashMap<String, Object>();
 
-		this.fishFreemarkerVariables.put(ExtendsDirective.DIRECTIVE_NAME, new ExtendsDirective());
-		this.fishFreemarkerVariables.put(DefineDirective.DIRECTIVE_NAME, new DefineDirective());
-		this.fishFreemarkerVariables.put(OverrideDirective.DIRECTIVE_NAME, new OverrideDirective());
-		this.fishFreemarkerVariables.put(ProfileDirective.DIRECTIVE_NAME, new ProfileDirective());
+		this.freemarkerVariablesHoder.put(ExtendsDirective.DIRECTIVE_NAME, new ExtendsDirective());
+		this.freemarkerVariablesHoder.put(DefineDirective.DIRECTIVE_NAME, new DefineDirective());
+		this.freemarkerVariablesHoder.put(OverrideDirective.DIRECTIVE_NAME, new OverrideDirective());
+		this.freemarkerVariablesHoder.put(ProfileDirective.DIRECTIVE_NAME, new ProfileDirective());
 
+		this.freemarkerVariablesHoder.putAll(extFreemarkerVariables);
 		/*this.fishFreemarkerVariables.put(DataGridDirective.DIRECTIVE_NAME, new DataGridDirective());
 		this.fishFreemarkerVariables.put(DataRowDirective.DIRECTIVE_NAME, new DataRowDirective());
 		this.fishFreemarkerVariables.put(DataFieldDirective.DIRECTIVE_NAME, new DataFieldDirective());
 		this.fishFreemarkerVariables.put(DataComponentDirective.DIRECTIVE_NAME, new DataComponentDirective());*/
 
-		super.setFreemarkerVariables(this.fishFreemarkerVariables);
+		super.setFreemarkerVariables(this.freemarkerVariablesHoder);
 		super.afterPropertiesSet();
 
 	}
 	
 
 	public void setFreemarkerVariables(Map<String, Object> variables) {
-		this.fishFreemarkerVariables = variables;
+		this.freemarkerVariablesHoder = variables;
+	}
+	
+	public void setFreemarkerVariable(String name, Object value){
+		this.extFreemarkerVariables.put(name, value);
 	}
 	
 	protected void postProcessConfiguration(Configuration config) throws IOException, TemplateException {
@@ -66,7 +72,7 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	}
 
 	protected Map<String, Object> getFreemarkerVariables() {
-		return fishFreemarkerVariables;
+		return freemarkerVariablesHoder;
 	}
 	
 	/*@Override

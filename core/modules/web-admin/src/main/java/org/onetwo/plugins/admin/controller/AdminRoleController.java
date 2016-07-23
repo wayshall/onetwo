@@ -3,7 +3,7 @@
 package org.onetwo.plugins.admin.controller;
 
 import org.onetwo.common.utils.Page;
-import org.onetwo.easyui.EasyPage;
+import org.onetwo.easyui.EasyDataGrid;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.AdminRoleMgr;
 import org.onetwo.plugins.admin.entity.AdminRole;
@@ -25,11 +25,11 @@ public class AdminRoleController extends WebAdminBaseController {
     
     @ByPermissionClass(AdminRoleMgr.class)
     @RequestMapping(method=RequestMethod.GET)
-    public ModelAndView index(EasyPage<AdminRole> easyPage, AdminRole adminRole){
+    public ModelAndView index(EasyDataGrid<AdminRole> easyPage, AdminRole adminRole){
         return responsePageOrData("/admin-role-index", ()->{
         			Page<AdminRole> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
                     adminRoleServiceImpl.findPage(page, adminRole);
-                    return EasyPage.create(page);
+                    return EasyDataGrid.create(page);
                 });
     }
     

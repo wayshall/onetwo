@@ -110,7 +110,12 @@ public class DictionaryServiceImpl {
 		if(StringUtils.isNotBlank(dictionary.getCode())){
 			code = dictionary.getCode();
 		}else if(StringUtils.isNotBlank(dictionary.getParentCode())){
-			code = dictionary.getParentCode()+"_"+dictionary.getValue();
+			String prefix = dictionary.getParentCode()+"_";
+			if(dictionary.getValue().startsWith(prefix)){
+				code = dictionary.getValue();
+			}else{
+				code = prefix+dictionary.getValue();
+			}
 		}else{
 			code =  dictionary.getValue();
 		}
