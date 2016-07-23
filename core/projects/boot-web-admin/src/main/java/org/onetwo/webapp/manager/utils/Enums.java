@@ -157,21 +157,6 @@ final public class Enums {
 		
 	}
 	
-	public static enum UserType {
-		COMMON("普通用户"),
-		BROKER("经纪人");
-		
-		final private String label;
-
-		private UserType(String label) {
-			this.label = label;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-		
-	}
 	
 	public static enum UserStatus {
 		NORMAL("正常"),

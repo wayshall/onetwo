@@ -33,6 +33,7 @@ public interface QueryBuilder {
 	public DefaultQueryBuilderField field(String... fields);*/
 
 	public QueryBuilder select(String... fields);
+	public QueryBuilderImpl unselect(String...fields);
 
 	public QueryBuilder limit(int first, int size);
 

@@ -136,10 +136,15 @@ public class QueryBuilderImpl implements QueryBuilder {
 //		this.throwIfHasBuild();
 		return new DefaultQueryBuilderField(this, fields);
 	}*/
-	
+
 	@Override
 	public QueryBuilderImpl select(String...fields){
 		this.params.put(K.SELECT, fields);
+		return self();
+	}
+	@Override
+	public QueryBuilderImpl unselect(String...fields){
+		this.params.put(K.UNSELECT, fields);
 		return self();
 	}
 	

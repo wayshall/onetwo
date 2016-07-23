@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.plugins.admin.dao.AdminPermissionDao;
 import org.onetwo.plugins.admin.entity.AdminPermission;
@@ -15,23 +16,37 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
-public class AdminUserDetailServiceImpl implements UserDetailsService {
+@SuppressWarnings("unchecked")
+public class AdminUserDetailServiceImpl<T extends AdminUser> implements UserDetailsService {
 
     @Autowired
-    private BaseEntityManager baseEntityManager;
+    protected BaseEntityManager baseEntityManager;
 	@Autowired
-	private AdminPermissionDao adminPermissionDao;
+	protected AdminPermissionDao adminPermissionDao;
+	
+	protected Class<T> userDetailClass;
+
+	public AdminUserDetailServiceImpl() {
+		super();
+		this.userDetailClass = (Class<T>)ReflectUtils.getSuperClassGenricType(this.getClass());
+	}
+
+	public AdminUserDetailServiceImpl(Class<T> userDetailClass) {
+		super();
+		this.userDetailClass = userDetailClass;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		List<AdminUser> users = baseEntityManager.findList(AdminUser.class, "userName", username);
-		AdminUser user = users.stream().findFirst().orElseThrow( ()-> new UsernameNotFoundException(username));
+		T user = fetUserByUserName(username);
 		
+		List<GrantedAuthority> authes = fetchUserGrantedAuthorities(user);
+		UserDetails userDetail = buildUserDetail(user, authes);
+		return userDetail;
+	}
+	
+	protected List<GrantedAuthority> fetchUserGrantedAuthorities(T user){
 		List<GrantedAuthority> authes = Collections.emptyList();
 		if(user.getId().longValue()==LoginUserDetails.ROOT_USER_ID){
 			List<AdminPermission> perms = adminPermissionDao.findAppPermissions(null);
@@ -42,6 +57,16 @@ public class AdminUserDetailServiceImpl implements UserDetailsService {
 			authes = perms.stream().map(perm->new SimpleGrantedAuthority(perm.getCode()))
 						.collect(Collectors.toList());
 		}
+		return authes;
+	}
+	
+	protected T fetUserByUserName(String username){
+		List<T> users = baseEntityManager.findList(userDetailClass, "userName", username);
+		T user = users.stream().findFirst().orElseThrow( ()-> new UsernameNotFoundException(username));
+		return user;
+	}
+	
+	protected UserDetails buildUserDetail(T user, List<GrantedAuthority> authes){
 		UserDetails userDetail = new LoginUserDetails(user.getId(), user.getUserName(), user.getPassword(), authes);
 		return userDetail;
 	}

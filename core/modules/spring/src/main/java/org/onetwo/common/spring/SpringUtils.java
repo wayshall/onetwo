@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
@@ -43,6 +44,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -79,7 +81,37 @@ final public class SpringUtils {
 		}
 		setProfiles(newProfiles);
 	}
-
+	
+	public static class WithAnnotationBeanData<T extends Annotation> {
+		final private T annotation;
+		final private String name;
+		final private Object bean;
+		public WithAnnotationBeanData(T annotation, String name, Object bean) {
+			super();
+			this.annotation = annotation;
+			this.name = name;
+			this.bean = bean;
+		}
+		public T getAnnotation() {
+			return annotation;
+		}
+		public String getName() {
+			return name;
+		}
+		public Object getBean() {
+			return bean;
+		}
+		
+	}
+	public static <T extends Annotation> List<WithAnnotationBeanData<T>> getBeansWithAnnotation(ApplicationContext applicationContext, Class<T> annotationType){
+		Map<String, Object> beans = applicationContext.getBeansWithAnnotation(annotationType);
+		return beans.entrySet().stream().map(e->{
+			T annotation = AnnotationUtils.findAnnotation(e.getValue().getClass(), annotationType);
+			WithAnnotationBeanData<T> data = new WithAnnotationBeanData<T>(annotation, e.getKey(), e.getValue());
+			return data;
+		})
+		.collect(Collectors.toList());
+	}
 
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);

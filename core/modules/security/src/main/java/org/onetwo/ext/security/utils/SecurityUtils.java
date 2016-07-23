@@ -51,9 +51,12 @@ final public class SecurityUtils {
 		return KEYWORDS.stream().filter(key->authority.startsWith(key))
 						.findAny().isPresent();
 	}
-	
+
 	public static LoginUserDetails getCurrentLoginUser(){
 		return (LoginUserDetails)getCurrentLoginUser(SecurityContextHolder.getContext());
+	}
+	public static <T> T getCurrentLoginUser(Class<T> clazz){
+		return clazz.cast(getCurrentLoginUser());
 	}
 	public static LoginUserDetails getCurrentLoginUser(SecurityContext context){
 		Authentication auth = context.getAuthentication();

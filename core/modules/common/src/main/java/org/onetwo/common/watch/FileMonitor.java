@@ -1,19 +1,19 @@
 package org.onetwo.common.watch;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.propconf.ResourceAdapter;
 import org.slf4j.Logger;
 
 
 @SuppressWarnings("rawtypes")
 public class FileMonitor {
-	protected final Logger logger = MyLoggerFactory.getLogger(FileMonitor.class);
+	protected final Logger logger = JFishLoggerFactory.getLogger(FileMonitor.class);
 	// private static final FileMonitor instance = new FileMonitor();
 	private Timer timer;
 	private Map timerEntries;
@@ -29,7 +29,7 @@ public class FileMonitor {
 	 */
 	
 
-	public void addFileChangeListener(FileChangeListener listener, File file, long period) {
+	public void addFileChangeListener(FileChangeListener listener, ResourceAdapter<?> file, long period) {
 		addFileChangeListener(listener, file, period, delay);
 	}
 
@@ -41,7 +41,7 @@ public class FileMonitor {
 	 * @param delay timeunit second
 	 */
 	@SuppressWarnings("unchecked")
-	public void addFileChangeListener(FileChangeListener listener, File file, long period, long delay) {
+	public void addFileChangeListener(FileChangeListener listener, ResourceAdapter<?> file, long period, long delay) {
 		this.removeFileChangeListener(file.getName());
 
 		logger.info("Watching " + file.getName());
@@ -71,25 +71,25 @@ public class FileMonitor {
 
 	private static class FileMonitorTask extends TimerTask {
 		private FileChangeListener listener;
-		private File monitoredFile;
+		private ResourceAdapter<?> monitoredFile;
 		private long lastModified;
 
-		public FileMonitorTask(FileChangeListener listener, String fileName) {
-			this(listener, new File(fileName));
-		}
+		/*public FileMonitorTask(FileChangeListener listener, String fileName) {
+			this(listener, FileUtils.adapterResource(new File(fileName)));
+		}*/
 
-		public FileMonitorTask(FileChangeListener listener, File file) {
+		public FileMonitorTask(FileChangeListener listener, ResourceAdapter<?> file) {
 			this.listener = listener;
 			this.monitoredFile = file;
-			if (!this.monitoredFile.exists()) {
+			if (!this.monitoredFile.getFile().exists()) {
 				return;
 			}
 
-			this.lastModified = this.monitoredFile.lastModified();
+			this.lastModified = this.monitoredFile.getFile().lastModified();
 		}
 
 		public void run() {
-			long latestChange = this.monitoredFile.lastModified();
+			long latestChange = this.monitoredFile.getFile().lastModified();
 			if (this.lastModified != latestChange) {
 				this.lastModified = latestChange;
 

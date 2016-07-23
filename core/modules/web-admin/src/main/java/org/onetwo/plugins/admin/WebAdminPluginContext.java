@@ -7,11 +7,14 @@ import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.plugins.admin.controller.LoginController;
+import org.onetwo.plugins.admin.entity.AdminUser;
+import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
@@ -23,6 +26,12 @@ public class WebAdminPluginContext {
 	@PostConstruct
 	public void init(){
 		this.securityConfig.setAfterLoginUrl("/web-admin/index");
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(UserDetailsService.class)
+	public UserDetailsService userDetailsService(){
+		return new AdminUserDetailServiceImpl<AdminUser>(AdminUser.class);
 	}
 	
 	@Bean

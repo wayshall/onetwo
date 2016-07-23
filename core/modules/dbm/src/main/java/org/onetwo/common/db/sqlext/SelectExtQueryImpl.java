@@ -207,12 +207,23 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			select.append(" ");
 		} else if(StringUtils.isNotBlank(countValue)){
 			select.append("count(").append(countValue).append(") ");
-		} else {
+			
+		} else if(params.containsKey(K.UNSELECT)){
+			List<String> unselectFields = CUtils.tolist(params.remove(K.UNSELECT), true);
+			List<String> fields = getSelectFieldsWithExclude(unselectFields);
+			String str = org.apache.commons.lang3.StringUtils.join(fields, ", ");
+			select.append(str).append(" ");
+			
+		}else {
 			select.append(getDefaultSelectFields(entityClass, this.alias)).append(" ");
 		}
 		
 		select.append("from ").append(getFromName(entityClass)).append(" ").append(this.alias).append(" ");
 		return this;
+	}
+	
+	protected List<String> getSelectFieldsWithExclude(List<String> unselectFields){
+		throw new UnsupportedOperationException();
 	}
 
 	
