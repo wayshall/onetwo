@@ -16,6 +16,7 @@ import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -37,6 +38,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	private String authenticationFailureUrl;
 	private String defaultTargetUrl;
 	private boolean alwaysUse = false;
+//	private MessageSourceAccessor exceptionMessageAccessor;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -54,6 +56,9 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	    this.alwaysUse = alwaysUse;
     }
 
+	/*public void setExceptionMessageAccessor(MessageSourceAccessor exceptionMessageAccessor) {
+		this.exceptionMessageAccessor = exceptionMessageAccessor;
+	}*/
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(authenticationFailureUrl!=null){
@@ -90,7 +95,11 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
             ServletException {
 		logger.error("login error", exception);
 		if(RequestUtils.isAjaxRequest(request)){
-			SimpleResultBuilder builder = WebResultCreator.creator().error("验证失败："+exception.getMessage());
+			String msg = exception.getMessage();
+			if(BadCredentialsException.class.isInstance(exception)){
+				msg = "用户密码不匹配！";
+			}
+			SimpleResultBuilder builder = WebResultCreator.creator().error("验证失败："+msg);
 			
 			SimpleDataResult<?> rs = buildErrorCode(builder, request, exception).buildResult();
 			String text = mapper.toJson(rs);
