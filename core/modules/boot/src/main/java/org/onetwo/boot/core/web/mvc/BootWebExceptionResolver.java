@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.onetwo.boot.core.BootContextConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
+import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
@@ -32,9 +32,6 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -60,16 +57,17 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected final Logger mailLogger = JFishLoggerFactory.findLogger("mailLogger");
 	
 //	resouce: exception-messages
-	@Qualifier(BootContextConfig.BEAN_EXCEPTION_MESSAGE)
+	/*@Qualifier(BootContextConfig.BEAN_EXCEPTION_MESSAGE)
 	@Autowired
-	private MessageSource exceptionMessage;
+	private MessageSource exceptionMessage;*/
 	
 	private List<String> notifyThrowables;// = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
 	
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
-	
-	private MessageSourceAccessor exceptionMessageAccessor;
+
+	@Autowired(required=false)
+	private ExceptionMessageAccessor exceptionMessageAccessor;
 	
 //	protected String defaultRedirect;
 	
@@ -80,7 +78,6 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
-		exceptionMessageAccessor = new MessageSourceAccessor(exceptionMessage);
 	}
 	
 	protected void initResolver(){
@@ -301,7 +298,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected String getMessage(String code, Object[] args, String defaultMessage, Locale locale){
-		if(this.exceptionMessage==null)
+		if(this.exceptionMessageAccessor==null)
 			return "";
 		try {
 //			return this.exceptionMessage.getMessage(code, args, defaultMessage, locale);
@@ -319,7 +316,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected String getMessage(String code, Object[] args) {
-		if(this.exceptionMessage==null)
+		if(this.exceptionMessageAccessor==null)
 			return "";
 		try {
 //			return this.exceptionMessage.getMessage(code, args, getLocale());
@@ -331,14 +328,6 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		
 	}
 
-	protected MessageSource getExceptionMessage() {
-		return exceptionMessage;
-	}
-
-	public void setExceptionMessage(MessageSource exceptionMessage) {
-		this.exceptionMessage = exceptionMessage;
-	}
-	
 	protected static class ErrorMessage {
 		private String code;
 		private String mesage;

@@ -34,12 +34,14 @@ $(function(){
 <body>
     <div class="easyui-layout" style="width:100%;height:100%;">
         <div data-options="region:'north'" style="height:50px">
-            <div>${adminTitle}</div>
-            <div style="float:right; margin-right: 20px;">
-                <form id="logoutForm" action="${securityConfig.userLogoutUrl}" method="post">
-                    <@security.csrfInput/>
-                    <a id="logoutButton" href="javascript:void(0);" class="easyui-linkbutton" style="width:80px" >注&nbsp;销</a>
-                </form>
+            <div style="display: inline;">
+            	<div style="padding: 10px;position: relative; float: left;">欢迎你，${loginUserInfo.userName}!</div>
+	            <div style="float:right; margin-right: 20px;padding: 10px;">
+	                <form id="logoutForm" action="${securityConfig.userLogoutUrl}" method="post">
+	                    <@security.csrfInput/>
+	                    <a id="logoutButton" href="javascript:void(0);" class="easyui-linkbutton" style="width:80px" >注&nbsp;销</a>
+	                </form>
+	            </div>
             </div>
         </div>
         <!-- <div data-options="region:'east',split:true" title="East" style="width:180px;">
