@@ -2,6 +2,7 @@ package org.onetwo.common.jfishdbm.query;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.onetwo.common.db.sqlext.ExtQueryListener;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -47,6 +48,16 @@ public class JFishExtQueryImpl extends SelectExtQueryImpl {
 
 	protected String getDefaultSelectFields(Class<?> entityClass, String alias){
 		return alias + ".*";
+	}
+
+	protected List<String> getSelectFieldsWithExclude(List<String> unselectFields){
+		return entry.getMappedFields().entrySet().stream().filter(e->{
+			return !unselectFields.contains(e.getKey());
+		})
+		.map(e->{
+			return this.getSelectFieldName(e.getValue().getName());
+		})
+		.collect(Collectors.toList());
 	}
 	
 	@Override

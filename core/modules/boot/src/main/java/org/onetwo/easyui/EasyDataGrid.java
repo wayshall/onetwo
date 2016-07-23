@@ -9,26 +9,26 @@ import org.onetwo.common.utils.Page;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class EasyPage<T> {
+public class EasyDataGrid<T> {
 	private static final String MYBAITS_PAGE_SUPPORT = "com.github.pagehelper.Page";
 
-	public static <E> EasyPage<E> create(){
-		EasyPage<E> page = new EasyPage<>();
+	public static <E> EasyDataGrid<E> create(){
+		EasyDataGrid<E> page = new EasyDataGrid<>();
 		return page;
 	}
-	public static <E> EasyPage<E> create(List<E> rows){
-		EasyPage<E> page = new EasyPage<>(rows);
+	public static <E> EasyDataGrid<E> create(List<E> rows){
+		EasyDataGrid<E> page = new EasyDataGrid<>(rows);
 		return page;
 	}
-	public static <E, S> EasyPage<E> create(List<E> rows, Page<S> p){
-		EasyPage<E> epage = new EasyPage<>(rows);
+	public static <E, S> EasyDataGrid<E> create(List<E> rows, Page<S> p){
+		EasyDataGrid<E> epage = new EasyDataGrid<>(rows);
 		epage.setPage(p.getPageNo());
 		epage.setPageSize(p.getPageSize());
 		epage.setTotal(p.getTotalCount());
 		return epage;
 	}
-	public static <E> EasyPage<E> create(Page<E> p){
-		EasyPage<E> page = new EasyPage<>(p.getResult());
+	public static <E> EasyDataGrid<E> create(Page<E> p){
+		EasyDataGrid<E> page = new EasyDataGrid<>(p.getResult());
 		page.setPage(p.getPageNo());
 		page.setPageSize(p.getPageSize());
 		page.setTotal(p.getTotalCount());
@@ -44,13 +44,14 @@ public class EasyPage<T> {
 	
 	protected boolean pagination = true;
 	
-	public EasyPage() {
+	public EasyDataGrid() {
 		super();
 	}
 
-	public EasyPage(List<T> rows) {
+	public EasyDataGrid(List<T> rows) {
 		super();
 		setRows(rows);
+		setTotal(rows.size());
 	}
 	
 	public <E> Page<E> toPage(){
@@ -61,7 +62,7 @@ public class EasyPage<T> {
 		return pageObj;
 	}
 	
-	public EasyPage<T> fromPage(Page<T> p){
+	public EasyDataGrid<T> fromPage(Page<T> p){
 		setPage(p.getPageNo());
 		setPageSize(p.getPageSize());
 		setTotal(p.getTotalCount());

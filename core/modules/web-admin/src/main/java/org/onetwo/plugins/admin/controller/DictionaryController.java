@@ -10,7 +10,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.MappableMap;
 import org.onetwo.easyui.EasyModel;
-import org.onetwo.easyui.EasyPage;
+import org.onetwo.easyui.EasyDataGrid;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.DictMgr;
 import org.onetwo.plugins.admin.entity.DataDictionary;
@@ -39,7 +39,7 @@ public class DictionaryController extends WebAdminBaseController implements Date
 						.mapText("name")
 						.mapIsStateOpen(src->false)
 						.build(page.getResult());
-				EasyPage<MappableMap> easyPage = EasyPage.create(districtMaps, page);
+				EasyDataGrid<MappableMap> easyPage = EasyDataGrid.create(districtMaps, page);
 				return easyPage;
 			}
 		);

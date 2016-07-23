@@ -35,7 +35,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	public static final String EQUALS_MARK = "=";
 //	public static final String IGNORE_NULL_KEY = "ignore.null";
 
-	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	static protected final Logger logger = JFishLoggerFactory.getLogger(NamespacePropertiesFileManagerImpl.class);
 	
 	private FileWatcher fileMonitor;
 	protected JFishPropertyConf<T> conf;
@@ -48,12 +48,13 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 	private SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();
 	final private NamespacePropertiesFileListener<T> listener;
 	
+	@SuppressWarnings("unchecked")
 	public NamespacePropertiesFileManagerImpl(JFishPropertyConf<T> conf, NamespacePropertiesFileListener<T> listener) {
 //		super(conf);
 		this.conf = conf;
 		if(conf!=null && conf.getPropertyBeanClass()==null){
-			Class<T> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), NamespacePropertiesFileManagerImpl.class);
-			conf.setPropertyBeanClass(clz);
+			Class<?> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), NamespacePropertiesFileManagerImpl.class);
+			conf.setPropertyBeanClass((Class<T>)clz);
 		}
 		this.listener = listener;
 	}
@@ -146,9 +147,9 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		this.fileMonitor.watchFile(period, new FileChangeListener() {
 			
 			@Override
-			public void fileChanged(File file) {
+			public void fileChanged(ResourceAdapter<?> file) {
 				try {
-					reloadFile(FileUtils.adapterResource(file));
+					reloadFile(file);
 				} catch (Exception e) {
 					logger.error("watch sql file error: " + e.getMessage(), e);
 				}
@@ -362,7 +363,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			}
 			this.namedProperties.put(name, info);
 			E newE = this.namedProperties.get(name);
-			System.out.println("newE:"+newE);
+			logger.info("newE:"+newE);
 		}
 		@Override
 		public boolean isGlobal() {

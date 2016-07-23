@@ -66,6 +66,7 @@ public interface JFishMappedEntry extends JFishMappedEntryMeta {
 	public JdbcStatementContext<List<Object[]>> makeDymanicUpdate(Object entity);
 
 	public Map<String, AbstractMappedField> getMappedFields();
+	public Map<String, AbstractMappedField> getMappedColumns();
 
 	/*public boolean isQueryableOnly();
 

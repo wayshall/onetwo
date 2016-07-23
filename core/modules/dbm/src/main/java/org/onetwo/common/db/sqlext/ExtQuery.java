@@ -41,6 +41,7 @@ public interface ExtQuery {
 //		public static final String RAW_QL = ":raw-ql";
 
 		public static final String SELECT = ":select";
+		public static final String UNSELECT = ":unselect";
 		public static final String SQL_SELECT = ":sql-select";
 		public static final String DISTINCT = ":distinct";
 		public static final String COUNT = ":count";

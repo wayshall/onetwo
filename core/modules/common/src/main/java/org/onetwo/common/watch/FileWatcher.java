@@ -1,12 +1,10 @@
 package org.onetwo.common.watch;
 
-import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.list.JFishList;
@@ -20,7 +18,7 @@ import org.slf4j.Logger;
  */
 public class FileWatcher {
 	private static final int DEFAULT_INIT_DELAY = 3;
-	private static final int DEFAULT_THREAD_COUNT = 2;
+	private static final int DEFAULT_THREAD_COUNT = 1;
 	
 	public static final FileWatcher GLOBAL_WATCHER = newWatcher(DEFAULT_THREAD_COUNT);
 	
@@ -64,7 +62,7 @@ public class FileWatcher {
 			fileStates = JFishList.newList(files.length);
 			for(ResourceAdapter<?> file : files){
 				if(file.isSupportedToFile())
-					fileStates.add(new FileState(file.getFile()));
+					fileStates.add(new FileState(file));
 			}
 			this.listener = listener;
 		}
@@ -83,7 +81,7 @@ public class FileWatcher {
 
 				@Override
 				protected void doIt(FileState element) throws Exception {
-					str.append(beforeElement).append(element.file.getPath());
+					str.append(beforeElement).append(element.file.getFile().getPath());
 				}
 				
 			});
@@ -93,15 +91,15 @@ public class FileWatcher {
 	}
 	
 	private static class FileState {
-		private File file;
+		private ResourceAdapter<?> file;
 		private long lastModified;
-		private FileState(File file) {
+		private FileState(ResourceAdapter<?> file) {
 			super();
 			this.file = file;
-			this.lastModified = file.lastModified();
+			this.lastModified = file.getFile().lastModified();
 		}
 		public boolean isModified(){
-			long latestChange = this.file.lastModified();
+			long latestChange = this.file.getFile().lastModified();
 			if (this.lastModified != latestChange) {
 				this.lastModified = latestChange;
 				return true;

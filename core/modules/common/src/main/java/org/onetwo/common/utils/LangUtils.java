@@ -389,7 +389,7 @@ public class LangUtils {
 		return SIMPLE_CLASS.contains(obj.getClass());
 	}
 	
-	public static boolean isTimeClass(Class clazz){
+	public static boolean isTimeClass(Class<?> clazz){
 		if(clazz==null)
 			return false;
 		return Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz);
