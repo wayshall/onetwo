@@ -2,6 +2,7 @@ package org.onetwo.plugins.admin;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
@@ -19,13 +20,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
 public class WebAdminPluginContext {
-	
+
 	@Autowired
 	private SecurityConfig securityConfig;
+	@Autowired
+	private BootSiteConfig bootSiteConfig;
 	
 	@PostConstruct
 	public void init(){
-		this.securityConfig.setAfterLoginUrl("/web-admin/index");
+		this.securityConfig.setAfterLoginUrl(bootSiteConfig.getBaseURL()+"/web-admin/index");
 	}
 	
 	@Bean

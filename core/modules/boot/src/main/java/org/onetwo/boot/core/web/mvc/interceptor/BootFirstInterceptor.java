@@ -8,7 +8,6 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.springframework.core.Ordered;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 
