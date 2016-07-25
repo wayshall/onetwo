@@ -70,6 +70,7 @@ $(function(){
 function addTab(title, url){
 	if(!url)
 		return ;
+	url = '${siteConfig.baseURL}'+ url;
     if ($('#mainContent').tabs('exists', title)){
         var tab = $('#mainContent').tabs('select', title);
         //tab.find("iframe").get(0).contentDocument.location.reload();
@@ -89,7 +90,7 @@ function addTab(title, url){
         data: ${menu.toJson()},
         onClick: function(node){
         	console.dir(node);
-        	addTab(node.name, '${siteConfig.baseURL}'+node.url);
+        	addTab(node.name, node.url);
         }
     });
 </#list>
