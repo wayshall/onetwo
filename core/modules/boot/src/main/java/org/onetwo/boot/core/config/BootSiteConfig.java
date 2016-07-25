@@ -6,7 +6,6 @@ import javax.servlet.ServletContext;
 
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -39,6 +38,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	final private static String WEBJARS_PATH = "/webjars";
 	
 	private String contextPath;
 	private String contextRealPath;
@@ -60,9 +61,6 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@Getter
 	private UploadConfig upload = new UploadConfig();
 	
-	@Getter
-	@Setter
-	private String webjarsPath = "/webjars";
 	
 
     @Override
@@ -80,6 +78,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
     
     public String getWebjarsStaticPath(){
     	return getWebjarsPath()+"/static";
+    }
+    
+    public String getWebjarsPath(){
+    	return getBaseURL()+WEBJARS_PATH;
     }
     
     public String getWebjarsJsPath(){

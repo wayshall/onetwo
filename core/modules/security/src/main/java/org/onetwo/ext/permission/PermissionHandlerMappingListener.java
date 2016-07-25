@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
@@ -66,10 +67,15 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		if(StringUtils.isNotBlank(menu.getUrl())){
 			//如果自定义了，忽略自动解释
 			url = menu.getUrl();
+			menu.setUrl(url);
 		}else{
 			url = getFirstUrl(entry.getKey());
+			if(!ExpressionFacotry.BRACE.isExpresstion(url)){
+				menu.setUrl(url);
+			}else{
+				logger.info("url[{}] has brace, ignore.", url);
+			}
 		}
-		menu.setUrl(url);
 //		Iterator<RequestMethod> it = entry.getKey().getMethodsCondition().getMethods().iterator();
 
 		/*if(it.hasNext()){
