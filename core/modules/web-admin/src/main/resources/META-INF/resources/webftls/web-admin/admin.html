@@ -74,7 +74,13 @@ function addTab(title, url){
     if ($('#mainContent').tabs('exists', title)){
         var tab = $('#mainContent').tabs('select', title);
         //tab.find("iframe").get(0).contentDocument.location.reload();
-        tab.find("iframe").get(0).src = url;
+        var frame = tab.find("iframe").get(0);
+        /* if(url.indexOf('?')>0){
+        	url = url+'&_frameReload=true';
+        }else{
+        	url = url+'?_frameReload=true';
+        } */
+        frame.src = url;
     } else {
         var content = '<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
         $('#mainContent').tabs('add',{

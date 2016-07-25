@@ -3,9 +3,10 @@ var helper = function () {
 helper.config = {
 	baseUrl: ''
 };
+helper.page = {
+};
 
 (function($) {
-	
 	$.ajaxSetup({
 		dataFilter: function(data, type){
 			var rs = data;
@@ -114,6 +115,7 @@ helper.config = {
 	//for helper.extendMethod()
 	helper.waitingMsgState = false;
 	$.extend(helper, {
+		
 		gotoTopPage: function(){
 			var current = window;
         	var url = location.href;
