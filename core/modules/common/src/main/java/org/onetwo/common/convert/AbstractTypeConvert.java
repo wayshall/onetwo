@@ -28,7 +28,7 @@ abstract public class AbstractTypeConvert<T> implements TypeConvert<T>{
 	public T convertNotNull(Object source, Class<?> componentType){
 		if(source==null){
 			if(!supportedNotNull)
-				throw new UnsupportedOperationException("class: " + componentType);
+				throw new IllegalArgumentException("source value is null, componentType: " + componentType);
 			return getDefaultValue(componentType);
 		}
 		return doConvert(source, componentType);
