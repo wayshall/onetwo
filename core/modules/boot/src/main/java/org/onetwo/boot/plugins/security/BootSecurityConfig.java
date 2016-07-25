@@ -1,6 +1,6 @@
 package org.onetwo.boot.plugins.security;
 
-import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 
 import lombok.ToString;
 
@@ -50,7 +50,7 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	}
 
 	@Override
-	public Object getWebConfig(FilterConfig config) {
+	public Object getWebConfig(ServletContext servletContext) {
 		return this;
 	}
 

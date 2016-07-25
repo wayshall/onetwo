@@ -5,7 +5,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /****
  * 注册自定义的filter

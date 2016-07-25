@@ -218,7 +218,6 @@ public class SpringApplication {
 		System.out.println("=================================== spring beans ===================================");
 		int index = 0;
 		for (String bn : beanNames) {
-//			Object obj = SpringApplication.getInstance().getBean(bn, false);
 			System.out.println("["+(++index)+"]" + bn );
 		}
 		System.out.println("=================================== spring beans ===================================");
