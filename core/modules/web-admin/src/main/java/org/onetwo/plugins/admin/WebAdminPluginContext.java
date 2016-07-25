@@ -34,7 +34,6 @@ public class WebAdminPluginContext {
 	public void init(){
 		String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
 		logger.info("targetUrl: "+targetUrl);
-		System.out.println("afterLoginUrl: "+targetUrl);
 		this.securityConfig.setAfterLoginUrl(targetUrl);
 	}
 	
