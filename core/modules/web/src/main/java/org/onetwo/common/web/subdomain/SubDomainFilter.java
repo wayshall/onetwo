@@ -28,8 +28,8 @@ public class SubDomainFilter extends IgnoreFiler{
 	
 	private SubdomainProcessor processor;
 	
-	public void initApplication(FilterConfig config){
-		super.initApplication(config);
+	public void onFilterInitialize(FilterConfig config){
+		super.onFilterInitialize(config);
 		this.processor = SpringApplication.getInstance().getBean(SubdomainProcessor.class, SubdomainProcessor.BEAN_NAME);
 		this.processor.readConfig();
 	}

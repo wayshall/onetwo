@@ -13,6 +13,7 @@ import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
+import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
@@ -137,6 +138,11 @@ public class BootWebAContextAutoConfig {
 	@ConditionalOnMissingBean(BootServletContextInitializer.class)
 	public BootServletContextInitializer bootServletContextInitializer(){
 		return new BootServletContextInitializer();
+	}
+	
+	@Bean
+	public ConfigServletContextInitializer configServletContextInitializer(){
+		return new ConfigServletContextInitializer();
 	}
 	
 	@Bean
