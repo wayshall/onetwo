@@ -1,6 +1,7 @@
 package org.onetwo.common.web.utils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -10,6 +11,7 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -25,20 +27,6 @@ public final class RequestUtils {
     public static final String CONTENT_LENGTH = "Content-length";
 	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
-	@SuppressWarnings("serial")
-	private static final Map<String, String> AGENT_BROWSER = new LinkedHashMap<String, String>(){
-		{
-			put("firefox", "Firefox");
-			put("chrome", "Chrome");
-			put("msie 8.0", "MSIE 8.0");
-			put("msie 7.0", "MSIE 7.0");
-			put("msie 6.0", "MSIE 6.0");
-			put("msie 5.0", "MSIE 5.0");
-			put("msie 4.0", "MSIE 4.0");
-			put("opera", "Opera");
-			put("mozilla/5.0", "Netscape");
-		}
-	};
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, String> AGENT_OS = new LinkedHashMap<String, String>(){
@@ -68,21 +56,40 @@ public final class RequestUtils {
 	 * @throws Exception
 	 */
 	public static String getBrowerByAgent(String userAgent){
+		return getBrowerMetaByAgent(userAgent).getName();
+	}
+
+	public static BrowserMeta getBrowerMetaByAgent(HttpServletRequest request){
+		return getBrowerMetaByAgent(getUserAgent(request));
+	}
+	public static BrowserMeta getBrowerMetaByAgent(String userAgent){
 		userAgent = userAgent.toLowerCase();
-		for(String agent : AGENT_BROWSER.keySet()){
+		for(String agent : Browsers.getAgentBrowsers().keySet()){
 			if(userAgent.indexOf(agent)!=-1){
-				return AGENT_BROWSER.get(agent);
+				return Browsers.getBrowser(agent);
 			}
 		}
-		return "Other";
+		return Browsers.UNKNOW;
 	}
 	public static String getBrowerByAgent(HttpServletRequest request){
-		return getBrowerByAgent(request.getHeader("User-Agent"));
+		return getBrowerByAgent(getUserAgent(request));
+	}
+	public static String getUserAgent(HttpServletRequest request){
+		return request.getHeader("User-Agent");
 	}
 	
 	public static boolean isAaXmlRequest(HttpServletRequest request){
 //		return AAUtils.isAjaxRequest(request);
 		return false;
+	}
+	
+	public static String getJsonContextTypeByUserAgent(HttpServletRequest request){
+		BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
+		String contextType = ResponseUtils.JSON_TYPE;
+		if(meta.isFuckingBrowser()){
+			contextType = ResponseUtils.HTML_TYPE;
+		}
+		return contextType;
 	}
 	
 	public static String getOSByAgent(String userAgent){
@@ -183,7 +190,7 @@ public final class RequestUtils {
 		return request.getParameterMap();
 	}
 
-	public static Map getGetParameter(HttpServletRequest request){
+	public static Map<Object, List<Object>> getGetParameter(HttpServletRequest request){
 		String q = request.getQueryString();
 		return new CasualMap(q);
 	}

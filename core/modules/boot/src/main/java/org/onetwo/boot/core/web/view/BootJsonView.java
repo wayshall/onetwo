@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.jackson.JsonMapper;
@@ -12,6 +15,9 @@ import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.MapResultBuilder;
+import org.onetwo.common.web.utils.Browsers.BrowserMeta;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -57,7 +63,18 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		}*/
 		this.setObjectMapper(JsonMapper.ignoreNull().getObjectMapper());
 	}
-
+	
+	@Override
+	protected void setResponseContentType(HttpServletRequest request, HttpServletResponse response) {
+		BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
+		if(meta.isFuckingBrowser()){
+			String contextType = ResponseUtils.HTML_TYPE;
+			response.setContentType(contextType);
+		}else{
+			super.setResponseContentType(request, response);
+		}
+	}
+	
 	protected Object filterModel(Map<String, Object> model) {
 		model.remove(BootFirstInterceptor.NOW_KEY);
 		

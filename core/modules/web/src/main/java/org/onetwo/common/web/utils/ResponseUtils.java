@@ -13,7 +13,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -213,6 +212,11 @@ abstract public class ResponseUtils {
 		render(response, text, JSON_TYPE, true);
 	}
 	
+	public static void renderJsonByAgent(HttpServletRequest request, HttpServletResponse response, String text){
+		String contextType = RequestUtils.getJsonContextTypeByUserAgent(request);
+		render(response, text, contextType, true);
+	}
+	
 	public static void renderObjectAsJson(HttpServletResponse response, Object data){
 		String text = JSON_MAPPER.toJson(data);
 		render(response, text, JSON_TYPE, true);
@@ -244,7 +248,7 @@ abstract public class ResponseUtils {
 //		response.addHeader("P3P", "CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		Date now = new Date();
 		String str = COOKIE_DATA_FORMAT.format(now);
 		System.out.println("str: " + now.toLocaleString());
@@ -254,5 +258,5 @@ abstract public class ResponseUtils {
 		now = DateUtil.addHours(now, 8);
 		System.out.println("str3: " + now.toLocaleString());
 		System.out.println("str3: " + COOKIE_DATA_FORMAT.format(now));
-	}
+	}*/
 }
