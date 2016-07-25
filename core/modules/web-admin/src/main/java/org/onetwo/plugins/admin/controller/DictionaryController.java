@@ -107,8 +107,7 @@ public class DictionaryController extends WebAdminBaseController implements Date
 	 * @return
 	 */
 	@RequestMapping(value="combobox/{parentCode}", method=RequestMethod.GET)
-	@ResponseBody
-	public Object combobox(@PathVariable("parentCode")String parentCode, String valueField){
+	public ModelAndView combobox(@PathVariable("parentCode")String parentCode, String valueField){
 		/*if(StringUtils.isBlank(parentCode))
 			throw new ServiceException("parentCode不能为空!");*/
 		
@@ -122,13 +121,14 @@ public class DictionaryController extends WebAdminBaseController implements Date
 												.mapValue(valueField)
 //												.mapSelected(src->src==empty)
 												.build(datalist);
-		return districtMaps;
+//		return districtMaps;
+		return responseData(districtMaps);
 	}
 	
 	@RequestMapping(value="getOne/{parentCode}/{value}")
-	@ResponseBody
-	public Object getOne(@PathVariable("parentCode") String parentCode, @PathVariable("value")String value){
-		return dictionaryServiceImpl.getByTypeAndValue(parentCode, value);
+	public ModelAndView getOne(@PathVariable("parentCode") String parentCode, @PathVariable("value")String value){
+		DataDictionary dict = dictionaryServiceImpl.getByTypeAndValue(parentCode, value);
+		return responseData(dict);
 	}
 	
 }
