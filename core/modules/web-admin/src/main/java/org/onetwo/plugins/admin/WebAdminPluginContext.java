@@ -10,6 +10,8 @@ import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.entity.AdminUser;
 import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
 public class WebAdminPluginContext {
+	
+	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private SecurityConfig securityConfig;
@@ -28,7 +32,10 @@ public class WebAdminPluginContext {
 	
 	@PostConstruct
 	public void init(){
-		this.securityConfig.setAfterLoginUrl(bootSiteConfig.getBaseURL()+"/web-admin/index");
+		String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
+		logger.info("targetUrl: "+targetUrl);
+		System.out.println("afterLoginUrl: "+targetUrl);
+		this.securityConfig.setAfterLoginUrl(targetUrl);
 	}
 	
 	@Bean

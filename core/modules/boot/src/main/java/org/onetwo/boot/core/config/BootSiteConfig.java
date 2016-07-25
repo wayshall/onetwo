@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
 import org.onetwo.common.web.filter.SiteConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -35,6 +37,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_RS = "path.resources";
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
+
+	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private String contextPath;
 	private String contextRealPath;
@@ -67,9 +71,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
     	this.contextPath = servletContext.getContextPath();
 		this.contextRealPath = servletContext.getRealPath("");
 		
+		logger.info("=====>>> contextPath: {}", contextPath);
 		if (StringUtils.isBlank(baseURL))
 			baseURL = contextPath;
-		
+		logger.info("=====>>> baseURL: {}", baseURL);
 	    return this;
     }
     
