@@ -64,6 +64,7 @@
     
     
     <embededTomcat.version>8.0.30</embededTomcat.version>
+    <rocketmq-client.version>3.5.3</rocketmq-client.version>
         
   </properties> 
 	
@@ -444,6 +445,11 @@
 	     <artifactId>druid</artifactId>
 	     <version>${druid.version}</version>
 	</dependency>
+    <dependency>
+        <groupId>com.alibaba.rocketmq</groupId>
+        <artifactId>rocketmq-client</artifactId>
+        <version>${rocketmq-client.version}</version>
+    </dependency>
 	
      <!-- for test -->
      <dependency>
