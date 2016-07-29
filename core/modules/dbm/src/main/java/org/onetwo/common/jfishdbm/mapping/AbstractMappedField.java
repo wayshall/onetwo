@@ -31,7 +31,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 //	private PropertyDescriptor property;
 	private BaseColumnInfo column;
 
-	private JFishMappedFieldType mappedFieldType = JFishMappedFieldType.FIELD;
+	private DbmMappedFieldType mappedFieldType = DbmMappedFieldType.FIELD;
 	private StrategyType strategyType;
 	private final JFishProperty propertyInfo;
 	
@@ -262,12 +262,12 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	}
 
 	@Override
-	public JFishMappedFieldType getMappedFieldType() {
+	public DbmMappedFieldType getMappedFieldType() {
 		return mappedFieldType;
 	}
 
 	@Override
-	public final void setMappedFieldType(JFishMappedFieldType mappedFieldType) {
+	public final void setMappedFieldType(DbmMappedFieldType mappedFieldType) {
 		this.mappedFieldType = mappedFieldType;
 	}
 	

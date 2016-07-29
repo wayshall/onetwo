@@ -8,7 +8,7 @@ import javax.persistence.FetchType;
 
 import org.onetwo.common.utils.StringUtils;
 
-public class BaseColumnInfo extends Propertable{
+abstract public class BaseColumnInfo extends Propertable{
 
 	public static final String QMARK = "?";
 	
@@ -31,6 +31,8 @@ public class BaseColumnInfo extends Propertable{
 		setName(name);
 	}
 
+	abstract public int getSqlType();
+	
 	public String getName() {
 		return name;
 	}

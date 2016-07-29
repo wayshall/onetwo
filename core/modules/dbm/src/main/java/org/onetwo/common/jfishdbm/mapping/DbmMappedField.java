@@ -67,9 +67,9 @@ public interface DbmMappedField {
 
 	public boolean isFreezing();
 
-	public JFishMappedFieldType getMappedFieldType();
+	public DbmMappedFieldType getMappedFieldType();
 
-	public void setMappedFieldType(JFishMappedFieldType mappedFieldType);
+	public void setMappedFieldType(DbmMappedFieldType mappedFieldType);
 
 	public boolean isJoinTableField();
 

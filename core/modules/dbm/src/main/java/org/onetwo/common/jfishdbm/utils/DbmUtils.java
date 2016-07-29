@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.utils;
 
 import java.beans.PropertyDescriptor;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,6 +22,7 @@ import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
@@ -124,6 +126,16 @@ final public class DbmUtils {
 		}
 		return value;
 	}
+	
+
+	public static String lookupColumnName(SqlRowSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
+		String name = resultSetMetaData.getColumnLabel(columnIndex);
+		if (name == null || name.length() < 1) {
+			name = resultSetMetaData.getColumnName(columnIndex);
+		}
+		return name;
+	}
+
 	private DbmUtils(){
 	}
 }

@@ -1,16 +1,16 @@
 	package org.onetwo.common.jfishdbm.event;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.RegisterManager;
-import org.onetwo.common.utils.map.ListMap;
+import org.onetwo.common.utils.map.CollectionMap;
 
-public class JFishdbEventListenerManager implements RegisterManager<JFishEventAction, List<JFishEventListener>> /*DbEventListenerManager*/ {
+public class JFishdbEventListenerManager implements RegisterManager<JFishEventAction, Collection<JFishEventListener>> /*DbEventListenerManager*/ {
 
 //	private Map<JFishEventAction, ?> registerMap = ArrayListMultimap.create();
 	private static final JFishEventListener[] EMPTY_LISTENERS = new JFishEventListener[]{};
-	private ListMap<JFishEventAction, JFishEventListener> registerMap = ListMap.newListMap();
+	private CollectionMap<JFishEventAction, JFishEventListener> registerMap = CollectionMap.newListMap();
 	
 	/*protected JFishInsertOrUpdateListener[] insertOrUpdateEventListeners;
 	protected InsertEventListener[] insertEventListeners;
@@ -26,7 +26,7 @@ public class JFishdbEventListenerManager implements RegisterManager<JFishEventAc
 	
 
 	@Override
-	public ListMap<JFishEventAction, JFishEventListener> getRegister() {
+	public CollectionMap<JFishEventAction, JFishEventListener> getRegister() {
 		return registerMap;
 	}
 	
@@ -36,7 +36,7 @@ public class JFishdbEventListenerManager implements RegisterManager<JFishEventAc
 	}
 	
 	public JFishEventListener[] getListeners(JFishEventAction action){
-		List<JFishEventListener> listenerList = getRegistered(action);
+		Collection<JFishEventListener> listenerList = getRegistered(action);
 		if(LangUtils.isEmpty(listenerList)){
 			return EMPTY_LISTENERS;
 		}

@@ -10,7 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.VerySimpleStartMatcher;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class CasualMap extends ListMap<Object, Object>{
+public class CasualMap extends CollectionMap<Object, Object>{
 	
 	public CasualMap(){super();};
 

@@ -3,81 +3,80 @@ package org.onetwo.common.jfishdbm.mapping;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
-import java.util.Date;
-import java.util.Map;
 
+import org.apache.commons.collections.keyvalue.MultiKey;
+import org.onetwo.common.jfishdbm.jdbc.type.TypeHandler;
 import org.onetwo.common.jfishdbm.utils.DBUtils;
-
-import com.google.common.collect.Maps;
+import org.onetwo.common.utils.map.TableMap;
 
 
 public class SqlTypeMapping {
 	
-	private  final Map<Class<?>, Integer> basicTypes = Maps.newHashMap();
+	/*private  final Map<Class<?>, SqlJavaTypeMapper<?>> basicTypes = Maps.newHashMap();
+	private final Map<Integer, SqlJavaTypeMapper<?>> sqlJavaTypeMapper = Maps.newHashMap() ;*/
+	private final TableMap<Class<?>, Integer, SqlJavaTypeMapper<?>> table = new TableMap<>();
 	
-	private final Map<Integer, Class<?>> sqlTypeMapping = Maps.newHashMap() ;
+	private final SqlJavaTypeMapper<Object> defaultSqlJavaTypeMapper = new SqlJavaTypeMapper<?>();
 	
 	public SqlTypeMapping() {
-		sqlToJava(Types.INTEGER, Integer.class);
-		sqlToJava(Types.BIGINT, Long.class);
-		sqlToJava(Types.CHAR, String.class);
-		sqlToJava(Types.DECIMAL, Long.class);
-		sqlToJava(Types.NUMERIC, Number.class);
-		sqlToJava(Types.VARCHAR, String.class);
-		sqlToJava(Types.LONGVARCHAR, String.class);
-		sqlToJava(Types.CLOB, String.class);
-		sqlToJava(Types.FLOAT, Float.class);
-		sqlToJava(Types.REAL, Float.class);
-		sqlToJava(Types.DOUBLE, Double.class);
-		sqlToJava(Types.BOOLEAN, Boolean.class);
-		sqlToJava(Types.SMALLINT, Short.class);
-		sqlToJava(Types.TINYINT, Byte.class);
-		sqlToJava(Types.DATE, Date.class); 
-		sqlToJava(Types.TIME, Date.class);
-		sqlToJava(Types.TIMESTAMP, Date.class);
+		map(int.class, Types.INTEGER);
+		map(long.class, Types.BIGINT);
+		map(short.class, Types.SMALLINT);
+		map(byte.class, Types.TINYINT);
+		map(float.class, Types.FLOAT);
+		map(double.class, Types.DOUBLE);
+		map(boolean.class, Types.BOOLEAN);
 		
+		map(Integer.class, Types.INTEGER);
+		map(Long.class, Types.BIGINT);
+		map(Short.class, Types.SMALLINT);
+		map(Byte.class, Types.TINYINT);
+		map(Float.class, Types.FLOAT);
+		map(Double.class, Types.DOUBLE);
+		map(Boolean.class, Types.BOOLEAN);
 		
-		
-		javaToSql(int.class, Types.INTEGER);
-		javaToSql(long.class, Types.BIGINT);
-		javaToSql(short.class, Types.SMALLINT);
-		javaToSql(byte.class, Types.TINYINT);
-		javaToSql(float.class, Types.FLOAT);
-		javaToSql(double.class, Types.DOUBLE);
-		javaToSql(boolean.class, Types.BOOLEAN);
-		
-		javaToSql(Integer.class, Types.INTEGER);
-		javaToSql(Long.class, Types.BIGINT);
-		javaToSql(Short.class, Types.SMALLINT);
-		javaToSql(Byte.class, Types.TINYINT);
-		javaToSql(Float.class, Types.FLOAT);
-		javaToSql(Double.class, Types.DOUBLE);
-		javaToSql(Boolean.class, Types.BOOLEAN);
-		
-		javaToSql(String.class, Types.VARCHAR);
-		javaToSql(BigDecimal.class, Types.NUMERIC);
-		javaToSql(BigInteger.class, Types.NUMERIC);
-		javaToSql(Number.class, Types.NUMERIC);
-		javaToSql(java.util.Date.class, Types.TIMESTAMP);
-		javaToSql(java.util.Calendar.class, Types.TIMESTAMP);
-		javaToSql(java.sql.Date.class, Types.DATE);
-		javaToSql(java.sql.Time.class, Types.TIME);
-		javaToSql(java.sql.Timestamp.class, Types.TIMESTAMP);
-		javaToSql(byte[].class, Types.BINARY);
+		map(String.class, Types.VARCHAR);
+		map(BigDecimal.class, Types.NUMERIC);
+		map(BigInteger.class, Types.NUMERIC);
+		map(Number.class, Types.NUMERIC);
+		map(java.util.Date.class, Types.TIMESTAMP);
+		map(java.util.Calendar.class, Types.TIMESTAMP);
+		map(java.sql.Date.class, Types.DATE);
+		map(java.sql.Time.class, Types.TIME);
+		map(java.sql.Timestamp.class, Types.TIMESTAMP);
+		map(byte[].class, Types.BINARY);
 		
 	}
 
-	final protected SqlTypeMapping javaToSql(Class<?> javaType, int sqlType){
-		basicTypes.put(javaType, sqlType);
-		return this;
-	}
-	final protected SqlTypeMapping sqlToJava(int sqlType, Class<?> javaType){
-		sqlTypeMapping.put(sqlType, javaType);
+	final protected SqlTypeMapping map(Class<?> javaType, int sqlType, TypeHandler<?> typeHandler){
+		MultiKey key = new MultiKey(javaType, sqlType);
+		SqlJavaTypeMapper<?> mapper = new SqlJavaTypeMapper<>(sqlType, javaType, typeHandler);
+		table.put(javaType, sqlType, mapper);
 		return this;
 	}
 	
+	public SqlJavaTypeMapper<?> getSqlJavaTypeMapper(Class<?> javaType, int sqlType){
+		SqlJavaTypeMapper<?> mapper = table.get(javaType, sqlType);
+		if(mapper==null){
+			mapper = defaultSqlJavaTypeMapper;
+		}
+		return mapper;
+	}
+	
+	public TypeHandler<?> getTypeHander(Class<?> javaType, int sqlType){
+		return getSqlJavaTypeMapper(javaType, sqlType).getTypeHandler();
+	}
+	
+	public SqlJavaTypeMapper<?> getSqlJavaTypeMapper(int sqlType){
+		SqlJavaTypeMapper<?> mapper = sqlJavaTypeMapper.get(sqlType);
+		if(mapper==null){
+			mapper = defaultSqlJavaTypeMapper;
+		}
+		return mapper;
+	}
+	
 	public int getType(Class<?> cls){
-		Integer type = basicTypes.get(cls);
+		Integer type = getSqlJavaTypeMapper(cls).getSqlType();
 		if(type==null){
 			type = new Integer(DBUtils.TYPE_UNKNOW);
 		}
@@ -92,9 +91,7 @@ public class SqlTypeMapping {
 	}
 	
 	public Class<?> getJavaType(int sqlType){
-		Class<?> clz = sqlTypeMapping.get(sqlType);
-		/*if(clz==null)
-			return String.class;*/
+		Class<?> clz = getSqlJavaTypeMapper(sqlType).getJavaType();
 		return clz;
 	}
 	
@@ -102,8 +99,30 @@ public class SqlTypeMapping {
 
 		public OracleSqlTypeMapping() {
 			super();
-			javaToSql(Boolean.class, Types.NUMERIC);
-			javaToSql(boolean.class, Types.NUMERIC);
+			map(Boolean.class, Types.NUMERIC);
+			map(boolean.class, Types.NUMERIC);
+		}
+		
+	}
+	
+	public static class SqlJavaTypeMapper<T> {
+		final private int sqlType;
+		final private Class<?> javaType;
+		final private TypeHandler<T> typeHandler;
+		public SqlJavaTypeMapper(int sqlType, Class<?> javaType, TypeHandler<T> typeHandler) {
+			super();
+			this.sqlType = sqlType;
+			this.javaType = javaType;
+			this.typeHandler = typeHandler;
+		}
+		public int getSqlType() {
+			return sqlType;
+		}
+		public Class<?> getJavaType() {
+			return javaType;
+		}
+		public TypeHandler<T> getTypeHandler() {
+			return typeHandler;
 		}
 		
 	}
