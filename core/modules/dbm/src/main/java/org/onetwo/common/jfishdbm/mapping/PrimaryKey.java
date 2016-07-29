@@ -71,5 +71,10 @@ public class PrimaryKey extends BaseColumnInfo {
 	public void setTable(TableInfo table) {
 		this.table = table;
 	}
+
+	@Override
+	public int getSqlType() {
+		return getFirstColumn().getSqlType();
+	}
 	
 }

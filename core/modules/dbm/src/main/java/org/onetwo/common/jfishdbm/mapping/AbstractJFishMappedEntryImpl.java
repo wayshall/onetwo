@@ -124,7 +124,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		return this.mappedFields.values();
 	}
 	
-	public Collection<AbstractMappedField> getFields(JFishMappedFieldType... types){
+	public Collection<AbstractMappedField> getFields(DbmMappedFieldType... types){
 		List<AbstractMappedField> flist = new ArrayList<AbstractMappedField>(mappedFields.values().size());
 		if(LangUtils.isEmpty(types)){
 			Collections.sort(flist, SORT_BY_LENGTH);
