@@ -38,7 +38,7 @@ public class JFishInsertEventListener extends InsertEventListener{
 				int index = 0;
 				for(Object[] arg : args){
 					KeyHolder keyHolder = new GeneratedKeyHolder();
-					updateCount += es.getJFishJdbcTemplate().updateWithKeyHolder(new SimpleArgsPreparedStatementCreator(sql, arg), keyHolder);
+					updateCount += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg), keyHolder);
 					if(keyHolder.getKey()!=null)
 						entry.setId(objects.get(index++), keyHolder.getKey());
 				}

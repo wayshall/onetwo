@@ -7,6 +7,8 @@ import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
 import org.onetwo.common.utils.Assert;
 
+import com.google.common.collect.ImmutableList;
+
 public class JFishDeleteEventListener extends AbstractJFishEventListener {
 
 	@Override
@@ -29,7 +31,8 @@ public class JFishDeleteEventListener extends AbstractJFishEventListener {
 		int count = 0;
 		if(deleteEvent.isDeleteAll()){
 			JdbcStatementContext<Object[]> delete = entry.makeDeleteAll();
-			count = es.getJFishJdbcTemplate().update(delete.getSql(), delete.getValue());
+//			count = es.getJFishJdbcTemplate().update(delete.getSql(), delete.getValue());
+			this.executeJdbcUpdate(delete.getSql(), ImmutableList.of(delete.getValue()), es);
 		}else{
 			JdbcStatementContext<List<Object[]>> delete = entry.makeDelete(entity, deleteEvent.isDeleteByIdentify());
 			count = this.executeJdbcUpdate(delete.getSql(), delete.getValue(), es);

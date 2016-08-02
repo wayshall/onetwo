@@ -124,7 +124,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	@Override
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
 		TableInfo tableInfo = newTableInfo(annotationInfo);
-		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(this.getDialect().getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(this.getDialect().getTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
 		entry.setSqlBuilderFactory(this.getDialect().getSqlBuilderFactory());
 		return entry;
 	}
@@ -195,7 +195,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		String colName = field.getName();
 //		if("id".equals(field.getName()))
 //			System.out.println("id");
-		int sqlType = getDialect().getSqlTypeMapping().getType(field.getPropertyInfo().getType());
+		int sqlType = getDialect().getTypeMapping().getType(field.getPropertyInfo().getType());
 		ColumnInfo col = null;
 		Column anno = field.getPropertyInfo().getAnnotation(Column.class);
 		if(anno!=null){

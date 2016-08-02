@@ -68,13 +68,13 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 //	private final SimpleDbmInnserServiceRegistry serviceRegistry;
 	private EntityValidator entityValidator;
 	
-	private SqlTypeMapping sqlTypeMapping;
+	private DbmTypeMapping sqlTypeMapping;
 	
 	/*public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public AbstractJFishMappedEntryImpl(DbmTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
 		this.sqlTypeMapping = sqlTypeMapping;
@@ -116,7 +116,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
 	}
 	
-	public SqlTypeMapping getSqlTypeMapping() {
+	public DbmTypeMapping getSqlTypeMapping() {
 		return sqlTypeMapping;
 	}
 
@@ -571,7 +571,11 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		for(DbmMappedField mfield : this.mappedColumns.values()){
 			
 //			val = mfield.getColumnValue(entity);
-			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
+//			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
+			val = mfield.getValue(entity);
+			if(mfield.fireDbmEntityFieldEvents(val, JFishEventAction.update)!=val){
+				mfield.setValue(entity, val);
+			}
 			if(mfield.isIdentify()){
 				Assert.notNull(val, "id can not be null : " + entity);
 				sqlBuilder.appendWhere(mfield, val);

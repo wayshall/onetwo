@@ -1,6 +1,8 @@
 package org.onetwo.common.jfishdbm.support;
 
 import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +30,13 @@ import org.onetwo.common.jfishdbm.event.JFishInsertEvent;
 import org.onetwo.common.jfishdbm.event.JFishInsertOrUpdateEvent;
 import org.onetwo.common.jfishdbm.event.JFishUpdateEvent;
 import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.jdbc.DbmArgumentPreparedStatementSetter;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
+import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JdbcDao;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.common.jfishdbm.jdbc.PreparedStatementParameterSetter;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
@@ -40,7 +46,9 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -87,7 +95,36 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		Assert.notNull(dialect);
 		this.setDataSource(dataSource);
 	}
-	
+
+	protected JFishJdbcOperations createJdbcTemplate(DataSource dataSource) {
+		return new JFishJdbcTemplate(dataSource){
+
+			@Override
+			protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
+				return new DbmArgumentPreparedStatementSetter(args);
+			}
+			
+			protected PreparedStatementSetter newArgTypePreparedStatementSetter(Object[] args, int[] argTypes) {
+				return new ArgumentTypePreparedStatementSetter(args, argTypes){
+					protected void doSetValue(PreparedStatement ps, int parameterPosition, int argType, Object argValue) throws SQLException {
+
+//						StatementCreatorUtils.setParameterValue(ps, parameterPosition, argType, argValue);
+						
+						/*JDBCType jdbcType = JDBCType.valueOf(argType);
+						TypeHandler<Object> typeHandler = (TypeHandler<Object>)dialect.getTypeMapping().getTypeHander(argValue.getClass(), jdbcType);
+						typeHandler.setParameter(ps, parameterPosition, argValue, jdbcType);*/
+						PreparedStatementParameterSetter parameterSetter = new PreparedStatementParameterSetter();
+						parameterSetter.setParameterValue(ps, parameterPosition, argType, argValue);
+					}
+				};
+			}
+			
+		};
+	}
+
+	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
+		return new JFishNamedJdbcTemplate(getJdbcTemplate());
+	}
 
 	protected void checkDaoConfig() {
 		Assert.notNull(getDataSource());

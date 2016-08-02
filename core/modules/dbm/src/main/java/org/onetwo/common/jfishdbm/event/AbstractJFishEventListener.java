@@ -1,12 +1,9 @@
 package org.onetwo.common.jfishdbm.event;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.jfishdbm.exception.DbmException;
-import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
 import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
@@ -18,7 +15,6 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
-import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
 @SuppressWarnings("unchecked")
 abstract public class AbstractJFishEventListener implements JFishEventListener {
@@ -106,19 +102,19 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 		if(userBatch){
 //			int[] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args);
 			int batchSize = es.getDataBaseConfig().getProcessSizePerBatch();
-			int[][] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args, batchSize, new ParameterizedPreparedStatementSetter<Object[]>(){
+			int[][] ups = es.getJFishJdbcTemplate().batchUpdateWith(sql, args, batchSize/*, new ParameterizedPreparedStatementSetter<Object[]>(){
 
 				@Override
 				public void setValues(PreparedStatement ps, Object[] argument) throws SQLException {
 					JdbcUtils.setValues(ps, argument);
 				}
 				
-			});
+			}*/);
 			for(int[] up : ups)
 				count += LangUtils.sum(up);
 		}else{
 			for(Object[] arg : args){
-				count += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg), null);
+				count += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg));
 			}
 		}
 		return count;
