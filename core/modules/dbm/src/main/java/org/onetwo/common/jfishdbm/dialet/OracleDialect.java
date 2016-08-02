@@ -6,7 +6,7 @@ import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleBatchInsertEventListener;
 import org.onetwo.common.jfishdbm.event.oracle.JFishOracleInsertEventListener;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping.OracleSqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping.OracleSqlTypeMapping;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 

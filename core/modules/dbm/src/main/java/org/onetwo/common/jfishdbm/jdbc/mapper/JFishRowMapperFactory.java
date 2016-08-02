@@ -40,7 +40,8 @@ public class JFishRowMapperFactory extends JdbcDaoRowMapperFactory {
 				return ReflectUtils.newInstance(rowMapperClass, type);
 			}
 		}else{
-			rowMapper = super.getBeanPropertyRowMapper(type);
+//			rowMapper = super.getBeanPropertyRowMapper(type);
+			rowMapper = new DbmBeanPropertyRowMapper<>(type);
 		}
 		return rowMapper;
 	}

@@ -20,7 +20,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
@@ -388,8 +388,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 
 	@Override
-	public SqlTypeMapping getSqlTypeMapping() {
-		return this.dbmDao.getDialect().getSqlTypeMapping();
+	public DbmTypeMapping getSqlTypeMapping() {
+		return this.dbmDao.getDialect().getTypeMapping();
 	}
 
 }

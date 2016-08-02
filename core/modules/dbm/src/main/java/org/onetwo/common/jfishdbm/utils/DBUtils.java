@@ -30,7 +30,7 @@ import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.QueryException;
 import org.onetwo.common.jfishdbm.mapping.DBValueHanlder;
 import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.BaseMap;
@@ -373,7 +373,7 @@ public class DBUtils {
 		}
 	}
 	
-	public static void setPstmParameter(PreparedStatement preparedStatement, List values, SqlTypeMapping mapping){
+	public static void setPstmParameter(PreparedStatement preparedStatement, List values, DbmTypeMapping mapping){
 		int index = 0;
 		for(Object value : values){
 			DBUtils.setPstmParameter(preparedStatement, index+1, value, mapping);
@@ -381,7 +381,7 @@ public class DBUtils {
 		}
 	}
 	
-	public static void setPstmParameter(PreparedStatement pstm, int index, Object value, SqlTypeMapping mapping){
+	public static void setPstmParameter(PreparedStatement pstm, int index, Object value, DbmTypeMapping mapping){
 		try {
 			setPstmParameter(pstm, index, value, mapping.getType(value));
 		} catch (Exception e) {
@@ -494,7 +494,7 @@ public class DBUtils {
 		return obj;
 	}
 	
-	public static Object getValueByFieldFromResultSet(String colName, Class requiredType, ResultSet rs) throws SQLException{
+	public static Object getValueByFieldFromResultSet(String colName, Class<?> requiredType, ResultSet rs) throws SQLException{
 		if(requiredType.isArray())
 			requiredType = requiredType.getComponentType();
 		if (requiredType == null) {
@@ -656,7 +656,7 @@ public class DBUtils {
 		}
 	}
 	
-	public static List<BaseMap> toList(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper){
+	public static List<BaseMap> toList(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper){
 		List<BaseMap> datas = new ArrayList<BaseMap>();
 		
 		try {
@@ -676,7 +676,7 @@ public class DBUtils {
 	}
 	
 
-	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
+	public static CaseInsensitiveMap toMap(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
 		CaseInsensitiveMap rowMap = new CaseInsensitiveMap();
 		try {
 			rowMap = mapper.map(rs, rowMap);
@@ -689,7 +689,7 @@ public class DBUtils {
 		return rowMap;
 	}
 	
-	public static List<Map> toList(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, String...names){
+	public static List<Map> toList(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, String...names){
 		List<Map> datas = new ArrayList<Map>();
 		
 		try {
@@ -718,11 +718,11 @@ public class DBUtils {
 	 * @param names
 	 * @return
 	 */
-	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, String...names) {
+	public static CaseInsensitiveMap toMap(DbmTypeMapping mapping, ResultSet rs, String...names) {
 		return toMap(mapping, rs, false, names);
 	}
 	
-	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, String...names) {
+	public static CaseInsensitiveMap toMap(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, String...names) {
 		CaseInsensitiveMap rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){

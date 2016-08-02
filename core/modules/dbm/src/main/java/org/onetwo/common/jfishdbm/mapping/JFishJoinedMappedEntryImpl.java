@@ -18,7 +18,7 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
 	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
 	
-	public JFishJoinedMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public JFishJoinedMappedEntryImpl(DbmTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		super(sqlTypeMapping, annotationInfo, tableInfo, serviceRegistry);
 	}
 	

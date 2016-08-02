@@ -17,7 +17,7 @@ import org.onetwo.common.date.Dates;
 import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.exception.DbmException;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
@@ -86,12 +86,12 @@ final public class DbmUtils {
 	}
 	
 
-	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value, SqlTypeMapping mapping){
+	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value, DbmTypeMapping mapping){
 		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
 		return convertSqlParameterValue(jproperty, value, mapping);
 	}
 	
-	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value, SqlTypeMapping mapping){
+	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value, DbmTypeMapping mapping){
 		if(value==null)
 			return null;
 		int sqlType = mapping.getType(propertyInfo.getType());

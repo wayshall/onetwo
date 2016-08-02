@@ -4,17 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.jfishdbm.jdbc.mapper.RowMapperFactory;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -36,9 +39,8 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	protected RowMapperFactory rowMapperFactory;
 
 	public JFishJdbcTemplate() {
-//		super(dataSource);
 	}
-
+	
 	public boolean isDebug() {
 		return debug;
 	}
@@ -51,7 +53,9 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	public JFishJdbcTemplate(DataSource dataSource) {
 		super(dataSource);
 	}
-
+	public JFishJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
+		super(dataSource);
+	}
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		this.initTemplateConfig();
@@ -78,7 +82,7 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 
 
 	@Override
-	public int updateWithKeyHolder(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException {
+	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException {
 		return updateWith(spsc, new AroundPreparedStatementExecute() {
 			
 			@Override
@@ -157,6 +161,22 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	}
 	
 
+	public <T> int[][] batchUpdateWith(String sql, Collection<T[]> batchArgs, int batchSize) throws DataAccessException {
+		int[][] ups = super.batchUpdate(sql, batchArgs, batchSize, new ParameterizedPreparedStatementSetter<T[]>(){
+
+			@Override
+			public void setValues(PreparedStatement ps, T[] args) throws SQLException {
+				if (args == null) {
+					return ;
+				}
+				newArgPreparedStatementSetter(args).setValues(ps);
+			}
+			
+		});
+		return ups;
+	}
+	
+
 	public NamedJdbcTemplate getNamedTemplate() {
 		return namedTemplate;
 	}
@@ -215,8 +235,15 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 		});
 	}
 	
-	protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
+	protected PreparedStatementSetter newDbmPreparedStatementSetter(Object[] args) {
 		return new DbmArgumentPreparedStatementSetter(args);
 	}
+	
+	@Override
+	protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
+		return newDbmPreparedStatementSetter(args);
+//		return super.newArgPreparedStatementSetter(args);
+	}
+
 	
 }

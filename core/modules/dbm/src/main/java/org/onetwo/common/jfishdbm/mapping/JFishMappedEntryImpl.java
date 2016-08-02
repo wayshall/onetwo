@@ -22,7 +22,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	private EntrySQLBuilderImpl staticCreateSeqSqlBuilder;
 	private EntrySQLBuilderImpl staticSelectVersionSqlBuilder;
 	
-	public JFishMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public JFishMappedEntryImpl(DbmTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		super(sqlTypeMapping, annotationInfo, tableInfo, serviceRegistry);
 	}
 

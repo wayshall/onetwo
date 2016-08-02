@@ -58,7 +58,11 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		Object val = null;
 		EntrySQLBuilderImpl builder = getSqlBuilder();
 		for(DbmMappedField field : builder.getFields()){
-			val = field.getValueForJdbcAndFireDbmEventAction(entity, getEventAction());
+			val = field.getValue(entity);
+//			val = field.getValueForJdbcAndFireDbmEventAction(entity, getEventAction());
+			if(field.fireDbmEntityFieldEvents(val, getEventAction())!=val){
+				field.setValue(entity, val);
+			}
 			if(field.isVersionControll()){
 				if(JFishEventAction.insert==getEventAction()){
 					val = field.getVersionableType().getVersionValule(val);
@@ -104,13 +108,30 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 	
 	public JdbcStatementContextBuilder processWhereCauseValuesFromEntity(Object entity){
 		Assert.notNull(entity);
-		Object val = null;
 		for(DbmMappedField field : this.sqlBuilder.getWhereCauseFields()){
-			val = field.getValueForJdbc(entity);
+			Object val = field.getValue(entity);
+//			SqlParameterValue pvalue = convertSqlParameterValue(field, val);
 			this.causeValues.add(val);
 		}
 		return this;
 	}
+
+	/****
+	 * 根据实体的属性做一定的类型转换
+	 * @param value
+	 * @return
+	 
+	protected Object convertPropertyValue(Object value){
+		return DbmUtils.convertPropertyValue(propertyInfo, value);
+	}*/
+	/***
+	 * 转成spring jdbc sql parameter 参数
+	 * @param value
+	 * @return
+	 */
+	/*protected SqlParameterValue convertSqlParameterValue(DbmMappedField field, Object value){
+		return DbmUtils.convertSqlParameterValue(field.getPropertyInfo(), value, entry.getSqlTypeMapping());
+	}*/
 	
 	public JdbcStatementContextBuilder addCauseValue(Object value){
 		causeValues.add(value);

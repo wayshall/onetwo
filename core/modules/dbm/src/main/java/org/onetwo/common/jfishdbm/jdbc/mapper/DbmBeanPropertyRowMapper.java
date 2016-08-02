@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.jfishdbm.jdbc.type.TypeHandler;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.Intro;
@@ -40,7 +40,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	private Class<T> mappedClass;
 	private Set<String> mappedProperties;
 	private Map<String, PropertyDescriptor> mappedFields;
-	private SqlTypeMapping sqlTypeMapping;
+	private DbmTypeMapping sqlTypeMapping;
 
 	public DbmBeanPropertyRowMapper() {
 		super();

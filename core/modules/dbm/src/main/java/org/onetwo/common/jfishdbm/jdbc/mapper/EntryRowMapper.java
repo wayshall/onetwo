@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.onetwo.common.jfishdbm.jdbc.type.TypeHandler;
 import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.Intro;
@@ -28,7 +28,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 	
 	private JFishMappedEntry entry;
 	private boolean debug = false;
-	private SqlTypeMapping sqlTypeMapping;
+	private DbmTypeMapping sqlTypeMapping;
 	
 	public EntryRowMapper(JFishMappedEntry entry) {
 		super();
