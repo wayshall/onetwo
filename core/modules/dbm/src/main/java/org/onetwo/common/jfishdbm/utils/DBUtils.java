@@ -718,12 +718,12 @@ public class DBUtils {
 	 * @param names
 	 * @return
 	 */
-	public static CaseInsensitiveMap toMap(DbmTypeMapping mapping, ResultSet rs, String...names) {
+	public static CaseInsensitiveMap<String, Object> toMap(DbmTypeMapping mapping, ResultSet rs, String...names) {
 		return toMap(mapping, rs, false, names);
 	}
 	
-	public static CaseInsensitiveMap toMap(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, String...names) {
-		CaseInsensitiveMap rowMap = new CaseInsensitiveMap<String, Object>();
+	public static CaseInsensitiveMap<String, Object> toMap(DbmTypeMapping mapping, ResultSet rs, boolean autoClose, String...names) {
+		CaseInsensitiveMap<String, Object> rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){
 				Map<String, Integer> columnNames = getColumnMeta(rs);

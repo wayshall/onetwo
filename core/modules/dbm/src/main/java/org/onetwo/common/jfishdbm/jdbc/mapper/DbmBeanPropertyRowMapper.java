@@ -9,12 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.onetwo.common.jfishdbm.jdbc.type.TypeHandler;
-import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
+import org.onetwo.common.jfishdbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.Intro;
-import org.onetwo.common.utils.JFishProperty;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -40,14 +37,16 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	private Class<T> mappedClass;
 	private Set<String> mappedProperties;
 	private Map<String, PropertyDescriptor> mappedFields;
-	private DbmTypeMapping sqlTypeMapping;
+//	private DbmTypeMapping sqlTypeMapping;
+	private JdbcResultSetGetter jdbcResultSetGetter;
 
-	public DbmBeanPropertyRowMapper() {
+	/*public DbmBeanPropertyRowMapper() {
 		super();
-	}
+	}*/
 
-	public DbmBeanPropertyRowMapper(Class<T> mappedClass) {
+	public DbmBeanPropertyRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass) {
 		this.mappedClass = mappedClass;
+		this.jdbcResultSetGetter = jdbcResultSetGetter;
 	}
 
 	protected String lowerCaseName(String name) {
@@ -130,7 +129,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 			PropertyDescriptor pd = this.mappedFields.get(field);
 			if (pd != null) {
 				try {
-					Object value = getColumnValue(resutSetWrapper, index, pd, rsmd.getColumnType(index));
+					Object value = getColumnValue(resutSetWrapper, index, pd);
 					if (rowNumber == 0 && logger.isDebugEnabled()) {
 						logger.debug("Mapping column '" + column + "' to property '" + pd.getName() +
 								"' of type [" + ClassUtils.getQualifiedName(pd.getPropertyType()) + "]");
@@ -175,11 +174,12 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		Object actualValue = DbmUtils.convertPropertyValue(jproperty, value);
 		return actualValue;
 	}*/
-	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd, int sqlType) throws SQLException {
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) throws SQLException {
+		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
+		/*JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
 		TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(jproperty.getType(), sqlType);
 		Object value = typeHandler.getResult(rs, index);
-		return value;
+		return value;*/
 	}
 
 }

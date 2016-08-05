@@ -4,15 +4,12 @@ import java.beans.PropertyDescriptor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.onetwo.common.jfishdbm.jdbc.type.TypeHandler;
+import org.onetwo.common.jfishdbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -28,18 +25,21 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 	
 	private JFishMappedEntry entry;
 	private boolean debug = false;
-	private DbmTypeMapping sqlTypeMapping;
+//	private DbmTypeMapping sqlTypeMapping;
+	private JdbcResultSetGetter jdbcResultSetGetter;
 	
-	public EntryRowMapper(JFishMappedEntry entry) {
+	public EntryRowMapper(JFishMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter) {
 		super();
 		this.entry = entry;
+		this.jdbcResultSetGetter = jdbcResultSetGetter;
 	}
 
 
-	public EntryRowMapper(JFishMappedEntry entry, boolean debug) {
+	public EntryRowMapper(JFishMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter, boolean debug) {
 		super();
 		this.entry = entry;
 		this.debug = debug;
+		this.jdbcResultSetGetter = jdbcResultSetGetter;
 	}
 
 
@@ -71,7 +71,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 					field = entry.getFieldByColumnName(column);
 					value = getColumnValue(resutSetWrapper, index, field);
 					if(value!=null){
-						field.setValueFromJdbc(entity, value);
+						field.setValue(entity, value);
 					}
 				}else{
 					String propName = toPropertyName(column);
@@ -135,10 +135,11 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 
 
 	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd, int sqlType) throws SQLException {
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
+		/*JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
 		TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(jproperty.getType(), sqlType);
 		Object value = typeHandler.getResult(rs, index);
-		return value;
+		return value;*/
 	}
 
 	/*protected Object getColumnValue(ResultSet rs, int index, PropertyDescriptor pd, int sqlType) throws SQLException {
@@ -149,9 +150,10 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 
 
 	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, DbmMappedField field) throws SQLException {
-		TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(field.getColumnType(), field.getColumn().getSqlType());
+		return jdbcResultSetGetter.getColumnValue(rs, index, field);
+		/*TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(field.getColumnType(), field.getColumn().getSqlType());
 		Object value = typeHandler.getResult(rs, index);
-		return value;
+		return value;*/
 	}
 	/*protected Object getColumnValue(ResultSet rs, int index, DbmMappedField field) throws SQLException {
 		final Object value = JdbcUtils.getResultSetValue(rs, index, field.getColumnType());

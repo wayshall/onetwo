@@ -74,10 +74,10 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(DbmTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
-		this.sqlTypeMapping = sqlTypeMapping;
+		this.sqlTypeMapping = serviceRegistry.getTypeMapping();
 //		this.serviceRegistry = serviceRegistry;
 		this.entityName = this.entityClass.getName();
 		this.tableInfo = tableInfo;
