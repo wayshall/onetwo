@@ -124,7 +124,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	@Override
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
 		TableInfo tableInfo = newTableInfo(annotationInfo);
-		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(this.getDialect().getTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		entry.setSqlBuilderFactory(this.getDialect().getSqlBuilderFactory());
 		return entry;
 	}

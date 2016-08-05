@@ -10,7 +10,6 @@ import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilderImpl;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.MappedType;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.mapping.TableInfo;
 import org.onetwo.common.jfishdbm.support.SimpleDbmInnserServiceRegistry;
 
@@ -19,8 +18,8 @@ public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl 
 	private EntrySQLBuilderImpl staticFetchSqlBuilder;
 	
 
-	public JFishQueryableMappedEntryImpl(DbmTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
-		super(sqlTypeMapping, annotationInfo, tableInfo, serviceRegistry);
+	public JFishQueryableMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	
 	protected void buildStaticSQL(TableInfo taboleInfo){

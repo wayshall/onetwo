@@ -183,14 +183,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){
-			entry = new JFishQueryableMappedEntryImpl(dialect.getTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
-				entry = new JFishQueryableMappedEntryImpl(dialect.getTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
 			}*/else{
-				entry = new JFishMappedEntryImpl(dialect.getTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}
 		}
 		entry.setSqlBuilderFactory(this.dialect.getSqlBuilderFactory());

@@ -7,6 +7,15 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 
+/*****
+ * ConcurrentRunnable.create().repeate(parties, ()->{
+			//run task
+		})
+		.start()
+		.await();
+ * @author way
+ *
+ */
 public class ConcurrentRunnable {
 	public static ConcurrentRunnable create(){
 		return new ConcurrentRunnable();

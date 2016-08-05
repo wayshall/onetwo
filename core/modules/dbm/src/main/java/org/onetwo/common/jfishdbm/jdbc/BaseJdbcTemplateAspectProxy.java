@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.onetwo.common.expr.HolderCharsScanner;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
@@ -133,7 +134,7 @@ public class BaseJdbcTemplateAspectProxy {
 				List<?> argList = convertAsList(mArgs);
 				String parseArgSql = holder.parse(sql, index->{
 					Object val = argList.get(index);
-					val = DbmArgumentPreparedStatementSetter.getActualValue(val);
+					val = DbmUtils.getActualValue(val);
 					if(val==null)
 						return "NULL";
 					return LangUtils.isNumberObject(val)?val.toString():"'"+val.toString()+"'";

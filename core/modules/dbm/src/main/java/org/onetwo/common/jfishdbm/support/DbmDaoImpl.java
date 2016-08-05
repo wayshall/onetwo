@@ -36,7 +36,7 @@ import org.onetwo.common.jfishdbm.jdbc.JFishJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JdbcDao;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.common.jfishdbm.jdbc.PreparedStatementParameterSetter;
+import org.onetwo.common.jfishdbm.jdbc.JdbcStatementParameterSetter;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.MappedEntryManager;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
@@ -80,7 +80,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 //	protected String[] packagesToScan;
 	
 	private SimpleDbmInnserServiceRegistry serviceRegistry;
-
+	private JdbcStatementParameterSetter jdbcParameterSetter;
 	
 	/*public JFishDaoImpl(){
 	}*/
@@ -101,20 +101,13 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 
 			@Override
 			protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
-				return new DbmArgumentPreparedStatementSetter(args);
+				return new DbmArgumentPreparedStatementSetter(jdbcParameterSetter, args);
 			}
 			
 			protected PreparedStatementSetter newArgTypePreparedStatementSetter(Object[] args, int[] argTypes) {
 				return new ArgumentTypePreparedStatementSetter(args, argTypes){
 					protected void doSetValue(PreparedStatement ps, int parameterPosition, int argType, Object argValue) throws SQLException {
-
-//						StatementCreatorUtils.setParameterValue(ps, parameterPosition, argType, argValue);
-						
-						/*JDBCType jdbcType = JDBCType.valueOf(argType);
-						TypeHandler<Object> typeHandler = (TypeHandler<Object>)dialect.getTypeMapping().getTypeHander(argValue.getClass(), jdbcType);
-						typeHandler.setParameter(ps, parameterPosition, argValue, jdbcType);*/
-						PreparedStatementParameterSetter parameterSetter = new PreparedStatementParameterSetter();
-						parameterSetter.setParameterValue(ps, parameterPosition, argType, argValue);
+						jdbcParameterSetter.setParameterValue(ps, parameterPosition, argType, argValue);
 					}
 				};
 			}
@@ -146,6 +139,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		this.sqlSymbolManager = this.serviceRegistry.getSqlSymbolManager();
 		this.setRowMapperFactory(this.serviceRegistry.getRowMapperFactory());
 		this.sequenceNameManager = this.serviceRegistry.getSequenceNameManager();
+		this.jdbcParameterSetter = this.serviceRegistry.getJdbcParameterSetter();
 		
 		/*if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDataBaseConfig();
