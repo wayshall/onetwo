@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,15 @@ import org.onetwo.common.utils.func.Closure;
  *
  */
 final public class LangOps {
+	
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
+		 return Stream.iterate(0, i->i+2)
+				 .limit(arrays.length/2)
+				 .map(i->new Object[]{arrays[i], arrays[i+1]})
+				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
+//		 return Collections.EMPTY_MAP;
+	}
 	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
@@ -59,6 +69,15 @@ final public class LangOps {
 	}
 	
 //	public static long sum(Iterable<T>)
+	
+	public static <T> BigDecimal sumBigDecimal(List<T> datas, Function<T, BigDecimal> mapper){
+		if(datas==null)
+			return BigDecimal.valueOf(0.0);
+		return datas.stream().map(mapper).reduce((n1, n2)->{
+			return n1.add(n2);
+		})
+		.orElse(BigDecimal.valueOf(0.0));
+	}
 	
 	private LangOps(){}
 

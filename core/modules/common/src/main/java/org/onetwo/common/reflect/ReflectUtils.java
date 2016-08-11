@@ -27,6 +27,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -69,7 +70,7 @@ public class ReflectUtils {
 //	private static WeakHashMap<Class, PropertyDescriptor[]> DESCRIPTORS_CACHE = new WeakHashMap<Class, PropertyDescriptor[]>();
 //	private static WeakHashMap<Class, List<Field>> FIELDS_CACHE = new WeakHashMap<Class, List<Field>>();
 	
-	private static final ClassIntroManager introManager = new ClassIntroManager();
+	private static final ClassIntroManager introManager = ClassIntroManager.getInstance();
 	
 	public static final String READMETHOD_KEY = "get";
 	public static final String BOOLEAN_READMETHOD_KEY = "is";
@@ -112,7 +113,7 @@ public class ReflectUtils {
 			while (srcIterator.hasNext()) {
 				T element = srcIterator.next();
 				Object id;
-				id = getProperty(element, idName);
+				id = getPropertyValue(element, idName);
 
 				if (!checkedIds.contains(id)) {
 					srcIterator.remove();
@@ -135,7 +136,7 @@ public class ReflectUtils {
 		Collection<T> values = new ArrayList<T>(elements.size());
 		T val = null;
 		for(Object obj : elements){
-			val = (T)getProperty(obj, propName);
+			val = (T)getPropertyValue(obj, propName);
 			values.add(val);
 		}
 		return values;
@@ -145,26 +146,26 @@ public class ReflectUtils {
 		Collection<T> values = new ArrayList<T>(elements.length);
 		T val = null;
 		for(Object obj : elements){
-			val = (T)getProperty(obj, propName);
+			val = (T)getPropertyValue(obj, propName);
 			values.add(val);
 		}
 		return values;
 	}
 
-	public static Object getProperty(Object element, String propName) {
-		return getProperty(element, propName, true);
+	public static Object getPropertyValue(Object element, String propName) {
+		return getPropertyValue(element, propName, true);
 	}
 	
 
-	public static Object getProperty(Object element, String propName, boolean throwIfError) {
-		return getProperty(element, propName, (p, e)->{
+	public static Object getPropertyValue(Object element, String propName, boolean throwIfError) {
+		return getPropertyValue(element, propName, (p, e)->{
 			logger.error("get ["+element+"] property["+propName+"] error: " + e.getMessage());
 			if(throwIfError)
 				throw new BaseException("get ["+element+"] property["+propName+"] error", e);
 		});
 	}
 
-	public static  Object getProperty(Object element, String propName, Closure2<String, Exception> errorHandler) {
+	public static  Object getPropertyValue(Object element, String propName, Closure2<String, Exception> errorHandler) {
 		if (element instanceof Map) {
 			return getValue((Map) element, propName);
 		}
@@ -181,7 +182,13 @@ public class ReflectUtils {
 		}
 		return null;
 	}
-
+	
+	public static boolean hasProperty(Object element, String propName) {
+    	return ClassIntroManager.getInstance()
+    							.getIntro(getObjectClass(element))
+    							.hasProperty(propName);
+    }
+	
 	public static Object getProperty(Object element, PropertyDescriptor prop) {
 		return invokeMethod(false, ReflectUtils.getReadMethod(element
 				.getClass(), prop), element);
@@ -285,7 +292,7 @@ public class ReflectUtils {
 		if(bean instanceof Map){
 			return ((Map) bean).containsKey(propName);
 		}else{
-			return getProperty(bean, propName)!=null;
+			return getPropertyValue(bean, propName)!=null;
 		}
 	}
 
@@ -299,7 +306,7 @@ public class ReflectUtils {
 			for (Object obj : collection) {
 				if (obj == null)
 					continue;
-				list.add(getProperty(obj, propertyName));
+				list.add(getPropertyValue(obj, propertyName));
 			}
 		} catch (Exception e) {
 			handleReflectionException(e);
@@ -315,12 +322,12 @@ public class ReflectUtils {
 		return StringUtils.join(list, separator);
 	}
 
-	public static <T> Class<T> getSuperClassGenricType(final Class clazz) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz) {
 		return getSuperClassGenricType(clazz, Object.class);
 	}
 
-	public static <T> Class<T> getSuperClassGenricType(final Class clazz,
-			final Class stopClass) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz,
+			final Class<?> stopClass) {
 		return getSuperClassGenricType(clazz, 0, stopClass);
 	}
 
@@ -332,8 +339,8 @@ public class ReflectUtils {
 	 * @param stopClass
 	 * @return
 	 */
-	public static Class getSuperClassGenricType(final Class clazz,
-			final int index, final Class stopClass) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz,
+			final int index, final Class<?> stopClass) {
 		if(clazz.equals(stopClass))
 			return clazz;
 		
@@ -368,14 +375,14 @@ public class ReflectUtils {
 			return Object.class;
 		}
 
-		return (Class) params[index];
+		return (Class<?>) params[index];
 	}
 
 
-	public static Class getGenricType(final Object obj, final int index) {
+	public static Class<?> getGenricType(final Object obj, final int index) {
 		return getGenricType(obj, index, Object.class);
 	}
-	public static Class getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
+	public static Class<?> getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
 
 		Class clazz = getObjectClass(obj);
 		Type genType = null;
@@ -838,10 +845,17 @@ public class ReflectUtils {
 	}
 
 
-	public static Map toMap(Object obj) {
+	public static Map<String, Object> toMap(Object obj) {
 		return toMap(true, obj);
 	}
-	public static Map toMap(boolean ignoreNull, Object obj) {
+	public static Map<String, Object> toMap(boolean ignoreNull, Object obj) {
+		return toMap(obj, (p, v)->{
+			if(v!=null)
+				return true;
+			return !ignoreNull;
+		});
+	}
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
 		
@@ -854,15 +868,12 @@ public class ReflectUtils {
 		PropertyDescriptor[] props = desribProperties(obj.getClass());
 		if (props == null || props.length == 0)
 			return Collections.EMPTY_MAP;
-		Map rsMap = new HashMap();
+		Map<String, Object> rsMap = new HashMap();
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = getProperty(obj, prop);
-			if (val != null){
-				rsMap.put(prop.getName(), val.toString());
-			}else{
-				if(!ignoreNull)
-					rsMap.put(prop.getName(), val);
+			if (acceptor.apply(prop, val)){
+				rsMap.put(prop.getName(), val);
 			}
 		}
 		return rsMap;
@@ -958,17 +969,21 @@ public class ReflectUtils {
 		
 	}
 
-	public static Map field2Map(Object obj) {
+
+	public static Map<String, Object> field2Map(Object obj) {
+		return field2Map(obj, (f, v)->v!=null);
+	}
+	public static Map<String, Object> field2Map(Object obj, BiFunction<Field, Object, Boolean> acceptor) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
 		Collection<Field> fields = findFieldsFilterStatic(obj.getClass());
 		if (fields == null || fields.isEmpty())
 			return Collections.EMPTY_MAP;
-		Map rsMap = new HashMap();
+		Map<String, Object> rsMap = new HashMap();
 		Object val = null;
 		for (Field field : fields) {
 			val = getFieldValue(field, obj, false);
-			if (val != null)
+			if (acceptor.apply(field, val))
 				rsMap.put(field.getName(), val);
 		}
 		return rsMap;
@@ -1340,7 +1355,7 @@ public class ReflectUtils {
 			return f.get(obj);
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw LangUtils.asBaseException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
+				throw new BaseException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
 			else
 				return null;
 		}
@@ -1736,7 +1751,7 @@ public class ReflectUtils {
 			if(hasIgnoredAnnotation(targetProperty))
 				return;
 			
-			Object val = ReflectUtils.getProperty(source, targetProperty.getName());
+			Object val = ReflectUtils.getPropertyValue(source, targetProperty.getName());
 			if(isIgnoreValue(val))
 				return ;
 			
@@ -1780,7 +1795,7 @@ public class ReflectUtils {
 		}
 		
 		private void copyValue(Object source, Object target, String prop){
-			Object value = getProperty(source, prop);
+			Object value = getPropertyValue(source, prop);
 			if(conf.isIgnoreNull() && value==null)
 				return;
 			if(conf.isIgnoreBlank() && ( (value instanceof String) && StringUtils.isBlank(value.toString())))

@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -284,6 +285,14 @@ abstract public class AbstractBaseController {
 		}
 		return clazz.cast(user);
 	}
+	
+	@ModelAttribute(name=UserDetail.USER_DETAIL_KEY)
+	public UserDetail getCurrentLoginUser(){
+		return checkAndGetCurrentLoginUser(false);
+	}
+	public <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz){
+		return checkAndGetCurrentLoginUser(clazz, false);
+	}
 
 	protected BootSiteConfig getBootSiteConfig() {
 		return bootSiteConfig;
@@ -344,7 +353,10 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.createModelAndView(viewName, DataWrapper.lazy(value));
+		return BootWebUtils.createModelAndView(getViewName(viewName), DataWrapper.lazy(value));
+	}
+	protected String getViewName(String viewName){
+		return viewName;
 	}
 	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
 		Assert.notNull(mv);

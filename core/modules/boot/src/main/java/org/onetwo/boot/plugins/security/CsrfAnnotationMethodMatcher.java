@@ -3,9 +3,9 @@ package org.onetwo.boot.plugins.security;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.plugins.security.utils.SecurityUtils;
 import org.onetwo.common.web.preventor.DefaultPreventRequestInfoManager;
 import org.onetwo.common.web.preventor.PreventRequestInfoManager;
+import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.method.HandlerMethod;
 

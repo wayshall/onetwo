@@ -2,7 +2,6 @@ package org.onetwo.boot.core.config;
 
 import java.util.stream.Stream;
 
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
 import lombok.Data;
@@ -12,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
 import org.onetwo.common.web.filter.SiteConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -35,6 +36,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_RS = "path.resources";
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
+
+	final private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	final private static String WEBJARS_PATH = "/webjars";
 	
 	private String contextPath;
 	private String contextRealPath;
@@ -56,17 +61,31 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@Getter
 	private UploadConfig upload = new UploadConfig();
 	
+	
 
     @Override
-    public BootSiteConfig createConfig(FilterConfig config) {
-    	ServletContext servletContext = config.getServletContext();
+    public BootSiteConfig initWebConfig(ServletContext servletContext) {
+//    	ServletContext servletContext = config.getServletContext();
     	this.contextPath = servletContext.getContextPath();
 		this.contextRealPath = servletContext.getRealPath("");
 		
+		logger.info("=====>>> contextPath: {}", contextPath);
 		if (StringUtils.isBlank(baseURL))
 			baseURL = contextPath;
-		
+		logger.info("=====>>> baseURL: {}", baseURL);
 	    return this;
+    }
+    
+    public String getWebjarsStaticPath(){
+    	return getWebjarsPath()+"/static";
+    }
+    
+    public String getWebjarsPath(){
+    	return getBaseURL()+WEBJARS_PATH;
+    }
+    
+    public String getWebjarsJsPath(){
+    	return getWebjarsStaticPath()+"/js";
     }
 	
 	public boolean isDev(){

@@ -1,13 +1,14 @@
 package org.onetwo.boot.plugins.permission;
 
-import org.onetwo.boot.plugins.permission.entity.IPermission;
-import org.onetwo.boot.plugins.permission.entity.PermisstionTreeModel;
-import org.onetwo.boot.plugins.permission.parser.DefaultMenuInfoParser;
-import org.onetwo.boot.plugins.permission.parser.PermissionConfig;
-import org.onetwo.boot.plugins.permission.service.MenuItemRepository;
-import org.onetwo.boot.plugins.permission.service.impl.DefaultMenuItemRepository;
-import org.onetwo.boot.plugins.permission.web.controller.AdminController;
-import org.onetwo.boot.plugins.permission.web.controller.PermissionController;
+import org.onetwo.boot.plugins.security.BootSecurityConfig;
+import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionHandlerMappingListener;
+import org.onetwo.ext.permission.PermissionManager;
+import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.entity.PermisstionTreeModel;
+import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
+import org.onetwo.ext.permission.service.MenuItemRepository;
+import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,27 +17,31 @@ import org.springframework.context.annotation.Configuration;
 
 /***
  * 菜单权限管理
+ * 需要：
+ * 实现 {@linkplain AbstractPermissionConfig} 接口
+ * 实现 {@linkplain PermissionManager} 接口
  * @author way
  *
  */
 @Configuration
-@ConditionalOnBean(PermissionConfig.class)
+@ConditionalOnBean(AbstractPermissionConfig.class)
 public class PermissionContextAutoConfig {
 	
-	@Bean
-	public PermissionController permissionController(){
-		return new PermissionController();
+	@Autowired
+	private BootSecurityConfig bootSecurityConfig;
+	
+	public PermissionContextAutoConfig(){
 	}
 	
 	@Bean
 	@Autowired
-	public <T extends IPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfig<T> permissionConfig){
+	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(AbstractPermissionConfig<T> permissionConfig){
 		DefaultMenuInfoParser<T> parser = new DefaultMenuInfoParser<T>(permissionConfig);
 		return parser;
 	}
 	
 	@Bean
-	@ConditionalOnBean(AdminController.class)
+//	@ConditionalOnBean(AdminController.class)
 	@ConditionalOnMissingBean(MenuItemRepository.class)
 	public MenuItemRepository<PermisstionTreeModel> menuItemRepository(){
 		DefaultMenuItemRepository menuItemRepository = new DefaultMenuItemRepository();
@@ -44,8 +49,11 @@ public class PermissionContextAutoConfig {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(value=PermissionHandlerMappingListener.class)
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
-		return new PermissionHandlerMappingListener();
+		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
+		listener.setSyncPermissionData(bootSecurityConfig.getSyncPermissionData());
+		return listener;
 	}
 	
 

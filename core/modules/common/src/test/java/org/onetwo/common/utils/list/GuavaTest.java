@@ -5,16 +5,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.UserEntity;
+import org.onetwo.common.utils.UserEntity;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -37,6 +38,14 @@ public class GuavaTest {
 	}
 	
 	public List<UserEntity> createUserList(String userName, int count){
+		List<UserEntity> users = LangUtils.newArrayList(count);
+		for (int i = 0; i < count; i++) {
+			users.add(createUser(userName+i, i));
+		}
+		return users;
+	}
+	
+	public List<UserEntity> createSameNameUserList(String userName, int count){
 		List<UserEntity> users = LangUtils.newArrayList(count);
 		for (int i = 0; i < count; i++) {
 			users.add(createUser(userName, i));
@@ -91,9 +100,9 @@ public class GuavaTest {
 	@Test
 	public void testGroupBy(){
 		List<UserEntity> all = LangUtils.newArrayList();
-		List<UserEntity> aa = createUserList("aa", 3);
-		List<UserEntity> bb = createUserList("bb", 1);
-		List<UserEntity> cc = createUserList("cc", 2);
+		List<UserEntity> aa = createSameNameUserList("aa", 3);
+		List<UserEntity> bb = createSameNameUserList("bb", 1);
+		List<UserEntity> cc = createSameNameUserList("cc", 2);
 		all.addAll(aa);
 		all.addAll(bb);
 		all.addAll(cc);
@@ -111,6 +120,12 @@ public class GuavaTest {
 		Assert.assertEquals(3, groups.get("aa").size());
 		Assert.assertEquals(1, groups.get("bb").size());
 		Assert.assertEquals(2, groups.get("cc").size());
+		
+		Map<String, List<UserEntity>> userGroup = all.stream().collect(Collectors.groupingBy(u->u.getUserName()));
+		System.out.println("userGroup:" + userGroup);
+		Assert.assertEquals(3, userGroup.get("aa").size());
+		Assert.assertEquals(1, userGroup.get("bb").size());
+		Assert.assertEquals(2, userGroup.get("cc").size());
 	}
 	
 	@Test
@@ -188,5 +203,6 @@ public class GuavaTest {
 		Assert.assertEquals("[1, test2, 3, test3, test4, test44]", list.toString());
 		
 	}
+	
 
 }

@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.JFishFieldInfoImpl;
@@ -68,7 +69,7 @@ public class Intro<T> {
 	
 	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
 		if(clazz==Object.class || clazz.isInterface() || clazz.isPrimitive())
-			return Collections.EMPTY_MAP;
+			return Collections.emptyMap();
 		BeanInfo beanInfo = null;
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz, Object.class);
@@ -96,10 +97,12 @@ public class Intro<T> {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public List<String> getPropertyNames(final Class<? extends Annotation>... ignoreAnnotation){
 		return getPropertyDescriptors(ignoreAnnotation).getPropertyList("name");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
 		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
 			
@@ -156,7 +159,7 @@ public class Intro<T> {
 				return ;
 
 			if(clazz==Object.class || clazz.isPrimitive()){
-				_fieldMaps = Collections.EMPTY_MAP;
+				_fieldMaps = Collections.emptyMap();
 				return ;
 			}
 			Field[] fields = clazz.getDeclaredFields();
@@ -272,10 +275,42 @@ public class Intro<T> {
 	
 	public Object getStaticFieldValue(String fieldName, boolean parent) {
 		Field f = checkField(fieldName, parent);
-		return ReflectUtils.getFieldValue(f, clazz, true);
+		return getFieldValue(f, clazz, true);
 	}
 	
+	public static Object getFieldValue(Field f, Object obj, boolean throwIfError) {
+		Assert.notNull(f);
+		try {
+			if (!f.isAccessible())
+				f.setAccessible(true);
+			return f.get(obj);
+		} catch (Exception ex) {
+			if (throwIfError)
+				throw new RuntimeException("get value of field[" + f + "] error: " + ex.getMessage(), ex);
+			else
+				return null;
+		}
+	}
 	
+	public static void setFieldValue(Field f, Object obj, Object value) {
+		Assert.notNull(f);
+		try {
+			if (!f.isAccessible())
+				f.setAccessible(true);
+			f.set(obj, value==null?null:Types.convertValue(value, f.getType()));
+		} catch (Exception ex) {
+			throw new RuntimeException("invoke method error: " + ex.getMessage(), ex);
+		}
+	}
+	public static <T> T newInstance(Class<T> clazz) {
+		T instance = null;
+		try {
+			instance = clazz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("instantce class error : " + clazz, e);
+		}
+		return instance;
+	}
 
 	public Object getFieldValue(Object obj, String fieldName) {
 		return getFieldValue(obj, fieldName, true);
@@ -283,7 +318,7 @@ public class Intro<T> {
 	public Object getFieldValue(Object obj, String fieldName, boolean parent) {
 		Assert.isInstanceOf(clazz, obj);
 		Field f = checkField(fieldName, parent);
-		return ReflectUtils.getFieldValue(f, obj, true);
+		return getFieldValue(f, obj, true);
 	}
 	
 
@@ -293,7 +328,7 @@ public class Intro<T> {
 	public void setFieldValue(Object obj, String fieldName, Object value, boolean parent) {
 		Assert.isInstanceOf(clazz, obj);
 		Field field = checkField(fieldName, parent);
-		ReflectUtils.setFieldValue(field, obj, value);
+		setFieldValue(field, obj, value);
 	}
 	
 
@@ -302,13 +337,15 @@ public class Intro<T> {
 	}
 	public void setStaticFieldValue(Object value, String fieldName, boolean parent) {
 		Field field = checkField(fieldName, parent);
-		ReflectUtils.setFieldValue(field, clazz, value);
+		setFieldValue(field, clazz, value);
 	}
 
 	public T newInstance(){
-		T bean = (T)ReflectUtils.newInstance(clazz);
+		T bean = (T)newInstance(clazz);
 		return bean;
 	}
+	
+	
 	
 	public T newInstance(Map<String, ?> propValues, TypeJudge typeJudge){
 		T bean = newInstance();

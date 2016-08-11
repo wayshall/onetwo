@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 
 public class DynamicQueryHandler implements InvocationHandler {
 	
@@ -134,8 +136,12 @@ public class DynamicQueryHandler implements InvocationHandler {
 				
 				result = em.getFileNamedQueryManager().findPage(page, invokeContext);
 				
-			}else if(List.class.isAssignableFrom(resultClass)){
+			}else if(Collection.class.isAssignableFrom(resultClass)){
 				result = em.getFileNamedQueryManager().findList(invokeContext);
+				
+			}else if(Set.class.isAssignableFrom(resultClass)){
+				List<?> datalist = em.getFileNamedQueryManager().findList(invokeContext);
+				result = Sets.newHashSet(datalist);
 				
 			}else if(DataQuery.class.isAssignableFrom(resultClass)){
 				DataQuery dq = em.getFileNamedQueryManager().createQuery(invokeContext);
@@ -198,7 +204,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 				}
 				if(paramBean.isReadableProperty(parameter.getProperty())){
 					value = parameter.getParamterValue(paramBean);
-					value = DbmUtils.convertSqlParameterValue(paramBean.getPropertyDescriptor(parameter.getProperty()), value);
+					value = DbmUtils.convertSqlParameterValue(paramBean.getPropertyDescriptor(parameter.getProperty()), value, em.getSqlTypeMapping());
 				}else{
 					if(!paramsContextBean.isReadableProperty(parameter.getProperty()))
 						throw new BaseException("batch execute parameter["+parameter.getProperty()+"] not found in bean["+val+"]'s properties or params");

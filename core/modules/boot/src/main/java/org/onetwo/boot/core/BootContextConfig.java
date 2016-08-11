@@ -6,6 +6,8 @@ import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
+import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.springframework.beans.BeanUtils;
@@ -15,15 +17,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.ClassUtils;
 
 @Configuration
+@Import(PluginContextConfig.class)
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 public class BootContextConfig {
 	
-	public static final String BEAN_EXCEPTION_MESSAGE = "exceptionMessage";
 	
 	@Autowired
 	private BootJFishConfig bootJFishConfig;
@@ -53,12 +56,17 @@ public class BootContextConfig {
 		return validator;
 	}
 	
-	@Bean(name=BEAN_EXCEPTION_MESSAGE)
+	@Bean(name=ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE)
 	public MessageSource exceptionMessageSource(){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setCacheSeconds(bootJFishConfig.getMessageSource().getCacheSeconds());
 		ms.setBasenames("classpath:messages/exception-messages", "classpath:messages/default-exception-messages");
 		return ms;
+	}
+	@Bean
+	public ExceptionMessageAccessor exceptionMessageAccessor(){
+		ExceptionMessageAccessor exceptionMessageAccessor = new ExceptionMessageAccessor(exceptionMessageSource());
+		return exceptionMessageAccessor;
 	}
 	
 	@Bean

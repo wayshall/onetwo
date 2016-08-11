@@ -11,15 +11,18 @@ public interface SQLBuilderFactory {
 		primaryKey,
 //		createTable,
 //		dropTable,
-		seq
+		seq,
+		createSeq
 	}
 	
 	public EntrySQLBuilder createNamed(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);
 
-	public EntrySQLBuilder createQMark(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);
+	public EntrySQLBuilderImpl createQMark(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);
 	
-	public TableSQLBuilder createNamed(String table, String alias, SqlBuilderType type);
+//	@Deprecated
+//	public TableSQLBuilder createNamed(String table, String alias, SqlBuilderType type);
 
-	public TableSQLBuilder createQMark(String table, String alias, SqlBuilderType type);
+//	@Deprecated
+//	public TableSQLBuilder createQMark(String table, String alias, SqlBuilderType type);
 
 }

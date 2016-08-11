@@ -2,7 +2,6 @@ package org.onetwo.common.db.generator.meta;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
@@ -19,7 +19,7 @@ public class TableMeta {
 	private String name;
 	private ColumnMeta primaryKey;
 
-	private Map<String, ColumnMeta> columnMap = new LinkedHashMap<String, ColumnMeta>();
+	private Map<String, ColumnMeta> columnMap = new CaseInsensitiveMap<String, ColumnMeta>();
 	
 	private String comment;
 	
@@ -89,8 +89,14 @@ public class TableMeta {
 		return columnMap.get(name);
 	}
 
+	public boolean hasColumn(String name) {
+		return columnMap.containsKey(name);
+	}
+
 	public void setColumns(Map<String, ColumnMeta> columns) {
-		this.columnMap = columns;
+		columns.values().forEach(col->{
+			addColumn(col);
+		});
 	}
 
 	public TableMeta addColumn(ColumnMeta column) {

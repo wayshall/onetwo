@@ -1,0 +1,193 @@
+
+<@extends parent="easyui-js.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       角色表
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+                <tr>
+                    <td>角色名:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="name" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                </tr>
+                <tr>
+                   <td>&nbsp;</td>
+                    <td rowspan="1">
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="角色表" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="name" >角色名</th>
+                <th field="status" >状态</th>
+                <th field="remark" >角色描述</th>
+                <th field="createAt" >创建时间</th>
+                <th field="updateAt" >更新时间</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/web-admin/admin-role-edit-form.html">
+    
+    <div id="assignPermission" class="easyui-dialog" title="分配权限" 
+            style="width:50%;height:80%;padding:10px 20px"
+            data-options="closed:true, modal:true, buttons:'#assigRoleButtons'">
+        <form id="assignForm" class="easyui-form" method="post">
+            <div class="easyui-panel" style="padding:5px">
+	            <ul id="permissionTree">
+	            </ul>
+            </div>
+        </form>
+    </div>
+    <div id="assigRoleButtons" >
+    	<a href="#" id="btnCascadeCheck" class="easyui-linkbutton" iconCls="" onclick="">设置级联选中</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="assignPermissions();">保存</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="closeAssignRole();">关闭</a>
+    </div>   
+                 
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/web-admin/role.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+
+    var onTreeLoading = true;
+    $('#permissionTree').tree({
+    	method:'get',
+    	animate:true,
+    	checkbox:true,
+    	onLoadSuccess: helper.loadTreeErrorHandler()
+    });
+
+    function closeAssignRole(){
+        $('#assignPermission').dialog('close');
+    }
+    
+    function assignPermissions(){
+        var row = $('#dataGrid').datagrid('getSelected');
+        var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
+        //$.post(url, param, helper.remoteMessageHandler());
+        var param = helper.getCsrfParams();
+        var permissionCodes = $('#permissionTree').tree('getAllCheckedIds') || [];
+        param.permissionCodes = permissionCodes;
+        param = $.param(param, true);
+        $.post(url, param, helper.remoteMessageHandler());
+    };
+    
+    var reqUrl = '${siteConfig.baseURL}/web-admin/role.json';
+    var editingId;
+    var toolbar = [
+        {
+            text:'分配权限',
+            handler:helper.selectOneHandler('#dataGrid', function(row){
+                $('#assignPermission').dialog('open');
+                
+                var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
+                $('#permissionTree').tree({
+	            	url: url,
+	            	cascadeCheck: false
+	            	//onlyLeafCheck: false
+	            });
+                $('#permissionTree').tree('reload');
+           })
+        },
+        
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+				
+                $('#id').val('');
+                var url = '${siteConfig.baseURL}/web-admin/role.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                if(!$('#dataGrid').isSelectedOne()){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/web-admin/role/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                        datagrid: '#dataGrid',
+                        url: '${siteConfig.baseURL}/web-admin/role.json',
+                        idField: 'id',
+                        paramIdName: 'ids'
+                    })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+    
+    var cascadeCheck = false;
+    $('#btnCascadeCheck').click(function(){
+   	 	 cascadeCheck = !cascadeCheck;
+    	 $('#permissionTree').tree('options').cascadeCheck = cascadeCheck;
+    	 $(this).text(cascadeCheck?'取消级联选中':'设置级联选中');
+    });
+    
+ </script>
+    </@override>
+</@extends>

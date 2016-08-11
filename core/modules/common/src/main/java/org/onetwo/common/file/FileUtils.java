@@ -253,22 +253,22 @@ public class FileUtils {
 	}
 	 
 	public static String getResourcePath(ClassLoader cld, String fileName){
-		if(cld==null)
-			cld = ClassUtils.getDefaultClassLoader();
 		if(fileName.startsWith(PATH)){
 			return fileName.substring(PATH.length());
 		}
 		if(fileName.indexOf(":")!=-1)
 			return fileName;
+		
+
+		if(cld==null)
+			cld = ClassUtils.getDefaultClassLoader();
+		
 		String realPath = null;
 		URL path = null;
 		path = cld.getResource(fileName);
 		
 		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
-			/*path = FileUtils.class.getClassLoader().getResource(fileName);
-			if(path==null)
-				return fileName;*/
 			realPath = cld.getResource("").getPath()+fileName;
 			logger.info("Default ClassLoader path2: "+ realPath);
 			if(StringUtils.isBlank(realPath)){
@@ -282,8 +282,6 @@ public class FileUtils {
 		}
 		if(realPath.indexOf("\\")!=-1)
 			realPath = realPath.replace("\\", "/");
-//		if(realPath.startsWith("/"))
-//			realPath = realPath.substring(1);
 		return realPath;
 	}
 	 
@@ -845,8 +843,8 @@ public class FileUtils {
 		return packageName;
 	}
 	
-	public static Class loadClass(File file){
-		Class clazz = null;
+	public static Class<?> loadClass(File file){
+		Class<?> clazz = null;
 		String className = getPackageName(file)+"."+getFileNameWithoutExt(file.getName());
 		try {
 			clazz = Class.forName(className);
@@ -1115,13 +1113,13 @@ public class FileUtils {
 		return new ResourceAdapterImpl<T>(resource);
 	}
 	
-	public static <T> ResourceAdapter<T>[] adapterResources(T[] resource){
+	public static <T> ResourceAdapter<T>[] adapterResources(T[] resource, String postfix){
 		if(LangUtils.isEmpty(resource))
 			return (ResourceAdapter<T>[])EMPTY_RESOURCES;
 		ResourceAdapterImpl<T>[] reslist = new ResourceAdapterImpl[resource.length];
 		int index = 0;
 		for(T obj : resource){
-			reslist[index++] = new ResourceAdapterImpl<T>(obj);
+			reslist[index++] = new ResourceAdapterImpl<T>(obj, postfix);
 		}
 		return reslist;
 	}

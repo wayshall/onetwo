@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -19,9 +21,9 @@ import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -41,6 +43,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.OrderComparator;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -77,13 +81,48 @@ final public class SpringUtils {
 		}
 		setProfiles(newProfiles);
 	}
+	
+	public static class WithAnnotationBeanData<T extends Annotation> {
+		final private T annotation;
+		final private String name;
+		final private Object bean;
+		public WithAnnotationBeanData(T annotation, String name, Object bean) {
+			super();
+			this.annotation = annotation;
+			this.name = name;
+			this.bean = bean;
+		}
+		public T getAnnotation() {
+			return annotation;
+		}
+		public String getName() {
+			return name;
+		}
+		public Object getBean() {
+			return bean;
+		}
+		
+	}
+	public static <T extends Annotation> List<WithAnnotationBeanData<T>> getBeansWithAnnotation(ApplicationContext applicationContext, Class<T> annotationType){
+		Map<String, Object> beans = applicationContext.getBeansWithAnnotation(annotationType);
+		return beans.entrySet().stream().map(e->{
+			T annotation = AnnotationUtils.findAnnotation(e.getValue().getClass(), annotationType);
+			WithAnnotationBeanData<T> data = new WithAnnotationBeanData<T>(annotation, e.getKey(), e.getValue());
+			return data;
+		})
+		.collect(Collectors.toList());
+	}
 
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
-			return Collections.EMPTY_LIST;
-		List<T> list = new JFishList<T>(beanMaps.values());
+			return Collections.emptyList();
+		List<T> list = new ArrayList<T>(beanMaps.values());
 		OrderComparator.sort(list);
+		return list;
+	}
+	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<?> clazz, ParameterizedTypeReference<T> typeRef) {
+		List<T> list = (List<T>)getBeans(appContext, clazz);
 		return list;
 	}
 	
@@ -284,6 +323,20 @@ final public class SpringUtils {
 		return bd;
 	}
 	
+	public static void registerBean(ApplicationContext configurableApplicationContext, String beanName, Class<?> beanClass, Object[] constructorArg, Object...params){
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry)configurableApplicationContext.getAutowireCapableBeanFactory();
+		
+		Map<String, Object> props = LangOps.arrayToMap(params);
+		BeanDefinitionBuilder bdb = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
+		for(Entry<String, Object> entry : props.entrySet()){
+			bdb.addPropertyValue(entry.getKey(), entry.getValue());
+		}
+		if(constructorArg!=null){
+			Stream.of(constructorArg).forEach(arg->bdb.addConstructorArgValue(arg));
+		}
+		registry.registerBeanDefinition(beanName, bdb.getBeanDefinition());
+	}
+	
 	/*****
 	 * 获取SingletonBeanRegistry
 	 * @param applicationContext
@@ -300,9 +353,28 @@ final public class SpringUtils {
 		SingletonBeanRegistry sbr = (SingletonBeanRegistry) bf;
 		return sbr;
 	}
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object applicationContext){
+		if(BeanDefinitionRegistry.class.isInstance(applicationContext)){
+			return (BeanDefinitionRegistry) applicationContext;
+		}
+		Object bf = applicationContext;
+		if(applicationContext instanceof AbstractApplicationContext){
+			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
+		}
+		if(bf==null || !BeanDefinitionRegistry.class.isInstance(bf)){
+			return null;
+		}
+		BeanDefinitionRegistry sbr = (BeanDefinitionRegistry) bf;
+		return sbr;
+	}
 	
 	public static void registerSingleton(BeanFactory applicationContext, String beanName, Object singletonObject){
 		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
+	}
+	
+	public static void registerAndInitSingleton(ApplicationContext applicationContext, String beanName, Object singletonObject){
+		getSingletonBeanRegistry(applicationContext).registerSingleton(beanName, singletonObject);
+		injectAndInitialize(applicationContext, singletonObject);
 	}
 	
 	public static Resource classpath(String path){

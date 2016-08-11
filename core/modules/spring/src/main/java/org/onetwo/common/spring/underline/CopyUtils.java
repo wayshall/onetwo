@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -36,15 +37,12 @@ import org.springframework.util.Assert;
 public class CopyUtils {
     public static final PropertyDescriptor[] EMPTY_PROPERTIES_ARRAY = new PropertyDescriptor[0];
     
-    
-
-
     public static class ObjectCopierBuilder extends SimpleCopierBuilder<Object, ObjectCopierBuilder> {
     	public static ObjectCopierBuilder newBuilder(){
     		return new ObjectCopierBuilder();
     	}
-    	public static ObjectCopierBuilder copyFrom(Object obj){
-    		return new ObjectCopierBuilder().copy(obj);
+    	public static ObjectCopierBuilder fromObject(Object obj){
+    		return new ObjectCopierBuilder().from(obj);
     	}
     }
 
@@ -52,12 +50,12 @@ public class CopyUtils {
     	public static <E> BeanCopierBuilder<E> newBuilder(){
     		return new BeanCopierBuilder<E>();
     	}
-    	public static <E> BeanCopierBuilder<E> copyFrom(E obj){
-    		return new BeanCopierBuilder<E>().copy(obj);
+    	public static <E> BeanCopierBuilder<E> fromObject(E obj){
+    		return new BeanCopierBuilder<E>().from(obj);
     	}
     }
     public static class PageCopierBuilder<T> extends BaseCopierBuilder<PageCopierBuilder<T>> {
-    	public static <E> PageCopierBuilder<E> copyFrom(Page<E> page){
+    	public static <E> PageCopierBuilder<E> fromPage(Page<E> page){
     		return new PageCopierBuilder<E>(page);
     	}
     	
@@ -159,7 +157,7 @@ public class CopyUtils {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	public static <T extends Collection<?>> T newCollections(Class<?> clazz){
 		if(!Collection.class.isAssignableFrom(clazz))
 			throw new RuntimeException("class must be a Collection type: " + clazz);
@@ -176,8 +174,8 @@ public class CopyUtils {
 			return (T)newInstance(clazz);
 		}
 	}
-	public static <K, V> Map<K, V> newMap(Class<? extends Map> mapClass){
-		if(mapClass==Map.class)
+	public static <K, V> Map<K, V> newMap(Class<? extends Map<K, V>> mapClass){
+		if(Map.class.equals(mapClass))
 			return new HashMap<K, V>();
 		return (Map<K, V>)ReflectUtils.newInstance(mapClass);
 	}
@@ -192,7 +190,7 @@ public class CopyUtils {
     }
 
     public static <T> BeanCopierBuilder<T> copyFrom(T target){
-    	return BeanCopierBuilder.copyFrom(target);
+    	return BeanCopierBuilder.fromObject(target);
     }
 
     public static <T> ListCopierBuilder<T> copyFrom(Iterable<T> target){
@@ -217,7 +215,7 @@ public class CopyUtils {
      */
     public static <T> T copy(T target, Object src, PropertyNameConvertor convertor){
 //    	return new BeanWrappedCopier<T>(target, convertor).fromObject(src);
-    	BeanCopierBuilder.copyFrom(src)
+    	BeanCopierBuilder.fromObject(src)
     					.propertyNameConvertor(convertor)
     					.to(target);
     	return target;
@@ -270,7 +268,8 @@ public class CopyUtils {
 		if(Serializable.class.isInstance(datas)){
 			return (List<T>)deepClone((Serializable)datas);
 		}
-		throw new IllegalArgumentException("datas not serializable");
+		String clsName = datas.getClass().getName();
+		throw new IllegalArgumentException("datas not serializable", new NotSerializableException(clsName));
 	}
 	
 	private CopyUtils(){

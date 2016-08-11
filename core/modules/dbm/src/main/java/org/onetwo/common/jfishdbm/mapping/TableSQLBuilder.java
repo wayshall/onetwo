@@ -12,6 +12,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+@Deprecated
 public class TableSQLBuilder {
 
 	public static final String VAR_SEQ_NAME = "seqName";

@@ -64,8 +64,6 @@ public class LangUtils {
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Class[] Empty_CLASSES = new Class[0];
 	
-	public static DecimalFormat DF_TWO_SCALE = new DecimalFormat("0.00");
-	
 	private final static Map<String, Pattern> REGEX_CACHE = new ConcurrentHashMap<String, Pattern>(); 
 
 	public static final Consoler CONSOLE;
@@ -391,7 +389,7 @@ public class LangUtils {
 		return SIMPLE_CLASS.contains(obj.getClass());
 	}
 	
-	public static boolean isTimeClass(Class clazz){
+	public static boolean isTimeClass(Class<?> clazz){
 		if(clazz==null)
 			return false;
 		return Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz);
@@ -1571,41 +1569,43 @@ public class LangUtils {
 	}
 	
 	public static String format(Number num) {
-		return DF_TWO_SCALE.format(num);
+		return new DecimalFormat("0.00").format(num);
 	}
 
 	/*****
-	 * 填充字符串，如果s的长度少于alength，则在左边填充(aleng-s.length)个append
+	 * 填充字符串，如果s的长度少于taotalLength，则在左边填充(aleng-s.length)个append
 	 * @param s 
-	 * @param alength
+	 * @param taotalLength
 	 * @param append
 	 * @return
 	 */
-	public static String padLeft(String s, int alength, String append){
-		return pad(s, alength, append.charAt(0), true);
+	public static String padLeft(String s, int taotalLength, String append){
+		return pad(s, taotalLength, append.charAt(0), true);
 	}
-	public static String padRight(String s, int alength, String append){
-		return pad(s, alength, append.charAt(0), false);
+	public static String padRight(String s, int taotalLength, String append){
+		return pad(s, taotalLength, append.charAt(0), false);
 	}
 	
-	public static String pad(String s, int alength, char append, boolean padLeft){
+	public static String pad(String s, int taotalLength, char append, boolean padLeft){
+		Assert.isTrue(taotalLength>0, "total length must be >0");
 		if(s==null){
 			return s;
 		}
-		int length = Math.abs(alength);
+		int length = Math.abs(taotalLength);
 		if(s.length()==length)
 			return s;
 		StringBuilder str = new StringBuilder(s);
 		if(str.length()<length){
 			int lack = length-str.length();
-			for(int i=0; i<lack; i++){
-				if(padLeft)
-					str.insert(0, append);
-				else
-					str.append(append);
+			char[] appendChars = new char[lack];
+			Arrays.fill(appendChars, append);
+			if(padLeft){
+				str.insert(0, appendChars);
+			}else{
+				str.append(appendChars);
 			}
 		}else{
-			if(alength>0)
+			if(taotalLength>0)
 				str.delete(length, str.length());
 			else
 				str.delete(0, str.length()-length);

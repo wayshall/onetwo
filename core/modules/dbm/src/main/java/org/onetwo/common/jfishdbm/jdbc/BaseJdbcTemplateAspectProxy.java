@@ -111,7 +111,7 @@ public class BaseJdbcTemplateAspectProxy {
 					}else if(mArgs==null && LangUtils.isMultiple(arg)){
 						mArgs = arg;
 					}else if(mArgs==null && Map.class.isInstance(arg)){
-						mArgs = (Map)arg;
+						mArgs = (Map<?, ?>)arg;
 					}else if(MapSqlParameterSource.class.isInstance(arg)){
 						MapSqlParameterSource c = (MapSqlParameterSource) arg;
 						mArgs = c.getValues();
@@ -133,6 +133,9 @@ public class BaseJdbcTemplateAspectProxy {
 				List<?> argList = convertAsList(mArgs);
 				String parseArgSql = holder.parse(sql, index->{
 					Object val = argList.get(index);
+					val = DbmArgumentPreparedStatementSetter.getActualValue(val);
+					if(val==null)
+						return "NULL";
 					return LangUtils.isNumberObject(val)?val.toString():"'"+val.toString()+"'";
 				});
 				logMsg.append("replaced arg sql:").append(parseArgSql).append("\n");

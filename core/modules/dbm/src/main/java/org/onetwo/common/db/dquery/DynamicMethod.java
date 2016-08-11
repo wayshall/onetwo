@@ -18,7 +18,7 @@ import org.onetwo.common.db.dquery.annotation.AsCountQuery;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
 import org.onetwo.common.db.dquery.annotation.Dispatcher;
-import org.onetwo.common.db.dquery.annotation.Name;
+import org.onetwo.common.db.dquery.annotation.Param;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
 import org.onetwo.common.db.filequery.JNamedQueryKey;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
@@ -272,7 +272,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		return values.toArray();
 	}*/
 	
-	private Pair<String, Object> addAndCheckParamValue(Name name, String pname, Object pvalue){
+	private Pair<String, Object> addAndCheckParamValue(Param name, String pname, Object pvalue){
 		//TODO 参数ifParamNull已过时，将来注释下面这段代码
 		/*IfNull ifnull = name.ifParamNull();
 		if(pvalue==null){
@@ -306,8 +306,8 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	protected void handleArg(Map<Object, Object> values, ParserContext parserContext, DynamicMethodParameter mp, Object pvalue){
 		if(pvalue instanceof ParserContext){
 			parserContext.putAll((ParserContext) pvalue);
-		}else if(mp.hasParameterAnnotation(Name.class)){
-			Name name = mp.getParameterAnnotation(Name.class);
+		}else if(mp.hasParameterAnnotation(Param.class)){
+			Param name = mp.getParameterAnnotation(Param.class);
 			if(name.renamedUseIndex()){
 				List<?> listValue = LangUtils.asList(pvalue);
 				int index = 0;
@@ -458,7 +458,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	protected static class DynamicMethodParameter extends BaseMethodParameter {
 
 		final protected String[] condidateParameterNames;
-		final protected Name nameAnnotation;
+		final protected Param nameAnnotation;
 		
 
 		public DynamicMethodParameter(Method method, int parameterIndex) {
@@ -468,7 +468,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		public DynamicMethodParameter(Method method, int parameterIndex, String[] parameterNamesByMethodName) {
 			super(method, parameterIndex);
 			this.condidateParameterNames = parameterNamesByMethodName;
-			nameAnnotation = getParameterAnnotation(Name.class);
+			nameAnnotation = getParameterAnnotation(Param.class);
 		}
 
 		/****
@@ -478,7 +478,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 		 * 以上皆否，则通过参数位置作为名称
 		 */
 		public String getParameterName() {
-			Name name = getParameterAnnotation(Name.class);
+			Param name = getParameterAnnotation(Param.class);
 			if(name!=null){
 				return name.value();
 			}else if(condidateParameterNames.length>getParameterIndex()){
@@ -503,7 +503,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 
 		@Override
 		public String getParameterName() {
-			Name name = getParameterAnnotation(Name.class);
+			Param name = getParameterAnnotation(Param.class);
 			if(name!=null){
 				return name.value();
 			}else if(parameter!=null && parameter.isNamePresent()){

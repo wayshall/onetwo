@@ -13,8 +13,8 @@ import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
+import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.web.filter.CorsFilter;
-import org.onetwo.boot.core.web.ftl.FreemarkerViewContextConfig;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
@@ -23,8 +23,8 @@ import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.view.BootJsonView;
+import org.onetwo.boot.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
@@ -38,9 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,13 +54,12 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
-@Import({BootContextConfig.class, FreemarkerViewContextConfig.class})
+@Import({BootContextConfig.class})
 //@Import({BootContextConfig.class})
+@ConditionalOnProperty(prefix="jfish", name="autoConfig", havingValue="true", matchIfMissing=true)
 public class BootWebAContextAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -141,6 +141,11 @@ public class BootWebAContextAutoConfig {
 	}
 	
 	@Bean
+	public ConfigServletContextInitializer configServletContextInitializer(){
+		return new ConfigServletContextInitializer();
+	}
+	
+	@Bean
 	RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
 		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
 		return req;	
@@ -172,6 +177,11 @@ public class BootWebAContextAutoConfig {
 	public BootFirstInterceptor bootFirstInterceptor(){
 		return new BootFirstInterceptor();
 	}
+
+	@Bean
+	public UploadValidateInterceptor uploadValidateInterceptor(){
+		return new UploadValidateInterceptor();
+	}
 	
 	@Bean
 	public BootJsonView bootJsonView(){
@@ -184,10 +194,10 @@ public class BootWebAContextAutoConfig {
 	 * instead of boot mapper config by JacksonAutoConfiguration
 	 * @return
 	 */
-	@Bean
+	/*@Bean
 	public ObjectMapper objectMapper(){
 		return BootWebUtils.createObjectMapper(applicationContext);
-	}
+	}*/
 	
 	@Bean
 	public WebHolderManager webHolderManager() {
@@ -231,8 +241,8 @@ public class BootWebAContextAutoConfig {
 	}
 
 	@Bean
-	public UploadValidateInterceptor uploadValidateInterceptor(){
-		return new UploadValidateInterceptor();
+	public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
+		return new BootJackson2ObjectMapperBuilder();
 	}
 	
 	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)

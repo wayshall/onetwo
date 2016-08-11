@@ -52,8 +52,8 @@ public abstract class IgnoreFiler implements Filter{
 	
 	final public void init(FilterConfig config) throws ServletException {
 //		logger = this.initLogger(config);
-		logger.info("项目正在启动...");
-		this.initApplication(config);
+//		logger.info("项目正在启动...");
+		this.onFilterInitialize(config);
 		
 		filterSuffix = "true".equals(config.getInitParameter("filterSuffix"));
 		if(filterSuffix){
@@ -83,7 +83,7 @@ public abstract class IgnoreFiler implements Filter{
 		
 		}
 
-		onInit(config);
+		initWebFilterInitializers(config);
 		
 	}
 	
@@ -93,7 +93,7 @@ public abstract class IgnoreFiler implements Filter{
 		return logger;
 	}*/
 	
-	protected void initApplication(FilterConfig config) {
+	protected void onFilterInitialize(FilterConfig config) {
 		/*ServletContext context = config.getServletContext();
 		
 		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
@@ -105,7 +105,7 @@ public abstract class IgnoreFiler implements Filter{
 		return null;
 	}*/
 	
-	protected void onInit(FilterConfig config){
+	protected void initWebFilterInitializers(FilterConfig config){
 		filterInitializers = (List<WebFilterInitializers>) SpringApplication.getInstance().getBeans(WebFilterInitializers.class);
 		webFilters = (List<WebFilter>) SpringApplication.getInstance().getBeans(WebFilter.class);
 		

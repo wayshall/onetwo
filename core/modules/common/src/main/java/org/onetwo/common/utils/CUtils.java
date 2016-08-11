@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -315,17 +316,6 @@ final public class CUtils {
 		List list = null;
 		if (List.class.isInstance(object)) {
 			list = (List) object;
-			/*if (List.class.isInstance(object))
-				list = (List) object;
-			else {
-				Collection col = (Collection) object;
-				if(col.isEmpty()){
-					list = new ArrayList(5);
-				}else{
-					list = new ArrayList(col.size());
-					list.addAll(col);
-				}
-			}*/
 		} else if(Iterable.class.isInstance(object)){
 			list = new ArrayList();
 			for(Object obj : (Iterable<?>)object){
@@ -574,7 +564,7 @@ final public class CUtils {
 			@Override
 			public boolean apply(T e1, T e2) {
 				for(String p : properties){
-					if(!ReflectUtils.getProperty(e1, p).equals(ReflectUtils.getProperty(e2, p)))
+					if(!ReflectUtils.getPropertyValue(e1, p).equals(ReflectUtils.getPropertyValue(e2, p)))
 						return false;
 				}
 				return true;
@@ -620,9 +610,11 @@ final public class CUtils {
 	public static <T> List<T> iterableToList(Iterable<T> it){
 		if(it==null)
 			return Collections.EMPTY_LIST;
-		List<T> list = new ArrayList<T>();
+		/*List<T> list = new ArrayList<T>();
 		it.forEach(e->list.add(e));
-		return Collections.unmodifiableList(list);
+		return Collections.unmodifiableList(list);*/
+		return StreamSupport.stream(it.spliterator(), false)
+							.collect(Collectors.toList());
 	}
 	
 	private CUtils(){

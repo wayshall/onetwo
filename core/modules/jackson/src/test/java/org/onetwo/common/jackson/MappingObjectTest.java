@@ -47,7 +47,7 @@ public class MappingObjectTest extends HashMap<String, Object>{
 		
 		public MappingObjectTest bindValues(MappingObjectTest mappingObject,Object sourceObject){
 		    mappingInfos.stream().forEach(maping->{
-		    	Object value = ReflectUtils.getProperty(sourceObject, maping.sourceName);
+		    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.sourceName);
 		    	mappingObject.put(maping.targetName, value);
 		    });
 		    return mappingObject;
@@ -73,7 +73,7 @@ public class MappingObjectTest extends HashMap<String, Object>{
 		
 		public MappingObjectTest bindValues(){
 		    mappingInfos.stream().forEach(maping->{
-		    	Object value = ReflectUtils.getProperty(sourceObject, maping.sourceName);
+		    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.sourceName);
 		    	mappingObject.put(maping.targetName, value);
 		    });
 		    return mappingObject;

@@ -3,14 +3,14 @@ package org.onetwo.boot.mybatis;
 import java.util.List;
 import java.util.Optional;
 
-import org.onetwo.easyui.EasyPage;
+import org.onetwo.easyui.EasyDataGrid;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 public class MyBatisUtils {
 	
-	public static void setCurrentQueryPage(EasyPage<?> page){
+	public static void setCurrentQueryPage(EasyDataGrid<?> page){
 		if(page.isPagination()){
 			PageHelper.startPage(page.getPage(), page.getPageSize());  
 		}

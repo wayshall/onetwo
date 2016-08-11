@@ -8,6 +8,7 @@ import java.util.List;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 public class ResourceUtils {
@@ -28,4 +29,9 @@ public class ResourceUtils {
 	public static Resource getResource(String pluginPath){
 		return patternResolver.getResource(pluginPath);
 	}
+	public static ResourceLoader getResourceLoader() {
+		return patternResolver.getResourceLoader();
+	}
+	
+	
 }

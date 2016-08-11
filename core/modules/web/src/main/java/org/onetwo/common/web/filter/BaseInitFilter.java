@@ -1,13 +1,11 @@
 package org.onetwo.common.web.filter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -18,7 +16,6 @@ import javax.servlet.http.HttpSession;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
@@ -34,7 +31,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @SuppressWarnings("unused")
 public class BaseInitFilter extends IgnoreFiler {
-	public static final String SITE_CONFIG_NAME = "siteConfig";
+//	public static final String SITE_CONFIG_NAME = "siteConfig";
 	public static final String WEB_CONFIG_NAME = "webConfig";
 	
 	public static final String PREVENT_XSS_REQUEST = "security.preventXssRequest";//xss
@@ -48,7 +45,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	public static final String LOCALE_SESSION_ATTRIBUTE = WebLocaleUtils.ATTRIBUTE_KEY;//I18nInterceptor.DEFAULT_SESSION_ATTRIBUTE;
 
 	public static final String RELOAD = "reload";
-	public static final String JNA_LIBRARY_PATH = "jna.library.path";
+//	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String LANGUAGE = "cookie.language";
@@ -58,55 +55,19 @@ public class BaseInitFilter extends IgnoreFiler {
 	private boolean preventXssRequest = false;
 	private SiteConfig siteConfig;
 
-	protected void initApplication(FilterConfig config) {
-		
-		super.initApplication(config);
-		
-		String libraryPath = System.getProperty(JNA_LIBRARY_PATH);
-		logger.info("jna.library.path: {}", libraryPath);
-		
-		ServletContext context = config.getServletContext();
-		
-		WebApplicationContext app = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
-//		SpringApplication.initApplication(app);
-		SpringApplication.initApplicationIfNotInitialized(app);
-		
-		SiteConfigProvider<?> webConfigProvider = SpringUtils.getBean(app, SiteConfigProvider.class);
-		if(webConfigProvider!=null){
-			siteConfig = webConfigProvider.createConfig(config);
-			Assert.notNull(siteConfig);
-			context.setAttribute(SITE_CONFIG_NAME, siteConfig);
-//			context.setAttribute(WEB_CONFIG_NAME, webConfigProvider.createWebConfig(config));
-			logger.info("find webConfigProvider : {}", webConfigProvider);
-			
-			this.initOnAppConfig(siteConfig);
-		}else{
-//			siteConfig = AppConfig.create(true);
-			logger.info("no webConfigProvider found.");
-		}
-		
-		List<WebContextConfigProvider> configs = SpringUtils.getBeans(app, WebContextConfigProvider.class);
-		configs.stream().forEach(cnf->{
-			context.setAttribute(cnf.getConfigName(), cnf.getWebConfig(config));
-			logger.info("find WebContextConfigProvider : {} -> {}", cnf.getConfigName(), cnf);
-		});
-		
-		this.initWithWebApplicationContext(config, app);
+	protected void onFilterInitialize(FilterConfig config) {
+		WebApplicationContext webapp = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+		siteConfig = SpringApplication.getInstance().getBean(SiteConfig.class);
+		Assert.notNull(siteConfig, "siteConfig not initialize yet!");
+		this.preventXssRequest = siteConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
+		UtilTimerStack.active(siteConfig.getConfig(TIME_PROFILER, false, boolean.class));
 	}
 	
 	protected void setPreventXssRequest(boolean preventXssRequest) {
 		this.preventXssRequest = preventXssRequest;
 	}
 
-	protected void initWithWebApplicationContext(FilterConfig config, WebApplicationContext app){
-	}
 	
-	protected void initOnAppConfig(SiteConfig appConfig){
-		//xss
-		this.preventXssRequest = appConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
-		UtilTimerStack.active(appConfig.getConfig(TIME_PROFILER, false, boolean.class));
-	}
-
 	/*public String[] getWebFilters(FilterConfig config){
 		return getBaseSiteConfig().getFilterInitializers();
 	}*/

@@ -30,7 +30,7 @@ import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.QueryException;
 import org.onetwo.common.jfishdbm.mapping.DBValueHanlder;
 import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeFactory;
+import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.BaseMap;
@@ -373,17 +373,17 @@ public class DBUtils {
 		}
 	}
 	
-	public static void setPstmParameter(PreparedStatement preparedStatement, List values){
+	public static void setPstmParameter(PreparedStatement preparedStatement, List values, SqlTypeMapping mapping){
 		int index = 0;
 		for(Object value : values){
-			DBUtils.setPstmParameter(preparedStatement, index+1, value);
+			DBUtils.setPstmParameter(preparedStatement, index+1, value, mapping);
 			index++;
 		}
 	}
 	
-	public static void setPstmParameter(PreparedStatement pstm, int index, Object value){
+	public static void setPstmParameter(PreparedStatement pstm, int index, Object value, SqlTypeMapping mapping){
 		try {
-			setPstmParameter(pstm, index, value, SqlTypeFactory.getType(value));
+			setPstmParameter(pstm, index, value, mapping.getType(value));
 		} catch (Exception e) {
 			throw new ServiceException("setPstmParameter error : " + e.getMessage(), e);
 		}
@@ -656,13 +656,13 @@ public class DBUtils {
 		}
 	}
 	
-	public static List<BaseMap> toList(ResultSet rs, boolean autoClose, ResultSetMapper mapper){
+	public static List<BaseMap> toList(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper){
 		List<BaseMap> datas = new ArrayList<BaseMap>();
 		
 		try {
 			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
-				rowMap = toMap(rs, false, mapper);
+				rowMap = toMap(mapping, rs, false, mapper);
 				if(rowMap!=null)
 					datas.add(rowMap);
 			}
@@ -676,7 +676,7 @@ public class DBUtils {
 	}
 	
 
-	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
+	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, ResultSetMapper mapper) {
 		CaseInsensitiveMap rowMap = new CaseInsensitiveMap();
 		try {
 			rowMap = mapper.map(rs, rowMap);
@@ -689,13 +689,13 @@ public class DBUtils {
 		return rowMap;
 	}
 	
-	public static List<Map> toList(ResultSet rs, boolean autoClose, String...names){
+	public static List<Map> toList(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, String...names){
 		List<Map> datas = new ArrayList<Map>();
 		
 		try {
 			CaseInsensitiveMap<String, Object> rowMap = null;
 			while(rs.next()){
-				rowMap = toMap(rs, false, names);
+				rowMap = toMap(mapping, rs, false, names);
 				if(rowMap!=null)
 					datas.add(rowMap);
 			}
@@ -718,11 +718,11 @@ public class DBUtils {
 	 * @param names
 	 * @return
 	 */
-	public static CaseInsensitiveMap toMap(ResultSet rs, String...names) {
-		return toMap(rs, false, names);
+	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, String...names) {
+		return toMap(mapping, rs, false, names);
 	}
 	
-	public static CaseInsensitiveMap toMap(ResultSet rs, boolean autoClose, String...names) {
+	public static CaseInsensitiveMap toMap(SqlTypeMapping mapping, ResultSet rs, boolean autoClose, String...names) {
 		CaseInsensitiveMap rowMap = new CaseInsensitiveMap<String, Object>();
 		try {
 			if(names==null || names.length==0){
@@ -733,7 +733,7 @@ public class DBUtils {
 						int index = colName.getValue()+1;
 //						System.out.println("index: " + index);
 						int sqlType = getColumnSqlType(rs, index);
-						val = DBUtils.getValueByFieldFromResultSet(colName.getKey(), SqlTypeFactory.getJavaType(sqlType), rs);
+						val = DBUtils.getValueByFieldFromResultSet(colName.getKey(), mapping.getJavaType(sqlType), rs);
 						rowMap.put(colName.getKey().toLowerCase(), val);
 					} catch (Exception e) {
 						throw new ServiceException("get value error : " + colName, e);

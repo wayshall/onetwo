@@ -11,10 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.utils.ArrayUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.UserEntity;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;

@@ -1,0 +1,120 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.onetwo</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.2.2-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+	
+  <artifactId>onetwo-web-admin</artifactId>
+  <packaging>jar</packaging>
+
+  <name>onetwo-web-admin</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	</dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-spring</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-dbm</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-jackson</artifactId>
+    </dependency>
+	
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-web</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-security</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-boot</artifactId>
+       <exclusions>
+       	<exclusion>
+       		<groupId>ch.qos.logback</groupId>
+       		<artifactId>logback-core</artifactId>
+       	</exclusion>
+       	<exclusion>
+       		<groupId>ch.qos.logback</groupId>
+       		<artifactId>logback-classic</artifactId>
+       	</exclusion>
+       </exclusions>
+    </dependency>
+    
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.1.6</version>
+    </dependency>
+
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.1.6</version>
+       <exclusions>
+       	<exclusion>
+       		<groupId>ch.qos.logback</groupId>
+       		<artifactId>logback-core</artifactId>
+       	</exclusion>
+       </exclusions>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.mockito</groupId>
+       <artifactId>mockito-all</artifactId>
+       <scope>test</scope>
+     </dependency>
+    <dependency>
+       <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <scope>test</scope>
+     </dependency>
+    <dependency>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+       <scope>test</scope>
+    </dependency> 
+
+  </dependencies>
+  
+  <build>
+  	<plugins>
+	    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+		</plugin>
+		
+  	</plugins>
+  </build>
+  
+</project>

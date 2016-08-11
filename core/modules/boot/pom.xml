@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.onetwo</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.2.2-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -47,13 +47,20 @@
         <dependency>
           <groupId>org.onetwo</groupId>
           <artifactId>onetwo-dbm</artifactId>
+          <optional>true</optional>
         </dependency>
-		
-		<dependency>
-		  <groupId>org.onetwo</groupId>
-		  <artifactId>onetwo-web</artifactId>
-		</dependency>
-		
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-security</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-web</artifactId>
+        </dependency>
+        
 	    <!-- <dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
@@ -61,7 +68,7 @@
 	    <dependency>
 	        <groupId>org.projectlombok</groupId>
 	        <artifactId>lombok</artifactId>
-	        <scope>provided</scope>
+          	<optional>true</optional>
 	    </dependency>
 	
 		<dependency>
@@ -82,13 +89,37 @@
         <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+          	<optional>true</optional>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>org.springframework.boot</groupId>
+	          		<artifactId>spring-boot-starter-logging</artifactId>
+	          	</exclusion>
+	          </exclusions>
 		</dependency>
+		
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+		
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.6</version>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>ch.qos.logback</groupId>
+	          		<artifactId>logback-core</artifactId>
+	          	</exclusion>
+	          </exclusions>
+        </dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -100,11 +131,6 @@
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
 	    </dependency> -->
-	    <dependency>
-	        <groupId>org.projectlombok</groupId>
-	        <artifactId>lombok</artifactId>
-	        <scope>compile</scope>
-	    </dependency>
         
         <dependency>
             <groupId>javax.mail</groupId>
@@ -129,30 +155,19 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>	
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-taglibs</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
-    
-	    <dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-cas</artifactId>
-            <scope>provided</scope>
+        
+        <dependency>
+	        <groupId>org.springframework.data</groupId>
+	        <artifactId>spring-data-elasticsearch</artifactId>
+            <optional>true</optional>
 	    </dependency>
+    
 	    
 	    <!-- mybatis -->
 	    <dependency>

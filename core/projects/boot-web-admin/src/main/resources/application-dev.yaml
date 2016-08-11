@@ -1,0 +1,26 @@
+server:
+    port: 9080
+spring: 
+    datasource: 
+        url: jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+jfish:
+    security:
+        cas:
+            service: http://localhost:8080/j_spring_cas_security_check
+            loginUrl: https://emall-sso.yooyo.com:9443/cas-server/login
+            casServerUrl: https://emall-sso.yooyo.com:9443/cas-server
+            logoutUrl: https://emall-sso.yooyo.com:9443/cas-server/logout
+        logoutUrl: /logout
+siteConfig:
+    uploadImageAccessPath: http://localhost/img/manager
+    upload:
+        #storeType: ftp
+        #ftpServer: 127.0.0.1
+        #ftpUser: test
+        #ftpPassword: test
+        fileStorePath: G:/temp/upload_files
+        appContextDir: manager
+        #maxUploadSize: 1024

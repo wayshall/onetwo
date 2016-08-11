@@ -1,0 +1,62 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[角色表]信息<hr/>
+       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/admin/admin_role.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
+           <input id="id" name="id" type="hidden"/>
+           <table cellpadding="5">
+                <tr>
+                    <td>角色名:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="name" 
+                               data-options="required:true,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        <input class="easyui-combobox formFieldClass" type="text" name="status" 
+                               data-options="required:true,
+                                             editable:false,
+                                             data: [{value:'NORMAL', text:'正常'}, {value:'STOP', text:'停用'}] "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>角色描述:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="remark" 
+                               style="width:185px;height:200px"
+                               data-options="required:false,
+                                             multiline:true, 
+                                             validType:'length[0,500]' "/>
+                    </td>
+                </tr>
+           </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+</script>

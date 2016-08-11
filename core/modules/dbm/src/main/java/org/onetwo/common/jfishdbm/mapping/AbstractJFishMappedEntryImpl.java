@@ -68,13 +68,16 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 //	private final SimpleDbmInnserServiceRegistry serviceRegistry;
 	private EntityValidator entityValidator;
 	
+	private SqlTypeMapping sqlTypeMapping;
+	
 	/*public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo) {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public AbstractJFishMappedEntryImpl(SqlTypeMapping sqlTypeMapping, AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
+		this.sqlTypeMapping = sqlTypeMapping;
 //		this.serviceRegistry = serviceRegistry;
 		this.entityName = this.entityClass.getName();
 		this.tableInfo = tableInfo;
@@ -101,6 +104,20 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 			this.entityValidator = serviceRegistry.getEntityValidator();
 			Assert.notNull(entityValidator, "no entity validator config!");
 		}
+	}
+
+
+	@Override
+	public String getStaticSeqSql() {
+		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
+	}
+	@Override
+	public String getStaticCreateSeqSql() {
+		throw new UnsupportedOperationException("the queryable entity unsupported this operation!");
+	}
+	
+	public SqlTypeMapping getSqlTypeMapping() {
+		return sqlTypeMapping;
 	}
 
 	public Collection<AbstractMappedField> getFields(){
@@ -237,14 +254,14 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	protected void buildStaticSQL(TableInfo taboleInfo){
 	}
 	
-	public EntrySQLBuilder createSQLBuilder(SqlBuilderType type){
+	public EntrySQLBuilderImpl createSQLBuilder(SqlBuilderType type){
 //		SQLBuilder sqlb = SQLBuilder.createNamed(tableInfo.getName(), tableInfo.getAlias(), type);
-		EntrySQLBuilder sqlb = sqlBuilderFactory.createQMark(this, tableInfo.getAlias(), type);
+		EntrySQLBuilderImpl sqlb = sqlBuilderFactory.createQMark(this, tableInfo.getAlias(), type);
 		return sqlb;
 	}
 	
 	public JdbcStatementContextBuilder createJdbcStatementContextBuilder(SqlBuilderType type){
-		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), type);
+		EntrySQLBuilderImpl sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), type);
 		JdbcStatementContextBuilder sqlb = JdbcStatementContextBuilder.create(null, this, sb);
 		return sqlb;
 	}
@@ -344,10 +361,10 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		}
 	}
 
-	abstract protected EntrySQLBuilder getStaticInsertSqlBuilder();
-	abstract protected EntrySQLBuilder getStaticUpdateSqlBuilder();
-	abstract protected EntrySQLBuilder getStaticDeleteSqlBuilder();
-	abstract protected EntrySQLBuilder getStaticFetchSqlBuilder();
+	abstract protected EntrySQLBuilderImpl getStaticInsertSqlBuilder();
+	abstract protected EntrySQLBuilderImpl getStaticUpdateSqlBuilder();
+	abstract protected EntrySQLBuilderImpl getStaticDeleteSqlBuilder();
+	abstract protected EntrySQLBuilderImpl getStaticFetchSqlBuilder();
 	abstract protected EntrySQLBuilder getStaticFetchAllSqlBuilder();
 	abstract protected EntrySQLBuilder getStaticSelectVersionSqlBuilder();
 	
@@ -414,7 +431,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	@Override
 	public JdbcStatementContext<List<Object[]>> makeInsert(Object entity){
 		this.throwIfQueryableOnly();
-		EntrySQLBuilder insertSqlBuilder = getStaticInsertSqlBuilder();
+		EntrySQLBuilderImpl insertSqlBuilder = getStaticInsertSqlBuilder();
 		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.insert, this, insertSqlBuilder);
 		if(LangUtils.isMultiple(entity)){
 			List<Object> list = LangUtils.asList(entity);
@@ -548,7 +565,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 
 	protected JdbcStatementContextBuilder makeDymanicUpdateJdbcStatementContextBuilder(Object entity){
-		EntrySQLBuilder sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
+		EntrySQLBuilderImpl sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
 		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(JFishEventAction.update, this, sb);
 		Object val = null;
 		for(DbmMappedField mfield : this.mappedColumns.values()){

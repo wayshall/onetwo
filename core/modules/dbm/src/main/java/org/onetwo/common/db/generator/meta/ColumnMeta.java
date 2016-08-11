@@ -22,7 +22,7 @@ public class ColumnMeta {
 	
 	protected boolean nullable;
 	private String comment;
-	private Map<String, String> commentsInfo = Collections.EMPTY_MAP;
+	private Map<String, String> commentsInfo = Collections.emptyMap();
 	protected int columnSize;
 	
 

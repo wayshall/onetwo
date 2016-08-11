@@ -1,9 +1,8 @@
 package org.onetwo.common.db.dquery;
 
 import java.lang.reflect.Method;
-import java.util.stream.Stream;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.db.filequery.SpringBasedSqlFileScanner;
 import org.onetwo.common.db.filequery.SqlFileScanner;
@@ -11,20 +10,16 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.util.ClassUtils;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-
-public class DynamicQueryObjectRegister implements /*FileNamedQueryFactoryListener, */ BeanDefinitionRegistryPostProcessor {
+public class DynamicQueryObjectRegister {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private SqlFileScanner sqlFileScanner = new SpringBasedSqlFileScanner(ClassUtils.getDefaultClassLoader());
@@ -37,17 +32,25 @@ public class DynamicQueryObjectRegister implements /*FileNamedQueryFactoryListen
 																	}
 																});
 
-	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+	private String databaseName;
+	private BeanDefinitionRegistry registry;
+	
+	public DynamicQueryObjectRegister(BeanDefinitionRegistry registry) {
+		super();
+		this.registry = registry;
+	}
+	
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
 	}
 
-	
-	@Override
-	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-		ResourceAdapter<?>[] sqlfiles = sqlFileScanner.scanMatchSqlFiles(null);
-		Stream.of(sqlfiles).forEach(f->{
-			final String fileName = f.getName();
-			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());
+	public void registerQueryBeans() {
+		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(databaseName);
+		sqlfiles.entrySet().forEach(f->{
+			/*final String fileName = f.getName();
+			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());*/
+			String className = f.getKey();
 			if(NamespacePropertiesManager.GLOBAL_NS_KEY.equalsIgnoreCase(className)){
 				return ;
 			}
@@ -55,14 +58,13 @@ public class DynamicQueryObjectRegister implements /*FileNamedQueryFactoryListen
 			BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(JDKDynamicProxyCreator.class)
 								.addConstructorArgValue(interfaceClass)
 								.addConstructorArgValue(methodCache)
-								.addPropertyValue("sqlFile", f)
+								.addPropertyValue("sqlFile", f.getValue())
 								.setScope(BeanDefinition.SCOPE_SINGLETON)
 //								.setRole(BeanDefinition.ROLE_APPLICATION)
 								.getBeanDefinition();
 			registry.registerBeanDefinition(className, beandef);
-			logger.info("register dao bean: {} ", className);
+			logger.info("register dao bean: {} -> {}", className, f.getValue().getFile());
 		});
 		
 	}
-	
 }

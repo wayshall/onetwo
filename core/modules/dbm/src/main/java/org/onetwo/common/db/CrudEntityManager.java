@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.utils.Page;
@@ -13,6 +14,8 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	public T load(PK id);
 	
 	public T findById(PK id);
+	
+	public Optional<T> findOptionalById(PK id);
 	
 	public T save(T entity);
 	
@@ -25,6 +28,7 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	public void removes(Collection<T> entities);
 
 	public T removeById(PK id);
+	public List<T> removeByIds(PK[] id);
 
 	public Collection<T> removeByIds(Class<T> entityClass, PK[] ids);
 

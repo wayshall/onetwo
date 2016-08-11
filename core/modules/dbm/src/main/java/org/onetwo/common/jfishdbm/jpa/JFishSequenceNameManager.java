@@ -4,7 +4,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.onetwo.common.db.sql.SequenceNameManager;
-import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.utils.StringUtils;
 
 /***
@@ -23,16 +23,15 @@ public class JFishSequenceNameManager extends SequenceNameManager {
 		SequenceGenerator seq = entityClass.getAnnotation(SequenceGenerator.class);
 		if(seq!=null){
 			seqName = seq.sequenceName();
-			if(StringUtils.isBlank(seqName))
-				seqName = seq.name();
-		}
-		if(StringUtils.isBlank(seqName)){
+			/*if(StringUtils.isBlank(seqName))
+				seqName = seq.name();*/
+		}else{
 			Table table = entityClass.getAnnotation(Table.class);
 			if(table!=null)
-				seqName = "SEQ_" + table.name();
+				seqName = SEQ_PREFIX + table.name();
 		}
 		if(StringUtils.isBlank(seqName))
-			throw new ServiceException("can not find the sequence. class["+entityClass.getName()+"]");
+			throw new DbmException("can not find the sequence. class["+entityClass.getName()+"]");
 		
 		return seqName;
 	}

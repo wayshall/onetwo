@@ -5,12 +5,13 @@ build.xml
 .svn
 pom.properties
 .gitignore.sublime-workspace
+.externalToolBuilders
 
-.class
+*.class
 *.jar
-.war
-.ear
-.log
+*.war
+*.ear
+*.log
 
 tomcat.8080
 build
@@ -28,9 +29,10 @@ work/Tomcat
 /labs/dbtest/jfish-orm-test/.gradle
 /core/projects/appweb/.gradle
 /core/projects/appweb-admin/.gradle
-/core/projects/appweb-admin/.externalToolBuilders
+
 /core/modules/ajaxanywhere/.groovy/*.xdsl
 release-pom.xml
 .releaseBackup
 pom.xml.releaseBackup
 *.orig
+/core/modules/dbm/src/test/resources/db/generator/emall/emall-jdbc.properties

@@ -10,6 +10,24 @@ import org.onetwo.common.utils.StringUtils;
 //@Deprecated
 public class ServiceException extends BaseException implements ExceptionCodeMark{
 
+	public static ServiceException formatMessage(String msg, Object...args){
+		String formatMsg = String.format(msg, args);
+		return new ServiceException(formatMsg);
+	}
+	public static ServiceException formatMessage(Throwable cause, String msg, Object...args){
+		String formatMsg = String.format(msg, args);
+		return new ServiceException(formatMsg, cause);
+	}
+
+	public static ServiceException formatCodeMessage(String code, Object...args){
+		return formatCodeMessage(null, code, args);
+	}
+	public static ServiceException formatCodeMessage(Throwable cause, String code, Object...args){
+		ServiceException se = new ServiceException(cause, code);
+		se.setArgs(args);
+		return se;
+	}
+
 	/**
 	 *  
 	 */
@@ -21,7 +39,6 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	public ServiceException() {
 		super();
 	} 
-
 
 	public ServiceException(String msg, String code) {
 		super(msg);

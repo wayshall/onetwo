@@ -124,7 +124,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 	@Override
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
 		TableInfo tableInfo = newTableInfo(annotationInfo);
-		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(this.getDialect().getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
 		entry.setSqlBuilderFactory(this.getDialect().getSqlBuilderFactory());
 		return entry;
 	}
@@ -195,21 +195,27 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		String colName = field.getName();
 //		if("id".equals(field.getName()))
 //			System.out.println("id");
+		int sqlType = getDialect().getSqlTypeMapping().getType(field.getPropertyInfo().getType());
 		ColumnInfo col = null;
 		Column anno = field.getPropertyInfo().getAnnotation(Column.class);
 		if(anno!=null){
 			colName = anno.name();
-			col = new ColumnInfo(tableInfo, colName);
+			col = new ColumnInfo(tableInfo, colName, sqlType);
 			col.setInsertable(anno.insertable());
 			col.setUpdatable(anno.updatable());
 		}else{
 			colName = StringUtils.convert2UnderLineName(colName);
-			col = new ColumnInfo(tableInfo, colName);
+			col = new ColumnInfo(tableInfo, colName, sqlType);
 		}
 		col.setPrimaryKey(field.isIdentify());
 		Basic basic = field.getPropertyInfo().getAnnotation(Basic.class);
 		if(basic!=null){
 			col.setFetchType(basic.fetch());
+		}
+		
+		if(field.isIdentify()){
+			col.setInsertable(!field.isIncreaseIdStrategy());
+			col.setUpdatable(!field.isIncreaseIdStrategy());
 		}
 		
 		return col;

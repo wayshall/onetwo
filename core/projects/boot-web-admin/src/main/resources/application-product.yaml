@@ -1,0 +1,32 @@
+server:
+    port: 9080
+spring: 
+    datasource: 
+        url: jdbc:mysql://rdsqnieqzqnieqz.mysql.rds.aliyuncs.com:3306/fang?useUnicode=true&amp;characterEncoding=UTF-8
+        username: fang
+        password: J3CDliOB
+        driver-class-name: com.mysql.jdbc.Driver
+        timeBetweenEvictionRunsMillis: 5000
+        minEvictableIdleTimeMillis: 600
+        validationQueryTimeout: 10
+        testOnBorrow: true
+        testOnConnect: true
+        logValidationErrors: true
+        validationQuery: SELECT 1
+jfish:
+    security:
+        cas:
+            service: http://localhost:8080/j_spring_cas_security_check
+            loginUrl: https://emall-sso.yooyo.com:9443/cas-server/login
+            casServerUrl: https://emall-sso.yooyo.com:9443/cas-server
+            logoutUrl: https://emall-sso.yooyo.com:9443/cas-server/logout
+        logoutUrl: /logout
+siteConfig:
+    upload:
+        #storeType: ftp
+        #ftpServer: 127.0.0.1
+        #ftpUser: test
+        #ftpPassword: test
+        fileStorePath: /home/glassfish/servers/upload_files/manager
+        #keepContextPath: /upload_files
+        #maxUploadSize: 1024

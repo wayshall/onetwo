@@ -18,6 +18,7 @@ import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -92,8 +93,14 @@ public abstract class ExtQueryUtils {
 			}else if(ifNull==IfNull.Throw){
 				throw LangUtils.asBaseException("the fields["+LangUtils.toString(fields)+"] 's value can not be null or empty.");
 			}else {//calm
-				valueList = new ArrayList();
-				valueList.add(values);
+				/*valueList = new ArrayList();
+				valueList.add(values);*/
+				if(LangUtils.isMultiple(values)){
+					valueList = CUtils.tolist(values, false);
+				}else{
+					valueList = new ArrayList();
+					valueList.add(values);
+				}
 			}
 		}else{
 			valueList = LangUtils.asList(values, trimNull);

@@ -8,6 +8,8 @@ import org.onetwo.common.jfishdbm.event.DbmEntityListener;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 public interface JFishMappedEntry extends JFishMappedEntryMeta {
+	
+	public SqlTypeMapping getSqlTypeMapping();
 
 	public void setId(Object entity, Object value);
 
@@ -45,6 +47,7 @@ public interface JFishMappedEntry extends JFishMappedEntryMeta {
 //	public String getStaticFetchSql();
 
 	public String getStaticSeqSql();
+	public String getStaticCreateSeqSql();
 	
 	public JdbcStatementContext<Object[]> makeSelectVersion(Object object);
 	
@@ -63,6 +66,7 @@ public interface JFishMappedEntry extends JFishMappedEntryMeta {
 	public JdbcStatementContext<List<Object[]>> makeDymanicUpdate(Object entity);
 
 	public Map<String, AbstractMappedField> getMappedFields();
+	public Map<String, AbstractMappedField> getMappedColumns();
 
 	/*public boolean isQueryableOnly();
 

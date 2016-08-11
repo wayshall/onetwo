@@ -45,7 +45,6 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	
 	final private Map<String, MappedEntryBuilderListener> builderListeners = new LinkedHashMap<>();
 	protected final SimpleDbmInnserServiceRegistry serviceRegistry;
-	
 
 	public Map<String, MappedEntryBuilderListener> getRegister() {
 		return builderListeners;
@@ -184,14 +183,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){
-			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+			entry = new JFishQueryableMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
-				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishQueryableMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
 			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
 			}*/else{
-				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
 			}
 		}
 		entry.setSqlBuilderFactory(this.dialect.getSqlBuilderFactory());
@@ -265,7 +264,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	
 	protected String buildSeqName(AnnotationInfo entry, TableInfo tableInfo){
 //		String sname = entry.getEntityClass().getSimpleName();
-		String sname = "SEQ_" + tableInfo.getName().toLowerCase();
+		String sname = "SEQ_" + tableInfo.getName().toUpperCase();
 		return sname;
 	}
 	
@@ -301,9 +300,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 			colName = StringUtils.convert2UnderLineName(colName);
 		}
 		
-		ColumnInfo col = new ColumnInfo(tableInfo, colName);
+		int sqlType = dialect.getSqlTypeMapping().getType(field.getPropertyInfo().getType());
+		ColumnInfo col = new ColumnInfo(tableInfo, colName, sqlType);
 		col.setJavaType(field.getPropertyInfo().getType());
 		col.setPrimaryKey(field.isIdentify());
+		if(field.isIdentify()){
+			col.setInsertable(!field.isIncreaseIdStrategy());
+			col.setUpdatable(!field.isIncreaseIdStrategy());
+		}
 		
 		return col;
 	}

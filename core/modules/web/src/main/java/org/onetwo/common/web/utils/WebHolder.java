@@ -49,7 +49,7 @@ public class WebHolder {
 		Assert.notNull(response);
 		return response;
 	}
-	private static HttpServletRequest getSpringContextHolderRequest(){
+	public static HttpServletRequest getSpringContextHolderRequest(){
 		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		return attrs==null?null:attrs.getRequest();
 	}
