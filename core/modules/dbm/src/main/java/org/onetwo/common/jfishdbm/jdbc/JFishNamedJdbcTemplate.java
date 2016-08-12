@@ -26,12 +26,18 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
  */
 public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implements NamedJdbcTemplate{
 
+	private JdbcStatementParameterSetter jdbcParameterSetter = new SpringStatementParameterSetter();
+	
 	public JFishNamedJdbcTemplate(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	public JFishNamedJdbcTemplate(JdbcOperations classicJdbcTemplate) {
 		super(classicJdbcTemplate);
+	}
+
+	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
+		this.jdbcParameterSetter = jdbcParameterSetter;
 	}
 
 	public Object execute(String sql, Map<String, ?> paramMap) throws DataAccessException {
@@ -62,6 +68,7 @@ public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implement
 	
 	protected PreparedStatementCreator createPreparedStatementCreator(String sqlToUse, Object[] params, List<SqlParameter> declaredParameters) {
 		DbmPreparedStatementCreatorFactory pscf = new DbmPreparedStatementCreatorFactory(sqlToUse, declaredParameters);
+		pscf.setParameterSetter(jdbcParameterSetter);
 		return pscf.newPreparedStatementCreator(params);
 	}
 	

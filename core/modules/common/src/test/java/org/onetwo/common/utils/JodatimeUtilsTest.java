@@ -8,6 +8,9 @@ public class JodatimeUtilsTest {
 
 	@Test
 	public void testDate(){
+		DateTime dt = DateTime.now().millisOfDay().withMinimumValue();;
+		System.out.println(JodatimeUtils.formatDateTime(dt.toDate()));
+		
 		DateTime date = JodatimeUtils.parse("2015-03-18");
 		System.out.println("date: " + date.getDayOfMonth());
 		Assert.assertEquals(18, date.getDayOfMonth());

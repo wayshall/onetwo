@@ -2,6 +2,7 @@ package org.onetwo.common.jfishdbm.event;
 
 import java.util.List;
 
+import org.onetwo.common.jfishdbm.exception.EntityInsertException;
 import org.onetwo.common.jfishdbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
@@ -49,8 +50,9 @@ public class JFishInsertEventListener extends InsertEventListener{
 			updateCount += executeJdbcUpdate(sql, args, es);
 		}
 
-		/*if(updateCount<1)
-			throw new JFishOrmException("can not insert any entity["+entry.getEntityClass()+"] : " + updateCount);*/
+		if(updateCount<1 && !isUseBatchUpdate(args, es)){
+			throw new EntityInsertException(entity, objects.size(), updateCount);
+		}
 		
 		event.setUpdateCount(updateCount);
 	}

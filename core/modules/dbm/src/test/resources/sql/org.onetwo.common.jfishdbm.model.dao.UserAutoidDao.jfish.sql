@@ -7,7 +7,7 @@
         test_user_autoid
         (birthday, email, gender, mobile, nick_name, password, status, user_name) 
     values
-        (:birthday, :email, :gender, :mobile, :nickName, :password, :status, :userName)
+        (:birthday, :email, :gender, :mobile, :nickName, :password, :status.value, :userName)
 
 /*****
  * @name: batchInsert2

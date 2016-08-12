@@ -11,8 +11,9 @@ import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.utils.Page;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 
-//@TransactionConfiguration(defaultRollback=true)
+@TransactionConfiguration(defaultRollback=true)
 public class BatchInsertTest extends AppBaseTest {
 
 	@Resource

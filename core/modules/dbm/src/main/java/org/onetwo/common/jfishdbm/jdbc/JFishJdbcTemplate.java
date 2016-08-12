@@ -10,11 +10,11 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.jfishdbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
@@ -36,9 +36,16 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	
 	private boolean debug;
 	protected NamedJdbcTemplate namedTemplate;
-	protected RowMapperFactory rowMapperFactory;
+	private JdbcStatementParameterSetter jdbcParameterSetter;
 
 	public JFishJdbcTemplate() {
+	}
+
+	public JFishJdbcTemplate(DataSource dataSource) {
+		super(dataSource);
+	}
+	public JFishJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
+		super(dataSource);
 	}
 	
 	public boolean isDebug() {
@@ -49,13 +56,10 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 		this.debug = debug;
 	}
 
+	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
+		this.jdbcParameterSetter = jdbcParameterSetter;
+	}
 
-	public JFishJdbcTemplate(DataSource dataSource) {
-		super(dataSource);
-	}
-	public JFishJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
-		super(dataSource);
-	}
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		this.initTemplateConfig();
@@ -234,11 +238,17 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 			}
 		});
 	}
+
 	@Override
 	protected PreparedStatementSetter newArgPreparedStatementSetter(Object[] args) {
-//		return newDbmPreparedStatementSetter(args);
-		return super.newArgPreparedStatementSetter(args);
+		return new DbmArgumentPreparedStatementSetter(jdbcParameterSetter, args);
 	}
-
 	
+	protected PreparedStatementSetter newArgTypePreparedStatementSetter(Object[] args, int[] argTypes) {
+		return new ArgumentTypePreparedStatementSetter(args, argTypes){
+			protected void doSetValue(PreparedStatement ps, int parameterPosition, int argType, Object argValue) throws SQLException {
+				jdbcParameterSetter.setParameterValue(ps, parameterPosition, argType, argValue);
+			}
+		};
+	}
 }

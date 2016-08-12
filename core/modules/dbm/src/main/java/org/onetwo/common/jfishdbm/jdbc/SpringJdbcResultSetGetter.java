@@ -3,6 +3,7 @@ package org.onetwo.common.jfishdbm.jdbc;
 import java.beans.PropertyDescriptor;
 import java.sql.SQLException;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
@@ -19,6 +20,9 @@ public class SpringJdbcResultSetGetter implements JdbcResultSetGetter {
 	@Override
 	public Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, DbmMappedField field) throws SQLException {
 		Object value = JdbcUtils.getResultSetValue(rs.getResultSet(), index, field.getColumnType());
+		if(!field.getColumnType().equals(field.getPropertyInfo().getType())){
+			value = Types.convertValue(value, field.getPropertyInfo().getType());
+		}
 		return value;
 	}
 	

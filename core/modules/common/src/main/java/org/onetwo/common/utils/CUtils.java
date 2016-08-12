@@ -462,7 +462,7 @@ final public class CUtils {
 		return list;
 	}
 	
-	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
+	public static <K, V> Map<K, Collection<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	
