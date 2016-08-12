@@ -10,6 +10,7 @@ import org.onetwo.common.jfishdbm.mapping.DbmMappedField;
 import org.onetwo.common.jfishdbm.mapping.EntrySQLBuilder;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryMeta;
 import org.onetwo.common.jfishdbm.mapping.JdbcStatementContext;
+import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
@@ -167,5 +168,9 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 			Object versionValue = builder.getVersionValue(updateValues);
 			entry.getVersionField().setValue(singleEntity, versionValue);
 		}
+	}
+	
+	protected void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
+		DbmUtils.throwIfEffectiveCountError(operation + " error.", expectCount, effectiveCount);
 	}
 }

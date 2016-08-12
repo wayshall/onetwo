@@ -28,9 +28,8 @@ import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.exception.QueryException;
-import org.onetwo.common.jfishdbm.mapping.DBValueHanlder;
-import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
 import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.ResultSetMapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.map.BaseMap;
@@ -244,10 +243,10 @@ public class DBUtils {
 		
 	};
 	
-	public static final Map<Class, DBValueHanlder> DBVALUE_HANDLERS;
+	public static final Map<Class<?>, DBValueHanlder> DBVALUE_HANDLERS;
 	
 	static {
-		Map<Class, DBValueHanlder> temp = new HashMap<Class, DBValueHanlder>();
+		Map<Class<?>, DBValueHanlder> temp = new HashMap<>();
 
 		temp.put(Integer.class, IntHandler);
 		temp.put(int.class, IntHandler);
@@ -732,8 +731,9 @@ public class DBUtils {
 					try {
 						int index = colName.getValue()+1;
 //						System.out.println("index: " + index);
-						int sqlType = getColumnSqlType(rs, index);
-						val = DBUtils.getValueByFieldFromResultSet(colName.getKey(), mapping.getJavaType(sqlType), rs);
+//						int sqlType = getColumnSqlType(rs, index);
+//						val = DBUtils.getValueByFieldFromResultSet(colName.getKey(), mapping.getJavaType(sqlType), rs);
+						val = rs.getObject(index);
 						rowMap.put(colName.getKey().toLowerCase(), val);
 					} catch (Exception e) {
 						throw new ServiceException("get value error : " + colName, e);
@@ -824,9 +824,11 @@ public class DBUtils {
 		throw asQueryException(msg, e);
 	}
 	
-	public static void main(String[] args){
-		DBValueHanlder h = DBVALUE_HANDLERS.get(null);
-		System.out.println("h:" + (h==NullHandler));
+	static public interface DBValueHanlder {
+
+		Object getValue(ResultSet rs, String colName, Class<?> toType) throws SQLException;
+
+		void setValue(PreparedStatement stat, Object value, int index) throws SQLException;
 	}
 	
 }

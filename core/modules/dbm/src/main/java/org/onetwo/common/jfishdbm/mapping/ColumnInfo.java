@@ -12,6 +12,7 @@ public class ColumnInfo extends BaseColumnInfo {
 	public ColumnInfo(TableInfo tableInfo, String name, int sqlType) {
 		super(name);
 		this.table = tableInfo;
+		this.sqlType = sqlType;
 	}
 	
 	public Class<?> getJavaType() {

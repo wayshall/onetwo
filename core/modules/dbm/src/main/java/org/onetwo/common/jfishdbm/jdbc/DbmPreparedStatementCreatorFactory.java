@@ -75,6 +75,10 @@ public class DbmPreparedStatementCreatorFactory {
 	}
 
 
+	public void setParameterSetter(JdbcStatementParameterSetter parameterSetter) {
+		this.parameterSetter = parameterSetter;
+	}
+
 	/**
 	 * Add a new declared parameter.
 	 * <p>Order of parameter addition is significant.

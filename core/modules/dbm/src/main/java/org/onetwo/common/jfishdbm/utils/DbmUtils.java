@@ -19,6 +19,7 @@ import org.onetwo.common.date.Dates;
 import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.exception.DbmException;
+import org.onetwo.common.jfishdbm.exception.UpdateCountException;
 import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -34,7 +35,7 @@ final public class DbmUtils {
 	
 	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
 		if(effectiveCount!=expectCount)
-			throw new DbmException(errorMsg + " expect effective: " + expectCount+", but actual effective: " + effectiveCount);
+			throw new UpdateCountException(errorMsg, expectCount, effectiveCount);
 	}
 	
 	public static List<DbmEntityFieldListener> initDbmEntityFieldListeners(DbmFieldListeners listenersAnntation){
@@ -90,8 +91,10 @@ final public class DbmUtils {
 	
 
 	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value, DbmTypeMapping mapping){
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		return convertSqlParameterValue(jproperty, value, mapping);
+//		ClassIntroManager.getInstance().getIntro(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+//		return convertSqlParameterValue(jproperty, value, mapping);
+		SqlParameterValue sqlValue = new SqlParameterValue(DBUtils.TYPE_UNKNOW, value);
+		return sqlValue;
 	}
 	
 	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value, DbmTypeMapping mapping){

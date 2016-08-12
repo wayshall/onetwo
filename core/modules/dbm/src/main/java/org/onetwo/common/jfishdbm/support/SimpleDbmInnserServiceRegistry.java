@@ -67,7 +67,7 @@ public class SimpleDbmInnserServiceRegistry {
 			this.jdbcResultSetGetter = new SpringJdbcResultSetGetter();
 		}
 		if(typeMapping==null){
-			this.typeMapping = new DbmTypeMapping();a
+			this.typeMapping = new DbmTypeMapping();
 		}
 		if(databaseDialetManager==null){
 			this.databaseDialetManager = new DefaultDatabaseDialetManager();

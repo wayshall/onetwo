@@ -133,6 +133,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		JFishJdbcTemplate template = new JFishJdbcTemplate();
 		template.setDataSource(dataSource);
 		template.setDebug(defaultDataBaseConfig().isLogSql());
+		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
 //		template.setNamedTemplate(namedJdbcTemplate());
 //		template.setLogJdbcSql(logJdbcSql);
 
@@ -149,7 +150,8 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	
 	@Bean
 	public NamedJdbcTemplate namedJdbcTemplate(){
-		NamedJdbcTemplate template = new JFishNamedJdbcTemplate(jdbcTemplate());
+		JFishNamedJdbcTemplate template = new JFishNamedJdbcTemplate(jdbcTemplate());
+		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
 
 		/*if(logJdbcSql){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);

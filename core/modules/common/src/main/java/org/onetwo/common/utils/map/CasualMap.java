@@ -1,5 +1,6 @@
 package org.onetwo.common.utils.map;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,7 @@ public class CasualMap extends CollectionMap<Object, Object>{
 	
 	public CasualMap(){super();};
 
-	public CasualMap(Map<Object, List<Object>> map){
+	public CasualMap(Map<Object, Collection<Object>> map){
 		super(map);
 	}
 	
@@ -44,7 +45,7 @@ public class CasualMap extends CollectionMap<Object, Object>{
 		}
 	}
 	
-	public CasualMap subtract(Map<Object, List<Object>> map){
+	public CasualMap subtract(Map<Object, Collection<Object>> map){
 		return (CasualMap) CUtils.subtract(this, map, true);
 	}
 	
@@ -104,10 +105,10 @@ public class CasualMap extends CollectionMap<Object, Object>{
 	public String toParamString(){
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
-		for(Map.Entry<Object, List<Object>> entry : (Set<Map.Entry<Object, List<Object>>>)entrySet()){
+		for(Map.Entry<Object, Collection<Object>> entry : (Set<Map.Entry<Object, Collection<Object>>>)entrySet()){
 			if(entry.getValue()==null)
 				continue;
-			List values = entry.getValue();
+			Collection values = entry.getValue();
 			for(Object value : values){
 				if(index!=0)
 					sb.append("&");
