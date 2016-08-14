@@ -21,7 +21,7 @@ public class OneBatchInsertTest extends AppBaseTest {
 	@Resource
 	private UserAutoidServiceImpl userAutoidServiceImpl;
 	
-//	@Test
+	@Test
 	public void testBatchInsert(){
 		int insertCount = 10000;
 		//精确到秒，否则会有误差，比如2015-05-06 13:49:09.783存储到mysql后会变成2015-05-06 13:49:10，mysql的datetime只能精确到秒

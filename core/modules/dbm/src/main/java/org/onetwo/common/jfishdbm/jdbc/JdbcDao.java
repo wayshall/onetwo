@@ -90,6 +90,9 @@ public class JdbcDao {
 			this.namedParameterJdbcTemplate = new JFishNamedJdbcTemplate(getJdbcTemplate());
 		}
 	}
+	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
+		return new JFishNamedJdbcTemplate(getJdbcTemplate());
+	}
 
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 	  return namedParameterJdbcTemplate;

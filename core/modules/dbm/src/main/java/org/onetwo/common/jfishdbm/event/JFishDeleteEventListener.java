@@ -1,6 +1,7 @@
 package org.onetwo.common.jfishdbm.event;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
@@ -29,9 +30,14 @@ public class JFishDeleteEventListener extends AbstractJFishEventListener {
 		int count = 0;
 		if(deleteEvent.isDeleteAll()){
 			JdbcStatementContext<Object[]> delete = entry.makeDeleteAll();
-			count = es.getJFishJdbcTemplate().update(delete.getSql(), delete.getValue());
+//			count = es.getJFishJdbcTemplate().update(delete.getSql(), delete.getValue());
+			List<Object[]> argList = new ArrayList<>(1);
+			argList.add(delete.getValue());
+			this.executeJdbcUpdate(delete.getSql(), argList, es);
 		}else{
 			JdbcStatementContext<List<Object[]>> delete = entry.makeDelete(entity, deleteEvent.isDeleteByIdentify());
+			List<List<Object[]>> argList = new ArrayList<>(1);
+			argList.add(delete.getValue());
 			count = this.executeJdbcUpdate(delete.getSql(), delete.getValue(), es);
 		}
 		/*if(count<1)

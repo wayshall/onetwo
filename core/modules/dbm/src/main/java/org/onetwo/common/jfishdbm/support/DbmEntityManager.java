@@ -8,8 +8,6 @@ public interface DbmEntityManager extends BaseEntityManager {
 	
 //	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params);
 	
-	public int removeAll(Class<?> entityClass);
-	
 	public DbmDaoImplementor getDbmDao();
 	
 	public QueryBuilder createQueryBuilder(Class<?> entityClass);

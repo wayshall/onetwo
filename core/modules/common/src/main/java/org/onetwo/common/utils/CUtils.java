@@ -29,7 +29,7 @@ import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.common.utils.list.Predicate;
 import org.onetwo.common.utils.map.BaseMap;
-import org.onetwo.common.utils.map.ListMap;
+import org.onetwo.common.utils.map.CollectionMap;
 
 import com.google.common.collect.Maps;
 
@@ -270,10 +270,10 @@ final public class CUtils {
 		return new HashMap<K, V>(size);
 	}
 
-	public static <K, V> ListMap<K, V> newListMap(int size){
+	public static <K, V> CollectionMap<K, V> newListMap(int size){
 		if(size<=0)
-			return ListMap.newListMap();
-		return ListMap.newListMap(size);
+			return CollectionMap.newListMap();
+		return CollectionMap.newListMap(size);
 	}
 
 	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int size){
@@ -462,7 +462,7 @@ final public class CUtils {
 		return list;
 	}
 	
-	public static <K, V> Map<K, List<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
+	public static <K, V> Map<K, Collection<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	

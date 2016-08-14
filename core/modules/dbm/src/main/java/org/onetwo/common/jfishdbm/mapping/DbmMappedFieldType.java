@@ -1,6 +1,6 @@
 package org.onetwo.common.jfishdbm.mapping;
 
-public enum JFishMappedFieldType {
+public enum DbmMappedFieldType {
 	FIELD,
 //	ONE_TO_ONE,
 //	ONE_TO_MANY,

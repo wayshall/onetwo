@@ -10,6 +10,7 @@ import org.onetwo.common.date.DateUtil;
 public class JodatimeUtils {
 	
 	public static String[] DATE_PATTERNS = new String[]{"yyyy-MM-dd"};
+	public static String PATTERN_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 	
 	public static DateTime atStartOfDate(Date date){
 		DateTime dt = new DateTime(date).withTimeAtStartOfDay();
@@ -34,6 +35,9 @@ public class JodatimeUtils {
 	
 	public static String format(Date date, String pattern){
 		return new DateTime(date).toString(pattern);
+	}
+	public static String formatDateTime(Date date){
+		return new DateTime(date).toString(PATTERN_DATE_TIME);
 	}
 	
 	public static DateTime parse(String source, String pattern){

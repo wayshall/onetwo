@@ -17,11 +17,16 @@ import org.onetwo.common.jfishdbm.dialet.DbmetaFetcher;
 import org.onetwo.common.jfishdbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.common.jfishdbm.dialet.MySQLDialect;
 import org.onetwo.common.jfishdbm.dialet.OracleDialect;
+import org.onetwo.common.jfishdbm.jdbc.JdbcResultSetGetter;
+import org.onetwo.common.jfishdbm.jdbc.JdbcStatementParameterSetter;
+import org.onetwo.common.jfishdbm.jdbc.SpringJdbcResultSetGetter;
+import org.onetwo.common.jfishdbm.jdbc.SpringStatementParameterSetter;
 import org.onetwo.common.jfishdbm.jdbc.mapper.JFishRowMapperFactory;
 import org.onetwo.common.jfishdbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.common.jfishdbm.jpa.JFishSequenceNameManager;
 import org.onetwo.common.jfishdbm.jpa.JPAMappedEntryBuilder;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.mapping.DefaultDataBaseConfig;
 import org.onetwo.common.jfishdbm.mapping.EntityValidator;
 import org.onetwo.common.jfishdbm.mapping.JFishMappedEntryBuilder;
@@ -44,13 +49,25 @@ public class SimpleDbmInnserServiceRegistry {
 	private SQLSymbolManager sqlSymbolManager;
 	private SequenceNameManager sequenceNameManager;
 	private DefaultDatabaseDialetManager databaseDialetManager;
-	protected DataBaseConfig dataBaseConfig;
+	private DataBaseConfig dataBaseConfig;
 	private RowMapperFactory rowMapperFactory;
 	private EntityValidator entityValidator;
+	private JdbcStatementParameterSetter jdbcParameterSetter;
+	private JdbcResultSetGetter jdbcResultSetGetter;
+	private DbmTypeMapping typeMapping;
 	
 	public void initialize(DataSource dataSource, String[] packagesToScan){
 		if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDataBaseConfig();
+		}
+		if(jdbcParameterSetter==null){
+			this.jdbcParameterSetter = new SpringStatementParameterSetter();
+		}
+		if(jdbcResultSetGetter==null){
+			this.jdbcResultSetGetter = new SpringJdbcResultSetGetter();
+		}
+		if(typeMapping==null){
+			this.typeMapping = new DbmTypeMapping();
 		}
 		if(databaseDialetManager==null){
 			this.databaseDialetManager = new DefaultDatabaseDialetManager();
@@ -104,7 +121,7 @@ public class SimpleDbmInnserServiceRegistry {
 		}
 		
 //		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.rowMapperFactory = new JFishRowMapperFactory(mappedEntryManager);
+		this.rowMapperFactory = new JFishRowMapperFactory(mappedEntryManager, jdbcResultSetGetter);
 
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();
@@ -116,6 +133,15 @@ public class SimpleDbmInnserServiceRegistry {
 		return dialect;
 	}
 
+
+	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
+		this.jdbcParameterSetter = jdbcParameterSetter;
+	}
+
+
+	public JdbcStatementParameterSetter getJdbcParameterSetter() {
+		return jdbcParameterSetter;
+	}
 
 
 	public MappedEntryManager getMappedEntryManager() {
@@ -147,6 +173,7 @@ public class SimpleDbmInnserServiceRegistry {
 		return clazz.cast(getService(clazz.getName()));
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getService(String name) {
 		Assert.hasText(name);
 		return (T) services.get(name);
@@ -170,6 +197,16 @@ public class SimpleDbmInnserServiceRegistry {
 
 	public void setEntityValidator(EntityValidator entityValidator) {
 		this.entityValidator = entityValidator;
+	}
+
+
+	public DbmTypeMapping getTypeMapping() {
+		return typeMapping;
+	}
+
+
+	public void setTypeMapping(DbmTypeMapping typeMapping) {
+		this.typeMapping = typeMapping;
 	}
 	
 

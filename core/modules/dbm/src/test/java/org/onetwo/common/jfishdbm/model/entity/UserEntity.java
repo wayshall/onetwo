@@ -26,7 +26,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * 用户表
  * @Entity
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name="TEST_USER")
 @TableGenerator(table=Constant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1, name="UserEntityGenerator")

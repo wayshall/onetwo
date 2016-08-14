@@ -79,20 +79,16 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 		});
 
 		logger.info("deletes[{}]: {}", deletes.size(), deletes);
-		deletes.forEach(p->{
+		deletes.stream().filter(p->p.getDataFrom()==DataFrom.SYNC).forEach(p->{
 			this.baseEntityManager.remove(p);
 		});
 
 		logger.info("updates[{}]: {}", updates.size(), updates);
-		updates.forEach(p->{
+		updates.stream().filter(p->p.getDataFrom()==DataFrom.SYNC).forEach(p->{
 //			this.adminPermissionMapper.updateByPrimaryKey(p.getAdminPermission());
 			AdminPermission dbPermission = dbPermissionMap.get(p.getCode());
-			if(dbPermission.getDataFrom()==DataFrom.SYNC){
-//				p.setUpdateAt(new Date());
-//				ReflectUtils.copyIgnoreBlank(dbPermission, p);
-				CopyUtils.copier().from(p).ignoreNullValue().ignoreBlankString().to(dbPermission);
-				this.baseEntityManager.update(p);
-			}
+			CopyUtils.copier().from(p).ignoreNullValue().ignoreBlankString().to(dbPermission);
+			this.baseEntityManager.update(p);
 		});
 	}
 

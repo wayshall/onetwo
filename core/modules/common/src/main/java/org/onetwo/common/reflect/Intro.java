@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.onetwo.common.annotation.AnnotationUtils;
@@ -31,6 +32,9 @@ import org.onetwo.common.utils.TypeJudge;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -55,6 +59,24 @@ public class Intro<T> {
 //	private List<Field> allFields;
 	private Map<String, Field> _allFieldMap;
 	private ReentrantLock _allFieldLock = new ReentrantLock();
+	
+	private LoadingCache<String, JFishFieldInfoImpl> fieldInfoCaches = CacheBuilder.newBuilder()
+																				.build(new CacheLoader<String, JFishFieldInfoImpl>() {
+																					@Override
+																					public JFishFieldInfoImpl load(String propName) throws Exception {
+																						Field field = getField(propName);
+																						return new JFishFieldInfoImpl(clazz, field);
+																					}
+																				});
+	
+	private LoadingCache<String, JFishPropertyInfoImpl> propertyInfoCaches = CacheBuilder.newBuilder()
+																				.build(new CacheLoader<String, JFishPropertyInfoImpl>() {
+																					@Override
+																					public JFishPropertyInfoImpl load(String propName) throws Exception {
+																						PropertyDescriptor pd = getProperty(propName);
+																						return new JFishPropertyInfoImpl(clazz, pd);
+																					}
+																				});
 
 	public Intro(Class<T> clazz) {
 		Assert.notNull(clazz);
@@ -207,13 +229,26 @@ public class Intro<T> {
 	}
 	
 	public JFishProperty getJFishProperty(String propName, boolean isField){
+		JFishProperty prop = null;
 		if(isField){
-			Field field = getField(propName);
-			return new JFishFieldInfoImpl(clazz, field);
+			/* 改用cache，修复大量获取字段时性能极差的问题
+			 * Field field = getField(propName);
+			return new JFishFieldInfoImpl(clazz, field);*/
+			try {
+				prop = fieldInfoCaches.get(propName);
+			} catch (ExecutionException e) {
+				throw new BaseException("no field error", e);
+			}
 		}else{
-			PropertyDescriptor pd = getProperty(propName);
-			return new JFishPropertyInfoImpl(clazz, pd);
+			/*PropertyDescriptor pd = getProperty(propName);
+			return new JFishPropertyInfoImpl(clazz, pd);*/
+			try {
+				prop = propertyInfoCaches.get(propName);
+			} catch (ExecutionException e) {
+				throw new BaseException("no property error", e);
+			}
 		}
+		return prop;
 	}
 	
 	/*public JFishProperty getJFishProperty(String propName){
