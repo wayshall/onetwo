@@ -20,13 +20,11 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jfishdbm.exception.EntityNotFoundException;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.query.JFishDataQuery;
 import org.onetwo.common.jfishdbm.query.JFishNamedFileQueryManagerImpl;
 import org.onetwo.common.jfishdbm.query.JFishQuery;
-import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,8 +47,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	
 	@Override
 	public void update(Object entity) {
-		int rs = this.dbmDao.update(entity);
-		throwIfEffectiveCountError("update", 1, rs);
+		this.dbmDao.update(entity);
+//		throwIfEffectiveCountError("update", 1, rs);
 	}
 
 
@@ -115,28 +113,29 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public <T> T save(T entity) {
-		int rs = getDbmDao().save(entity);
-		int expectsize = LangUtils.size(entity);
-		throwIfEffectiveCountError("save", expectsize, rs);
+		getDbmDao().save(entity);
+		/*int expectsize = LangUtils.size(entity);
+		throwIfEffectiveCountError("save", expectsize, rs);*/
 		return entity;
 	}
 	
-	private void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
+	/*private void throwIfEffectiveCountError(String operation, int expectCount, int effectiveCount){
 		DbmUtils.throwIfEffectiveCountError(operation + " error.", expectCount, effectiveCount);
-	}
+	}*/
 
 	@Override
 	public <T> void persist(T entity) {
-		int rs = getDbmDao().insert(entity);
-		int expectsize = LangUtils.size(entity);
-		throwIfEffectiveCountError("persist", expectsize, rs);
+		getDbmDao().insert(entity);
+		/*int expectsize = LangUtils.size(entity);
+		throwIfEffectiveCountError("persist", expectsize, rs);*/
 	}
 
 	@Override
 	public void remove(Object entity) {
-		int rs = getDbmDao().delete(entity);
+		getDbmDao().delete(entity);
+		/*int rs = getDbmDao().delete(entity);
 		int expectsize = LangUtils.size(entity);
-		throwIfEffectiveCountError("remove", expectsize, rs);
+		throwIfEffectiveCountError("remove", expectsize, rs);*/
 	}
 
 	@Override
@@ -149,8 +148,9 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		T entity = getDbmDao().findById(entityClass, id);
 		if(entity==null)
 			return null;
-		int rs = getDbmDao().delete(entity);
-		throwIfEffectiveCountError("removeById", 1, rs);
+		getDbmDao().delete(entity);
+		/*int rs = getDbmDao().delete(entity);
+		throwIfEffectiveCountError("removeById", 1, rs);*/
 		return entity;
 	}
 
@@ -169,8 +169,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	 */
 	@Override
 	public <T> T merge(T entity) {
-		int rs = getDbmDao().dymanicUpdate(entity);
-		throwIfEffectiveCountError("merge", 1, rs);
+		getDbmDao().dymanicUpdate(entity);
+//		throwIfEffectiveCountError("merge", 1, rs);
 		return entity;
 	}
 
@@ -388,8 +388,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 
 	@Override
-	public SqlTypeMapping getSqlTypeMapping() {
-		return this.dbmDao.getDialect().getSqlTypeMapping();
+	public DbmTypeMapping getSqlTypeMapping() {
+		return this.dbmDao.getDialect().getTypeMapping();
 	}
 
 }

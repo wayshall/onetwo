@@ -19,7 +19,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
-import org.onetwo.common.utils.map.ListMap;
+import org.onetwo.common.utils.map.CollectionMap;
 
 
 @SuppressWarnings("unchecked")
@@ -433,8 +433,8 @@ public class JFishList<E> implements List<E>, Serializable {
 		return maps;
 	}
 	
-	public <K> ListMap<K, E> groupBy(final ReturnableClosure<E, K> block){
-		final ListMap<K, E> maps = ListMap.newLinkedListMap();
+	public <K> CollectionMap<K, E> groupBy(final ReturnableClosure<E, K> block){
+		final CollectionMap<K, E> maps = CollectionMap.newLinkedListMap();
 		each(new NoIndexIt<E>() {
 
 			@Override
@@ -450,7 +450,7 @@ public class JFishList<E> implements List<E>, Serializable {
 		return maps;
 	}
 	
-	public <K> ListMap<K, E> groupBy(final String propName){
+	public <K> CollectionMap<K, E> groupBy(final String propName){
 		return groupBy(new ReturnableClosure<E, K>() {
 
 			@Override
@@ -462,7 +462,7 @@ public class JFishList<E> implements List<E>, Serializable {
 	}
 	
 	public boolean isPropertyEqualsAllOfElement(String propertyOfElement){
-		ListMap<String, E> map = this.groupBy(propertyOfElement);
+		CollectionMap<String, E> map = this.groupBy(propertyOfElement);
 		return map.size()<=1;
 	}
 	

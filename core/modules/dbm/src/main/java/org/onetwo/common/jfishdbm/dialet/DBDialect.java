@@ -7,7 +7,7 @@ import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.common.jfishdbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.common.jfishdbm.event.JFishdbEventListenerManager;
 import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.jfishdbm.utils.Initializable;
 
 public interface DBDialect extends Initializable {
@@ -40,5 +40,5 @@ public interface DBDialect extends Initializable {
 //	public boolean isPrintSql();
 //	public DataBaseConfig getDataBaseConfig();
 	
-	public SqlTypeMapping getSqlTypeMapping();
+	public DbmTypeMapping getTypeMapping();
 }

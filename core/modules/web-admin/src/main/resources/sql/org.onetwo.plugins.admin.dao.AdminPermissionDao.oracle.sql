@@ -31,6 +31,9 @@
     [#if appCode?has_content]
     and ap.APP_CODE=:appCode
     [/#if]
+	[#if roleId??]
+	and ap.role_id=#{roleId} 
+	[/#if]
 
 
 /***

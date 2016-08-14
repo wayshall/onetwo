@@ -97,6 +97,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 			if(pvalue!=null && sqlAndValues.getQueryConfig().isLikeQueryField(parameter.getName())){
 				pvalue = ExtQueryUtils.getLikeString(pvalue.toString());
 			}
+			//wrap pvalue
 			dataQuery.setParameter(parameter.getName(), pvalue);
 		}
 		

@@ -3,6 +3,8 @@ package org.onetwo.plugins.admin;
 import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.plugins.dbm.DbmContextAutoConfig;
+import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
@@ -13,6 +15,7 @@ import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
+@AutoConfigureAfter(DbmContextAutoConfig.class)
 public class WebAdminPluginContext {
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -29,6 +33,11 @@ public class WebAdminPluginContext {
 	private SecurityConfig securityConfig;
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
+	/****
+	 * trigger baseEntityManager init and load the sql file
+	 */
+	@Autowired
+	private BaseEntityManager baseEntityManager;
 	
 	@PostConstruct
 	public void init(){

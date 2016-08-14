@@ -29,6 +29,7 @@ import org.onetwo.common.jfishdbm.event.JFishInsertOrUpdateEvent;
 import org.onetwo.common.jfishdbm.event.JFishUpdateEvent;
 import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.jfishdbm.jdbc.JFishJdbcOperations;
+import org.onetwo.common.jfishdbm.jdbc.JFishNamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.jdbc.JdbcDao;
 import org.onetwo.common.jfishdbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.common.jfishdbm.mapping.DataBaseConfig;
@@ -72,7 +73,6 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 //	protected String[] packagesToScan;
 	
 	private SimpleDbmInnserServiceRegistry serviceRegistry;
-
 	
 	/*public JFishDaoImpl(){
 	}*/
@@ -87,7 +87,10 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		Assert.notNull(dialect);
 		this.setDataSource(dataSource);
 	}
-	
+
+	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
+		return new JFishNamedJdbcTemplate(getJdbcTemplate());
+	}
 
 	protected void checkDaoConfig() {
 		Assert.notNull(getDataSource());
