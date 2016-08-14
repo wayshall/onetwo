@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>4.2.2</version>
+  <version>4.2.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
@@ -57,7 +57,7 @@
 	    <url>https://github.com/wayshall/onetwo</url>
 	    <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
 	    <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-    <tag>onetwo-modules-4.2.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
 	<build>
