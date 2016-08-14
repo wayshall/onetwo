@@ -50,7 +50,7 @@
    </logger>  
    
    <!-- print mybatis sql -->
-   <logger name="com.yooyo.zhiyetong" level="TRACE">  
+   <logger name="org.onetwo.webapp.manager" level="TRACE">  
        <appender-ref ref="console" />   
    </logger>  
      

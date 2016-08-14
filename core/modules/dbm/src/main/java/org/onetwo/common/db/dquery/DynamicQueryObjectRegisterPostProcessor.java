@@ -1,5 +1,6 @@
 package org.onetwo.common.db.dquery;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -12,12 +13,11 @@ public class DynamicQueryObjectRegisterPostProcessor implements /*FileNamedQuery
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 
-	private String databaseName;
+	private DataBase database;
 	
-	public void setDataBaseName(String databaseName) {
-		this.databaseName = databaseName;
+	public void setDatabase(DataBase database) {
+		this.database = database;
 	}
-
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -27,7 +27,7 @@ public class DynamicQueryObjectRegisterPostProcessor implements /*FileNamedQuery
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 		DynamicQueryObjectRegister register = new DynamicQueryObjectRegister(registry);
-		register.setDatabaseName(databaseName);
+		register.setDatabase(database);
 		register.registerQueryBeans();
 	}
 	

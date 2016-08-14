@@ -49,6 +49,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	private Validator validator;
 	
 	public JFishdbmSpringConfiguration(){
+		System.out.println("JFishdbmSpringConfiguration init");
 	}
 
 

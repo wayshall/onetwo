@@ -175,7 +175,6 @@ public class Intro<T> {
 		if(_fieldMaps!=null)
 			return ;
 		
-		System.out.println("_loadFields..............");
 		this._fieldLock.lock();
 		try{
 			if(_fieldMaps!=null)

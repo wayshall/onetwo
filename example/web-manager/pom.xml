@@ -3,13 +3,13 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.onetwo.sample</groupId>
-    <artifactId>onetwo-boot-web-admin</artifactId>
+    <groupId>org.onetwo.example</groupId>
+    <artifactId>onetwo-web-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>onetwo-boot-web-admin</name>
-    <description>onetwo-boot-web-admin</description>
+    <name>onetwo-web-manager</name>
+    <description>onetwo-web-manager</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
