@@ -1,1 +1,0 @@
-<input name="btnBack" class="btn-large btn" type="button" value="  返   回   " <#if urlHelper??>onclick="location.href='${siteConfig.baseURL}${urlHelper.listAction}'"</#if>/>
