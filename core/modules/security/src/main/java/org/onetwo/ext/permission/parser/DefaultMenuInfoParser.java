@@ -1,6 +1,7 @@
 package org.onetwo.ext.permission.parser;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	
 	private static final String CODE_SEPRATOR = "_";
 	public static final Class<?> ROOT_MENU_TAG = Object.class;
-	private static final int DEFAULT_SORT = 10000;
+//	private static final int DEFAULT_SORT = 10000;
 
 	private final int INIT_SIZE = 300;
 	private final Map<String, P> permissionMap;
@@ -38,6 +39,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	private final Map<Class<?>, PermClassParser> permClassParserMap;
 	
 	private P rootMenu;
+	private Integer firstNodeSort;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
 //	@Resource
@@ -54,9 +56,15 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	    this.permissionMapByClass = new LinkedHashMap<>(INIT_SIZE);
 	    this.permClassParserMap = new LinkedHashMap<Class<?>, PermClassParser>(INIT_SIZE);
 	    this.permissionConfig = permissionConfig;
+	    this.firstNodeSort = this.generatedSort();
     }
 	
-	
+
+	private Integer generatedSort(){
+		String str = String.valueOf(new Date().getTime());
+		Integer sort = Integer.parseInt(str.substring(str.length()-4, str.length()));
+		return sort;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -241,7 +249,8 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		perm.setCode(code);
 		//数字越小，排序越靠前
 		Number sort = parser.getSort();
-		perm.setSort(sort==null?DEFAULT_SORT:sort.intValue());
+//		perm.setSort(sort==null?DEFAULT_SORT:sort.intValue());
+		perm.setSort(sort==null?firstNodeSort+permClassParserMap.size():sort.intValue());
 		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
 
