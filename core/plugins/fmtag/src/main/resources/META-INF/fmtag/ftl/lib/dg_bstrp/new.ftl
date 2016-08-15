@@ -1,1 +1,0 @@
-<a href="${siteConfig.baseURL+urlHelper.newAction}"> 新 建  </a>
