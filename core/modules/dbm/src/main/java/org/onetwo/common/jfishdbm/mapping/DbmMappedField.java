@@ -7,7 +7,6 @@ import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.event.JFishEventAction;
 import org.onetwo.common.jfishdbm.mapping.version.VersionableType;
 import org.onetwo.common.utils.JFishProperty;
-import org.springframework.jdbc.core.SqlParameterValue;
 
 public interface DbmMappedField {
 
@@ -15,9 +14,9 @@ public interface DbmMappedField {
 
 	public Object getValue(Object entity);
 
-	public void setValueFromJdbc(Object entity, Object value);
+//	public void setValueFromJdbc(Object entity, Object value);
 
-	public SqlParameterValue getValueForJdbc(Object entity);
+//	public Object getValueForJdbc(Object entity);
 	
 	public List<DbmEntityFieldListener> getFieldListeners();
 
@@ -67,15 +66,22 @@ public interface DbmMappedField {
 
 	public boolean isFreezing();
 
-	public JFishMappedFieldType getMappedFieldType();
+	public DbmMappedFieldType getMappedFieldType();
 
-	public void setMappedFieldType(JFishMappedFieldType mappedFieldType);
+	public void setMappedFieldType(DbmMappedFieldType mappedFieldType);
 
 	public boolean isJoinTableField();
 
 //	public DataHolder<String, Object> getDataHolder();
 	
-	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction);
+//	public SqlParameterValue getValueForJdbcAndFireDbmEventAction(Object entity, JFishEventAction eventAction);
+	/***
+	 * 
+	 * @param fieldValue
+	 * @param eventAction
+	 * @return newFieldValue
+	 */
+	public Object fireDbmEntityFieldEvents(Object fieldValue, JFishEventAction eventAction);
 
 	public boolean isVersionControll();
 	public <T> VersionableType<T> getVersionableType();

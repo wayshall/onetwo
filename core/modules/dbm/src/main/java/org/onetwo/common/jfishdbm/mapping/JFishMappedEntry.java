@@ -9,7 +9,7 @@ import org.onetwo.common.jfishdbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 public interface JFishMappedEntry extends JFishMappedEntryMeta {
 	
-	public SqlTypeMapping getSqlTypeMapping();
+	public DbmTypeMapping getSqlTypeMapping();
 
 	public void setId(Object entity, Object value);
 

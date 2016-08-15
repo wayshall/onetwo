@@ -3,16 +3,20 @@ package org.onetwo.common.db.dquery;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.db.filequery.SpringBasedSqlFileScanner;
 import org.onetwo.common.db.filequery.SqlFileScanner;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import com.google.common.cache.CacheBuilder;
@@ -32,21 +36,26 @@ public class DynamicQueryObjectRegister {
 																	}
 																});
 
-	private String databaseName;
+	private DataBase database;
 	private BeanDefinitionRegistry registry;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	public DynamicQueryObjectRegister(BeanDefinitionRegistry registry) {
-		super();
 		this.registry = registry;
 	}
-	
 
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
+	public DynamicQueryObjectRegister(ApplicationContext applicationContext) {
+		this.registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
 	}
 
+	public void setDatabase(DataBase database) {
+		this.database = database;
+	}
+
+
 	public void registerQueryBeans() {
-		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(databaseName);
+		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(database.getName());
 		sqlfiles.entrySet().forEach(f->{
 			/*final String fileName = f.getName();
 			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());*/

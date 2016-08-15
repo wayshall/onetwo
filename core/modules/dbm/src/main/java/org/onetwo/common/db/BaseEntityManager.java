@@ -43,6 +43,7 @@ public interface BaseEntityManager extends QueryProvideManager {
 	public <T> void removes(Collection<T> entities);
 	public <T> Collection<T> removeByIds(Class<T> entityClass, Serializable[] id);
 	public <T> T removeById(Class<T> entityClass, Serializable id);
+	public int removeAll(Class<?> entityClass);
 
 	public <T> List<T> findAll(Class<T> entityClass);
 

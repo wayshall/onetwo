@@ -1,6 +1,9 @@
 package org.onetwo.common.jfishdbm.utils;
 
 import java.beans.PropertyDescriptor;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,11 +19,14 @@ import org.onetwo.common.date.Dates;
 import org.onetwo.common.jfishdbm.annotation.DbmFieldListeners;
 import org.onetwo.common.jfishdbm.event.DbmEntityFieldListener;
 import org.onetwo.common.jfishdbm.exception.DbmException;
-import org.onetwo.common.jfishdbm.mapping.SqlTypeMapping;
+import org.onetwo.common.jfishdbm.exception.UpdateCountException;
+import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
@@ -29,7 +35,7 @@ final public class DbmUtils {
 	
 	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
 		if(effectiveCount!=expectCount)
-			throw new DbmException(errorMsg + " expect effective: " + expectCount+", but actual effective: " + effectiveCount);
+			throw new UpdateCountException(errorMsg, expectCount, effectiveCount);
 	}
 	
 	public static List<DbmEntityFieldListener> initDbmEntityFieldListeners(DbmFieldListeners listenersAnntation){
@@ -84,12 +90,14 @@ final public class DbmUtils {
 	}
 	
 
-	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value, SqlTypeMapping mapping){
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		return convertSqlParameterValue(jproperty, value, mapping);
+	public static SqlParameterValue convertSqlParameterValue(PropertyDescriptor pd, Object value, DbmTypeMapping mapping){
+//		ClassIntroManager.getInstance().getIntro(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
+//		return convertSqlParameterValue(jproperty, value, mapping);
+		SqlParameterValue sqlValue = new SqlParameterValue(DBUtils.TYPE_UNKNOW, value);
+		return sqlValue;
 	}
 	
-	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value, SqlTypeMapping mapping){
+	public static SqlParameterValue convertSqlParameterValue(JFishProperty propertyInfo, Object value, DbmTypeMapping mapping){
 		if(value==null)
 			return null;
 		int sqlType = mapping.getType(propertyInfo.getType());
@@ -124,6 +132,46 @@ final public class DbmUtils {
 		}
 		return value;
 	}
+	
+
+	public static String lookupColumnName(SqlRowSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
+		String name = resultSetMetaData.getColumnLabel(columnIndex);
+		if (name == null || name.length() < 1) {
+			name = resultSetMetaData.getColumnName(columnIndex);
+		}
+		return name;
+	}
+	
+	public static Object getActualValue(Object value){
+		if(SqlParameterValue.class.isInstance(value)){
+			return ((SqlParameterValue)value).getValue();
+		}else if(Enum.class.isInstance(value)){
+			return ((Enum<?>)value).name();
+		}else if(value instanceof LocalDate){
+			final LocalDate localDate = (LocalDate) value;
+			return new SqlTypeValue(){
+
+				@Override
+				public void setTypeValue(PreparedStatement ps, int paramIndex, int sqlType, String typeName) throws SQLException {
+					ps.setDate(paramIndex, new java.sql.Date(Dates.toDate(localDate).getTime()));
+				}
+				
+			};
+		}else if(value instanceof LocalDateTime){
+			final LocalDateTime localDateTime = (LocalDateTime) value;
+			return new SqlTypeValue(){
+
+				@Override
+				public void setTypeValue(PreparedStatement ps, int paramIndex, int sqlType, String typeName) throws SQLException {
+					ps.setTimestamp(paramIndex, new Timestamp(Dates.toDate(localDateTime).getTime()));
+				}
+				
+			};
+			
+		}
+		return value;
+	}
+
 	private DbmUtils(){
 	}
 }

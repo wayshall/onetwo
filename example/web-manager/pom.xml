@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.onetwo.example</groupId>
+    <artifactId>onetwo-web-manager</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>onetwo-web-manager</name>
+    <description>onetwo-web-manager</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <start-class>org.onetwo.webapp.manager.ApplicationStarter</start-class>
+        
+        <!-- for test -->
+        <unit-tests.skip>false</unit-tests.skip>
+        <integration-tests.skip>true</integration-tests.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-web-admin</artifactId>
+	       <exclusions>
+	       	<exclusion>
+	       		<groupId>ch.qos.logback</groupId>
+	       		<artifactId>logback-core</artifactId>
+	       	</exclusion>
+	       	<exclusion>
+	       		<groupId>ch.qos.logback</groupId>
+	       		<artifactId>logback-classic</artifactId>
+	       	</exclusion>
+	       </exclusions>
+        </dependency>
+        
+        
+	   <dependency>
+	       <groupId>ch.qos.logback</groupId>
+	       <artifactId>logback-core</artifactId>
+	       <version>1.1.6</version>
+	   </dependency>
+	
+	   <dependency>
+	       <groupId>ch.qos.logback</groupId>
+	       <artifactId>logback-classic</artifactId>
+	       <version>1.1.6</version>
+	      <exclusions>
+	      	<exclusion>
+	      		<groupId>ch.qos.logback</groupId>
+	      		<artifactId>logback-core</artifactId>
+	      	</exclusion>
+	      </exclusions>
+	   </dependency>
+	   
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-security</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-dbm</artifactId>
+        </dependency>
+        
+         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency> 
+        
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+    
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency> -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.springframework.data</groupId>
+          <artifactId>spring-data-commons</artifactId>
+          <exclusions>
+          	<exclusion>
+          		<groupId>org.springframework.boot</groupId>
+          		<artifactId>spring-boot-starter-logging</artifactId>
+          	</exclusion>
+          </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>org.springframework.boot</groupId>
+	          		<artifactId>spring-boot-starter-logging</artifactId>
+	          	</exclusion>
+	          </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+	          <exclusions>
+	          	<exclusion>
+	          		<groupId>org.springframework.boot</groupId>
+	          		<artifactId>spring-boot-starter-logging</artifactId>
+	          	</exclusion>
+	          </exclusions>
+        </dependency>
+    
+        <dependency>
+          <groupId>commons-net</groupId>
+          <artifactId>commons-net</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+        
+        <!-- for test -->
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-test</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.assertj</groupId>
+          <artifactId>assertj-core</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.jayway.restassured</groupId>
+          <artifactId>rest-assured</artifactId>
+          <scope>test</scope>
+        </dependency>
+
+        
+    </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.onetwo</groupId>
+                <artifactId>onetwo-bom</artifactId>
+                <version>4.2.2-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <profiles>
+       <profile>
+        <id>integration</id>
+        <properties>
+          <unit-tests.skip>false</unit-tests.skip>
+           <integration-tests.skip>false</integration-tests.skip>
+        </properties>
+      </profile>
+    </profiles>
+    
+    <build>
+        <finalName>${artifactId}-${version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerVersion>${java.version}</compilerVersion>
+                    <showWarnings>true</showWarnings>
+                    <encoding>utf-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+			        <failOnMissingWebXml>false</failOnMissingWebXml>
+			    </configuration>
+			</plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                	<mainClass>${start-class}</mainClass>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>springloaded</artifactId>
+                        <version>1.2.5.RELEASE</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                	<execution>
+                		<goals>
+                			<goal>repackage</goal>
+                		</goals>
+                	</execution>
+                </executions>
+            </plugin>
+            
+            
+            <!-- for test -->
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <skipTests>${unit-tests.skip}</skipTests>
+                <excludes>
+                  <exclude>**/*IT.java</exclude>
+                </excludes>
+              </configuration>
+            </plugin>
+            <plugin>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>integration-test</id>
+                  <goals>
+                    <goal>integration-test</goal>
+                  </goals>
+                  <configuration>
+                    <skipTests>${integration-tests.skip}</skipTests>
+                    <includes>
+                      <include>**/*IT.class</include>
+                    </includes>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    
+</project>

@@ -183,14 +183,14 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){
-			entry = new JFishQueryableMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
-				entry = new JFishQueryableMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
 			}*/else{
-				entry = new JFishMappedEntryImpl(dialect.getSqlTypeMapping(), annotationInfo, tableInfo, serviceRegistry);
+				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}
 		}
 		entry.setSqlBuilderFactory(this.dialect.getSqlBuilderFactory());
@@ -300,7 +300,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 			colName = StringUtils.convert2UnderLineName(colName);
 		}
 		
-		int sqlType = dialect.getSqlTypeMapping().getType(field.getPropertyInfo().getType());
+		int sqlType = dialect.getTypeMapping().getType(field.getPropertyInfo().getType());
 		ColumnInfo col = new ColumnInfo(tableInfo, colName, sqlType);
 		col.setJavaType(field.getPropertyInfo().getType());
 		col.setPrimaryKey(field.isIdentify());

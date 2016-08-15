@@ -1,1 +1,0 @@
-<input value=" 批量删除 " type="submit" data-method="delete" class="dg-toolbar-button-delete" data-confirm="确定要批量删除这些数据？"/>

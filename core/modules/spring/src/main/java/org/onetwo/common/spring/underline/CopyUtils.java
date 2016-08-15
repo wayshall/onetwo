@@ -3,11 +3,7 @@ package org.onetwo.common.spring.underline;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -25,6 +21,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.underline.BaseCopierBuilder.SimpleCopierBuilder;
@@ -252,13 +249,16 @@ public class CopyUtils {
 	public static <T extends Serializable> T deepClone(T obj){
 		T cloneObj;
 		try {
-			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			byte[] data = SerializationUtils.serialize(obj);
+			cloneObj = SerializationUtils.deserialize(data);
+			
+			/*ByteArrayOutputStream bao = new ByteArrayOutputStream();
 			ObjectOutputStream objOut = new ObjectOutputStream(bao);
 			objOut.writeObject(obj);
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(bao.toByteArray());
 			ObjectInputStream bis = new ObjectInputStream(bais);
-			cloneObj = (T)bis.readObject();
+			cloneObj = (T)bis.readObject();*/
 		} catch (Exception e) {
 			throw new BaseException("serializeClone error: " + e.getMessage(), e);
 		} 
