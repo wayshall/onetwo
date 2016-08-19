@@ -355,7 +355,7 @@ final public class CUtils {
 		return strip(collection);
 	}
 
-	public static List trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
+	public static <T> List<T> trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
 		if (array == null)
 			return NULL_LIST;
 		

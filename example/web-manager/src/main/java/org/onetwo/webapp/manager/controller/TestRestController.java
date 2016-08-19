@@ -19,8 +19,8 @@ public class TestRestController {
 	
 	@RequestMapping("say")
 	public SimpleDataResult<?> say(HttpServletRequest request, String word){
-		System.out.println("this.request:"+this.request);
-		System.out.println("request:"+request);
+		System.out.println("this.request:"+this.request.getParameter("word"));
+		System.out.println("request:"+request.getParameter("word"));
 		if("error".equals(word)){
 			throw new ServiceException("error word!");
 		}
