@@ -1,8 +1,6 @@
 package org.onetwo.common.web.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -16,8 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
-import org.onetwo.common.utils.MyUtils;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.utils.PostfixMatcher;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
@@ -31,13 +28,15 @@ public abstract class IgnoreFiler implements Filter{
 
 	public static final String INCLUDE_SUFFIXS_NAME = "includeSuffixs";
 
-	private static final String[] DEFAULT_EXCLUDE_SUFFIXS = { ".js", ".css", ".jpg", ".jpeg", ".gif", ".png",".htm" };
+	/*private static final String[] DEFAULT_EXCLUDE_SUFFIXS = { ".js", ".css", ".jpg", ".jpeg", ".gif", ".png",".htm" };
 
 	private static final String[] DEFAULT_INCLUDE_SUFFIXS = { ".html", ".jsp", ".do", ".action", ".json", ".xml", ".jfxls" };
 
 	protected Collection<String> excludeSuffixs = new ArrayList<String>();
 
-	protected Collection<String> includeSuffixs = new ArrayList<String>();
+	protected Collection<String> includeSuffixs = new ArrayList<String>();*/
+	
+	private PostfixMatcher postfixMatcher;
 	
 	/*****
 	 * 是否过滤后缀
@@ -57,30 +56,7 @@ public abstract class IgnoreFiler implements Filter{
 		
 		filterSuffix = "true".equals(config.getInitParameter("filterSuffix"));
 		if(filterSuffix){
-			String[] excludeSuffixsStrs = StringUtils.split(config.getInitParameter("excludeSuffixs"), ',');
-			if (excludeSuffixsStrs != null && excludeSuffixsStrs.length>0) {
-				for (String path : excludeSuffixsStrs){
-					path = path.trim();
-					if(path.indexOf('.')==-1)
-						path = "." + path;
-					excludeSuffixs.add(path);
-				}
-			}else{
-				excludeSuffixs = MyUtils.asList(DEFAULT_EXCLUDE_SUFFIXS);
-			}
-
-			String[] includeSuffixsStr = StringUtils.split(config.getInitParameter("includeSuffixs"), ',');
-			if (includeSuffixsStr != null && includeSuffixsStr.length>0) {
-				for (String path : includeSuffixsStr){
-					path = path.trim();
-					if(path.indexOf('.')==-1)
-						path = "." + path;
-					includeSuffixs.add(path);
-				}
-			}else{
-				includeSuffixs = MyUtils.asList(DEFAULT_INCLUDE_SUFFIXS);
-			}
-		
+			this.postfixMatcher = new PostfixMatcher(config.getInitParameter("excludeSuffixs"), config.getInitParameter("includeSuffixs"));
 		}
 
 		initWebFilterInitializers(config);
@@ -197,19 +173,7 @@ public abstract class IgnoreFiler implements Filter{
 			return true;
 		}
 		
-		for (String suffix : excludeSuffixs) {//此类后缀的将不会经过过滤器
-			if (uri.endsWith(suffix))
-				return false;
-		}
-		
-		for (String suffix : includeSuffixs) {//此类后缀的必须经过过滤器
-			if (uri.endsWith(suffix))
-				return true;
-		}
-		
-
-		//没有配置的默认不需要过滤
-		return false;
+		return postfixMatcher.isMatch(uri);
 	}
 	
 	public void destroy(){
