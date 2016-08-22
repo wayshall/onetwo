@@ -5,6 +5,8 @@ import lombok.ToString;
 
 import org.onetwo.common.spring.SpringApplication;
 
+import redis.clients.jedis.JedisPoolConfig;
+
 
 /***
  * @author way
@@ -27,6 +29,9 @@ public class SecurityConfig {
 	protected Boolean syncPermissionData;
 	
 	private RememberMeConfig rememberMe = new RememberMeConfig();
+	
+	private RedisConfig redis = new RedisConfig();
+	private CookieConfig cookie = new CookieConfig();
 	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
@@ -63,5 +68,19 @@ public class SecurityConfig {
 		private boolean sendRenew = true;
 		private String casServerUrl;
 		private String key = CasConfig.class.getName();
+	}
+
+	@Data
+	public static class RedisConfig {
+		private String hostName = "localhost";
+		private int port = 6379;
+		private JedisPoolConfig pool;
+	}
+
+	@Data
+	public static class CookieConfig {
+		private String path = "/";
+		private String domain;
+		private String name = "sid";
 	}
 }

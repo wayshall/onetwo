@@ -170,6 +170,10 @@ public final class RequestUtils {
         servletPath = requestUri.substring(startIndex, endIndex);
         return requestUri;
     }
+
+	public static String getContextRequestPath(HttpServletRequest request) {
+		return request.getContextPath() + getServletPath(request);
+	}
 	
 	public static String getRequestFullURI(HttpServletRequest request){
 		String uri = request.getRequestURI();
