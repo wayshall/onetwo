@@ -65,7 +65,9 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	
 	@Bean
 	public AccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
-		return new AjaxSupportedAccessDeniedHandler();
+		AjaxSupportedAccessDeniedHandler adh = new AjaxSupportedAccessDeniedHandler();
+		adh.setErrorPage(securityConfig.getErrorPage());
+		return adh;
 	}
 
 	@Bean

@@ -24,6 +24,12 @@ public class SecurityConfig {
 	private String loginUrl = LOGIN_PATH;
 	private String loginProcessUrl = LOGIN_PROCESS_PATH;
 	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
+
+	//AccessDenied redirectErrorUrl
+	private String redirectErrorUrl;
+	//AccessDenied errorPage
+	private String errorPage = "/error";
+	
 	private CasConfig cas = new CasConfig();
 //	private boolean csrf = true;
 	protected Boolean syncPermissionData;
