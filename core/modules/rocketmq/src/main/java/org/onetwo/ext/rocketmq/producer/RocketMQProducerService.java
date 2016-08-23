@@ -1,4 +1,4 @@
-package org.onetwo.common.rocketmq.producer;
+package org.onetwo.ext.rocketmq.producer;
 
 import java.io.Serializable;
 import java.util.function.Consumer;

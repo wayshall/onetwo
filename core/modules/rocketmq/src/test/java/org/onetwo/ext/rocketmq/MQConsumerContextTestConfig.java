@@ -1,6 +1,6 @@
-package org.onetwo.common.rocketmq;
+package org.onetwo.ext.rocketmq;
 
-import org.onetwo.common.rocketmq.consumer.RocketMQPushConsumerStarter;
+import org.onetwo.ext.rocketmq.consumer.RocketMQPushConsumerStarter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;

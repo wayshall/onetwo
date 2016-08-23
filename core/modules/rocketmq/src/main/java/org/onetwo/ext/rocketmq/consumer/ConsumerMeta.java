@@ -1,4 +1,4 @@
-package org.onetwo.common.rocketmq.consumer;
+package org.onetwo.ext.rocketmq.consumer;
 
 import java.util.Arrays;
 import java.util.List;

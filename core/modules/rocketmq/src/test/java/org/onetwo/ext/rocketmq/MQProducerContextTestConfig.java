@@ -1,6 +1,6 @@
-package org.onetwo.common.rocketmq;
+package org.onetwo.ext.rocketmq;
 
-import org.onetwo.common.rocketmq.producer.RocketMQProducerService;
+import org.onetwo.ext.rocketmq.producer.RocketMQProducerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
