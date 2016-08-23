@@ -1,7 +1,7 @@
-package org.onetwo.common.rocketmq;
+package org.onetwo.ext.rocketmq;
 
-import org.onetwo.common.rocketmq.consumer.AppMQConsumer;
-import org.onetwo.common.rocketmq.consumer.ConsumerMeta;
+import org.onetwo.ext.rocketmq.consumer.AppMQConsumer;
+import org.onetwo.ext.rocketmq.consumer.ConsumerMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
