@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.jackson.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,6 +26,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	private String namesrvAddr;
 	private String groupName;
 	private DefaultMQProducer defaultMQProducer;
+	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 
 	public RocketMQProducerService() {
 	}
@@ -39,19 +41,25 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	}
 
 
-
-	public void sendMessage(String topic, String tags, Serializable body){
+	public void sendJdkSerializedMessage(String topic, String tags, Serializable body){
+		sendMessage(topic, tags, SerializationUtils.serialize(body));
+	}
+	public void sendJsonSerializedMessage(String topic, String tags, Object body){
+		sendMessage(topic, tags, jsonMapper.toJsonBytes(body));
+	}
+	
+	public void sendMessage(String topic, String tags, byte[] body){
 		SendResult result =  sendMessage(topic, tags, body, null);
 		if(result.getSendStatus()!=SendStatus.SEND_OK){
 			throw ServiceException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
 		}
 	}
 
-	public SendResult sendMessage(String topic, String tags, Serializable body, Consumer<Throwable> errorHandler){
+	public SendResult sendMessage(String topic, String tags, byte[] body, Consumer<Throwable> errorHandler){
 		Message message = new Message();
 		message.setTopic(topic);
 		message.setTags(tags);
-		message.setBody(SerializationUtils.serialize(body));
+		message.setBody(body);
 		return sendMessage(message, errorHandler);
 	}
 	public void sendMessage(Message message){
@@ -76,9 +84,18 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 			}else{
 				throw new ServiceException(errorMsg);
 			}
+		}catch (Throwable e) {
+			String errorMsg = "send message error. topic:"+message.getTopic()+", tags:"+message.getTags();
+			logger.error(errorMsg);
+			if(errorHandler!=null){
+				errorHandler.accept(e);
+				return null;
+			}else{
+				throw new ServiceException(errorMsg);
+			}
 		}
 	}
-
+	
 	@Override
 	public void destroy() throws Exception {
 		if(this.defaultMQProducer!=null)

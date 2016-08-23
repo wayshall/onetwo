@@ -17,7 +17,7 @@ public class ProductProduerTest {
 	
 	@Test
 	public void testSendMessage(){
-		rocketMQProducerService.sendMessage("product", "index-update", 2L);
+		rocketMQProducerService.sendJdkSerializedMessage("product", "index-update", 2L);
 //		rocketMQProducerService.sendMessage(MQTopic.PRODUCT.name(), MQTag.UPDATE_INDEX.name(), 2L);
 	}
 	
