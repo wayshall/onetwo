@@ -10,6 +10,6 @@ public interface AppMQConsumer<T> {
 	default public T convertMessage(MessageExt msg){
 		return SerializationUtils.deserialize(msg.getBody());
 	}
-	public void doConsume(MessageExt msg, T body);
+	public void doConsume(T body);
 
 }

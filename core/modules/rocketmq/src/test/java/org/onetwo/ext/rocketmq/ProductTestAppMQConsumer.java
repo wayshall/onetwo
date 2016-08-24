@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.rocketmq.common.message.MessageExt;
 
 @Transactional
-public class ProductTestAppMQConsumer implements AppMQConsumer<Long> {
+public class ProductTestAppMQConsumer implements AppMQConsumer<MessageExt> {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	
@@ -20,7 +20,7 @@ public class ProductTestAppMQConsumer implements AppMQConsumer<Long> {
 	}
 
 	@Override
-	public void doConsume(MessageExt msg, Long productId) {
+	public void doConsume(MessageExt msg) {
 		logger.info("receive id: {}, topic: {}, tag: {}", msg.getMsgId(),  msg.getTopic(), msg.getTags());
 	}
 
