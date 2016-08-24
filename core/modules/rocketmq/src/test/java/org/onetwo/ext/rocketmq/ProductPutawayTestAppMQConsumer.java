@@ -4,8 +4,6 @@ import org.onetwo.ext.rocketmq.consumer.AppMQConsumer;
 import org.onetwo.ext.rocketmq.consumer.ConsumerMeta;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.rocketmq.common.message.MessageExt;
-
 @Transactional
 public class ProductPutawayTestAppMQConsumer implements AppMQConsumer<Long> {
 
@@ -18,7 +16,7 @@ public class ProductPutawayTestAppMQConsumer implements AppMQConsumer<Long> {
 	}
 
 	@Override
-	public void doConsume(MessageExt msg, Long productId) {
+	public void doConsume(Long productId) {
 	}
 
 }
