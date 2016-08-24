@@ -18,7 +18,7 @@ public @interface RMQSubscribe {
 
 	String groupName();
 	String topic();
-	String[] tags();
+	String[] tags() default {};
 	MessageModel messageModel() default MessageModel.CLUSTERING;
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
 }
