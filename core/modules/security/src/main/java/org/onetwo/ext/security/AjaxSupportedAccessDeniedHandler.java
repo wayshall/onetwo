@@ -1,6 +1,7 @@
 package org.onetwo.ext.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+
+import com.google.common.base.Charsets;
 
 public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, InitializingBean {
 	
@@ -55,7 +58,8 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			}else{
 				rurl += "?";
 			}
-			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message="+accessDeniedException.getMessage();
+			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message=";
+			rurl += URLEncoder.encode(accessDeniedException.getMessage(), Charsets.UTF_8.name());//encode value, otherwise will redirect failed
 			response.sendRedirect(rurl);
 		}else{
 			this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);

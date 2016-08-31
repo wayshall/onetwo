@@ -1,15 +1,15 @@
 package org.onetwo.ext.rocketmq.producer;
 
-import java.io.Serializable;
+
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.client.exception.MQClientException;
@@ -27,6 +27,8 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	private String groupName;
 	private DefaultMQProducer defaultMQProducer;
 	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
+	private Consumer<Throwable> errorHandler = null;
+	private MessageSerializer messageSerializer = msg->jsonMapper.toJsonBytes(msg);
 
 	public RocketMQProducerService() {
 	}
@@ -41,35 +43,44 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	}
 
 
-	public void sendJdkSerializedMessage(String topic, String tags, Serializable body){
+	public void setErrorHandler(Consumer<Throwable> errorHandler) {
+		this.errorHandler = errorHandler;
+	}
+
+	/*public void sendJdkSerializedMessage(String topic, String tags, Serializable body){
 		sendMessage(topic, tags, SerializationUtils.serialize(body));
 	}
 	public void sendJsonSerializedMessage(String topic, String tags, Object body){
 		sendMessage(topic, tags, jsonMapper.toJsonBytes(body));
+	}*/
+
+	public void sendMessage(String topic, String tags, Object body){
+		Assert.notNull(messageSerializer);
+		sendBytesMessage(topic, tags, messageSerializer.serialize(body));
 	}
 	
-	public void sendMessage(String topic, String tags, byte[] body){
-		SendResult result =  sendMessage(topic, tags, body, null);
+	public void sendBytesMessage(String topic, String tags, byte[] body){
+		SendResult result =  sendBytesMessage(topic, tags, body, errorHandler);
 		if(result.getSendStatus()!=SendStatus.SEND_OK){
-			throw ServiceException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
+			throw BaseException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
 		}
 	}
 
-	public SendResult sendMessage(String topic, String tags, byte[] body, Consumer<Throwable> errorHandler){
+	public SendResult sendBytesMessage(String topic, String tags, byte[] body, Consumer<Throwable> errorHandler){
 		Message message = new Message();
 		message.setTopic(topic);
 		message.setTags(tags);
 		message.setBody(body);
-		return sendMessage(message, errorHandler);
+		return sendRawMessage(message, errorHandler);
 	}
-	public void sendMessage(Message message){
-		SendResult result = sendMessage(message, null);
+	public void sendRawMessage(Message message){
+		SendResult result = sendRawMessage(message, errorHandler);
 		if(result.getSendStatus()!=SendStatus.SEND_OK){
-			throw ServiceException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
+			throw BaseException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
 		}
 	}
 	
-	public SendResult sendMessage(Message message, Consumer<Throwable> errorHandler){
+	public SendResult sendRawMessage(Message message, Consumer<Throwable> errorHandler){
 		try {
 			SendResult sendResult = this.defaultMQProducer.send(message);
 			logger.info("send message success. sendResult: {}", sendResult);
@@ -82,7 +93,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 				errorHandler.accept(e);
 				return null;
 			}else{
-				throw new ServiceException(errorMsg);
+				throw BaseException.formatMessage(errorMsg);
 			}
 		}catch (Throwable e) {
 			String errorMsg = "send message error. topic:"+message.getTopic()+", tags:"+message.getTags();
@@ -91,7 +102,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 				errorHandler.accept(e);
 				return null;
 			}else{
-				throw new ServiceException(errorMsg);
+				throw BaseException.formatMessage(errorMsg);
 			}
 		}
 	}
