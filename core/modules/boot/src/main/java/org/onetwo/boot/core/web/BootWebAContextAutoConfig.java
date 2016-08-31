@@ -14,6 +14,7 @@ import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
+import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
@@ -99,6 +100,25 @@ public class BootWebAContextAutoConfig {
 		registration.setName(CorsFilter.CORS_FILTER_NAME);
 		return registration;
 	}
+	
+	@Bean
+	public FilterRegistrationBean requestContextFilter(){
+		FilterRegistrationBean registration = new FilterRegistrationBean(new BootRequestContextFilter());
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE+100);
+		registration.setName("requestContextFilter");
+		return registration;
+	}
+	
+	
+
+	/*@Bean
+	public RequestContextFilter requestContextFilter(){
+		return new RequestContextFilter();
+	}*/
+	/*@Bean
+	public RequestContextListener requestContextListener(){
+		return new RequestContextListener();
+	}*/
 	
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)

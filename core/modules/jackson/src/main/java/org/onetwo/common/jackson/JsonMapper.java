@@ -1,5 +1,6 @@
 package org.onetwo.common.jackson;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -147,6 +148,24 @@ public class JsonMapper {
 		return json;
 	}
 	
+
+	public byte[] toJsonBytes(Object object){
+		return toJsonBytes(object, true);
+	}
+	
+	public byte[] toJsonBytes(Object object, boolean throwIfError){
+		byte[] json = null;
+		try {
+			json = this.objectMapper.writeValueAsBytes(object);
+		} catch (Exception e) {
+			if(throwIfError)
+				throw new RuntimeException("parse to json error : " + object, e);
+			else
+				logger.warn("parse to json error : " + object);
+		}
+		return json;
+	}
+	
 	public JsonNode readTree(String content){
 		try {
 			JsonNode rootNode = objectMapper.readTree(content);
@@ -202,17 +221,27 @@ public class JsonMapper {
 		}
 	}
 
-	public <T> T fromJson(String json, Type objType){
-		if(StringUtils.isBlank(json))
+	@SuppressWarnings("unchecked")
+	public <T> T fromJson(final Object json, Type objType){
+		if(json==null)
 			return null;
 		Assert.notNull(objType);
-		T obj = null;
+		Object obj = null;
 		try {
-			obj = this.objectMapper.readValue(json, constructJavaType(objType));
+			if(json instanceof InputStream){
+				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
+			}else if(json instanceof File){
+				obj = this.objectMapper.readValue((File)json, (Class<?>)objType);
+			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
+				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
+			}else{
+				String jsonstr = json.toString();
+				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
+			}
 		} catch (Exception e) {
 			throw new JsonException("parse json to "+objType+" error : " + json, e);
 		}
-		return obj;
+		return (T)obj;
 	}
 	
 	/****
@@ -221,13 +250,22 @@ public class JsonMapper {
 	 * @param valueTypeRef
 	 * @return
 	 */
-	public <T> T fromJson(String json, TypeReference<T> valueTypeRef){
-		if(StringUtils.isBlank(json))
+	public <T> T fromJson(final Object json, TypeReference<T> valueTypeRef){
+		if(json==null)
 			return null;
 		Assert.notNull(valueTypeRef);
 		T obj = null;
 		try {
-			obj = this.objectMapper.readValue(json, valueTypeRef);
+			if(json instanceof InputStream){
+				obj = this.objectMapper.readValue((InputStream)json, valueTypeRef);
+			}else if(json instanceof File){
+				obj = this.objectMapper.readValue((File)json, valueTypeRef);
+			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
+				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
+			}else{
+				String jsonstr = json.toString();
+				obj = this.objectMapper.readValue(jsonstr, valueTypeRef);
+			}
 		} catch (Exception e) {
 			throw new JsonException("parse json to "+valueTypeRef+" error : " + json, e);
 		}

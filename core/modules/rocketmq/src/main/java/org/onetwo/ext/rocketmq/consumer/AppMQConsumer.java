@@ -1,4 +1,4 @@
-package org.onetwo.common.rocketmq.consumer;
+package org.onetwo.ext.rocketmq.consumer;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -10,6 +10,6 @@ public interface AppMQConsumer<T> {
 	default public T convertMessage(MessageExt msg){
 		return SerializationUtils.deserialize(msg.getBody());
 	}
-	public void doConsume(MessageExt msg, T body);
+	public void doConsume(T body);
 
 }

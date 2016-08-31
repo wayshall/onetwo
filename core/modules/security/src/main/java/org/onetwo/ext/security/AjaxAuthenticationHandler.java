@@ -13,7 +13,6 @@ import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
-import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.common.web.utils.WebUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,10 +78,6 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
-		String browser = RequestUtils.getBrowerByAgent(WebHolder.getRequest());
-		browser = WebHolder.getRequest().getHeader("User-Agent");
-		logger.info("browser:"+browser);
-		
 		if(RequestUtils.isAjaxRequest(request)){
 			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
 											.data(authentication.getPrincipal())

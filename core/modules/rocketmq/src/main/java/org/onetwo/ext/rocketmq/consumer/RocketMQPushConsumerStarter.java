@@ -1,18 +1,27 @@
-package org.onetwo.common.rocketmq.consumer;
+package org.onetwo.ext.rocketmq.consumer;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.ext.rocketmq.consumer.annotation.RMQConsumer;
+import org.onetwo.ext.rocketmq.consumer.annotation.RMQSubscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -22,12 +31,12 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 
-//@Component
+@Component
 public class RocketMQPushConsumerStarter implements InitializingBean, DisposableBean {
 
 	private final Logger logger = LoggerFactory.getLogger(RocketMQPushConsumerStarter.class);
 
-//	@Value("${jfish.rocketmq.namesrvAddr}")
+	@Value("${mq.namesrvAddr}")
 	private String namesrvAddr;
 	
 	@Autowired
@@ -42,14 +51,17 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		logger.debug("mq consumer init.");
+		logger.info("mq consumer init. namesrvAddr: {}", namesrvAddr);
 		Assert.hasText(namesrvAddr, "namesrvAddr can not be empty!");
 
 		Map<String, AppMQConsumer> consumerBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, AppMQConsumer.class);
+		List<AppMQConsumer> consumerBeanList = Lists.newArrayList(consumerBeans.values());
+		
+		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
+		consumerBeanList.addAll(scanner.findConsumers());
 
-		Map<ConsumerMeta, List<AppMQConsumer<Object>>> consumerGroups = consumerBeans.values()
-																						.stream()
-																						.collect(Collectors.groupingBy(c->c.getConsumerMeta()));
+		Map<ConsumerMeta, List<AppMQConsumer>> consumerGroups = consumerBeanList.stream()
+																				.collect(Collectors.groupingBy(c->c.getConsumerMeta()));
 		consumerGroups.entrySet().forEach(e->{
 			try {
 				this.initializeConsumers(e.getKey(), e.getValue());
@@ -61,7 +73,9 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 	}
 
 
-	private void initializeConsumers(ConsumerMeta meta, List<AppMQConsumer<Object>> consumers) throws InterruptedException, MQClientException {
+
+	@SuppressWarnings("rawtypes")
+	private void initializeConsumers(ConsumerMeta meta, List<AppMQConsumer> consumers) throws InterruptedException, MQClientException {
 
 		Assert.hasText(meta.getGroupName(), "consumerGroup can not be empty!");
 		Assert.hasText(meta.getTopic(), "topic can not be empty!");
@@ -73,7 +87,7 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 		
 		defaultMQPushConsumer.registerMessageListener(new MessageListenerConcurrently() {
 
-			// 默认msgs里只有一条消息，可以通过设置consumeMessageBatchMaxSize参数来批量接收消息
+			@SuppressWarnings("unchecked")
 			@Override
 			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 
@@ -84,7 +98,7 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 					consumers.stream().forEach(consumer->{
 						Object body = consumer.convertMessage(msg);
 						logger.info("consume id: {}, body: {}", msg.getMsgId(), body);
-						consumer.doConsume(msg, body);
+						consumer.doConsume(body);
 					});
 				} catch (Exception e) {
 					String errorMsg = "consume message error. id: "+msg.getMsgId()+", topic: "+msg.getTopic()+", tag: "+msg.getTags();
@@ -131,4 +145,67 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 		this.namesrvAddr = namesrvAddr;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static class ConsumerScanner {
+		private ApplicationContext applicationContext;
+		
+		public ConsumerScanner(ApplicationContext applicationContext) {
+			super();
+			this.applicationContext = applicationContext;
+		}
+
+		public List<AppMQConsumer> findConsumers() {
+			Map<String, Object> annotationBeans = applicationContext.getBeansWithAnnotation(RMQConsumer.class);
+			return annotationBeans.values().stream().flatMap(bean->{
+				return findAppMQConsumer(bean).stream();
+			})
+			.collect(Collectors.toList());
+		}
+
+
+		private List<AppMQConsumer> findAppMQConsumer(Object bean){
+			return findConsumerMethods(bean).stream().map(method->{
+				return new DelegateAppMQConsumer(bean, method, AnnotationUtils.findAnnotation(method, RMQSubscribe.class));
+			})
+			.collect(Collectors.toList());
+		}
+
+		private List<Method> findConsumerMethods(Object bean){
+			Class<?> targetClass = AopUtils.getTargetClass(bean);
+			List<Method> consumerMethods = Lists.newArrayList();
+			ReflectionUtils.doWithMethods(targetClass, m->consumerMethods.add(m), m->{
+				if(AnnotationUtils.findAnnotation(m, RMQSubscribe.class)!=null){
+					if(ArrayUtils.contains(m.getParameterTypes(), MessageExt.class)){
+						return true;
+					}
+					throw new RuntimeException("the parameter type of the consumer method must be a "+MessageExt.class);
+				}
+				return false;
+			});
+			return consumerMethods;
+		}
+		
+		class DelegateAppMQConsumer implements AppMQConsumer<MessageExt> {
+			private Object target;
+			private Method consumerMethod;
+			private ConsumerMeta meta;
+			public DelegateAppMQConsumer(Object target, Method consumerMethod, RMQSubscribe subscribe) {
+				super();
+				this.target = target;
+				this.consumerMethod = consumerMethod;
+				this.meta = new ConsumerMeta(subscribe.groupName(), subscribe.topic(), subscribe.tags());
+			}
+			@Override
+			public ConsumerMeta getConsumerMeta() {
+				return meta;
+			}
+			public MessageExt convertMessage(MessageExt msg){
+				return msg;
+			}
+			@Override
+			public void doConsume(MessageExt msg) {
+				ReflectionUtils.invokeMethod(consumerMethod, target, msg);
+			}
+		}
+	}
 }
