@@ -5,6 +5,15 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class BaseException extends RuntimeException implements SystemErrorCode, Serializable{
+	
+	public static BaseException formatMessage(String msg, Object...args){
+		String formatMsg = String.format(msg, args);
+		return new BaseException(formatMsg);
+	}
+	public static BaseException formatMessage(Throwable cause, String msg, Object...args){
+		String formatMsg = String.format(msg, args);
+		return new BaseException(formatMsg, cause);
+	}
 
 	protected static final String DefaultMsg = "occur error";
 	public static final String Prefix = "[ERROR]:";
