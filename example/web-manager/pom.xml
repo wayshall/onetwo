@@ -37,7 +37,7 @@
 	       </exclusions>
         </dependency>
         
-        
+       <!-- boot1.4rc 日志有冲突 -->
 	   <dependency>
 	       <groupId>ch.qos.logback</groupId>
 	       <artifactId>logback-core</artifactId>
@@ -249,6 +249,30 @@
                 </executions>
             </plugin>
             
+            <!-- db tools -->
+            <plugin>
+			   <groupId>org.liquibase</groupId>
+			   <artifactId>liquibase-maven-plugin</artifactId>
+			   <version>3.5.0</version>
+			   <configuration>                  
+				  <propertyFile>src/main/resources/liquibase/liquibase.properties</propertyFile>
+				  <changeLogFile>src/main/resources/liquibase/db.changelog.xml</changeLogFile>
+			      <driver>com.mysql.jdbc.Driver</driver>
+			      <url>jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8</url>
+			      <username>root</username>
+			      <password>root</password>
+			      <outputChangeLogFile>src/main/resources/liquibase/db.xml</outputChangeLogFile>
+			   </configuration>                
+			   <executions>
+				 <execution>
+				   <phase>process-resources</phase>                                                                  
+				   <goals>
+					 <goal>update</goal>
+				   </goals>
+				 </execution>
+			   </executions>
+			</plugin> 
+            
             
             <!-- for test -->
             <plugin>
@@ -278,6 +302,39 @@
               </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>org.liquibase</groupId>
+        								<artifactId>
+        									liquibase-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[3.0.5,)
+        								</versionRange>
+        								<goals>
+        									<goal>update</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 
     
