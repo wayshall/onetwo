@@ -264,8 +264,7 @@ public class FileUtils {
 			cld = ClassUtils.getDefaultClassLoader();
 		
 		String realPath = null;
-		URL path = null;
-		path = cld.getResource(fileName);
+		URL path = cld.getResource(fileName);
 		
 		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
