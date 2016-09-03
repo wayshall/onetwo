@@ -14,41 +14,30 @@
   </properties>
   
     
-    <modules>
-            <module>bom</module>
-            <module>parent</module>
-            <module>common</module>
-            <module>jackson</module>
-            <module>spring</module>
-            <module>dbm</module>
-            <module>web</module>
-            <module>boot</module>
-            <module>security</module>
-            <module>web-admin</module>
-    </modules>
-    
 	<profiles>
 	  <profile>
     	<id>all</id>
     	<modules>
-				<module>bom</module>
-				<module>parent</module>
-                <module>common</module>
-				<module>jackson</module>
-				<module>spring</module>
-                <module>dbm</module>
-				<module>web</module>
-                <module>boot</module>
-                <module>security</module>
-				<module>web-admin</module>
+				<module>modules/bom</module>
+				<module>modules/parent</module>
+                <module>modules/common</module>
+				<module>modules/jackson</module>
+				<module>modules/spring</module>
+                <module>modules/dbm</module>
+				<module>modules/web</module>
+                <module>modules/boot</module>
+                <module>modules/security</module>
+				
+				<module>plugins/parent</module>
+				<module>plugins/web-admin</module>
 	  	</modules>
 	  </profile>
 	  
 	  <profile>
 	    <id>tomcat</id>
 	    <modules>
-           <module>bom</module>
-	       <module>tomcat</module>
+           <module>modules/bom</module>
+	       <module>modules/tomcat</module>
 	    </modules>
 	  </profile>
 	</profiles>

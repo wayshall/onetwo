@@ -16,3 +16,7 @@ function throwErrorFunc(context){
 	}
 	throw msg;
 }
+var funcObj = {}
+funcObj.say = function(something){
+	return 'say:'+something;
+}

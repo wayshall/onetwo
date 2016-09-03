@@ -2,16 +2,16 @@
   <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.onetwo</groupId>
-        <artifactId>onetwo-parent</artifactId>
+		<groupId>org.onetwo.plugins</groupId>
+		<artifactId>onetwo-plugin-parent</artifactId>
         <version>4.2.3-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
-  <artifactId>onetwo-web-admin</artifactId>
+  <artifactId>onetwo-plugin-web-admin</artifactId>
   <packaging>jar</packaging>
 
-  <name>onetwo-web-admin</name>
+  <name>onetwo-plugin-web-admin</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -20,15 +20,6 @@
 
   <dependencies>
 	
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-common</artifactId>
-	</dependency>
-    
-    <dependency>
-      <groupId>org.onetwo</groupId>
-      <artifactId>onetwo-spring</artifactId>
-    </dependency>
     
     <dependency>
       <groupId>org.onetwo</groupId>

@@ -8,13 +8,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
 
 import org.onetwo.common.utils.CUtils;
 import org.slf4j.Logger;
@@ -68,35 +66,13 @@ public class JavaScriptInvoker {
 			errorHandler.orElseThrow(exceptionSupplier).accept(e);
 		}
 		
-		public ScriptEnginer compile(String script, Object... args){
+		public ScriptEnginer evalClassPathFile(String jsfile, Object... args){
+			configScriptContext(scriptEngine.getContext(), args);
+			ClassPathResource res = new ClassPathResource(jsfile);
 			try {
-				configScriptContext(scriptEngine.getContext(), args);
-				CompiledScript compiledScript = getCompilable().compile(script);
-				compiledScript.eval();
-			} catch (Exception e) {
-				processError(e, ()->new RuntimeException("compile javascript error:"+script, e));
-			}
-//			this.eval(script, null);
-			return this;
-		}
-		
-		public ScriptEnginer compileFile(String jsfile, Object... args){
-			try {
-				configScriptContext(scriptEngine.getContext(), args);
-				CompiledScript compiledScript = getCompilable().compile(new FileReader(jsfile));
-				compiledScript.eval();
-			} catch (Exception e) {
-				processError(e, ()-> new RuntimeException("eval javascript error:"+jsfile, e));
-			}
-			return this;
-		}
-		
-		public ScriptEnginer compileClassPathFile(String jsfile, Object... args){
-			try {
-				configScriptContext(scriptEngine.getContext(), args);
-				ClassPathResource res = new ClassPathResource(jsfile);
-				CompiledScript compiledScript = getCompilable().compile(new FileReader(res.getFile()));
-				compiledScript.eval();
+				/*CompiledScript compiledScript = getCompilable().compile(new FileReader(res.getFile()));
+				compiledScript.eval();*/
+				this.eval(new FileReader(res.getFile()), args);
 			} catch (Exception e) {
 				processError(e, ()-> new RuntimeException("eval javascript error:"+jsfile, e));
 			}
@@ -107,11 +83,9 @@ public class JavaScriptInvoker {
 		public <T> T eval(String script, Object... args){
 			try {
 				if(args.length>0){
-					ScriptContext context = configScriptContext(new SimpleScriptContext(), args);
-					return (T)scriptEngine.eval(script, context);
-				}else{
-					return (T)scriptEngine.eval(script);
+					configScriptContext(scriptEngine.getContext(), args);
 				}
+				return (T)scriptEngine.eval(script);
 			} catch (ScriptException e) {
 				logger.error("eval javascript error: {}, script: {}", e.getMessage(), script);
 				processError(e, ()-> new RuntimeException("eval javascript error", e));
@@ -119,7 +93,6 @@ public class JavaScriptInvoker {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		private ScriptContext configScriptContext(ScriptContext context, Object... args){
 			Map<String, Object> params = CUtils.asMap(args);
 			params.entrySet().forEach(e->{
@@ -132,11 +105,9 @@ public class JavaScriptInvoker {
 		public <T> T eval(Reader reader, Object... args){
 			try {
 				if(args.length>0){
-					ScriptContext context = configScriptContext(new SimpleScriptContext(), args);
-					return (T)scriptEngine.eval(reader, context);
-				}else{
-					return (T)scriptEngine.eval(reader);
+					configScriptContext(scriptEngine.getContext(), args);
 				}
+				return (T)scriptEngine.eval(reader);
 			} catch (ScriptException e) {
 				logger.error("eval javascript error: {}, script reader: {}", e.getMessage(), reader);
 				processError(e, ()-> new RuntimeException("eval javascript error", e));
@@ -156,12 +127,12 @@ public class JavaScriptInvoker {
 			return null;
 		}
 		@SuppressWarnings("unchecked")
-		public <T> T invokeMethod(Object thisObject, String funName, Object...args){
+		public <T> T invokeMethod(Object thisObject, String method, Object...args){
 			try {
-				T res = (T)getInvocable().invokeMethod(thisObject, funName, args);
+				T res = (T)getInvocable().invokeMethod(thisObject, method, args);
 				return res;
 			} catch (Exception e) {
-				logger.error("eval javascript error: {}, method: {}", e.getMessage(), funName);
+				logger.error("eval javascript error: {}, method: {}", e.getMessage(), method);
 				processError(e, ()-> new RuntimeException("eval javascript error", e));
 			}
 			return null;

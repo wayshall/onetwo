@@ -3,6 +3,7 @@
 build.xml
 .settings
 .svn
+.idea
 pom.properties
 .gitignore.sublime-workspace
 .externalToolBuilders

@@ -29,9 +29,10 @@ public class JavaScriptInvokerTest {
 		user.setId(100L);
 		
 		ScriptEnginer enginer = this.javaScriptInvoker.createScriptEnginer();
-		boolean res = enginer.compileClassPathFile("org/onetwo/common/spring/utils/test.js")
+		boolean res = enginer
+							.evalClassPathFile("org/onetwo/common/spring/utils/test.js")
 //								.compile("var validate = function(context){ if(context.ruleExt.arg1==='testArgs'){ return ture; }return false;}")
-								.invokeFunc("validate", user);
+							.invokeFunc("validate", user);
 		System.out.println("res:"+res);
 		Assert.assertEquals(true, res);
 
@@ -52,6 +53,10 @@ public class JavaScriptInvokerTest {
 		} catch (Exception e) {
 			Assert.assertTrue(ScriptException.class.isInstance(e.getCause()));
 		}
+		
+		Object funcObj = enginer.eval("funcObj");
+		String methodRes = enginer.invokeMethod(funcObj, "say", "hello world!");
+		Assert.assertEquals("say:hello world!", methodRes);
 	}
 	
 	public class JsContext {

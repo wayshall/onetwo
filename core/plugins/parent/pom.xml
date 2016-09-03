@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+	
+  	<groupId>org.onetwo.plugins</groupId>
+	<artifactId>onetwo-plugin-parent</artifactId>
+	<!-- 4.1.x for boot -->
+	<version>4.2.3-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>onetwo-plugin-parent</name>
+	<description>onetwo-plugin-parent</description>
+
+  <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<java.version>1.8</java.version>
+  </properties> 
+  
+  <dependencies>
+	
+	<dependency>
+	  <groupId>org.onetwo</groupId>
+	  <artifactId>onetwo-common</artifactId>
+	</dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-spring</artifactId>
+    </dependency>
+	
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.mockito</groupId>
+       <artifactId>mockito-all</artifactId>
+       <scope>test</scope>
+     </dependency>
+  </dependencies>
+	
+	<dependencyManagement>
+	  <dependencies>
+		<dependency>
+	         <groupId>org.onetwo</groupId>
+	         <artifactId>onetwo-bom</artifactId>
+	         <version>4.2.3-SNAPSHOT</version>
+	         <type>pom</type>
+	         <scope>import</scope>
+	     </dependency>
+	  </dependencies>
+	</dependencyManagement>
+
+
+	<build>
+	  <plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
+			<configuration>
+				<source>${java.version}</source>
+				<target>${java.version}</target>
+				<compilerVersion>${java.version}</compilerVersion>
+				<showWarnings>true</showWarnings>
+				<encoding>utf-8</encoding>
+				<compilerArgs>
+					<arg>-parameters</arg>
+				</compilerArgs>
+			</configuration>
+		</plugin>
+	  </plugins>
+	</build>
+  
+</project>
