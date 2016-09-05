@@ -430,15 +430,6 @@
 		<artifactId>ojdbc6</artifactId>
         <version>${ojdbc.version}</version>
     </dependency>
-	
-	<!-- Import dependency management from Spring Boot -->
-	<dependency>
-         <groupId>org.springframework.boot</groupId>
-         <artifactId>spring-boot-dependencies</artifactId>
-         <version>1.4.0.RC1</version>
-         <type>pom</type>
-         <scope>import</scope>
-     </dependency>
      
      <dependency>
 	     <groupId>com.alibaba</groupId>

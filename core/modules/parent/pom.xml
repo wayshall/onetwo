@@ -43,6 +43,14 @@
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>
+		<!-- Import dependency management from Spring Boot -->
+		<dependency>
+	         <groupId>org.springframework.boot</groupId>
+	         <artifactId>spring-boot-dependencies</artifactId>
+	         <version>1.4.0.RC1</version>
+	         <type>pom</type>
+	         <scope>import</scope>
+	     </dependency>
 	  </dependencies>
 	</dependencyManagement>
 

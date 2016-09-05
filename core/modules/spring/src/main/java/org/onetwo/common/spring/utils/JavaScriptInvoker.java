@@ -18,14 +18,13 @@ import org.onetwo.common.utils.CUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
-@Component
 public class JavaScriptInvoker {
 	private static final String SCRIPT_ENGINE_NAME = "nashorn";
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private ScriptEngineManager scriptEngineManager;
+	private Optional<Consumer<Throwable>> errorHandler = Optional.empty();
 	
 	public JavaScriptInvoker() {
 		this.scriptEngineManager = new ScriptEngineManager();
@@ -34,7 +33,11 @@ public class JavaScriptInvoker {
 	public ScriptEnginer createScriptEnginer(){
 		return new ScriptEnginer();
 	}
-	
+
+	public JavaScriptInvoker whenError(Consumer<Throwable> errorHandler) {
+		this.errorHandler = Optional.ofNullable(errorHandler);
+		return this;
+	}
 
 	public <T> T eval(String script, Object... args){
 		return this.createScriptEnginer().eval(script, args);
@@ -43,17 +46,11 @@ public class JavaScriptInvoker {
 	
 	public class ScriptEnginer {
 		final private ScriptEngine scriptEngine = scriptEngineManager.getEngineByName(SCRIPT_ENGINE_NAME);
-		private Optional<Consumer<Throwable>> errorHandler = Optional.empty();
 
 		public ScriptEngine getScriptEngine() {
 			return scriptEngine;
 		}
 		
-		public ScriptEnginer whenError(Consumer<Throwable> errorHandler) {
-			this.errorHandler = Optional.ofNullable(errorHandler);
-			return this;
-		}
-
 		public Compilable getCompilable(){
 			Compilable compilable = (Compilable)scriptEngine;
 			return compilable;
@@ -122,7 +119,7 @@ public class JavaScriptInvoker {
 				return res;
 			} catch (Exception e) {
 				logger.error("eval javascript error: {}, funName: {}", e.getMessage(), funName);
-				processError(e, ()-> new RuntimeException("eval javascript error", e));
+				processError(e, ()-> new RuntimeException("eval javascript function["+funName+"] error.", e));
 			}
 			return null;
 		}
@@ -133,7 +130,7 @@ public class JavaScriptInvoker {
 				return res;
 			} catch (Exception e) {
 				logger.error("eval javascript error: {}, method: {}", e.getMessage(), method);
-				processError(e, ()-> new RuntimeException("eval javascript error", e));
+				processError(e, ()-> new RuntimeException("eval javascript object["+thisObject+"] method["+method+"] error.", e));
 			}
 			return null;
 		}
