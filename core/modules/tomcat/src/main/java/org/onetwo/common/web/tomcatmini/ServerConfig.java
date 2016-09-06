@@ -17,6 +17,7 @@ public class ServerConfig {
 	
 	private WebappConfig defaultWebappConfig;
 	private final Collection<WebappConfig> webapps = new HashSet<WebappConfig>();
+	private String tomcatContextClassName;
 
 	public int getPort() {
 		return port;
@@ -154,4 +155,13 @@ public class ServerConfig {
 		}
 		return cld;
 	}
+
+	public String getTomcatContextClassName() {
+		return tomcatContextClassName;
+	}
+
+	public void setTomcatContextClassName(String tomcatContextClassName) {
+		this.tomcatContextClassName = tomcatContextClassName;
+	}
+	
 }

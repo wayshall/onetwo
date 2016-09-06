@@ -19,6 +19,7 @@
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
+		<spring-boot.version>1.4.0.RC1</spring-boot.version>
     </properties>
 
     <dependencies>
@@ -190,6 +191,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+			<dependency>
+		         <groupId>org.springframework.boot</groupId>
+		         <artifactId>spring-boot-dependencies</artifactId>
+		         <version>${spring-boot.version}</version>
+		         <type>pom</type>
+		         <scope>import</scope>
+		     </dependency>
         </dependencies>
     </dependencyManagement>
     

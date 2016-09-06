@@ -14,6 +14,7 @@
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
+	<spring-boot.version>1.4.0.RC1</spring-boot.version>
   </properties> 
   
   <dependencies>
@@ -52,7 +53,7 @@
 		<dependency>
 	         <groupId>org.springframework.boot</groupId>
 	         <artifactId>spring-boot-dependencies</artifactId>
-	         <version>1.4.0.RC1</version>
+	         <version>${spring-boot.version}</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>

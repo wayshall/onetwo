@@ -769,11 +769,11 @@ public class ReflectUtils {
 		return true;
 	}
 
-	public static boolean matchParameterTypes(Class[] sourceTypes, Class[] targetTypes) {
+	public static boolean matchParameterTypes(Class<?>[] sourceTypes, Class<?>[] targetTypes) {
 		if (sourceTypes.length != targetTypes.length)
 			return false;
 		int index = 0;
-		for (Class cls : targetTypes) {
+		for (Class<?> cls : targetTypes) {
 			if (!cls.isAssignableFrom(sourceTypes[index]))
 				return false;
 			index++;
@@ -1262,14 +1262,14 @@ public class ReflectUtils {
 		return targetClass;
 	}
 
-	public static Class[] findTypes(Object... args) {
-		Class[] argTypes = null;
+	public static Class<?>[] findTypes(Object... args) {
+		Class<?>[] argTypes = null;
 		if (args != null) {
 			for (Object arg : args) {
 				if (arg == null)
 					continue;
-				Class t = arg.getClass();
-				argTypes = (Class[]) ArrayUtils.add(argTypes, t);
+				Class<?> t = arg.getClass();
+				argTypes = (Class<?>[]) ArrayUtils.add(argTypes, t);
 			}
 		}
 		return argTypes;

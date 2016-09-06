@@ -1,9 +1,17 @@
 package org.onetwo.common.web.tomcatmini;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.ProtocolHandler;
@@ -12,6 +20,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TomcatServer {
+	
+	public static class TomcatServerBuilder {
+		private ServerConfig serverConfig = new ServerConfig();
+		static private Map<String, String> initParametersMapper = new HashMap<String, String>();
+
+		public TomcatServerBuilder mapInitParameter(String name, String value){
+			initParametersMapper.put(name, value);
+			return this;
+		}
+		
+		public static TomcatServerBuilder create(int port){
+			TomcatServerBuilder builder = new TomcatServerBuilder();
+			builder.serverConfig.setPort(port);	
+			return builder;
+		}
+		
+		public TomcatServerBuilder tomcatContextClassName(String tomcatContextClassName){
+			this.serverConfig.setTomcatContextClassName(tomcatContextClassName);;
+			return this;
+		}
+		
+		public TomcatServer build(){
+			if(!initParametersMapper.isEmpty()){
+				serverConfig.setTomcatContextClassName(HardCodeSpringProfileContext.class.getName());
+			}
+			TomcatServer server = TomcatServer.create(serverConfig);
+			return server;
+		}
+		
+		public static Map<String, String> getInitParametersMapper() {
+			return initParametersMapper;
+		}
+
+
+
+		/*
+		 * tomcat通过getConstructor()实例化，无法使用innerclass，使用静态参数代替。。。
+		 * public class HardCodeSpringProfileContext extends HackServletContextStandardContext {
+			public HardCodeSpringProfileContext() {
+//				this.mapInitParameter("spring.profiles.active", "dev");
+				initParametersMapper.entrySet().forEach(e->this.mapInitParameter(e.getKey(), e.getValue()));
+			}
+		}*/
+	}
+	
 
 	public static TomcatServer create(){
 		ServerConfig config = null;
@@ -41,26 +94,37 @@ public class TomcatServer {
 
 //	public static final String PLUGIN_WEBAPP_BASE_PATH = "classpath:META-INF";
 	
-	private ServerConfig webConfig;
+	private ServerConfig serverConfig;
 	private Tomcat tomcat;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private List<TomcatServerListener> listeners = new ArrayList<>();
 
 	private TomcatServer(ServerConfig webConfig) {
-		this.webConfig = webConfig;
+		this.serverConfig = webConfig;
+	}
+	
+	public ServerConfig getServerConfig() {
+		return serverConfig;
 	}
 
+	public void addListeners(TomcatServerListener...listeners){
+		this.listeners.addAll(Arrays.asList(listeners));
+	}
 	public void initialize() {
 		try {
 			
-			this.tomcat = new JFishTomcat();
-			int port = webConfig.getPort();
+			JFishTomcat tomcat = new JFishTomcat();
+			if(serverConfig.getTomcatContextClassName()!=null){
+				tomcat.setContextClass((Class<StandardContext>)ReflectUtils.loadClass(serverConfig.getTomcatContextClassName(), true));
+			}
+			int port = serverConfig.getPort();
 			tomcat.setPort(port);
 //			tomcat.setBaseDir(webConfig.getServerBaseDir());
-			tomcat.setBaseDir(webConfig.getServerBaseDir());
-			tomcat.getHost().setAppBase(webConfig.getWebappDir());
+			tomcat.setBaseDir(serverConfig.getServerBaseDir());
+			tomcat.getHost().setAppBase(serverConfig.getWebappDir());
 			Connector connector = tomcat.getConnector();
 			connector.setURIEncoding("UTF-8");
-			connector.setRedirectPort(webConfig.getRedirectPort());
+			connector.setRedirectPort(serverConfig.getRedirectPort());
 			
 			ProtocolHandler protocol = connector.getProtocolHandler();
 			if(protocol instanceof AbstractHttp11Protocol){
@@ -83,6 +147,8 @@ public class TomcatServer {
 			/*tomcat.addUser("adminuser", "adminuser");
 			tomcat.addRole("adminuser", "admin");
 			tomcat.addRole("adminuser", "admin");*/
+			
+			this.tomcat = tomcat;
 		} catch (Exception e) {
 			throw new RuntimeException("web server initialize error , check it. " + e.getMessage(), e);
 		}
@@ -90,8 +156,8 @@ public class TomcatServer {
 
 	public void start() {
 		try {
-
-			addWebapps();
+			List<Context> contexts = addWebapps();
+			this.onContextCreated(contexts);
 			tomcat.start();
 			printConnectors();
 			tomcat.getServer().await();
@@ -101,14 +167,25 @@ public class TomcatServer {
 		}
 	}
 	
-	protected void addWebapps() throws ServletException{
-		logger.info("add defulat webapp {}, path {} ", webConfig.getContextPath(), webConfig.getWebappDir());
-		tomcat.addWebapp(webConfig.getContextPath(), webConfig.getWebappDir());
-		for(WebappConfig webapp : webConfig.getWebapps()){
+	protected List<Context> addWebapps() throws ServletException{
+		logger.info("add defulat webapp {}, path {} ", serverConfig.getContextPath(), serverConfig.getWebappDir());
+		List<Context> contexts = new ArrayList<Context>();
+		//host.addChild(ctx);
+		Context ctx = tomcat.addWebapp(serverConfig.getContextPath(), serverConfig.getWebappDir());
+		contexts.add(ctx);
+		for(WebappConfig webapp : serverConfig.getWebapps()){
 			logger.info("add webapp : {} ", webapp);
-			tomcat.addWebapp(webapp.getContextPath(), webapp.getWebappDir());
+			ctx = tomcat.addWebapp(webapp.getContextPath(), webapp.getWebappDir());
+			contexts.add(ctx);
 		}
+		return contexts;
 	}
+	
+	protected void onContextCreated(List<Context> contexts){
+		this.listeners.forEach(l->l.onContextCreated(new ContextCreatedEvent(tomcat, contexts)));
+	}
+	
+	
 	
 	public Tomcat getTomcat() {
 		return tomcat;
