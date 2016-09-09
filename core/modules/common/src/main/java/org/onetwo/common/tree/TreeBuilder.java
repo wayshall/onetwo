@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.onetwo.common.utils.CUtils;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private final Comparator<TM> comparator = new Comparator<TM>() {
+	private Comparator<TM> comparator = new Comparator<TM>() {
 		@Override
 		public int compare(TM o1, TM o2) {
 			Comparable<Object> s1 = (Comparable<Object>)o1.getSort();
@@ -95,30 +96,22 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		this(datas, treeNodeCreator, null);
 	}
 
-	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<T> comparator) {
+	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<TM> comparator) {
 //		Assert.notEmpty(datas);
-
 		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 
-		Comparator<T> comp = comparator != null ? comparator : new Comparator<T>() {
-			@Override
-			public int compare(T o1, T o2) {
-				TM t1 = tnc.createTreeModel(o1);
-				TM t2 = tnc.createTreeModel(o2);
-				Comparable<Object> s1 = (Comparable<Object>)t1.getSort();
-				Comparable<Object> s2 = (Comparable<Object>)t2.getSort();
-				return s1.compareTo(s2);
-			}
-		};
+		this.comparator = comparator != null ? comparator : this.comparator;
+		List<TM> tmDatas = datas.stream()
+								.map(e->tnc.createTreeModel(e))
+								.filter(e->e!=null)
+								.collect(Collectors.toList());
+		this.sortAndPutToMap(tmDatas);
+	}
 
-		if(datas!=null && !datas.isEmpty())
-			Collections.sort(datas, comp);
-
-		for (T data : datas) {
-			if (data == null)
-				continue;
-			TM node = tnc.createTreeModel(data);
-			nodeMap.put(node.getId(), node);
+	private final void sortAndPutToMap(List<TM> datas){
+		Collections.sort(datas, comparator);
+		for(TM tm : datas){
+			this.nodeMap.put(tm.getId(), tm);
 		}
 	}
 

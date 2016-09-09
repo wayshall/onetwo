@@ -352,7 +352,10 @@ final public class CUtils {
 	}
 	
 	public static Collection stripNull(Collection collection) {
+//		collection.removeIf(Objects::isNull);
 		return strip(collection);
+		/*collection.removeAll(Collections.singletonList(null));
+		return collection;*/
 	}
 
 	public static <T> List<T> trimAndexcludeTheClassElement(boolean trimNull, Object array, Object... excludeClasses) {//Class... excludeClasses
@@ -374,22 +377,41 @@ final public class CUtils {
 		return (list == null) ? NULL_LIST : list;
 	}
 	
-	public static Collection strip(Collection collection, final Object... stripValue) {
+	/****
+	 * remove specify value frome list
+	 * default remove null or blank string
+	 * @param collection
+	 * @param stripValue
+	 * @return
+	 */
+	public static Collection strip(Collection<?> collection, final Object... stripValue) {
 //		L.StripValuePredicate stripPredicate = new L.StripValuePredicate(false, stripValue);
 		//remove if return false
-		CollectionUtils.filter(collection, new Predicate<Object>() {
-
+		/*Predicate predicate = new Predicate<Object>() {
 			@Override
 			public boolean apply(Object obj) {
 				if (obj instanceof Class) {
 					if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
 						return false;
-				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj))
+				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj)){
 					return false;
+				}
 				return true;
 			}
 			
-		});//
+		};
+		CollectionUtils.filter(collection, predicate);*/
+		collection.removeIf(obj-> {
+
+				if (obj instanceof Class) {
+					if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
+						return false;
+				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj)){
+					return false;
+				}
+				return true;
+			
+		});
 		return collection;
 		
 	}
@@ -450,16 +472,6 @@ final public class CUtils {
 			array[index++] = entry.getValue();
 		}
 		return array;
-	}
-	
-	public static <K, V> List<Pair<K, V>> map2List(Map<K, V> map){
-		List<Pair<K, V>> list = newArrayList(LangUtils.isEmpty(map)?3:map.size());
-		Pair<K, V> p = null;
-		for(Entry<?, ?> entry : map.entrySet()){
-			p = new Pair(entry.getKey(), entry.getValue());
-			list.add(p);
-		}
-		return list;
 	}
 	
 	public static <K, V> Map<K, Collection<V>> groupBy(Collection<V> datas, ReturnableClosure<V, K> block){
