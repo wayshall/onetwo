@@ -166,7 +166,6 @@
 	        <artifactId>spring-data-elasticsearch</artifactId>
             <optional>true</optional>
 	    </dependency>
-    
 	    
 	    <!-- mybatis -->
 	    <dependency>

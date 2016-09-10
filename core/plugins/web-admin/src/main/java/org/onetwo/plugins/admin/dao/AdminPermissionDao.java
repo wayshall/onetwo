@@ -17,4 +17,6 @@ public interface AdminPermissionDao {
 
 	List<AdminPermission> findPermissions(@Param("codes")Collection<Object> codes);
 	
+	int deleteRolePermissions(@Param("permissionCode")String permissionCode);
+	
 }

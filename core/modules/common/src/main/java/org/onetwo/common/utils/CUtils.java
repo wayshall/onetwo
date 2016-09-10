@@ -405,11 +405,11 @@ final public class CUtils {
 
 				if (obj instanceof Class) {
 					if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
-						return false;
+						return true;
 				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj)){
-					return false;
+					return true;
 				}
-				return true;
+				return false;
 			
 		});
 		return collection;

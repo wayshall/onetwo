@@ -80,6 +80,7 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 
 		logger.info("deletes[{}]: {}", deletes.size(), deletes);
 		deletes.stream().filter(p->p.getDataFrom()==DataFrom.SYNC).forEach(p->{
+			this.adminPermissionDao.deleteRolePermissions(p.getCode());
 			this.baseEntityManager.remove(p);
 		});
 

@@ -116,4 +116,12 @@
     and ap.APP_CODE=:appCode
     [/#if]
 
-
+/***
+ * @name: deleteRolePermissions
+ * @parser: template
+ * 
+ */
+    delete from admin_role_permission where PERMISSION_CODE = :permissionCode
+    
+    
+    
