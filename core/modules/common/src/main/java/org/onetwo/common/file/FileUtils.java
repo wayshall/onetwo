@@ -52,6 +52,8 @@ public class FileUtils {
 
 	private static final Logger logger = JFishLoggerFactory.getLogger(FileUtils.class);
 
+	public static final String UTF8_BOM = "\uFEFF";
+	
 	public static final String UTF8 = "utf-8";
 	public static final String DEFAULT_CHARSET = UTF8;
 	public static final int DEFAULT_BUF_SIZE = 1024 * 4;
@@ -332,6 +334,9 @@ public class FileUtils {
 			
 			@Override
 			public boolean doWithLine(String line, int lineIndex) {
+				if(lineIndex==0 && line.startsWith(UTF8_BOM)){
+					line = line.substring(1);
+				}
 				datas.add(line);
 				return true;
 			}
@@ -349,9 +354,10 @@ public class FileUtils {
 			int lineIndex = 0;
 			while((buf=br.readLine())!=null){
 //				datas.add(buf);
-				if(!flcb.doWithLine(buf, lineIndex++)){
+				if(!flcb.doWithLine(buf, lineIndex)){
 					break;
 				}
+				lineIndex++;
 			}
 		}catch(Exception e){
 			LangUtils.throwBaseException("read file["+br+"] error : " + e.getMessage(), e);
