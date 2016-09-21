@@ -1,6 +1,6 @@
 package org.onetwo.boot.plugin.core;
 
-abstract public class PluginAdapter implements Plugin {
+abstract public class WebPluginAdapter implements WebPlugin {
 	
 	public String toString(){
 		return this.getPluginMeta().toString();

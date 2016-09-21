@@ -100,10 +100,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		this.processAfterLog(request, response, handlerMethod, ex);
 		
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
+		
 		if(isAjaxRequest(request)){
-			/*MapResult result = new MapResult();
-			result.setCode(AjaxKeys.RESULT_FAILED);
-			result.setMessage("操作失败，"+ errorMessage.getMesage());*/
 			SimpleDataResult<?> result = WebResultCreator.creator()
 							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();

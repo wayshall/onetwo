@@ -20,12 +20,12 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	@Autowired
 	private ApplicationContext applicationContext;
 	
-	private List<Plugin> plugins;
+	private List<WebPlugin> plugins;
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		List<Plugin> plugins = SpringUtils.getBeans(applicationContext, Plugin.class);
+		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
 		this.plugins = ImmutableList.copyOf(plugins);
 		logger.info("find plugins : {} ", plugins);
 		
@@ -37,7 +37,7 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	}*/
 	
 	@Override
-	public Optional<Plugin> findPluginByElementClass(Class<?> elementClass){
+	public Optional<WebPlugin> findPluginByElementClass(Class<?> elementClass){
 		return this.plugins.stream()
 							.filter(p->p.contains(elementClass))
 							.sorted((o1, o2)->o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length())
@@ -45,7 +45,7 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	}
 
 	@Override
-	public List<Plugin> getPlugins() {
+	public List<WebPlugin> getPlugins() {
 		return plugins;
 	}
 	

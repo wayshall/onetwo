@@ -1,7 +1,7 @@
 package org.onetwo.plugins.admin.controller;
 
 import org.onetwo.boot.core.web.controller.DateInitBinder;
-import org.onetwo.boot.plugin.core.Plugin;
+import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.boot.plugin.mvc.PluginBaseController;
 import org.onetwo.plugins.admin.WebAdminPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ abstract public class WebAdminBaseController extends PluginBaseController implem
 	private WebAdminPlugin webAdminPlugin;
 
 	@Override
-	protected Plugin getPlugin() {
+	protected WebPlugin getPlugin() {
 		return webAdminPlugin;
 	}
 	

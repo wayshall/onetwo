@@ -2,7 +2,7 @@ package org.onetwo.boot.plugin.core;
 
 import org.onetwo.common.utils.StringUtils;
 
-public interface Plugin {
+public interface WebPlugin {
 	
 	public PluginMeta getPluginMeta();
 	

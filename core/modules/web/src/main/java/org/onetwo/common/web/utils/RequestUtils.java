@@ -7,15 +7,14 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
-import org.springframework.web.util.WebUtils;
 
 @SuppressWarnings("rawtypes")
 public final class RequestUtils {
@@ -256,18 +255,17 @@ public final class RequestUtils {
 	
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
-//		String extension = webHelper(request).getRequestExtension();
-		String extension = getRequestExtension(request);
 		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
 		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
 		
-		return "json".equalsIgnoreCase(extension) || RequestType.Ajax.equals(requestType) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+		return RequestType.Ajax.equals(requestType) || "json".equalsIgnoreCase(getRequestExtension(request)) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
 	}
 
 	public static String getRequestExtension(HttpServletRequest request) {
 		String requestUri = getUrlPathHelper().getLookupPathForRequest(request);
-		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
-		String extension = FileUtils.getExtendName(reqUri);
+//		String reqUri = WebUtils.extractFullFilenameFromUrlPath(requestUri);
+//		String extension = FileUtils.getExtendName(reqUri);
+		String extension = UriUtils.extractFileExtension(requestUri);
 		return extension;
 	}
 

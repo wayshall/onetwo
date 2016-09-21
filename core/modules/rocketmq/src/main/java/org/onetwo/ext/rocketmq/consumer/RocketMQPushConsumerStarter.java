@@ -3,6 +3,7 @@ package org.onetwo.ext.rocketmq.consumer;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,8 +29,10 @@ import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.common.message.MessageConst;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Component
 public class RocketMQPushConsumerStarter implements InitializingBean, DisposableBean {
@@ -37,7 +40,7 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 	private final Logger logger = LoggerFactory.getLogger(RocketMQPushConsumerStarter.class);
 
 	@Value("${mq.namesrvAddr}")
-	private String namesrvAddr;
+	private String namesrvAddr;// = WebApplication.getProperty("mq.namesrvAddr");
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -93,9 +96,17 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 
 				MessageExt msg = msgs.get(0);
 				logger.info("receive id: {}, topic: {}, tag: {}", msg.getMsgId(),  msg.getTopic(), msg.getTags());
-
+				  
 				try {
 					consumers.stream().forEach(consumer->{
+						ConsumerMeta meta = consumer.getConsumerMeta();
+						if(meta.getIgnoreOffSetThreshold()>0){
+							long diff = getMessageDiff(msg);
+							if(diff>meta.getIgnoreOffSetThreshold()){
+								logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold, ignore!", diff);
+								return ;
+							}
+						}
 						Object body = consumer.convertMessage(msg);
 						logger.info("consume id: {}, body: {}", msg.getMsgId(), body);
 						consumer.doConsume(body);
@@ -114,6 +125,17 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 		defaultMQPushConsumer.start();
 		logger.info("defaultMQPushConsumer[{}] start. consumers size: {}", meta.getGroupName(), consumers.size());
 		defaultMQPushConsumers.add(defaultMQPushConsumer);
+	}
+	
+	private long getMessageDiff(MessageExt msg){
+		try {
+			long offset = msg.getQueueOffset();
+			String maxOffset = msg.getProperty(MessageConst.PROPERTY_MAX_OFFSET);
+			long diff = Long.parseLong(maxOffset)-offset;
+			return diff;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	
 	protected DefaultMQPushConsumer createAndConfigMQPushConsumer(ConsumerMeta meta) throws InterruptedException, MQClientException {
@@ -193,7 +215,9 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 				super();
 				this.target = target;
 				this.consumerMethod = consumerMethod;
-				this.meta = new ConsumerMeta(subscribe.groupName(), subscribe.topic(), subscribe.tags());
+				Set<String> tags = Sets.newHashSet(subscribe.tags());
+				this.meta = new ConsumerMeta(subscribe.groupName(), subscribe.topic(), tags, 
+												subscribe.messageModel(), subscribe.consumeFromWhere(), subscribe.ignoreOffSetThreshold());
 			}
 			@Override
 			public ConsumerMeta getConsumerMeta() {

@@ -1,7 +1,7 @@
 package org.onetwo.ext.rocketmq.consumer;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
@@ -9,9 +9,13 @@ import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 public class ConsumerMeta {
 	final private String groupName;
 	final private String topic;
-	final private List<String> tags;
+	final private Collection<String> tags;
 	final private MessageModel messageModel;
 	final private ConsumeFromWhere consumeFromWhere;
+	/***
+	 * 大于
+	 */
+	private long ignoreOffSetThreshold;
     
 	public ConsumerMeta(String groupName, String topic, String... tags) {
 		super();
@@ -20,16 +24,26 @@ public class ConsumerMeta {
 		this.tags = Arrays.asList(tags);
 		this.messageModel = MessageModel.CLUSTERING;
 		this.consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+		this.ignoreOffSetThreshold = -1;
 	}
 
-	public ConsumerMeta(String groupName, String topic, List<String> tags,
-			MessageModel messageModel, ConsumeFromWhere consumeFromWhere) {
+	public ConsumerMeta(String groupName, String topic, Collection<String> tags,
+			MessageModel messageModel, ConsumeFromWhere consumeFromWhere, long ignoreOffSetThreshold) {
 		super();
 		this.groupName = groupName;
 		this.topic = topic;
 		this.tags = tags;
 		this.messageModel = messageModel;
 		this.consumeFromWhere = consumeFromWhere;
+		this.ignoreOffSetThreshold = ignoreOffSetThreshold;
+	}
+	
+	public void setIgnoreOffSetThreshold(long ignoreOffSetThreshold) {
+		this.ignoreOffSetThreshold = ignoreOffSetThreshold;
+	}
+
+	public long getIgnoreOffSetThreshold() {
+		return ignoreOffSetThreshold;
 	}
 
 	public String getGroupName() {
@@ -40,7 +54,7 @@ public class ConsumerMeta {
 		return topic;
 	}
 
-	public List<String> getTags() {
+	public Collection<String> getTags() {
 		return tags;
 	}
 

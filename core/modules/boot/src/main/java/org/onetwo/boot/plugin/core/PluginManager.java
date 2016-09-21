@@ -5,8 +5,8 @@ import java.util.Optional;
 
 public interface PluginManager {
 
-	public Optional<Plugin> findPluginByElementClass(Class<?> elementClass);
+	public Optional<WebPlugin> findPluginByElementClass(Class<?> elementClass);
 
-	public List<Plugin> getPlugins();
+	public List<WebPlugin> getPlugins();
 
 }

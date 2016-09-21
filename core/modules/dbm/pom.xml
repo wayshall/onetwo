@@ -64,6 +64,10 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+     <dependency>
+	     <groupId>com.alibaba</groupId>
+	     <artifactId>druid</artifactId>
+	</dependency>
     
 	<dependency>
 	  <groupId>javax.persistence</groupId>
