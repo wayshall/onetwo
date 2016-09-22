@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.onetwo.common.jfishdbm.utils.DbmUtils;
+import org.onetwo.dbm.utils.DbmUtils;
 
 import com.google.common.collect.ImmutableMap;
 

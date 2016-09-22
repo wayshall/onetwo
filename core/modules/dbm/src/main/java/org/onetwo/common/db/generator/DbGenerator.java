@@ -17,10 +17,10 @@ import org.onetwo.common.db.generator.mapping.ColumnMapping.ColumnAttrValueFunc;
 import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.jfishdbm.exception.DbmException;
-import org.onetwo.common.jfishdbm.jdbc.JdbcUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.jdbc.JdbcUtils;
 
 import com.google.common.collect.Lists;
 

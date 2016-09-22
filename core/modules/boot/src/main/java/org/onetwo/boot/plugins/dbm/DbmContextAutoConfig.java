@@ -1,7 +1,7 @@
 package org.onetwo.boot.plugins.dbm;
 
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
-import org.onetwo.common.jfishdbm.spring.JFishdbmSpringConfiguration;
+import org.onetwo.dbm.spring.JFishdbmSpringConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

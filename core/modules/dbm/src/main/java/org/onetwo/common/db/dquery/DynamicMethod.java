@@ -25,13 +25,13 @@ import org.onetwo.common.db.filequery.ParsedSqlUtils;
 import org.onetwo.common.db.filequery.ParserContext;
 import org.onetwo.common.db.filequery.ParserContextFunctionSet;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
-import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.springframework.core.MethodParameter;
 
 

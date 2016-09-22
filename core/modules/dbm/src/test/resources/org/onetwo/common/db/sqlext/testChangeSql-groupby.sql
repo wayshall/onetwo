@@ -49,6 +49,8 @@ select
 			    	bbl.linename,bbl.lineid,bb.busnumber,bbn.id,bbn.naturename
 			)
 	) type10   
+	where 
+		type10.accountdate = :accountdate
   	group by 
 			accountdate,
   		linename,busnumber,lineid,natureid,naturename

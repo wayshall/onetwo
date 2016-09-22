@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
-import org.onetwo.common.jfishdbm.support.DbmEntityManager;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.support.DbmEntityManager;
 
 //@TransactionConfiguration(defaultRollback=true)
 public class JFishDaoTest extends AppBaseTest {

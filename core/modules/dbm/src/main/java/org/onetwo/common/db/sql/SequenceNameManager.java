@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.jfishdbm.exception.DbmException;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.exception.DbmException;
 
 /***
  * 序列管理类

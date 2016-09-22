@@ -10,10 +10,10 @@ import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao;
 import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao2;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
-import org.onetwo.common.jfishdbm.support.DbmDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.support.DbmDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

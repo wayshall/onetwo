@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.common.jfishdbm.support.DbmDao;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.support.DbmDao;
 
 public class UserAutoidServiceNoSpringImpl implements UserAutoidService {
 	

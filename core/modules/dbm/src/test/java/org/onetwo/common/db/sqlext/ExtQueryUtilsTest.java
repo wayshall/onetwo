@@ -27,7 +27,7 @@ public class ExtQueryUtilsTest {
 	public void testParseSql(){
 		printStatements("select * from user where user_name=?");
 		printStatements("select id, user_name, password from user where user_name=?");
-		printStatements("select count(1) from user where user_name=?");
+		printStatements("select count(id) from user where user_name=?");
 	}
 	
 	private void printStatements(String sql){
@@ -113,7 +113,8 @@ public class ExtQueryUtilsTest {
 		SQLSelectItem countItem = new SQLSelectItem();
 		SQLAggregateExpr countMethod = new SQLAggregateExpr("count");
 		countMethod.setParent(countItem);
-		countMethod.addArgument(new SQLIntegerExpr(1));
+//		countMethod.addArgument(new SQLIntegerExpr(1));
+		countMethod.addArgument(new SQLIdentifierExpr("id"));
 
 		countItem.setParent(query);
 		countItem.setExpr(countMethod);

@@ -2,7 +2,7 @@ package org.onetwo.common.db.filequery;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
-import org.onetwo.common.jfishdbm.mapping.DbmTypeMapping;
+import org.onetwo.dbm.mapping.DbmTypeMapping;
 
 public interface QueryProvideManager {
 

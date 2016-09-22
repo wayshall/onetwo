@@ -1,6 +1,6 @@
 package org.onetwo.common.db.dquery;
 
-import org.onetwo.common.jfishdbm.spring.DbmDaoCreateEvent;
+import org.onetwo.dbm.spring.DbmDaoCreateEvent;
 import org.springframework.context.ApplicationListener;
 
 public class DynamicQueryObjectRegisterListener implements ApplicationListener<DbmDaoCreateEvent> {

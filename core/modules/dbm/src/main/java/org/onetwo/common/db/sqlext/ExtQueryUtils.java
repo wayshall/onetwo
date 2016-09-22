@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.onetwo.common.db.DruidUtils;
 import org.onetwo.common.db.RawSqlWrapper;
+import org.onetwo.common.db.SqlUtils;
 import org.onetwo.common.db.builder.QueryField;
 import org.onetwo.common.db.builder.QueryFieldImpl;
 import org.onetwo.common.db.builder.SqlFuncFieldImpl;
@@ -148,6 +150,10 @@ public abstract class ExtQueryUtils {
 	}
 	
 	public static String buildCountSql(String sql, String countValue){
+		if(SqlUtils.isDruidPresent()){
+			return DruidUtils.toCountSql(sql, countValue);
+		}
+		
 		String[] tokens = StringUtils.split(sql.toLowerCase(), " ");
 		
 		int groupIndex = ArrayUtils.indexOf(tokens, "group");

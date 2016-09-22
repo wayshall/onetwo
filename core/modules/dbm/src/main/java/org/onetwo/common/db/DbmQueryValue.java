@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
-import org.onetwo.common.jfishdbm.utils.DbmUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.utils.DbmUtils;
 
 
 public class DbmQueryValue {

@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.jfishdbm.exception.DbmException;
-import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -18,6 +16,8 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.watch.FileChangeListener;
 import org.onetwo.common.watch.FileWatcher;
+import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.slf4j.Logger;
 
 import com.google.common.collect.ImmutableList;

@@ -3,9 +3,9 @@ package org.onetwo.common.jfishdbm;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.jfishdbm.spring.EnableJFishDbm;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
+import org.onetwo.dbm.spring.EnableJFishDbm;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

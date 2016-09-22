@@ -1,8 +1,8 @@
 package org.onetwo.common.db.filequery;
 
-import org.onetwo.common.jfishdbm.exception.FileNamedQueryException;
 import org.onetwo.common.spring.ftl.FtlUtils;
 import org.onetwo.common.spring.ftl.TemplateParser;
+import org.onetwo.dbm.exception.FileNamedQueryException;
 
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;

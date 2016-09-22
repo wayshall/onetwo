@@ -8,8 +8,8 @@ import org.onetwo.common.db.InnerBaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
-import org.onetwo.common.jfishdbm.support.DbmEntityManager;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.support.DbmEntityManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 

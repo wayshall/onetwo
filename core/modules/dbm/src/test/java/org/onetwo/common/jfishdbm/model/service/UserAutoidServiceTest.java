@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.jfishdbm.AppBaseTest;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.common.jfishdbm.support.DaoFactory;
-import org.onetwo.common.jfishdbm.support.DbmDao;
+import org.onetwo.dbm.support.DaoFactory;
+import org.onetwo.dbm.support.DbmDao;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UserAutoidServiceTest extends AppBaseTest {

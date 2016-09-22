@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryBuilderImpl.SubQueryBuilder;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
-import org.onetwo.common.jfishdbm.mapping.JFishMappedEntry;
-import org.onetwo.common.jfishdbm.support.DbmDaoImplementor;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.support.DbmDaoImplementor;
 
 public class DefaultWhereCauseBuilder implements WhereCauseBuilder {
 	final protected QueryBuilderImpl queryBuilder;
