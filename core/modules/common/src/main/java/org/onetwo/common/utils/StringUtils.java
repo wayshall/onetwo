@@ -21,6 +21,11 @@ public abstract class StringUtils {
 	public static final String ENCODING = "UTF-8";
 	public static final String EMPTY = "";
 
+
+	public static boolean isNullOrBlankString(Object value){
+		return value==null || (String.class.isInstance(value) && org.apache.commons.lang3.StringUtils.isBlank(value.toString()));
+	}
+	
 	public static String emptyIfNull(Object str){
 		return str==null?EMPTY:str.toString();
 	}
