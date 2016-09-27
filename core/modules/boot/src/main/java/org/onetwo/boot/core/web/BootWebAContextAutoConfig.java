@@ -14,6 +14,7 @@ import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
+import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
@@ -26,18 +27,20 @@ import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.json.BootJackson2ObjectMapperBuilder;
+import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.web.init.CommonWebFilterInitializer;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.common.web.utils.WebHolderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
@@ -58,9 +61,10 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
-@Import({BootContextConfig.class})
+@Import({BootContextConfig.class, PluginContextConfig.class})
 //@Import({BootContextConfig.class})
-@ConditionalOnProperty(prefix="jfish", name="autoConfig", havingValue="true", matchIfMissing=true)
+@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue="true", matchIfMissing=true)
+@ConditionalOnClass(CommonWebFilterInitializer.class)
 public class BootWebAContextAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -122,6 +126,7 @@ public class BootWebAContextAutoConfig {
 	
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)
+	@ConditionalOnBean(AbstractBaseController.class)
 	public FileStorer<?> fileStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		StoreType type = config.getStoreType();
@@ -149,6 +154,7 @@ public class BootWebAContextAutoConfig {
 	
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
+	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		return service;
@@ -219,11 +225,11 @@ public class BootWebAContextAutoConfig {
 		return BootWebUtils.createObjectMapper(applicationContext);
 	}*/
 	
-	@Bean
+	/*@Bean
 	public WebHolderManager webHolderManager() {
 		WebHolderManager webHolderManager = new WebHolderManager();
 		return webHolderManager;
-	}
+	}*/
 
 	/***
 	 * 协作视图
@@ -233,6 +239,7 @@ public class BootWebAContextAutoConfig {
 	 */
 	@Bean
 	@Autowired
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
 	public ViewResolver viewResolver(ApplicationContext applicationContext, ContentNegotiationManager contentNegotiationManager) {
 		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
@@ -248,6 +255,7 @@ public class BootWebAContextAutoConfig {
 	}
 	
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+//	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(bootSiteConfig.getUpload().getMaxUploadSize());
@@ -265,41 +273,5 @@ public class BootWebAContextAutoConfig {
 		return new BootJackson2ObjectMapperBuilder();
 	}
 	
-	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
-	public CommonsMultipartResolver filterMultipartResolver(){
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setDefaultEncoding("utf-8");
-		resolver.setMaxUploadSize(jfishBootConfig.getUpload().getMaxUploadSize());
-		return resolver;
-	}*/
-	
-//	@Bean
-	/*private ContentNegotiationManagerFactoryBean contentNegotiationManagerFactoryBean(){
-		ContentNegotiationManagerFactoryBean bean = new ContentNegotiationManagerFactoryBean();
-		bean.setMediaTypes(jfishBootConfig.getMediaType());
-		bean.setDefaultContentType(MediaType.TEXT_HTML);
-		bean.setIgnoreAcceptHeader(true);
-		bean.setFavorParameter(true);
-		return bean;
-	}*/
-	
-	/*@Bean
-	public BootFirstInterceptor bootFirstInterceptor(){
-		return new BootFirstInterceptor();
-	}*/
-	
-	/*@Bean
-	@ConditionalOnProperty(prefix="deploy", name="server", havingValue="glassfish", matchIfMissing=false)
-	public SimpleCharacterEncodingFilter fixGlassfishOrderedCharacterEncodingFilter(){
-		SimpleCharacterEncodingFilter filter = new SimpleCharacterEncodingFilter();
-		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
-		filter.setForceEncoding(this.httpEncodingProperties.isForce());
-		filter.setOrder(Ordered.LOWEST_PRECEDENCE);
-
-		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.getCharset().name());
-		logger.info("SimpleCharacterEncodingFilter init: {} ", this.httpEncodingProperties.isForce());
-		
-		return filter;
-	}*/
 
 }

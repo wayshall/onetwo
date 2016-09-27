@@ -18,6 +18,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix="jfish")
 @Data
 public class BootJFishConfig {
+	public static final String ENABLE_JFISH_AUTO_CONFIG = "jfish.autoConfig";
+	
+	public static final String ENABLE_NEGOTIATING_VIEW = "negotiating-view";
 	
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
@@ -32,6 +35,8 @@ public class BootJFishConfig {
 	private Properties mediaTypes;*/
 	
 	//security=BootSecurityConfig
+	
+	private boolean profile;
 	
 	@Data
 	public class MessageSourceConfig {

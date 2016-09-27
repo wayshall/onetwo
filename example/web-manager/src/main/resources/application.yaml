@@ -4,15 +4,15 @@ spring:
     freemarker:
         suffix: .html
 jfish: 
+    profile: true
     mvc: 
         mediaTypes:
             json: application/json
             xls: application/vnd.ms-excel
             xml: application/xml
+        negotiating-view: true
 siteConfig:
     name: 后台管理系统
     config:
-        profile:
-            timeit: true
         security:
             preventXssRequest: true

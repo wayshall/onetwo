@@ -37,6 +37,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
 
+	public static final String ENABLE_UPLOAD_PREFIX = "siteConfig.upload";
+	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	final private static String WEBJARS_PATH = "/webjars";
@@ -169,7 +171,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 
 
 	@Data
-	public class UploadConfig {
+	static public class UploadConfig {
+		
 		private StoreType storeType = StoreType.LOCAL;
 		private String fileStorePath;
 		private String appContextDir;

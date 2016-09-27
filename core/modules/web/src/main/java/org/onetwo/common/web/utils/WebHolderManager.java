@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.common.web.filter.WebFilterAdapter;
 import org.springframework.core.Ordered;
 
+@Deprecated
 public class WebHolderManager extends WebFilterAdapter implements Ordered {
 
 	@Override

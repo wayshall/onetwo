@@ -16,7 +16,7 @@ import org.springframework.web.util.HtmlUtils;
 
 public class BootWebHelper {
 
-	public static final String WEB_HELPER_CLASS = "web.helper.class";
+//	public static final String WEB_HELPER_CLASS = "web.helper.class";
 	public static final String WEB_HELPER_KEY = "helper";
 	
 //	private static final Class<?> ACTUAL_HELPERCLASS;
@@ -133,7 +133,12 @@ public class BootWebHelper {
 
 
 	public String getRequestExtension() {
-		return requestExtension;
+		String extension = this.requestExtension;
+		if(extension==null){
+			extension = RequestUtils.getRequestExtension(request);
+			this.requestExtension = extension==null?"":extension;
+		}
+		return extension;
 	}
 
 	public void setRequestExtension(String requestExtension) {

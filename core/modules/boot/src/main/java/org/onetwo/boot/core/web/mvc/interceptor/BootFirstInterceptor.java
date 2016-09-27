@@ -3,11 +3,12 @@ package org.onetwo.boot.core.web.mvc.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.profiling.UtilTimerStack;
-import org.onetwo.common.web.utils.RequestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,17 +22,21 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 //	private final List<JFishRequestValidator> requestValidators;
 //	private RequestPreventor submitPreventor = PreventorFactory.getRepeateSubmitPreventor();
 	
+	@Autowired(required=false)
+	private BootJFishConfig bootJFishConfig;
 	
+	private boolean isProfile(){
+		return bootJFishConfig!=null && bootJFishConfig.isProfile();
+	}
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		HandlerMethod handlerMethod = getHandlerMethod(handler);
 		if(handlerMethod==null)
 			return true;
 
-		UtilTimerStack.push(CONTROLLER_TIME_KEY);
+		if(isProfile())
+			UtilTimerStack.push(CONTROLLER_TIME_KEY);
 		
 		BootWebHelper helper = BootWebUtils.webHelper(request);
-		String extension = RequestUtils.getRequestExtension(request);// 
-		helper.setRequestExtension(extension);
 		helper.setControllerHandler(handlerMethod);
 		
 		/*if(BaseSiteConfig.getInstance().isPreventRepeateSubmit()){
@@ -53,9 +58,11 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 			return ;
 		
 		if(modelAndView!=null){
-			modelAndView.addObject(NOW_KEY, new NiceDate());
+			if(!modelAndView.getModel().containsKey(NOW_KEY))
+				modelAndView.addObject(NOW_KEY, new NiceDate());
 		}else{
-			request.setAttribute(NOW_KEY, new NiceDate());
+			if(request.getAttribute(NOW_KEY)==null)
+				request.setAttribute(NOW_KEY, new NiceDate());
 		}
 	}
 	
@@ -63,7 +70,8 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		if(!isMethodHandler(handler))
 			return ;
-		UtilTimerStack.pop(CONTROLLER_TIME_KEY);
+		if(isProfile())
+			UtilTimerStack.pop(CONTROLLER_TIME_KEY);
 	}
 
 	@Override
