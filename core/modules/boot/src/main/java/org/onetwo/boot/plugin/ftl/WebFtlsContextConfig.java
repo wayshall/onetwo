@@ -21,7 +21,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 @Configuration
-public class FtlContextConfig {
+public class WebFtlsContextConfig {
 	public static final String WEBFTLS_PATH = "classpath:META-INF/resources/webftls";
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	

@@ -166,7 +166,7 @@ public class BootWebAContextAutoConfig {
 	}
 	
 	@Bean
-	RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
+	public RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
 		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
 		return req;	
 	}
