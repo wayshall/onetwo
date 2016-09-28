@@ -31,6 +31,12 @@ public class OneBatchInsertTest extends AppBaseTest {
 		int count = this.userAutoidServiceImpl.daoBatchInsert("testBatchInsert", UserStatus.NORMAL, niceNowSeconde.getTime(), insertCount);
 		Assert.assertEquals(insertCount, count);
 		t.stop();
+
+		t = new TimeCounter("OneBatchInsertTest2");
+		t.start();
+		count = this.userAutoidServiceImpl.daoBatchInsert("testBatchInsert", UserStatus.NORMAL, niceNowSeconde.getTime(), insertCount);
+		Assert.assertEquals(insertCount, count);
+		t.stop();
 		
 		userAutoidServiceImpl.deleteAll();
 	}

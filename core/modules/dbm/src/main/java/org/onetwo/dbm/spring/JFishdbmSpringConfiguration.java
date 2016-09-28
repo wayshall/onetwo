@@ -3,6 +3,8 @@ package org.onetwo.dbm.spring;
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
+import org.onetwo.common.db.DataBase;
+import org.onetwo.common.db.dquery.DynamicQueryObjectRegister;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
@@ -12,6 +14,7 @@ import org.onetwo.dbm.jdbc.JFishJdbcOperations;
 import org.onetwo.dbm.jdbc.JFishJdbcTemplate;
 import org.onetwo.dbm.jdbc.JFishJdbcTemplateAspectProxy;
 import org.onetwo.dbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
 import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
@@ -35,12 +38,14 @@ import org.springframework.context.annotation.Configuration;
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
 //@Import(JFishProfiles.class)
 //@EnableConfigurationProperties({DataBaseConfig.class})
-public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean{
+public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean/*, ImportAware*/ {
 
 	private ApplicationContext applicationContext;
 
 	@Autowired
 	private DataSource dataSource;
+	
+	private DataBase database;
 
 	@Autowired(required=false)
 	private DataBaseConfig dataBaseConfig;
@@ -49,13 +54,27 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	private Validator validator;
 	
 	public JFishdbmSpringConfiguration(){
-		System.out.println("JFishdbmSpringConfiguration init");
 	}
 
+
+	/*@Override
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
+		Map<String, Object> annotationAttributes = importMetadata
+				.getAnnotationAttributes(EnableJFishDbm.class.getName());
+		AnnotationAttributes attrs = AnnotationAttributes.fromMap(annotationAttributes);
+		this.database = (DataBase)attrs.get("database");
+	}*/
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+		
+		if(dataSource!=null){
+			this.database = JdbcUtils.getDataBase(dataSource);
+			DynamicQueryObjectRegister register = new DynamicQueryObjectRegister(applicationContext);
+			register.setDatabase(database);
+			register.registerQueryBeans();
+		}
 	}
 
 	@Override
@@ -87,9 +106,11 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 
-		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
-		DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
-		this.applicationContext.publishEvent(event);
+		if(this.database==null){
+			BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
+			DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
+			this.applicationContext.publishEvent(event);
+		}
 		return jem;
 	}
 	

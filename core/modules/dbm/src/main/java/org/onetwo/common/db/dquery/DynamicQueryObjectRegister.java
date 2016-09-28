@@ -12,7 +12,6 @@ import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -38,8 +37,7 @@ public class DynamicQueryObjectRegister {
 
 	private DataBase database;
 	private BeanDefinitionRegistry registry;
-	@Autowired
-	private ApplicationContext applicationContext;
+//	private ApplicationContext applicationContext;
 	
 	public DynamicQueryObjectRegister(BeanDefinitionRegistry registry) {
 		this.registry = registry;

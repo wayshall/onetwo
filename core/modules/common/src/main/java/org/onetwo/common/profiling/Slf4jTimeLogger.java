@@ -2,6 +2,7 @@ package org.onetwo.common.profiling;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 
 public class Slf4jTimeLogger implements TimeLogger {
@@ -21,7 +22,7 @@ public class Slf4jTimeLogger implements TimeLogger {
 
 	@Override
 	public void log(String msg){
-		if(logger!=null){
+		if(logger!=null && !NOPLogger.class.isInstance(logger)){
 			logger.info(msg);
 		}else{
 			outer.log(msg);
