@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
+import org.onetwo.common.data.Result;
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.Result;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.MapResultBuilder;

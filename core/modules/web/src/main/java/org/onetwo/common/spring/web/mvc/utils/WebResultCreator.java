@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.LazyValue;
+import org.onetwo.common.data.LazyValue;
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.CUtils;
 import org.springframework.validation.BindingResult;
@@ -40,7 +40,7 @@ final public class WebResultCreator {
 	}
 	/***
 	 * SimpleResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
 	 * 
 	 * @return
 	 */
@@ -64,7 +64,7 @@ final public class WebResultCreator {
 	/****
 	 * 
 	 * ListResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.AbstractDataResult.ListResult ListResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain org.onetwo.common.data.AbstractDataResult.ListResult ListResult}) 类型返回
 	 * 
 	 * @return
 	 */
@@ -84,7 +84,7 @@ final public class WebResultCreator {
 	/***
 	 * 
 	 * MapResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
 	 * 
 	 * @return
 	 */

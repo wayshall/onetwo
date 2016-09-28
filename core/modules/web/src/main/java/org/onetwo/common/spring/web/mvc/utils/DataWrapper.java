@@ -2,7 +2,7 @@ package org.onetwo.common.spring.web.mvc.utils;
 
 import java.io.Serializable;
 
-import org.onetwo.common.result.LazyValue;
+import org.onetwo.common.data.LazyValue;
 
 /*****
  * @author wayshall

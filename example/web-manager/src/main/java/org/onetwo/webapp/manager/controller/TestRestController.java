@@ -2,8 +2,8 @@ package org.onetwo.webapp.manager.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;

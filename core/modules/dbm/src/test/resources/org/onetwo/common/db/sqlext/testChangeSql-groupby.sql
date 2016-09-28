@@ -23,6 +23,8 @@ select
 				    	and bbl.lineid = :lineId 
 			    group by
 			  		  rtcs.accountdate
+			    order by 
+			      	natureid,linename,busnumber
 			)
 		union all
 			(

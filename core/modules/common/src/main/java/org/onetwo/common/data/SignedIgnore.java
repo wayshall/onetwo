@@ -1,4 +1,4 @@
-package org.onetwo.common.result;
+package org.onetwo.common.data;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

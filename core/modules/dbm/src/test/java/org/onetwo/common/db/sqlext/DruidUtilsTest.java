@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.onetwo.common.db.DruidUtils;
 import org.onetwo.common.file.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -13,7 +14,6 @@ import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.util.JdbcUtils;
 
-public class ExtQueryUtilsTest {
+public class DruidUtilsTest {
 
 	@Test
 	public void testParseSql(){
@@ -87,8 +87,8 @@ public class ExtQueryUtilsTest {
 		//order by
 		sql = readSql("testChangeSql.sql");
 		printStatements(sql);
-		selectStatement = this.changeAsCountSql(sql);
-		System.out.println("new sql: "+selectStatement);
+		String countSql = DruidUtils.toCountSql(sql, null);
+		System.out.println("new sql: "+countSql);
 		
 	}
 	
@@ -98,8 +98,8 @@ public class ExtQueryUtilsTest {
 		//union group by
 		String sql = readSql("testChangeSql-groupby.sql");
 		printStatements(sql);
-		SQLSelectStatement selectStatement = this.changeAsCountSql(sql);
-		System.out.println("new sql: "+selectStatement);
+		String countSql = DruidUtils.toCountSql(sql, null);
+		System.out.println("new sql: "+countSql);
 	}
 	
 	private SQLSelectStatement changeAsCountSql(String sql){

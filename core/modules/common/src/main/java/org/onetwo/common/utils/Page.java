@@ -1,7 +1,6 @@
 package org.onetwo.common.utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -27,11 +26,10 @@ public class Page<T> implements Serializable {
 		page.orderBy = p.orderBy;
 		page.first = p.first;
 		page.autoCount = p.autoCount;
-		page.totalCount = p.totalCount;
 		page.pagination = p.pagination;
 		if(mapper!=null){
 			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
-			page.result = rs;
+			page.result.addAll(rs);
 		}
 		return page;
 	}
@@ -61,8 +59,8 @@ public class Page<T> implements Serializable {
 	protected String order = null;
 	protected boolean autoCount = true;
 
-	protected List<T> result = new ArrayList<T>();
-	protected long totalCount = -1;
+	protected List<T> result;
+	protected long totalCount = 0;
 	
 	protected int first = -1;
 	
@@ -191,10 +189,12 @@ public class Page<T> implements Serializable {
 	}
 
 	public void setResult(final List<T> result) {
+//		this.result.datas(result);
 		this.result = result;
 	}
 
 	public long getTotalCount() {
+		long totalCount = this.totalCount;
 		if (totalCount < 0) {
 			return 0L;
 		}
@@ -222,7 +222,8 @@ public class Page<T> implements Serializable {
 	}
 
 	public int getTotalPages() {
-		if (totalCount < 0)
+		long totalCount = this.totalCount;
+		if (totalCount <= 0)
 			return 0;
 
 		int count = (int)(totalCount / pageSize);

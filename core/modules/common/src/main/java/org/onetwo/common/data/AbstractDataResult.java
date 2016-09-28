@@ -1,4 +1,4 @@
-package org.onetwo.common.result;
+package org.onetwo.common.data;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;

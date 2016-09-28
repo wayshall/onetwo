@@ -1,7 +1,7 @@
 package org.onetwo.common.spring.web.mvc.utils;
 
-import org.onetwo.common.result.AbstractDataResult;
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.AbstractDataResult;
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.springframework.web.servlet.ModelAndView;
 
 @SuppressWarnings("unchecked")

@@ -75,6 +75,7 @@ public class JsonMapperTest {
 		rs = mapper.fromJson(json, Integer.class);
 		System.out.println("json: " + json + ", rs: " + rs);
 		Assert.assertEquals(data, rs);
+		
 	}
 	
 	

@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;

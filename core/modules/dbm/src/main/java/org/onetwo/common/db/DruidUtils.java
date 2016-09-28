@@ -14,21 +14,42 @@ import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitorAdapter;
 import com.alibaba.druid.util.JdbcUtils;
 
 abstract public class DruidUtils {
-	
 
 	public static String toCountSql(String sql, Object value){
 		return changeAsCountStatement(sql, value).toString();
 	}
 
-	private static SQLSelectStatement changeAsCountStatement(String sql, Object value){
+	/*public static String toCountSql2(String sql, Object value){
+		return changeAsCountStatement2(sql, value).toString();
+	}
+
+	public static SQLSelectStatement changeAsCountStatement2(String sql, Object value){
 		List<SQLStatement> statements = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
-		if(!SQLSelectStatement.class.isInstance(statements.get(0))){
+		SQLSelectStatement selectStatement = getSQLSelectStatement(statements, 0);
+		if(selectStatement==null){
 			throw new DbmException("it must be a select query, sql: " + sql);
 		}
-		SQLSelectStatement selectStatement = (SQLSelectStatement)statements.get(0);
+		selectStatement.accept(new TrimOrderBySQLASTVisitorAdapter());
+		return selectStatement;
+	}*/
+	public static SQLSelectStatement getSQLSelectStatement(List<SQLStatement> statements, int index){
+		if(!SQLSelectStatement.class.isInstance(statements.get(index))){
+			return null;
+		}
+		SQLSelectStatement selectStatement = (SQLSelectStatement)statements.get(index);
+		return selectStatement;
+	}
+	private static SQLSelectStatement changeAsCountStatement(String sql, Object value){
+		List<SQLStatement> statements = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
+		SQLSelectStatement selectStatement = getSQLSelectStatement(statements, 0);
+		if(selectStatement==null){
+			throw new DbmException("it must be a select query, sql: " + sql);
+		}
 		SQLSelect select = selectStatement.getSelect();
 		SQLSelectQueryBlock query = (SQLSelectQueryBlock)select.getQuery();
 		List<SQLSelectItem> items = query.getSelectList();
@@ -47,11 +68,18 @@ abstract public class DruidUtils {
 		countItem.setExpr(countMethod);
 		items.add(countItem);
 		
-		query.setOrderBy(null);
+//		query.setOrderBy(null);
+		selectStatement.accept(new TrimOrderBySQLASTVisitorAdapter());
 		
 		return selectStatement;
 	}
-	
+
+	static class TrimOrderBySQLASTVisitorAdapter extends MySqlASTVisitorAdapter {
+	    @Override
+	    public void endVisit(MySqlSelectQueryBlock x) {
+	    	x.setOrderBy(null);
+	    }
+	}
 	private DruidUtils(){
 	}
 

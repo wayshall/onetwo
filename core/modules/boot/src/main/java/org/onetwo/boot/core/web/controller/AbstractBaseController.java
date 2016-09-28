@@ -15,6 +15,9 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
+import org.onetwo.common.data.AbstractDataResult;
+import org.onetwo.common.data.LazyValue;
+import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -22,9 +25,6 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.result.AbstractDataResult;
-import org.onetwo.common.result.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.result.LazyValue;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
@@ -326,7 +326,7 @@ abstract public class AbstractBaseController {
 
 	/***
 	 * SimpleResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.result.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
 	 * 
 	 * @return
 	 */

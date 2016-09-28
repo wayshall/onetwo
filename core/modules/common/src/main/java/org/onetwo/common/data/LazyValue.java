@@ -1,4 +1,4 @@
-package org.onetwo.common.result;
+package org.onetwo.common.data;
 
 public interface LazyValue {
 	Object lazyGet();
