@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.onetwo</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.2.3-SNAPSHOT</version>
+        <version>4.3.3-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -196,14 +196,14 @@
 	</dependencies>
 	
 	<repositories>
-		<repository>
+		<!-- <repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		</repository>
+		</repository> -->
 		<repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>

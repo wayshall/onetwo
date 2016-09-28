@@ -2,41 +2,27 @@ package org.onetwo.boot.core.web;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
+import org.onetwo.boot.core.BootWebCommontAutoConfig;
 import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.core.init.BootServletContextInitializer;
-import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
-import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.filter.CorsFilter;
-import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
-import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
-import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
-import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
-import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
-import org.onetwo.boot.core.web.view.BootJsonView;
-import org.onetwo.boot.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
-import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
-import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -52,8 +38,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -63,28 +47,17 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, PluginContextConfig.class})
 //@Import({BootContextConfig.class})
-@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue="true", matchIfMissing=true)
+@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
 @ConditionalOnClass(CommonWebFilterInitializer.class)
-public class BootWebAContextAutoConfig {
+public class BootWebUIContextAutoConfig extends BootWebCommontAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private ApplicationContext applicationContext;
-
-	@Autowired
-	private BootJFishConfig bootJfishConfig;
-	
-	@Autowired
-	private BootSiteConfig bootSiteConfig;
 	
 	@Autowired
 	private HttpEncodingProperties httpEncodingProperties;
 	
-	@PostConstruct
-	public void init(){
-		SpringApplication.initApplicationIfNotInitialized(applicationContext);
+	public BootWebUIContextAutoConfig(){
+		System.out.println("BootWebUIContextAutoConfig init");
 	}
-	
 	/*@Bean
 	public BootSiteConfig bootSiteConfig(){
 		return bootSiteConfig;
@@ -104,25 +77,6 @@ public class BootWebAContextAutoConfig {
 		registration.setName(CorsFilter.CORS_FILTER_NAME);
 		return registration;
 	}
-	
-	@Bean
-	public FilterRegistrationBean requestContextFilter(){
-		FilterRegistrationBean registration = new FilterRegistrationBean(new BootRequestContextFilter());
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE+100);
-		registration.setName("requestContextFilter");
-		return registration;
-	}
-	
-	
-
-	/*@Bean
-	public RequestContextFilter requestContextFilter(){
-		return new RequestContextFilter();
-	}*/
-	/*@Bean
-	public RequestContextListener requestContextListener(){
-		return new RequestContextListener();
-	}*/
 	
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)
@@ -160,61 +114,6 @@ public class BootWebAContextAutoConfig {
 		return service;
 	}
 	
-	@Bean
-	@ConditionalOnMissingBean(BootServletContextInitializer.class)
-	public BootServletContextInitializer bootServletContextInitializer(){
-		return new BootServletContextInitializer();
-	}
-	
-	@Bean
-	public ConfigServletContextInitializer configServletContextInitializer(){
-		return new ConfigServletContextInitializer();
-	}
-	
-	@Bean
-	public RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
-		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
-		return req;	
-	}
-	
-	@Bean
-	public BootMvcConfigurerAdapter bootMvcConfigurerAdapter(){
-		return new BootMvcConfigurerAdapter();
-	}
-	
-	/***
-	 * 异常解释
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnMissingBean(BootWebExceptionResolver.class)
-//	@Autowired
-	public BootWebExceptionResolver bootWebExceptionResolver(){
-		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
-//		resolver.setExceptionMessage(exceptionMessage);
-		return resolver;
-	}
-	
-	/***
-	 * 拦截器
-	 * @return
-	 */
-	@Bean
-	public BootFirstInterceptor bootFirstInterceptor(){
-		return new BootFirstInterceptor();
-	}
-
-	@Bean
-	public UploadValidateInterceptor uploadValidateInterceptor(){
-		return new UploadValidateInterceptor();
-	}
-	
-	@Bean
-	public BootJsonView bootJsonView(){
-		BootJsonView jv = new BootJsonView();
-		jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
-		return jv;
-	}
 	
 	/***
 	 * instead of boot mapper config by JacksonAutoConfiguration
@@ -252,25 +151,6 @@ public class BootWebAContextAutoConfig {
 //		viewResolver.setIgnoreAcceptHeader(true);
 		viewResolver.setContentNegotiationManager(contentNegotiationManager);
 		return viewResolver;
-	}
-	
-	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
-//	@ConditionalOnMissingBean(MultipartResolver.class)
-	public MultipartResolver filterMultipartResolver(){
-		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(bootSiteConfig.getUpload().getMaxUploadSize());
-		return resolver;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(SessionUserManager.class)
-	public SessionUserManager<UserDetail> sessionUserManager(){
-		return new BootSessionUserManager();
-	}
-
-	@Bean
-	public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
-		return new BootJackson2ObjectMapperBuilder();
 	}
 	
 

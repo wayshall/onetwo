@@ -19,6 +19,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class BootJFishConfig {
 	public static final String ENABLE_JFISH_AUTO_CONFIG = "jfish.autoConfig";
+	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
+	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
 	
 	public static final String ENABLE_NEGOTIATING_VIEW = "negotiating-view";
 	
@@ -37,6 +39,11 @@ public class BootJFishConfig {
 	//security=BootSecurityConfig
 	
 	private boolean profile;
+	/***
+	 * default is web
+	 * option: web, ms
+	 */
+	private String autoConfig;
 	
 	@Data
 	public class MessageSourceConfig {
