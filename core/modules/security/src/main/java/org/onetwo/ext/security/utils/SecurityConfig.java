@@ -31,6 +31,7 @@ public class SecurityConfig {
 	private String errorPage = "/error";
 	
 	private CasConfig cas = new CasConfig();
+	private CrsfConfig csrf = new CrsfConfig();
 //	private boolean csrf = true;
 	protected Boolean syncPermissionData;
 	
@@ -88,5 +89,12 @@ public class SecurityConfig {
 		private String path = "/";
 		private String domain;
 		private String name = "sid";
+	}
+
+	@Data
+	public static class CrsfConfig {
+		private boolean disable;
+		private String[] ignoringPaths;
+		private String[] requirePaths;
 	}
 }

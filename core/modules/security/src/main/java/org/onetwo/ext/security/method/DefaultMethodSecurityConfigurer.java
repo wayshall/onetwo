@@ -2,13 +2,16 @@ package org.onetwo.ext.security.method;
 
 import lombok.Getter;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.ext.security.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.IgnoreCsrfProtectionRequestUrlMatcher;
+import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -67,40 +70,53 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		this.defaultConfigure(http);
 	}
 	
+	protected void configureCsrf(HttpSecurity http) throws Exception{
+		CsrfConfigurer<HttpSecurity> csrf = http.csrf();
+		if(securityConfig.getCsrf().isDisable()){
+			csrf.disable();
+		}
+		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getIgnoringPaths())){
+			csrf.ignoringAntMatchers(securityConfig.getCsrf().getIgnoringPaths());
+		}
+		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getRequirePaths())){
+			csrf.requireCsrfProtectionMatcher(MatcherUtils.matchAntPaths(securityConfig.getCsrf().getRequirePaths()));
+		}else{
+			csrf.requireCsrfProtectionMatcher(IgnoreCsrfProtectionRequestUrlMatcher.ignoreUrls("/login*"));
+		}
+	}
+	
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
-			http
-				.formLogin()
-				.loginPage(securityConfig.getLoginUrl())
-				.loginProcessingUrl(securityConfig.getLoginProcessUrl())
-				.usernameParameter("username")
-				.passwordParameter("password")
-				.failureUrl(securityConfig.getLoginUrl()+"?error=true")
-				.failureHandler(ajaxAuthenticationHandler)
-				.successHandler(ajaxAuthenticationHandler)
+		http
+			.formLogin()
+			.loginPage(securityConfig.getLoginUrl())
+			.loginProcessingUrl(securityConfig.getLoginProcessUrl())
+			.usernameParameter("username")
+			.passwordParameter("password")
+			.failureUrl(securityConfig.getLoginUrl()+"?error=true")
+			.failureHandler(ajaxAuthenticationHandler)
+			.successHandler(ajaxAuthenticationHandler)
+		.and()
+			.logout()
+			.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
+		.and()
+			.httpBasic()
+			.disable()
+			.headers()
+				.frameOptions()
+				.sameOrigin()
+				.xssProtection()
+				.xssProtectionEnabled(true)
 			.and()
-				.logout()
-				.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
-			.and()
-				.httpBasic()
-				.disable()
-				.csrf()
-				.requireCsrfProtectionMatcher(IgnoreCsrfProtectionRequestUrlMatcher.ignoreUrls("/login*"))
-			.and()
-				.headers()
-					.frameOptions()
-					.sameOrigin()
-					.xssProtection()
-					.xssProtectionEnabled(true)
-				.and()
-			.and()
-				.exceptionHandling()
-				.accessDeniedPage("/access?error=true")
-				.accessDeniedHandler(ajaxSupportedAccessDeniedHandler)
-			.and()
-				.rememberMe()
-				.tokenValiditySeconds(securityConfig.getRememberMe().getTokenValiditySeconds())
-				//must be config
-				.key(securityConfig.getRememberMe().getKey());
+		.and()
+			.exceptionHandling()
+			.accessDeniedPage("/access?error=true")
+			.accessDeniedHandler(ajaxSupportedAccessDeniedHandler)
+		.and()
+			.rememberMe()
+			.tokenValiditySeconds(securityConfig.getRememberMe().getTokenValiditySeconds())
+			//must be config
+			.key(securityConfig.getRememberMe().getKey());
+		configureCsrf(http);
 	}
 
 }

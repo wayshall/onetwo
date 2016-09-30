@@ -6,8 +6,22 @@ spring:
         username: root
         password: root
         driver-class-name: com.mysql.jdbc.Driver
+    application:
+        name: web-manager
+    boot:
+        admin:
+            url: http://localhost:${server.port}
+            client:
+                service-url: http://localhost:${server.port}
+endpoints:
+    health:
+        sensitive: false
+
 jfish:
     security:
+        syncPermissionData: false
+        csrf:
+            disable: true
         cas:
             service: http://localhost:8080/j_spring_cas_security_check
             loginUrl: https://emall-sso.yooyo.com:9443/cas-server/login

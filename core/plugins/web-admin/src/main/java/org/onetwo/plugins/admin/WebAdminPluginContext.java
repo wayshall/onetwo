@@ -25,11 +25,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
 @AutoConfigureAfter(DbmContextAutoConfig.class)
+//@ConditionalOnBean(PermissionContextAutoConfig.class)
 public class WebAdminPluginContext {
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
+	@Autowired(required=false)
 	private SecurityConfig securityConfig;
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
@@ -41,9 +42,11 @@ public class WebAdminPluginContext {
 	
 	@PostConstruct
 	public void init(){
-		String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
-		logger.info("targetUrl: "+targetUrl);
-		this.securityConfig.setAfterLoginUrl(targetUrl);
+		if(securityConfig!=null){
+			String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
+			logger.info("targetUrl: "+targetUrl);
+			this.securityConfig.setAfterLoginUrl(targetUrl);
+		}
 	}
 	
 	@Bean

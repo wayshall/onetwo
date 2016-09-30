@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
-@ConditionalOnBean(AbstractPermissionConfig.class)
+@ConditionalOnBean({AbstractPermissionConfig.class})
 public class PermissionContextAutoConfig {
 	
 	@Autowired

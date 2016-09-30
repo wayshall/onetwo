@@ -2,21 +2,28 @@ package org.onetwo.webapp.manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import de.codecentric.boot.admin.config.EnableAdminServer;
 
 @Controller
-@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
-//@SpringBootApplication(exclude={SecurityAutoConfiguration.class})
-//@SpringBootApplication
-public class ApplicationStarter {
+@SpringBootApplication
+@EnableAdminServer
+//@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
+public class ApplicationStarter extends SpringBootServletInitializer {
 	
-	@RequestMapping("/")
+	/*@RequestMapping("/")
     String home() {
         return "index";
-    }
-
+    }*/
+	
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application;
+	}
+	
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStarter.class, args);
     }

@@ -15,6 +15,8 @@ import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuild
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -24,6 +26,8 @@ import com.google.common.base.Charsets;
 
 public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, InitializingBean {
 	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+			
 	private AccessDeniedHandler delegateAccessDeniedHandler;
 	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
 	private String redirectErrorUrl;
@@ -50,6 +54,7 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			
 			SimpleDataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).buildResult();
 			String text = mapper.toJson(rs);
+			logger.info("AccessDenied, render json: {}", text);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else if(!response.isCommitted() && StringUtils.isNotBlank(redirectErrorUrl)) {
 			String rurl = redirectErrorUrl;
@@ -60,8 +65,11 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			}
 			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message=";
 			rurl += URLEncoder.encode(accessDeniedException.getMessage(), Charsets.UTF_8.name());//encode value, otherwise will redirect failed
+
+			logger.info("AccessDenied, redirect to {}", rurl);
 			response.sendRedirect(rurl);
 		}else{
+			logger.info("AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", errorPage);
 			this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
 		}
 	}
