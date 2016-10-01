@@ -11,8 +11,6 @@ spring:
     boot:
         admin:
             url: http://localhost:${server.port}
-            client:
-                service-url: http://localhost:${server.port}
 endpoints:
     health:
         sensitive: false
