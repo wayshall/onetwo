@@ -10,7 +10,7 @@ spring:
         name: web-manager
     boot:
         admin:
-            url: http://localhost:${server.port}
+            url: http://localhost:9999
 endpoints:
     health:
         sensitive: false

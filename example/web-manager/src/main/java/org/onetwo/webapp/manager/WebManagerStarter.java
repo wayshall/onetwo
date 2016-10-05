@@ -6,13 +6,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Controller;
 
-import de.codecentric.boot.admin.config.EnableAdminServer;
-
 @Controller
 @SpringBootApplication
-@EnableAdminServer
 //@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
-public class ApplicationStarter extends SpringBootServletInitializer {
+public class WebManagerStarter extends SpringBootServletInitializer {
 	
 	/*@RequestMapping("/")
     String home() {
@@ -25,6 +22,6 @@ public class ApplicationStarter extends SpringBootServletInitializer {
 	}
 	
     public static void main(String[] args) {
-        SpringApplication.run(ApplicationStarter.class, args);
+        SpringApplication.run(WebManagerStarter.class, args);
     }
 }
