@@ -22,12 +22,12 @@ public class SQLSymbolManagerFactory {
 	
 	{
 //		 SQLSymbolManager jpa = new DefaultSQLSymbolManagerImpl(new JPQLDialetImpl());
-		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
-		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
+		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
+		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
 		 
 		 Map<EntityManagerProvider, SQLSymbolManager> temp = new HashMap<EntityManagerProvider, SQLSymbolManager>();
 //		 temp.put(EntityManagerProvider.JPA, jpa);
-		 temp.put(EntityManagerProvider.Hibernate, hibernate);
+//		 temp.put(EntityManagerProvider.Hibernate, hibernate);
 		 temp.put(EntityManagerProvider.JDBC, jdbc);
 		 
 //		 PROVIDERS = Collections.unmodifiableMap(temp);
@@ -56,8 +56,8 @@ public class SQLSymbolManagerFactory {
 	public SQLSymbolManager getJPA(){
 		return get(EntityManagerProvider.JPA);
 	}
-	
+	/*
 	public SQLSymbolManager getHibernate(){
 		return get(EntityManagerProvider.Hibernate);
-	}
+	}*/
 }

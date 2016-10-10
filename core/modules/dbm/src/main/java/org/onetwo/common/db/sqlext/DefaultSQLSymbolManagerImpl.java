@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.sqlext.CopyOfParamValues.PlaceHolder;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 
@@ -18,12 +17,12 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	
 	public static SQLSymbolManager create(){
 //		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl(), PlaceHolder.POSITION);
-		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultSQLDialetImpl());
+		DefaultSQLSymbolManagerImpl sql = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
 		return sql;
 	}
 	
 	protected Map<String, HqlSymbolParser> parser;
-	private SQLDialet sqlDialet;
+	private ExtQueryDialet sqlDialet;
 //	private PlaceHolder placeHolder;
 	
 	private List<ExtQueryListener> listeners;
@@ -33,13 +32,13 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 		this(sqlDialet, ParamValues.PlaceHolder.NAMED);
 	}*/
 
-	public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {
+	public DefaultSQLSymbolManagerImpl(ExtQueryDialet sqlDialet) {
 		parser = new HashMap<String, HqlSymbolParser>();
 		this.sqlDialet = sqlDialet;
 		this.initParser();
 	}
 
-	public SQLDialet getSqlDialet() {
+	public ExtQueryDialet getSqlDialet() {
 		return sqlDialet;
 	}
 

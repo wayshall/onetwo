@@ -1,6 +1,6 @@
 package org.onetwo.common.db.sqlext;
 
-public interface SQLDialet {
+public interface ExtQueryDialet {
 
 //	public String getFieldName(String field);
 

@@ -9,6 +9,12 @@ public class JsonDataBinder<T> {
 
 	private JsonMapper jsonMapper =  JsonMapper.defaultMapper().setDateFormat(DateUtil.DATE_TIME);
 	
+	public JsonDataBinder(Class<T> dataType) {
+		String path = dataType.getName().replace('.', '/')+".data.json";
+		this.dataType = dataType;
+		this.dataFilePath = path;
+	}
+	
 	public JsonDataBinder(Class<T> dataType, String dataFilePath) {
 		super();
 		this.dataType = dataType;

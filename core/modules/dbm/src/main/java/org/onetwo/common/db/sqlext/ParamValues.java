@@ -16,12 +16,12 @@ public class ParamValues {
 		NAMED
 	}*/
 
-	protected SQLDialet sqlDialet;
+	protected ExtQueryDialet sqlDialet;
 //	private PlaceHolder holder;
 	private Map<String, Object> values = new LinkedHashMap<String, Object>();
 	
 	
-	public ParamValues(SQLDialet sqlDialet){
+	public ParamValues(ExtQueryDialet sqlDialet){
 		this.sqlDialet = sqlDialet;
 	}
 

@@ -1,10 +1,13 @@
 package org.onetwo.common.test;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 
@@ -78,5 +81,42 @@ public class MapList<E> extends ArrayList<E> {
 		.orElse(null);
 	}
 	
+	public UsingData using(Object id){
+		E e = dataMap.get(id);
+		if(e==null)
+			throw new RuntimeException("not found: "+id);
+		return new UsingData(e);
+	}
+	class UsingData {
+		private E element;
+
+		public UsingData(E element) {
+			super();
+			this.element = element;
+		}
+		
+		protected E cloneElement(){
+			E cloneObj;
+			try {
+				byte[] data = SerializationUtils.serialize((Serializable)element);
+				cloneObj = SerializationUtils.deserialize(data);
+			} catch (Exception e) {
+				throw new RuntimeException("serializeClone error: " + e.getMessage(), e);
+			} 
+			return cloneObj;
+		}
+		
+		public MapList<E> generateDatas(int count, BiConsumer<E, Integer> newObjConsumer){
+			List<E> datas = new ArrayList<>(count);
+			for (int i = 0; i < count; i++) {
+				E newObj = cloneElement();
+				newObjConsumer.accept(newObj, i);
+				datas.add(newObj);
+			}
+			MapList.this.addAll(datas);
+			return MapList.this;
+		}
+		
+	}
 
 }

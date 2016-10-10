@@ -1,13 +1,13 @@
 package org.onetwo.common.db.sqlext;
 
 
-public class DefaultSQLDialetImpl implements SQLDialet {
+public class DefaultExtQueryDialetImpl implements ExtQueryDialet {
 	
 	public static final char[] REPLACE_CHARS = new char[]{
 		'.', ',', '(', ')', '+', '-', '*', '/'
 	};
 
-	public DefaultSQLDialetImpl() {
+	public DefaultExtQueryDialetImpl() {
 	}
 
 	@Override

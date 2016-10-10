@@ -2,9 +2,9 @@ package org.onetwo.dbm.query;
 
 import java.util.Map;
 
-import org.onetwo.common.db.sqlext.DefaultSQLDialetImpl;
+import org.onetwo.common.db.sqlext.DefaultExtQueryDialetImpl;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
-import org.onetwo.common.db.sqlext.SQLDialet;
+import org.onetwo.common.db.sqlext.ExtQueryDialet;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.mapping.MappedEntryManager;
@@ -14,7 +14,7 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 //	public static final SQLSymbolManager SQL_SYMBOL_MANAGER = create();
 	
 	public static JFishSQLSymbolManagerImpl create(){
-		SQLDialet sqlDialet = new DefaultSQLDialetImpl();
+		ExtQueryDialet sqlDialet = new DefaultExtQueryDialetImpl();
 		JFishSQLSymbolManagerImpl newSqlSymbolManager = new JFishSQLSymbolManagerImpl(sqlDialet);
 		return newSqlSymbolManager;
 	}
@@ -22,7 +22,7 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 //	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
 
-	public JFishSQLSymbolManagerImpl(SQLDialet sqlDialet) {
+	public JFishSQLSymbolManagerImpl(ExtQueryDialet sqlDialet) {
 		super(sqlDialet);
 	}
 

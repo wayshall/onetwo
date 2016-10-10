@@ -17,15 +17,15 @@ public class CopyOfParamValues {
 		NAMED
 	}
 
-	protected SQLDialet sqlDialet;
+	protected ExtQueryDialet sqlDialet;
 	private PlaceHolder holder;
 	private Object values;
 	
-	public CopyOfParamValues(SQLDialet sqlDialet){
+	public CopyOfParamValues(ExtQueryDialet sqlDialet){
 		this(PlaceHolder.NAMED, sqlDialet);
 	}
 	
-	public CopyOfParamValues(PlaceHolder holder, SQLDialet sqlDialet){
+	public CopyOfParamValues(PlaceHolder holder, ExtQueryDialet sqlDialet){
 		this.sqlDialet = sqlDialet;
 		this.holder = holder;
 		if(PlaceHolder.POSITION.equals(holder))

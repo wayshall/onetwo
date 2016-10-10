@@ -45,7 +45,7 @@ public interface SQLSymbolManager {
 		}
 	}
 
-	public SQLDialet getSqlDialet();
+	public ExtQueryDialet getSqlDialet();
 
 	public SQLSymbolManager register(String symbol, HqlSymbolParser parser);
 	public SQLSymbolManager register(HqlSymbolParser parser);

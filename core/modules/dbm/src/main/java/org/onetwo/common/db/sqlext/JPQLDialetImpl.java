@@ -1,7 +1,7 @@
 package org.onetwo.common.db.sqlext;
 
 
-public class JPQLDialetImpl extends DefaultSQLDialetImpl {
+public class JPQLDialetImpl extends DefaultExtQueryDialetImpl {
 
 	public JPQLDialetImpl() {
 	}
