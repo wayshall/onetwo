@@ -1,6 +1,5 @@
 package org.onetwo.ext.es;
 
-
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -31,13 +30,14 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
-import org.elasticsearch.search.aggregations.bucket.SingleBucketAggregation;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Page;
@@ -60,6 +60,7 @@ import com.google.common.collect.Maps;
 
 
 public class SimpleSearchQueryBuilder {
+	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
 	
 	public static SimpleSearchQueryBuilder newBuilder(){
 		return new SimpleSearchQueryBuilder();
@@ -291,6 +292,15 @@ public class SimpleSearchQueryBuilder {
 
     @SuppressWarnings("unchecked")
     static public class AggregationsResult {
+
+	    static public List<? extends Bucket> getBuckets(Aggregation agg) {
+	    	if(agg instanceof MultiBucketsAggregation){
+	    		return ((MultiBucketsAggregation)agg).getBuckets();
+	    	}else{
+	    		return ImmutableList.of();
+	    	}
+	    }
+	    
     	private Aggregations aggregations;
 
 		public AggregationsResult(Aggregations aggregations) {
@@ -309,7 +319,7 @@ public class SimpleSearchQueryBuilder {
 
 		public <T extends Aggregation> T getAggregationByPath(String path) {
 	    	this.checkAggs();
-	    	List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
+	    	/*List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
 	    	T agg = aggregations.get(paths.get(0));
 	    	for (int i = 1; i < paths.size(); i++) {
 	    		if(agg==null)
@@ -321,23 +331,25 @@ public class SimpleSearchQueryBuilder {
 	    			}
 	    		}
 	    		agg = (T) agg.getProperty(paths.get(i));
+			}*/
+	    	try {
+		        return (T)aggregations.getProperty(path);
+			} catch (IllegalArgumentException e) {
+				logger.info("getAggregationByPath error: {}", e.getMessage());
+				return null;
 			}
-	        return (T)aggregations.getProperty(path);
 	    }
 
 	    public List<? extends Bucket> getBucketsByPath(String path) {
 	    	this.checkAggs();
 	    	Aggregation agg = getAggregationByPath(path);
-	    	if(agg instanceof MultiBucketsAggregation){
-	    		return ((MultiBucketsAggregation)agg).getBuckets();
-	    	}else{
-	    		return ImmutableList.of();
-	    	}
+	    	return getBuckets(agg);
 	    }
 	    
-	    public <T> BucketMappingObjectBuilder<T> createBucketsMapping(String key, Class<T> targetClass, String keyField) {
+	    public <T> BucketMappingObjectBuilder<T, AggregationsResult> createBucketsMapping(String key, Class<T> targetClass, String keyField) {
 	    	this.checkAggs();
-	    	return new BucketMappingObjectBuilder<T>(this, key, targetClass, keyField);
+//	    	Aggregation agg = getAggregationByPath(key);
+	    	return new BucketMappingObjectBuilder<>(this, this, key, targetClass, keyField);
 	    }
 	    
 	    /****
@@ -345,9 +357,24 @@ public class SimpleSearchQueryBuilder {
 	     * @param path
 	     * @return 返回的数组，里面的值可能是数组，深度对应路径深度
 	     */
-	    public Object[] getKeysByPath(String path) {
+	    public Object[] getRawKeysByPath(String path) {
 	    	this.checkAggs();
 	    	return (Object[])aggregations.getProperty(path+"._key");
+	    }
+	    public Object[] getKeysByPath(String path) {
+	    	this.checkAggs();
+		    Object[] keys = getRawKeysByPath(path);
+		    if(keys==null || keys.length==0){
+			    return null;
+		    }else{
+		        int size = AggregationPath.parse(path).getPathElementsAsStringList().size();
+		        for (int i = 0; i < size; i++) {
+		    	    if(i!=size-1){
+		    		    keys = (Object[])keys[0];
+		    	    }
+		        }
+		        return keys;
+		    }
 	    }
 
 	    /****
@@ -357,21 +384,12 @@ public class SimpleSearchQueryBuilder {
 	     */
 	    public <T> T getKeyByPath(String path) {
 	    	this.checkAggs();
-	       Object[] keys = getKeysByPath(path);
-	       if(keys==null || keys.length==0){
-	    	   return null;
-	       }else{
-	           int size = AggregationPath.parse(path).getPathElementsAsStringList().size();
-	           T value = null;
-	           for (int i = 0; i < size; i++) {
-	        	   if(i==size-1){
-	        		   value = (T)keys[0];
-	        	   }else{
-	        		   keys = (Object[])keys[0];
-	        	   }
-	           }
-	           return value;
-	       }
+		    Object[] keys = getKeysByPath(path);
+		    if(keys==null || keys.length==0){
+			    return null;
+		    }else{
+		        return (T)keys[0];
+		    }
 	    }
 
 	    public <T> T getAggregationProperty(String path) {
@@ -392,30 +410,54 @@ public class SimpleSearchQueryBuilder {
 	    }
     }
     
-    public static class BucketMappingObjectBuilder<T> {
+    public static class BucketMappingObjectBuilder<T, P> {
     	private BucketMapping<T> mapping;
-    	private List<? extends Bucket> buckets;
+//    	private List<? extends Bucket> buckets;
+    	private AggregationsResult aggResult;
+    	private P parent;
+    	private String key;
+//    	private final Aggregation aggregation;
     	
-    	public BucketMappingObjectBuilder(AggregationsResult aggResult, String key, Class<T> targetClass, String keyField) {
+    	public BucketMappingObjectBuilder(P parent, AggregationsResult aggResult, String key, Class<T> targetClass, String keyField) {
 			super();
+			this.parent = parent;
+			this.key = key;
 			this.mapping = new BucketMapping<T>(targetClass, keyField);
-			this.buckets = aggResult.getBucketsByPath(key);
+			this.aggResult = aggResult;
+//			this.aggregation = aggregation;
+//			this.buckets = ar.getBucketsByPath(key);
 		}
 
+    	public P end(){
+    		return this.parent;
+    	}
     	/***
     	 * @param path
     	 * @param property
     	 * @return
     	 */
-		public BucketMappingObjectBuilder<T> map(String path, String property){
+		public BucketMappingObjectBuilder<T, P> mapKey(String path, String property){
     		this.mapping.map(path, property);
     		return this;
     	}
+		
+		public <SUB> BucketMappingObjectBuilder<SUB, BucketMappingObjectBuilder<T, P>> mapBuckets(String key, String property, Class<SUB> targetClass, String keyField){
+			BucketMappingObjectBuilder<SUB, BucketMappingObjectBuilder<T, P>> builder = new BucketMappingObjectBuilder<>(this, null, key, targetClass, keyField);
+			this.mapping.map(property, builder);
+    		return builder;
+    	}
 
 		public List<T> buildTargetList(){
+			Assert.notNull(aggResult);
+			return this.buildTargetList(aggResult);
+		}
+
+		public List<T> buildTargetList(AggregationsResult aggResult){
+	    	Aggregation agg = aggResult.getAggregationByPath(key);
+			List<? extends Bucket> buckets = AggregationsResult.getBuckets(agg);
 			if(buckets==null)
 				return Collections.emptyList();
-			return this.buckets.stream().map(b->mapping.buildTarget(b)).collect(Collectors.toList());
+			return buckets.stream().map(b->mapping.buildTarget(b)).collect(Collectors.toList());
 		}
     }
     
@@ -423,7 +465,7 @@ public class SimpleSearchQueryBuilder {
 //    	private String key;
     	private Class<T> targetClass;
     	private String keyProperty;
-    	private Map<String, String> fieldMappings = Maps.newHashMap();
+    	private Map<String, Object> fieldMappings = Maps.newHashMap();
     	
     	public BucketMapping(Class<T> targetClass, String keyField) {
 			super();
@@ -432,19 +474,25 @@ public class SimpleSearchQueryBuilder {
 			this.keyProperty = keyField;
 		}
 
-		public BucketMapping<T> map(String path, String property){
+		public BucketMapping<T> map(String path, Object property){
     		this.fieldMappings.put(path, property);
     		return this;
     	}
-		
+
 		public T buildTarget(Bucket bucket){
 			T obj = ReflectUtils.newInstance(targetClass);
 			BeanWrapper bw = newBeanWrapper(obj);
 			bw.setPropertyValue(keyProperty, bucket.getKey());
 			AggregationsResult ar = new AggregationsResult(bucket.getAggregations());
 			this.fieldMappings.forEach((path, prop)->{
-				Object value = ar.getKeyByPath(path);
-				bw.setPropertyValue(prop, value);
+				if(prop instanceof BucketMappingObjectBuilder){
+					BucketMappingObjectBuilder<?, ?> b = (BucketMappingObjectBuilder<?, ?>)prop;
+					List<?> values = b.buildTargetList(ar);
+					bw.setPropertyValue(path, values);
+				}else{
+					Object[] value = ar.getKeysByPath(path);
+					bw.setPropertyValue(prop.toString(), value);
+				}
 			});
 			return obj;
 		}
