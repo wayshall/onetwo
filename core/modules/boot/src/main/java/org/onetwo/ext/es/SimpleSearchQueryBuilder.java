@@ -1,5 +1,6 @@
 package org.onetwo.ext.es;
 
+
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -218,7 +219,8 @@ public class SimpleSearchQueryBuilder {
 		}else if(matchAllIfQueryNotExists){
 			searchQueryBuilder.withQuery(matchAllQuery());
 		}
-		if(booleanQuery!=null){
+		if(booleanQuery!=null && booleanQuery.hasClauses()){
+			booleanQuery.build();
 			searchQueryBuilder.withFilter(booleanQuery.boolQuery);
 		}
 		this.nativeSearchQuery = searchQueryBuilder.build();
@@ -485,9 +487,25 @@ public class SimpleSearchQueryBuilder {
 	
 	public class SimpleBooleanQueryBuilder<PB> extends ExtBaseQueryBuilder<PB> {
 		private BoolQueryBuilder boolQuery = boolQuery();
+		private List<SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>>> nestedQuerys = Lists.newArrayList();
 		
 		public SimpleBooleanQueryBuilder(PB parentBuilder) {
 			super(parentBuilder);
+		}
+		
+		public boolean hasClauses() {
+			if(boolQuery.hasClauses()){
+				return true;
+			}
+			return this.nestedQuerys.size()>0;
+		}
+
+		private void build(){
+			this.nestedQuerys.stream()
+								.filter(nested->nested.boolQuery.hasClauses())
+								.forEach(nested->{
+									must(QueryBuilders.nestedQuery(nested.getPath(), nested.bool().boolQuery));
+								});
 		}
 
 		public SimpleBooleanQueryBuilder<PB> mustTerm(String field, Object value){
@@ -499,7 +517,7 @@ public class SimpleSearchQueryBuilder {
 
 		public SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nested(String path){
 			SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nestedBuilder = new SimpleNestedQueryBuilder<>(this, path);
-			must(QueryBuilders.nestedQuery(nestedBuilder.getPath(), nestedBuilder.bool().boolQuery));
+			nestedQuerys.add(nestedBuilder);
 			return nestedBuilder;
 		}
 
