@@ -25,7 +25,7 @@ public class DefaultSQLSymbolManagerImpl implements SQLSymbolManager {
 	private ExtQueryDialet sqlDialet;
 //	private PlaceHolder placeHolder;
 	
-	private List<ExtQueryListener> listeners;
+	protected List<ExtQueryListener> listeners;
 	
 
 	/*public DefaultSQLSymbolManagerImpl(SQLDialet sqlDialet) {

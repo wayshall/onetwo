@@ -6,6 +6,7 @@ import java.util.Map;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
 
 public class SQLSymbolManagerFactory {
 //	private static SQLSymbolManager JPA;
@@ -22,8 +23,9 @@ public class SQLSymbolManagerFactory {
 	
 	{
 //		 SQLSymbolManager jpa = new DefaultSQLSymbolManagerImpl(new JPQLDialetImpl());
-		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
-		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
+//		 SQLSymbolManager hibernate = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
+//		 SQLSymbolManager jdbc = new DefaultSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
+		 SQLSymbolManager jdbc = new JFishSQLSymbolManagerImpl(new DefaultExtQueryDialetImpl());
 		 
 		 Map<EntityManagerProvider, SQLSymbolManager> temp = new HashMap<EntityManagerProvider, SQLSymbolManager>();
 //		 temp.put(EntityManagerProvider.JPA, jpa);

@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class UserEntity {
 
 	private Long id;

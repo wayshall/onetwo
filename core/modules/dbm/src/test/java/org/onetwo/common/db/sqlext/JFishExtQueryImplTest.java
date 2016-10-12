@@ -6,27 +6,26 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.db.EntityManagerProvider;
+import org.onetwo.common.db.Magazine;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQueryUtils.F;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
 
 public class JFishExtQueryImplTest {
+	
+	public static class LogRouteEntity {
+	}
 
 	Map<Object, Object> properties;
 	
 	private SQLSymbolManagerFactory sqlSymbolManagerFactory;
 	
 
-	static public class Magazine {
-	}
-
 	@Before
 	public void setup(){
 		this.properties = new LinkedHashMap<Object, Object>();
 		sqlSymbolManagerFactory = SQLSymbolManagerFactory.getInstance();
-		sqlSymbolManagerFactory.register(EntityManagerProvider.JPA, JPASQLSymbolManager.create());
 	}
 	
 	@Test
@@ -37,8 +36,7 @@ public class JFishExtQueryImplTest {
 		properties.put("log_supplier_id", 22l);
 		properties.put(".sup.supplierCode", "supplierCodeValue");
 		properties.put(F.sqlFunc("ceil(@syn_end_time-@syn_start_time):>="), 1l);
-		properties.put(K.SQL_QUERY, true);
-		ExtQuery q = sqlSymbolManagerFactory.getJPA().createSelectQuery(LogRouteEntity.class, "ent",  properties);
+		ExtQuery q = sqlSymbolManagerFactory.getJdbc().createSelectQuery(LogRouteEntity.class, "ent",  properties);
 		q.build();
 		
 		/*String sql2 = "select ent.CREATE_TIME as createTime, ent.DELETE_TOUR as deleteTour, ent.FAIL_REASON as failReason, ent.FAIL_TOUR as failTour, ent.ID as id, ent.LAST_UPDATE_TIME as lastUpdateTime, ent.NEW_TOUR as newTour, ent.REPET_LOG_SUPPLIER_ID as repetLogSupplierId, ent.ROUTE_NAME as routeName, ent.STATE as state, ent.SUPPLIER_ROUTE_CODE as supplierRouteCode, ent.SYN_END_TIME as synEndTime, ent.SYN_START_TIME as synStartTime, ent.TYPE as type, ent.UPDATE_TOUR as updateTour, ent.YOOYO_ROUTE_ID as yooyoRouteId from SYN_LOG_ROUTE ent " +
