@@ -85,6 +85,7 @@ public class ReflectUtilsTest {
 		}
 		
 	}
+
 	
 	@Test
 	public void testToMap(){
@@ -92,12 +93,22 @@ public class ReflectUtilsTest {
 		user.setUserName("testName");
 		user.setAge(11);
 		user.setBirthDate(NiceDate.New("2013-4-18 14:00:00").getTime());
-		Map map = ReflectUtils.toMap(user);
+		Map<String, Object> map = ReflectUtils.toMap(user);
+		Assert.assertEquals(false, map.get("avaiable"));
+		Assert.assertEquals(11, map.get("age"));
+		Assert.assertEquals(map.get("userName"), "testName");
+	}
+	
+	@Test
+	public void testToStringMap(){
+		User user = new User();
+		user.setUserName("testName");
+		user.setAge(11);
+		user.setBirthDate(NiceDate.New("2013-4-18 14:00:00").getTime());
+		Map<String, String> map = ReflectUtils.toStringMap(true, user);
 		Assert.assertEquals(map.get("avaiable"), "false");
 		Assert.assertEquals(map.get("age"), "11");
 		Assert.assertEquals(map.get("userName"), "testName");
-		map = ReflectUtils.toMap(false, user);
-		Map map2 = ReflectUtils.field2Map(user);
 	}
 	
 	@Test

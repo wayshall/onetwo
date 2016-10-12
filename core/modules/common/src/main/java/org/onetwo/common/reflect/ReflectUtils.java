@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -49,6 +50,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
 import org.onetwo.common.utils.map.BaseMap;
 import org.slf4j.Logger;
+
 
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
@@ -848,14 +850,23 @@ public class ReflectUtils {
 	public static Map<String, Object> toMap(Object obj) {
 		return toMap(true, obj);
 	}
+
 	public static Map<String, Object> toMap(boolean ignoreNull, Object obj) {
+		return toMap(ignoreNull, obj, null);
+	}
+	public static Map<String, Object> toMap(boolean ignoreNull, Object obj, Function<Object, Object> valueConvertor) {
 		return toMap(obj, (p, v)->{
 			if(v!=null)
 				return true;
 			return !ignoreNull;
-		});
+		}, valueConvertor);
 	}
+	
 	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor) {
+		return toMap(obj, acceptor, null);
+	}
+	
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor, Function<Object, Object> valueConvertor) {
 		if (obj == null)
 			return Collections.EMPTY_MAP;
 		
@@ -872,7 +883,9 @@ public class ReflectUtils {
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = getProperty(obj, prop);
-			if (acceptor.apply(prop, val)){
+			if (acceptor==null || acceptor.apply(prop, val)){
+				if(valueConvertor!=null)
+					val = valueConvertor.apply(val);
 				rsMap.put(prop.getName(), val);
 			}
 		}
@@ -880,22 +893,11 @@ public class ReflectUtils {
 	}
 
 	public static Map<String, String> toStringMap(boolean ignoreNull, Object obj) {
-		if (obj == null)
-			return Collections.EMPTY_MAP;
-		PropertyDescriptor[] props = desribProperties(obj.getClass());
-		if (props == null || props.length == 0)
-			return Collections.EMPTY_MAP;
+		Map<String, Object> map = toMap(ignoreNull, obj);
 		Map<String, String> rsMap = new HashMap<String, String>();
-		Object val = null;
-		for (PropertyDescriptor prop : props) {
-			val = getProperty(obj, prop);
-			if (val != null){
-				rsMap.put(prop.getName(), val.toString());
-			}else{
-				if(!ignoreNull)
-					rsMap.put(prop.getName(), "");
-			}
-		}
+		map.forEach((k, v)->{
+			rsMap.put(k, v==null?null:v.toString());
+		});
 		return rsMap;
 	}
 

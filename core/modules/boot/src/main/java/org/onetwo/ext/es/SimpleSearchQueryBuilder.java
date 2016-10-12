@@ -448,13 +448,12 @@ public class SimpleSearchQueryBuilder {
     	}
 
 		public List<T> buildTargetList(){
-			Assert.notNull(aggResult);
 			return this.buildTargetList(aggResult);
 		}
 
 		public List<T> buildTargetList(AggregationsResult aggResult){
-	    	Aggregation agg = aggResult.getAggregationByPath(key);
-			List<? extends Bucket> buckets = AggregationsResult.getBuckets(agg);
+			Assert.notNull(aggResult);
+			List<? extends Bucket> buckets = aggResult.getBucketsByPath(key);
 			if(buckets==null)
 				return Collections.emptyList();
 			return buckets.stream().map(b->mapping.buildTarget(b)).collect(Collectors.toList());
