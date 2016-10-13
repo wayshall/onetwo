@@ -58,7 +58,7 @@ abstract public class AbstractExtQuery implements ExtQueryInner{
 		this.alias = alias;
 		this.symbolManager = symbolManager;
 		this.sourceParams = sourceParams;//ImmutableMap.copyOf(sourceParams);
-		this.listeners = (listeners==null?Collections.EMPTY_LIST:listeners);
+		this.listeners = (listeners==null?Collections.emptyList():listeners);
 		
 //		this.init(entityClass, this.alias);
 	}

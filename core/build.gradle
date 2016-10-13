@@ -180,7 +180,6 @@ def projectSecurity = "${projectPrefix}security"
 def projectPoi = "${projectPrefix}poi"
 def projectDbm = "${projectPrefix}dbm"
 def projectJfish = "${projectPrefix}jfish"
-def projectEjb = "${projectPrefix}ejb"
 def projectTomcat = "${projectPrefix}tomcat"
 def projectTomcatMini = "${projectPrefix}tomcat-mini"
 def projectJsonrpc = "${projectPrefix}jsonrpc"
@@ -426,20 +425,6 @@ project("$projectJfish") {
 }
 
 
-project("$projectEjb"){
-	description = "onetwo ejb"
-			
-	ext.openJpaVersion = "1.2.0"
-		
-	dependencies {
-//		compile(project(":$projectCommon"))
-		compile("org.onetwo:onetwo-common:${onetwoMvnVersioin}")
-		compile("org.apache.openejb:javaee-api:${javaeeVersion}")
-		compile("org.apache.openjpa:openjpa:${openJpaVersion}")
-		
-		
-	}
-}
 
 
 project("${projectTomcat}"){

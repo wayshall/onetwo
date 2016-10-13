@@ -66,7 +66,15 @@ public class SecurityConfig {
 
 
 
-
+	/****
+	 * cas:
+            service: http://localhost:8080/j_spring_cas_security_check
+            loginUrl: https://sso.server.com:9443/cas-server/login
+            casServerUrl: https://sso.server.com:9443/cas-server
+            logoutUrl: https://sso.server.com:9443/cas-server/logout
+	 * @author way
+	 *
+	 */
 	@Data
 	public class CasConfig {
 		private String loginUrl;

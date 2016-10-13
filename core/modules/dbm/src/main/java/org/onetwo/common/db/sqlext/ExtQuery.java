@@ -117,7 +117,7 @@ public interface ExtQuery {
 
 	public String getSql();
 
-	public StringBuilder getWhere();
+//	public StringBuilder getWhere();
 
 	public Class<?> getEntityClass();
 //	public boolean isSqlQuery();

@@ -20,11 +20,6 @@ jfish:
         syncPermissionData: false
         csrf:
             disable: true
-        cas:
-            service: http://localhost:8080/j_spring_cas_security_check
-            loginUrl: https://emall-sso.yooyo.com:9443/cas-server/login
-            casServerUrl: https://emall-sso.yooyo.com:9443/cas-server
-            logoutUrl: https://emall-sso.yooyo.com:9443/cas-server/logout
         logoutUrl: /logout
 siteConfig:
     uploadImageAccessPath: http://localhost/img/manager
