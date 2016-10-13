@@ -39,3 +39,5 @@ pom.xml.releaseBackup
 /core/modules/dbm/src/test/resources/db/generator/emall/emall-jdbc.properties
 application-product.yaml
 *.externalToolBuilders
+*.iml
+/core/modules/dbm/*.iml
