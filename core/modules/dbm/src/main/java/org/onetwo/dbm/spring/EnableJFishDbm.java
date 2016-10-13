@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({JFishdbmSpringConfiguration.class})
+@Import({DbmSpringConfiguration.class})
 public @interface EnableJFishDbm {
 
 //	DataBase database() default DataBase.MySQL;

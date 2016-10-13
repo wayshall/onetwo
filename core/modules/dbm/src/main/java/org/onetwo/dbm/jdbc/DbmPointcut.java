@@ -4,7 +4,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 @Aspect
-public class JFishPointcut {
+public class DbmPointcut {
 
 	@Pointcut("execution (* *query*(..)) || execution (* *execute*(..)) || execution (* *batchUpdate*(..)) || execution (* *update*(..))")
 	public void jdbcTemplate(){}

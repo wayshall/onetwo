@@ -10,7 +10,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
-import org.onetwo.dbm.jdbc.JFishJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
@@ -63,7 +63,7 @@ public interface DbmDaoImplementor extends DbmDao {
 	
 	public int executeUpdate(DbmQueryValue queryValue);
 
-	public JFishJdbcOperations getJFishJdbcTemplate();
+	public DbmJdbcOperations getJFishJdbcTemplate();
 	
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate();
 	

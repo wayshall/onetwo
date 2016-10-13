@@ -93,7 +93,11 @@ public class BaseJdbcTemplateAspectProxy {
 	}*/
 
 	protected void afterProceed(Context context, ProceedingJoinPoint pjp){
-		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());
+//		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());
+
+		StringBuilder logMsg = new StringBuilder(pjp.getSignature().toString()).append("\n");
+		logMsg.append(context).append("\n");
+		logger.info(logMsg.toString());
 	}
 
 	protected void printLog(Context context, String name, Object[] args){

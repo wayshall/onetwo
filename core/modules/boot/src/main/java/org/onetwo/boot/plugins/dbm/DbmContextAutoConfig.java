@@ -1,7 +1,7 @@
 package org.onetwo.boot.plugins.dbm;
 
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
-import org.onetwo.dbm.spring.JFishdbmSpringConfiguration;
+import org.onetwo.dbm.spring.DbmSpringConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@ConditionalOnClass(JFishdbmSpringConfiguration.class)
-@Import({JFishdbmSpringConfiguration.class})
+@ConditionalOnClass(DbmSpringConfiguration.class)
+@Import({DbmSpringConfiguration.class})
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class DbmContextAutoConfig {
 	

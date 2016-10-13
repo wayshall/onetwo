@@ -49,7 +49,7 @@ where aur.user_id = :userId
     from 
         admin_role_permission  arp
     left join admin_permission ap on ap.code=arp.permission_code
-    where role_id=#{roleId} 
+    where role_id= :roleId
     [#if permissionCode?has_content]
         and arp.permission_code=:permissionCode
     [/#if]

@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -24,16 +27,27 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
  * @author weishao
  *
  */
-public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implements NamedJdbcTemplate{
+public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate implements NamedJdbcTemplate{
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private JdbcStatementParameterSetter jdbcParameterSetter = new SpringStatementParameterSetter();
+
+	private boolean debug;
 	
-	public JFishNamedJdbcTemplate(DataSource dataSource) {
+	public DbmNamedJdbcTemplate(DataSource dataSource) {
 		super(dataSource);
 	}
 
-	public JFishNamedJdbcTemplate(JdbcOperations classicJdbcTemplate) {
+	public DbmNamedJdbcTemplate(JdbcOperations classicJdbcTemplate) {
 		super(classicJdbcTemplate);
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
@@ -63,6 +77,10 @@ public class JFishNamedJdbcTemplate extends NamedParameterJdbcTemplate implement
 		List<SqlParameter> declaredParameters = NamedParameterUtils.buildSqlParameterList(parsedSql, paramSource);
 		/*DbmPreparedStatementCreatorFactory pscf = new DbmPreparedStatementCreatorFactory(sqlToUse, declaredParameters);
 		return pscf.newPreparedStatementCreator(params);*/
+		if(isDebug() || logger.isDebugEnabled()){
+			logger.info("sql: {}", sqlToUse);
+			logger.info("sql params: {}", ArrayUtils.toString(params));
+		}
 		return this.createPreparedStatementCreator(sqlToUse, params, declaredParameters);
 	}
 	

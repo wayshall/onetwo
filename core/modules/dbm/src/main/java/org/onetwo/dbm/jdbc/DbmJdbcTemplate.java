@@ -29,7 +29,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.util.Assert;
 
-public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperations {
+public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -38,13 +38,13 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 	protected NamedJdbcTemplate namedTemplate;
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 
-	public JFishJdbcTemplate() {
+	public DbmJdbcTemplate() {
 	}
 
-	public JFishJdbcTemplate(DataSource dataSource) {
+	public DbmJdbcTemplate(DataSource dataSource) {
 		super(dataSource);
 	}
-	public JFishJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
+	public DbmJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
 		super(dataSource);
 	}
 	
@@ -67,7 +67,8 @@ public class JFishJdbcTemplate extends JdbcTemplate implements JFishJdbcOperatio
 
 	protected void initTemplateConfig() {
 		if(namedTemplate==null){
-			NamedJdbcTemplate t = new JFishNamedJdbcTemplate(this);
+			DbmNamedJdbcTemplate t = new DbmNamedJdbcTemplate(this);
+			t.setDebug(this.isDebug());
 			/*if(logJdbcSql){
 				AspectJProxyFactory ajf = new AspectJProxyFactory(t);
 				ajf.setProxyTargetClass(true);

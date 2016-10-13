@@ -8,7 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.KeyHolder;
 
-public interface JFishJdbcOperations extends JdbcOperations {
+public interface DbmJdbcOperations extends JdbcOperations {
 
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException;
 

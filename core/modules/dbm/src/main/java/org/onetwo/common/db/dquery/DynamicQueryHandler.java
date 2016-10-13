@@ -29,9 +29,8 @@ import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.FileNamedQueryException;
-import org.onetwo.dbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
@@ -182,7 +181,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		NamedJdbcTemplate namedJdbcTemplate = this.namedJdbcTemplate;
 		if(namedJdbcTemplate==null){
 			DataSource ds = SpringApplication.getInstance().getBean(DataSource.class, false);
-			namedJdbcTemplate = new JFishNamedJdbcTemplate(ds);
+			namedJdbcTemplate = new DbmNamedJdbcTemplate(ds);
 		}
 		
 		

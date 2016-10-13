@@ -10,10 +10,10 @@ import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.dbm.jdbc.JFishJdbcOperations;
-import org.onetwo.dbm.jdbc.JFishJdbcTemplate;
-import org.onetwo.dbm.jdbc.JFishJdbcTemplateAspectProxy;
-import org.onetwo.dbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.DbmJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
+import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
 //@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
 //@Import(JFishProfiles.class)
 //@EnableConfigurationProperties({DataBaseConfig.class})
-public class JFishdbmSpringConfiguration implements ApplicationContextAware, InitializingBean/*, ImportAware*/ {
+public class DbmSpringConfiguration implements ApplicationContextAware, InitializingBean/*, ImportAware*/ {
 
 	private ApplicationContext applicationContext;
 
@@ -53,7 +53,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	@Autowired(required=false)
 	private Validator validator;
 	
-	public JFishdbmSpringConfiguration(){
+	public DbmSpringConfiguration(){
 	}
 
 
@@ -151,8 +151,8 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	}
 	
 	@Bean
-	public JFishJdbcOperations jdbcTemplate(){
-		JFishJdbcTemplate template = new JFishJdbcTemplate();
+	public DbmJdbcOperations jdbcTemplate(){
+		DbmJdbcTemplate template = new DbmJdbcTemplate();
 		template.setDataSource(dataSource);
 		template.setDebug(defaultDataBaseConfig().isLogSql());
 		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
@@ -162,7 +162,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 		if(defaultDataBaseConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
 			ajf.setProxyTargetClass(false);
-			ajf.addAspect(JFishJdbcTemplateAspectProxy.class);
+			ajf.addAspect(DbmJdbcTemplateAspectProxy.class);
 //			ajf.setTargetClass(JFishJdbcOperations.class);
 			return ajf.getProxy();
 		}
@@ -172,7 +172,7 @@ public class JFishdbmSpringConfiguration implements ApplicationContextAware, Ini
 	
 	@Bean
 	public NamedJdbcTemplate namedJdbcTemplate(){
-		JFishNamedJdbcTemplate template = new JFishNamedJdbcTemplate(jdbcTemplate());
+		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate());
 		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
 
 		/*if(logJdbcSql){

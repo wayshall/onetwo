@@ -47,7 +47,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String contextRealPath;
 	private String name;
 	private String code;
-	private String baseURL;
+	private String baseURL = "";
 	
 	//static resouce path config
 	private String jsPath;

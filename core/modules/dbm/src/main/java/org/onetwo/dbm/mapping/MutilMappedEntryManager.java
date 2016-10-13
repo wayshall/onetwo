@@ -115,7 +115,6 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 
 	private void putInCache(String key, JFishMappedEntry entry) {
 		this.entryCaches.put(key, entry);
-		logger.info("put entry into cache : " + key);
 	}
 
 	@Override

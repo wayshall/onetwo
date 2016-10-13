@@ -93,11 +93,7 @@
    
    [#if codes??]
     where
-        ap.code in (
-	        [@foreach list=codes joiner=', '; code, index]
-	            #{code}
-	        [/@foreach]
-        )
+        ap.code in (:codes)
    [/#if]
 
 /***
@@ -111,7 +107,7 @@
         admin_permission ap
     left join 
         admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
-    where arp.ROLE_ID = #{roleId} and ap.hidden=0
+    where arp.ROLE_ID = :roleId and ap.hidden=0
     [#if appCode?has_content]
     and ap.APP_CODE=:appCode
     [/#if]

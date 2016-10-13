@@ -31,8 +31,8 @@ import org.onetwo.dbm.event.JFishUpdateEvent;
 import org.onetwo.dbm.event.JFishDeleteEvent.DeleteType;
 import org.onetwo.dbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.jdbc.JFishJdbcOperations;
-import org.onetwo.dbm.jdbc.JFishNamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.DbmJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
@@ -89,7 +89,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 
 	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
-		return new JFishNamedJdbcTemplate(getJdbcTemplate());
+		return new DbmNamedJdbcTemplate(getJdbcTemplate());
 	}
 
 	protected void checkDaoConfig() {
@@ -624,7 +624,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		};
 	}*/
 
-	public final JFishJdbcOperations getJFishJdbcTemplate() {
+	public final DbmJdbcOperations getJFishJdbcTemplate() {
 	  return this.jdbcTemplate;
 	}
 

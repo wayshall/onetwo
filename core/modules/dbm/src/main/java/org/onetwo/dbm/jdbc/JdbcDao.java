@@ -25,7 +25,7 @@ public class JdbcDao {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected JFishJdbcOperations jdbcTemplate;
+	protected DbmJdbcOperations jdbcTemplate;
 	protected NamedJdbcTemplate namedParameterJdbcTemplate;
 	
 	private RowMapperFactory rowMapperFactory;
@@ -68,30 +68,30 @@ public class JdbcDao {
 		}
 	}
 
-	protected JFishJdbcOperations createJdbcTemplate(DataSource dataSource) {
-		return new JFishJdbcTemplate(dataSource);
+	protected DbmJdbcOperations createJdbcTemplate(DataSource dataSource) {
+		return new DbmJdbcTemplate(dataSource);
 	}
 
 	public final DataSource getDataSource() {
 		return (this.jdbcTemplate != null ? this.jdbcTemplate.getDataSource() : null);
 	}
 	
-	public final void setJdbcTemplate(JFishJdbcOperations jdbcTemplate) {
+	public final void setJdbcTemplate(DbmJdbcOperations jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 		initTemplateConfig();
 	}
 
-	public final JFishJdbcOperations getJdbcTemplate() {
+	public final DbmJdbcOperations getJdbcTemplate() {
 	  return this.jdbcTemplate;
 	}
 
 	protected void initTemplateConfig() {
 		if(this.namedParameterJdbcTemplate==null){
-			this.namedParameterJdbcTemplate = new JFishNamedJdbcTemplate(getJdbcTemplate());
+			this.namedParameterJdbcTemplate = new DbmNamedJdbcTemplate(getJdbcTemplate());
 		}
 	}
 	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
-		return new JFishNamedJdbcTemplate(getJdbcTemplate());
+		return new DbmNamedJdbcTemplate(getJdbcTemplate());
 	}
 
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
