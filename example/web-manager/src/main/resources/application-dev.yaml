@@ -11,6 +11,7 @@ spring:
     boot:
         admin:
             url: http://localhost:9999
+            context-path: /monitorui
 endpoints:
     health:
         sensitive: false

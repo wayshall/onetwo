@@ -62,6 +62,9 @@ public final class RequestUtils {
 		return getBrowerMetaByAgent(getUserAgent(request));
 	}
 	public static BrowserMeta getBrowerMetaByAgent(String userAgent){
+		if(StringUtils.isBlank(userAgent)){
+			return Browsers.UNKNOW;
+		}
 		userAgent = userAgent.toLowerCase();
 		for(String agent : Browsers.getAgentBrowsers().keySet()){
 			if(userAgent.indexOf(agent)!=-1){
@@ -85,6 +88,7 @@ public final class RequestUtils {
 	public static String getJsonContextTypeByUserAgent(HttpServletRequest request){
 		BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
 		String contextType = ResponseUtils.JSON_TYPE;
+		//如果是ie某些低版本，必须设置为html，否则会导致json下载
 		if(meta.isFuckingBrowser()){
 			contextType = ResponseUtils.HTML_TYPE;
 		}

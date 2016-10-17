@@ -138,7 +138,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommontAutoConfig {
 	 */
 	@Bean
 	@Autowired
-	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
+//	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
 	public ViewResolver viewResolver(ApplicationContext applicationContext, ContentNegotiationManager contentNegotiationManager) {
 		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();

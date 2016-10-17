@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.ModelAttr;
-import org.onetwo.common.data.Result;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
@@ -27,6 +27,12 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.google.common.collect.Lists;
 
+/****
+ * 统一处理json对象
+ * DataWrapper类型的对象获取value直接返回，其它包装成Result类型对象
+ * @author way
+ *
+ */
 public class BootJsonView extends MappingJackson2JsonView implements InitializingBean {
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 
@@ -75,6 +81,9 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		}
 	}
 	
+	/*****
+	 * DataWrapper类型的对象获取value直接返回，其它包装成Result类型对象
+	 */
 	protected Object filterModel(Map<String, Object> model) {
 		model.remove(BootFirstInterceptor.NOW_KEY);
 		

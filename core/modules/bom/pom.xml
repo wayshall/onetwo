@@ -166,7 +166,13 @@
       <artifactId>onetwo-api</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
-	
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-test</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    
 	<dependency>
 	  <groupId>commons-codec</groupId>
 	  <artifactId>commons-codec</artifactId>

@@ -5,16 +5,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @SpringBootApplication
 //@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
 public class WebManagerStarter extends SpringBootServletInitializer {
 	
-	/*@RequestMapping("/")
+	@RequestMapping("/")
     String home() {
         return "index";
-    }*/
+    }
 	
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

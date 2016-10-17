@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.onetwo.webapp.manager.ManagerApplicationTests;
+import org.onetwo.webapp.manager.ManagerApplicationUTests;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class AdminPermissionDaoTest extends ManagerApplicationTests {
+public class AdminPermissionDaoTest extends ManagerApplicationUTests {
 	
 	@Autowired
 	private AdminPermissionDao adminPermissionDao;
