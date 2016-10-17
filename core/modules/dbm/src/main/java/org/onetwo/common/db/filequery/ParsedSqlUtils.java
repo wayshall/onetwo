@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterUtils;
 import org.springframework.jdbc.core.namedparam.ParsedSql;
 
 final public class ParsedSqlUtils {
+	public static final String SQL_POST_FIX_FUNC_MARK = "?";
 
 	public static final QueryConfigData EMPTY_CONFIG = new QueryConfigData(true){
 		
@@ -24,7 +25,8 @@ final public class ParsedSqlUtils {
 			throw new UnsupportedOperationException();
 		}
 	};
-	
+
+	@SuppressWarnings("unchecked")
 	public static class ParsedSqlWrapper {
 //		final private ParsedSql parsedSql;
 		final private Collection<SqlParamterMeta> parameterNames;
@@ -54,7 +56,7 @@ final public class ParsedSqlUtils {
 			public SqlParamterMeta(String pname) {
 				super();
 				this.name = pname;
-				int mark = pname.indexOf('?');
+				int mark = pname.indexOf(sqlParamterPostfixFunctions.getFuncPostfixMark());
 				if(mark==-1){
 					property = name;
 				}else{

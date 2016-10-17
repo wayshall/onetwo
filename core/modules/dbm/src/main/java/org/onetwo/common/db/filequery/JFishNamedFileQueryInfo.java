@@ -19,6 +19,9 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	public static final String PROPERTY_KEY = "property";
 	public static final String NAME_KEY = "name";
 	public static final String ALIAS_KEY = "alias";
+	/***
+	 * fragment.
+	 */
 	public static final String FRAGMENT_DOT_KEY = FRAGMENT_KEY + DOT_KEY;
 
 	public static boolean isCountName(String name){
@@ -141,6 +144,11 @@ public class JFishNamedFileQueryInfo extends NamespaceProperty {
 	public Map<String, String> getFragment() {
 		return fragment;
 	}
+	/***
+	 * fullName.fragment.attrName
+	 * @param attr
+	 * @return
+	 */
 	public String getFragmentTemplateName(String attr){
 		return getFullName() + DOT_KEY + FRAGMENT_DOT_KEY + attr;
 	}

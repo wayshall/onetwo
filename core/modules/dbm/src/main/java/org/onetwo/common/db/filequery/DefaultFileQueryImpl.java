@@ -246,6 +246,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getRawQuery(Class<T> clazz) {
 		this.createDataQueryIfNecessarry();

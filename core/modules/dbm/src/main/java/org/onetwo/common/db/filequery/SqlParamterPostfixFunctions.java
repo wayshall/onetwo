@@ -10,12 +10,24 @@ import org.onetwo.common.utils.JodatimeUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+/*****
+ * 自定义sql语句里，命名参数的后缀函数
+ * 比如 where u.userName = :userName.likeString
+ * @author way
+ *
+ */
 public class SqlParamterPostfixFunctions implements SqlParamterPostfixFunctionRegistry {
+
+	public static final String SQL_POST_FIX_FUNC_MARK = "?";
 	
 	/*final private static SqlParamterPostfixFunctionRegistry instance = new SqlParamterPostfixFunctions();
 	public static SqlParamterPostfixFunctionRegistry getInstance() {
 		return instance;
 	}*/
+	
+	public String getFuncPostfixMark(){
+		return SQL_POST_FIX_FUNC_MARK;
+	}
 	
 	private Map<String, SqlParamterPostfixFunction> funcMap = LangUtils.newHashMap();
 

@@ -3,10 +3,10 @@ package org.onetwo.dbm.support;
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-final public class DaoFactory {
+final public class Dbms {
 	
 	
-	private DaoFactory(){
+	private Dbms(){
 	}
 	
 

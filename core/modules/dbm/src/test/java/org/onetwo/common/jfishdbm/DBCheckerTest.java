@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.dbm.support.DaoFactory;
+import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDao;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.util.Assert;
@@ -21,7 +21,7 @@ public class DBCheckerTest extends AppBaseTest {
 	
 	@Before
 	public void setup(){
-		this.jfishDao = DaoFactory.newDao(dataSource);
+		this.jfishDao = Dbms.newDao(dataSource);
 	}
 	
 	@Test
