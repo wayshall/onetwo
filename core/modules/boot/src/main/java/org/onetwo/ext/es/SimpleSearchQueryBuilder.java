@@ -28,6 +28,7 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.HasAggregations;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -36,8 +37,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Page;
@@ -60,7 +59,7 @@ import com.google.common.collect.Maps;
 
 
 public class SimpleSearchQueryBuilder {
-	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
+//	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
 	
 	public static SimpleSearchQueryBuilder newBuilder(){
 		return new SimpleSearchQueryBuilder();
@@ -319,31 +318,28 @@ public class SimpleSearchQueryBuilder {
 
 		public <T extends Aggregation> T getAggregationByPath(String path) {
 	    	this.checkAggs();
-	    	/*List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
+	    	List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
 	    	T agg = aggregations.get(paths.get(0));
 	    	for (int i = 1; i < paths.size(); i++) {
-	    		if(agg==null)
-	    			return null;
-	    		if(agg instanceof SingleBucketAggregation){
-	    			SingleBucketAggregation sagg = (SingleBucketAggregation) agg;
-	    			if(!sagg.getAggregations().iterator().hasNext()){
-	    				return null;
-	    			}
+	    		String attr = paths.get(i);
+	    		if(agg instanceof HasAggregations){
+	    			HasAggregations hasagg = (HasAggregations) agg;
+	    			agg = hasagg.getAggregations().get(attr);
+	    		}else if(agg instanceof MultiBucketsAggregation){
+	    			MultiBucketsAggregation magg = (MultiBucketsAggregation) agg;
+	    			Bucket bucket = magg.getBuckets().get(0);
+	    			agg = bucket.getAggregations().get(attr);
+	    		}else{
+	    			break;
 	    		}
-	    		agg = (T) agg.getProperty(paths.get(i));
-			}*/
-	    	try {
-		        return (T)aggregations.getProperty(path);
-			} catch (IllegalArgumentException e) {
-				logger.info("getAggregationByPath error: {}", e.getMessage());
-				return null;
 			}
+	    	return agg;
 	    }
 
 	    public List<? extends Bucket> getBucketsByPath(String path) {
 	    	this.checkAggs();
-	    	Aggregation agg = getAggregationByPath(path);
-	    	return getBuckets(agg);
+	    	Aggregation val = getAggregationByPath(path);
+	    	return getBuckets(val);
 	    }
 	    
 	    public <T> BucketMappingObjectBuilder<T, AggregationsResult> createBucketsMapping(String key, Class<T> targetClass, String keyField) {
@@ -390,11 +386,6 @@ public class SimpleSearchQueryBuilder {
 		    }else{
 		        return (T)keys[0];
 		    }
-	    }
-
-	    public <T> T getAggregationProperty(String path) {
-	    	this.checkAggs();
-	        return (T)aggregations.getProperty(path);
 	    }
 
 	    public Nested getNestedAggregation(String name) {
@@ -489,8 +480,10 @@ public class SimpleSearchQueryBuilder {
 					List<?> values = b.buildTargetList(ar);
 					bw.setPropertyValue(path, values);
 				}else{
-					Object[] value = ar.getKeysByPath(path);
-					bw.setPropertyValue(prop.toString(), value);
+					/*Object[] value = ar.getKeysByPath(path);
+					SimpleSearchQueryBuilder.logger.info("values:"+ArrayUtils.toString(value));*/
+					Object val = ar.getKeyByPath(path);
+					bw.setPropertyValue(prop.toString(), val);
 				}
 			});
 			return obj;
