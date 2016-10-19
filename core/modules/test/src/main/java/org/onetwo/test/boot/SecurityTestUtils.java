@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.ext.security.utils.LoginUserDetails;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,8 +17,9 @@ public abstract class SecurityTestUtils {
 
 	public static LoginUserDetails mockLogin(MockMvc mockMvcs, String loginUrl, String userName, String password){
 		MvcResult result = mockLogin(mockMvcs, post(loginUrl)
-								.param("username", userName)
-								.param("password", password));
+												.accept(MediaType.APPLICATION_JSON_UTF8)
+												.param("username", userName)
+												.param("password", password));
 		return getLoginUserDetails(result);
 	}
 	public static MvcResult mockLogin(MockMvc mockMvcs, RequestBuilder request){

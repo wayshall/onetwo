@@ -1,5 +1,7 @@
 package org.onetwo.common.web.utils;
 
+import javax.servlet.http.HttpServletRequest;
+
 abstract public class RequestTypeUtils {
 
 	public static class AjaxKeys {
@@ -39,6 +41,12 @@ abstract public class RequestTypeUtils {
 	
 	public static RequestType getRequestType(String key){
 		return RequestType.valueOfKey(key);
+	}
+	
+	public static RequestType getRequestType(HttpServletRequest request){
+		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
+		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
+		return requestType;
 	}
 	
 	public static void main(String[] args){

@@ -1,13 +1,23 @@
 package org.onetwo.test.boot;
 
 import org.junit.Before;
+import org.onetwo.boot.plugins.security.BootSecurityConfig;
 import org.onetwo.ext.security.utils.LoginUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 public class BootMvcWithSecurityBaseTest extends BootMvcBaseTest {
 
+	static private LoginUserDetails loginUser;
+	@Autowired
+	protected BootSecurityConfig bootSecurityConfig;
 	
+	
+	public static LoginUserDetails currentLoginUser() {
+		return loginUser;
+	}
+
 	@Before
 	public void initMockMvc(){
 		this.mockMvcs = MockMvcBuilders.webAppContextSetup(webApplicationContext)
@@ -15,8 +25,15 @@ public class BootMvcWithSecurityBaseTest extends BootMvcBaseTest {
 				.build();
 	}
 	
-
 	protected LoginUserDetails mockLogin(String loginUrl, String userName, String password){
 		return SecurityTestUtils.mockLogin(mockMvcs, loginUrl, userName, password);
+	}
+	
+	
+	protected LoginUserDetails login(String userName, String password){
+		if(loginUser==null){
+			loginUser = mockLogin(bootSecurityConfig.getLoginProcessUrl(), "root", "test");
+		}
+		return loginUser;
 	}
 }

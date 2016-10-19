@@ -11,12 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes=WebManagerStarter.class, webEnvironment=WebEnvironment.MOCK)
 public class ManagerApplicationITests extends BootMvcWithSecurityBaseTest {
 	
-	static protected LoginUserDetails loginUser;
-	
-	protected void login(){
-		if(loginUser==null){
-			loginUser = mockLogin("/dologin?ajaxRequest=true", "root", "test");
-		}
+	protected LoginUserDetails login(){
+		return login("root", "test");
 	}
 
 }

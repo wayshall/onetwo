@@ -12,6 +12,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
+import org.springframework.http.MediaType;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -257,12 +258,19 @@ public final class RequestUtils {
 		return ClassUtils.isPresent("javax.servlet.SessionCookieConfig", ClassUtils.getDefaultClassLoader());
 	}
 	
+	public static MediaType getAcceptAsMediaType(HttpServletRequest request){
+		String accept = request.getHeader("Accept");
+		MediaType mtype = MediaType.valueOf(accept);
+		return mtype;
+	}
+	
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
-		String reqeustKey = request.getHeader(RequestTypeUtils.HEADER_KEY);
-		RequestType requestType = RequestTypeUtils.getRequestType(reqeustKey);
-		
-		return RequestType.Ajax.equals(requestType) || "json".equalsIgnoreCase(getRequestExtension(request)) || RequestType.Flash.equals(requestType) || "true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+		return MediaType.APPLICATION_JSON.isCompatibleWith(getAcceptAsMediaType(request)) || 
+				RequestType.Ajax.equals(RequestTypeUtils.getRequestType(request)) || 
+				"json".equalsIgnoreCase(getRequestExtension(request)) || 
+				RequestType.Flash.equals(RequestTypeUtils.getRequestType(request)) || 
+				"true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
 	}
 
 	public static String getRequestExtension(HttpServletRequest request) {
