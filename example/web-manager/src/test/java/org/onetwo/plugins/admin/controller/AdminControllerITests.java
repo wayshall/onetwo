@@ -15,13 +15,13 @@ public class AdminControllerITests extends ManagerApplicationITests {
 	
 	@Test
 	public void testList() throws Exception{
-		mockMvcs.perform(get("/web-admin/user")
-							.accept(MediaType.APPLICATION_JSON_UTF8)
-							.with(user(login()))
-				)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.total").value(Matchers.greaterThan(0)))
-				.andExpect(jsonPath("$.rows").isArray());
+		perform(get("/web-admin/user")
+					.accept(MediaType.APPLICATION_JSON_UTF8)
+					.with(user(login()))
+		)
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.total").value(Matchers.greaterThan(0)))
+		.andExpect(jsonPath("$.rows").isArray());
 	}
 
 }
