@@ -17,7 +17,7 @@ public class BootWebExceptionHandler {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@ExceptionHandler
-	public Object doResolveException(HttpServletRequest request, HttpServletResponse response, Throwable ex) throws Throwable {
+	public Object doResolveException(HttpServletRequest request, HttpServletResponse response, Throwable ex) {
 		Result<?, ?> result = BootWebUtils.webHelper(request).getAjaxErrorResult();
 		if(result!=null){
 			ResponseEntity<?> reponseEntity = new ResponseEntity<>(result, HttpStatus.OK);
@@ -25,6 +25,6 @@ public class BootWebExceptionHandler {
 		}
 		
 		logger.error("unhandle Throwable: ", ex.getMessage());
-		throw ex;
+		return null;
 	}
 }
