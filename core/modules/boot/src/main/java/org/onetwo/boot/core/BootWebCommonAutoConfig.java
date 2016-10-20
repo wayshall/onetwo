@@ -1,5 +1,7 @@
 package org.onetwo.boot.core;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
@@ -16,9 +18,11 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
+import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
@@ -28,8 +32,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 public class BootWebCommonAutoConfig {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -118,6 +126,11 @@ public class BootWebCommonAutoConfig {
 		return jv;
 	}
 	
+	@Bean
+	public ResultBodyAdvice resultBodyAdvice(){
+		return new ResultBodyAdvice();
+	}
+	
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 //	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
@@ -138,4 +151,26 @@ public class BootWebCommonAutoConfig {
 	}
 	
 
+	/***
+	 * 协作视图
+	 * @param applicationContext
+	 * @param contentNegotiationManager
+	 * @return
+	 */
+	@Bean
+	@Autowired
+//	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
+	public ViewResolver viewResolver(ApplicationContext applicationContext, ContentNegotiationManager contentNegotiationManager) {
+		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
+		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
+		viewResolver.setUseNotAcceptableStatusCode(true);
+		viewResolver.setOrder(0);
+		viewResolver.setDefaultViews(views);
+//		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
+//		viewResolver.setMediaTypes(mediaType());
+//		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
+//		viewResolver.setIgnoreAcceptHeader(true);
+		viewResolver.setContentNegotiationManager(contentNegotiationManager);
+		return viewResolver;
+	}
 }

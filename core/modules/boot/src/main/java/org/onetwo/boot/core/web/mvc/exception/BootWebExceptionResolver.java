@@ -48,7 +48,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
 	private static final String ERROR_CODE_KEY = "__errorCode__";
 	private static final String PRE_URL = "preurl";
-//	private static final String AJAX_RESULT_PLACEHOLDER = "result";
+	private static final String AJAX_RESULT_PLACEHOLDER = "result";
 	
 	public static final int RESOLVER_ORDER = -9999;
 
@@ -94,7 +94,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(request, handlerMethod, model, ex);
+		ErrorMessage errorMessage = this.getErrorMessage(request, response, handlerMethod, model, ex);
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
 		this.processAfterLog(request, response, handlerMethod, ex);
@@ -103,15 +103,14 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		
 		if(isAjaxRequest(request)){
 			SimpleDataResult<?> result = WebResultCreator.creator()
-							.error("操作失败，"+ errorMessage.getMesage())
+							.error(errorMessage.getMesage())
 							.buildResult();
-			/*model.put(AJAX_RESULT_PLACEHOLDER, result);
+			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			ModelAndView mv = new ModelAndView("", model);
-			return mv;*/
-			request.setAttribute("AJAX_RESULT", result);
-			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
+			return mv;
+//			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
 			//return null for post exceptionHandler to process
-			return null;
+//			return null;
 		}
 		
 		String msg = errorMessage.getMesage();
@@ -142,7 +141,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected String getUnknowError(){
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
-	protected ErrorMessage getErrorMessage(HttpServletRequest request, Object handlerMethod, ModelMap model, Exception ex){
+	protected ErrorMessage getErrorMessage(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, ModelMap model, Exception ex){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;

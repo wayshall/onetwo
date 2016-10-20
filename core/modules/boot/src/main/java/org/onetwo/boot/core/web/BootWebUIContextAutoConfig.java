@@ -129,29 +129,6 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 		WebHolderManager webHolderManager = new WebHolderManager();
 		return webHolderManager;
 	}*/
-
-	/***
-	 * 协作视图
-	 * @param applicationContext
-	 * @param contentNegotiationManager
-	 * @return
-	 */
-	@Bean
-	@Autowired
-//	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
-	public ViewResolver viewResolver(ApplicationContext applicationContext, ContentNegotiationManager contentNegotiationManager) {
-		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
-		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
-		viewResolver.setUseNotAcceptableStatusCode(true);
-		viewResolver.setOrder(0);
-		viewResolver.setDefaultViews(views);
-//		List<View> views = LangUtils.asListWithType(View.class, xmlView(), jsonView());
-//		viewResolver.setMediaTypes(mediaType());
-//		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
-//		viewResolver.setIgnoreAcceptHeader(true);
-		viewResolver.setContentNegotiationManager(contentNegotiationManager);
-		return viewResolver;
-	}
 	
 
 }

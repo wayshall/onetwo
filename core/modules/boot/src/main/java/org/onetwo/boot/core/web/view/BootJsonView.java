@@ -83,6 +83,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	
 	/*****
 	 * DataWrapper类型的对象获取value直接返回，其它包装成Result类型对象
+	 * spring新版本加了MappingJacksonValue对象，是否统一处理掉它？
 	 */
 	protected Object filterModel(Map<String, Object> model) {
 		model.remove(BootFirstInterceptor.NOW_KEY);
@@ -117,7 +118,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		return processData(result);
 	}
 	
-	private Object processData(Object data){
+	protected Object processData(Object data){
 		/*try {
 			String json = getObjectMapper().writeValueAsString(data);
 			logger.info("json ---> {}", json);

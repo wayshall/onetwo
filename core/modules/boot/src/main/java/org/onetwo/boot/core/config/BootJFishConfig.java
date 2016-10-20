@@ -21,7 +21,7 @@ public class BootJFishConfig {
 	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
 	
-	public static final String ENABLE_NEGOTIATING_VIEW = "negotiating-view";
+//	public static final String ENABLE_NEGOTIATING_VIEW = "negotiating-view";
 	
 	@Autowired
 	private BootSpringConfig bootSpringConfig;

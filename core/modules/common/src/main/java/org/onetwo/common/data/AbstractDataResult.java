@@ -43,6 +43,10 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 		this.message = message;
 	}
 
+	/****
+	 * 本次操作请求是否成功(没有发生任何异常)
+	 * @return
+	 */
 	public boolean isSuccess(){
 		return !isError();
 	}
@@ -69,6 +73,10 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 		this.extractableData = extractableData;
 	}
 
+	/****
+	 * 指示客户端是否只显示message内容即可
+	 * @return
+	 */
 	public boolean isMessageOnly() {
 		return StringUtils.isNotBlank(message) && getData()==null;
 	}
