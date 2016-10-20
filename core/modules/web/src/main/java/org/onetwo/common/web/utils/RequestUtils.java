@@ -12,6 +12,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.util.UriUtils;
@@ -19,6 +21,8 @@ import org.springframework.web.util.UrlPathHelper;
 
 @SuppressWarnings("rawtypes")
 public final class RequestUtils {
+	
+	final static private Logger logger = LoggerFactory.getLogger(RequestUtils.class);
 	
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
@@ -260,13 +264,20 @@ public final class RequestUtils {
 	
 	public static MediaType getAcceptAsMediaType(HttpServletRequest request){
 		String accept = request.getHeader("Accept");
-		MediaType mtype = MediaType.valueOf(accept);
-		return mtype;
+		try {
+			MediaType mtype = MediaType.valueOf(accept);
+			return mtype;
+		} catch (Exception e) {
+			logger.error("parse [{}] as MediaType error: " + e.getMessage(), accept);
+			return null;
+		}
 	}
 	
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
-		return MediaType.APPLICATION_JSON.isCompatibleWith(getAcceptAsMediaType(request)) || 
+		MediaType mtype = getAcceptAsMediaType(request);
+		return MediaType.APPLICATION_JSON.isCompatibleWith(mtype) || 
+				MediaType.APPLICATION_ATOM_XML.isCompatibleWith(mtype) || 
 				RequestType.Ajax.equals(RequestTypeUtils.getRequestType(request)) || 
 				"json".equalsIgnoreCase(getRequestExtension(request)) || 
 				RequestType.Flash.equals(RequestTypeUtils.getRequestType(request)) || 

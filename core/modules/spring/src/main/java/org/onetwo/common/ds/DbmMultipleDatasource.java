@@ -22,7 +22,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class JFishMultipleDatasource implements DataSource, Ordered, InitializingBean, ApplicationContextAware {
+public class DbmMultipleDatasource implements DataSource, Ordered, InitializingBean, ApplicationContextAware {
 
 //	public static final String DATASOURCE_KEY = "DataSource";
 	public static final String DEFAULT_MASTER_NAME = SwitcherInfo.DEFAULT_SWITCHER_NAME;// + DATASOURCE_KEY;

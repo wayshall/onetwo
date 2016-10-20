@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import lombok.Data;
 
-import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -30,7 +29,7 @@ public class BootJFishConfig {
 //	private String ftlDir = "/jfish/ftl";
 	private MessageSourceConfig messageSource = new MessageSourceConfig();
 	
-	private DefaultDataBaseConfig dbm = new DefaultDataBaseConfig();
+//	private DefaultDataBaseConfig dbm = new DefaultDataBaseConfig();
 	
 	private MvcConfig mvc = new MvcConfig();
 	/*private JsonConfig json = new JsonConfig();

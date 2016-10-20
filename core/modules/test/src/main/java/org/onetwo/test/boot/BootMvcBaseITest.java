@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-public class BootMvcBaseTest {
+public class BootMvcBaseITest {
 
 	@Autowired
 	protected WebApplicationContext webApplicationContext;

@@ -8,11 +8,9 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.onetwo.dbm.mapping.DataBaseConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
@@ -70,9 +68,4 @@ public class BootContextConfig {
 		return exceptionMessageAccessor;
 	}
 	
-	@Bean
-//	@ConditionalOnMissingBean(DataBaseConfig.class)
-	public DataBaseConfig dataBaseConfig(){
-		return bootJFishConfig.getDbm();
-	}
 }

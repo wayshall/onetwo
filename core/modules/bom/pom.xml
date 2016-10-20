@@ -65,6 +65,7 @@
     
     
     <embededTomcat.version>8.0.30</embededTomcat.version>
+    <tomat-jdbc.version>8.5.0</tomat-jdbc.version>
     <rocketmq-client.version>3.5.3</rocketmq-client.version>
         
   </properties> 
@@ -190,6 +191,11 @@
      <artifactId>tomcat-embed-jasper</artifactId>
      <version>7.0.68</version>
    </dependency>-->
+   <dependency>
+	  <groupId>org.apache.tomcat</groupId>
+	  <artifactId>tomcat-jdbc</artifactId>
+	  <version>${tomat-jdbc.version}</version>
+	</dependency>
 	
 	<dependency>
 		<groupId>com.thoughtworks.xstream</groupId>

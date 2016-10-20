@@ -1,10 +1,14 @@
 package org.onetwo.common.convert;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.onetwo.common.utils.StringUtils;
+
 public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 
-	public static final String FALSE_VALUE = "false";
-	public static final String TRUE_VALUE = "true";
-	public static final String NO_VALUE = "no";
+	public static final List<String> FALSE_VALUES = Arrays.asList("false", "no");
+	public static final List<String> TRUE_VALUES = Arrays.asList("true", "yes");
 
 	
 	public ToBooleanConvertor() {
@@ -24,12 +28,16 @@ public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 		if (c == Character.class)
 			return ((Character) value).charValue() != 0;
 		if (CharSequence.class.isAssignableFrom(c)) {
-			if (FALSE_VALUE.equalsIgnoreCase(value.toString()) || NO_VALUE.equalsIgnoreCase(value.toString())) {
+			if (StringUtils.isBlank(value.toString()) || FALSE_VALUES.contains(value.toString().toLowerCase())) {
 				return false;
+			}else if(TRUE_VALUES.contains(value.toString().toLowerCase())){
+				return true;
+			}else{
+				throw new IllegalArgumentException("can not convert string["+value+"] to bolean!");
 			}
 		}
 
-		return true;
+		throw new IllegalArgumentException("can not convert object["+value+"] to bolean!");
 
 	}
 

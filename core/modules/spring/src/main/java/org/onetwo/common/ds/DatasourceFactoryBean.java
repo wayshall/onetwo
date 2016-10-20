@@ -1,18 +1,14 @@
 package org.onetwo.common.ds;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.spring.utils.BeanPropertiesMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +32,13 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		if(config==null){
 			config = configHolder.getMergedConfig();
 		}
-		Assert.notEmpty(config);
-		boolean hasPrefix = StringUtils.isNotBlank(prefix);
+//		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
 		dataSource = BeanUtils.instantiate(implementClass);
-		BeanWrapper bw = SpringUtils.newBeanWrapper(dataSource);
+		
+		BeanPropertiesMapper mapper = new BeanPropertiesMapper(config, prefix);
+		mapper.mapToObject(dataSource);
+		/*BeanWrapper bw = SpringUtils.newBeanWrapper(dataSource);
 		Enumeration<?> names = config.propertyNames();
 		while(names.hasMoreElements()){
 			String propertyName = names.nextElement().toString();
@@ -57,7 +55,7 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 				bw.setPropertyValue(propertyName, value);
 				logger.info("set property: {}={} ", propertyName, value);
 			}
-		}
+		}*/
 	}
 
 	@Override

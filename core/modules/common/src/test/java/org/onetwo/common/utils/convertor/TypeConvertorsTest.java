@@ -67,12 +67,22 @@ public enum JNamedQueryKey {
 	
 	@Test
 	public void testBoolean(){
-		Assert.assertTrue(Types.convertValue("1", boolean.class));
-		Assert.assertTrue(Types.convertValue("aa", boolean.class));
-		Assert.assertTrue(Types.convertValue("", boolean.class));
+		try {
+			Assert.assertTrue(Types.convertValue("1", boolean.class));
+			Assert.fail();
+		} catch (Exception e) {
+			Assert.assertTrue(IllegalArgumentException.class.isInstance(e));
+		}
+		try {
+			Assert.assertTrue(Types.convertValue("aa", boolean.class));
+			Assert.fail();
+		} catch (Exception e) {
+			Assert.assertTrue(IllegalArgumentException.class.isInstance(e));
+		}
 		Assert.assertTrue(Types.convertValue(true, boolean.class));
 		Assert.assertTrue(Types.convertValue(111.11, boolean.class));
 		Assert.assertFalse(Types.convertValue(false, boolean.class));
+		Assert.assertFalse(Types.convertValue("", boolean.class));
 		Assert.assertFalse(Types.convertValue(null, boolean.class));
 		Assert.assertFalse(Types.convertValue("false", boolean.class));
 		Assert.assertFalse(Types.convertValue("no", boolean.class));

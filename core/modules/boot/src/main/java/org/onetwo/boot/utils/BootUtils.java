@@ -11,6 +11,7 @@ import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.ClassUtils;
 
 final public class BootUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootUtils.class);
@@ -20,6 +21,10 @@ final public class BootUtils {
 	
 
 	private BootUtils(){
+	}
+	
+	public static boolean isDmbPresent(){
+		return ClassUtils.isPresent("org.onetwo.dbm.spring.DbmSpringConfiguration", ClassUtils.getDefaultClassLoader());
 	}
 	
 	public static Locale getDefaultLocale(){

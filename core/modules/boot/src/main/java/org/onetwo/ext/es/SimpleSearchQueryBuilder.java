@@ -327,6 +327,9 @@ public class SimpleSearchQueryBuilder {
 	    			agg = hasagg.getAggregations().get(attr);
 	    		}else if(agg instanceof MultiBucketsAggregation){
 	    			MultiBucketsAggregation magg = (MultiBucketsAggregation) agg;
+	    			if(magg.getBuckets().isEmpty()){
+	    				return agg;
+	    			}
 	    			Bucket bucket = magg.getBuckets().get(0);
 	    			agg = bucket.getAggregations().get(attr);
 	    		}else{

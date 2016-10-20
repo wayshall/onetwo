@@ -7,7 +7,7 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-public class BootMvcWithSecurityBaseTest extends BootMvcBaseTest {
+public class BootMvcWithSecurityBaseITest extends BootMvcBaseITest {
 
 	static private LoginUserDetails loginUser;
 	@Autowired

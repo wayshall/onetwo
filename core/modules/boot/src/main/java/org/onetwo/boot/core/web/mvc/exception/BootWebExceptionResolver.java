@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.mvc;
+package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +48,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
 	private static final String ERROR_CODE_KEY = "__errorCode__";
 	private static final String PRE_URL = "preurl";
-	private static final String AJAX_RESULT_PLACEHOLDER = "result";
+//	private static final String AJAX_RESULT_PLACEHOLDER = "result";
 	
 	public static final int RESOLVER_ORDER = -9999;
 
@@ -105,10 +105,13 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			SimpleDataResult<?> result = WebResultCreator.creator()
 							.error("操作失败，"+ errorMessage.getMesage())
 							.buildResult();
-			model.put(AJAX_RESULT_PLACEHOLDER, result);
-//			return createModelAndView(null, model, request, response, ex);
+			/*model.put(AJAX_RESULT_PLACEHOLDER, result);
 			ModelAndView mv = new ModelAndView("", model);
-			return mv;
+			return mv;*/
+			request.setAttribute("AJAX_RESULT", result);
+			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
+			//return null for post exceptionHandler to process
+			return null;
 		}
 		
 		String msg = errorMessage.getMesage();
@@ -169,7 +172,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !bootSiteConfig.isProduct();
-		}else if(DbmException.class.isInstance(ex)){
+		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
 //			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = JFishErrorCode.ORM_ERROR;
 			
@@ -282,7 +285,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		}
 	}
 	
-	@Deprecated
+	/*@Deprecated
 	private String findInSiteConfig(Exception ex){
 		Class<?> eclass = ex.getClass();
 		String viewName = null;
@@ -293,7 +296,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			eclass = eclass.getSuperclass();
 		} 
 		return viewName;
-	}
+	}*/
 
 	protected String getMessage(String code, Object[] args, String defaultMessage, Locale locale){
 		if(this.exceptionMessageAccessor==null)
@@ -326,7 +329,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		
 	}
 
-	protected static class ErrorMessage {
+	public static class ErrorMessage {
 		private String code;
 		private String mesage;
 		boolean detail;

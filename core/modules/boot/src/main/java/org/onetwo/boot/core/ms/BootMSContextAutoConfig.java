@@ -1,7 +1,7 @@
 package org.onetwo.boot.core.ms;
 
 import org.onetwo.boot.core.BootContextConfig;
-import org.onetwo.boot.core.BootWebCommontAutoConfig;
+import org.onetwo.boot.core.BootWebCommonAutoConfig;
 import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 @Import({BootContextConfig.class})
 //@Import({BootContextConfig.class})
 @ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_MS)
-public class BootMSContextAutoConfig extends BootWebCommontAutoConfig {
+public class BootMSContextAutoConfig extends BootWebCommonAutoConfig {
 	
 	public BootMSContextAutoConfig(){
 		System.out.println("BootMSContextAutoConfig init");

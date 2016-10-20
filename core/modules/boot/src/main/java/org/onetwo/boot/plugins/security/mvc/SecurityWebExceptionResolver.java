@@ -3,7 +3,7 @@ package org.onetwo.boot.plugins.security.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;

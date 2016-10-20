@@ -26,6 +26,6 @@ public interface DataBaseConfig {
 	
 	public boolean isWatchSqlFile();
 	
-	public String[] getModelBasePackages();
+//	public String[] getModelBasePackages();
 
 }

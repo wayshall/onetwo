@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
-import org.onetwo.boot.core.BootWebCommontAutoConfig;
+import org.onetwo.boot.core.BootWebCommonAutoConfig;
 import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
@@ -49,7 +49,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 //@Import({BootContextConfig.class})
 @ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
 @ConditionalOnClass(CommonWebFilterInitializer.class)
-public class BootWebUIContextAutoConfig extends BootWebCommontAutoConfig {
+public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired

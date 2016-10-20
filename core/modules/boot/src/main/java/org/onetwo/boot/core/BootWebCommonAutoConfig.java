@@ -9,8 +9,9 @@ import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
-import org.onetwo.boot.core.web.mvc.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
@@ -30,7 +31,7 @@ import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 
-public class BootWebCommontAutoConfig {
+public class BootWebCommonAutoConfig {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
@@ -89,6 +90,11 @@ public class BootWebCommontAutoConfig {
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
 //		resolver.setExceptionMessage(exceptionMessage);
 		return resolver;
+	}
+	
+	@Bean
+	public BootWebExceptionHandler bootWebExceptionHandler(){
+		return new BootWebExceptionHandler();
 	}
 	
 	/***

@@ -18,7 +18,7 @@ public class AppConfig extends PropConfig {
 	public static final String APP_CODE = "app.code";
 	public static final String APP_ENVIRONMENT = "app.environment";
 	public static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-	public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
+//	public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
 	public static final String CONFIG_LOADER = "config.loader";
 	/*public static final String APP_ENVIRONMENT_DEV = "dev";
 	public static final String APP_ENVIRONMENT_TEST = "test";
@@ -62,6 +62,7 @@ public class AppConfig extends PropConfig {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	protected void afterInitAppConfig(){
 		JFishProperties loadedConfig = config;
 		Class<ConfigLoader> loaderClass = loadedConfig.getClass(CONFIG_LOADER, null);
@@ -131,6 +132,7 @@ public class AppConfig extends PropConfig {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	final public void printConfigs(){
 		if(logger.isInfoEnabled()){
 			logger.info("==================================== siteconfig start ====================================");
@@ -179,9 +181,9 @@ public class AppConfig extends PropConfig {
 		return getEnv()==Env.TEST;
 	}
 	
-	public String getJFishBasePackages(){
+	/*public String getJFishBasePackages(){
 		return getProperty(JFISH_BASE_PACKAGES);
-	}
+	}*/
 
 	public Map<String, PropConfig> getOuters() {
 		return outers;

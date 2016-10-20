@@ -120,12 +120,6 @@
 	          </exclusions>
         </dependency>
 		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
 	    <!-- <dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
@@ -143,6 +137,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<optional>true</optional>
 		</dependency>
 
         <dependency>
@@ -152,7 +147,7 @@
 		
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>	
 
         <dependency>
@@ -171,28 +166,39 @@
 	    <dependency>
 	      <groupId>org.mybatis</groupId>
 	      <artifactId>mybatis</artifactId>
-          <scope>provided</scope>
+          <optional>true</optional>
 	    </dependency>
 	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>
 	        <artifactId>pagehelper</artifactId>
-            <scope>provided</scope>
+          <optional>true</optional>
 	    </dependency>
 	    <dependency>
 	      <groupId>org.mybatis</groupId>
 	      <artifactId>mybatis-spring</artifactId>
-          <scope>provided</scope>
+          <optional>true</optional>
 	    </dependency>
 	    
 	    
         <dependency>
+            <groupId>org.onetwo</groupId>
+            <artifactId>onetwo-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- <dependency>
           <groupId>com.jayway.restassured</groupId>
           <artifactId>rest-assured</artifactId>
         </dependency>
         <dependency>
 		    <groupId>junit</groupId>
 		    <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency> -->
 	</dependencies>
 	
 	<repositories>
