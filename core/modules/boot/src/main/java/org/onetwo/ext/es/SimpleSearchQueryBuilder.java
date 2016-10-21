@@ -60,9 +60,12 @@ import com.google.common.collect.Maps;
 
 public class SimpleSearchQueryBuilder {
 //	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
-	
+
 	public static SimpleSearchQueryBuilder newBuilder(){
 		return new SimpleSearchQueryBuilder();
+	}
+	public static SimpleSearchQueryBuilder from(String index, String type){
+		return new SimpleSearchQueryBuilder().addIndices(index).addTypes(type);
 	}
 	
 	/***
@@ -85,14 +88,32 @@ public class SimpleSearchQueryBuilder {
 
 	private String[] includeSources;
 	private String[] excludeSources;
+	
+	private List<String> indices = Lists.newArrayList();
+	private List<String> types = Lists.newArrayList();
 
-	public SimpleSearchQueryBuilder() {
+	private SimpleSearchQueryBuilder() {
 		this(new NativeSearchQueryBuilder());
 	}
 
 	public SimpleSearchQueryBuilder(int pageNo, int pageSize) {
 		this(new NativeSearchQueryBuilder());
+		withPageable(pageNo, pageSize);
+	}
+	
+	public SimpleSearchQueryBuilder addIndices(String... indeces){
+		Collections.addAll(this.indices, indeces);
+		return this;
+	}
+	
+	public SimpleSearchQueryBuilder addTypes(String... types){
+		Collections.addAll(this.types, types);
+		return this;
+	}
+	
+	final public SimpleSearchQueryBuilder withPageable(int pageNo, int pageSize){
 		this.searchQueryBuilder.withPageable(new PageRequest(pageNo, pageSize));
+		return this;
 	}
 
 	public SimpleSearchQueryBuilder(NativeSearchQueryBuilder searchQueryBuilder) {
@@ -224,6 +245,8 @@ public class SimpleSearchQueryBuilder {
 			searchQueryBuilder.withFilter(booleanQuery.boolQuery);
 		}
 		this.nativeSearchQuery = searchQueryBuilder.build();
+		this.nativeSearchQuery.addIndices(this.indices.toArray(new String[0]));
+		this.nativeSearchQuery.addTypes(this.types.toArray(new String[0]));
 		this.nativeSearchQuery.addSourceFilter(new FetchSourceFilter(includeSources, excludeSources));
 		this.sorts.forEach(s->this.nativeSearchQuery.addSort(s));
 //		built = true;
