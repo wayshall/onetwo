@@ -5,9 +5,13 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1039,6 +1043,37 @@ public abstract class StringUtils {
         }
         return str.substring(0, end);
     }
+    
+
+    public static <T extends Comparable<T>> String toParamString(Map<T, ?> params){
+    	return toParamString(params, Comparator.comparing(e->e));
+    }
+    
+    public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator){
+		Map<T, Object> map = null;
+		if(comparator==null){
+			map = new HashMap<>(params);
+		}else{
+			map = new TreeMap<>(comparator);
+			map.putAll(params);
+//			System.out.println("sortmap:"+map);
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		int index = 0;
+		for(Map.Entry<T, Object> entry : (Set<Map.Entry<T, Object>>)map.entrySet()){
+			if(entry.getValue()==null)
+				continue;
+			Collection<?> values = CUtils.toCollection(entry.getValue());
+			for(Object value : values){
+				if(index!=0)
+					sb.append("&");
+				sb.append(entry.getKey()).append("=").append(value.toString());
+				index++;
+			}
+		}
+		return sb.toString();
+	}
 
 	public static void main(String[] args) {
 

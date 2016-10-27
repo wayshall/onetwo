@@ -146,7 +146,7 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 	protected void validateAndThrow(Object obj, Class<?>... groups) throws BusinessException{
 		ValidationBindingResult validations = validate(obj, groups);
 		if(validations.hasErrors()){
-			throw new ValidationException(validations.getFieldErrorMessagesAsString());
+			throw new ValidationException(validations.getErrorMessagesAsString());
 		}
 	}
 

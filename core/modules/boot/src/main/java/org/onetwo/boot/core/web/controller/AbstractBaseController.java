@@ -209,7 +209,7 @@ abstract public class AbstractBaseController {
 	protected void validateAndThrow(Object obj, Class<?>... groups){
 		ValidationBindingResult validations = validate(obj, groups);
 		if(validations.hasErrors()){
-			throw new ValidationException(validations.getFieldErrorMessagesAsString());
+			throw new ValidationException(validations.getErrorMessagesAsString());
 		}
 	}
 	

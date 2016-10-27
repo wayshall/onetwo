@@ -106,7 +106,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 							.error(errorMessage.getMesage())
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
-			ModelAndView mv = new ModelAndView("", model);
+			ModelAndView mv = new ModelAndView("error", model);
 			return mv;
 //			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
 			//return null for post exceptionHandler to process

@@ -33,6 +33,8 @@ public class UrlResourceInfoParserTest {
 		pasedString = parser.parseToString(urlResourceInfo);
 		System.out.println("parsedstirng: " + pasedString);
 		
+		urlResourceInfo.remove(urlResourceInfo.size()-1);
+		urlResourceInfo.add(new UrlResourceInfo("/user/create*", "post"));
 		parsedResourceInfo = parser.parseToUrlResourceInfos(pasedString);
 		Assert.assertEquals(urlResourceInfo, parsedResourceInfo);
 	}
@@ -42,6 +44,9 @@ public class UrlResourceInfoParserTest {
 		AntPathMatcher path = new AntPathMatcher();
 		boolean rs = path.match("/user.*", "/user.json?aaa=bbb&cc=ddd");
 		Assert.assertTrue(rs);
+		//后缀的点号变成可选的写法？
+		rs = path.match("/user.*", "/user");
+		Assert.assertFalse(rs);
 	}
 
 }

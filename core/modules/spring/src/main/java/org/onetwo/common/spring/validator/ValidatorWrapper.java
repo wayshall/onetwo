@@ -41,7 +41,7 @@ public class ValidatorWrapper {
 	public void throwIfValidateFailed(Object obj, Class<?>... groups){
 		ValidationBindingResult validations = validate(obj, groups);
 		if(validations.hasErrors()){
-			throw new ValidationException(validations.getFieldErrorMessagesAsString());
+			throw new ValidationException(validations.getErrorMessagesAsString());
 		}
 	}
 }

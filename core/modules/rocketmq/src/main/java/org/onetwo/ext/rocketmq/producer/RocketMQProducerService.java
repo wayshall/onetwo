@@ -1,10 +1,11 @@
 package org.onetwo.ext.rocketmq.producer;
 
-
+import java.io.Serializable;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -26,9 +27,9 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	private String namesrvAddr;
 	private String groupName;
 	private DefaultMQProducer defaultMQProducer;
-	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
+//	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private Consumer<Throwable> errorHandler = null;
-	private MessageSerializer messageSerializer = msg->jsonMapper.toJsonBytes(msg);
+	private MessageSerializer messageSerializer = msg->SerializationUtils.serialize((Serializable)msg);
 
 	public RocketMQProducerService() {
 	}
@@ -87,23 +88,20 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 			return sendResult;
 		} catch (MQClientException | RemotingException | MQBrokerException
 				| InterruptedException e) {
-			String errorMsg = "send message error. topic:"+message.getTopic()+", tags:"+message.getTags();
-			logger.error(errorMsg);
-			if(errorHandler!=null){
-				errorHandler.accept(e);
-				return null;
-			}else{
-				throw BaseException.formatMessage(errorMsg);
-			}
+			this.handleException(e, message);
 		}catch (Throwable e) {
-			String errorMsg = "send message error. topic:"+message.getTopic()+", tags:"+message.getTags();
-			logger.error(errorMsg);
-			if(errorHandler!=null){
-				errorHandler.accept(e);
-				return null;
-			}else{
-				throw BaseException.formatMessage(errorMsg);
-			}
+			this.handleException(e, message);
+		}
+		return null;
+	}
+	
+	protected void handleException(Throwable e, Message message){
+		String errorMsg = "send message error. topic:"+message.getTopic()+", tags:"+message.getTags();
+		logger.error(errorMsg);
+		if(errorHandler!=null){
+			errorHandler.accept(e);
+		}else{
+			throw new ServiceException(errorMsg);
 		}
 	}
 	
