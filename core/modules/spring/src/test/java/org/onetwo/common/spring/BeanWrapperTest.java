@@ -5,12 +5,11 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.spring.entity.RoleEntity;
+import org.onetwo.common.spring.entity.UserEntity;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-
-import test.entity.RoleEntity;
-import test.entity.UserEntity;
 
 public class BeanWrapperTest {
 

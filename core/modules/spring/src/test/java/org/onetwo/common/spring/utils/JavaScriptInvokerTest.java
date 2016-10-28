@@ -5,9 +5,8 @@ import javax.script.ScriptException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.entity.UserEntity;
 import org.onetwo.common.spring.utils.JavaScriptInvoker.ScriptEnginer;
-
-import test.entity.UserEntity;
 
 public class JavaScriptInvokerTest {
 	

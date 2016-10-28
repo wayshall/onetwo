@@ -7,12 +7,11 @@ import java.util.Map.Entry;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.spring.entity.UserEntity;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-
-import test.entity.UserEntity;
 
 public class PropertyAccessorTest {
 	

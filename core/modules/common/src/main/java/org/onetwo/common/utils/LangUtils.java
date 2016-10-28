@@ -389,6 +389,9 @@ public class LangUtils {
 		return SIMPLE_CLASS.contains(obj.getClass());
 	}
 	
+	public static List<Class<?>> getSimpleClass() {
+		return SIMPLE_CLASS;
+	}
 	public static boolean isTimeClass(Class<?> clazz){
 		if(clazz==null)
 			return false;

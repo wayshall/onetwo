@@ -40,6 +40,7 @@ import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
@@ -80,6 +81,8 @@ public class ReflectUtils {
 	
 	private static final BaseMap<Class<?>, Class<?>> BASE_TYPE_MAPPER;
 	
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = new BeanToMapConvertor();
+	
 	static {
 
 		BASE_TYPE_MAPPER = new BaseMap<Class<?>, Class<?>>();
@@ -96,6 +99,10 @@ public class ReflectUtils {
 	private ReflectUtils() {
 	}
 	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return BEAN_TO_MAP_CONVERTOR;
+	}
+
 	public static <T, ID> void mergeByCheckedIds(
 			final Collection<T> srcObjects, final Collection<ID> checkedIds,
 			final Class<T> clazz, final String idName) {
@@ -867,29 +874,10 @@ public class ReflectUtils {
 	}
 	
 	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor, Function<Object, Object> valueConvertor) {
-		if (obj == null)
-			return Collections.EMPTY_MAP;
-		
-		if(obj.getClass().isArray())
-			return LangUtils.asMap((Object[])obj);
-		
-		if(obj instanceof Map)
-			return (Map)obj;
-		
-		PropertyDescriptor[] props = desribProperties(obj.getClass());
-		if (props == null || props.length == 0)
-			return Collections.EMPTY_MAP;
-		Map<String, Object> rsMap = new HashMap();
-		Object val = null;
-		for (PropertyDescriptor prop : props) {
-			val = getProperty(obj, prop);
-			if (acceptor==null || acceptor.apply(prop, val)){
-				if(valueConvertor!=null)
-					val = valueConvertor.apply(val);
-				rsMap.put(prop.getName(), val);
-			}
-		}
-		return rsMap;
+		return BeanToMapBuilder.newBuilder()
+						.propertyAcceptor(acceptor)
+						.valueConvertor(valueConvertor)
+						.toMap(obj);
 	}
 
 	public static Map<String, String> toStringMap(boolean ignoreNull, Object obj) {

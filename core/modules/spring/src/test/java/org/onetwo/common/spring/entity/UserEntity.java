@@ -1,11 +1,10 @@
-package test.entity;
+package org.onetwo.common.spring.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class UserEntity {
 
 	private Long id;

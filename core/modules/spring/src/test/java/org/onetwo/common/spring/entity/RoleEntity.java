@@ -1,4 +1,4 @@
-package test.entity;
+package org.onetwo.common.spring.entity;
 
 
 public class RoleEntity  {
