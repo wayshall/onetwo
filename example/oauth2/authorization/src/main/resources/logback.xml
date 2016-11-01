@@ -29,24 +29,6 @@
   </appender>
   
   
-  	<appender name="mail" class="ch.qos.logback.classic.net.SMTPAppender">
-	    <smtpHost>smtp.qq.com</smtpHost>
-	    <smtpPort>465</smtpPort>
-	    <SSL>true</SSL>
-	    <username>wayshall@qq.com</username>
-	    <password>udarlmvpprwsbbjh</password>
-	
-	    <to>pistols@qq.com</to>
-	    <from>wayshall@qq.com</from>
-	    <subject>zhiyetong-manager程序严重错误，请注意</subject>
-	    <layout class="ch.qos.logback.classic.PatternLayout">
-	    <pattern>%date %-5level %logger{35} - %message%n</pattern>
-	    </layout>
-	</appender>
-   <logger name="mailLogger" level="INFO">  
-       <appender-ref ref="mail" />   
-   </logger>  
-   
    <logger name="accessLogger" level="INFO">  
        <appender-ref ref="accessAppender" />   
    </logger>  

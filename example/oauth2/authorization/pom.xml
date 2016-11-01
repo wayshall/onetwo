@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.onetwo.example</groupId>
-    <artifactId>onetwo-web-manager</artifactId>
+    <artifactId>onetwo-oauth2-authorization</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>onetwo-web-manager</name>
-    <description>onetwo-web-manager</description>
+    <name>onetwo-oauth2-authorization</name>
+    <description>onetwo-oauth2-authorization</description>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -20,7 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <start-class>org.onetwo.webapp.manager.ApplicationStarter</start-class>
+        <start-class>org.onetwo.webapp.oauth2.authorization.AuthorizationStarter</start-class>
         
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
@@ -28,20 +28,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-		  <groupId>org.onetwo.plugins</groupId>
-		  <artifactId>onetwo-plugin-web-admin</artifactId>
-	       <exclusions>
-	       	<exclusion>
-	       		<groupId>ch.qos.logback</groupId>
-	       		<artifactId>logback-core</artifactId>
-	       	</exclusion>
-	       	<exclusion>
-	       		<groupId>ch.qos.logback</groupId>
-	       		<artifactId>logback-classic</artifactId>
-	       	</exclusion>
-	       </exclusions>
-        </dependency>
         
        <!-- boot1.4rc 日志有冲突 -->
 	   <dependency>
@@ -68,7 +54,16 @@
         </dependency>
         <dependency>
           <groupId>org.onetwo</groupId>
+          <artifactId>onetwo-web</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.onetwo</groupId>
           <artifactId>onetwo-dbm</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.springframework.security.oauth</groupId>
+          <artifactId>spring-security-oauth2</artifactId>
         </dependency>
         
          <dependency>

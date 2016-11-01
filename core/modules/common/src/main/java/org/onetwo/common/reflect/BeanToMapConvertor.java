@@ -23,6 +23,7 @@ public class BeanToMapConvertor {
 	private String prefix = "";
 	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = (prop, val)->val!=null;
 	private Function<Object, Object> valueConvertor;
+	private Function<Object, Boolean> flatableObject;
 	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 	
 	/***
@@ -75,29 +76,28 @@ public class BeanToMapConvertor {
 	}
 	
 
-	public boolean isValueType(Class<?> clazz){
-		return valueTypes.contains(clazz);
+	public boolean isMappableValue(Object value){
+		if(value==null)
+			return true;
+		return valueTypes.contains(value.getClass()) || (flatableObject!=null && !flatableObject.apply(value));
 	}
 
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
 		flatObject(prefix, obj, (k, v)->params.put(k, v));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter){
-		if(obj==null)
-			return ;
-		if(isValueType(obj.getClass())){
-			valuePutter.put(prefixName, obj==null?"":obj.toString());
+		if(isMappableValue(obj)){
+			valuePutter.put(prefixName, obj);
 		}else if(Map.class.isInstance(obj)){
 			String mapPrefixName = prefixName;
 			if(StringUtils.isNotBlank(prefixName)){
 				mapPrefixName = prefixName+this.propertyAccesor;
 			}
 			for(Entry<String, Object> entry : ((Map<String, Object>)obj).entrySet()){
-				if(entry.getValue()==null){
-					valuePutter.put(mapPrefixName+entry.getKey(), "");
-				}else if(String.class.isInstance(entry.getValue()) || isValueType(entry.getValue().getClass())){
-					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue()==null?"":entry.getValue().toString());
+				if(isMappableValue(entry.getValue())){
+					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue());
 				}else{
 					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter);
 				}
@@ -107,8 +107,8 @@ public class BeanToMapConvertor {
 			int index = 0;
 			for(Object o : list){
 				String listPrefixName = prefixName + this.listOpener+index+this.listCloser;
-				if(String.class.isInstance(o) || LangUtils.isBaseTypeObject(o)){
-					valuePutter.put(listPrefixName, o==null?"":o.toString());
+				if(isMappableValue(o)){
+					valuePutter.put(listPrefixName, o);
 				}else{
 					flatObject(listPrefixName, o, valuePutter);
 				}
@@ -140,10 +140,15 @@ public class BeanToMapConvertor {
 			return new BeanToMapBuilder();
 		}
 		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		
+
 
 		public BeanToMapBuilder propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
 			beanToFlatMap.propertyAcceptor = propertyAcceptor;
+			return this;
+		}
+
+		public BeanToMapBuilder flatableObject(Function<Object, Boolean> flatableObject) {
+			beanToFlatMap.flatableObject = flatableObject;
 			return this;
 		}
 

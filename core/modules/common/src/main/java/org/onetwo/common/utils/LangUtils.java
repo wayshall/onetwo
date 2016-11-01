@@ -68,14 +68,14 @@ public class LangUtils {
 
 	public static final Consoler CONSOLE;
 
-	private static final List<Class<?>> BASE_CLASS;
-	private static final List<Class<?>> SIMPLE_CLASS;
+	private static final Collection<Class<?>> BASE_CLASS;
+	private static final Collection<Class<?>> SIMPLE_CLASS;
 
 	static {
 		CONSOLE = Consoler.create(asBufferedReader(System.in));
 		
 		
-		List<Class<?>> cls = new ArrayList<Class<?>>();
+		Set<Class<?>> cls = new HashSet<Class<?>>();
 		cls.add(Boolean.class);
 		cls.add(boolean.class);
 		cls.add(Character.class);
@@ -92,15 +92,15 @@ public class LangUtils {
 		cls.add(float.class);
 		cls.add(Double.class);
 		cls.add(double.class);
-		BASE_CLASS = Collections.unmodifiableList(cls);
+		BASE_CLASS = Collections.unmodifiableSet(cls);
 		
-		List<Class<?>> simples = new ArrayList<Class<?>>(cls);
+		Set<Class<?>> simples = new HashSet<Class<?>>(cls);
 		simples.add(String.class);
 		simples.add(Date.class);
 		simples.add(Calendar.class);
 		simples.add(Number.class);
 		
-		SIMPLE_CLASS = Collections.unmodifiableList(simples);
+		SIMPLE_CLASS = Collections.unmodifiableSet(simples);
 	}
 	
 	public static final char[] WORD_CHARS = {  '1', '2', '3', '4', '5', '6', '7', 
@@ -366,7 +366,7 @@ public class LangUtils {
 	private static final boolean debug = true;
 	
 
-	public static List<Class<?>> getBaseTypeClass(){
+	public static Collection<Class<?>> getBaseTypeClass(){
 		return BASE_CLASS;
 	}
 	public static boolean isPrimitive(Class<?> clazz){
@@ -389,7 +389,7 @@ public class LangUtils {
 		return SIMPLE_CLASS.contains(obj.getClass());
 	}
 	
-	public static List<Class<?>> getSimpleClass() {
+	public static Collection<Class<?>> getSimpleClass() {
 		return SIMPLE_CLASS;
 	}
 	public static boolean isTimeClass(Class<?> clazz){

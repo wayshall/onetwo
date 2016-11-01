@@ -1,4 +1,4 @@
-package org.onetwo.webapp.manager;
+package org.onetwo.webapp.oauth2.resource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @SpringBootApplication
-//@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
-public class WebManagerStarter extends SpringBootServletInitializer {
+public class ResourceStarter extends SpringBootServletInitializer {
 	
 	@RequestMapping("/")
     String home() {
@@ -19,10 +18,10 @@ public class WebManagerStarter extends SpringBootServletInitializer {
 	
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(WebManagerStarter.class);
+		return application;
 	}
 	
     public static void main(String[] args) {
-        SpringApplication.run(WebManagerStarter.class, args);
+        SpringApplication.run(ResourceStarter.class, args);
     }
 }

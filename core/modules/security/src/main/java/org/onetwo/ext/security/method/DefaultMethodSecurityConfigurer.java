@@ -10,6 +10,7 @@ import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,6 +42,13 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	@Autowired
 	private SecurityConfig securityConfig;
 	
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
+        web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
+    }
+    
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		Assert.notNull(userDetailsService, "no userDetailsService found!");
