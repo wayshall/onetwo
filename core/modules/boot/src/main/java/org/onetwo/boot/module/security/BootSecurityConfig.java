@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.security;
+package org.onetwo.boot.module.security;
 
 import javax.servlet.ServletContext;
 

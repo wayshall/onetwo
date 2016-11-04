@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.dbm;
+package org.onetwo.boot.module.dbm;
 
 import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;

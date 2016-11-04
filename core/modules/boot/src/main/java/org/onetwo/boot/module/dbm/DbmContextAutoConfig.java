@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.dbm;
+package org.onetwo.boot.module.dbm;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;

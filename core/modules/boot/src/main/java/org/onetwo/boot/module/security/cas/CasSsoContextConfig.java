@@ -1,7 +1,7 @@
-package org.onetwo.boot.plugins.security.cas;
+package org.onetwo.boot.module.security.cas;
 
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.onetwo.boot.plugins.security.BootSecurityConfig;
+import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

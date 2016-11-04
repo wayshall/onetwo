@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.security.mvc;
+package org.onetwo.boot.module.security.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

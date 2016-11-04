@@ -1,6 +1,6 @@
 package org.onetwo.webapp.manager;
 
-import org.onetwo.boot.plugins.security.method.EnableJFishMethodSecurity;
+import org.onetwo.boot.module.security.method.EnableJFishMethodSecurity;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

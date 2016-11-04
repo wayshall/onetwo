@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.security.url;
+package org.onetwo.boot.module.security.url;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

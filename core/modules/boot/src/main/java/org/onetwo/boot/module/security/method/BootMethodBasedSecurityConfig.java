@@ -1,7 +1,7 @@
-package org.onetwo.boot.plugins.security.method;
+package org.onetwo.boot.module.security.method;
 
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.plugins.security.config.BootSecurityCommonContextConfig;
+import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.method.MethodBasedSecurityConfig;
 import org.onetwo.ext.security.method.RelaodableDelegatingMethodSecurityMetadataSource;

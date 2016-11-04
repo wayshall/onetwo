@@ -1,6 +1,6 @@
-package org.onetwo.boot.plugins.security.url;
+package org.onetwo.boot.module.security.url;
 
-import org.onetwo.boot.plugins.security.config.BootSecurityCommonContextConfig;
+import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.method.JFishMethodSecurityMetadataSource;
 import org.onetwo.ext.security.url.SecurityBeanPostProcessor;

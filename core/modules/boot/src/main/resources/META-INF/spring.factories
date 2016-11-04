@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.onetwo.boot.core.ms.BootMSContextAutoConfig,\
 org.onetwo.boot.core.web.BootWebUIContextAutoConfig,\
-org.onetwo.boot.plugins.permission.PermissionContextAutoConfig,\
-org.onetwo.boot.plugins.dbm.DbmContextAutoConfig
+org.onetwo.boot.module.permission.PermissionContextAutoConfig,\
+org.onetwo.boot.module.dbm.DbmContextAutoConfig

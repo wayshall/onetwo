@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.security.method;
+package org.onetwo.boot.module.security.method;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

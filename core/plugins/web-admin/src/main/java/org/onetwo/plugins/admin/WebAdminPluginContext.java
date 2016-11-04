@@ -3,7 +3,7 @@ package org.onetwo.plugins.admin;
 import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.plugins.dbm.DbmContextAutoConfig;
+import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;

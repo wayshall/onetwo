@@ -1,6 +1,6 @@
-package org.onetwo.boot.plugins.permission;
+package org.onetwo.boot.module.permission;
 
-import org.onetwo.boot.plugins.security.BootSecurityConfig;
+import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.ext.permission.AbstractPermissionConfig;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;

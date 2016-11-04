@@ -1,8 +1,8 @@
-package org.onetwo.boot.plugins.security.config;
+package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
-import org.onetwo.boot.plugins.security.BootSecurityConfig;
-import org.onetwo.boot.plugins.security.mvc.SecurityWebExceptionResolver;
+import org.onetwo.boot.module.security.BootSecurityConfig;
+import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
