@@ -36,7 +36,7 @@ public class JsonMapperParameterizedTest {
 		
 	}
 	
-	protected TestJsonBean createTestJsonBean(int i){
+	protected TestJsonBean createTestJsonBean(long i){
 		TestJsonBean bean = new TestJsonBean();
 		bean.setName("test bean"+i);
 		bean.setEmail("test@email.com"+i);
@@ -45,7 +45,7 @@ public class JsonMapperParameterizedTest {
 	}
 	
 	public List<TestJsonBean> createBeans(int count){
-		return LangOps.generateList(count, (i)->createTestJsonBean(i));
+		return LangOps.generateList((long)count, (i)->createTestJsonBean(i));
 		/*return Stream.iterate(1, i->i+1).limit(count)
 										.map((i)->createTestJsonBean(i))
 										.collect(Collectors.toList());*/

@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.func.Closure;
+import org.onetwo.common.utils.map.KVEntry;
 
 /***
  * langutils for java8
@@ -36,13 +37,26 @@ final public class LangOps {
 		return (R[])list.stream().map(mapper).collect(Collectors.toList()).toArray();
 	}
 	
-	public static <R> List<R> generateList(Integer count, Function<Integer, ? extends R> mapper){
-		return Stream.iterate(1, i->i+1).limit(count)
-										.map(mapper)
-										.collect(Collectors.toList());
+	public static <R> Map<Long, R> generateMap(Long count, Function<Long, ? extends R> mapper){
+		return Stream.iterate(1L, i->i+1)
+					.limit(count)
+					.map(i->new KVEntry<Long, R>(i, mapper.apply(i)))
+					.collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
 	}
-
-
+	
+	public static <R> List<R> generateList(int count, Function<Integer, ? extends R> mapper){
+		return Stream.iterate(1, i->i+1)
+						.limit(count)
+						.map(mapper)
+						.collect(Collectors.toList());
+	}
+	public static <R> List<R> generateList(Long count, Function<Long, ? extends R> mapper){
+		return Stream.iterate(1L, i->i+1)
+						.limit(count)
+						.map(mapper)
+						.collect(Collectors.toList());
+	}
+	
 	public static void timeIt(String tag, Closure closure){
 		TimeCounter tc = new TimeCounter(tag);
 		tc.start();

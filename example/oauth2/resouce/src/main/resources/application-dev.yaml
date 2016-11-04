@@ -7,28 +7,17 @@ spring:
         password: root
         driver-class-name: com.mysql.jdbc.Driver
     application:
-        name: web-manager
+        name: onetwo-oauth2-resource
     boot:
         admin:
             url: http://localhost:9999
             context-path: /monitorui
-endpoints:
-    health:
-        sensitive: false
-
-jfish:
-    security:
-        syncPermissionData: false
-        csrf:
-            disable: true
-        logoutUrl: /logout
-siteConfig:
-    uploadImageAccessPath: http://localhost/img/manager
-    upload:
-        #storeType: ftp
-        #ftpServer: 127.0.0.1
-        #ftpUser: test
-        #ftpPassword: test
-        fileStorePath: G:/temp/upload_files
-        appContextDir: manager
-        #maxUploadSize: 1024
+security:
+    oauth2:
+        client:
+            client-id: acme
+            client-secret: acmesecret
+            access-token-uri: http://localhost:8080/oauth/token
+            user-authorization-uri: http://localhost:8080/oauth/authorize
+        resource:
+            user-info-uri: http://localhost:8080/me

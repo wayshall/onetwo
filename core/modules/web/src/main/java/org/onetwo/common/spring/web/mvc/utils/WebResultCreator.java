@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.onetwo.common.data.LazyValue;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.LazyValue;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.CUtils;
 import org.springframework.validation.BindingResult;
@@ -48,6 +48,9 @@ final public class WebResultCreator {
 		return simple(null);
 	}
 	public SimpleResultBuilder simple(Object data){
+		return data(data);
+	}
+	public SimpleResultBuilder data(Object data){
 		SimpleResultBuilder builder = new SimpleResultBuilder().success();
 		builder.data(data);
 		return builder;

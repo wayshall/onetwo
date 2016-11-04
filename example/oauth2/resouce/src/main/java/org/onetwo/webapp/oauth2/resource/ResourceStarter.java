@@ -18,7 +18,7 @@ public class ResourceStarter extends SpringBootServletInitializer {
 	
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application;
+		return application.sources(ResourceStarter.class);
 	}
 	
     public static void main(String[] args) {
