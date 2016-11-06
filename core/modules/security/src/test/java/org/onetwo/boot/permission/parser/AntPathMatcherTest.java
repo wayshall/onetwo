@@ -32,7 +32,10 @@ public class AntPathMatcherTest {
 		Assert.assertTrue(res);
 		res = req.match("/user**", "/userInfo");
 		Assert.assertTrue(res);
-		res = req.match("/user**", "/user/1.json");
+		res = req.match("/user*/**", "/userInfo");
+		Assert.assertTrue(res);
+		res = req.match("/user*/**", "/user/1.json");
+		Assert.assertTrue(res);
 
 		res = req.match("/user/*", "/user/1");
 		Assert.assertTrue(res);
@@ -40,9 +43,7 @@ public class AntPathMatcherTest {
 		Assert.assertTrue(res);
 		res = req.match("/user/*", "/user/aaa/1.json");
 		Assert.assertFalse(res);
-		
 
-		Assert.assertFalse(res);
 		res = req.match("/user/**", "/user/1.json");
 		Assert.assertTrue(res);
 		res = req.match("/user/**", "/user/aaa/1.json");

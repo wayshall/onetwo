@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
-
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;
 import org.onetwo.ext.security.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.expression.Expression;
 import org.springframework.security.access.ConfigAttribute;
@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
  *
  */
 public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSecurityMetadataSource {
-	@Resource
+	@Autowired(required=false)
 	private MenuInfoParser<? extends DefaultIPermission<?>> menuInfoParser;
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
@@ -57,6 +57,9 @@ public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSec
 		if(codeClasses!=null){
 			List<ConfigAttribute> perms = Stream.of(codeClasses)
 					.map(cls->{
+						if(menuInfoParser==null){
+							throw new BaseException("no menuInfoParser found!");
+						}
 						String code = SecurityUtils.createSecurityExpression(menuInfoParser.getCode(cls));
 						Expression exp = securityExpressionHandler.getExpressionParser().parseExpression(code);
 						WebExpressionConfigAttribute config = new WebExpressionConfigAttribute(exp);

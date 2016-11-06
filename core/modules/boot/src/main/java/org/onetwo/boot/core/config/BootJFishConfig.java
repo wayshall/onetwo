@@ -3,6 +3,7 @@ package org.onetwo.boot.core.config;
 import java.util.Properties;
 
 import lombok.Data;
+import lombok.Setter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,10 +50,18 @@ public class BootJFishConfig {
 		private int cacheSeconds = -1;//cache forever
 	}
 	
-	@Data
 	public class MvcConfig {
+		@Setter
 		private Properties mediaTypes;
+		@Setter
 		private JsonConfig json = new JsonConfig();
+
+		public MvcConfig() {
+			this.mediaTypes = new Properties();
+			this.mediaTypes.put("json", "application/json");
+			this.mediaTypes.put("xml", "application/xml");
+			this.mediaTypes.put("xls", "application/vnd.ms-excel");
+		}
 
 		@Data
 		public class JsonConfig {
@@ -65,7 +74,15 @@ public class BootJFishConfig {
 					 return prettyPrint;
 			}
 		}
-		
+
+		public Properties getMediaTypes() {
+			return mediaTypes;
+		}
+
+		public JsonConfig getJson() {
+			return json;
+		}
+
 	}
 	
 	
