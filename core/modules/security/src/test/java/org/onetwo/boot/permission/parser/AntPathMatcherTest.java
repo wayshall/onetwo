@@ -17,6 +17,20 @@ public class AntPathMatcherTest {
 		boolean res = req.match("/user.*", "/user.json");
 		Assert.assertTrue(res);
 		
+
+		res = req.match("*zh.*", "user_zh.html");
+		Assert.assertTrue(res);
+		res = req.match("*zh.*", "/user_zh.html");
+		Assert.assertFalse(res);
+		res = req.match("**zh.*", "user_zh.html");
+		Assert.assertTrue(res);
+		res = req.match("**zh.*", "/user_zh.html");
+		Assert.assertFalse(res);
+		res = req.match("**/*zh.*", "/user_zh.html");
+		Assert.assertFalse(res);
+		res = req.match("/*zh.*", "/user_zh.html");
+		Assert.assertTrue(res);
+		
 		res = req.match("/user*", "/user");
 		Assert.assertTrue(res);
 		res = req.match("/user*", "/user.json");

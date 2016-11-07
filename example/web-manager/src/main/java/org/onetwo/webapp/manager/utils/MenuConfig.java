@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MenuConfig extends AbstractPermissionConfig<AdminPermission> {
+	
+	public MenuConfig(){
+	}
 
 	@Override
     public Class<?> getRootMenuClass() {

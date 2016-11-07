@@ -52,4 +52,6 @@ final public class BootUtils {
 	        throw new BaseException("load yaml file error: " + classpath);
         }
 	}
+	
+	
 }

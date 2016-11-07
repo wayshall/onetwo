@@ -1,12 +1,18 @@
 package org.onetwo.boot.plugin.core;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
+
+import org.onetwo.boot.plugin.ftl.PluginNameParser;
 
 public interface PluginManager {
 
 	public Optional<WebPlugin> findPluginByElementClass(Class<?> elementClass);
 
-	public List<WebPlugin> getPlugins();
+	public Collection<WebPlugin> getPlugins();
+	public WebPlugin getPlugin(String pluginName);
+	public PluginNameParser getPluginNameParser();
+//	public String getPluginTemplateBasePath(WebPlugin webPlugin);
+	public String getPluginTemplateBasePath(String pluginName);
 
 }

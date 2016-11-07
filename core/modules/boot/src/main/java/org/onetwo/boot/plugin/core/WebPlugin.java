@@ -18,8 +18,8 @@ public interface WebPlugin {
 		return StringUtils.appendStartWith(getPluginMeta().getName(), "/");
 	}
 
-	default String getTemplatePath() {
-		return StringUtils.appendStartWith(getPluginMeta().getName(), "/");
-	}
+	/*default String getTemplatePath() {
+		return "["+getPluginMeta().getName()+"]";
+	}*/
 	
 }

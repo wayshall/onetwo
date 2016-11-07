@@ -1,8 +1,12 @@
 package org.onetwo.boot.plugin.core;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.onetwo.boot.plugin.ftl.PluginNameParser;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 
 public class DefaultPluginsManager implements InitializingBean, PluginManager {
@@ -20,33 +24,58 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	@Autowired
 	private ApplicationContext applicationContext;
 	
-	private List<WebPlugin> plugins;
-	
+	private Map<String, WebPlugin> pluginMapping = Maps.newHashMap();
+	private final PluginNameParser pluginNameParser = new PluginNameParser();
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
-		this.plugins = ImmutableList.copyOf(plugins);
 		logger.info("find plugins : {} ", plugins);
-		
+		plugins.stream().forEach(plugin->registerPlugin(plugin));
+		logger.info("find plugins : {} ", pluginMapping);
+	}
+	
+	public PluginNameParser getPluginNameParser() {
+		return pluginNameParser;
 	}
 
-	/*public DefaultPluginsManager addPlugin(Plugin plugin){
-		plugins.add(plugin);
+	public String getPluginTemplateBasePath(WebPlugin webPlugin) {
+		return pluginNameParser.getPluginBasePath(webPlugin.getPluginMeta().getName());
+	}
+
+	@Override
+	public String getPluginTemplateBasePath(String pluginName) {
+		return getPluginTemplateBasePath(getPlugin(pluginName));
+	}
+
+	final public PluginManager registerPlugin(WebPlugin plugin){
+		String pluginName = plugin.getPluginMeta().getName();
+		if(pluginMapping.containsKey(pluginName)){
+			throw new BaseException("plugin["+pluginName+"] has exists. find new plugin: "+plugin+", exists plugin:" + pluginMapping.get(pluginName));
+		}
+		pluginMapping.put(pluginName, plugin);
+		if(logger.isDebugEnabled()){
+			logger.debug("register plugin : " + pluginName);
+		}
 		return this;
-	}*/
+	}
 	
 	@Override
 	public Optional<WebPlugin> findPluginByElementClass(Class<?> elementClass){
-		return this.plugins.stream()
+		return this.pluginMapping.values().stream()
 							.filter(p->p.contains(elementClass))
 							.sorted((o1, o2)->o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length())
 							.findFirst();
 	}
 
 	@Override
-	public List<WebPlugin> getPlugins() {
-		return plugins;
+	public Collection<WebPlugin> getPlugins() {
+		return pluginMapping.values();
+	}
+
+	@Override
+	public WebPlugin getPlugin(String pluginName) {
+		return pluginMapping.get(pluginName);
 	}
 	
 }

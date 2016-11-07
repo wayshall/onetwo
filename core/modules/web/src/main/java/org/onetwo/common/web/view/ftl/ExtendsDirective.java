@@ -22,15 +22,20 @@ public class ExtendsDirective implements TemplateDirectiveModel {
 	@Override
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 		String file = DirectivesUtils.getParameterByString(params, PARAMS_FILE, DEFAULT_LAYOUT);
-		if(!file.startsWith("/")){
-			file = DEFAULT_LAYOUT_DIR + file;
-		}
-		String template = env.toFullTemplateName("/", file);
+		
+		String template = env.toFullTemplateName("/", getActaulFile(params, file));
 		if(!template.contains(".")){
 			template += FTL;
 		}
 		body.render(env.getOut());
 		env.include(template, DirectivesUtils.ENCODING, true);
+	}
+	
+	protected String getActaulFile(Map params, String file){
+		if(!file.startsWith("/")){
+			return DEFAULT_LAYOUT_DIR + file;
+		}
+		return file;
 	}
 
 }

@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
-import org.onetwo.boot.module.permission.PermissionContextAutoConfig;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @ComponentScan(basePackageClasses={WebAdminPluginContext.class})
 @AutoConfigureAfter(DbmContextAutoConfig.class)
-@ConditionalOnBean(PermissionContextAutoConfig.class)
+//@ConditionalOnBean(PermissionContextAutoConfig.class)
 public class WebAdminPluginContext {
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -50,6 +48,11 @@ public class WebAdminPluginContext {
 			this.securityConfig.setAfterLoginUrl(targetUrl);
 		}
 	}
+	
+	/*@Bean
+	public PermissionManager<AdminPermission> permissionManagerImpl(){
+		return new PermissionManagerImpl();
+	}*/
 	
 	@Bean
 	@ConditionalOnMissingBean(UserDetailsService.class)

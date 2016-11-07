@@ -22,7 +22,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 @Configuration
 public class WebFtlsContextConfig {
-	public static final String WEBFTLS_PATH = "classpath*:META-INF/resources/webftls";
+//	public static final String WEBFTLS_PATH = "classpath*:META-INF/resources/webftls";
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
@@ -45,7 +45,7 @@ public class WebFtlsContextConfig {
 		PluginFreeMarkerConfigurer configurer = new PluginFreeMarkerConfigurer();
 		applyProperties(configurer);
 		String[] paths = this.properties.getTemplateLoaderPath();
-		paths = ArrayUtils.add(paths, WEBFTLS_PATH);
+//		paths = ArrayUtils.add(paths, WEBFTLS_PATH);
 		configurer.setTemplateLoaderPaths(paths);
 		
 		List<WithAnnotationBeanData<FreeMarkerViewTools>> tools = SpringUtils.getBeansWithAnnotation(applicationContext, FreeMarkerViewTools.class);

@@ -20,6 +20,9 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 	@Autowired
 	private AdminPermissionDao adminPermissionDao;
 	
+	public AdminMenuItemServiceImpl(){
+	}
+	
 	public List<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
 		/*List<Permission> permissions = findUserAppPermissions(null, loginUser);
 		return createMenuTreeBuilder(permissions).buidTree();*/

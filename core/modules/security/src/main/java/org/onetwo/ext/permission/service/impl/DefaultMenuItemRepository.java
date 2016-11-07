@@ -2,8 +2,6 @@ package org.onetwo.ext.permission.service.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.AbstractPermissionConfig;
@@ -12,13 +10,14 @@ import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.utils.PermissionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultMenuItemRepository implements MenuItemRepository<PermisstionTreeModel> {
 	
-	@Resource
+	@Autowired
 	private PermissionManager<? extends DefaultIPermission<?>> permissionManager;
 
-	@Resource
+	@Autowired
 	private AbstractPermissionConfig<? extends DefaultIPermission<?>> permissionConfig;
 	
 	@Override
