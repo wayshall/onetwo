@@ -41,3 +41,4 @@ application-product.yaml
 *.externalToolBuilders
 *.iml
 /core/modules/dbm/*.iml
+/core/release.properties

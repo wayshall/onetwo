@@ -1,7 +1,7 @@
 package org.onetwo.common.utils.map;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
-import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.junit.Assert;
 import org.junit.Test;
 
