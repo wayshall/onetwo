@@ -41,11 +41,6 @@
 	</dependency>
 
 	<dependency>
-	  <groupId>org.springframework</groupId>
-	  <artifactId>spring-webmvc</artifactId>
-	</dependency>
-	
-	<dependency>
 		<groupId>com.thoughtworks.xstream</groupId>
 		<artifactId>xstream</artifactId>
 	</dependency>

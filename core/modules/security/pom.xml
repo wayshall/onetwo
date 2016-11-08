@@ -94,14 +94,17 @@
         </dependency>
 	    
 	    
-        <dependency>
-          <groupId>com.jayway.restassured</groupId>
-          <artifactId>rest-assured</artifactId>
-        </dependency>
-        <dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-        </dependency>
+        <!-- for test -->
+	    <dependency>
+	      <groupId>com.jayway.restassured</groupId>
+	      <artifactId>rest-assured</artifactId>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.security</groupId>
+	        <artifactId>spring-security-test</artifactId>
+	      <scope>test</scope>
+	    </dependency>
 	</dependencies>
 	
 	<repositories>

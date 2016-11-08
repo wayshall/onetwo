@@ -131,11 +131,6 @@
 	        <artifactId>spring-boot-devtools</artifactId>
 	    </dependency> -->
         
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-        </dependency>
-        
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
@@ -186,25 +181,17 @@
 	    </dependency>
 	    
 	    
+        <!-- test -->
         <dependency>
-            <groupId>org.onetwo</groupId>
-            <artifactId>onetwo-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- <dependency>
           <groupId>com.jayway.restassured</groupId>
           <artifactId>rest-assured</artifactId>
+          <scope>test</scope>
         </dependency>
-        <dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency> -->
+	    <dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-starter-test</artifactId>
+	      <scope>test</scope>
+	    </dependency>
 	</dependencies>
 	
 	<repositories>
