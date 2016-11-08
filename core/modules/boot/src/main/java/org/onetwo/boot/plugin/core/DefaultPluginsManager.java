@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.onetwo.boot.plugin.ftl.PluginNameParser;
+import org.onetwo.boot.plugin.mvc.annotation.WebPluginController;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import com.google.common.collect.Maps;
 
@@ -23,8 +25,9 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	private Map<String, WebPlugin> pluginMapping = Maps.newHashMap();
+
+	private final Map<String, WebPlugin> pluginMapping = Maps.newHashMap();
+	private final Map<Class<? extends WebPlugin>, WebPlugin> pluginClassMapping = Maps.newHashMap();
 	private final PluginNameParser pluginNameParser = new PluginNameParser();
 	
 	@Override
@@ -54,6 +57,7 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 			throw new BaseException("plugin["+pluginName+"] has exists. find new plugin: "+plugin+", exists plugin:" + pluginMapping.get(pluginName));
 		}
 		pluginMapping.put(pluginName, plugin);
+		pluginClassMapping.put(plugin.getClass(), plugin);
 		if(logger.isDebugEnabled()){
 			logger.debug("register plugin : " + pluginName);
 		}
@@ -62,10 +66,19 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	
 	@Override
 	public Optional<WebPlugin> findPluginByElementClass(Class<?> elementClass){
-		return this.pluginMapping.values().stream()
-							.filter(p->p.contains(elementClass))
-							.sorted((o1, o2)->o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length())
-							.findFirst();
+		if(WebPlugin.class.isAssignableFrom(elementClass)){
+			return Optional.ofNullable(pluginClassMapping.get(elementClass));
+		}
+		WebPluginController wpc = AnnotationUtils.findAnnotation(elementClass, WebPluginController.class);
+		if(wpc!=null){
+			Class<? extends WebPlugin> wpClass = wpc.value();
+			return Optional.ofNullable(pluginClassMapping.get(wpClass));
+		}
+		return this.pluginMapping.values()
+									.stream()
+									.filter(p->p.contains(elementClass))
+									.sorted((o1, o2)->o2.getRootClass().getPackage().getName().length()-o1.getRootClass().getPackage().getName().length())
+									.findFirst();
 	}
 
 	@Override

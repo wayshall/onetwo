@@ -7,10 +7,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.onetwo.boot.plugin.core.WebPlugin;
+import org.springframework.stereotype.Controller;
+
 @Target({TYPE, METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PluginContext {
+@Controller
+public @interface WebPluginController {
 	
-	public String contextPath();
+	Class<? extends WebPlugin> value();
+//	String contextPath();
 
 }

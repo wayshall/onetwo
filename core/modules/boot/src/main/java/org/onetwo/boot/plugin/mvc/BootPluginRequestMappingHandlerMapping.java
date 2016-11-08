@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.boot.plugin.core.PluginManager;
-import org.onetwo.boot.plugin.mvc.annotation.PluginContext;
+import org.onetwo.boot.plugin.core.WebPlugin;
+import org.onetwo.boot.plugin.mvc.annotation.WebPluginContext;
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -44,7 +44,7 @@ public class BootPluginRequestMappingHandlerMapping extends RequestMappingHandle
 	}
 	
 	private String getPluginContextPath(Method method, Class<?> handlerType){
-		PluginContext pluginContext = AnnotationUtils.findAnnotationWithStopClass(handlerType, method, PluginContext.class);
+		WebPluginContext pluginContext = AnnotationUtils.findAnnotationWithStopClass(handlerType, method, WebPluginContext.class);
 		if(pluginContext!=null){
 			return pluginContext.contextPath();
 		}

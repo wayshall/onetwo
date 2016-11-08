@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Import;
 public class PluginContextConfig {
 	
 	public PluginContextConfig(){
-		System.out.println("init PluginContextConfig");
 	}
 	
 	@Bean
