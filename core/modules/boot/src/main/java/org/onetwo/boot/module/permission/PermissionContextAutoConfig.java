@@ -1,7 +1,7 @@
 package org.onetwo.boot.module.permission;
 
 import org.onetwo.boot.module.security.BootSecurityConfig;
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
@@ -18,13 +18,13 @@ import org.springframework.context.annotation.Configuration;
 /***
  * 菜单权限管理
  * 需要：
- * 实现 {@linkplain AbstractPermissionConfig} 接口
+ * 实现 {@linkplain PermissionConfigAdapter} 接口
  * 实现 {@linkplain PermissionManager} 接口
  * @author way
  *
  */
 @Configuration
-@ConditionalOnBean({AbstractPermissionConfig.class})
+@ConditionalOnBean({PermissionConfigAdapter.class})
 public class PermissionContextAutoConfig {
 	
 	@Autowired
@@ -35,7 +35,7 @@ public class PermissionContextAutoConfig {
 	
 	@Bean
 	@Autowired
-	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(AbstractPermissionConfig<T> permissionConfig){
+	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfigAdapter<T> permissionConfig){
 		DefaultMenuInfoParser<T> parser = new DefaultMenuInfoParser<T>(permissionConfig);
 		return parser;
 	}

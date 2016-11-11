@@ -2,12 +2,12 @@ package org.onetwo.ext.permission.parser;
 
 import java.util.Map;
 
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 
 public interface MenuInfoParser<P extends DefaultIPermission<P>> {
 	
-	public AbstractPermissionConfig<P> getMenuInfoable();
+	public PermissionConfigAdapter<P> getMenuInfoable();
 	
 	public abstract P parseTree();
 	public abstract String getCode(Class<?> permClass);

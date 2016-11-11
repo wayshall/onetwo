@@ -1,11 +1,11 @@
 package org.onetwo.webapp.manager.utils;
 
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MenuConfig extends AbstractPermissionConfig<AdminPermission> {
+public class MenuConfig extends PermissionConfigAdapter<AdminPermission> {
 	
 	public MenuConfig(){
 	}

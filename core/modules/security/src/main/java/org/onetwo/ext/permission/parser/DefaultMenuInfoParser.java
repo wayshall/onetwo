@@ -16,7 +16,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.CasualMap;
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.api.DataFrom;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
@@ -43,14 +43,14 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
 //	@Resource
-	private AbstractPermissionConfig<P> permissionConfig;
+	private PermissionConfigAdapter<P> permissionConfig;
 //	private int sortStartIndex = 1000;
 	
 	private boolean parsed = false;
 	
 	
 	
-	public DefaultMenuInfoParser(AbstractPermissionConfig<P> permissionConfig) {
+	public DefaultMenuInfoParser(PermissionConfigAdapter<P> permissionConfig) {
 	    super();
 	    this.permissionMap = new LinkedHashMap<>(INIT_SIZE);
 	    this.permissionMapByClass = new LinkedHashMap<>(INIT_SIZE);
@@ -338,7 +338,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		this.rootMenu = rootMenu;
 	}
 
-	public AbstractPermissionConfig<P> getMenuInfoable() {
+	public PermissionConfigAdapter<P> getMenuInfoable() {
 		return permissionConfig;
 	}
 	

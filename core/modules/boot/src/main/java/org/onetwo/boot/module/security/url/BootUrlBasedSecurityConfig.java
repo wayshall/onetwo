@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
 @Import(BootSecurityCommonContextConfig.class)
@@ -31,7 +30,7 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
 	@Autowired
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return super.defaultSecurityConfigurer(accessDecisionManager);

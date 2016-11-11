@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 //@EnableGlobalMethodSecurity(securedEnabled=true)
 @Configuration
@@ -37,7 +36,7 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
 		return super.defaultSecurityConfigurer();
 	}

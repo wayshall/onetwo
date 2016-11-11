@@ -4,13 +4,13 @@ package org.onetwo.boot.permission.parser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.boot.permission.parser.AdminModule.AppRole;
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 
 public class DefaultMenuInfoParserTest {
 	
-	public static class MenuTest extends AbstractPermissionConfig<AdminPermission> {
+	public static class MenuTest extends PermissionConfigAdapter<AdminPermission> {
 
 		@Override
         public Class<?> getRootMenuClass() {

@@ -25,11 +25,12 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType,
 			ServerHttpRequest request, ServerHttpResponse response) {
-		if(Result.class.isInstance(body)){
+		/*if(Result.class.isInstance(body)){
 			return body;
 		}
 		SimpleDataResult<Object> dataResult = SimpleDataResult.success("", body);
-		return dataResult;
+		return dataResult;*/
+		return body;
 	}
 	
 	

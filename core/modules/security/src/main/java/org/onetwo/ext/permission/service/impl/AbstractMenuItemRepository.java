@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.permission.AbstractPermissionConfig;
+import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionManager;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.service.MenuItemRepository;
@@ -18,7 +18,7 @@ abstract public class AbstractMenuItemRepository<T extends TreeModel<T>, P exten
 	private PermissionManager<P> permissionManager;
 
 	@Resource
-	private AbstractPermissionConfig<P> permissionConfig;
+	private PermissionConfigAdapter<P> permissionConfig;
 	
 	@Override
     public List<T> findAllMenus() {
