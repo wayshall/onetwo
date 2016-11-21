@@ -34,6 +34,7 @@ abstract public class XmlUtils {
 			xstream.useAttributeFor(Boolean.class);
 			xstream.useAttributeFor(boolean.class);
 		}
+		xstream.ignoreUnknownElements();
 		
 		return xstream;
 	}

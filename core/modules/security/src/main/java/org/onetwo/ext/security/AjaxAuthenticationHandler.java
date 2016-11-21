@@ -23,6 +23,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, AuthenticationSuccessHandler, InitializingBean {
 	
@@ -39,6 +42,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	private String defaultTargetUrl;
 	private boolean alwaysUse = false;
 //	private MessageSourceAccessor exceptionMessageAccessor;
+	private RequestCache requestCache = new HttpSessionRequestCache();
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -66,21 +70,26 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	    }else{
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler();
 	    }
+		SavedRequestAwareAuthenticationSuccessHandler srHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 	    if(defaultTargetUrl!=null){
-		    SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-		    successHandler.setDefaultTargetUrl(defaultTargetUrl);
-		    successHandler.setAlwaysUseDefaultTargetUrl(alwaysUse);
-	        this.successHandler = successHandler;
-	    }else{
-	    	this.successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+	    	srHandler.setDefaultTargetUrl(defaultTargetUrl);
+	    	srHandler.setAlwaysUseDefaultTargetUrl(alwaysUse);
 	    }
+	    srHandler.setRequestCache(requestCache);
+        this.successHandler = srHandler;
 	}
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
+			SavedRequest saveRequest = this.requestCache.getRequest(request, response);
+			String redirectUrl = this.defaultTargetUrl;
+			if(saveRequest!=null){
+				redirectUrl = saveRequest.getRedirectUrl();
+			}
 			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
-											.data(authentication.getPrincipal())
+//											.data(authentication.getPrincipal())
+											.data(redirectUrl)
 											.buildResult();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);

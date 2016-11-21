@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,6 +37,8 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.support.AggregationPath;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -199,6 +202,12 @@ public class SimpleSearchQueryBuilder {
 	public SimpleSearchQueryBuilder orderByDesc(String...fields){
 		return order(Direction.DESC, fields);
 	}
+	public GeoDistanceSortExtBuilder geoDistanceSort(String fieldName){
+		GeoDistanceSortExtBuilder geosort = new GeoDistanceSortExtBuilder(fieldName);
+		withSortBuilder(geosort);
+		return geosort;
+	}
+	
 	public SimpleSearchQueryBuilder order(Direction direct, String...fields){
 		if(ArrayUtils.isEmpty(fields))
 			return this;
@@ -211,6 +220,13 @@ public class SimpleSearchQueryBuilder {
 		if(sort==null)
 			return this;
 		this.sorts.add(sort);
+		return this;
+	}
+	
+	public SimpleSearchQueryBuilder withSortBuilder(SortBuilder sortBuilder){
+		if(sortBuilder==null)
+			return this;
+		this.searchQueryBuilder.withSort(sortBuilder);
 		return this;
 	}
 
@@ -534,6 +550,14 @@ public class SimpleSearchQueryBuilder {
 			return parentBuilder;
 		}
 	}
+	class GeoDistanceSortExtBuilder extends GeoDistanceSortBuilder {
+		GeoDistanceSortExtBuilder(String fieldName){
+			super(fieldName);
+		}
+		public SimpleSearchQueryBuilder end(){
+			return SimpleSearchQueryBuilder.this;
+		}
+	}
 	
 	public class SimpleNestedQueryBuilder<PB> extends ExtBaseQueryBuilder<PB> {
 		final private SimpleBooleanQueryBuilder<SimpleNestedQueryBuilder<PB>> boolQuery = new SimpleBooleanQueryBuilder<>(this);
@@ -554,12 +578,24 @@ public class SimpleSearchQueryBuilder {
 	public class SimpleBooleanQueryBuilder<PB> extends ExtBaseQueryBuilder<PB> {
 		private BoolQueryBuilder boolQuery = boolQuery();
 		private List<SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>>> nestedQuerys = Lists.newArrayList();
+
+		private Supplier<Boolean> conditionSupplier;
 		
 		public SimpleBooleanQueryBuilder(PB parentBuilder) {
 			super(parentBuilder);
 		}
-		
-		public boolean hasClauses() {
+
+		public SimpleBooleanQueryBuilder<PB> withCondition(Supplier<Boolean> condition) {
+			this.conditionSupplier = condition;
+			return this;
+		}
+
+		public SimpleBooleanQueryBuilder<PB> endCondition() {
+			this.conditionSupplier = null;
+			return this;
+		}
+
+		public boolean hasClauses() {	
 			if(boolQuery.hasClauses()){
 				return true;
 			}
@@ -570,6 +606,7 @@ public class SimpleSearchQueryBuilder {
 			this.nestedQuerys.stream()
 								.filter(nested->nested.boolQuery.hasClauses())
 								.forEach(nested->{
+									nested.bool().build();
 									must(QueryBuilders.nestedQuery(nested.getPath(), nested.bool().boolQuery));
 								});
 		}
@@ -644,9 +681,11 @@ public class SimpleSearchQueryBuilder {
 		public SimpleBooleanQueryBuilder<PB> missing(String field){
 			return mustNotExists(field);
 		}
+		
 		public SimpleBooleanQueryBuilder<PB> mustNotExists(String field){
 			Assert.hasText(field);
-			boolQuery.mustNot(QueryBuilders.existsQuery(field));
+//			boolQuery.mustNot(QueryBuilders.existsQuery(field));
+			mustNot(QueryBuilders.existsQuery(field));
 			return this;
 		}
 		/***
@@ -656,14 +695,16 @@ public class SimpleSearchQueryBuilder {
 		 */
 		public SimpleBooleanQueryBuilder<PB> mustExists(String field){
 			Assert.hasText(field);
-			boolQuery.must(QueryBuilders.existsQuery(field));
+			must(QueryBuilders.existsQuery(field));
 			return this;
 		}
 		
 		public SimpleBooleanQueryBuilder<PB> shouldTerms(String field, Collection<?> values){
 			Assert.hasText(field);
-			if(values!=null && !values.isEmpty())
-				boolQuery.should(QueryBuilders.termsQuery(field, values));
+			if(values!=null && !values.isEmpty()){
+				should(QueryBuilders.termsQuery(field, values));
+//				boolQuery.should(QueryBuilders.termsQuery(field, values));
+			}
 			return this;
 		}
 		
@@ -671,26 +712,42 @@ public class SimpleSearchQueryBuilder {
 			if(ArrayUtils.isEmpty(fields))
 				return this;
 //			Stream.of(fields).forEach(f->mustTerm(f, value));
-			boolQuery.must(QueryBuilders.multiMatchQuery(value, fields));
+//			boolQuery.must(QueryBuilders.multiMatchQuery(value, fields));
+			must(QueryBuilders.multiMatchQuery(value, fields));
 			return this;
 		}
 		
 		public RangeQueryBuilder rangeBuilder(String name){
 			RangeQueryBuilder range = new RangeQueryBuilder(name);
-			boolQuery.must(range);
+			must(range);
 			return range;
 		}
 		
 		public <T extends QueryBuilder> T must(T queryBuilder){
 			Assert.notNull(queryBuilder);
-			boolQuery.must(queryBuilder);
+//			boolQuery.must(queryBuilder);
+			addToBoolQuery(()->boolQuery.must(queryBuilder));
+			return queryBuilder;
+		}
+		
+		public <T extends QueryBuilder> T mustNot(T queryBuilder){
+			Assert.notNull(queryBuilder);
+//			boolQuery.mustNot(queryBuilder);
+			addToBoolQuery(()->boolQuery.mustNot(queryBuilder));
 			return queryBuilder;
 		}
 		
 		public <T extends QueryBuilder> T should(T queryBuilder){
 			Assert.notNull(queryBuilder);
-			boolQuery.should(queryBuilder);
+//			boolQuery.should(queryBuilder);
+			addToBoolQuery(()->boolQuery.should(queryBuilder));
 			return queryBuilder;
+		}
+		
+		private <T> void addToBoolQuery(Runnable runnable){
+			if(conditionSupplier==null || conditionSupplier.get().booleanValue()){
+				runnable.run();
+			}
 		}
 
 	}
@@ -729,6 +786,17 @@ public class SimpleSearchQueryBuilder {
 			}
 			terms.order(Terms.Order.count(false));//COUNT_DESC
 			this.aggsBuilder = terms;
+		}
+		
+		private TermsBuilder asTermsBuilder(){
+			return (TermsBuilder) this.aggsBuilder;
+		}
+		
+		public SimpleAggregationBuilder<PB> minDocCount(Long minDocCount){
+			if(minDocCount!=null){
+				this.asTermsBuilder().minDocCount(minDocCount);
+			}
+			return this;
 		}
 
 		/*public SimpleAggregationBuilder<PB> aggs(String name, String field) {

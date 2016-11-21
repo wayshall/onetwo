@@ -119,7 +119,7 @@ public class JavaScriptInvoker {
 				return res;
 			} catch (Exception e) {
 				logger.error("eval javascript error: {}, funName: {}", e.getMessage(), funName);
-				processError(e, ()-> new RuntimeException("eval javascript function["+funName+"] error.", e));
+				processError(e, ()-> new RuntimeException("eval javascript function["+funName+"] error: " + e.getMessage(), e));
 			}
 			return null;
 		}
@@ -130,7 +130,7 @@ public class JavaScriptInvoker {
 				return res;
 			} catch (Exception e) {
 				logger.error("eval javascript error: {}, method: {}", e.getMessage(), method);
-				processError(e, ()-> new RuntimeException("eval javascript object["+thisObject+"] method["+method+"] error.", e));
+				processError(e, ()-> new RuntimeException("eval javascript object["+thisObject+"] method["+method+"] error: " + e.getMessage(), e));
 			}
 			return null;
 		}

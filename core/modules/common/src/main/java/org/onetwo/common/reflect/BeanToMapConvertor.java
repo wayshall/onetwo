@@ -16,12 +16,25 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public class BeanToMapConvertor {
+	
+	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+
+		@Override
+		public Boolean apply(PropertyDescriptor prop, Object val) {
+			String clsName = prop.getPropertyType().getName();
+			if(clsName.startsWith("groovy.lang.MetaClass") ){
+				return false;
+			}
+			return val!=null;
+		}
+		
+	}
 
 	private String listOpener = "[";
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
 	private String prefix = "";
-	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = (prop, val)->val!=null;
+	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
 	private Function<Object, Object> valueConvertor;
 	private Function<Object, Boolean> flatableObject;
 	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
@@ -80,6 +93,7 @@ public class BeanToMapConvertor {
 		if(value==null)
 			return true;
 		return valueTypes.contains(value.getClass()) || (flatableObject!=null && !flatableObject.apply(value));
+//		return valueTypes.contains(value.getClass());
 	}
 
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
@@ -115,6 +129,10 @@ public class BeanToMapConvertor {
 				index++;
 			}
 		}else{
+			/*if(flatableObject==null || !flatableObject.apply(obj)){
+				valuePutter.put(prefixName, obj);
+				return ;
+			}*/
 			ReflectUtils.listProperties(obj.getClass(), prop-> {
 				Object val = ReflectUtils.getProperty(obj, prop);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){

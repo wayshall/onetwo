@@ -20,7 +20,6 @@ final public class ClassUtils {
 	private ClassUtils(){
 	}
 
-
 	public static ClassLoader getDefaultClassLoader(){
 		ClassLoader cld = null;
 		try {

@@ -45,7 +45,8 @@
 		                		$.messager.alert('登录出错！',data.message,'warning');
 		                	}else{
                                 $.messager.alert('登录成功！',data.message,'info');
-		                		location.href="${securityConfig.afterLoginUrl}"
+                                var url = $(document.createElement('div')).html(data.data).text();
+		                		location.href = url;
 		                	}
 		                }
 		            });

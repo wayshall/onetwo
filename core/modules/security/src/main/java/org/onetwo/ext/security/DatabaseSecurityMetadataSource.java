@@ -152,6 +152,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	public void buildSecurityMetadataSource(){
 		Assert.notNull(filterSecurityInterceptor);
 		this.buildRequestMap();
+		DefaultFilterInvocationSecurityMetadataSource oldFism = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
 		//这个内置实现不支持一个url映射到多个表达式
 //		ExpressionBasedFilterInvocationSecurityMetadataSource fism = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
 		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
@@ -181,9 +182,11 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	
 	public static class ResourceMapping extends MappingSqlQuery<AuthorityResource> {
 		private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
+		private boolean hasAuthorityName;
 
 		public ResourceMapping(DataSource ds, String sql) {
 	        super(ds, sql);
+	        hasAuthorityName = sql.contains("authority_name");
         }
 
 		@Override
@@ -194,7 +197,9 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 			authoricty.setUrlResourceInfo(urlResourceInfo);
 			authoricty.setAuthority(rs.getString("authority"));
 			authoricty.setSort(rs.getInt("sort"));
-			authoricty.setAuthorityName(rs.getString("authority_name"));
+			if(hasAuthorityName){
+				authoricty.setAuthorityName(rs.getString("authority_name"));
+			}
 	        return authoricty;
         }
 		
