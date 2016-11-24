@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -470,6 +471,14 @@ public class Java78Test {
 			closeholder = autoclose;
 		}
 		Assert.assertTrue(closeholder.closed);
+	}
+	
+	@Test
+	public void testThreadLocalRandom(){
+		LangOps.repeatRun(100, ()->{
+			int val = ThreadLocalRandom.current().nextInt(0, 100);
+			System.out.println("val:"+val);
+		});
 	}
 
 	class CloseableObject implements Closeable{

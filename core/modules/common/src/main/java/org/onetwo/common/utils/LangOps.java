@@ -93,6 +93,16 @@ final public class LangOps {
 		.orElse(BigDecimal.valueOf(0.0));
 	}
 	
+	public static <T, K, V> Map<K, List<V>> groupBy(List<T> datas, Function<? super T, ? extends K> keyer, Function<? super T, ? extends V> valuer){
+		Map<K, List<V>> groups = datas.stream()
+										.collect(Collectors.groupingBy(
+												keyer, 
+												Collectors.mapping(valuer, Collectors.toList())
+											)
+										);
+		return groups;
+	}
+	
 	private LangOps(){}
 
 }

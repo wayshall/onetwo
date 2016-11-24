@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.LocalTime;
+import org.joda.time.chrono.ISOChronology;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.DateRange;
@@ -16,9 +19,25 @@ import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.date.DateUtil.DateType;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.log.MyLoggerFactory;
 
 public class DateUtilTest {
+	
+	@Test
+	public void testSqlTime(){
+		Date now = new Date();
+		Time time = new Time(now.getTime());
+    	Time nowTime = new Time(now.getHours(), now.getMinutes(), now.getSeconds());
+		String str = DateUtil.formatDateTime(time);
+		System.out.println("time:"+str);
+		System.out.println("time:"+now.getTime());
+		System.out.println("time:"+time.getTime());
+		System.out.println("nowTime:"+nowTime.getTime());
+		
+		LocalTime jodaTime = LocalTime.fromDateFields(now);
+		System.out.println("jodaTime:"+jodaTime.toString());
+		System.out.println("jodaTime:"+now.getTime());
+		System.out.println("jodaTime:"+jodaTime.getMillisOfDay());
+	}
 	
 	@Test
 	public void testSimple(){
