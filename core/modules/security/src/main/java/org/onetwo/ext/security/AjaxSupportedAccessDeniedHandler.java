@@ -24,6 +24,11 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 import com.google.common.base.Charsets;
 
+/****
+ * 访问拒绝处理器，没有权限时调用此处理器
+ * @author way
+ *
+ */
 public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, InitializingBean {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

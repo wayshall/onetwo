@@ -27,6 +27,11 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
+/****
+ * 验证成功或失败后的处理器
+ * @author way
+ *
+ */
 public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, AuthenticationSuccessHandler, InitializingBean {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -75,6 +80,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 	    	srHandler.setDefaultTargetUrl(defaultTargetUrl);
 	    	srHandler.setAlwaysUseDefaultTargetUrl(alwaysUse);
 	    }
+	    //set HttpSessionRequestCache to save pre request url
 	    srHandler.setRequestCache(requestCache);
         this.successHandler = srHandler;
 	}

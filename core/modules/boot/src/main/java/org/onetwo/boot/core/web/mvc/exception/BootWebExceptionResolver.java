@@ -24,6 +24,7 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.exception.SystemErrorCode.JFishErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -84,9 +85,6 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 //		defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	}
 	
-	private boolean isAjaxRequest(HttpServletRequest request){
-		return BootWebUtils.isAjaxRequest(request);
-	}
 	
 	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 	}
@@ -101,7 +99,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		
-		if(isAjaxRequest(request)){
+		if(BootWebUtils.isAjaxRequest(request) || BootWebUtils.isAjaxHandlerMethod(handlerMethod)){
 			SimpleDataResult<?> result = WebResultCreator.creator()
 							.error(errorMessage.getMesage())
 							.buildResult();
@@ -187,13 +185,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		}*/else if(ex instanceof ConstraintViolationException){
 			ConstraintViolationException cex = (ConstraintViolationException) ex;
 			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
-			int i = 0;
-			for(ConstraintViolation<?> cv : constrants){
-				if(i!=0)
-					errorMsg+=", ";
-				errorMsg += cv.getMessage();
-				i++;
-			}
+			errorMsg = ValidatorUtils.toMessages(constrants);
 			findMsgByCode = false;
 		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();

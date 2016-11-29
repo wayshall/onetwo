@@ -18,6 +18,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+/****
+ * 验证入口点
+ * 当然filter检测到没有登录时，调用commence方法
+ * @author way
+ *
+ */
 public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntryPoint, InitializingBean {
 
 	private AuthenticationEntryPoint defaultAuthenticationEntryPoint;

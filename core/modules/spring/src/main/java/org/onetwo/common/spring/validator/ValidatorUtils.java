@@ -75,11 +75,11 @@ public final class ValidatorUtils {
 		return StringUtils.join(asStringList(br, appendFieldname), MESSAGE_SEPERATOR);
 	}
 	
-	public static <T> String toMessages(Set<ConstraintViolation<T>> constrains){
+	public static String toMessages(Set<ConstraintViolation<?>> constrains){
 		List<String> msgs = toMessageList(constrains);
 		return StringUtils.join(msgs, MESSAGE_SEPERATOR);
 	}
-	public static <T> List<String> toMessageList(Set<ConstraintViolation<T>> constrains){
+	public static List<String> toMessageList(Set<ConstraintViolation<?>> constrains){
 		if(constrains==null || constrains.isEmpty())
 			return ImmutableList.of();
 		
@@ -90,7 +90,7 @@ public final class ValidatorUtils {
 	}
 	
 
-	public static <T> void throwIfValidateFailed(Set<ConstraintViolation<T>> constrains){
+	public static void throwIfValidateFailed(Set<ConstraintViolation<?>> constrains){
 		if(constrains==null || constrains.isEmpty())
 			return;
 		String msg = toMessages(constrains);

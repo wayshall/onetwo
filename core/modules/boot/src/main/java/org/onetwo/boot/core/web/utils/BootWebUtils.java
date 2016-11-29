@@ -34,6 +34,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
@@ -354,6 +355,14 @@ public final class BootWebUtils {
 	
 	public static boolean isAjaxRequest(HttpServletRequest request){
 		return RequestUtils.isAjaxRequest(request);
+	}
+	
+	public static boolean isAjaxHandlerMethod(Object handlerMethod){
+		HandlerMethod hm = getHandlerMethod(handlerMethod);
+		if(hm==null){
+			return false;
+		}
+		return hm.hasMethodAnnotation(ResponseBody.class);
 	}
 	
 	public static ObjectMapper createObjectMapper(ApplicationContext applicationContext){
