@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -32,7 +33,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
  * @author way
  *
  */
-public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, AuthenticationSuccessHandler, InitializingBean {
+public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHandler implements AuthenticationFailureHandler, AuthenticationSuccessHandler, InitializingBean {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -92,6 +93,7 @@ public class AjaxAuthenticationHandler implements AuthenticationFailureHandler, 
 			String redirectUrl = this.defaultTargetUrl;
 			if(saveRequest!=null){
 				redirectUrl = saveRequest.getRedirectUrl();
+				clearAuthenticationAttributes(request);
 			}
 			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
 //											.data(authentication.getPrincipal())

@@ -43,8 +43,8 @@ public class TemplateImageTest {
 		System.out.println("save to: " + file);
 		
 		ti.createDrawer().set("now", DateUtil.format("h:mm a", new Date()))
-						.set("userName", "古总")
-						.set("first", "加博汇的剩货，能免费分给员工吗？")
+						.set("userName", "x总")
+						.set("first", "xxx的剩货，能免费分给员工吗？")
 						.set("productImg", "G:/tmp/dg.jpg")
 						.set("avatar", "G:/tmp/zg.jpg")
 						.drawTo("G:/tmp/test2.jpg");
