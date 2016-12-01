@@ -15,19 +15,21 @@ public class TemplateImageTest {
 	@Test
 	public void testImg(){
 		String basePath = FileUtils.getResourcePath("org/onetwo/common/img");
-		TemplateImage ti = TemplateImage.create(basePath+"/blank.jpg");
-		//+20
-		ti.addTextDefined("userName", Horizontal.CENTER, 98, Color.WHITE, new Font("微软雅黑", Font.PLAIN, 36));
-		ti.addTextDefined("now", 330, 29, Color.WHITE, new Font("微软雅黑", Font.PLAIN, 26));
-		ti.addTextDefined("first", 177, 210, Color.BLACK, new Font("微软雅黑", Font.PLAIN, 30));
-		ti.addTextDefined("productName", 177, 656, Color.BLACK, new Font("微软雅黑", Font.PLAIN, 30));
-		ti.addTextDefined("unit", 177, 762, Color.RED, new Font("微软雅黑", Font.PLAIN, 20));
-		ti.addTextDefined("productPrice", 194, 762, Color.RED, new Font("微软雅黑", Font.BOLD, 30));
-		ti.addImageDefined("productImg", 177, 349, 481, 271);
-		ti.addImageDefined("avatar", 31, 163, 77, 76);
-		ti.addImageDefined("avatar", 31, 324, 77, 76);
-		ti.addImageDefined("avatar", 31, 829, 77, 76);
-		ti.addImageDefined("qrcode", 207, 918, 181, 179);
+		TemplateImage ti = TemplateImageBuilder.newBuilder(basePath+"/blank.jpg")
+										//+20
+										.addTextDefined("userName", Horizontal.CENTER, 98, Color.WHITE, new Font("微软雅黑", Font.PLAIN, 36))
+										.addTextDefined("now", 330, 29, Color.WHITE, new Font("微软雅黑", Font.PLAIN, 26))
+										.addTextDefined("first", 177, 210, Color.BLACK, new Font("微软雅黑", Font.PLAIN, 30))
+										.addTextDefined("productName", 177, 656, Color.BLACK, new Font("微软雅黑", Font.PLAIN, 30))
+										.addTextDefined("unit", 177, 762, Color.RED, new Font("微软雅黑", Font.PLAIN, 20))
+										.addTextDefined("productPrice", 194, 762, Color.RED, new Font("微软雅黑", Font.BOLD, 30))
+										.addImageDefined("productImg", 177, 349, 481, 271)
+										.addImageDefined("avatar", 31, 163, 77, 76)
+										.addImageDefined("avatar", 31, 324, 77, 76)
+										.addImageDefined("avatar", 31, 829, 77, 76)
+										.addImageDefined("qrcode", 207, 918, 181, 179)
+										.build();
+		
 		File file = ti.drawTo(basePath+"/test1.jpg", 
 				"now", DateUtil.format("h:mm a", new Date()),
 				"userName", "12号12号12号",
@@ -40,12 +42,12 @@ public class TemplateImageTest {
 				"qrcode", basePath+"/dg.jpg");
 		System.out.println("save to: " + file);
 		
-		ti.drawTo("G:/tmp/test2.jpg", 
-				"now", DateUtil.format("h:mm a", new Date()),
-				"userName", "深圳市市长",
-				"first", "我想申请今年的租房补贴！",
-				"productImg", "G:/tmp/dg.jpg",
-				"avatar", "G:/tmp/icon.jpg");
+		ti.createDrawer().set("now", DateUtil.format("h:mm a", new Date()))
+						.set("userName", "古总")
+						.set("first", "加博汇的剩货，能免费分给员工吗？")
+						.set("productImg", "G:/tmp/dg.jpg")
+						.set("avatar", "G:/tmp/zg.jpg")
+						.drawTo("G:/tmp/test2.jpg");
 		
 	}
 

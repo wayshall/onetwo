@@ -27,36 +27,7 @@ import com.google.common.collect.Maps;
 
 public class TemplateImage {
 	
-	public static TemplateImage create(String templatePath){
-		TemplateImage templateImage = new TemplateImage(templatePath);
-		return templateImage;
-	}
-	
-	final private String imagePath;
-	final private HashSetValuedHashMap<String, DefinedData<?>> defineTables = new HashSetValuedHashMap<>();
-	final private Map<Class<? extends DefinedData<?>>, DefinedDrawHandler> definedDrawHandlers = Maps.newHashMap();
-	final private String format;
-	private boolean ignoreDrawingIfNoData = true;
-
-	public TemplateImage(String imagePath) {
-		super();
-		this.imagePath = imagePath;
-		this.format = FileUtils.getExtendName(imagePath);
-		this.registerDefaultDrawHandlers();
-	}
-	
-	final private void registerDefaultDrawHandlers(){
-		registerDrawHandler(ImageDefinedData.class, new ImageDrawing());
-		registerDrawHandler(TextDefinedData.class, new TextDrawing());
-	}
-
-	public TemplateImage ignoreDrawingIfNoData(boolean ignoreDrawingIfNoData) {
-		this.ignoreDrawingIfNoData = ignoreDrawingIfNoData;
-		return this;
-	}
-
-	public File drawTo(String savePath, Object...params){
-		byte[] bytes = draw(params);
+	static File toFile(String savePath, byte[] bytes){
 		File file = new File(savePath);
 		FileUtils.writeByteArrayToFile(file, bytes);
 		/*FileOutputStream output;
@@ -69,8 +40,66 @@ public class TemplateImage {
 		return file;
 	}
 	
+	public static class TemplateDrawer {
+		final private Map<String, Object> paramMap = Maps.newHashMap();
+		final private TemplateImage templateImage;
+		public TemplateDrawer(TemplateImage templateImage) {
+			super();
+			this.templateImage = templateImage;
+		}
+		public TemplateDrawer set(String name, Object value){
+			paramMap.put(name, value);
+			return this;
+		}
+		public TemplateDrawer set(String name, Supplier<?> value){
+			paramMap.put(name, value);
+			return this;
+		}
+		public byte[] draw(){
+			return this.templateImage.draw(paramMap);
+		}
+		public File drawTo(String savePath){
+			byte[] bytes = templateImage.drawWithMap(paramMap);
+			return toFile(savePath, bytes);
+		}
+	}
+	
+	final private String imagePath;
+	final private HashSetValuedHashMap<String, DefinedData<?>> defineTables;
+	final private Map<Class<? extends DefinedData<?>>, DefinedDrawHandler> definedDrawHandlers;
+	final private String format;
+	private boolean ignoreDrawingIfNoData = true;
+
+	public TemplateImage(TemplateImageBuilder builder) {
+		super();
+		this.imagePath = builder.getImagePath();
+		this.format = FileUtils.getExtendName(imagePath);
+		this.definedDrawHandlers = builder.getDefinedDrawHandlers();
+		this.defineTables = builder.getDefineTables();
+	}
+
+	public DefinedDrawHandler getDefinedDrawing(Class<? extends DefinedData<?>> dataClass){
+		DefinedDrawHandler drawing = this.definedDrawHandlers.get(dataClass);
+		if(drawing==null){
+			throw new NoSuchElementException("no drawing found for: " + dataClass);
+		}
+		return drawing;
+	}
+	
+	public TemplateDrawer createDrawer(){
+		return new TemplateDrawer(this);
+	}
+
+	public File drawTo(String savePath, Object...params){
+		byte[] bytes = draw(params);
+		return toFile(savePath, bytes);
+	}
+
 	public byte[] draw(Object...params){
 		Map<String, Object> paramMap = CUtils.asMap(params);
+		return drawWithMap(paramMap);
+	}
+	public byte[] drawWithMap(Map<String, Object> paramMap){
 		BufferedImage imageBuf = ImageUtils.readBufferedImageFromPath(imagePath);
 		Graphics graphic = imageBuf.getGraphics();
 		try {
@@ -109,36 +138,6 @@ public class TemplateImage {
 		});
 	}
 	
-	public DefinedDrawHandler getDefinedDrawing(Class<? extends DefinedData<?>> dataClass){
-		DefinedDrawHandler drawing = this.definedDrawHandlers.get(dataClass);
-		if(drawing==null){
-			throw new NoSuchElementException("no drawing found for: " + dataClass);
-		}
-		return drawing;
-	}
-	
-	final public TemplateImage registerDrawHandler(Class<? extends DefinedData<?>> dataClass, DefinedDrawHandler drawing){
-		this.definedDrawHandlers.put(dataClass, drawing);
-		return this;
-	}
-	
-	public TemplateImage addImageDefined(String name, int x, int y, int width, int height){
-		ImageDefinedData img = new ImageDefinedData(x, y, width, height);
-		return addDefined(name, img);
-	}
-	public TemplateImage addTextDefined(String name, int x, int y, Color color, Font font){
-		TextDefinedData text = new TextDefinedData(x, y, color, font);
-		return addDefined(name, text);
-	}
-	public TemplateImage addTextDefined(String name, Horizontal horizontal, int y, Color color, Font font){
-		TextDefinedData text = new TextDefinedData(horizontal, y, color, font);
-		return addDefined(name, text);
-	}
-	
-	public TemplateImage addDefined(String name, DefinedData<?> defined){
-		defineTables.put(name, defined);
-		return this;
-	}
 	
 	public class GraphicsContext {
 		final private BufferedImage bufferedImage;
