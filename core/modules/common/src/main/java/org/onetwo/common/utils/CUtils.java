@@ -1,6 +1,5 @@
 package org.onetwo.common.utils;
 
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
@@ -22,7 +21,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.onetwo.common.reflect.Ignore;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.IndexableReturnableClosure;
 import org.onetwo.common.utils.func.ReturnableClosure;
@@ -117,50 +115,23 @@ final public class CUtils {
 
 	public static <K, V> Map<K, V> asMap(Object... params) {
 		if(LangUtils.isEmpty(params))
-			return Collections.EMPTY_MAP;
-		Map map = arrayIntoMap(CUtils.newHashMap(-1), params);
+			return Collections.emptyMap();
+		Map<K, V> map = arrayIntoMap(CUtils.newHashMap(-1), params);
 		return map;
-	}
-
-
-	public static Map<Object, Object> fromProperties(Object obj) {
-		return fromProperties(obj, false);
 	}
 	
-	public static Map<Object, Object> fromProperties(Object obj, boolean craeteIfNull) {
-		if(obj==null)
-			return craeteIfNull?LangUtils.newHashMap():null;
-		if(Map.class.isInstance(obj))
-			return (Map) obj;
-		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-		Map<Object, Object> map = LangUtils.newHashMap();
-		for(PropertyDescriptor prop : props){
-			if(prop==null)
-				continue;
-			Object value = ReflectUtils.getProperty(obj, prop);
-			if(value!=null)
-				map.put(prop.getDisplayName(), value);
-		}
+	public static <T> Map<T, T> typeMap(T... params) {
+		if(LangUtils.isEmpty(params))
+			return Collections.emptyMap();
+		Map<T, T> map = arrayIntoMap(CUtils.newHashMap(-1), params);
 		return map;
 	}
 
-	public static Map<Object, Object> from(Object obj, boolean craeteIfNull) {
-		if(obj==null)
-			return craeteIfNull?newMap():null;
 
-		if(Map.class.isInstance(obj))
-			return (Map) obj;
-		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-		Map<Object, Object> map = LangUtils.newHashMap();
-		for(PropertyDescriptor prop : props){
-			if(prop==null)
-				continue;
-			Object value = ReflectUtils.getFieldValue(obj, prop.getDisplayName(), false);
-			if(value!=null)
-				map.put(prop.getDisplayName(), value);
-		}
-		return map;
+	public static Map<String, Object> fromProperties(Object obj) {
+		return ReflectUtils.toMap(obj);
 	}
+	
 	public static BaseMap toBase(Map map) {
 		if(map instanceof BaseMap)
 			return (BaseMap) map;
@@ -170,26 +141,6 @@ final public class CUtils {
 			return null;
 	}
 	
-	public static Map<String, Object> bean2Map(Object obj, Object... ignores) {
-		Assert.notNull(obj);
-		/*if(Map.class.isInstance(obj))
-			return (Map)obj;*/
-		Ignore ig = null;
-		if(LangUtils.hasElement(ignores))
-			ig = Ignore.create(ignores);
-		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-		Map<String, Object> propMap = LangUtils.newHashMap();
-		Object val = null;
-		
-		for(PropertyDescriptor prop : props){
-			val = ReflectUtils.getProperty(obj, prop);
-			if(ig!=null && ig.ignore(prop.getName(), val))
-				continue;
-//			val = ig.defaultVal(prop.getName(), val);
-			propMap.put(prop.getName(), val);
-		}
-		return propMap;
-	}
 	public static <T extends Map> T arrayIntoMap(T properties, Object... params) {
 		if (params.length % 2 == 1)
 			throw new IllegalArgumentException("参数不是key, value形式！ ");

@@ -19,6 +19,7 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.EntityNotFoundException;
@@ -342,12 +343,12 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
-		Map<String, Object> properties = CUtils.bean2Map(obj);
+		Map<String, Object> properties = ReflectUtils.toMap(obj);
 		return this.findList(entityClass, properties);
 	}
 
 	public <T> void findPageByExample(Class<T> entityClass, Page<T> page, Object obj) {
-		Map<String, Object> properties = CUtils.bean2Map(obj);
+		Map<String, Object> properties = ReflectUtils.toMap(obj);
 		this.findPage(entityClass, page, properties);
 	}
 

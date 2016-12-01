@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.LocalTime;
-import org.joda.time.chrono.ISOChronology;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.DateRange;
@@ -28,6 +27,7 @@ public class DateUtilTest {
 		Time time = new Time(now.getTime());
     	Time nowTime = new Time(now.getHours(), now.getMinutes(), now.getSeconds());
 		String str = DateUtil.formatDateTime(time);
+		System.out.println("time:"+DateUtil.format("h:mm a", new Date()));
 		System.out.println("time:"+str);
 		System.out.println("time:"+now.getTime());
 		System.out.println("time:"+time.getTime());

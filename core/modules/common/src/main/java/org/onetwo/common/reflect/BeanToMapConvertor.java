@@ -38,7 +38,39 @@ public class BeanToMapConvertor {
 	private Function<Object, Object> valueConvertor;
 	private Function<Object, Boolean> flatableObject;
 	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
+	private boolean freezed;
+
+	public void freeze(){
+		this.checkFreezed();
+		this.freezed = true;
+	}
+	public void checkFreezed(){
+		if(this.freezed){
+			throw new UnsupportedOperationException("object has freezed!");
+		}
+	}
 	
+	public void setPropertyAccesor(String propertyAccesor) {
+		this.checkFreezed();
+		this.propertyAccesor = propertyAccesor;
+	}
+	public void setPrefix(String prefix) {
+		this.checkFreezed();
+		this.prefix = prefix;
+	}
+	public void setPropertyAcceptor(
+			BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+		this.checkFreezed();
+		this.propertyAcceptor = propertyAcceptor;
+	}
+	public void setValueConvertor(Function<Object, Object> valueConvertor) {
+		this.checkFreezed();
+		this.valueConvertor = valueConvertor;
+	}
+	public void setFlatableObject(Function<Object, Boolean> flatableObject) {
+		this.checkFreezed();
+		this.flatableObject = flatableObject;
+	}
 	/***
 	 * 简单反射对象的propertyName为key， propertyValue为value
 	 * @param obj
@@ -84,6 +116,7 @@ public class BeanToMapConvertor {
 	}
 	
 	public BeanToMapConvertor addValueType(Class<?> clazz){
+		this.checkFreezed();
 		this.valueTypes.add(clazz);
 		return this;
 	}
@@ -161,31 +194,35 @@ public class BeanToMapConvertor {
 
 
 		public BeanToMapBuilder propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
-			beanToFlatMap.propertyAcceptor = propertyAcceptor;
+			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
 			return this;
 		}
 
 		public BeanToMapBuilder flatableObject(Function<Object, Boolean> flatableObject) {
-			beanToFlatMap.flatableObject = flatableObject;
+			beanToFlatMap.setFlatableObject(flatableObject);
 			return this;
 		}
 
 		public BeanToMapBuilder valueConvertor(Function<Object, Object> valueConvertor) {
-			beanToFlatMap.valueConvertor = valueConvertor;
+			beanToFlatMap.setValueConvertor(valueConvertor);
 			return this;
 		}
 
 		public BeanToMapBuilder prefix(String prefix) {
-			beanToFlatMap.prefix = prefix;
+			beanToFlatMap.setPrefix(prefix);
 			return this;
 		}
 		
-		public Map<String, Object> toMap(Object obj){
+		/*public Map<String, Object> toMap(Object obj){
 			return beanToFlatMap.toMap(obj);
 		}
 		
 		public Map<String, Object> toFlatMap(Object obj){
 			return beanToFlatMap.toFlatMap(obj);
+		}*/
+		public BeanToMapConvertor build(){
+			this.beanToFlatMap.freeze();
+			return beanToFlatMap;
 		}
 	}
 	

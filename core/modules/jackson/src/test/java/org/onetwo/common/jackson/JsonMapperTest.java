@@ -64,6 +64,9 @@ public class JsonMapperTest {
 	public void testSimple(){
 		JsonMapper mapper = JsonMapper.IGNORE_NULL;
 		
+		String jsonTest = mapper.toJson("test string");
+		System.out.println("jsonTest:"+jsonTest);
+		
 		Object data = "child1-aa";
 		String json = mapper.toJson(data);
 		Object rs = mapper.fromJson(json, String.class);

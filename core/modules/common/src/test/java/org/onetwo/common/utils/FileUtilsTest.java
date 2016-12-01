@@ -2,6 +2,7 @@ package org.onetwo.common.utils;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,12 @@ public class FileUtilsTest {
 		String parent = FileUtils.getParentpath(path);
 		System.out.println("parent:"+parent);
 		Assert.assertEquals(parent, "/webapp/aa/bb");
+		
+		try {
+			URL url = new URL("aa.gif");
+			Assert.fail();
+		} catch (Exception e) {
+		}
 	}
 	
 	@Test
