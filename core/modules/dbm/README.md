@@ -15,7 +15,7 @@
 ```java     
   
 	@EnableJFishDbm
-	public static class TestContextConfig {
+	public class TestContextConfig {
 	}   
    
 ```
@@ -24,7 +24,7 @@
 大多数数据库操作都可以通过BaseEntityManager接口来完成。
 ```java    
 
-@Test
+	@Test
 	public void testSample(){
 		UserAutoidEntity user = new UserAutoidEntity();
 		user.setUserName("dbm");
@@ -84,6 +84,20 @@ public interface UserAutoidDao {
 sql/test.dao.UserAutoidDao.jfish.sql
 文件内容为：    
 ![removeByUserName](doc/sql.removeByUserName.jpg)
+
+```MySQL   
+/*****
+ * @name: removeByUserName
+ * 批量删除
+ */
+    delete from test_user_autoid 
+        where 1=1 
+        [#if userName?has_content]
+         and user_name like :userName?likeString
+        [/#if]
+
+```
+
 
 解释：   
 - dbm会根据sql文件名去掉.jfish.sql后缀后作为类名，绑定对应的接口类，此处为：test.dao.UserAutoidDao    
