@@ -82,7 +82,7 @@ public interface UserAutoidDao {
 在resource源码代码文件下新建一个目录：sql
 然后在sql目录里新建一个UserAutoidDao全类名的.jfish.sql文件，完整路径和文件为：
 sql/test.dao.UserAutoidDao.jfish.sql
-文件内容为：
+文件内容为：    
 ![removeByUserName](doc/sql.removeByUserName.jpg)
 
 解释：   
@@ -125,7 +125,7 @@ public interface UserAutoidDao {
 }
 
 ```   
-定义sql：   
+定义sql：     
 ![batcchInsert](doc/sql.batcchInsert.jpg)
 
 
