@@ -83,7 +83,7 @@ public interface UserAutoidDao {
 然后在sql目录里新建一个UserAutoidDao全类名的.jfish.sql文件，完整路径和文件为：
 sql/test.dao.UserAutoidDao.jfish.sql
 文件内容为：
-图片
+![removeByUserName](doc/sql.removeByUserName.jpg)
 
 解释：   
 - dbm会根据sql文件名去掉.jfish.sql后缀后作为类名，绑定对应的接口类，此处为：test.dao.UserAutoidDao    
@@ -126,7 +126,7 @@ public interface UserAutoidDao {
 
 ```   
 定义sql：   
-图片
+![batcchInsert](doc/sql.batcchInsert.jpg)
 
 
    
