@@ -1,6 +1,7 @@
 # onetwo
 ------
-基于spring boot的快速开发
+基于spring boot的快速开发   
+spring-boot技术交流群：  8060215
 
    
 ##[dbm模块](https://github.com/wayshall/onetwo/tree/master/core/modules/dbm)
@@ -10,6 +11,4 @@
 
    
 
-##联系
-spring-boot技术交流群：  
-8060215
+

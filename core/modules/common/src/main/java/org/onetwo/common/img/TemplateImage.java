@@ -107,7 +107,7 @@ public class TemplateImage {
 		} catch (NoSuchElementException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new RuntimeException("drawing error: " + e.getMessage());
+			throw new RuntimeException("drawing error: " + e.getMessage(), e);
 		} finally{
 			graphic.dispose();
 		}
@@ -115,7 +115,7 @@ public class TemplateImage {
 		try {
 			ImageIO.write(imageBuf, format, bo);
 		} catch (IOException e) {
-			throw new RuntimeException("write image error: " + e.getMessage());
+			throw new RuntimeException("write image error: " + e.getMessage(), e);
 		}
 		return bo.toByteArray();
 	}
@@ -126,11 +126,11 @@ public class TemplateImage {
 			Collection<? extends DefinedData<?>> datas = this.defineTables.get(key);
 			datas.stream().forEach(data->{
 				Object val = paramMap.get(key);
-				if(val==null && ignoreDrawingIfNoData){
-					return ;
-				}
 				if(val instanceof Supplier){
 					val = ((Supplier<?>)val).get();
+				}
+				if(val==null && ignoreDrawingIfNoData){
+					return ;
 				}
 				GraphicsContext g = new GraphicsContext(imageBuf, graphic, val);
 				getDefinedDrawing((Class<? extends DefinedData<?>>)data.getClass()).draw(g, data);
@@ -206,10 +206,10 @@ public class TemplateImage {
 		public void doDraw(GraphicsContext graphic, ImageDefinedData data) {
 			Image img = null;
 			if(data.getWidth()!=null && data.getHeight()!=null){
-				BufferedImage imgBuf = ImageUtils.readBufferedImageFromPath(graphic.getData().toString());
+				BufferedImage imgBuf = ImageUtils.readBufferedImage(graphic.getData());
 				img = imgBuf.getScaledInstance(data.getWidth(), data.getHeight(), Image.SCALE_SMOOTH);
 			}else{
-				img = ImageUtils.createImageIconFromPath(graphic.getData().toString()).getImage();
+				img = ImageUtils.createImageIcon(graphic.getData()).getImage();
 			}
 			int x = data.getX();
 			int y = data.getY();

@@ -5,13 +5,18 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 	/*public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
 	public static final String JFISH_DBM_SQL_LOG = "jfish.dbm.sql.log";
 	public static final String JFISH_DBM_SQL_WATCH = "jfish.dbm.sql.watch";*/
-	
+	/***
+	 * the threshold of useBatchOptimize
+	 */
 	private int useBatchThreshold = 50;
 	private int processSizePerBatch = 10000;
-	private boolean batchEnabled = true;
+	/****
+	 * whether use jdbc batch to optimeze insert or update list
+	 */
+	private boolean useBatchOptimize = true;
 	private boolean logSql = true;
 	private boolean watchSqlFile = true;
-	private String[] modelBasePackages;
+//	private String[] modelBasePackages;
 	
 
 	public DefaultDataBaseConfig(){
@@ -33,7 +38,7 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 		super();
 		this.useBatchThreshold = useBatchThreshold;
 		this.processSizePerBatch = processSizePerBatch;
-		this.batchEnabled = batchEnabled;
+		this.useBatchOptimize = batchEnabled;
 	}
 
 	@Override
@@ -43,7 +48,7 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 
 	@Override
 	public boolean isBatchEnabled() {
-		return batchEnabled;
+		return useBatchOptimize;
 	}
 
 	public int getProcessSizePerBatch() {
@@ -71,20 +76,20 @@ public class DefaultDataBaseConfig implements DataBaseConfig {
 		this.watchSqlFile = watchSqlFile;
 	}
 
-	public String[] getModelBasePackages() {
+	/*public String[] getModelBasePackages() {
 		return modelBasePackages;
 	}
 
 	public void setModelBasePackages(String[] modelBasePackages) {
 		this.modelBasePackages = modelBasePackages;
-	}
+	}*/
 
 	public void setProcessSizePerBatch(int processSizePerBatch) {
 		this.processSizePerBatch = processSizePerBatch;
 	}
 
 	public void setBatchEnabled(boolean batchEnabled) {
-		this.batchEnabled = batchEnabled;
+		this.useBatchOptimize = batchEnabled;
 	}
 
 }

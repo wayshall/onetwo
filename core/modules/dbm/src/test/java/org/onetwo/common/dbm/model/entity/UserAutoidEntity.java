@@ -16,7 +16,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.spring.dozer.DozerMapping;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
@@ -24,24 +23,24 @@ import org.springframework.format.annotation.DateTimeFormat;
  * 用户表
  * @Entity
  */
+//@SequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
+//@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
 @Entity
 @Table(name="TEST_USER_AUTOID")
-//@ASequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
-//@DynamicUpdate
-@DozerMapping
-//@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
 public class UserAutoidEntity {
-	
-	/*****
-	 * 
-	 */
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY) 
+	@Column(name="ID")
 	protected Long id;
-  
-	/*****
-	 * 
-	 */
 	@Length(min=1, max=50)
 	protected String userName;
+	@Length(min=0, max=50)
+	@Email
+	protected String email;
+	protected String mobile;
+	protected UserStatus status;
+	
   
 	/*****
 	 * 
@@ -56,23 +55,11 @@ public class UserAutoidEntity {
 	 */
 	protected String password;
   
-	/*****
-	 * 
-	 */
-	@Length(min=0, max=50)
-	@Email
-	protected String email;
-  
-	/*****
-	 * 
-	 */
-	protected String mobile;
   
 	/*****
 	 * 
 	 */
 	protected Integer gender;
-	protected UserStatus status;
 	
   
 	/*****
@@ -91,9 +78,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY) 
-	@Column(name="ID")
 	public Long getId() {
 		return this.id;
 	}
@@ -106,7 +90,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Column(name="USER_NAME")
 	public String getUserName() {
 		return this.userName;
 	}
@@ -119,7 +102,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Column(name="NICK_NAME")
 	public String getNickName() {
 		return this.nickName;
 	}
@@ -132,7 +114,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Column(name="EMAIL")
 	public String getEmail() {
 		return this.email;
 	}
@@ -145,7 +126,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Column(name="MOBILE")
 	public String getMobile() {
 		return this.mobile;
 	}
@@ -158,7 +138,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Column(name="GENDER")
 	public Integer getGender() {
 		return this.gender;
 	}
@@ -171,8 +150,6 @@ public class UserAutoidEntity {
 	 * 
 	 * @return
 	 */
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="BIRTHDAY")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	public Date getBirthday() {
 		return this.birthday;
@@ -182,7 +159,6 @@ public class UserAutoidEntity {
 		this.birthday = birthday;
 	}
 
-	@Column(name="PASSWORD")
 	public String getPassword() {
 		return password;
 	}

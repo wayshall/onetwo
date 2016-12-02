@@ -1,13 +1,16 @@
 # dbm
 ------
-基于spring jdbc实现的简单orm
+基于spring jdbc实现的简单orm   
+交流群：  8060215
 
 ##特色
 - 基本的实体增删改查（单表）不需要生成样板代码和sql文件。
 - 返回结果不需要手动映射，会根据字段名称自动映射。
 - 支持sql语句和接口绑定风格的DAO，但sql不是写在丑陋的xml里，而是直接写在sql文件里，这样用eclipse或者相关支持sql的编辑器打开时，就可以语法高亮，更容易阅读。
+- 支持sql脚本修改后重新加载
 - 内置支持分页查询。
 - 接口支持批量插入
+
    
 ##使用
 如果是基于onetwo本框架的使用，已利用boot的autoconfig功能自动集成，无需任何配置。  
@@ -19,6 +22,38 @@
 	}   
    
 ```
+
+##实体映射
+```java   
+@Entity   
+@Table(name="TEST\_USER\_AUTOID")   
+public class UserAutoidEntity {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY) 
+	@Column(name="ID")
+	protected Long id;
+	@Length(min=1, max=50)
+	protected String userName;
+	@Length(min=0, max=50)
+	@Email
+	protected String email;
+	protected String mobile;
+	protected UserStatus status;
+
+	//省略getter和setter
+}   
+```   
+###注意这里用到了一些jpa的注解，含义和jpa一致：
+- @Entity，表示这是一个映射到数据库表的实体
+- @Table，表示这个实体映射的表
+- @Id，表示这是一个主键字段
+- @GeneratedValue(strategy=GenerationType.IDENTITY)，表示这个主键的值用数据库自增的方式生成，dbm目前只支持IDENTITY和SEQUENCE两种方式      
+- @Column，表示映射到表的字段，一般用在java的字段名和表的字段名不对应的时候   
+
+java的字段名使用驼峰的命名风格，而数据库使用下划线的风格，dbm会自动做转换   
+注意dbm并没有实现jpa规范，只是借用了几个jpa的注解，纯属只是为了方便。。。
+后来为了证明我也不是真的很懒，也写了和@Entity、@Table、@Column对应的注解，分别是：@DbmEntity（@Entity和@Table合一），@DbmColumn。。。
 
 ##BaseEntityManager接口
 大多数数据库操作都可以通过BaseEntityManager接口来完成。
@@ -85,18 +120,6 @@ sql/test.dao.UserAutoidDao.jfish.sql
 文件内容为：    
 ![removeByUserName](doc/sql.removeByUserName.jpg)
 
-```MySQL   
-/*****
- * @name: removeByUserName
- * 批量删除
- */
-    delete from test_user_autoid 
-        where 1=1 
-        [#if userName?has_content]
-         and user_name like :userName?likeString
-        [/#if]
-
-```
 
 
 解释：   
