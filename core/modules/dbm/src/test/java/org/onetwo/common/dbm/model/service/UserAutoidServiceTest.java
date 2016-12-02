@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.model.service;
+package org.onetwo.common.dbm.model.service;
 
 import java.util.Date;
 import java.util.List;
@@ -9,8 +9,8 @@ import javax.sql.DataSource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.jfishdbm.AppBaseTest;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.AppBaseTest;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDao;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.model.entity;
+package org.onetwo.common.dbm.model.entity;
 
 import java.util.Date;
 
@@ -10,12 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.onetwo.common.dbm.utils.Constant;
 import org.onetwo.common.spring.dozer.DozerMapping;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,12 +27,10 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @Entity
  */
 @Entity
-@Table(name="TEST_USER_AUTOID")
-//@ASequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
-//@DynamicUpdate
+@Table(name="TEST_USER")
+@TableGenerator(table=Constant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1, name="UserEntityGenerator")
 @DozerMapping
-//@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
-public class UserAutoidEntity {
+public class UserEntity {
 	
 	/*****
 	 * 
@@ -79,11 +79,15 @@ public class UserAutoidEntity {
 	 * 
 	 */
 	protected Date birthday;
+
+	private Integer age;
+	private Float height;
+
 	
 	//系统代码
 	protected String appCode;
   
-	public UserAutoidEntity(){
+	public UserEntity(){
 	}
 	
 	
@@ -92,7 +96,8 @@ public class UserAutoidEntity {
 	 * @return
 	 */
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY) 
+	//TODO 未实现此id策略
+	@GeneratedValue(strategy=GenerationType.TABLE, generator="UserEntityGenerator") 
 	@Column(name="ID")
 	public Long getId() {
 		return this.id;
@@ -210,6 +215,16 @@ public class UserAutoidEntity {
 	}
 
 
+	public Integer getAge() {
+		return age;
+	}
+
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+
 	public String getAppCode() {
 		return appCode;
 	}
@@ -224,6 +239,16 @@ public class UserAutoidEntity {
 		this.status = status;
 	}
 	
+
+	public Float getHeight() {
+		return height;
+	}
+
+
+	public void setHeight(Float height) {
+		this.height = height;
+	}
+
 
 	public static enum UserStatus {
 		NORMAL("正常"),

@@ -1,8 +1,8 @@
-package org.onetwo.common.jfishdbm.model.dao;
+package org.onetwo.common.dbm.model.dao;
 
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.model.entity.UserEntity;
+import org.onetwo.common.dbm.model.entity.UserEntity;
 
 public interface UserDao {
 	

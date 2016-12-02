@@ -73,7 +73,7 @@ public class OneCommentBasedSqlFileParser<T extends NamespaceProperty> extends D
 					}
 					int eqIndex = line.indexOf(EQUALS_MARK);
 					if(eqIndex==-1)
-						LangUtils.throwBaseException("the jfish sql file lack a equals mark : " + line);
+						LangUtils.throwBaseException("the jfish sql file lack a equals symbol : " + line);
 					
 					if(line.startsWith(CONFIG_PREFIX)){
 						matchConfig = true;

@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource("classpath:conf/applicationContext-test.xml")
 //@Import(JFishdbmSpringConfiguration.class)
 @EnableJFishDbm
-public class JFishOrmTestContextConfig {
+public class DbmOrmTestContextConfig {
 
 	@Resource
 	private DataSource dataSource;

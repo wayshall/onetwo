@@ -1,9 +1,9 @@
-package org.onetwo.common.jfishdbm.model.service;
+package org.onetwo.common.dbm.model.service;
 
 import java.util.Date;
 import java.util.List;
 
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 
 public interface UserAutoidService {
 

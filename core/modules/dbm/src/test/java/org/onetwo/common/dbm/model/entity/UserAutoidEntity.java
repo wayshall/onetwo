@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.model.entity;
+package org.onetwo.common.dbm.model.entity;
 
 import java.util.Date;
 
@@ -10,14 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.jfishdbm.utils.Constant;
 import org.onetwo.common.spring.dozer.DozerMapping;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,10 +25,12 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @Entity
  */
 @Entity
-@Table(name="TEST_USER")
-@TableGenerator(table=Constant.SEQ_TABLE_NAME, pkColumnName="GEN_NAME",valueColumnName="GEN_VALUE", pkColumnValue="SEQ_ADMIN_USER", allocationSize=50, initialValue=1, name="UserEntityGenerator")
+@Table(name="TEST_USER_AUTOID")
+//@ASequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
+//@DynamicUpdate
 @DozerMapping
-public class UserEntity {
+//@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
+public class UserAutoidEntity {
 	
 	/*****
 	 * 
@@ -79,15 +79,11 @@ public class UserEntity {
 	 * 
 	 */
 	protected Date birthday;
-
-	private Integer age;
-	private Float height;
-
 	
 	//系统代码
 	protected String appCode;
   
-	public UserEntity(){
+	public UserAutoidEntity(){
 	}
 	
 	
@@ -96,8 +92,7 @@ public class UserEntity {
 	 * @return
 	 */
 	@Id
-	//TODO 未实现此id策略
-	@GeneratedValue(strategy=GenerationType.TABLE, generator="UserEntityGenerator") 
+	@GeneratedValue(strategy=GenerationType.IDENTITY) 
 	@Column(name="ID")
 	public Long getId() {
 		return this.id;
@@ -215,16 +210,6 @@ public class UserEntity {
 	}
 
 
-	public Integer getAge() {
-		return age;
-	}
-
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-
 	public String getAppCode() {
 		return appCode;
 	}
@@ -240,13 +225,85 @@ public class UserEntity {
 	}
 	
 
-	public Float getHeight() {
-		return height;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((appCode == null) ? 0 : appCode.hashCode());
+		result = prime * result
+				+ ((birthday == null) ? 0 : birthday.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((mobile == null) ? 0 : mobile.hashCode());
+		result = prime * result
+				+ ((nickName == null) ? 0 : nickName.hashCode());
+		result = prime * result
+				+ ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result
+				+ ((userName == null) ? 0 : userName.hashCode());
+		return result;
 	}
 
 
-	public void setHeight(Float height) {
-		this.height = height;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserAutoidEntity other = (UserAutoidEntity) obj;
+		if (appCode == null) {
+			if (other.appCode != null)
+				return false;
+		} else if (!appCode.equals(other.appCode))
+			return false;
+		if (birthday == null) {
+			if (other.birthday != null)
+				return false;
+		} else if (!birthday.equals(other.birthday))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (gender == null) {
+			if (other.gender != null)
+				return false;
+		} else if (!gender.equals(other.gender))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (mobile == null) {
+			if (other.mobile != null)
+				return false;
+		} else if (!mobile.equals(other.mobile))
+			return false;
+		if (nickName == null) {
+			if (other.nickName != null)
+				return false;
+		} else if (!nickName.equals(other.nickName))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (status != other.status)
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
 	}
 
 

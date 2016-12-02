@@ -46,7 +46,6 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private Object proxyObject;
 //	private List<Method> excludeMethods = new ArrayList<Method>();
 //	private List<Method> includeMethods = new ArrayList<Method>();
-	private boolean debug = true;
 //	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
 //	private Map<String, Method> methodCache = new HashMap<String, Method>();
 	private NamedJdbcTemplate namedJdbcTemplate;
@@ -117,8 +116,9 @@ public class DynamicQueryHandler implements InvocationHandler {
 		Class<?> resultClass = dmethod.getResultClass();
 //		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
 
-		if(debug)
-			logger.info("{}: {}", dmethod.getQueryName(), LangUtils.toString(args));
+		if(logger.isDebugEnabled()){
+			logger.debug("{}: {}", dmethod.getQueryName(), LangUtils.toString(args));
+		}
 		
 		Object result = null;
 //		Object[] methodArgs = null;
@@ -184,9 +184,10 @@ public class DynamicQueryHandler implements InvocationHandler {
 			namedJdbcTemplate = new DbmNamedJdbcTemplate(ds);
 		}
 		
-		
-		logger.info("===>>> batch insert start ...");
-		TimeCounter t = new TimeCounter("prepare insert");
+		if(logger.isDebugEnabled()){
+			logger.debug("===>>> batch insert start ...");
+		}
+		TimeCounter t = new TimeCounter("prepare insert", logger);
 		t.start();
 		
 		BeanWrapper paramsContextBean = SpringUtils.newBeanMapWrapper(invokeContext.getParsedParams());
@@ -214,17 +215,22 @@ public class DynamicQueryHandler implements InvocationHandler {
 			batchValues.add(paramValueMap);
 		}
 
-		logger.info("prepare insert finish!");
+		if(logger.isDebugEnabled()){
+			logger.debug("prepare insert finish!");
+			logger.debug("batch sql : {}", sv.getParsedSql() );
+		}
 		t.stop();
 		t.restart("insert to db");
 
-		logger.info("batch sql : {}", sv.getParsedSql() );
 		@SuppressWarnings("unchecked")
 //		int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 		int[] counts = namedJdbcTemplate.batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+
+		t.stop(false);
 		
-		logger.info("===>>> batch insert stop ...");
-		t.stop();
+		if(logger.isDebugEnabled()){
+			logger.debug("===>>> batch insert stop: {}", t.getMessage());
+		}
 		
 		if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
 			return counts;

@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.model.service;
+package org.onetwo.common.dbm.model.service;
 
 import java.util.Date;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao;
-import org.onetwo.common.jfishdbm.model.dao.UserAutoidDao2;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
+import org.onetwo.common.dbm.model.dao.UserAutoidDao;
+import org.onetwo.common.dbm.model.dao.UserAutoidDao2;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -27,20 +27,24 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	@Resource
 	private DataSource dataSource;
 	@Resource
-	private DbmDao jfishDao;
-	
-	@Resource
-	private UserAutoidDao userAutoidDao;
+	private DbmDao dbmDao;
 	
 	@Resource
 	private UserAutoidDao2 userAutoidDao2;
+	
+	@Resource
+	private UserAutoidDao userAutoidDao;
+
+	public int removeByUserName(String userName){
+		return this.userAutoidDao.removeByUserName(userName);
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.onetwo.test.jorm.model.service.UserAutoidService#deleteAll()
 	 */
 	@Override
 	public int deleteAll(){
-		return this.jfishDao.deleteAll(UserAutoidEntity.class);
+		return this.dbmDao.deleteAll(UserAutoidEntity.class);
 	}
 	
 	/* (non-Javadoc)
@@ -63,7 +67,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			
 			list.add(user);
 		}
-		int insertCount = jfishDao.save(list);
+		int insertCount = dbmDao.save(list);
 		return insertCount;
 	}
 	
@@ -72,7 +76,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public List<UserAutoidEntity> findUserAutoIdEntity(String userName, Date birthday){
-		return jfishDao.findByProperties(UserAutoidEntity.class, CUtils.asMap(
+		return dbmDao.findByProperties(UserAutoidEntity.class, CUtils.asMap(
 																"userName:like", userName,
 																"birthday", birthday
 																));
@@ -83,7 +87,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int update(List<UserAutoidEntity> users){
-		return jfishDao.update(users);
+		return dbmDao.update(users);
 	}
 	
 	/* (non-Javadoc)
@@ -91,7 +95,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int delete(List<UserAutoidEntity> users){
-		return jfishDao.delete(users);
+		return dbmDao.delete(users);
 	}
 	
 	public int daoBatchInsert(String userNamePrefix, UserStatus status, Date birthday, int count){ 
@@ -130,12 +134,6 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 		return this.userAutoidDao.batchInsert2(users, new Date());
 	}
 	
-
-	public int removeByUserName(String userName){
-		return this.userAutoidDao.removeByUserName(userName);
-	}
-
-
 	public void findUserPage(Page<UserAutoidEntity> page, String userName){
 		this.userAutoidDao2.findUserPage(page, userName);
 	}

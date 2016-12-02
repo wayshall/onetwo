@@ -1,11 +1,11 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDao;
 import org.springframework.test.context.transaction.TransactionConfiguration;

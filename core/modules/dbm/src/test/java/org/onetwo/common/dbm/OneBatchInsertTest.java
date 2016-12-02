@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
@@ -10,8 +10,8 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
-import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
+import org.onetwo.common.dbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
 

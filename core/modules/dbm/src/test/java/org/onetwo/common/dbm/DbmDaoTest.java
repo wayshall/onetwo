@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import java.util.Date;
 import java.util.List;
@@ -13,15 +13,15 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
-import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
+import org.onetwo.common.dbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.support.DbmEntityManager;
 
 //@TransactionConfiguration(defaultRollback=true)
-public class JFishDaoTest extends AppBaseTest {
+public class DbmDaoTest extends AppBaseTest {
 	
 	@Resource
 	private DbmEntityManager jfishEntityManager;

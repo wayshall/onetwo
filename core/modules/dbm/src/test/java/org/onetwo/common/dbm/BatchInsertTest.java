@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import java.util.List;
 
@@ -7,13 +7,12 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity;
-import org.onetwo.common.jfishdbm.model.entity.UserAutoidEntity.UserStatus;
-import org.onetwo.common.jfishdbm.model.service.UserAutoidServiceImpl;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
+import org.onetwo.common.dbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.utils.Page;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-@TransactionConfiguration(defaultRollback=true)
 public class BatchInsertTest extends AppBaseTest {
 
 	@Resource
@@ -38,7 +37,7 @@ public class BatchInsertTest extends AppBaseTest {
 		count = this.userAutoidServiceImpl.daoBatchInsert2(userNamePrefix2, insertCount);
 		Assert.assertEquals(insertCount, count);
 		
-		count = this.userAutoidServiceImpl.removeByUserName(userNamePrefix);
+		count = this.userAutoidServiceImpl.removeByUserName("%"+userNamePrefix+"%");
 		System.out.println("delete count: " + count);
 		Assert.assertTrue(count==insertCount*2);
 	}

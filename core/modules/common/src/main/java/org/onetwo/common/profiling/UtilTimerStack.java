@@ -114,7 +114,7 @@ public class UtilTimerStack
             {
                 printTimes(currentTimer);
                 current.set(null); //prevent printing multiple times
-                getOuputer().log("Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
+                getOuputer().log(UtilTimerStack.class, "Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
             }
         }
 
@@ -128,7 +128,7 @@ public class UtilTimerStack
      */
     private static void printTimes(ProfilingTimerBean currentTimer)
     {
-    	getOuputer().log(currentTimer.getPrintable(getMinTime()));
+    	getOuputer().log(UtilTimerStack.class, currentTimer.getPrintable(getMinTime()));
     }
 
     /**

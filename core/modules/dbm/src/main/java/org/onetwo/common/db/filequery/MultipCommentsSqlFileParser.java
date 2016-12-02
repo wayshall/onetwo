@@ -18,7 +18,8 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFileQueryInfo> {
 	
 	public static class SimpleDirectiveExtractor implements SqlDirectiveExtractor {
-		public static final String DIRECTIVE_START = SimpleSqlFileLineLexer.COMMENT + "[";
+		public static final String DIRECTIVE_PREFIX = SimpleSqlFileLineLexer.COMMENT + ">";//-->
+		public static final String DIRECTIVE_START = DIRECTIVE_PREFIX + "[";
 		public static final String DIRECTIVE_END = "]";
 
 		@Override
@@ -29,7 +30,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 		@Override
 		public String extractDirective(String value) {
 //			String directive = StringUtils.substringBetween(value, DIRECTIVE_START, DIRECTIVE_END);// value.substring(SimpleSqlFileLineLexer.COMMENT.length());
-			String directive = StringUtils.substringAfter(value, SimpleSqlFileLineLexer.COMMENT);// value.substring(SimpleSqlFileLineLexer.COMMENT.length());
+			String directive = StringUtils.substringAfter(value, DIRECTIVE_PREFIX);// value.substring(SimpleSqlFileLineLexer.COMMENT.length());
 			return directive;
 		}
 		
@@ -151,7 +152,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 				break;
 			}else if(lineLexer.getLineToken()==LineToken.ONE_LINE_COMMENT){
 				String value = StringUtils.join(lineLexer.getLineBuf(), " ");
-				if(sqlDirectiveExtractor.isDirective(value)){//--[#if ]
+				if(sqlDirectiveExtractor.isDirective(value)){//-->[#if ... ]
 					buf.append(sqlDirectiveExtractor.extractDirective(value)).append(" ");
 				}
 				continue;

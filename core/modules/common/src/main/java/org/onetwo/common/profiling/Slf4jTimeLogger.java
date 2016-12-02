@@ -6,7 +6,6 @@ import org.slf4j.helpers.NOPLogger;
 
 
 public class Slf4jTimeLogger implements TimeLogger {
-	private TimeLogger outer = new TimerOutputer();
 	private final Logger logger;
 	
 
@@ -21,22 +20,13 @@ public class Slf4jTimeLogger implements TimeLogger {
 	}
 
 	@Override
-	public void log(String msg){
-		if(logger!=null && !NOPLogger.class.isInstance(logger)){
-			logger.info(msg);
-		}else{
-			outer.log(msg);
+	public void log(Class<?> logSource, String msg, Object...args){
+		Logger logger = this.logger;
+		if(logger==null || NOPLogger.class.isInstance(logger)){
+			logger = JFishLoggerFactory.getLogger(logSource);
 		}
+		logger.info(msg, args);
 	}
 
-	@Override
-	public void log(Object logSource, String msg){
-		Logger logger = JFishLoggerFactory.getLogger(logSource.getClass());
-		if(logger!=null){
-			logger.info(msg);
-		}else{
-			outer.log(msg);
-		}
-	}
 
 }

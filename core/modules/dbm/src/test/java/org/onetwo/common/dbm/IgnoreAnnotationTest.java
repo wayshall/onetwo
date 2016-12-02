@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 import java.lang.annotation.Annotation;
 
@@ -6,7 +6,7 @@ import javax.persistence.Id;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.jfishdbm.model.entity.UserEntity;
+import org.onetwo.common.dbm.model.entity.UserEntity;
 import org.onetwo.common.reflect.ReflectUtils;
 
 

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.onetwo.common.date.DateUtil;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 
 public class TimeCounter {
 
@@ -29,6 +30,11 @@ public class TimeCounter {
 
 	public TimeCounter(Object target) {
 		this(target, false);
+	}
+	public TimeCounter(Object target, Logger logger) {
+		super();
+		this.target = target;
+		this.timeLogger = new Slf4jTimeLogger(logger);
 	}
 	public TimeCounter(Object target, boolean printMemory) {
 		this.target = target;
@@ -63,13 +69,16 @@ public class TimeCounter {
 	}
 	
 	public Date restart(Object target) {
-		timeLogger.log("restart time counter...");
+		timeLogger.log(this.getClass(), "restart time counter...");
 		this.message = new StringBuilder();
 		this.target = target;
 		return start();
 	}
 
 	public Date stop() {
+		return stop(true);
+	}
+	public Date stop(boolean printMessage) {
 		long stopMills = System.currentTimeMillis();
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
@@ -81,10 +90,15 @@ public class TimeCounter {
 		if(printMemory){
 			message.append("\n").append(LangUtils.statisticsMemory(""));
 		}
-		timeLogger.log(message.toString());
+		if(printMessage){
+			timeLogger.log(this.getClass(), message.toString());
+		}
 		return this.stop;
 	}
 	
+	public String getMessage() {
+		return message.toString();
+	}
 	public void printMemory(){
 		LangUtils.printMemory();
 		System.out.println();

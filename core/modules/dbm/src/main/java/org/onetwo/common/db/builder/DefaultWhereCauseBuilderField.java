@@ -51,6 +51,9 @@ public class DefaultWhereCauseBuilderField extends WhereCauseBuilderField {
 			this.values = values;
 		});
 	}
+	public WhereCauseBuilder is(Object... values) {
+		return equalTo(values);
+	}
 	
 	public WhereCauseBuilder isNull(boolean isNull) {
 		return this.doWhenPredicate(()->{

@@ -30,7 +30,7 @@ public class Timeit {
 		this.out = ouputer;
 	}
 	public void ptime(String name, ArgsReturnableClosure block){
-		out.log("timeit ["+name+"] : " + timeit(name, block));
+		out.log(Timeit.class, "timeit ["+name+"] : " + timeit(name, block));
 	}
 	public Timeit timeit(String name, ArgsReturnableClosure block){
 		long start = System.currentTimeMillis();
@@ -41,7 +41,7 @@ public class Timeit {
 	}
 	
 	public void ptimeit(Object obj, String method){
-		out.log("timeit ["+obj.getClass().getSimpleName()+"."+method+"] : " + timeit(obj, method));
+		out.log(Timeit.class, "timeit ["+obj.getClass().getSimpleName()+"."+method+"] : " + timeit(obj, method));
 	}
 	
 	public Timeit timeit(Object obj, String method){
@@ -56,7 +56,7 @@ public class Timeit {
 	
 	public void printAll(){
 		for(Entry<String, Long> entry : times.entrySet()){
-			out.log("timeit ["+entry.getKey()+" : " + entry.getValue());
+			out.log(Timeit.class, "timeit ["+entry.getKey()+" : " + entry.getValue());
 		}
 		this.times.clear();
 	}

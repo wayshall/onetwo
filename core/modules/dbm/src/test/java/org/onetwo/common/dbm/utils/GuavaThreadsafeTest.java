@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm.utils;
+package org.onetwo.common.dbm.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

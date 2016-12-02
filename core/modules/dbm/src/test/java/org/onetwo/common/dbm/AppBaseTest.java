@@ -1,4 +1,4 @@
-package org.onetwo.common.jfishdbm;
+package org.onetwo.common.dbm;
 
 
 
@@ -14,15 +14,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 
 @ActiveProfiles({ "dev" })
 //@ContextConfiguration(value="classpath:/applicationContext-test.xml")
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class)
-@TransactionConfiguration(defaultRollback = false)
+@Rollback
 public class AppBaseTest extends SpringBaseJUnitTestCase {
 	
 	@Configuration
@@ -30,7 +30,7 @@ public class AppBaseTest extends SpringBaseJUnitTestCase {
 	@ImportResource("classpath:conf/applicationContext-test.xml")
 	@EnableJFishDbm
 	@ComponentScan(basePackageClasses=AppBaseTest.class)
-	public static class JFishOrmTestInnerContextConfig {
+	public static class DbmOrmTestInnerContextConfig {
 
 		@Resource
 		private DataSource dataSource;
