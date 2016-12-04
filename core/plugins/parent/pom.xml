@@ -5,7 +5,7 @@
   	<groupId>org.onetwo.plugins</groupId>
 	<artifactId>onetwo-plugin-parent</artifactId>
 	<!-- 4.1.x for boot -->
-	<version>4.3.4-SNAPSHOT</version>
+	<version>4.3.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-plugin-parent</name>
@@ -45,7 +45,7 @@
 		<dependency>
 	         <groupId>org.onetwo</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.3.4-SNAPSHOT</version>
+	         <version>4.3.5-SNAPSHOT</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>

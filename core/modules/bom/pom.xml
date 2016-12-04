@@ -5,7 +5,7 @@
 	<artifactId>onetwo-bom</artifactId>
 	<!-- 4.1.x for boot 1.2.4.RELEASE -->
 	<!-- 4.2.x for boot 1.3.2.RELEASE -->
-	<version>4.3.4-SNAPSHOT</version>
+	<version>4.3.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -15,7 +15,7 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>4.3.4-SNAPSHOT</onetwo.version>
+	<onetwo.version>4.3.5-SNAPSHOT</onetwo.version>
 	<spring-boot.version>1.4.0.RELEASE</spring-boot.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
