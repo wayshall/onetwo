@@ -42,7 +42,12 @@ import com.google.common.collect.Maps;
 
 
 public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements FactoryBean<FilterInvocationSecurityMetadataSource>*/ {
-	//获取权限标识和url的sql语句
+	/*****
+	 * 获取权限标识和url的sql语句，返回下列字段：
+	 * authority：权限标识代码
+	 * resources_pattern：拦截的资源模式，格式：http_method|request_path,
+	 * format: http_method|request_path,http_method|request_path,http_method|request_path...
+	 */
 	private static final String AUTHORITY_RESOURCE_SQL_FILE = "/plugins/security/authority_resource.sql";
 
 	private String resourceQuery;
@@ -85,6 +90,9 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		
 		List<AuthorityResource> authorities = mapping.execute();
 		return authorities;
+	}
+	public void setResourceQuery(String resourceQuery) {
+		this.resourceQuery = resourceQuery;
 	}
 	/****
 	 * fetch all permissions from database

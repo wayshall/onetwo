@@ -30,12 +30,18 @@ public interface PermissionConfig<P extends IPermission<P>> {
 		}
 		return appCode;
 	}*/
-	
+	/****
+	 * 菜单配置类
+	 * @return
+	 */
 	public Class<?> getRootMenuClass();
 	default public String[] getChildMenuPackages(){
 		return null;
 	}
-	
+	/*****
+	 * 权限实体类
+	 * @return
+	 */
 	public Class<P> getIPermissionClass();
 	
 	/*default public int menuCacheInitSize(){

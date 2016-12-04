@@ -23,6 +23,11 @@ public class UrlResourceInfoParser {
 		}
 	});
 	
+	/*****
+	 * format: http_method|request_path,http_method|request_path,http_method|request_path...
+	 * @param source
+	 * @return
+	 */
 	public List<UrlResourceInfo> parseToUrlResourceInfos(String source){
 		if(StringUtils.isBlank(source))
 			return Lists.newArrayList();
@@ -37,6 +42,11 @@ public class UrlResourceInfoParser {
 				.collect(Collectors.toList());
 	}
 	
+	/*****
+	 * format: http_method|request_path
+	 * @param source
+	 * @return
+	 */
 	private UrlResourceInfo parseToUrlResourceInfo(String source){
 		Assert.hasText(source);
 		Iterable<String> it = Splitter.on("|")

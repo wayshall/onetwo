@@ -1,4 +1,4 @@
-package org.onetwo.common.web.asyn2;
+package org.onetwo.common.web.asyn;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -7,7 +7,6 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.asyn.DefaultAsyncWebProcessor;
 import org.springframework.core.task.AsyncTaskExecutor;
 
 /****

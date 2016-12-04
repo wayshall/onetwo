@@ -8,6 +8,7 @@ import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,8 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 @Configuration
 @Import(SecurityCommonContextConfig.class)
 public class UrlBasedSecurityConfig {
+	@Autowired
+	private SecurityConfig securityConfig;
 	/***
 	 * 如果不是基于方法拦截（即url匹配），需要用后处理器重新配置SecurityMetadataSource
 	 * @return
@@ -51,6 +54,7 @@ public class UrlBasedSecurityConfig {
 	public DatabaseSecurityMetadataSource securityMetadataSource(DataSource dataSource){
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
+		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());
 		return ms;
 	}
 	

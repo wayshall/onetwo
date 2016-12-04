@@ -1,4 +1,4 @@
-package org.onetwo.common.web.asyn2;
+package org.onetwo.common.web.asyn;
 
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;

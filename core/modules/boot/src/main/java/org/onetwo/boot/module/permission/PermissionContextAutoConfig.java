@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.permission;
 
-import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;
@@ -9,6 +8,7 @@ import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 public class PermissionContextAutoConfig {
 	
 	@Autowired
-	private BootSecurityConfig bootSecurityConfig;
+	private SecurityConfig securityConfig;
 	
 	public PermissionContextAutoConfig(){
 	}
@@ -52,7 +52,7 @@ public class PermissionContextAutoConfig {
 	@ConditionalOnMissingBean(value=PermissionHandlerMappingListener.class)
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
 		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
-		listener.setSyncPermissionData(bootSecurityConfig.getSyncPermissionData());
+		listener.setSyncPermissionData(securityConfig.getSyncPermissionData());
 		return listener;
 	}
 	

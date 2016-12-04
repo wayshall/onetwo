@@ -39,6 +39,7 @@ public class SecurityConfig {
 	
 	private RedisConfig redis = new RedisConfig();
 	private CookieConfig cookie = new CookieConfig();
+	private RbacConfig rbac = new RbacConfig();
 	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
@@ -104,5 +105,10 @@ public class SecurityConfig {
 		private boolean disable;
 		private String[] ignoringPaths;
 		private String[] requirePaths;
+	}
+
+	@Data
+	public static class RbacConfig {
+		private String resourceQuery;
 	}
 }

@@ -1,4 +1,4 @@
-package org.onetwo.common.web.asyn2;
+package org.onetwo.common.web.asyn;
 
 import java.io.IOException;
 
@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.web.asyn.AsyncUtils;
 
 public final class AsyncWppFactory {
 	

@@ -1,11 +1,10 @@
-package org.onetwo.common.web.asyn2;
+package org.onetwo.common.web.asyn;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.asyn.AsyncMessageTunnel;
 import org.slf4j.Logger;
 
 @SuppressWarnings("serial")
