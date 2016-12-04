@@ -1,8 +1,9 @@
-package org.onetwo.boot.module.permission;
+package org.onetwo.ext.security.config;
 
 import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionHandlerMappingListener;
 import org.onetwo.ext.permission.PermissionManager;
+import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
@@ -10,8 +11,6 @@ import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,32 +23,28 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
-@ConditionalOnBean({PermissionConfigAdapter.class})
-public class PermissionContextAutoConfig {
+public class PermissionContextConfig {
 	
 	@Autowired
-	private SecurityConfig securityConfig;
+	protected SecurityConfig securityConfig;
 	
-	public PermissionContextAutoConfig(){
+	public PermissionContextConfig(){
 	}
 	
 	@Bean
 	@Autowired
-	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfigAdapter<T> permissionConfig){
+	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfig<T> permissionConfig){
 		DefaultMenuInfoParser<T> parser = new DefaultMenuInfoParser<T>(permissionConfig);
 		return parser;
 	}
 	
 	@Bean
-//	@ConditionalOnBean(AdminController.class)
-	@ConditionalOnMissingBean(MenuItemRepository.class)
 	public MenuItemRepository<PermisstionTreeModel> menuItemRepository(){
 		DefaultMenuItemRepository menuItemRepository = new DefaultMenuItemRepository();
 		return menuItemRepository;
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(value=PermissionHandlerMappingListener.class)
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
 		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
 		listener.setSyncPermissionData(securityConfig.getSyncPermissionData());

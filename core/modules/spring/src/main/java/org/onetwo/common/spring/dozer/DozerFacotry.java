@@ -53,7 +53,7 @@ public class DozerFacotry {
 		
 		try {
 			DozerBean dupplicator = null;
-			dupplicator = new JFishDozer(dozerClasses);
+			dupplicator = new ClassMapperDozerBean(dozerClasses);
 			dupplicator.initDozer();
 			return dupplicator;
 		} catch (Throwable e) {

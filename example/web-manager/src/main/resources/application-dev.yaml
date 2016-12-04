@@ -18,7 +18,7 @@ endpoints:
 
 jfish:
     security:
-        syncPermissionData: false
+        syncPermissionData: true
         csrf:
             disable: true
         logoutUrl: /logout

@@ -4,6 +4,9 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.onetwo.boot.module.permission.BootPermissionContextConfig;
+import org.onetwo.ext.security.EnableOnetwoSecurity;
+import org.onetwo.ext.security.EnableOnetwoSecurity.InterceptMode;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,8 +14,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value = { java.lang.annotation.ElementType.TYPE })
 @Documented
-@Import({ BootMethodBasedSecurityConfig.class })
+//@Import({ BootMethodBasedSecurityConfig.class })
+@Import({BootPermissionContextConfig.class})
+@EnableOnetwoSecurity(mode=InterceptMode.CUSTOM, configClass=BootMethodBasedSecurityConfig.class, enableJavaStylePermissionManage=false)
 @Configuration
 @EnableGlobalMethodSecurity
-public @interface EnableJFishMethodSecurity {
+public @interface EnableOnetwoMethodSecurity {
 }

@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
@@ -12,6 +13,8 @@ import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.entity.AdminUser;
 import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
+import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
+import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +89,14 @@ public class WebAdminPluginContext {
 	public DictionaryImportController dictionaryImportController(){
 		return new DictionaryImportController();
 	}*/
+	
+	@Bean
+	@ConditionalOnMissingBean(PermissionConfig.class)
+	@Autowired
+	public WebAdminPermissionConfig webAdminPermissionConfig(RootMenuClassProvider provider){
+		WebAdminPermissionConfig config = new WebAdminPermissionConfig();
+		config.setRootMenuClassProvider(provider);
+		return config;
+	}
 
 }

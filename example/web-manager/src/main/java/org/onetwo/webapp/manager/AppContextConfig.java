@@ -1,17 +1,18 @@
 package org.onetwo.webapp.manager;
 
-import org.onetwo.boot.module.security.method.EnableJFishMethodSecurity;
+import org.onetwo.boot.module.security.url.EnableOnetwoUrlSecurity;
+import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
+import org.onetwo.webapp.manager.utils.Apps;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableJFishMethodSecurity
+@EnableOnetwoUrlSecurity
 public class AppContextConfig {
 
-
-	/*@Bean
-	@ConditionalOnMissingBean(RbacWebSecurityConfigurerAdapter.class)
-	public SimpleWebSecurityConfigurerAdapter simpleWebSecurityConfigurerAdapter(){
-		return new SimpleWebSecurityConfigurerAdapter();
-	}*/
-
+	@Bean
+	public RootMenuClassProvider menuConfig(){
+		return ()->Apps.class;
+	}
+	
 }

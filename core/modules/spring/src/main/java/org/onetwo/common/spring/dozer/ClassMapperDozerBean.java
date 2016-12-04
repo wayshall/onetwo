@@ -4,15 +4,15 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 
-public class JFishDozer extends DozerBean {
+public class ClassMapperDozerBean extends DozerBean {
 
 	private PropertyUnderlineMappingBuilder builder;
 	
 
-	public JFishDozer(List<DozerClassMapper> dozerClasses) {
+	public ClassMapperDozerBean(List<DozerClassMapper> dozerClasses) {
 		this(dozerClasses, null);
 	}
-	public JFishDozer(List<DozerClassMapper> dozerClasses, List<String> mappingFiles) {
+	public ClassMapperDozerBean(List<DozerClassMapper> dozerClasses, List<String> mappingFiles) {
 		super(mappingFiles);
 		if(LangUtils.isNotEmpty(dozerClasses)){
 			this.builder = new PropertyUnderlineMappingBuilder(dozerClasses);
