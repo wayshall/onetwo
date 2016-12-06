@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
 import org.onetwo.common.utils.map.KVEntry;
 
@@ -92,7 +93,20 @@ final public class LangOps {
 		})
 		.orElse(BigDecimal.valueOf(0.0));
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, K> Map<K, List<T>> groupByProperty(List<T> datas, String propName){
+		return datas.stream().collect(Collectors.groupingBy(e->(K)ReflectUtils.getPropertyValue(e, propName)));
+	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T, K, V> Map<K, List<V>> groupByProperty(List<T> datas, String keyProperty, String valueProperty){
+		return groupBy(datas, e->(K)ReflectUtils.getPropertyValue(e, keyProperty), e->(V)ReflectUtils.getPropertyValue(e, valueProperty));
+	}
+	
+	public static <T, K> Map<K, List<T>> groupBy(List<T> datas, Function<? super T, ? extends K> keyer){
+		return datas.stream().collect(Collectors.groupingBy(keyer));
+	}
 	public static <T, K, V> Map<K, List<V>> groupBy(List<T> datas, Function<? super T, ? extends K> keyer, Function<? super T, ? extends V> valuer){
 		Map<K, List<V>> groups = datas.stream()
 										.collect(Collectors.groupingBy(

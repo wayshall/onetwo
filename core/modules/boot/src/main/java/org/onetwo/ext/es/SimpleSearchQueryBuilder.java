@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
@@ -25,6 +27,7 @@ import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -39,6 +42,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilder.SuggestionBuilder;
+import org.jasig.cas.client.util.CommonUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -94,7 +99,7 @@ public class SimpleSearchQueryBuilder {
 	
 	private List<String> indices = Lists.newArrayList();
 	private List<String> types = Lists.newArrayList();
-
+	
 	private SimpleSearchQueryBuilder() {
 		this(new NativeSearchQueryBuilder());
 	}
@@ -303,6 +308,11 @@ public class SimpleSearchQueryBuilder {
 	public <R> R doQuery(ElasticsearchTemplate elasticsearchTemplate, ResultsExtractor<R> resultsExtractor){
 		NativeSearchQuery searchQuery = build(true);
 		return elasticsearchTemplate.query(searchQuery, resultsExtractor);
+	}
+	
+	public SuggestResponse querySuggest(ElasticsearchTemplate elasticsearchTemplate, SuggestionBuilder<?> suggestion){
+		SuggestResponse reponse = elasticsearchTemplate.suggest(suggestion, this.indices.toArray(new String[0]));
+		return reponse;
 	}
 
 	static public class QueryResult {
@@ -581,6 +591,10 @@ public class SimpleSearchQueryBuilder {
 
 		private Supplier<Boolean> conditionSupplier;
 		
+		private List<SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>>> orBoolQuerys = Lists.newArrayList();
+		private List<SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>>> andBoolQuerys = Lists.newArrayList();
+		private List<SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>>> notBoolQuerys = Lists.newArrayList();
+		
 		public SimpleBooleanQueryBuilder(PB parentBuilder) {
 			super(parentBuilder);
 		}
@@ -588,6 +602,19 @@ public class SimpleSearchQueryBuilder {
 		public SimpleBooleanQueryBuilder<PB> withCondition(Supplier<Boolean> condition) {
 			this.conditionSupplier = condition;
 			return this;
+		}
+
+		public PB end(){
+			andBoolQuerys.forEach(b->{
+				boolQuery.must(b.boolQuery);
+			});
+			orBoolQuerys.forEach(b->{
+				boolQuery.should(b.boolQuery);
+			});
+			notBoolQuerys.forEach(b->{
+				boolQuery.mustNot(b.boolQuery);
+			});
+			return parentBuilder;
 		}
 
 		public SimpleBooleanQueryBuilder<PB> endCondition() {
@@ -618,6 +645,24 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 
+		public SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> or(){
+			SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> simpleBooleanQuery = new SimpleBooleanQueryBuilder<>(this);
+			orBoolQuerys.add(simpleBooleanQuery);
+			return simpleBooleanQuery;
+		}
+
+		public SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> and(){
+			SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> simpleBooleanQuery = new SimpleBooleanQueryBuilder<>(this);
+			andBoolQuerys.add(simpleBooleanQuery);
+			return simpleBooleanQuery;
+		}
+
+		public SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> not(){
+			SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> simpleBooleanQuery = new SimpleBooleanQueryBuilder<>(this);
+			notBoolQuerys.add(simpleBooleanQuery);
+			return simpleBooleanQuery;
+		}
+
 		public SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nested(String path){
 			SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nestedBuilder = new SimpleNestedQueryBuilder<>(this, path);
 			nestedQuerys.add(nestedBuilder);
@@ -644,17 +689,46 @@ public class SimpleSearchQueryBuilder {
 			}
 			return this;
 		}*/
+
+		public SimpleBooleanQueryBuilder<PB> doTerms(String field, Consumer<TermsQueryBuilder> consumer, Object... values){
+			Assert.hasText(field);
+			if(values==null || values.length==0){
+				return this;
+			}
+			List<Object> listValue = Lists.newArrayList(values);
+			listValue.removeIf(Objects::isNull);
+			if(listValue.isEmpty()){
+				return this;
+			}
+			TermsQueryBuilder termQueryBuilder = null;
+			if(listValue.get(0) instanceof Collection){
+				Collection<?> colValue = (Collection<?>) listValue.get(0);
+				if(!colValue.isEmpty()){
+					termQueryBuilder = QueryBuilders.termsQuery(field, colValue);
+				}
+			}else{
+				termQueryBuilder = QueryBuilders.termsQuery(field, listValue.toArray(new Object[0]));
+			}
+//					mustNot(termQueryBuilder);
+			consumer.accept(termQueryBuilder);
+			return this;
+		}
+		
+
+		public SimpleBooleanQueryBuilder<PB> mustNotTerms(String field, Object... values){
+			return doTerms(field, q->mustNot(q), values);
+		}
 		
 		public SimpleBooleanQueryBuilder<PB> mustTerms(String field, Object... values){
-			Assert.hasText(field);
+			/*Assert.hasText(field);
 			if(values!=null && values.length>0){
 				List<Object> listValue = Lists.newArrayList(values);
 				listValue.removeIf(Objects::isNull);
 				if(!listValue.isEmpty()){
 					must(QueryBuilders.termsQuery(field, listValue.toArray(new Object[0])));
 				}
-			}
-			return this;
+			}*/
+			return doTerms(field, q->must(q), values);
 		}
 		
 		public SimpleBooleanQueryBuilder<PB> mustTerms(String field, Collection<?> values){
@@ -667,21 +741,42 @@ public class SimpleSearchQueryBuilder {
 		public SimpleBooleanQueryBuilder<PB> mustTermOrMissing(String field, Object value){
 			Assert.hasText(field);
 			if(value==null){
-				return missing(field);
+				return mustMissing(field);
 			}else{
 				return mustTerm(field, value);
 			}
 		}
 
-		/****
-		 * is null
+		/***
+		 * or is not null
 		 * @param field
 		 * @return
 		 */
-		public SimpleBooleanQueryBuilder<PB> missing(String field){
+		public SimpleBooleanQueryBuilder<PB> shouldExists(String field){
+			Assert.hasText(field);
+			should(QueryBuilders.existsQuery(field));
+			return this;
+		}
+		/****
+		 * and is null
+		 * @param field
+		 * @return
+		 */
+		public SimpleBooleanQueryBuilder<PB> mustMissing(String field){
 			return mustNotExists(field);
 		}
+		public SimpleBooleanQueryBuilder<PB> mustIsNull(String field){
+			return mustNotExists(field);
+		}
+		public SimpleBooleanQueryBuilder<PB> mustIsNotNull(String field){
+			return mustExists(field);
+		}
 		
+		/***
+		 * and is null
+		 * @param field
+		 * @return
+		 */
 		public SimpleBooleanQueryBuilder<PB> mustNotExists(String field){
 			Assert.hasText(field);
 //			boolQuery.mustNot(QueryBuilders.existsQuery(field));
@@ -689,7 +784,7 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 		/***
-		 * is not null
+		 * and is not null
 		 * @param field
 		 * @return
 		 */
@@ -699,11 +794,26 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 		
-		public SimpleBooleanQueryBuilder<PB> shouldTerms(String field, Collection<?> values){
+/*		public SimpleBooleanQueryBuilder<PB> shouldTerms(String field, Collection<?> values){
 			Assert.hasText(field);
 			if(values!=null && !values.isEmpty()){
 				should(QueryBuilders.termsQuery(field, values));
 //				boolQuery.should(QueryBuilders.termsQuery(field, values));
+			}
+			return this;
+		}
+*/		
+		public SimpleBooleanQueryBuilder<PB> shouldTerms(String field, Object... values){
+			Assert.hasText(field);
+			if(values!=null && values.length>0){
+				if(values.length==1 && values[0] instanceof Collection){
+					Collection<?> col = (Collection<?>)values[0];
+					if(!col.isEmpty()){
+						should(QueryBuilders.termsQuery(field, col));
+					}
+				}else{
+					should(QueryBuilders.termsQuery(field, values));
+				}
 			}
 			return this;
 		}
@@ -714,6 +824,11 @@ public class SimpleSearchQueryBuilder {
 //			Stream.of(fields).forEach(f->mustTerm(f, value));
 //			boolQuery.must(QueryBuilders.multiMatchQuery(value, fields));
 			must(QueryBuilders.multiMatchQuery(value, fields));
+			return this;
+		}
+		
+		public SimpleBooleanQueryBuilder<PB> minShouldMatch(int minimumNumberShouldMatch){
+			boolQuery.minimumNumberShouldMatch(minimumNumberShouldMatch);
 			return this;
 		}
 		
