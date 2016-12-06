@@ -14,6 +14,7 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionFuzzyBuilder;
 import org.elasticsearch.search.suggest.phrase.PhraseSuggestionBuilder;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.util.Assert;
 
@@ -34,6 +35,7 @@ public class SimpleSuggestionBuilder {
 
 	public <R> R get(ElasticsearchTemplate elasticsearchTemplate, Function<SuggestResponse, R> mapper){
 		Assert.notNull(this.suggestion);
+		Assert.notEmpty(indices);
 		SuggestResponse response = elasticsearchTemplate.suggest(suggestion, this.indices.toArray(new String[0]));
 		
 		return mapper.apply(response);
@@ -47,6 +49,9 @@ public class SimpleSuggestionBuilder {
 
 	@SuppressWarnings("unchecked")
 	public List<? extends Option> getOptions(ElasticsearchTemplate elasticsearchTemplate){
+		if(StringUtils.isBlank(text)){
+			return Collections.emptyList();
+		}
 		return get(elasticsearchTemplate, response->{
 			Suggestion<?> suggestion = response.getSuggest().getSuggestion(name);
 			if(suggestion==null || suggestion.getEntries().isEmpty()){

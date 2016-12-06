@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.onetwo.common.date.DateUtil;
 
@@ -82,6 +84,15 @@ public class JodatimeUtils {
 		Objects.requireNonNull(end);
 		Interval interval = createInterval(start, end);
 		return interval.contains(new DateTime(theTime));
+	}
+
+	public static Period between(Date start, Date end){
+		Period p = new Period(start.getTime(), end.getTime());
+		return p;
+	}
+	public static Period between(LocalDateTime start, LocalDateTime end){
+		Period p = new Period(start, end);
+		return p;
 	}
 
 	private JodatimeUtils(){

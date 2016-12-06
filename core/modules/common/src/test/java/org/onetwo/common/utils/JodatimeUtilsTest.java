@@ -1,21 +1,34 @@
 package org.onetwo.common.utils;
 
-import java.util.Calendar;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.util.Date;
 
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
+import org.joda.time.Seconds;
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.DateUtil;
 
 public class JodatimeUtilsTest {
+	
+	@Test
+	public void testBetween(){
+		Date start = DateUtil.parse("2016-12-06 17:35:30");
+		Date end = DateUtil.parse("2016-12-06 17:35:33");
+		Period period = JodatimeUtils.between(start, end);
+		assertThat(period.getSeconds(), equalTo(Seconds.THREE.getSeconds()));
+		assertThat(Seconds.secondsBetween(new LocalDateTime(start), new LocalDateTime(end)), equalTo(Seconds.THREE));
+	}
 
 	@Test
 	public void testDate(){
-		LocalDateTime fromDate = new LocalDateTime(new Date());
+		/*LocalDateTime fromDate = new LocalDateTime(new Date());
 		String str = fromDate.toString("yyyy-MM-dd HH:mm:ss.SSS");
 		System.out.println("str:"+str);
 		LocalTime localTime = fromDate.toLocalTime();
@@ -30,7 +43,7 @@ public class JodatimeUtilsTest {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		cal.set(1970, 0, 1);
-		System.out.println("cal:"+cal.getTime().toLocaleString());
+		System.out.println("cal:"+cal.getTime().toLocaleString());*/
 		
 		DateTime dt = DateTime.now().millisOfDay().withMinimumValue();;
 		System.out.println(JodatimeUtils.formatDateTime(dt.toDate()));
