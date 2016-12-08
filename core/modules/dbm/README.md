@@ -17,7 +17,7 @@
 如果是非onetwo的项目，只需要在spring配置类（即有@Configuration注解的类）上加上注解@EnableJFishDbm，以启用dbm功能。
 ```java     
   
-	@EnableJFishDbm
+	@EnableDbm
 	public class TestContextConfig {
 	}   
    

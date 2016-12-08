@@ -1,4 +1,4 @@
-package org.onetwo.dbm.spring;
+package org.onetwo.common.spring.config;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,8 +11,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({DbmSpringConfiguration.class})
-public @interface EnableJFishDbm {
+@Import(JFishProfiles.class)
+public @interface JFishProfile {
 
-//	DataBase database() default DataBase.MySQL;
 }

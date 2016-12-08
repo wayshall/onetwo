@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
-import org.onetwo.dbm.spring.EnableJFishDbm;
+import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,7 +28,7 @@ public class AppBaseTest extends SpringBaseJUnitTestCase {
 	@Configuration
 	@JFishProfile
 	@ImportResource("classpath:conf/applicationContext-test.xml")
-	@EnableJFishDbm
+	@EnableDbm
 	@ComponentScan(basePackageClasses=AppBaseTest.class)
 	public static class DbmOrmTestInnerContextConfig {
 
