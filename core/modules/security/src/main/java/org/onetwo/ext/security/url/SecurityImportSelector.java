@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.ext.security.EnableOnetwoSecurity;
-import org.onetwo.ext.security.EnableOnetwoSecurity.InterceptMode;
+import org.onetwo.ext.security.EnableSecurity;
+import org.onetwo.ext.security.EnableSecurity.InterceptMode;
 import org.onetwo.ext.security.config.PermissionContextConfig;
 import org.onetwo.ext.security.method.MethodBasedSecurityConfig;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
-public class OnetwoSecurityImportSelector implements ImportSelector {
+public class SecurityImportSelector implements ImportSelector {
 
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-		Map<String, Object> attributes = importingClassMetadata.getAnnotationAttributes(EnableOnetwoSecurity.class.getName(), false);
+		Map<String, Object> attributes = importingClassMetadata.getAnnotationAttributes(EnableSecurity.class.getName(), false);
 		InterceptMode mode = (InterceptMode)attributes.get("mode");
 		List<String> classNames = new ArrayList<>();
 		if(mode==InterceptMode.URL){

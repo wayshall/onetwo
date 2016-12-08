@@ -106,11 +106,17 @@
         <version>2.6</version>
     </dependency>
     
-	<dependency>
-	  <groupId>org.onetwo</groupId>
-	  <artifactId>onetwo-common</artifactId>
-	  <version>${onetwo.version}</version>
-	</dependency>
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-common</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo</groupId>
+      <artifactId>onetwo-poi</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
 	
 	<dependency>
 	  <groupId>org.onetwo</groupId>

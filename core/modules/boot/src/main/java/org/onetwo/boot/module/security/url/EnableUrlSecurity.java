@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.onetwo.boot.module.permission.BootPermissionContextConfig;
-import org.onetwo.ext.security.EnableOnetwoSecurity;
-import org.onetwo.ext.security.EnableOnetwoSecurity.InterceptMode;
+import org.onetwo.ext.security.EnableSecurity;
+import org.onetwo.ext.security.EnableSecurity.InterceptMode;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 @Documented
 //@Import({ BootUrlBasedSecurityConfig.class })
 @Import({BootPermissionContextConfig.class})
-@EnableOnetwoSecurity(mode=InterceptMode.CUSTOM, configClass=BootUrlBasedSecurityConfig.class, enableJavaStylePermissionManage=false)
+@EnableSecurity(mode=InterceptMode.CUSTOM, configClass=BootUrlBasedSecurityConfig.class, enableJavaStylePermissionManage=false)
 @Configuration
-public @interface EnableOnetwoUrlSecurity {
+public @interface EnableUrlSecurity {
 }
