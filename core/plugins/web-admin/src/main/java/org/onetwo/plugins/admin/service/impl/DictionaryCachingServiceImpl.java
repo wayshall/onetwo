@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.onetwo.common.spring.underline.CopyUtils;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.plugins.admin.entity.DataDictionary;

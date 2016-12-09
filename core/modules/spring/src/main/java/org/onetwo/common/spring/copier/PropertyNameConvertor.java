@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.underline;
+package org.onetwo.common.spring.copier;
 
 public interface PropertyNameConvertor {
 	

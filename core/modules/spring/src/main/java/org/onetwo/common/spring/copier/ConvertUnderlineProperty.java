@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.underline;
+package org.onetwo.common.spring.copier;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.underline;
+package org.onetwo.common.spring.copier;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -24,7 +24,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.underline.BaseCopierBuilder.SimpleCopierBuilder;
+import org.onetwo.common.spring.copier.BaseCopierBuilder.SimpleCopierBuilder;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;

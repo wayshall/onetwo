@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.copier.Cloneable;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.ConversionNotSupportedException;
 

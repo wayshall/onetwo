@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
-import org.onetwo.common.spring.underline.CopyUtils;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.AbstractPermissionManager;
 import org.onetwo.ext.permission.api.DataFrom;
