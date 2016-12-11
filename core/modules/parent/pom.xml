@@ -1,27 +1,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-	<!-- <parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.4.RELEASE</version>
-		<relativePath /> 
-	</parent> -->
-	
-  	<groupId>org.onetwo</groupId>
+  	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-parent</artifactId>
-	<!-- 4.1.x for boot -->
 	<version>4.3.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-parent</name>
 	<description>onetwo-parent</description>
+    <url>https://github.com/wayshall/onetwo</url>
 
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	<!-- <spring-boot.version>1.4.0.RELEASE</spring-boot.version> -->
   </properties> 
+  
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+        <name>zeng weishao</name>
+        <email>weishao.zeng@gmail.com</email>
+    </developer>
+  </developers>
   
   <dependencies>
     <dependency>
@@ -44,7 +51,7 @@
 	<dependencyManagement>
 	  <dependencies>
 		<dependency>
-	         <groupId>org.onetwo</groupId>
+	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
 	         <version>4.3.5-SNAPSHOT</version>
 	         <type>pom</type>

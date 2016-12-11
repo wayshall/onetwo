@@ -63,15 +63,15 @@
 	   </dependency>
 	   
         <dependency>
-          <groupId>org.onetwo</groupId>
+          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-security</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.onetwo</groupId>
+          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-dbm</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.onetwo</groupId>
+          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-poi</artifactId>
         </dependency>
         
@@ -173,7 +173,7 @@
         
         <!-- for test -->
         <dependency>
-          <groupId>org.onetwo</groupId>
+          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-test</artifactId>
           <scope>test</scope> 
         </dependency>
@@ -218,7 +218,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.onetwo</groupId>
+                <groupId>org.onetwo4j</groupId>
                 <artifactId>onetwo-bom</artifactId>
                 <version>4.3.5-SNAPSHOT</version>
                 <type>pom</type>

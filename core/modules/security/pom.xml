@@ -9,7 +9,7 @@
         <relativePath /> 
     </parent> -->
     <parent>
-        <groupId>org.onetwo</groupId>
+        <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
         <version>4.3.5-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
@@ -29,7 +29,7 @@
 	<dependencies>
         
         <dependency>
-          <groupId>org.onetwo</groupId>
+          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-web</artifactId>
         </dependency>
         
