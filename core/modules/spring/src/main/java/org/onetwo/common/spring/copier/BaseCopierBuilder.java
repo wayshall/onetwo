@@ -17,6 +17,7 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 	private CompositePropertyFilter<?> propertyFilters;
 //	private CompositePropertyFilter<?> currentFilters;
 	private PropertyNameConvertor propertyNameConvertor;
+	private PropertyValueCopier propertyValueCopier;
 	private List<String> ignoreFields;
 	private List<String> includeFields;
 
@@ -55,6 +56,11 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		}
 	}
 	
+	final public B propertyValueCopier(PropertyValueCopier propertyValueCopier) {
+		this.propertyValueCopier = propertyValueCopier;
+		return (B)this;
+	}
+
 	/****
 	 * 添加filter
 	 * 最终会组合这些filter，所有filter都通过才会被copy
@@ -132,7 +138,7 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		return (B)this;
 	}
 	
-	protected SimpleBeanCopier newCopier(){
+	public SimpleBeanCopier build(){
 		if(LangUtils.isNotEmpty(ignoreFields)){
 			this.propertyFilters.add((prop, fromValue)->!ignoreFields.contains(prop.getName()));
 		}
@@ -142,6 +148,9 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		SimpleBeanCopier copier = new SimpleBeanCopier();
 		copier.setPropertyFilter(this.propertyFilters);
 		copier.setPropertyNameConvertor(getPropertyNameConvertor());
+		if(propertyValueCopier!=null){
+			copier.setPropertyValueCopier(propertyValueCopier);
+		}
 		return copier;
 	}
 	
@@ -174,12 +183,12 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		}
 		public <E> E toClass(Class<E> targetClass){
 			E targetObject = ReflectUtils.newInstance(targetClass);
-			newCopier().fromObject(fromObject, targetObject);
+			build().fromObject(fromObject, targetObject);
 			return targetObject;
 		}
 		
 		public void to(T target){
-			newCopier().fromObject(fromObject, target);
+			build().fromObject(fromObject, target);
 		}
 
 	}

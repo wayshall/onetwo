@@ -88,7 +88,7 @@ public class CopyUtils {
 		public List<T> toNewList(){
 			List<T> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
-							return newCopier().fromObject(e, (Class<T>)e.getClass());
+							return build().fromObject(e, (Class<T>)e.getClass());
 						})
 						.collect(Collectors.toList());
 			return newDatas;
@@ -98,7 +98,7 @@ public class CopyUtils {
 		public <E> List<E> toNewListWith(Class<E> targetClass){
 			List<E> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
-							return newCopier().fromObject(e, targetClass);
+							return build().fromObject(e, targetClass);
 						})
 						.collect(Collectors.toList());
 			return newDatas;
@@ -129,7 +129,7 @@ public class CopyUtils {
 			Assert.notNull(elementClass);
 			List<R> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
-							return newCopier().fromObject(e, elementClass);
+							return build().fromObject(e, elementClass);
 						})
 						.collect(Collectors.toList());
 			return newDatas;
