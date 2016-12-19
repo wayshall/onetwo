@@ -23,6 +23,7 @@ public class ReflectUtilsTest {
 		System.out.println("super class: " +sclass);
 		Type type = UserEntity.class.getGenericSuperclass();
 		System.out.println("super type: " +type);
+		System.out.println("getCanonicalName: " +long.class.getCanonicalName());
 
 		Class<?>[] intes = UserEntity.class.getInterfaces();
 		for(Class c :intes){

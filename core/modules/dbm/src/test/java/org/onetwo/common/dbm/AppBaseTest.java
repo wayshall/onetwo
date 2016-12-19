@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -22,7 +21,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 @ActiveProfiles({ "dev" })
 //@ContextConfiguration(value="classpath:/applicationContext-test.xml")
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class)
-@Rollback
+//@Rollback(false)
 public class AppBaseTest extends SpringBaseJUnitTestCase {
 	
 	@Configuration

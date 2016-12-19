@@ -19,6 +19,7 @@ import lombok.ToString;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
@@ -157,12 +158,18 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	 * @param source
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public void buildSecurityMetadataSource(){
 		Assert.notNull(filterSecurityInterceptor);
 		this.buildRequestMap();
-		DefaultFilterInvocationSecurityMetadataSource oldFism = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
+		DefaultFilterInvocationSecurityMetadataSource originMetadata = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
 		//这个内置实现不支持一个url映射到多个表达式
 //		ExpressionBasedFilterInvocationSecurityMetadataSource fism = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
+		
+		Map<RequestMatcher, Collection<ConfigAttribute>> originRequestMap = (Map<RequestMatcher, Collection<ConfigAttribute>>)ReflectUtils.getFieldValue(originMetadata, "requestMap", false);
+		if(originRequestMap!=null && !originRequestMap.isEmpty()){
+			this.requestMap.putAll(originRequestMap);
+		}
 		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
 		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
 	}

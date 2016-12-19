@@ -98,19 +98,18 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public DbmEntityManager jfishEntityManager() {
+	public DbmEntityManager dbmEntityManager() {
 		DbmEntityManagerImpl jem = new DbmEntityManagerImpl();
-		DbmDaoImplementor dbmDao = jfishDao();
+		DbmDaoImplementor dbmDao = dbmDao();
 		jem.setDbmDao(dbmDao);
 		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 
-		if(this.database==null){
-			BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
-			DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
-			this.applicationContext.publishEvent(event);
-		}
+		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
+		DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
+		this.applicationContext.publishEvent(event);
+		
 		return jem;
 	}
 	
@@ -127,7 +126,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 //		fq.initQeuryFactory(createQueryable);
 		fq.setQueryProvideManager(jfishEntityManager());
 		return fq;*/
-		return jfishEntityManager().getFileNamedQueryManager();
+		return dbmEntityManager().getFileNamedQueryManager();
 	}
 	
 	@Bean
@@ -137,7 +136,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	@Autowired
-	public DbmDaoImplementor jfishDao() {
+	public DbmDaoImplementor dbmDao() {
 		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());

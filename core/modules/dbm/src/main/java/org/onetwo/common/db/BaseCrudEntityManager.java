@@ -11,21 +11,44 @@ import java.util.stream.Stream;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements CrudEntityManager<T, PK> {
+@SuppressWarnings({"unchecked"})
+public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEntityManager<T, PK> {
  
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected Class entityClass;
-	
-	public BaseCrudServiceImpl(){
-		this.entityClass = ReflectUtils.getSuperClassGenricType(this.getClass(), BaseCrudServiceImpl.class);
+	protected Class<T> entityClass;
+	protected BaseEntityManager baseEntityManager;
+
+	public BaseCrudEntityManager(Class<T> entityClass){
+		this(entityClass, SpringApplication.getInstance().getBean(BaseEntityManager.class));
 	}
-	
-	abstract public BaseEntityManager getBaseEntityManager();
+	public BaseCrudEntityManager(Class<T> entityClass, BaseEntityManager baseEntityManager){
+		if(entityClass==null){
+			this.entityClass = (Class<T>)ReflectUtils.getSuperClassGenricType(this.getClass(), BaseCrudEntityManager.class);
+		}else{
+			this.entityClass = entityClass;
+		}
+		this.baseEntityManager = baseEntityManager;
+	}
+	protected BaseCrudEntityManager(BaseEntityManager baseEntityManager){
+		this((Class<T>)null);
+		this.baseEntityManager = baseEntityManager;
+	}
+
+	public BaseEntityManager getBaseEntityManager() {
+		BaseEntityManager bem = this.baseEntityManager;
+		if(bem==null){
+			bem = SpringApplication.getInstance().getBean(BaseEntityManager.class);
+			if(this.baseEntityManager==null){
+				this.baseEntityManager = bem;
+			}
+		}
+		return bem;
+	}
 
 	@Override
 	public T findById(PK id) {
@@ -95,7 +118,8 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	public T removeById(PK id) {
 		return (T)getBaseEntityManager().removeById(entityClass, id);
 	}
-	public List<T> removeByIds(PK[] ids){
+	@Override
+	public Collection<T> removeByIds(PK[] ids){
 		List<T> list = new ArrayList<>(ids.length);
 		Stream.of(ids).forEach(id->list.add(removeById(id)));
 		return list;
@@ -141,8 +165,7 @@ abstract public class BaseCrudServiceImpl<T, PK extends Serializable> implements
 	}
 
 	@Override
-	public Collection<T> removeByIds(Class<T> entityClass, PK[] ids) {
-		return getBaseEntityManager().removeByIds(entityClass, ids);
+	public int removeAll() {
+		return getBaseEntityManager().removeAll(entityClass);
 	}
-	
 }

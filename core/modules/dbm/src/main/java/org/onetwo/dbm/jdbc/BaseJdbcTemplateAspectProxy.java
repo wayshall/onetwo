@@ -93,7 +93,7 @@ public class BaseJdbcTemplateAspectProxy {
 	}*/
 
 	protected void afterProceed(Context context, ProceedingJoinPoint pjp){
-//		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());
+		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());
 
 		StringBuilder logMsg = new StringBuilder(pjp.getSignature().toString()).append("\n");
 		logMsg.append(context).append("\n");
@@ -150,7 +150,7 @@ public class BaseJdbcTemplateAspectProxy {
 			}
 			
 		} catch (Throwable e) {
-			logger.error("log jdbc error : " + e.getMessage(), e);
+			logger.error("log jdbc error : " + e.getMessage());
 		}
 	}
 	

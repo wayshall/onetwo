@@ -18,7 +18,7 @@ import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.db.sqlext.ExtQueryUtils.F;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.dbm.entity.UserEntity;
+import org.onetwo.common.utils.UserEntity;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})

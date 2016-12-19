@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.validation.ValidationException;
 
-import org.onetwo.common.db.BaseCrudServiceImpl;
+import org.onetwo.common.db.BaseCrudEntityManager;
+import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.SpringApplication;
@@ -17,24 +17,19 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.springframework.transaction.annotation.Transactional;
 
-abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends BaseCrudServiceImpl<T, PK> {
+abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends BaseCrudEntityManager<T, PK> {
 
-	private DbmEntityManager baseEntityManager;
 	
-	public DbmCrudServiceImpl(){
+	public DbmCrudServiceImpl(Class<T> entityClass) {
+		super(entityClass);
 	}
-	
+
+	protected DbmCrudServiceImpl(BaseEntityManager baseEntityManager) {
+		super(baseEntityManager);
+	}
+
 	protected String serviceQName(String methodName){
 		return this.getClass().getSimpleName() + "." + methodName;
-	}
-	@Resource
-	public void setBaseEntityManager(DbmEntityManager baseEntityManager) {
-		this.baseEntityManager = baseEntityManager;
-	}
-
-	@Override
-	public DbmEntityManager getBaseEntityManager() {
-		return baseEntityManager;
 	}
 
 	@Override
@@ -134,8 +129,8 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 	}
 	
 	@Transactional
-	public void removeAll(){
-		baseEntityManager.removeAll(entityClass);
+	public int removeAll(){
+		return baseEntityManager.removeAll(entityClass);
 	}
 	
 	protected ValidationBindingResult validate(Object obj, Class<?>... groups){
@@ -149,13 +144,14 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 			throw new ValidationException(validations.getErrorMessagesAsString());
 		}
 	}
-
 	
 	protected JFishMappedEntry getMappedEntry(){
-		return this.getBaseEntityManager().getDbmDao().getMappedEntryManager().getEntry(entityClass);
+		DbmEntityManager dem = (DbmEntityManager)this.getBaseEntityManager();
+		return dem.getDbmDao().getMappedEntryManager().getEntry(entityClass);
 	}
 	
 	protected QueryBuilder createQueryBuilder(){
-		return this.getBaseEntityManager().createQueryBuilder(entityClass);
+		DbmEntityManager dem = (DbmEntityManager)this.getBaseEntityManager();
+		return dem.createQueryBuilder(entityClass);
 	}
 }
