@@ -29,6 +29,13 @@
         <email>weishao.zeng@gmail.com</email>
     </developer>
   </developers>
+
+  <scm>
+      <url>https://github.com/wayshall/onetwo</url>
+      <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+      <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
   
   <dependencies>
     <dependency>
