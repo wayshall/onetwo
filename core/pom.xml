@@ -31,6 +31,8 @@
 	  <profile>
     	<id>all</id>
     	<modules>
+                <module>modules/poi</module>
+                
 				<module>modules/bom</module>
 				<module>modules/parent</module>
                 <module>modules/common</module>
