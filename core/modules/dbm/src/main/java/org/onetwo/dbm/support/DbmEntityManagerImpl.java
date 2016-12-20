@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
@@ -66,6 +67,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 
 	public void afterPropertiesSet() throws Exception{
+		Objects.requireNonNull(dbmDao, "dbmDao");
 		/*FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDb(), watchSqlFile, listener);
 		this.fileNamedQueryFactory.initQeuryFactory(this);*/
@@ -83,14 +85,6 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public void destroy() throws Exception {
-		/*this.emListeners.each(new NoIndexIt<JFishEntityManagerLifeCycleListener>() {
-
-			@Override
-			protected void doIt(JFishEntityManagerLifeCycleListener element) throws Exception {
-				element.onDestroy(JFishEntityManagerImpl.this);
-			}
-			
-		});*/
 	}
 	
 	public <T> List<T> findAll(Class<T> entityClass){

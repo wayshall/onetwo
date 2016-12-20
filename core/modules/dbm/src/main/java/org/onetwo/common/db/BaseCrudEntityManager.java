@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -17,16 +18,23 @@ import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked"})
 public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEntityManager<T, PK> {
+
+	public static final <E, ID  extends Serializable> BaseCrudEntityManager<E, ID> createCrudManager(Class<E> entityClass){
+		return new BaseCrudEntityManager<>(entityClass);
+	}
+	public static final <E, ID  extends Serializable> BaseCrudEntityManager<E, ID> createCrudManager(Class<E> entityClass, BaseEntityManager baseEntityManager){
+		return new BaseCrudEntityManager<>(entityClass, baseEntityManager);
+	}
  
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
 	protected Class<T> entityClass;
 	protected BaseEntityManager baseEntityManager;
 
-	public BaseCrudEntityManager(Class<T> entityClass){
+	protected BaseCrudEntityManager(Class<T> entityClass){
 		this(entityClass, SpringApplication.getInstance().getBean(BaseEntityManager.class));
 	}
-	public BaseCrudEntityManager(Class<T> entityClass, BaseEntityManager baseEntityManager){
+	
+	protected BaseCrudEntityManager(Class<T> entityClass, BaseEntityManager baseEntityManager){
 		if(entityClass==null){
 			this.entityClass = (Class<T>)ReflectUtils.getSuperClassGenricType(this.getClass(), BaseCrudEntityManager.class);
 		}else{
@@ -34,6 +42,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 		}
 		this.baseEntityManager = baseEntityManager;
 	}
+	
 	protected BaseCrudEntityManager(BaseEntityManager baseEntityManager){
 		this((Class<T>)null);
 		this.baseEntityManager = baseEntityManager;
@@ -43,6 +52,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 		BaseEntityManager bem = this.baseEntityManager;
 		if(bem==null){
 			bem = SpringApplication.getInstance().getBean(BaseEntityManager.class);
+			Objects.requireNonNull(bem, "BaseEntityManager not found");
 			if(this.baseEntityManager==null){
 				this.baseEntityManager = bem;
 			}

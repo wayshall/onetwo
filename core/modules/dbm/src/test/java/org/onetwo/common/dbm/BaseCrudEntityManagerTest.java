@@ -12,16 +12,16 @@ import org.onetwo.common.profiling.TimeCounter;
 
 public class BaseCrudEntityManagerTest extends AppBaseTest {
 	
-	private BaseCrudEntityManager<UserAutoidEntity, Long> userDao = new BaseCrudEntityManager<>(UserAutoidEntity.class);
+	private BaseCrudEntityManager<UserAutoidEntity, Long> userDao = BaseCrudEntityManager.createCrudManager(UserAutoidEntity.class);
 
 
 	private UserAutoidEntity createUserAutoidEntity(int i){
 		String userNamePrefix = "BaseCrudEntityManager";;
 		UserAutoidEntity user = new UserAutoidEntity();
-		user.setUserName(userNamePrefix+"-batch-"+i);
-		user.setPassword("password-batch-"+i);
+		user.setUserName(userNamePrefix+"-insert-"+i);
+		user.setPassword("password-insert-"+i);
 		user.setGender(i%2);
-		user.setNickName("nickName-batch-"+i);
+		user.setNickName("nickName-insert-"+i);
 		user.setEmail("test@qq.com");
 		user.setMobile("137"+i);
 		user.setBirthday(new Date());
@@ -38,7 +38,7 @@ public class BaseCrudEntityManagerTest extends AppBaseTest {
 			System.out.println(s);
 		});
 		t.start();
-		String userName = "unique_user_name______________________";
+		String userName = "unique_user_name_";
 		Stream.iterate(1, item->item+1).limit(insertCount).forEach(item->{
 			UserAutoidEntity entity = createUserAutoidEntity(item);
 			entity.setUserName(userName);
