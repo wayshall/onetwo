@@ -4,7 +4,6 @@
 	
   	<groupId>org.onetwo.plugins</groupId>
 	<artifactId>onetwo-plugin-parent</artifactId>
-	<!-- 4.1.x for boot -->
 	<version>4.3.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -81,5 +80,77 @@
 		</plugin>
 	  </plugins>
 	</build>
+	
+    <profiles>
+       <profile>
+           <id>release</id>
+           <build>
+               <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Javadoc -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <additionalparam>-Xdoclint:none</additionalparam>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- GPG -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+               </plugins>
+           </build>
+       </profile>
+    </profiles>
   
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+        <name>zeng weishao</name>
+        <email>weishao.zeng@gmail.com</email>
+    </developer>
+  </developers>
+  
+  <scm>
+      <url>https://github.com/wayshall/onetwo</url>
+      <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+      <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
 </project>

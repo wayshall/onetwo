@@ -447,7 +447,7 @@ final public class CUtils {
      * list1中存在，list2中找不到的元素
      * @param list1
      * @param list2
-     * @param predicate
+     * @param notInPredicate
      */
     public static <T> List<T> difference(List<T> list1, List<T> list2, NotInPredicate<T> notInPredicate) {
     	List<T> diff = LangUtils.newArrayList();

@@ -15,11 +15,6 @@ public class Ignore {
 		public static final String EMPTY = ":empty";//map.put(":ignore", ":empty")
 	}
 	
-	/**********
-	 * ignore rule
-	 * @param objects
-	 * @return
-	 */
 	public static Ignore create(Object...objects){
 		return createBy(true, CUtils.asMap(objects));
 	}

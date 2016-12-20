@@ -1448,7 +1448,7 @@ public class ReflectUtils {
 	/************
 	 * 
 	 * @param bean
-	 * @param name this-property => thisProperty
+	 * @param name this-property  to thisProperty
 	 * @param newIfNull
 	 * @return
 	 */

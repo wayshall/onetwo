@@ -33,7 +33,7 @@ import org.onetwo.common.utils.StringUtils;
 /**
  * copy from springside 
  * 
- * 使用Jaxb2.0实现XML<->Java Object的Mapper.
+ * 使用Jaxb2.0实现XML to Java Object的Mapper.
  * 
  * 在创建时需要设定所有需要序列化的Root对象的Class.
  * 特别支持Root对象是Collection的情形.
@@ -70,14 +70,14 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * Java Object->Xml without encoding.
+	 * Java Object to Xml without encoding.
 	 */
 	public String toXml(Object root) {
 		return toXml(root, null);
 	}
 
 	/**
-	 * Java Object->Xml with encoding.
+	 * Java Object to Xml with encoding.
 	 */
 	public String toXml(Object root, String encoding) {
 		try {
@@ -91,14 +91,14 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * Java Collection->Xml without encoding, 特别支持Root Element是Collection的情形.
+	 * Java Collection to Xml without encoding, 特别支持Root Element是Collection的情形.
 	 */
 	public String toXml(Collection<?> root, String rootName) {
 		return toXml(root, rootName, null);
 	}
 
 	/**
-	 * Java Collection->Xml with encoding, 特别支持Root Element是Collection的情形.
+	 * Java Collection to Xml with encoding, 特别支持Root Element是Collection的情形.
 	 */
 	public String toXml(Collection<?> root, String rootName, String encoding) {
 		try {
@@ -119,7 +119,7 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * Xml->Java Object.
+	 * Xml to Java Object.
 	 */
 	public <T> T fromXml(String xml, Class<T> type) {
 		try {

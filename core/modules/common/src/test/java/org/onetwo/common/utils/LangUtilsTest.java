@@ -170,11 +170,7 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testGenerateToken(){
-		MD5 md5 = new MD5();
-		String token1 = md5.calcMD5("wayshall");
 		String token2 = MDFactory.MD5.encrypt("wayshall");
-		Assert.assertEquals(token1, token2);
-		
 		System.out.println("token:" + LangUtils.generateToken("wayshall"));
 	}
 	

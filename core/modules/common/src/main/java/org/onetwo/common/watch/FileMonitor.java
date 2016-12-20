@@ -55,8 +55,6 @@ public class FileMonitor {
 	/**
 	 * Stop watching a file
 	 * 
-	 * @param listener
-	 *            The file listener
 	 * @param filename
 	 *            The filename to keep watch
 	 */

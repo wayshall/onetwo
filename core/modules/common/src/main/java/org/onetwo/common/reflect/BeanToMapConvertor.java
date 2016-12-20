@@ -106,8 +106,6 @@ public class BeanToMapConvertor {
 	
 	/***
 	 * 递归解释嵌套对象
-	 * @param obj
-	 * @return
 	 */
 	public Map<String, Object> toFlatMap(final Object obj){
 		final Map<String, Object> params = new HashMap<>();

@@ -24,9 +24,9 @@ public class SynonymsMap {
 	public static final String UTF8_BOM = "\uFEFF";
 	
 	/****
-	 * 羊城, 花城 => 广州
-		广州市 => 广州
-		清远市 => 清远
+	 * 羊城, 花城   广州
+		广州市    广州
+		清远市   清远
 	 * @return
 	 */
 	public static SynonymsMap buildFromClassPath(String path){

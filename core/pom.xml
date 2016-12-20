@@ -28,8 +28,30 @@
   </developers>
     
 	<profiles>
+	
+      <profile>
+        <id>all</id>
+        <modules>
+                <module>modules/poi</module>
+                
+                <module>modules/bom</module>
+                <module>modules/parent</module>
+                <module>modules/common</module>
+                <module>modules/jackson</module>
+                <module>modules/spring</module>
+                <module>modules/dbm</module>
+                <module>modules/web</module>
+                <module>modules/boot</module>
+                <module>modules/security</module>
+                <module>modules/test</module>
+                
+                <module>plugins/parent</module>
+                <module>plugins/web-admin</module>
+        </modules>
+      </profile>
+      
 	  <profile>
-    	<id>all</id>
+    	<id>release</id>
     	<modules>
                 <module>modules/poi</module>
                 
@@ -65,75 +87,6 @@
         <tag>HEAD</tag>
     </scm>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<compilerVersion>1.8</compilerVersion>
-					<showWarnings>true</showWarnings>
-					<encoding>utf-8</encoding>
-					<compilerArgs>
-						<arg>-parameters</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin>
-	        <plugin>  
-	            <groupId>org.apache.maven.plugins</groupId>  
-	            <artifactId>maven-release-plugin</artifactId>  
-	            <version>2.5.2</version>  
-	        </plugin>
-	        
-	        <!-- Source -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- GPG -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-                    
-  	    </plugins>
-	</build>
-	
 	<distributionManagement>
 	    <snapshotRepository>
             <id>oss</id>
