@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-parent</artifactId>
-	<version>4.3.6-SNAPSHOT</version>
+	<version>4.3.6</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-parent</name>
@@ -34,7 +34,7 @@
       <url>https://github.com/wayshall/onetwo</url>
       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>onetwo-modules-4.3.6</tag>
   </scm>
   
   <dependencies>
@@ -60,7 +60,7 @@
 		<dependency>
 	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.3.6-SNAPSHOT</version>
+	         <version>4.3.6</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>
@@ -144,8 +144,29 @@
 		                </execution>
 		            </executions>
 		        </plugin>
+		        <plugin>
+	               <groupId>org.sonatype.plugins</groupId>
+	               <artifactId>nexus-staging-maven-plugin</artifactId>
+	               <version>1.6.3</version>
+	               <extensions>true</extensions>
+	               <configuration>
+	                 <serverId>oss</serverId>
+	                 <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	                 <autoReleaseAfterClose>true</autoReleaseAfterClose>
+	               </configuration>
+	             </plugin>
 	           </plugins>
 	       </build>
+	        <distributionManagement>
+	            <snapshotRepository>
+	                <id>oss</id>
+	                <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	            </snapshotRepository>
+	            <repository>
+	                <id>oss</id>
+	                <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+	            </repository>
+	        </distributionManagement>
 	   </profile>
 	</profiles>
   

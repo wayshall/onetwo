@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
 
 	
-  	<groupId>org.onetwo.plugins</groupId>
+    <groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-plugin-parent</artifactId>
-	<version>4.3.6-SNAPSHOT</version>
+	<version>4.3.6</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-plugin-parent</name>
@@ -15,6 +15,27 @@
 	<java.version>1.8</java.version>
 	<!-- <spring-boot.version>1.4.0.RC1</spring-boot.version> -->
   </properties> 
+  
+  
+   <scm>
+       <url>https://github.com/wayshall/onetwo</url>
+       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+       <tag>onetwo-modules-4.3.6</tag>
+   </scm>
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+        <name>zeng weishao</name>
+        <email>weishao.zeng@gmail.com</email>
+    </developer>
+  </developers>
   
   <dependencies>
 	
@@ -44,7 +65,7 @@
 		<dependency>
 	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.3.6-SNAPSHOT</version>
+	         <version>4.3.6</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>
@@ -128,8 +149,29 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                   <groupId>org.sonatype.plugins</groupId>
+                   <artifactId>nexus-staging-maven-plugin</artifactId>
+                   <version>1.6.3</version>
+                   <extensions>true</extensions>
+                   <configuration>
+                     <serverId>oss</serverId>
+                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                   </configuration>
+                 </plugin>
                </plugins>
            </build>
+	        <distributionManagement>
+	            <snapshotRepository>
+	                <id>oss</id>
+	                <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	            </snapshotRepository>
+	            <repository>
+	                <id>oss</id>
+	                <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+	            </repository>
+	        </distributionManagement>
        </profile>
     </profiles>
   
@@ -151,6 +193,6 @@
       <url>https://github.com/wayshall/onetwo</url>
       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>onetwo-modules-4.3.6</tag>
   </scm>
 </project>
