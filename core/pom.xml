@@ -7,6 +7,7 @@
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
+  <description>onetwo-modules</description>
   <url>http://maven.apache.org</url>
 
   <properties>
