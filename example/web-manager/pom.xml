@@ -29,7 +29,7 @@
 
     <dependencies>
         <dependency>
-		  <groupId>org.onetwo.plugins</groupId>
+		  <groupId>org.onetwo4j</groupId>
 		  <artifactId>onetwo-plugin-web-admin</artifactId>
 	       <exclusions>
 	       	<exclusion>
@@ -220,7 +220,7 @@
             <dependency>
                 <groupId>org.onetwo4j</groupId>
                 <artifactId>onetwo-bom</artifactId>
-                <version>4.3.5-SNAPSHOT</version>
+                <version>4.3.6-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
