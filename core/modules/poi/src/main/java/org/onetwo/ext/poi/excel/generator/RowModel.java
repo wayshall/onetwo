@@ -29,7 +29,13 @@ public class RowModel implements PoiModel {
 
 	private String fieldFont;
 	private String fieldStyle;
+	/****
+	 * @see {@link org.apache.poi.ss.usermodel.Font Font}
+	 */
 	private String fieldHeaderFont;
+	/***
+	 * @see {@link org.apache.poi.ss.usermodel.CellStyle CellStyle}
+	 */
 	private String fieldHeaderStyle;
 	
 	private String fieldProcessor;

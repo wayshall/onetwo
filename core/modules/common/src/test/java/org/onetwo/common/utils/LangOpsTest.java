@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.test.TestUtils;
 
 import com.google.common.collect.Lists;
 

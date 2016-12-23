@@ -4,7 +4,7 @@
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-tomcat</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.2-SNAPSHOT</version>
+  <version>4.3.7-SNAPSHOT</version>
 
   <name>onetwo-tomcat</name>
   <url>http://maven.apache.org</url>
@@ -15,6 +15,25 @@
     <tomcat.version>8.0.30</tomcat.version>
   </properties>
   
+   <scm>
+       <url>https://github.com/wayshall/onetwo</url>
+       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+       <tag>onetwo-modules-4.3.6</tag>
+   </scm>
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+        <name>zeng weishao</name>
+        <email>weishao.zeng@gmail.com</email>
+    </developer>
+  </developers>
 
   <dependencies>
   	
@@ -39,6 +58,12 @@
 	  <version>2.2</version>
 	</dependency>   
 	
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-websocket</artifactId>
+      <version>${tomcat.version}</version>
+    </dependency>
+        
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>

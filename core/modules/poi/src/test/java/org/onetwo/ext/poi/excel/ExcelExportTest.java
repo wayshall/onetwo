@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.ext.poi.excel.generator.ExcelGenerators;
 import org.onetwo.ext.poi.excel.interfaces.TemplateGenerator;
 import org.onetwo.ext.poi.utils.ExcelUtils;
@@ -54,7 +55,6 @@ public class ExcelExportTest {
 				
 				cb.setBeans(Arrays.asList(cb));
 				card.addCardBean(cb);
-//				card.setProperties(Arrays.asList("aa", "bb"));
 			}
 			
 			cards.add(card);
@@ -64,18 +64,35 @@ public class ExcelExportTest {
 	}
 
 	@Test
+	public void testExportSimple() {
+		List<CardEntity> cardList = LangOps.generateList(10, i->{
+			CardEntity card = new CardEntity();
+			card.setId(Long.valueOf(i));
+			card.setCardNo("card_no_"+i);
+			card.setCardPwd("password"+i);
+			card.setStartTime(new Date());
+			return card;
+		});
+		Map<String, Object> context = new HashMap<>();
+		context.put("cardList", cardList);
+		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_simple.xml", context);
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_simple.xls");
+		g.write(path);
+	}
+
+	@Test
 	public void testExport() {
-		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test.xls");
 		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_test.xml", context);
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test.xls");
 		g.write(path);
 	}
 
 	@Test
 	public void testExport2() {
 		ExcelGenerators.devModel();
+		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
 		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test2.xls");
 		System.out.println("path:"+path);
-		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_test2.xml", context);
 		g.write(path);
 	}
 

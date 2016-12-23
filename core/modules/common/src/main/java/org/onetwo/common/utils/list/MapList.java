@@ -1,4 +1,4 @@
-package org.onetwo.common.test;
+package org.onetwo.common.utils.list;
 
 import java.io.Serializable;
 import java.util.ArrayList;

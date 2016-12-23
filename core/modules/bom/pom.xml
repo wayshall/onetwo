@@ -158,12 +158,6 @@
 	
 	<dependency>
 	  <groupId>org.onetwo4j</groupId>
-	  <artifactId>onetwo-ajaxanywhere</artifactId>
-	  <version>${onetwo.version}</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.onetwo4j</groupId>
 	  <artifactId>onetwo-web</artifactId>
 	  <version>${onetwo.version}</version>
 	</dependency>

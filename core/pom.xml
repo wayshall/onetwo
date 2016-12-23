@@ -39,9 +39,8 @@
       <profile>
         <id>all</id>
         <modules>
-                <module>modules/poi</module>
-                
                 <module>modules/bom</module>
+                
                 <module>modules/parent</module>
                 <module>modules/common</module>
                 <module>modules/jackson</module>
@@ -54,6 +53,10 @@
                 
                 <module>plugins/parent</module>
                 <module>plugins/web-admin</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
         </modules>
       </profile>
       
@@ -61,7 +64,6 @@
     	<id>release</id>
     	<modules>
                 <module>modules/bom</module>
-                <module>modules/poi</module>
                 
                 <module>modules/parent</module>
                 <module>modules/common</module>
@@ -75,6 +77,10 @@
 				
 				<module>plugins/parent</module>
 				<module>plugins/web-admin</module>
+				
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
 	  	</modules>
         <build>
             <plugins>

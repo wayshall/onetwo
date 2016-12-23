@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: 1.4.2_08-b03 (Sun Microsystems Inc.)
-
