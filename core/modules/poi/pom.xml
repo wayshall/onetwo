@@ -5,7 +5,7 @@
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-poi</artifactId>
   <packaging>jar</packaging>
-  <version>4.3.6</version>
+  <version>4.3.7-SNAPSHOT</version>
   
    <!--  <parent>
         <groupId>org.onetwo4j</groupId>

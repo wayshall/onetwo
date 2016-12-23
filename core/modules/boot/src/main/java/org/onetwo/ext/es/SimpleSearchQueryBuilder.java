@@ -43,7 +43,6 @@ import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilder.SuggestionBuilder;
-import org.jasig.cas.client.util.CommonUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -281,6 +280,12 @@ public class SimpleSearchQueryBuilder {
 	public <T> Page<T> queryForPage(ElasticsearchTemplate elasticsearchTemplate, Class<T> clazz){
 		NativeSearchQuery searchQuery = build(true);
 		Page<T> page = elasticsearchTemplate.queryForPage(searchQuery, clazz);
+		return page;
+	}
+
+	public <T> List<T> queryForList(ElasticsearchTemplate elasticsearchTemplate, Class<T> clazz){
+		NativeSearchQuery searchQuery = build(true);
+		List<T> page = elasticsearchTemplate.queryForList(searchQuery, clazz);
 		return page;
 	}
 	
@@ -585,6 +590,7 @@ public class SimpleSearchQueryBuilder {
 
 	}
 	
+
 	public class SimpleBooleanQueryBuilder<PB> extends ExtBaseQueryBuilder<PB> {
 		private BoolQueryBuilder boolQuery = boolQuery();
 		private List<SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>>> nestedQuerys = Lists.newArrayList();
@@ -832,10 +838,19 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 		
-		public RangeQueryBuilder rangeBuilder(String name){
+		public SimpleBooleanQueryBuilder<PB> range(String name, Object from, Object to){
+			if(from==null && to==null){
+				return this;
+			}
+			return rangeBuilder(name, range->range.from(from).to(to));
+		}
+		public SimpleBooleanQueryBuilder<PB> rangeBuilder(String name, Function<RangeQueryBuilder, RangeQueryBuilder> func){
 			RangeQueryBuilder range = new RangeQueryBuilder(name);
-			must(range);
-			return range;
+			range = func.apply(range);
+			if(range!=null){
+				must(range);
+			}
+			return this;
 		}
 		
 		public <T extends QueryBuilder> T must(T queryBuilder){
