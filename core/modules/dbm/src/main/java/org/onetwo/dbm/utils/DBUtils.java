@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
@@ -451,17 +451,17 @@ public class DBUtils {
 		}
 		else if(isDateValue(value) || value instanceof java.sql.Timestamp){
 			sql.append("'");
-			sql.append(DateUtil.formatDateTime((Date)value));
+			sql.append(DateUtils.formatDateTime((Date)value));
 			sql.append("'");
 		}
 		else if(value instanceof java.sql.Date){
 			sql.append("'");
-			sql.append(DateUtil.formatDate((Date)value));
+			sql.append(DateUtils.formatDate((Date)value));
 			sql.append("'");
 		}
 		else if(value instanceof java.sql.Time){
 			sql.append("'");
-			sql.append(DateUtil.formatTime((Date)value));
+			sql.append(DateUtils.formatTime((Date)value));
 			sql.append("'");
 		}
 		else {

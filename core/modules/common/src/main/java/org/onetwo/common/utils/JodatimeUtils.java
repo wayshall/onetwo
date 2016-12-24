@@ -9,7 +9,7 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 
 public class JodatimeUtils {
 	
@@ -57,7 +57,7 @@ public class JodatimeUtils {
 	
 	public static DateTime parse(String source){
 		Assert.hasText(source);
-		return DateTimeFormat.forPattern(DateUtil.matchPattern(source)).parseDateTime(source);
+		return DateTimeFormat.forPattern(DateUtils.matchPattern(source)).parseDateTime(source);
 	}
 
 	public static Interval createInterval(String start, String end){

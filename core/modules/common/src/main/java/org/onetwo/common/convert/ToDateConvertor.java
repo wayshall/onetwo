@@ -2,7 +2,7 @@ package org.onetwo.common.convert;
 
 import java.util.Date;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 
 public class ToDateConvertor extends AbstractTypeConvert<Date> {
 	
@@ -19,7 +19,7 @@ public class ToDateConvertor extends AbstractTypeConvert<Date> {
 		if(Date.class.isAssignableFrom(vtype)){
 			date = new Date(((Date)value).getTime());
 		}else if(CharSequence.class.isAssignableFrom(vtype)){
-			date = DateUtil.parse(value.toString());
+			date = DateUtils.parse(value.toString());
 		}else if(Number.class.isAssignableFrom(vtype)){
 			date = new Date(((Number)value).longValue());
 		}

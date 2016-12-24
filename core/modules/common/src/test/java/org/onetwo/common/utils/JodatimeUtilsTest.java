@@ -13,14 +13,14 @@ import org.joda.time.Period;
 import org.joda.time.Seconds;
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 
 public class JodatimeUtilsTest {
 	
 	@Test
 	public void testBetween(){
-		Date start = DateUtil.parse("2016-12-06 17:35:30");
-		Date end = DateUtil.parse("2016-12-06 17:35:33");
+		Date start = DateUtils.parse("2016-12-06 17:35:30");
+		Date end = DateUtils.parse("2016-12-06 17:35:33");
 		Period period = JodatimeUtils.between(start, end);
 		assertThat(period.getSeconds(), equalTo(Seconds.THREE.getSeconds()));
 		assertThat(Seconds.secondsBetween(new LocalDateTime(start), new LocalDateTime(end)), equalTo(Seconds.THREE));

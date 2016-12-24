@@ -1,6 +1,6 @@
 package org.onetwo.common.commandline;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -28,7 +28,7 @@ public class InputValidators {
 
 		@Override
 		public void doValidate(String input) {
-			String pattern = DateUtil.matchPattern(input);
+			String pattern = DateUtils.matchPattern(input);
 			if(StringUtils.isBlank(pattern))
 				throw newError("必须是日期格式，输入错误：" + input);
 		}

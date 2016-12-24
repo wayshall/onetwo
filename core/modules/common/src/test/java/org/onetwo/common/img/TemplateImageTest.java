@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.img.TemplateImage.Horizontal;
 
@@ -31,7 +31,7 @@ public class TemplateImageTest {
 										.build();
 		
 		File file = ti.drawTo(basePath+"/test1.jpg", 
-				"now", DateUtil.format("h:mm a", new Date()),
+				"now", DateUtils.format("h:mm a", new Date()),
 				"userName", "12号12号12号",
 				"first", "我刚申请了一个免费商品，赶紧来\n跟我一起拼团吧！",
 				"unit", "¥",
@@ -42,7 +42,7 @@ public class TemplateImageTest {
 				"qrcode", basePath+"/dg.jpg");
 		System.out.println("save to: " + file);
 		
-		ti.createDrawer().set("now", DateUtil.format("h:mm a", new Date()))
+		ti.createDrawer().set("now", DateUtils.format("h:mm a", new Date()))
 						.set("userName", "zhouf")
 						.set("first", "xxx的剩货，能免费分给员工吗？")
 						.set("productImg", "G:/tmp/dg.jpg")

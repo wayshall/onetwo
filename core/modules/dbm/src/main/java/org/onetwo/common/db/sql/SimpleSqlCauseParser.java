@@ -11,7 +11,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.SToken;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.Stringer;
+import org.onetwo.common.utils.StringSpliter;
 
 import com.google.common.collect.ImmutableList;
 
@@ -101,7 +101,7 @@ public class SimpleSqlCauseParser implements SqlCauseParser {
 			UtilTimerStack.push("parseSql");
 		}
 		
-		Stringer sg = Stringer.wrap(originalSql, null, getRetainSeperators());
+		StringSpliter sg = StringSpliter.wrap(originalSql, null, getRetainSeperators());
 		String[] strs = sg.getArrays();
 		
 //		LangUtils.println("tokens: ", strs);

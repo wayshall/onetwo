@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 
@@ -73,7 +73,7 @@ public class CacheElement {
 	}
 	
 	public String toString(){
-		return LangUtils.append("{key:", key, ", expire time(second):", expire, ", createAt:", DateUtil.formatDateTime(createAtTime),"}");
+		return LangUtils.append("{key:", key, ", expire time(second):", expire, ", createAt:", DateUtils.formatDateTime(createAtTime),"}");
 	}
 
 }

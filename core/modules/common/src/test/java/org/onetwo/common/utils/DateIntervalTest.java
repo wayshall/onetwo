@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.DateInterval;
-import org.onetwo.common.date.DateUtil;
-import org.onetwo.common.date.DateUtil.DateType;
+import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.utils.list.It;
 
@@ -25,7 +25,7 @@ public class DateIntervalTest {
 		dates = interval.splitDate();
 		int index = 0;
 		for(Date date : dates){
-			System.out.println("testSplit date["+(index++)+"]: " + DateUtil.formatDate(date));
+			System.out.println("testSplit date["+(index++)+"]: " + DateUtils.formatDate(date));
 		}
 		Assert.assertEquals(27, dates.size());
 		Assert.assertEquals("2014-09-15", NiceDate.New(dates.get(0)).formatAsDate());

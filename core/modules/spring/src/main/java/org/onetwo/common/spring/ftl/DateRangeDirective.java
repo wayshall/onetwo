@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.date.DateInterval;
-import org.onetwo.common.date.DateUtil;
-import org.onetwo.common.date.DateUtil.DateType;
+import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.date.DateUtils.DateType;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

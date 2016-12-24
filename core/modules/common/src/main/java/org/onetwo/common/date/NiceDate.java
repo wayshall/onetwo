@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.onetwo.common.date.DateUtil.DateType;
+import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.utils.Assert;
 
 public class NiceDate {
@@ -20,12 +20,12 @@ public class NiceDate {
 	}
 
 	public static NiceDate New(String dateStr){
-		Date date = DateUtil.parse(dateStr);
+		Date date = DateUtils.parse(dateStr);
 		return New(date);
 	}
 
 	public static NiceDate New(String dateStr, String format){
-		Date date = DateUtil.parseByPatterns(dateStr, format);
+		Date date = DateUtils.parseByPatterns(dateStr, format);
 		return New(date);
 	}
 	
@@ -112,22 +112,22 @@ public class NiceDate {
 	}
 	
 	public NiceDate nextDay(int number){
-		DateUtil.increaseDay(calendar, number);
+		DateUtils.increaseDay(calendar, number);
 		return this;
 	}
 	
 	public NiceDate nextHour(int amount){
-		DateUtil.addHours(calendar, amount);
+		DateUtils.addHours(calendar, amount);
 		return this;
 	}
 	
 	public NiceDate nextMonth(int amount){
-		DateUtil.addMonth(calendar, amount);
+		DateUtils.addMonth(calendar, amount);
 		return this;
 	}
 	
 	public NiceDate nextYear(int amount){
-		DateUtil.addYear(calendar, amount);
+		DateUtils.addYear(calendar, amount);
 		return this;
 	}
 	
@@ -201,12 +201,12 @@ public class NiceDate {
 	
 
 	public NiceDate atTheBeginning(){
-		DateUtil.accurateToBeginningAt(calendar, dateType);
+		DateUtils.accurateToBeginningAt(calendar, dateType);
 		return this;
 	}
 	
 	public NiceDate atTheEnd(){
-		DateUtil.accurateToEndAt(calendar, dateType);
+		DateUtils.accurateToEndAt(calendar, dateType);
 		return this;
 	}
 	
@@ -249,19 +249,19 @@ public class NiceDate {
 	}
 
 	public String format(String format){
-		return DateUtil.format(format, calendar.getTime());
+		return DateUtils.format(format, calendar.getTime());
 	}
 	public String formatAsDate(){
-		return DateUtil.formatDate(calendar.getTime());
+		return DateUtils.formatDate(calendar.getTime());
 	}
 	public String formatAsTime(){
-		return DateUtil.formatTime(calendar.getTime());
+		return DateUtils.formatTime(calendar.getTime());
 	}
 	public String formatAsDateTime(){
-		return DateUtil.formatDateTime(calendar.getTime());
+		return DateUtils.formatDateTime(calendar.getTime());
 	}
 	public String formatDateTimeMillis(){
-		return DateUtil.formatDateTimeMillis(calendar.getTime());
+		return DateUtils.formatDateTimeMillis(calendar.getTime());
 	}
 	
 	public int getYear(){

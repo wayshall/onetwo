@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.Page;
@@ -40,7 +40,7 @@ public class JsonMapperParameterizedTest {
 		TestJsonBean bean = new TestJsonBean();
 		bean.setName("test bean"+i);
 		bean.setEmail("test@email.com"+i);
-		bean.setBirthday(DateUtil.parse("2012-11-23"));
+		bean.setBirthday(DateUtils.parse("2012-11-23"));
 		return bean;
 	}
 	

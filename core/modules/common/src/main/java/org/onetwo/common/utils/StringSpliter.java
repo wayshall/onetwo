@@ -3,59 +3,62 @@ package org.onetwo.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Stringer {
+public class StringSpliter {
 	
-	public static Stringer wrap(String s) {
+	public static StringSpliter wrap(String s) {
 		return wrap(s, " ");
 	}
-	public static Stringer wrap(String s, String... ops) {
-		Stringer g = new Stringer(s, ops);
+	public static StringSpliter wrap(String s, String... ops) {
+		StringSpliter g = new StringSpliter(s, ops);
 		return g;
 	}
-	public static Stringer wrap(String s, List<String> ops, List<String> ratainOps) {
-		Stringer g = new Stringer(s, ops, ratainOps);
+	public static StringSpliter wrap(String s, List<String> spliters, List<String> ratainOps) {
+		StringSpliter g = new StringSpliter(s, spliters, ratainOps);
 		return g;
 	}
 
+	//&开头的spliter会被保留添加到strlist里
 	private static final String RETAIN_OP_MARK = "&";
 
 	// private String source;
-	private List<String> op;
-	private String joinOp;
-	private List<String> retainOp;
+	private List<String> spliters;
+	private String joiner;
+	//retain spliter
+	private List<String> retainers;
 	private List<String> strList;
 
-	private Stringer(String source, String... ops) {
+	private StringSpliter(String source, String... ops) {
 
 		Assert.hasText(source);
 		if (LangUtils.isEmpty(ops)) {
 			ops = new String[] { " " };
 		}
-		this.op = new ArrayList<String>(ops.length);
-		this.retainOp = new ArrayList<String>(ops.length);
+		this.spliters = new ArrayList<String>(ops.length);
+		this.retainers = new ArrayList<String>(ops.length);
 		for (String _op : ops) {
 			if (_op.length()>1 && _op.startsWith(RETAIN_OP_MARK)) {
 				_op = _op.substring(RETAIN_OP_MARK.length());
-				this.retainOp.add(_op);
+				this.retainers.add(_op);
 			}
-			this.op.add(_op);
+			this.spliters.add(_op);
 		}
-		this.joinOp = op.get(0);
+		//get the first spliter as joiner
+		this.joiner = spliters.get(0);
 
 		this.parse(source);
 	}
 	
-	private Stringer(String source, List<String> ops, List<String> retailOps) {
+	private StringSpliter(String source, List<String> ops, List<String> retailOps) {
 
 		Assert.hasText(source);
 		int size = (ops==null?0:ops.size())+(retailOps==null?0:retailOps.size());
-		this.op = new ArrayList<String>(size);
-		this.retainOp = retailOps;
+		this.spliters = new ArrayList<String>(size);
+		this.retainers = retailOps;
 		if(ops!=null)
-			this.op.addAll(ops);
+			this.spliters.addAll(ops);
 		if(retailOps!=null)
-			this.op.addAll(retailOps);
-		this.joinOp = op.get(0);
+			this.spliters.addAll(retailOps);
+		this.joiner = spliters.get(0);
 
 		this.parse(source);
 	}
@@ -70,8 +73,8 @@ public class Stringer {
 			String matchSep = "";
 			int minIndex = -1;
 			int curIndex = -1;
-			for(int i=0; i<op.size(); i++){
-	    		String sep = op.get(i);
+			for(int i=0; i<spliters.size(); i++){
+	    		String sep = spliters.get(i);
 	    		curIndex = source.indexOf(sep, wordIndex);
 	    		if(curIndex==-1)
 	    			continue;
@@ -95,11 +98,11 @@ public class Stringer {
 	
 	protected void addToList(String word, String sep){
 		this.strList.add(word);
-		if(this.retainOp.contains(sep))
+		if(this.retainers.contains(sep))
 			this.strList.add(sep);
 	}
 
-	public Stringer removeBlank() {
+	public StringSpliter removeBlank() {
 		if (isEmpty())
 			return this;
 		List<String> temp = new ArrayList<String>(strList);
@@ -115,18 +118,18 @@ public class Stringer {
 		return strList.contains(val);
 	}
 
-	public Stringer remove(String val) {
+	public StringSpliter remove(String val) {
 		if (contails(val))
 			strList.remove(val);
 		return this;
 	}
 
-	public Stringer add(String val) {
+	public StringSpliter add(String val) {
 		strList.add(val);
 		return this;
 	}
 
-	public Stringer addIfNotExist(String val) {
+	public StringSpliter addIfNotExist(String val) {
 		if (contails(val))
 			return this;
 		add(val);
@@ -155,7 +158,7 @@ public class Stringer {
 	}
 
 	public String toString() {
-		return StringUtils.join(strList, joinOp);
+		return StringUtils.join(strList, joiner);
 	}
 
 }

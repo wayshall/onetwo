@@ -19,13 +19,12 @@ import org.slf4j.Logger;
 /**
  * 时间通用方法
  * 
- * @author cg
+ * @author way
  * 
  */
-@SuppressWarnings({ "serial"})
-abstract public class DateUtil {
+abstract public class DateUtils {
 
-	private static final Logger logger = JFishLoggerFactory.getLogger(DateUtil.class);
+	private static final Logger logger = JFishLoggerFactory.getLogger(DateUtils.class);
 	public static enum DateType {
 
 		year(Calendar.YEAR), month(Calendar.MONTH), 

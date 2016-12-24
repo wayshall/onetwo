@@ -32,7 +32,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
@@ -108,7 +108,6 @@ public class FileUtils {
 		return newOutputStream(smbpath);
 	}
 	
-
 	public static InputStream newInputStream(String baseDir, String subPath){
 		String path = StringUtils.trimRight(baseDir, SLASH);
 		path += StringUtils.appendStartWith(subPath, SLASH);
@@ -546,7 +545,7 @@ public class FileUtils {
 	
 
 	public static String newFileNameByDateAndRand(String fileNameNoDirPath){
-		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtil.DATETIME, 6);
+		return newFileNameByDateAndRand(fileNameNoDirPath, "-", DateUtils.DATETIME, 6);
 	}
 	
 	public static String newFileNameByDateAndRand(String fileNameNoDirPath, String seprator, String dateformat, int count){

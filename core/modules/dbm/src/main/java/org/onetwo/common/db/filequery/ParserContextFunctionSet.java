@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Date;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.SqlUtils;
 import org.onetwo.common.utils.Assert;
@@ -99,9 +99,9 @@ public class ParserContextFunctionSet implements QueryContextVariable {
 		Assert.notNull(date);
 		String val = null;
 		if(Date.class.isInstance(date)){
-			val = DateUtil.format(pattern, (Date)date);
+			val = DateUtils.format(pattern, (Date)date);
 		}else if(String.class.isInstance(date)){
-			val = DateUtil.format(pattern, DateUtil.parse(date.toString()));
+			val = DateUtils.format(pattern, DateUtils.parse(date.toString()));
 		}else{
 			throw new IllegalArgumentException("type: " + date.getClass());
 		}

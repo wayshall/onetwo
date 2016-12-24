@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -91,7 +91,7 @@ public class JsonMapper {
 	public JsonMapper(Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-		setDateFormat(DateUtil.DATE_TIME);
+		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);

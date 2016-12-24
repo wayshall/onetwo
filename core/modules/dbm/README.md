@@ -12,7 +12,18 @@
 - 接口支持批量插入
 
    
-##使用
+
+##maven
+```xml
+
+<dependency>
+    <groupId>org.onetwo4j</groupId>
+    <artifactId>onetwo-dbm</artifactId>
+    <version>4.3.6</version>
+</dependency>
+
+```
+##启用
 如果是基于onetwo本框架的使用，已利用boot的autoconfig功能自动集成，无需任何配置。  
 如果是非onetwo的项目，只需要在spring配置类（即有@Configuration注解的类）上加上注解@EnableJFishDbm，以启用dbm功能。
 ```java     

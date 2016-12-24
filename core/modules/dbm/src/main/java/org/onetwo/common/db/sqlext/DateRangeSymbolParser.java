@@ -3,7 +3,7 @@ package org.onetwo.common.db.sqlext;
 import java.util.Date;
 import java.util.List;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.db.builder.QueryField;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
@@ -48,9 +48,9 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 			if(paramlist.size()==1){
 				Date date = getDate(paramlist.get(0));
 				if(date!=null){
-					startDate = DateUtil.setDateStart(date);
+					startDate = DateUtils.setDateStart(date);
 	//				endDate = DateUtil.setDateEnd(date);
-					endDate = DateUtil.addDay(startDate, 1);
+					endDate = DateUtils.addDay(startDate, 1);
 				}
 			}else{
 				startDate = getDate(paramlist.get(0));
@@ -85,7 +85,7 @@ public class DateRangeSymbolParser extends CommonSQLSymbolParser implements HqlS
 	protected Date getDate(Object value){
 		Date date = null;
 		if(value instanceof String){
-			date = DateUtil.date(value.toString());
+			date = DateUtils.date(value.toString());
 		}else if(value instanceof NiceDate){
 			date = ((NiceDate)value).getTime();
 		}else{

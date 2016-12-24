@@ -237,8 +237,11 @@ final public class CUtils {
 		return new LinkedHashMap<K, V>();
 	}
 
-	public static <T> List<T> aslist(T... array) {
+	public static <T> List<T> trimAsList(T... array) {
 		return tolist(array, true);
+	}
+	public static <T> List<T> asList(T... array) {
+		return tolist(array, false);
 	}
 	public static List tolist(Object object, boolean trimNull) {
 		return tolist(object, trimNull, NULL_LIST);
@@ -336,22 +339,6 @@ final public class CUtils {
 	 * @return
 	 */
 	public static Collection strip(Collection<?> collection, final Object... stripValue) {
-//		L.StripValuePredicate stripPredicate = new L.StripValuePredicate(false, stripValue);
-		//remove if return false
-		/*Predicate predicate = new Predicate<Object>() {
-			@Override
-			public boolean apply(Object obj) {
-				if (obj instanceof Class) {
-					if (ArrayUtils.isAssignableFrom(stripValue, (Class) obj))
-						return false;
-				} else if (obj == null || (String.class.isAssignableFrom(obj.getClass()) && StringUtils.isBlank(obj.toString())) || ArrayUtils.contains(stripValue, obj)){
-					return false;
-				}
-				return true;
-			}
-			
-		};
-		CollectionUtils.filter(collection, predicate);*/
 		collection.removeIf(obj-> {
 
 				if (obj instanceof Class) {

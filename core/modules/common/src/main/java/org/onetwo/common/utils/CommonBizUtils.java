@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
 
 import com.google.common.collect.BiMap;
@@ -90,10 +90,10 @@ final public class CommonBizUtils {
 		if(StringUtils.isBlank(birthYearStr)){
 			idCardNo.append("19").append(YEARS[RandUtils.randomInt(YEARS.length)]).append(RandUtils.randomInt(10));//4 year
 		}else{
-			Date birthYear = DateUtil.parseByPatterns(birthYearStr, "yyyy");
+			Date birthYear = DateUtils.parseByPatterns(birthYearStr, "yyyy");
 			if(birthYear==null)
 				throw new BaseException("error birth year: " + birthYearStr);
-			birthYearStr = DateUtil.format("yyyy", birthYear);
+			birthYearStr = DateUtils.format("yyyy", birthYear);
 			idCardNo.append(birthYearStr);
 		}
 		idCardNo.append(RandUtils.randomWithPadLeft(13, "0", 0)).append(RandUtils.randomWithPadLeft(29, "0", 0))//4 month day

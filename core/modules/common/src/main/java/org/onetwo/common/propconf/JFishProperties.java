@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
@@ -502,7 +502,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		if (!containsKey(key)) {
 			return def;
 		}
-		Date date = DateUtil.parse(getVariable(key));
+		Date date = DateUtils.parse(getVariable(key));
 		if(date==null)
 			date = def;
 		return date;

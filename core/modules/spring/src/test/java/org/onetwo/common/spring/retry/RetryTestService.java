@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.retry;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 
@@ -15,7 +15,7 @@ public class RetryTestService {
 	 */
 	@Retryable(maxAttempts=4, backoff=@Backoff(delay=1000, multiplier=2))
 	public int saySomething(){
-		String dateStr = DateUtil.nowString();
+		String dateStr = DateUtils.nowString();
 		if(count<successCount){
 			System.out.println(dateStr+": error count: " +count);
 			count++;

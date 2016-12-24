@@ -1,7 +1,9 @@
 package org.onetwo.common.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -10,6 +12,7 @@ import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 import jcifs.smb.SmbFileOutputStream;
 
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 
@@ -22,6 +25,22 @@ public class SmbFileUtils {
 	private SmbFileUtils() {
 	}
 
+
+	public static File copyFileToDir(SmbFile srcFile, String targetDir) {
+		String fname = FileUtils.getFileName(srcFile.getName());
+		File destFile = new File(targetDir + File.separator + fname);
+		String newFileName = FileUtils.newFileNameAppendRepeatCount(destFile);
+		destFile = new File(destFile.getParentFile(), newFileName);
+		
+//		copyFile(srcFile, destFile);
+		try {
+			IOUtils.copy(newSmbInputStream(srcFile), new FileOutputStream(destFile));
+		} catch (Exception e) {
+			throw new RuntimeException("copy file error, src:"+srcFile+", target:"+targetDir);
+		}
+		return destFile;
+	}
+	
 	public static String newSmbPath(String user, String password, String path){
 		return LangUtils.append(SMB_PREFIX, user, ":", password, "@", path);
 	}

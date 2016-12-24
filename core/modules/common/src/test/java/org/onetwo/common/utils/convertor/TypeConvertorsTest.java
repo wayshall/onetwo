@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -148,13 +148,13 @@ public enum JNamedQueryKey {
 	public void testToDate(){
 		String datestr = "2012-05-05";
 		Date cdate = Types.convertValue(datestr, Date.class);
-		Assert.assertEquals(datestr, DateUtil.formatDate(cdate));
+		Assert.assertEquals(datestr, DateUtils.formatDate(cdate));
 		
 		datestr = "21:21:21";
 		cdate = Types.convertValue(datestr, Date.class);
-		Assert.assertEquals(datestr, DateUtil.formatTime(cdate));
+		Assert.assertEquals(datestr, DateUtils.formatTime(cdate));
 		
 		cdate = Types.convertValue(cdate.getTime(), Date.class);
-		Assert.assertEquals(datestr, DateUtil.formatTime(cdate));
+		Assert.assertEquals(datestr, DateUtils.formatTime(cdate));
 	}
 }

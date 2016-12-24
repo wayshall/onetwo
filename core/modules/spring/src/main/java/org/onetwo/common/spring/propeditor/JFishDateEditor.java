@@ -3,7 +3,7 @@ package org.onetwo.common.spring.propeditor;
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
@@ -13,7 +13,7 @@ public class JFishDateEditor extends PropertyEditorSupport {
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		try {
-			setValue(DateUtil.parse(text));
+			setValue(DateUtils.parse(text));
 		} catch (Exception ex) {
 			logger.error("parse date error : " + ex.getMessage());
 		}
@@ -21,7 +21,7 @@ public class JFishDateEditor extends PropertyEditorSupport {
 
 	@Override
 	public String getAsText() {
-		return DateUtil.formatDateTime((Date) getValue());
+		return DateUtils.formatDateTime((Date) getValue());
 	}
 
 }

@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.Magazine;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
@@ -514,7 +514,7 @@ public class ExtQueryImplTest {
 		properties.put(K.DESC, "id");
 		
 		properties.put("createTime:date in", new String[]{"2011-10-27", "2011-10-28"});
-		properties.put("regiestTime:date in", DateUtil.parse("2011-10-27"));
+		properties.put("regiestTime:date in", DateUtils.parse("2011-10-27"));
 		
 		q = sqlSymbolManagerFactory.getJPA().createSelectQuery(Magazine.class, "mag", properties);
 		q.build();

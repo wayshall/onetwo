@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.UserEntity.SubUserEntity;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
@@ -142,7 +142,7 @@ public class JsonMapperTest {
 		user.setAge(11);
 		user.setUserName("勺子");
 		user.setEmail("userNameJsonTest@163.com");
-		user.setBirthDay2(DateUtil.parse("1984-01-01 11:11:11"));
+		user.setBirthDay2(DateUtils.parse("1984-01-01 11:11:11"));
 		
 		String json = JsonMapper.defaultMapper().toJson(user);
 		Assert.assertTrue(json.contains("birthDay2"));
@@ -152,7 +152,7 @@ public class JsonMapperTest {
 		SubUserEntity u2 = JsonMapper.defaultMapper().fromJson(json, SubUserEntity.class);
 		Assert.assertEquals(user.getId(), u2.getId());
 		Assert.assertEquals(user.getUserName(), u2.getUserName());
-		Assert.assertEquals(DateUtil.parse("1984-01-01"), u2.getBirthDay2());
+		Assert.assertEquals(DateUtils.parse("1984-01-01"), u2.getBirthDay2());
 		
 		JsonMapper jsonMapper = JsonMapper.defaultMapper();
 		jsonMapper.getObjectMapper()
@@ -251,7 +251,7 @@ public class JsonMapperTest {
 		TestJsonBean bean = new TestJsonBean();
 		bean.setName("test bean");
 		bean.setEmail("test@email.com");
-		bean.setBirthday(DateUtil.parse("2012-11-23"));
+		bean.setBirthday(DateUtils.parse("2012-11-23"));
 
 		JsonMapper jm = JsonMapper.ignoreEmpty();
 		String json = jm.toJson(bean);
@@ -265,7 +265,7 @@ public class JsonMapperTest {
 		TestJsonBean bean = new TestJsonBean();
 		bean.setName("test bean");
 		bean.setEmail("test@email.com");
-		bean.setBirthday(DateUtil.parse("2012-11-23"));
+		bean.setBirthday(DateUtils.parse("2012-11-23"));
 
 		JsonMapper jm = JsonMapper.ignoreEmpty().defaultFiler(new TestDefaultBeanPropertyFilter());
 		String json = jm.toJson(bean);

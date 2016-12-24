@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
@@ -121,7 +121,7 @@ public class DbmEntityManagerTest extends AppBaseTest {
 			UserEntity user = new UserEntity();
 			user.setId(i+1L);
 			user.setUserName("JdbcTest");
-			user.setBirthday(DateUtil.now());
+			user.setBirthday(DateUtils.now());
 			user.setEmail("username@qq.com");
 			user.setHeight(3.3f);
 			user.setAge(28);

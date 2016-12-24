@@ -4,7 +4,18 @@
 交流群：  8060215
 
    
-##使用
+
+##maven
+```xml
+
+<dependency>
+    <groupId>org.onetwo4j</groupId>
+    <artifactId>onetwo-security</artifactId>
+    <version>4.3.6</version>
+</dependency>
+```
+
+##启用
 基于onetwo的项目，在Configuration类上加上@EnableOnetwoUrlSecurity注解，提供一个实现了接口RootMenuClassProvider的bean，和添加[web-admin插件](https://github.com/wayshall/onetwo/blob/master/core/plugins/web-admin)依赖。   
 ```java     
   

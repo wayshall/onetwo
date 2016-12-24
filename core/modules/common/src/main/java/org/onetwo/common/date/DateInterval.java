@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import org.onetwo.common.date.DateUtil.DateType;
+import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.list.It;
 import org.onetwo.common.utils.list.JFishList;
@@ -20,7 +20,7 @@ public class DateInterval {
 	public static DateInterval in(String date1, String date2){
 		Assert.hasText(date1);
 		Assert.hasText(date2);
-		return new DateInterval(DateUtil.parse(date1), DateUtil.parse(date2));
+		return new DateInterval(DateUtils.parse(date1), DateUtils.parse(date2));
 	}
 	
 	public static DateInterval in(Date date1, Date date2){
@@ -79,11 +79,11 @@ public class DateInterval {
 		Calendar end = getEndCalendar();
 
 		int index = 0;
-		while((!includeEnd && DateUtil.compareAccurateAt(end, start, dt)>0) ||
-				(includeEnd && DateUtil.compareAccurateAt(end, start, dt)>=0)
+		while((!includeEnd && DateUtils.compareAccurateAt(end, start, dt)>0) ||
+				(includeEnd && DateUtils.compareAccurateAt(end, start, dt)>=0)
 				){
 			if(it.doIt(start.getTime(), index)){
-				DateUtil.addByDateType(start, dt, intevalNumb);
+				DateUtils.addByDateType(start, dt, intevalNumb);
 				index++;
 			}else{
 				break;
@@ -123,12 +123,12 @@ public class DateInterval {
 		Calendar end = getEndCalendar();
 
 		DateIntervalList dates = new DateIntervalList();
-		while((!includeEnd && DateUtil.compareAccurateAt(end, start, dt)>0) ||
-				(includeEnd && DateUtil.compareAccurateAt(end, start, dt)>=0)
+		while((!includeEnd && DateUtils.compareAccurateAt(end, start, dt)>0) ||
+				(includeEnd && DateUtils.compareAccurateAt(end, start, dt)>=0)
 				){
 //			System.out.println("stat:" + start.getTime().toLocaleString());
 			dates.add(start.getTime());
-			DateUtil.addByDateType(start, dt, intevalNumb);
+			DateUtils.addByDateType(start, dt, intevalNumb);
 		}
 		return dates;
 	}
@@ -165,19 +165,19 @@ public class DateInterval {
 	}
 
 	public long getStandardDays() {
-        return getMillis() / DateUtil.MILLIS_PER_DAY;
+        return getMillis() / DateUtils.MILLIS_PER_DAY;
     }
 
     public long getStandardHours() {
-        return getMillis() / DateUtil.MILLIS_PER_HOUR;
+        return getMillis() / DateUtils.MILLIS_PER_HOUR;
     }
     
     public long getStandardMinutes() {
-        return getMillis() / DateUtil.MILLIS_PER_MINUTE;
+        return getMillis() / DateUtils.MILLIS_PER_MINUTE;
     }
     
     public long getStandardSeconds() {
-        return getMillis() / DateUtil.MILLIS_PER_SECOND;
+        return getMillis() / DateUtils.MILLIS_PER_SECOND;
     }
     
     public class DateIntervalList extends JFishList<Date> {
@@ -195,7 +195,7 @@ public class DateInterval {
 
 				@Override
 				protected void doIt(Date date) throws Exception {
-					String rs = DateUtil.formatDateByPattern(date, pattern);
+					String rs = DateUtils.formatDateByPattern(date, pattern);
 					list.add(rs);
 				}
     			

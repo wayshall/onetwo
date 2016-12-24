@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 import org.onetwo.common.annotation.BeanOrder;
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.encrypt.MDFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
@@ -632,7 +632,7 @@ public class LangUtils {
 			}
 		}
 		if(print){
-			System.out.println(DateUtil.nowString()+" : "+sb.toString());
+			System.out.println(DateUtils.nowString()+" : "+sb.toString());
 		}
 		return sb.toString();
 	}
@@ -671,7 +671,7 @@ public class LangUtils {
 		}else if(obj instanceof Class){
 			result.append(((Class)obj).getName());
 		}else if(obj instanceof Date){
-			result.append(DateUtil.formatDateTime((Date)obj));
+			result.append(DateUtils.formatDateTime((Date)obj));
 		}else if(obj instanceof String){
 			result.append(obj);
 		}else if(obj instanceof Number){
@@ -1554,8 +1554,8 @@ public class LangUtils {
 		Object actualValue;
 		if(value instanceof Date){
 			if(StringUtils.isBlank(dataFormat))
-				dataFormat = DateUtil.DATE_TIME;
-			actualValue = DateUtil.format(dataFormat, (Date)value);
+				dataFormat = DateUtils.DATE_TIME;
+			actualValue = DateUtils.format(dataFormat, (Date)value);
 		}else if(value instanceof Number && dataFormat != null) {
 			NumberFormat nf = new DecimalFormat(dataFormat);
 			nf.setRoundingMode(RoundingMode.HALF_UP);

@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.generator.mapping.ResultSetMapper;
 import org.onetwo.common.db.generator.mapping.SimpleMetaMapping;
 import org.onetwo.common.db.generator.mapping.SqlTypeMapping;
@@ -213,17 +213,17 @@ public class DBUtils {
 		}
 		else if(isDateValue(value) || value instanceof java.sql.Timestamp){
 			sql.append("'");
-			sql.append(DateUtil.formatDateTime((Date)value));
+			sql.append(DateUtils.formatDateTime((Date)value));
 			sql.append("'");
 		}
 		else if(value instanceof java.sql.Date){
 			sql.append("'");
-			sql.append(DateUtil.formatDate((Date)value));
+			sql.append(DateUtils.formatDate((Date)value));
 			sql.append("'");
 		}
 		else if(value instanceof java.sql.Time){
 			sql.append("'");
-			sql.append(DateUtil.formatTime((Date)value));
+			sql.append(DateUtils.formatTime((Date)value));
 			sql.append("'");
 		}
 		else {
@@ -514,7 +514,7 @@ public class DBUtils {
 					}
 				}
 			}else{
-				Collection<String> columnNames = CUtils.aslist(names);
+				Collection<String> columnNames = CUtils.trimAsList(names);
 				Object val = null;
 				for(String colName : columnNames){
 					try {

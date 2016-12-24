@@ -2,7 +2,7 @@ package org.onetwo.common.profiling;
 
 import java.util.Date;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
@@ -84,8 +84,8 @@ public class TimeCounter {
 		this.costTime = this.stop.getTime() - this.start.getTime();
 		message.append(this.target)
 				.append("---> cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
-				.append(", start time[").append(DateUtil.formatDateTimeMillis(start))
-				.append("], stop time[").append(DateUtil.formatDateTimeMillis(this.stop))
+				.append(", start time[").append(DateUtils.formatDateTimeMillis(start))
+				.append("], stop time[").append(DateUtils.formatDateTimeMillis(this.stop))
 				.append("]");
 		if(printMemory){
 			message.append("\n").append(LangUtils.statisticsMemory(""));

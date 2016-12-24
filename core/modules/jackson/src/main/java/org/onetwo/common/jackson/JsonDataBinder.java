@@ -1,13 +1,13 @@
 package org.onetwo.common.jackson;
 
-import org.onetwo.common.date.DateUtil;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.file.FileUtils;
 
 public class JsonDataBinder<T> {
 	private Class<T> dataType;
 	private String dataFilePath;
 
-	private JsonMapper jsonMapper =  JsonMapper.defaultMapper().setDateFormat(DateUtil.DATE_TIME);
+	private JsonMapper jsonMapper =  JsonMapper.defaultMapper().setDateFormat(DateUtils.DATE_TIME);
 	
 	public JsonDataBinder(Class<T> dataType) {
 		String path = dataType.getName().replace('.', '/')+".data.json";
