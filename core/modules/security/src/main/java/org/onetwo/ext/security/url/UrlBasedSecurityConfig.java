@@ -28,15 +28,6 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 public class UrlBasedSecurityConfig {
 	@Autowired
 	private SecurityConfig securityConfig;
-	/***
-	 * 如果不是基于方法拦截（即url匹配），需要用后处理器重新配置SecurityMetadataSource
-	 * @return
-	 */
-	@Bean
-	public SecurityBeanPostProcessor securityBeanPostProcessor(){
-		return new SecurityBeanPostProcessor();
-	}
-
 	
 	@Bean
 	public MultiWebExpressionVoter multiWebExpressionVoter(){

@@ -72,6 +72,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		//if basic method interceptor, ignore all url interceptor
 		http.authorizeRequests()
 			.anyRequest()
 			.permitAll();
@@ -96,8 +97,8 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
 		http
 			.formLogin()
-			.loginPage(securityConfig.getLoginUrl())
-			.loginProcessingUrl(securityConfig.getLoginProcessUrl())
+			.loginPage(securityConfig.getLoginUrl()).permitAll()
+			.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
 			.usernameParameter("username")
 			.passwordParameter("password")
 			.failureUrl(securityConfig.getLoginUrl()+"?error=true")
