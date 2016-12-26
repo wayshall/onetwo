@@ -14,7 +14,7 @@ import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.UserEntity.SubUserEntity;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.utils.map.ParamMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -275,7 +275,7 @@ public class JsonMapperTest {
 	
 	@Test
 	public void testCauseMap(){
-		CasualMap map = new CasualMap();
+		ParamMap map = new ParamMap();
 		map.putElement("aa", "aavalue");
 		map.putElement("bb", "bbvalue");
 		String json = JsonMapper.IGNORE_EMPTY.toJson(map);

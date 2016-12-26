@@ -1,22 +1,34 @@
 package org.onetwo.common.utils.map;
 
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.utils.CUtils;
 
-@SuppressWarnings("serial")
-public class BaseMap<K, V> extends LinkedHashMap<K, V> {
+/****
+ * 提供类型转换的get方法
+ * @author way
+ *
+ * @param <K>
+ * @param <V>
+ */
+public class BaseMap<K, V> implements Map<K, V>{
 	
-	public BaseMap(){super();}
+	final private Map<K, V> delegateMap;
+	
+	public BaseMap(){
+		this.delegateMap = new HashMap<>();
+	}
 	
 	public BaseMap(int initialCapacity) {
-		super(initialCapacity);
+		this.delegateMap = new HashMap<>(initialCapacity);
 	}
 	
 	public BaseMap(Map<K, V> map){
-		super(map);
+		delegateMap = map;
 	}
 
 	public Object get(Object key, Object def){
@@ -91,4 +103,61 @@ public class BaseMap<K, V> extends LinkedHashMap<K, V> {
 	public Object[] toArray(){
 		return CUtils.toList(this).toArray();
 	}
+
+	public int size() {
+		return delegateMap.size();
+	}
+
+	public boolean isEmpty() {
+		return delegateMap.isEmpty();
+	}
+
+	public boolean containsKey(Object key) {
+		return delegateMap.containsKey(key);
+	}
+
+	public boolean containsValue(Object value) {
+		return delegateMap.containsValue(value);
+	}
+
+	public V get(Object key) {
+		return delegateMap.get(key);
+	}
+
+	public V put(K key, V value) {
+		return delegateMap.put(key, value);
+	}
+
+	public V remove(Object key) {
+		return delegateMap.remove(key);
+	}
+
+	public void putAll(Map<? extends K, ? extends V> m) {
+		delegateMap.putAll(m);
+	}
+
+	public void clear() {
+		delegateMap.clear();
+	}
+
+	public Set<K> keySet() {
+		return delegateMap.keySet();
+	}
+
+	public Collection<V> values() {
+		return delegateMap.values();
+	}
+
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		return delegateMap.entrySet();
+	}
+
+	public boolean equals(Object o) {
+		return delegateMap.equals(o);
+	}
+
+	public int hashCode() {
+		return delegateMap.hashCode();
+	}
+	
 }

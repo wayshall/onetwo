@@ -32,7 +32,7 @@ class WeixinSignTest {
 		"""
 		XmlObj obj = XmlUtils.toBean(xml, "xml", XmlObj.class)
 		println("obj: ${obj}")
-		String toParamString = ParamUtils.toParamString(obj)
+		String toParamString = ParamUtils.comparableKeyMapToParamString(obj)
 		println("toParamString: ${toParamString}")
 		boolean res = MDFactory.createMD5().checkEncrypt(toParamString, "398DFBD65C8550ABACD7583B50A04F40")
 		println("res: ${res}")

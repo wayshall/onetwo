@@ -2,9 +2,9 @@ package org.onetwo.common.utils.map;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -38,7 +38,7 @@ public class CollectionMap<K, V> implements Map<K, Collection<V>>{
 	}
 
 	private Map<K, Collection<V>> map;
-	private Supplier<Collection<V>> collectionCreator = ()->new HashSet<V>();
+	private Supplier<Collection<V>> collectionCreator = ()->new LinkedHashSet<V>();
 	
 	protected CollectionMap(){
 		this(new LinkedHashMap<K, Collection<V>>());
@@ -47,7 +47,11 @@ public class CollectionMap<K, V> implements Map<K, Collection<V>>{
 	
 	protected CollectionMap(Map<K, Collection<V>> map) {
 		super();
-		this.map = map;
+		if(map!=null){
+			this.map = map;
+		}else{
+			this.map = new LinkedHashMap<>();
+		}
 	}
 
 

@@ -1,6 +1,13 @@
 package org.onetwo.common.utils.map;
 
-@SuppressWarnings({ "unchecked", "serial" })
+/****
+ * key不区分大小写
+ * @author way
+ *
+ * @param <K>
+ * @param <V>
+ */
+@SuppressWarnings({ "unchecked"})
 public class CaseInsensitiveMap<K, V> extends BaseMap<K, V>{
 	
 	public CaseInsensitiveMap() {

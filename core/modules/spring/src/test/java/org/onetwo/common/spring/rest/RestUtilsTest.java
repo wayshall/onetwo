@@ -30,7 +30,7 @@ public class RestUtilsTest {
 		
 		MultiValueMap<String, Object> mmap = RestUtils.toMultiValueMap(user);
 		System.out.println("mmap:"+mmap);
-		String paramString = ParamUtils.toParamString(mmap);
+		String paramString = ParamUtils.comparableKeyMapToParamString(mmap);
 		System.out.println("paramString:"+paramString);
 		Assert.assertEquals("age=0&height=0.0&id=11&roles[0].id=20&roles[0].name=testRoleName&roles[0].version=0&roles[1].id=21&roles[1].name=testRoleName1&roles[1].version=0&userName=testUserName", 
 				paramString);

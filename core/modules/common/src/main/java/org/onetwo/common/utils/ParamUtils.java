@@ -11,12 +11,15 @@ import org.onetwo.common.reflect.ReflectUtils;
 
 public abstract class ParamUtils {
 
-    public static String toParamString(Object obj){
-    	return toParamString(ReflectUtils.getBeanToMapConvertor().toFlatMap(obj));
+    public static String objectToParamString(Object obj){
+    	return comparableKeyMapToParamString(ReflectUtils.getBeanToMapConvertor().toFlatMap(obj));
     }
 
-    public static <T extends Comparable<T>> String toParamString(Map<T, ?> params){
+    public static <T extends Comparable<T>> String comparableKeyMapToParamString(Map<T, ?> params){
     	return toParamString(params, Comparator.comparing(e->e));
+    }
+    public static String mapToParamString(Map<?, ?> params){
+    	return toParamString(params, null);
     }
     
     public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator){

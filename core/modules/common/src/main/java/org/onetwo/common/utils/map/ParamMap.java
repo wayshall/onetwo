@@ -1,29 +1,38 @@
 package org.onetwo.common.utils.map;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.ParamUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.VerySimpleStartMatcher;
 
+/****
+ * CasualMap
+ * @author way
+ *
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class CasualMap extends CollectionMap<Object, Object>{
+public class ParamMap extends CollectionMap<Object, Object>{
 	
-	public CasualMap(){super();};
+	public ParamMap(){super();};
 
-	public CasualMap(Map<Object, Collection<Object>> map){
+	public ParamMap(Map<Object, Collection<Object>> map){
 		super(map);
 	}
 	
-	public CasualMap(String paramStr){
+	public ParamMap(String paramStr){
+		this(paramStr, null);
+	}
+	public ParamMap(String paramStr, Map<Object, Collection<Object>> map){
+		super(map);
 		this.putEntryByString(paramStr);
 	}
 	
-	protected void putEntryByString(String paramStr){
+	final protected void putEntryByString(String paramStr){
 		if(StringUtils.isBlank(paramStr))
 			return ;
 		
@@ -45,14 +54,14 @@ public class CasualMap extends CollectionMap<Object, Object>{
 		}
 	}
 	
-	public CasualMap subtract(Map<Object, Collection<Object>> map){
-		return (CasualMap) CUtils.subtract(this, map, true);
+	public ParamMap subtract(Map<Object, Collection<Object>> map){
+		return (ParamMap) CUtils.subtract(this, map, false);
 	}
 	
-	public CasualMap addWithFilter(Map<Object, List<Object>> map, String...prefixs){
+	public ParamMap addWithFilter(Map<Object, Collection<Object>> map, String...prefixs){
 		if(map==null || map.isEmpty())
 			return this;
-		for(Map.Entry<Object, List<Object>> entry : (Set<Map.Entry<Object, List<Object>>>)map.entrySet()){
+		for(Map.Entry<Object, Collection<Object>> entry : (Set<Map.Entry<Object, Collection<Object>>>)map.entrySet()){
 			if(matchPrefix(entry.getKey().toString(), prefixs))
 				continue;
 			for(Object v : entry.getValue()){
@@ -73,14 +82,14 @@ public class CasualMap extends CollectionMap<Object, Object>{
 	}
 	
 
-	public CasualMap filter(String...patterns){
+	public ParamMap filter(String...patterns){
 		LangUtils.filterMap(this, patterns);
 		return this;
 	}
 	
 
 	
-	public CasualMap addMapWithFilter(Map map, String...prefixs){
+	public ParamMap addMapWithFilter(Map map, String...prefixs){
 		if(map==null || map.isEmpty())
 			return this;
 		for(Map.Entry entry : (Set<Map.Entry>)map.entrySet()){
@@ -88,8 +97,8 @@ public class CasualMap extends CollectionMap<Object, Object>{
 				continue;
 			Object val = entry.getValue();
 			Object[] values = null;
-			if(val instanceof List){
-				values = (Object[])((List<Object>)val).toArray();
+			if(val instanceof Collection){
+				values = (Object[])((Collection<Object>)val).toArray();
 			}else if(val instanceof Object[]){
 				values = (Object[]) val;
 			}else{
@@ -103,7 +112,7 @@ public class CasualMap extends CollectionMap<Object, Object>{
 	}
 	
 	public String toParamString(){
-		StringBuilder sb = new StringBuilder();
+		/*StringBuilder sb = new StringBuilder();
 		int index = 0;
 		for(Map.Entry<Object, Collection<Object>> entry : (Set<Map.Entry<Object, Collection<Object>>>)entrySet()){
 			if(entry.getValue()==null)
@@ -116,7 +125,8 @@ public class CasualMap extends CollectionMap<Object, Object>{
 				index++;
 			}
 		}
-		return sb.toString();
+		return sb.toString();*/
+		return ParamUtils.mapToParamString(this);
 	}
 	
 }

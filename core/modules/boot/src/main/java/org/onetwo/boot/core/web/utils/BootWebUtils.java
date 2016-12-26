@@ -23,7 +23,7 @@ import org.onetwo.common.spring.web.mvc.utils.MvcUtils;
 import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
@@ -108,7 +108,7 @@ public final class BootWebUtils {
 			path = BaseSiteConfig.getInstance().appendAppUrlPostfix(path);
 		}*/
 		if(!LangUtils.isEmpty(params)){
-			CasualMap map = new CasualMap(LangUtils.asMap(params));
+			ParamMap map = new ParamMap(LangUtils.asMap(params));
 			path += "?"+map.toParamString();
 		}
 		return path;

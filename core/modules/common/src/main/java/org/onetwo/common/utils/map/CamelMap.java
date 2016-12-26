@@ -2,7 +2,6 @@ package org.onetwo.common.utils.map;
 
 import org.onetwo.common.utils.StringUtils;
 
-@SuppressWarnings({ "serial" })
 public class CamelMap<V> extends CaseInsensitiveMap<String, V>{
 	
 	final private char sperator;

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestTypeUtils.RequestType;
 import org.slf4j.Logger;
@@ -189,12 +189,12 @@ public final class RequestUtils {
 		return uri;
 	}
 
-	public static CasualMap getPostParametersWithout(HttpServletRequest request, String... prefix){
+	public static ParamMap getPostParametersWithout(HttpServletRequest request, String... prefix){
 		return getParametersWithout(request, prefix).subtract(getGetParameter(request));
 	}
 	
-	public static CasualMap getParametersWithout(HttpServletRequest request, String... prefix){
-		return new CasualMap().addMapWithFilter(getParameters(request), prefix);
+	public static ParamMap getParametersWithout(HttpServletRequest request, String... prefix){
+		return new ParamMap().addMapWithFilter(getParameters(request), prefix);
 	}
 	
 	public static Map getParameters(HttpServletRequest request){
@@ -204,7 +204,7 @@ public final class RequestUtils {
 
 	public static Map<Object, Collection<Object>> getGetParameter(HttpServletRequest request){
 		String q = request.getQueryString();
-		return new CasualMap(q);
+		return new ParamMap(q);
 	}
 	
 

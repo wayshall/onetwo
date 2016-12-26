@@ -15,7 +15,7 @@ import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.utils.map.CasualMap;
+import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.ext.permission.api.DataFrom;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.api.PermissionType;
@@ -233,7 +233,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		if(parser.getPermissionType()==PermissionType.MENU){
 			P menu = perm;
 			Map<?, ?> param = parser.getParams();//getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
-			CasualMap casualmap = new CasualMap().addMapWithFilter(param);
+			ParamMap casualmap = new ParamMap().addMapWithFilter(param);
 			menu.setUrl(casualmap.toParamString());
 			parser.setOptionFieldValue(menu, PermClassParser.MENU_CSS_CLASS, String.class, "");
 			parser.setOptionFieldValue(menu, PermClassParser.MENU_SHOW_PROPS, String.class, "");
