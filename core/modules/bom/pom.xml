@@ -548,6 +548,12 @@
         <version>2.9.0</version>
     </dependency>
     
+    <dependency>
+      <groupId>eu.bitwalker</groupId>
+      <artifactId>UserAgentUtils</artifactId>
+      <version>1.19</version>
+    </dependency>
+    
      <!-- for test -->
      <dependency>
        <groupId>org.assertj</groupId>

@@ -60,6 +60,11 @@
 		<artifactId>jsf-api</artifactId>
 	</dependency>
 	
+    <dependency>
+      <groupId>eu.bitwalker</groupId>
+      <artifactId>UserAgentUtils</artifactId>
+    </dependency>
+	
 	<!-- <dependency>
 	  <groupId>org.apache.struts</groupId>
 	  <artifactId>struts2-core</artifactId>

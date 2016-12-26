@@ -120,12 +120,12 @@ public final class BootWebUtils {
 	
 	public static void req(String name, Object value){
 //		RequestContextHolder.getRequestAttributes().setAttribute(name, value, RequestAttributes.SCOPE_REQUEST);
-		WebHolder.getRequest().setAttribute(name, value);
+		WebHolder.getRequest().get().setAttribute(name, value);
 	}
 	
 	public static <T> T req(String name){
 //		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
-		return (T)WebHolder.getRequest().getAttribute(name);
+		return (T)WebHolder.getRequest().get().getAttribute(name);
 	}
 	
 	public boolean isGridSearchFormSubmit(){
@@ -223,7 +223,7 @@ public final class BootWebUtils {
 	
 	public static HttpServletRequest request(){
 //		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		return WebHolder.getRequest();
+		return WebHolder.getRequest().get();
 	}
 	
 	public static String requestExtension(){

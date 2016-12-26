@@ -1,5 +1,7 @@
 package org.onetwo.common.web.utils;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,9 +41,9 @@ public class WebHolder {
 		}*/
 	}
 	
-	public static HttpServletRequest getRequest(){
-		HttpServletRequest req = getSpringContextHolderRequest();
-		return req==null?REQUEST_HOLDER.get():req;
+	public static Optional<HttpServletRequest> getRequest(){
+		Optional<HttpServletRequest> req = getSpringContextHolderRequest();
+		return req.isPresent()?req:Optional.of(REQUEST_HOLDER.get());
 	}
 	
 	/*public static HttpServletResponse getResponse(){
@@ -49,20 +51,25 @@ public class WebHolder {
 		Assert.notNull(response);
 		return response;
 	}*/
-	public static HttpServletRequest getSpringContextHolderRequest(){
+	public static Optional<HttpServletRequest> getSpringContextHolderRequest(){
 		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		return attrs==null?null:attrs.getRequest();
+		return attrs==null?Optional.empty():Optional.of(attrs.getRequest());
 	}
 	
 	public static HttpSession getSession(){
-		return getRequest().getSession();
+		return getRequest().get().getSession();
 	}
 	
 	public static Object getValue(String name){
-		Object val = getRequest().getParameter(name);
-		val = StringUtils.isObjectBlank(val)?getRequest().getAttribute(name):val;
-		val = StringUtils.isObjectBlank(val)?getRequest().getSession().getAttribute(name):val;
-		val = StringUtils.isObjectBlank(val)?getRequest().getSession().getServletContext().getAttribute(name):val;
+		Optional<HttpServletRequest> reqOpts = getRequest();
+		if(!reqOpts.isPresent()){
+			return null;
+		}
+		HttpServletRequest request = reqOpts.get();
+		Object val = request.getParameter(name);
+		val = StringUtils.isObjectBlank(val)?request.getAttribute(name):val;
+		val = StringUtils.isObjectBlank(val)?request.getSession().getAttribute(name):val;
+		val = StringUtils.isObjectBlank(val)?request.getSession().getServletContext().getAttribute(name):val;
 		return StringUtils.emptyIfNull(val);
 	}
 }

@@ -174,7 +174,6 @@
           <optional>true</optional>
 	    </dependency>
 	    
-	    
         <!-- test -->
         <dependency>
           <groupId>com.jayway.restassured</groupId>

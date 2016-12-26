@@ -21,7 +21,7 @@ public class LinkTag extends BaseBodyTag {
 		String linkAddress = href;
 		
 		if(keepQueryString){
-			String qs = WebHolder.getSpringContextHolderRequest().getQueryString();
+			String qs = WebHolder.getSpringContextHolderRequest().get().getQueryString();
 			if(StringUtils.isBlank(qs)){
 				writeHref(tagWriter, linkAddress);
 				return ;
