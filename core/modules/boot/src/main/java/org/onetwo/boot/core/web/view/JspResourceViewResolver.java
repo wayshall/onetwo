@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.web.utils.UserAgentUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -55,7 +56,11 @@ public class JspResourceViewResolver extends InternalResourceViewResolver {
 		if(scr.exists()){
 			return true;
 		}
-		File jspFile = new File(sc.getRealPath(jsp));
+		String path = sc.getRealPath(jsp);
+		if(StringUtils.isBlank(path)){
+			return false;
+		}
+		File jspFile = new File(path);
 		return jspFile.exists();
 	}
 
