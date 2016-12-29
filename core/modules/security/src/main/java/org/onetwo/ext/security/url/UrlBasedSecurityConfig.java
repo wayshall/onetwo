@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
-import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
 /***
@@ -36,7 +36,7 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	public AccessDecisionManager accessDecisionManager(){
-		AffirmativeBased affirmative = new AffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter()));
+		AffirmativeBased affirmative = new AffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter(), new AuthenticatedVoter()));
 		return affirmative;
 	}
 	
@@ -53,7 +53,7 @@ public class UrlBasedSecurityConfig {
 //	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 //	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 	@Autowired
-	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
+	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return new DefaultUrlSecurityConfigurer(accessDecisionManager);
 	}
 }

@@ -11,7 +11,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
@@ -21,15 +20,12 @@ import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.onetwo.common.web.xss.XssPreventRequestWrapper;
 import org.springframework.util.Assert;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /****
  * 自定义的过滤器
  * @author weishao
  *
  */
-@SuppressWarnings("unused")
 public class BaseInitFilter extends IgnoreFiler {
 //	public static final String SITE_CONFIG_NAME = "siteConfig";
 	public static final String WEB_CONFIG_NAME = "webConfig";
@@ -48,7 +44,6 @@ public class BaseInitFilter extends IgnoreFiler {
 //	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
-	public static final String LANGUAGE = "cookie.language";
 	public static final String REQUEST_URI = RequestUtils.REQUEST_URI;
 	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
 	
@@ -56,7 +51,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	private SiteConfig siteConfig;
 
 	protected void onFilterInitialize(FilterConfig config) {
-		WebApplicationContext webapp = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+//		WebApplicationContext webapp = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
 		siteConfig = SpringApplication.getInstance().getBean(SiteConfig.class);
 		Assert.notNull(siteConfig, "siteConfig not initialize yet!");
 		this.preventXssRequest = siteConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
@@ -66,11 +61,6 @@ public class BaseInitFilter extends IgnoreFiler {
 	protected void setPreventXssRequest(boolean preventXssRequest) {
 		this.preventXssRequest = preventXssRequest;
 	}
-
-	
-	/*public String[] getWebFilters(FilterConfig config){
-		return getBaseSiteConfig().getFilterInitializers();
-	}*/
 
 	protected HttpServletRequest wrapRequest(ServletRequest servletRequest){
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -103,21 +93,15 @@ public class BaseInitFilter extends IgnoreFiler {
 	public void doFilterInternal(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
-		HttpSession session = request.getSession();
 		
-//		WebContextUtils.initRequestInfo(request);
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
-		System.out.println("rq:"+request.getRequestURL()+", sid:"+request.getSession().getId()+", accept:"+request.getHeader("referer"));
+//		System.out.println("rq:"+request.getRequestURL()+", sid:"+request.getSession().getId()+", accept:"+request.getHeader("referer"));
 		try {
-//			this.reloadConfigIfNecessary(request);
 			if(siteConfig.getConfig(COOKIE_P3P, false, boolean.class))
 				addP3P(response);
 			processLocale(request, response);
 			
-//			ResponseUtils.setHttpOnlyCookie(response, "aa2", "bb2", "/", 5, ".a.com");
-//			ResponseUtils.setHttpOnlyCookie(response, "aa1", "bb1", "/", 5, ".b.com");
-
 			filterChain.doFilter(request, response);
 		}catch (ServletException e) {
 			this.logger.error("request["+getRequestURI(request)+"] error: " + e.getMessage(), e);
@@ -133,10 +117,6 @@ public class BaseInitFilter extends IgnoreFiler {
 		
 	}
 
-	/*protected void doProcess(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-		filterChain.doFilter(request, response);
-	}*/
-	
 	protected void addP3P(HttpServletResponse response){
 		ResponseUtils.addP3PHeader(response);
 	}
@@ -151,14 +131,6 @@ public class BaseInitFilter extends IgnoreFiler {
 	 * @param response
 	 */
 	protected void processLocale(HttpServletRequest request, HttpServletResponse response) {
-//		StrutsUtils.setCurrentSessioniLocale(request.getSession(), BusinessLocale.getDefault());
-		/*
-		 * Locale locale = StrutsUtils.getCurrentSessionLocale(request, null);
-		 * if(locale==null){
-		 * StrutsUtils.setCurrentSessioniLocale(request.getSession(),BusinessLocale.getDefault()); }
-		 * processLocaleByPath(request, response);
-		 */
-		// processDataLocale(request);
 	}
 
 	protected void processDataLocale(HttpServletRequest request) {

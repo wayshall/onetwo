@@ -7,6 +7,8 @@ import org.onetwo.ext.security.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,10 +19,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.util.Assert;
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Getter
 	@Autowired
@@ -35,7 +36,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	private PasswordEncoder passwordEncoder;
 
 	@Getter
-	@Autowired
+	@Autowired(required=false)
 	private UserDetailsService userDetailsService;
 
 	@Getter
@@ -51,7 +52,9 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		Assert.notNull(userDetailsService, "no userDetailsService found!");
+		if(userDetailsService==null){
+			logger.warn("no userDetailsService found!");
+		}
 		/*auth
 			.inMemoryAuthentication()
 				.withUser("test")

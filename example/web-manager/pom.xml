@@ -177,11 +177,17 @@
           <artifactId>onetwo-test</artifactId>
           <scope>test</scope> 
         </dependency>
-        <!-- <dependency>
+        <dependency>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-starter-test</artifactId>
           <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-test</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <!-- 
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
@@ -201,11 +207,7 @@
           <groupId>com.jayway.restassured</groupId>
           <artifactId>rest-assured</artifactId>
           <scope>test</scope>
-        </dependency>
-        <dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-test</artifactId>
-		</dependency> -->
+        </dependency> -->
         <!-- 
 	    <dependency>
 	      <groupId>org.apache.struts</groupId>
@@ -220,7 +222,7 @@
             <dependency>
                 <groupId>org.onetwo4j</groupId>
                 <artifactId>onetwo-bom</artifactId>
-                <version>4.3.7-SNAPSHOT</version>
+                <version>4.3.8-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

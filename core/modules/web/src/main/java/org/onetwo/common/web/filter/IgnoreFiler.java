@@ -20,22 +20,12 @@ import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 
 
-@SuppressWarnings("unchecked")
 public abstract class IgnoreFiler implements Filter{
 
-	
 	public static final String EXCLUDE_SUFFIXS_NAME = "excludeSuffixs";
 
 	public static final String INCLUDE_SUFFIXS_NAME = "includeSuffixs";
 
-	/*private static final String[] DEFAULT_EXCLUDE_SUFFIXS = { ".js", ".css", ".jpg", ".jpeg", ".gif", ".png",".htm" };
-
-	private static final String[] DEFAULT_INCLUDE_SUFFIXS = { ".html", ".jsp", ".do", ".action", ".json", ".xml", ".jfxls" };
-
-	protected Collection<String> excludeSuffixs = new ArrayList<String>();
-
-	protected Collection<String> includeSuffixs = new ArrayList<String>();*/
-	
 	private PostfixMatcher postfixMatcher;
 	
 	/*****

@@ -1,7 +1,7 @@
 package org.onetwo.boot.module.security.url;
 
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
-import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
+import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,11 +16,17 @@ import org.springframework.security.access.AccessDecisionManager;
 @Import(BootSecurityCommonContextConfig.class)
 public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 
+	@ConditionalOnMissingBean(AccessDecisionManager.class)
+	@Bean
+	public AccessDecisionManager accessDecisionManager(){
+		return super.accessDecisionManager();
+	}
+	
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
+	@ConditionalOnMissingBean(DefaultUrlSecurityConfigurer.class)
 	@Autowired
-	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
+	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return super.defaultSecurityConfigurer(accessDecisionManager);
 	}
 }

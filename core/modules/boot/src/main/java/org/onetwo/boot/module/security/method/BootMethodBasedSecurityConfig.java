@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 
 //@EnableGlobalMethodSecurity(securedEnabled=true)
@@ -22,6 +23,12 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
 	
+
+	@ConditionalOnMissingBean(AccessDecisionManager.class)
+	@Bean
+	public AccessDecisionManager accessDecisionManager(){
+		return super.accessDecisionManager();
+	}
 
 	@Override
 	@Bean
