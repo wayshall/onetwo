@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.onetwo4j.example</groupId>
-    <artifactId>onetwo-web-manager</artifactId>
+    <artifactId>onetwo-product-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>onetwo-web-manager</name>
-    <description>onetwo-web-manager</description>
+    <name>onetwo-product-manager</name>
+    <description>onetwo-product-manager</description>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -20,7 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <start-class>org.onetwo.webapp.manager.ApplicationStarter</start-class>
+        <start-class>projects.manager.ProjectStarter</start-class>
         
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
@@ -29,39 +29,39 @@
 
     <dependencies>
         <dependency>
-		  <groupId>org.onetwo4j</groupId>
-		  <artifactId>onetwo-plugin-web-admin</artifactId>
-	       <exclusions>
-	       	<exclusion>
-	       		<groupId>ch.qos.logback</groupId>
-	       		<artifactId>logback-core</artifactId>
-	       	</exclusion>
-	       	<exclusion>
-	       		<groupId>ch.qos.logback</groupId>
-	       		<artifactId>logback-classic</artifactId>
-	       	</exclusion>
-	       </exclusions>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-plugin-web-admin</artifactId>
+           <exclusions>
+            <exclusion>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+            </exclusion>
+           </exclusions>
         </dependency>
         
        <!-- boot1.4rc 日志有冲突 -->
-	   <dependency>
-	       <groupId>ch.qos.logback</groupId>
-	       <artifactId>logback-core</artifactId>
-	       <version>1.1.6</version>
-	   </dependency>
-	
-	   <dependency>
-	       <groupId>ch.qos.logback</groupId>
-	       <artifactId>logback-classic</artifactId>
-	       <version>1.1.6</version>
-	      <exclusions>
-	      	<exclusion>
-	      		<groupId>ch.qos.logback</groupId>
-	      		<artifactId>logback-core</artifactId>
-	      	</exclusion>
-	      </exclusions>
-	   </dependency>
-	   
+       <dependency>
+           <groupId>ch.qos.logback</groupId>
+           <artifactId>logback-core</artifactId>
+           <version>1.1.6</version>
+       </dependency>
+    
+       <dependency>
+           <groupId>ch.qos.logback</groupId>
+           <artifactId>logback-classic</artifactId>
+           <version>1.1.6</version>
+          <exclusions>
+            <exclusion>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+            </exclusion>
+          </exclusions>
+       </dependency>
+       
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-security</artifactId>
@@ -117,33 +117,33 @@
           <groupId>org.springframework.data</groupId>
           <artifactId>spring-data-commons</artifactId>
           <exclusions>
-          	<exclusion>
-          		<groupId>org.springframework.boot</groupId>
-          		<artifactId>spring-boot-starter-logging</artifactId>
-          	</exclusion>
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
           </exclusions>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-	          <!-- <exclusions>
-	          	<exclusion>
-	          		<groupId>org.springframework.boot</groupId>
-	          		<artifactId>spring-boot-starter-logging</artifactId>
-	          	</exclusion>
-	          </exclusions> -->
+              <!-- <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+              </exclusions> -->
         </dependency>
         
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-	          <!-- <exclusions>
-	          	<exclusion>
-	          		<groupId>org.springframework.boot</groupId>
-	          		<artifactId>spring-boot-starter-logging</artifactId>
-	          	</exclusion>
-	          </exclusions> -->
+              <!-- <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+              </exclusions> -->
         </dependency>
     
         <dependency>
@@ -162,14 +162,14 @@
         </dependency>
         
         <dependency>
-        	<groupId>org.springframework.boot</groupId>
- 			<artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         
         <dependency>
-		    <groupId>de.codecentric</groupId>
-		    <artifactId>spring-boot-admin-starter-client</artifactId>
-		</dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
         
         <!-- for test -->
         <dependency>
@@ -209,11 +209,11 @@
           <scope>test</scope>
         </dependency> -->
         <!-- 
-	    <dependency>
-	      <groupId>org.apache.struts</groupId>
-	      <artifactId>struts2-core</artifactId>
-	      <version>2.3.15.2</version>
-	    </dependency> -->
+        <dependency>
+          <groupId>org.apache.struts</groupId>
+          <artifactId>struts2-core</artifactId>
+          <version>2.3.15.2</version>
+        </dependency> -->
         
     </dependencies>
     
@@ -277,14 +277,14 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-				 <artifactId>maven-resources-plugin</artifactId>
-				 <!-- <version>2.6</version> -->
-				 <configuration>
-				    <delimiters>
-				       <delimiter>@{*}</delimiter>
-				    </delimiters>
-				    <useDefaultDelimiters>false</useDefaultDelimiters>
-				 </configuration> 
+                 <artifactId>maven-resources-plugin</artifactId>
+                 <!-- <version>2.6</version> -->
+                 <configuration>
+                    <delimiters>
+                       <delimiter>@{*}</delimiter>
+                    </delimiters>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                 </configuration> 
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -301,16 +301,16 @@
                 </configuration>
             </plugin>
             <plugin>
-			    <artifactId>maven-war-plugin</artifactId>
-			    <configuration>
-			        <failOnMissingWebXml>false</failOnMissingWebXml>
-			    </configuration>
-			</plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                	<mainClass>${start-class}</mainClass>
+                    <mainClass>${start-class}</mainClass>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -320,44 +320,44 @@
                     </dependency>
                 </dependencies>
                 <executions>
-                	<execution>
-                		<goals>
-                			<goal>repackage</goal>
-                		</goals>
-                	</execution>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
             
             <!-- db tools -->
             <plugin>
-			   <groupId>org.liquibase</groupId>
-			   <artifactId>liquibase-maven-plugin</artifactId>
-			   <version>3.5.0</version>
-			   <configuration>                  
-				  <propertyFile>src/main/resources/liquibase/liquibase.properties</propertyFile>
-				  <changeLogFile>src/main/resources/liquibase/db.changelog.xml</changeLogFile>
-			      <driver>com.mysql.jdbc.Driver</driver>
-			      <url>jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8</url>
-			      <username>root</username>
-			      <password>root</password>
-			      <outputChangeLogFile>src/main/resources/liquibase/db.xml</outputChangeLogFile>
-			   </configuration>                
-			   <executions>
-				 <execution>
-				   <phase>process-resources</phase>                                                                  
-				   <goals>
-					 <goal>update</goal>
-				   </goals>
-				 </execution>
-			   </executions>
-			</plugin> 
+               <groupId>org.liquibase</groupId>
+               <artifactId>liquibase-maven-plugin</artifactId>
+               <version>3.5.0</version>
+               <configuration>                  
+                  <propertyFile>src/main/resources/liquibase/liquibase.properties</propertyFile>
+                  <changeLogFile>src/main/resources/liquibase/db.changelog.xml</changeLogFile>
+                  <driver>com.mysql.jdbc.Driver</driver>
+                  <url>jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8</url>
+                  <username>root</username>
+                  <password>root</password>
+                  <outputChangeLogFile>src/main/resources/liquibase/db.xml</outputChangeLogFile>
+               </configuration>                
+               <executions>
+                 <execution>
+                   <phase>process-resources</phase>                                                                  
+                   <goals>
+                     <goal>update</goal>
+                   </goals>
+                 </execution>
+               </executions>
+            </plugin> 
             
             
             <!-- for test -->
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-surefire-plugin</artifactId>
-	          <!-- <version>2.19.1</version> -->
+              <artifactId>maven-surefire-plugin</artifactId>
+              <!-- <version>2.19.1</version> -->
               <configuration>
                 <skipTests>${unit-tests.skip}</skipTests>
                 <excludes>
@@ -384,37 +384,37 @@
             </plugin>
         </plugins>
         <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>org.liquibase</groupId>
-        								<artifactId>
-        									liquibase-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[3.0.5,)
-        								</versionRange>
-        								<goals>
-        									<goal>update</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.liquibase</groupId>
+                                        <artifactId>
+                                            liquibase-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [3.0.5,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>update</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
 

@@ -1,0 +1,98 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[产品激活表]信息<hr/>
+       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/manager/product_active.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
+           <table cellpadding="5">
+                <tr>
+                    <td>时间:</td>
+                    <td>
+                        <input class="easyui-datebox formFieldClass" type="text" name="activeDate" 
+                               data-options="required:true,
+                                             editable:false "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>激活所属账户:</td>
+                    <td>
+                        <input class="formFieldClass" type="text" id="activeUserId" name="activeUserId" 
+                               data-options="required:true
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>激活产品:</td>
+                    <td>
+                        <input class="formFieldClass" type="text" id="productId" name="productId" 
+                               data-options="required:true
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>激活数量:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="activeAmount" 
+                               data-options="required:true
+                                              "/>
+                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注说明:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="remark" 
+                               style="width:185px;height:200px"
+                               data-options="required:false,
+                                             multiline:true, 
+                                             validType:'length[0,1000]' "/>
+                    </td>
+                </tr>
+           </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+    
+    $('#activeUserId').combogrid({
+        panelWidth:500,
+        method: 'get',
+        url: '${siteConfig.baseURL}/manager/user.json',
+        idField:'id',
+        textField:'userName',
+        mode:'remote',
+        fitColumns:true,
+        pagination: true,
+        columns:[[
+            {field:'userName',title:'账户',width:80},
+            {field:'qq',title:'qq',align:'right',width:60},
+            {field:'mobile',title:'手机',align:'right',width:60}
+        ]]
+    });
+    
+    
+</script>

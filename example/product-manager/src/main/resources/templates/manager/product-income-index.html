@@ -1,0 +1,152 @@
+
+<@extends parent="easyui-js.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       产品收益表
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+                <tr>
+                    <td>时间:</td>
+                    <td>
+                        <input class="easyui-datebox searchFieldClass" type="text" name="incomeDate" 
+                               data-options="required:false,
+                                             editable:false "/>
+                               
+                    </td>
+                    <td>产品:</td>
+                    <td>
+                        <input class=" searchFieldClass" type="text" name="productId" 
+                               data-options="required:false
+                                              "/>
+                               
+                    </td>
+                   <td>&nbsp;</td>
+                    <td rowspan="5">
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="产品收益表" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="incomeDate" >时间</th>
+                <th field="productName" >产品</th>
+                <th field="income" >收益（元）</th>
+                <th field="remark" >备注说明</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/manager/product-income-edit-form.html">
+       
+                 
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/manager/productIncome.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+    
+    var reqUrl = '${siteConfig.baseURL}/manager/productIncome.json';
+    var editingId;
+    var toolbar = [
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+
+                var url = '${siteConfig.baseURL}/manager/productIncome.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                if(!$('#dataGrid').isSelectedOne()){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/manager/productIncome/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                        datagrid: '#dataGrid',
+                        url: '${siteConfig.baseURL}/manager/productIncome.json',
+                        idField: 'id',
+                        paramIdName: 'ids'
+                    })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+    
+
+    $('input[name=productId]').combogrid({
+        panelWidth:500,
+        method: 'get',
+        url: '${siteConfig.baseURL}/manager/product.json',
+        idField:'id',
+        textField:'name',
+        mode:'remote',
+        fitColumns:true,
+        pagination: true,
+        columns:[[
+            {field:'name',title:'产品名称',width:80},
+            {field:'price',title:'单价',align:'right',width:60}
+        ]]
+    });
+ </script>
+    </@override>
+</@extends>

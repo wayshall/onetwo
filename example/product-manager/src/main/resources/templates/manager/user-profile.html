@@ -1,0 +1,132 @@
+
+<@extends parent="easyui-js.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       修改资料
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+		<div id="addDataDialog" class="easyui-dialog" 
+		    style="width:50%;height:80%;padding:10px 20px">
+		           填写[用户表]信息<hr/>
+		       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/manager/user.json" method="post" >
+		            <input id="_method" name="_method" type="hidden" />
+		           <input name="id" type="hidden"/>
+		           <table cellpadding="5">
+		                <tr>
+		                    <td>用户名:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" id="userName" name="userName" 
+		                               data-options="required:true,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>昵称:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" name="nickName" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>密码:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="password" name="password" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                
+		                <tr>
+		                    <td>电子邮件:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" name="email" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>qq:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" name="qq" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>手机:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" name="mobile" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>银行:</td>
+		                    <td>
+		                        <input class="easyui-combobox formFieldClass" type="text" name="bank" 
+		                               data-options="required:false,
+				                                     editable:false,
+		                                             method: 'get',
+		                                             url: '${siteConfig.baseURL}/web-admin/dictionary/combobox/BANK.json'
+		                                              "/>
+		                               
+		                    </td>
+		                </tr>
+		                <tr>
+		                    <td>银行账户:</td>
+		                    <td>
+		                        <input class="easyui-textbox formFieldClass" type="text" name="bankAccount" 
+		                               data-options="required:false,
+		                                             validType:'length[0,50]' "/>
+		                    </td>
+		                </tr>
+		                
+		           </table>
+		           <@security.csrfInput/>
+		       </form>
+		</div>
+		
+		<div id="dlg-buttons2" style="float:right;display: none;">
+		    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveProfile();">保存</a>
+		</div>
+		<script type="text/javascript">
+		    $('#addDataDialog').dialog({
+		        width:'50%',
+		        height:'80%',
+		        onClose: function(){
+		            $('#dataForm').form('reset');
+		        }
+		    })
+		    
+	    function saveProfile(){
+	        helper.submitEasyForm({
+	        					dataForm: '#dataForm',
+	        					autoClear: false
+	        					});
+	    }
+	    
+	    $('#addDataDialog').dialog({
+	    	title:'修改资料',
+	    	closable: false,
+			modal:true, 
+			buttons:'#dlg-buttons2'
+	    })
+	    
+	    $('#userName').attr('disabled', true);
+        var dataForm = $('#dataForm');
+	    var url = '${siteConfig.baseURL}/manager/userProfile.json';
+        dataForm.attr('action', url);
+        dataForm.find('input[name="_method"]').val('put');
+        dataForm.form('load', url);
+	</script>
+	 
+    </@override>
+</@extends>
