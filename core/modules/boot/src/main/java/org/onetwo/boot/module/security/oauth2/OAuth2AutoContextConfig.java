@@ -5,14 +5,13 @@ import java.util.Arrays;
 import org.onetwo.ext.security.url.MultiWebExpressionVoter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.oauth2.provider.vote.ScopeVoter;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
-@Configuration
+//@Configuration
 public class OAuth2AutoContextConfig {
 	
 	@Autowired
