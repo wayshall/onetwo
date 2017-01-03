@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import projects.manager.entity.Product;
 import projects.manager.service.impl.ProductServiceImpl;
-import projects.manager.utils.Apps.SystemMgr.ProductMgr;
+import projects.manager.utils.Products.SystemMgr.ProductMgr;
 
 @Controller
 @RequestMapping("/manager/product")

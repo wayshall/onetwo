@@ -49,6 +49,25 @@
       </table>
     </div>
     
+    
+    
+    <div id="selectApp" class="easyui-dialog" title="选择子系统" 
+             style="width:50%;height:80%;padding:10px 20px"
+             data-options="closed:true, modal:true">
+         <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+            <table id="appDataGrid"
+                   title="系统列表" >
+             <thead>
+                 <tr>
+                     <th field="name" >子系统</th>
+                     <th field="code" >代码</th>
+                     <th field="_operation" formatter="permissionField.assignPermissionLink">操作</th>
+                 </tr>
+             </thead>
+           </table>
+         </div>
+     </div>
+    
   </div>
         
 	<#include "admin-role-edit-form.html">
@@ -71,6 +90,25 @@
                  
     <script type="text/javascript">
     
+    var permissionField = {
+       assignPermissionLink:  function(val,row,index){
+           return '<a href="javascript:void(0)" onclick="permissionField.showPermissions('+index+');">分配权限</a>';
+       },
+       
+       showPermissions: function(index){
+           var role = $('#dataGrid').datagrid('getSelected');
+           var app = $('#appDataGrid').selectRow(index);
+           
+           $('#assignPermission').dialog('open');
+           var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+role.id+'.json?appCode='+app.code;
+           $('#permissionTree').tree('options').url = url;
+           $('#permissionTree').tree('options').cascadeCheck = false;
+           $('#permissionTree').tree('reload');
+
+       }
+       
+   }
+    
     $('#btnSearch').bind('click', function(){
         var param = $('#searchForm').serialize();
         var url = '${siteConfig.baseURL}/web-admin/role.json?'+param;
@@ -91,32 +129,38 @@
     }
     
     function assignPermissions(){
+        var app = $('#appDataGrid').getSelectedRow();
         var row = $('#dataGrid').datagrid('getSelected');
-        var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
+        var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json?appCode='+app.code;
         //$.post(url, param, helper.remoteMessageHandler());
         var param = helper.getCsrfParams();
         var permissionCodes = $('#permissionTree').tree('getAllCheckedIds') || [];
         param.permissionCodes = permissionCodes;
         param = $.param(param, true);
-        $.post(url, param, helper.remoteMessageHandler());
+        $.post(url, param, helper.remoteMessageHandler(function(){
+        	$('#selectApp').dialog('open');
+        }));
     };
     
     var reqUrl = '${siteConfig.baseURL}/web-admin/role.json';
     var editingId;
     var toolbar = [
+
         {
             text:'分配权限',
             handler:helper.selectOneHandler('#dataGrid', function(row){
-                $('#assignPermission').dialog('open');
-                
-                var url = '${siteConfig.baseURL}/web-admin/rolePermission/'+row.id+'.json';
-                $('#permissionTree').tree({
-	            	url: url,
-	            	cascadeCheck: false
-	            	//onlyLeafCheck: false
-	            });
-                $('#permissionTree').tree('reload');
-           })
+            	$('#selectApp').dialog('open');
+            	$('#appDataGrid').datagrid({
+                    iconCls: 'icon-ok',
+                    rownumbers: true,
+                    fitColumns: true,
+                    pagination: true,
+                    singleSelect: true,
+                    url: '${siteConfig.baseURL}/web-admin/application.json',
+                    method: 'get'
+                }); 
+            })
+            
         },
         
         {

@@ -5,14 +5,15 @@ import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.db.BaseCrudEntityManager;
+import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.dbm.support.Dbms;
 
 public class BaseCrudEntityManagerTest extends AppBaseTest {
 	
-	private BaseCrudEntityManager<UserAutoidEntity, Long> userDao = BaseCrudEntityManager.createCrudManager(UserAutoidEntity.class);
+	private CrudEntityManager<UserAutoidEntity, Long> userDao = Dbms.newCrudManager(UserAutoidEntity.class);
 
 
 	private UserAutoidEntity createUserAutoidEntity(int i){

@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import projects.manager.entity.ProductIncome;
 import projects.manager.service.impl.ProductIncomeServiceImpl;
-import projects.manager.utils.Apps.SystemMgr.IncomeMgr;
+import projects.manager.utils.Products.SystemMgr.IncomeMgr;
 import projects.manager.vo.BudgetStatisVo;
 
 @Controller

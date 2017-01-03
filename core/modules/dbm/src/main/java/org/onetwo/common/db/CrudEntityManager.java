@@ -16,8 +16,16 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	public T findById(PK id);
 	
 	public Optional<T> findOptionalById(PK id);
-	
+
+	/*****
+	 * insert or update
+	 * @param entity
+	 * @return
+	 */
 	public T save(T entity);
+
+	public void update(T entity);
+	public void persist(T entity);
 	
 //	public T createNew(T entity);
 
@@ -38,15 +46,19 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 
 	public Number countRecord(Object... params);
 
-	public List<T> findByProperties(Object... properties);
+	public List<T> findListByProperties(Object... properties);
 
-	public List<T> findByProperties(Map<Object, Object> properties);
+	public List<T> findListByProperties(Map<Object, Object> properties);
 	
-	public List<T> findByProperties(QueryBuilder squery);
+	public List<T> findListByProperties(QueryBuilder squery);
+	
+	public List<T> findListByExample(T example);
 
 	public Page<T> findPage(final Page<T> page, Object... properties);
 
 	public Page<T> findPage(final Page<T> page, Map<Object, Object> properties);
+	
+	public Page<T> findPageByExample(final Page<T> page, T example);
 	
 	public void findPage(final Page<T> page, QueryBuilder query);
 

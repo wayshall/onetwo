@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+import javax.validation.Validator;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.DataBase;
@@ -41,6 +42,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class SimpleDbmInnserServiceRegistry {
+
+	public static SimpleDbmInnserServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
+		SimpleDbmInnserServiceRegistry serviceRegistry = new SimpleDbmInnserServiceRegistry();
+		serviceRegistry.initialize(dataSource, null);
+		if(validator!=null){
+			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
+		}
+		return serviceRegistry;
+	}
 	
 	final private Map<String, Object> services = Maps.newConcurrentMap();
 

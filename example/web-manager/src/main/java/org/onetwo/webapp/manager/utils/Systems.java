@@ -5,9 +5,9 @@ import org.onetwo.plugins.admin.AdminModule;
 
 
 
-public interface Apps {
+public interface Systems {
 	String name = "后台管理系统";
-	String appCode = Apps.class.getSimpleName();
+	String appCode = Systems.class.getSimpleName();
 	
 	Class<?>[] children = new Class<?>[]{AdminModule.class};
 	

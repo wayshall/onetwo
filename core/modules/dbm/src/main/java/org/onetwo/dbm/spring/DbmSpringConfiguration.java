@@ -18,7 +18,6 @@ import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
 import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
-import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDaoImpl;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
@@ -131,7 +130,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(){
-		return Dbms.createServiceRegistry(dataSource, validator);
+		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator);
 	}
 	
 	@Bean

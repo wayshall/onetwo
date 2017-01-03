@@ -13,12 +13,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.onetwo.common.db.CrudEntityManager;
+import org.onetwo.dbm.support.Dbms;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 
 
 /*****
- * 用户表
+ * 
  * @Entity
  */
 @SuppressWarnings("serial")
@@ -27,6 +29,8 @@ import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 @Data
 @EqualsAndHashCode
 public class AdminApplication implements Serializable {
+
+	final public static CrudEntityManager<AdminApplication, String> MANAGER = Dbms.newCrudManager(AdminApplication.class);
 
 	@Id
 	@NotBlank

@@ -5,7 +5,7 @@ package org.onetwo.plugins.admin.controller;
 import org.onetwo.common.utils.Page;
 import org.onetwo.easyui.EasyDataGrid;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
-import org.onetwo.plugins.admin.AdminModule.AdminRoleMgr;
+import org.onetwo.plugins.admin.AdminModule.RoleMgr;
 import org.onetwo.plugins.admin.entity.AdminRole;
 import org.onetwo.plugins.admin.service.impl.AdminRoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AdminRoleController extends WebAdminBaseController {
     private AdminRoleServiceImpl adminRoleServiceImpl;
     
     
-    @ByPermissionClass(AdminRoleMgr.class)
+    @ByPermissionClass(RoleMgr.class)
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView index(EasyDataGrid<AdminRole> easyPage, AdminRole adminRole){
         return responsePageOrData("/admin-role-index", ()->{
@@ -33,20 +33,20 @@ public class AdminRoleController extends WebAdminBaseController {
                 });
     }
     
-    @ByPermissionClass(AdminRoleMgr.Create.class)
+    @ByPermissionClass(RoleMgr.Create.class)
     @RequestMapping(method=RequestMethod.POST)
     public ModelAndView create(AdminRole adminRole){
         adminRoleServiceImpl.save(adminRole);
         return messageMv("保存成功！");
     }
-    @ByPermissionClass(AdminRoleMgr.class)
+    @ByPermissionClass(RoleMgr.class)
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public ModelAndView show(@PathVariable("id") Long id){
         AdminRole adminRole = adminRoleServiceImpl.loadById(id);
         return responseData(adminRole);
     }
     
-    @ByPermissionClass(AdminRoleMgr.Update.class)
+    @ByPermissionClass(RoleMgr.Update.class)
     @RequestMapping(value="{id}", method=RequestMethod.PUT)
     public ModelAndView update(@PathVariable("id") Long id, AdminRole adminRole){
         adminRole.setId(id);
@@ -55,7 +55,7 @@ public class AdminRoleController extends WebAdminBaseController {
     }
     
     
-    @ByPermissionClass(AdminRoleMgr.Delete.class)
+    @ByPermissionClass(RoleMgr.Delete.class)
     @RequestMapping(method=RequestMethod.DELETE)
     public ModelAndView deleteBatch(Long[] ids){
         adminRoleServiceImpl.deleteByIds(ids);

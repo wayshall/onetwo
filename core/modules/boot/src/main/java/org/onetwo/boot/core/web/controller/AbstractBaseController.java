@@ -341,6 +341,12 @@ abstract public class AbstractBaseController {
 		return RequestUtils.getResponseType(WebHolder.getRequest().get());
 	}
 	
+	/******
+	 * return responseFlow().responsePage(()->result().simple().buildModelAndView())
+							  .responseJson(()->result().simple().buildModelAndView())
+							  .execute();
+	 * @return
+	 */
 	protected ResponseFlow<ModelAndView> responseFlow(){
 		return new ResponseFlow<>(getResponseType());
 	}

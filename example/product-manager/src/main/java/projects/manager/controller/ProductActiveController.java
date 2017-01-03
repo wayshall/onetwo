@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import projects.manager.entity.ProductActive;
 import projects.manager.service.impl.ProductActiveServiceImpl;
-import projects.manager.utils.Apps.SystemMgr.ActiveMgr;
+import projects.manager.utils.Products.SystemMgr.ActiveMgr;
 import projects.manager.vo.ProductActiveStatisVo;
 
 

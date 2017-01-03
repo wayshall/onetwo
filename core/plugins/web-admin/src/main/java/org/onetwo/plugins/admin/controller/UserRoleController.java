@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.utils.map.MappableMap;
 import org.onetwo.easyui.EasyModel;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
-import org.onetwo.plugins.admin.AdminModule.AdminUserMgr.AssignRole;
+import org.onetwo.plugins.admin.AdminModule.UserMgr.AssignRole;
 import org.onetwo.plugins.admin.entity.AdminRole;
 import org.onetwo.plugins.admin.entity.AdminUser;
 import org.onetwo.plugins.admin.service.impl.AdminRoleServiceImpl;

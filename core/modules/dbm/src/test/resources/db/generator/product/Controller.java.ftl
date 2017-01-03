@@ -46,11 +46,10 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     
     @ByPermissionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(method=RequestMethod.GET)
-    public ModelAndView index(EasyPage<${_tableContext.className}> easyPage, ${_tableContext.className} ${_tableContext.propertyName}){
+    public ModelAndView index(Page<${_tableContext.className}> page, ${_tableContext.className} ${_tableContext.propertyName}){
         return responsePageOrData("${pagePath}-index", ()->{
-        			Page<${_tableContext.className}> page = Page.create(easyPage.getPage(), easyPage.getPageSize());
                     ${serviceImplPropertyName}.findPage(page, ${_tableContext.propertyName});
-                    return EasyPage.create(page);
+                    return EasyDataGrid.create(page);
                 });
     }
     
@@ -63,24 +62,24 @@ public class ${_tableContext.className}Controller extends AbstractBaseController
     }
     @ByPermissionClass(${_tableContext.className}Mgr.class)
     @RequestMapping(value="{${idName}}", method=RequestMethod.GET)
-    public ModelAndView show(@PathVariable("${idName}") Long ${idName}){
+    public ModelAndView show(@PathVariable("${idName}") ${idType} ${idName}){
         ${_tableContext.className} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
         return responseData(${_tableContext.propertyName});
     }
     
     @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
     @RequestMapping(value="{${idName}}", method=RequestMethod.PUT)
-    public ModelAndView update(@PathVariable("${idName}") Long ${idName}, @Validated({ValidAnyTime.class, ValidWhenEdit.class}) ${_tableContext.className} ${_tableContext.propertyName}, BindingResult br){
+    public ModelAndView update(@PathVariable("${idName}") ${idType} ${idName}, @Validated({ValidAnyTime.class, ValidWhenEdit.class}) ${_tableContext.className} ${_tableContext.propertyName}, BindingResult br){
     	ValidatorUtils.throwIfHasErrors(br, true);
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
-        ${serviceImplPropertyName}.save(${_tableContext.propertyName});
+        ${serviceImplPropertyName}.update(${_tableContext.propertyName});
         return messageMv("更新成功！");
     }
     
     
     @ByPermissionClass(${_tableContext.className}Mgr.Delete.class)
     @RequestMapping(method=RequestMethod.DELETE)
-    public ModelAndView deleteBatch(Long[] ${idName}s){
+    public ModelAndView deleteBatch(${idType}[] ${idName}s){
         ${serviceImplPropertyName}.removeByIds(${idName}s);
         return messageMv("删除成功！");
     }

@@ -9,7 +9,7 @@ public class MenuConfig extends PermissionConfigAdapter<AdminPermission> {
 
 	@Override
     public Class<?> getRootMenuClass() {
-	    return Apps.class;
+	    return Products.class;
     }
 
 	@Override

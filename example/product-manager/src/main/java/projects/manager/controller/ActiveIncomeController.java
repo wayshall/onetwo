@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import projects.manager.service.impl.ProductActiveServiceImpl;
-import projects.manager.utils.Apps.SystemMgr.ActiveMgr;
+import projects.manager.utils.Products.SystemMgr.ActiveMgr;
 import projects.manager.vo.ActiveIncomeStatisVo;
 import projects.manager.vo.LoginUserInfo;
 

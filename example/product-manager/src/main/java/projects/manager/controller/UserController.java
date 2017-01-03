@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import projects.manager.entity.User;
 import projects.manager.service.impl.UserServiceImpl;
-import projects.manager.utils.Apps.SystemMgr.UserMgr;
+import projects.manager.utils.Products.SystemMgr.UserMgr;
 import projects.manager.vo.LoginUserInfo;
 
 @Controller

@@ -119,18 +119,18 @@ public class AdminRoleServiceImpl {
     						 .collect(Collectors.toList());
 	}
     
-    public void saveRolePermission(long roleId, String...assignPerms){
+    public void saveRolePermission(String appCode, long roleId, String...assignPerms){
     	if(LangUtils.isEmpty(assignPerms)){
-    		this.adminRoleDao.deleteRolePermisssion(null, roleId, null);
+    		this.adminRoleDao.deleteRolePermisssion(appCode, roleId, null);
     		return ;
     	}
-    	List<String> existsPermCodes = this.adminRoleDao.findRolePermisssion(null, roleId);
+    	List<String> existsPermCodes = this.adminRoleDao.findRolePermisssion(appCode, roleId);
     	
     	Set<String> adds = Sets.difference(Sets.newHashSet(assignPerms), Sets.newHashSet(existsPermCodes));
     	adds.stream().forEach(code->adminRoleDao.insertRolePermission(roleId, code));
     	
 		Set<String> deletes = Sets.difference(Sets.newHashSet(existsPermCodes), Sets.newHashSet(assignPerms));
-		deletes.stream().forEach(code->adminRoleDao.deleteRolePermisssion(null, roleId, code));
+		deletes.stream().forEach(code->adminRoleDao.deleteRolePermisssion(appCode, roleId, code));
     }
     
     public AdminRole findByName(String roleName){

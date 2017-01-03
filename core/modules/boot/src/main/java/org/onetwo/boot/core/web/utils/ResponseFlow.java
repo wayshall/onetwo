@@ -28,8 +28,8 @@ public class ResponseFlow<T> {
 		return BootWebUtils.mv("", DataWrapper.wrap(value));
 	}*/
 
-	public ResponseFlow<T> ifPage(ResponseAction<T> action){
-		return ifResponse(action, ResponseType.PAGE);
+	public ResponseFlow<T> responsePage(ResponseAction<T> action){
+		return response(action, ResponseType.PAGE);
 	}
 
 	/***
@@ -37,11 +37,11 @@ public class ResponseFlow<T> {
 	 * @param action
 	 * @return
 	 */
-	public ResponseFlow<T> ifData(ResponseAction<T> action){
-		return ifResponse(action, ResponseType.JSON);
+	public ResponseFlow<T> responseJson(ResponseAction<T> action){
+		return response(action, ResponseType.JSON);
 	}
 
-	public ResponseFlow<T> ifResponse(ResponseAction<T> action, ResponseType...anyOfTypes){
+	public ResponseFlow<T> response(ResponseAction<T> action, ResponseType...anyOfTypes){
 		Stream.of(anyOfTypes).filter(type->responseTypes.contains(type))
 							.findAny().ifPresent(type->ResponseFlow.this.action = action);
 		return this;

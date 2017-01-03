@@ -484,7 +484,8 @@ public class DbGenerator {
 			public String tableNameStripStart(String stripChars) {
 				if(StringUtils.isBlank(stripChars))
 					return tableName;
-				return org.apache.commons.lang3.StringUtils.stripStart(tableName.toLowerCase(), stripChars.toLowerCase());
+//				return org.apache.commons.lang3.StringUtils.stripStart(tableName.toLowerCase(), stripChars.toLowerCase());
+				return tableName.toLowerCase().substring(stripChars.length());
 			}
 			
 			public GlobalConfig globalGeneratedConfig(){
