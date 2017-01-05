@@ -28,5 +28,6 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@Autowired
 	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return super.defaultSecurityConfigurer(accessDecisionManager);
+//		return new OAuth2SsoClientUrlSecurityConfigurer(accessDecisionManager);
 	}
 }

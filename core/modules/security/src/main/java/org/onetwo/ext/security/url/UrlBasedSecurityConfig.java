@@ -1,9 +1,12 @@
 package org.onetwo.ext.security.url;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
@@ -42,10 +45,14 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	@Autowired
-	public DatabaseSecurityMetadataSource securityMetadataSource(DataSource dataSource){
+	public DatabaseSecurityMetadataSource securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
 		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());
+		if(configs!=null){
+			List<String> appCodes = configs.stream().map(c->c.getAppCode()).collect(Collectors.toList());
+			ms.setAppCodes(appCodes);
+		}
 		return ms;
 	}
 	

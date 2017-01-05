@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 @Documented
 //@Import({ BootUrlBasedSecurityConfig.class })
 @Import({BootPermissionContextConfig.class})
-@EnableSecurity(mode=InterceptMode.CUSTOM, configClass=BootUrlBasedSecurityConfig.class, enableJavaStylePermissionManage=false)
+@EnableSecurity(mode=InterceptMode.CUSTOM, configClass={BootUrlBasedSecurityConfig.class}, enableJavaStylePermissionManage=false)
 @Configuration
 public @interface EnableUrlSecurity {
 }

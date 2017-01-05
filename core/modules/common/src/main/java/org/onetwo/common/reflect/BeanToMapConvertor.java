@@ -73,6 +73,7 @@ public class BeanToMapConvertor {
 	}
 	/***
 	 * 简单反射对象的propertyName为key， propertyValue为value
+	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
 	 * @param obj
 	 * @return
 	 */
@@ -127,14 +128,32 @@ public class BeanToMapConvertor {
 //		return valueTypes.contains(value.getClass());
 	}
 
+	/****
+	 * 
+	 * 简单反射对象的propertyName为key， propertyValue为value
+	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
+	 * @param params
+	 * @param obj
+	 */
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
-		flatObject(prefix, obj, (k, v)->params.put(k, v));
+		flatObject(prefix, obj, (k, v, c)->params.put(k, v));
 	}
 	
-	@SuppressWarnings("unchecked")
+	/****
+	 * 
+	 * 简单反射对象的propertyName为key， propertyValue为value
+	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
+	 * @param prefixName
+	 * @param obj
+	 * @param valuePutter
+	 */
 	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter){
+		flatObject(prefixName, obj, valuePutter, null);
+	}
+	@SuppressWarnings("unchecked")
+	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
 		if(isMappableValue(obj)){
-			valuePutter.put(prefixName, obj);
+			valuePutter.put(prefixName, obj, keyContext);
 		}else if(Map.class.isInstance(obj)){
 			String mapPrefixName = prefixName;
 			if(StringUtils.isNotBlank(prefixName)){
@@ -142,7 +161,7 @@ public class BeanToMapConvertor {
 			}
 			for(Entry<String, Object> entry : ((Map<String, Object>)obj).entrySet()){
 				if(isMappableValue(entry.getValue())){
-					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue());
+					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue(), null);
 				}else{
 					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter);
 				}
@@ -153,7 +172,7 @@ public class BeanToMapConvertor {
 			for(Object o : list){
 				String listPrefixName = prefixName + this.listOpener+index+this.listCloser;
 				if(isMappableValue(o)){
-					valuePutter.put(listPrefixName, o);
+					valuePutter.put(listPrefixName, o, null);
 				}else{
 					flatObject(listPrefixName, o, valuePutter);
 				}
@@ -170,10 +189,11 @@ public class BeanToMapConvertor {
 					if(valueConvertor!=null){
 						val = valueConvertor.apply(val);
 					}
+					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
 					if(StringUtils.isBlank(prefixName)){
-						flatObject(prop.getName(), val, valuePutter);
+						flatObject(prop.getName(), val, valuePutter, propContext);
 					}else{
-						flatObject(prefixName+propertyAccesor+prop.getName(), val, valuePutter);
+						flatObject(prefixName+propertyAccesor+prop.getName(), val, valuePutter, propContext);
 					}
 				}
 			});
@@ -181,7 +201,29 @@ public class BeanToMapConvertor {
 	}
 
 	public static interface ValuePutter {
-		void put(String key, Object value);
+		void put(String key, Object value, PropertyContext keyContext);
+	}
+	
+	public static class PropertyContext {
+		final private Object source;
+		final private PropertyDescriptor property;
+		final private String originName;
+		public PropertyContext(Object source, PropertyDescriptor property,
+				String originName) {
+			super();
+			this.source = source;
+			this.property = property;
+			this.originName = originName;
+		}
+		public Object getSource() {
+			return source;
+		}
+		public PropertyDescriptor getProperty() {
+			return property;
+		}
+		public String getOriginName() {
+			return originName;
+		}
 	}
 
 	public static class BeanToMapBuilder {
