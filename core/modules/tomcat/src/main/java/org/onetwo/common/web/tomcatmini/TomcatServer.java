@@ -1,10 +1,12 @@
 package org.onetwo.common.web.tomcatmini;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.servlet.ServletException;
 
@@ -37,7 +39,17 @@ public class TomcatServer {
 		}
 		
 		public TomcatServerBuilder tomcatContextClassName(String tomcatContextClassName){
-			this.serverConfig.setTomcatContextClassName(tomcatContextClassName);;
+			this.serverConfig.setTomcatContextClassName(tomcatContextClassName);
+			return this;
+		}
+
+		public TomcatServerBuilder addWebapp(String webappDir, String contextPath){
+			this.serverConfig.addWebapp(webappDir, contextPath);
+			return this;
+		}
+
+		public TomcatServerBuilder config(Consumer<ServerConfig> configer){
+			configer.accept(this.serverConfig);
 			return this;
 		}
 		
@@ -98,6 +110,7 @@ public class TomcatServer {
 	private Tomcat tomcat;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private List<TomcatServerListener> listeners = new ArrayList<>();
+	private File appBaseFile;
 
 	private TomcatServer(ServerConfig webConfig) {
 		this.serverConfig = webConfig;
@@ -112,7 +125,6 @@ public class TomcatServer {
 	}
 	public void initialize() {
 		try {
-			
 			JFishTomcat tomcat = new JFishTomcat();
 			if(serverConfig.getTomcatContextClassName()!=null){
 				tomcat.setContextClass((Class<StandardContext>)ReflectUtils.loadClass(serverConfig.getTomcatContextClassName(), true));
@@ -120,8 +132,24 @@ public class TomcatServer {
 			int port = serverConfig.getPort();
 			tomcat.setPort(port);
 //			tomcat.setBaseDir(webConfig.getServerBaseDir());
-			tomcat.setBaseDir(serverConfig.getServerBaseDir());
-			tomcat.getHost().setAppBase(serverConfig.getWebappDir());
+			String baseDir = null;
+			if(!Utils.isBlank(serverConfig.getServerBaseDir())){
+				baseDir = serverConfig.getServerBaseDir();
+			}else{
+				baseDir = System.getProperty("java.io.tmpdir");
+				logger.info("set serverBaseDir as java.io.tmpdir : {} ", baseDir);
+			}
+			tomcat.setBaseDir(baseDir);
+			
+			// This magic line makes Tomcat look for WAR files in catalinaHome/webapps
+			// and automatically deploy them
+//			tomcat.getHost().addLifecycleListener(new HostConfig());
+			appBaseFile = new File(baseDir+"/tomcat.webapps."+this.serverConfig.getPort());
+			if(!appBaseFile.exists()){
+				appBaseFile.mkdirs();
+			}
+			appBaseFile.deleteOnExit();
+			tomcat.getHost().setAppBase(appBaseFile.getAbsolutePath());
 			Connector connector = tomcat.getConnector();
 			connector.setURIEncoding("UTF-8");
 			connector.setRedirectPort(serverConfig.getRedirectPort());
@@ -152,6 +180,15 @@ public class TomcatServer {
 		} catch (Exception e) {
 			throw new RuntimeException("web server initialize error , check it. " + e.getMessage(), e);
 		}
+		
+		/*Runtime.getRuntime().addShutdownHook(new Thread(){
+
+			@Override
+			public void run() {
+				appBaseFile.delete();
+			}
+			
+		});*/
 	}
 
 	public void start() {
@@ -168,14 +205,17 @@ public class TomcatServer {
 	}
 	
 	protected List<Context> addWebapps() throws ServletException{
-		logger.info("add defulat webapp {}, path {} ", serverConfig.getContextPath(), serverConfig.getWebappDir());
 		List<Context> contexts = new ArrayList<Context>();
 		//host.addChild(ctx);
-		Context ctx = tomcat.addWebapp(serverConfig.getContextPath(), serverConfig.getWebappDir());
-		contexts.add(ctx);
+		File webAppDir = new File(serverConfig.getWebappDir());
+		if(webAppDir.exists()){
+			logger.info("add defulat webapp {}, path {} ", serverConfig.getContextPath(), serverConfig.getWebappDir());
+			Context ctx = tomcat.addWebapp(serverConfig.getContextPath(), serverConfig.getWebappDir());
+			contexts.add(ctx);
+		}
 		for(WebappConfig webapp : serverConfig.getWebapps()){
 			logger.info("add webapp : {} ", webapp);
-			ctx = tomcat.addWebapp(webapp.getContextPath(), webapp.getWebappDir());
+			Context ctx = tomcat.addWebapp(webapp.getContextPath(), webapp.getWebappDir());
 			contexts.add(ctx);
 		}
 		return contexts;

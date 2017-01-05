@@ -110,12 +110,13 @@ public class ServerConfig {
 	}
 
 	public String getServerBaseDir() {
-		if(Utils.isBlank(serverBaseDir))
+		return serverBaseDir;
+		/*if(Utils.isBlank(serverBaseDir))
 			return getProjectDir().getPath() + "/target";
 		if(serverBaseDir.startsWith("/")){
 			return serverBaseDir;
 		}
-		return getProjectDir().getPath()+"/"+serverBaseDir;
+		return getProjectDir().getPath()+"/"+serverBaseDir;*/
 	}
 
 	public void setServerBaseDir(String serverBaseDir) {
