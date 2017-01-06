@@ -3,7 +3,6 @@ package org.onetwo.ext.poi.excel.generator;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
@@ -215,11 +214,11 @@ public class FieldModel implements PoiModel {
 		this.rowspan = rowspan;
 	}
 
-	public boolean isRange(){
+	/*public boolean isRange(){
 		//性能关键点。。。。。。。
 //		boolean rs = this.rowspan != null   || this.colspan != null;
 		return (rowspanValue!=null && rowspanValue>1) || (colspanValue!=null && colspanValue>1);
-	}
+	}*/
 
 	public String getStyle() {
 		return ExcelUtils.defaultValues(style, getParentRow()==null?"":getParentRow().getFieldStyle(), "");

@@ -197,9 +197,11 @@ public class DefaultRowProcessor implements RowProcessor {
 			}
 		}
 		//性能关键点。。。。。。。
-		if(field.isRange()){
+//		if(field.isRange()){
+		int rowSpan = cellContext.getRowSpan();
+		if(rowSpan>1 || colspan>1){
 //			CellRangeAddress range = createCellRange(row, cell, field, root);
-			CellRangeAddress range = new CellRangeAddress(rowNum, rowNum+cellContext.getRowSpan()-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
+			CellRangeAddress range = new CellRangeAddress(rowNum, rowNum+rowSpan-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
 			sheet.addMergedRegion(range);
 		}
 		return cell;
