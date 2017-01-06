@@ -1,5 +1,17 @@
 # onetw-poi
 基于poi，对操作excel的简单封装。
+交流群： 8060215
+
+## maven ##
+```xml
+
+<dependency>
+    <groupId>org.onetwo4j</groupId>
+    <artifactId>onetwo-dbm</artifactId>
+    <version>4.3.6</version>
+</dependency>   
+
+```
 
 ## 使用 ##
 ###定义xml模板
