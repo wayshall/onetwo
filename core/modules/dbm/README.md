@@ -1,4 +1,4 @@
-dao # dbm
+#dbm#
 ------
 基于spring jdbc实现的简单orm   
 交流群：  8060215
