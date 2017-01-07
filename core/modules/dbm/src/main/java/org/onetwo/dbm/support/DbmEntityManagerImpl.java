@@ -43,7 +43,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 //	private boolean watchSqlFile = false;
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
-	public DbmEntityManagerImpl(){
+	public DbmEntityManagerImpl(DbmDaoImplementor dbmDao){
+		this.dbmDao = dbmDao;
 	}
 	
 	
@@ -220,9 +221,9 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		return dbmDao;
 	}
 
-	public void setDbmDao(DbmDaoImplementor jFishDao) {
+	/*public void setDbmDao(DbmDaoImplementor jFishDao) {
 		this.dbmDao = jFishDao;
-	}
+	}*/
 
 /*
 	public void setSQLSymbolManager(SQLSymbolManager sQLSymbolManager) {
