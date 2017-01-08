@@ -33,6 +33,6 @@ security:
             access-token-uri: ${oauth2-server}/oauth/token
             user-authorization-uri: ${oauth2-server}/oauth/authorize
         resource:
-            # user-info-uri: http://localhost:8080/me
+            user-info-uri: ${oauth2-server}/web-admin/me
             # prefer-token-info: true
-            token-info-uri: ${oauth2-server}/oauth/check_token
+            # token-info-uri: ${oauth2-server}/oauth/check_token

@@ -15,6 +15,10 @@ public class LoginUserInfo extends LoginUserDetails {
 	@Setter
 	private Integer userType;
 	
+	public LoginUserInfo(LoginUserDetails userDetails){
+		this(userDetails.getUserId(), userDetails.getUserName(), userDetails.getPassword(), userDetails.getAuthorities());
+	}
+	
 	public LoginUserInfo(long userId, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(userId, username, password, authorities);

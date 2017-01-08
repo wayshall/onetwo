@@ -1,6 +1,7 @@
 package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -151,7 +152,7 @@ public class BeanToMapConvertor {
 		flatObject(prefixName, obj, valuePutter, null);
 	}
 	@SuppressWarnings("unchecked")
-	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
+	private <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
 		if(isMappableValue(obj)){
 			valuePutter.put(prefixName, obj, keyContext);
 		}else if(Map.class.isInstance(obj)){
@@ -207,13 +208,13 @@ public class BeanToMapConvertor {
 	public static class PropertyContext {
 		final private Object source;
 		final private PropertyDescriptor property;
-		final private String originName;
+		final private String name;
 		public PropertyContext(Object source, PropertyDescriptor property,
 				String originName) {
 			super();
 			this.source = source;
 			this.property = property;
-			this.originName = originName;
+			this.name = originName;
 		}
 		public Object getSource() {
 			return source;
@@ -221,8 +222,11 @@ public class BeanToMapConvertor {
 		public PropertyDescriptor getProperty() {
 			return property;
 		}
-		public String getOriginName() {
-			return originName;
+		public Field getField(){
+			return ClassIntroManager.getInstance().getIntro(source.getClass()).getField(name);
+		}
+		public String getName() {
+			return name;
 		}
 	}
 

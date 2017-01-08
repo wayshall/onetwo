@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1724,6 +1725,31 @@ public class ReflectUtils {
 		return target;
 	}
 
+	public static Constructor<?> getConstructor(Class<?> clazz, int constructorIndex){
+		Constructor<?>[] constroctors = clazz.getConstructors();
+		if(constructorIndex>=constroctors.length){
+			throw new NoSuchElementException("no constructor find. index: " + constructorIndex);
+		}
+		Constructor<?> targetConstructor = constroctors[constructorIndex];
+		return targetConstructor;
+	}
+	
+	public static <T> T newByConstructor(Class<T> clazz, int constructorIndex, Object...initargs){
+		Constructor<?> constructor = getConstructor(clazz, constructorIndex);
+		try {
+			return (T) constructor.newInstance(initargs);
+		} catch (Exception e) {
+			throw new BaseException("new instance error, class:"+constructor.getDeclaringClass()+"");
+		} 
+	}
+	
+	public static Object newInstance(Constructor<?> constructor, Object...initargs){
+		try {
+			return constructor.newInstance(initargs);
+		} catch (Exception e) {
+			throw new BaseException("new instance error, class:"+constructor.getDeclaringClass()+"");
+		} 
+	}
 	
 	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
 		
