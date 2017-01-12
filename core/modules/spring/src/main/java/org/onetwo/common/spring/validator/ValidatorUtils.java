@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.validation.BindingResult;

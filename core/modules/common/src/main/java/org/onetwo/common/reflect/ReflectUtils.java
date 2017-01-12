@@ -47,6 +47,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
@@ -1828,6 +1829,17 @@ public class ReflectUtils {
 			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isIgnoreIfNoSetMethod());
 		}
 	};
+	
+	public static FieldName getFieldNameAnnotation(Class<?> clazz, String name){
+		PropertyDescriptor property = getPropertyDescriptor(clazz, name);
+		FieldName fn = property.getReadMethod().getAnnotation(FieldName.class);
+		if(fn!=null){
+			return fn;
+		}
+		Field field = findField(clazz, name);
+		fn = field.getAnnotation(FieldName.class);
+		return fn;
+	}
 
 	public static void main(String[] args) {
 

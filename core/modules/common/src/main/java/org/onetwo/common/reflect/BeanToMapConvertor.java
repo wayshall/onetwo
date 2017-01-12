@@ -13,6 +13,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -40,6 +41,7 @@ public class BeanToMapConvertor {
 	private Function<Object, Boolean> flatableObject;
 	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 	private boolean freezed;
+	private boolean enableFieldNameAnnotation = false;
 
 	public void freeze(){
 		this.checkFreezed();
@@ -171,11 +173,11 @@ public class BeanToMapConvertor {
 			List<Object> list = LangUtils.asList(obj);
 			int index = 0;
 			for(Object o : list){
-				String listPrefixName = prefixName + this.listOpener+index+this.listCloser;
+				String listIndexName = prefixName + this.listOpener+index+this.listCloser;
 				if(isMappableValue(o)){
-					valuePutter.put(listPrefixName, o, null);
+					valuePutter.put(listIndexName, o, null);
 				}else{
-					flatObject(listPrefixName, o, valuePutter);
+					flatObject(listIndexName, o, valuePutter);
 				}
 				index++;
 			}
@@ -192,9 +194,9 @@ public class BeanToMapConvertor {
 					}
 					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
 					if(StringUtils.isBlank(prefixName)){
-						flatObject(prop.getName(), val, valuePutter, propContext);
+						flatObject(propContext.getName(), val, valuePutter, propContext);
 					}else{
-						flatObject(prefixName+propertyAccesor+prop.getName(), val, valuePutter, propContext);
+						flatObject(prefixName+propertyAccesor+propContext.getName(), val, valuePutter, propContext);
 					}
 				}
 			});
@@ -205,7 +207,7 @@ public class BeanToMapConvertor {
 		void put(String key, Object value, PropertyContext keyContext);
 	}
 	
-	public static class PropertyContext {
+	public class PropertyContext {
 		final private Object source;
 		final private PropertyDescriptor property;
 		final private String name;
@@ -226,6 +228,12 @@ public class BeanToMapConvertor {
 			return ClassIntroManager.getInstance().getIntro(source.getClass()).getField(name);
 		}
 		public String getName() {
+			if(enableFieldNameAnnotation){
+				FieldName fn = ReflectUtils.getFieldNameAnnotation(source.getClass(), name);
+				if(fn!=null){
+					return fn.value();
+				}
+			}
 			return name;
 		}
 	}
@@ -249,6 +257,10 @@ public class BeanToMapConvertor {
 
 		public BeanToMapBuilder valueConvertor(Function<Object, Object> valueConvertor) {
 			beanToFlatMap.setValueConvertor(valueConvertor);
+			return this;
+		}
+		public BeanToMapBuilder enableFieldNameAnnotation() {
+			beanToFlatMap.enableFieldNameAnnotation = true;
 			return this;
 		}
 

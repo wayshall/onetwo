@@ -13,6 +13,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/***
+ * convert authenticate server Principal object to local Principal
+ * @author way
+ *
+ */
 public class UserDetailPrincipalExtractor implements PrincipalExtractor {
 	
 	private Class<? extends UserDetails> userDetailClass;

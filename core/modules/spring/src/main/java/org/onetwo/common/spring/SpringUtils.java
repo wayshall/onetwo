@@ -77,6 +77,7 @@ final public class SpringUtils {
 
 	private static final FormattingConversionService CONVERSION_SERVICE = new DefaultFormattingConversionService();
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
+																			.enableFieldNameAnnotation()
 																			.build();
 	
 	private SpringUtils(){

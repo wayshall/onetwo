@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.validator;
+package org.onetwo.common.utils;
 
 import static java.lang.annotation.ElementType.*;
 
@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({TYPE, METHOD, FIELD})
+@Target({METHOD, FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldName {
 

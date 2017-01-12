@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.utils.FieldName;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class SpringUtilsTest {
@@ -29,10 +30,12 @@ public class SpringUtilsTest {
 		TestBean test2 = new TestBean();
 		test2.setUserName("testUserName2");
 		test.getAttrs().put("cc", test2);
+		test.setName("testRealName");
 		Map<String, Object> map = SpringUtils.toFlatMap(test);
 		System.out.println("map:"+map);
-		assertThat(map.size()).isEqualTo(4);
+		assertThat(map.size()).isEqualTo(5);
 		assertThat(map.get("birthday")).isEqualTo("2017-01-05");
+		assertThat(map.get("realName")).isEqualTo("testRealName");
 	}
 	
 	public static class TestBean {
@@ -40,6 +43,9 @@ public class SpringUtilsTest {
 	    @DateTimeFormat(pattern= DateUtils.DATE_ONLY)
 		private Date birthday;
 	    private Map<String, Object> attrs = new HashMap<String, Object>();
+	    
+	    @FieldName("realName")
+	    private String name;
 
 		public TestBean() {
 			super();
@@ -67,6 +73,14 @@ public class SpringUtilsTest {
 		}
 		public void setAttrs(Map<String, Object> attrs) {
 			this.attrs = attrs;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 		
 	}
