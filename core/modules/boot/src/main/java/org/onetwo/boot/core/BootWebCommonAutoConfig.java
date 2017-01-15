@@ -13,7 +13,6 @@ import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
-import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -100,10 +99,10 @@ public class BootWebCommonAutoConfig {
 		return resolver;
 	}
 	
-	@Bean
+	/*@Bean
 	public BootWebExceptionHandler bootWebExceptionHandler(){
 		return new BootWebExceptionHandler();
-	}
+	}*/
 	
 	/***
 	 * 拦截器
@@ -159,7 +158,6 @@ public class BootWebCommonAutoConfig {
 	 */
 	@Bean
 	@Autowired
-//	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_NEGOTIATING_VIEW, havingValue="true")
 	public ViewResolver viewResolver(ApplicationContext applicationContext, ContentNegotiationManager contentNegotiationManager) {
 		List<View> views = SpringUtils.getBeans(applicationContext, View.class);
 		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();

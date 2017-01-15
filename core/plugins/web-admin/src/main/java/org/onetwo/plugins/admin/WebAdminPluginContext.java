@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
+import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
@@ -28,19 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.util.ClassUtils;
 
 @Configuration
 @AutoConfigureAfter(DbmContextAutoConfig.class)
@@ -83,9 +78,14 @@ public class WebAdminPluginContext {
 		return new DictionaryImportController();
 	}*/
 
+	/****
+	 * 如果是sso client端，则不需要启用
+	 * @author way
+	 *
+	 */
 	@ComponentScan(basePackageClasses={WebAdminBaseController.class, DictionaryImportService.class, WebAdminPermissionConfig.class})
 	@Configuration
-	@Conditional(WebAdminManagerCondition.class)
+	@Conditional(NotEnableOauth2SsoCondition.class)
 	protected static class WebAdminManagerModule {
 
 		@Bean
@@ -109,23 +109,6 @@ public class WebAdminPluginContext {
 		}
 	}
 	
-	protected static class WebAdminManagerCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			String ssoClass = "org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso";
-			boolean ssoClientAnnotationExists = ClassUtils.isPresent(ssoClass, null);
-			if(!ssoClientAnnotationExists){
-				return ConditionOutcome.match("EnableOAuth2Sso not exists!");
-			}
-			String[] beanNames = context.getBeanFactory().getBeanNamesForAnnotation(EnableOAuth2Sso.class);
-			if(beanNames==null || beanNames.length==0){
-				return ConditionOutcome.match("not @EnableOAuth2Sso bean found!");
-			}
-			return ConditionOutcome.noMatch("@EnableOAuth2Sso sso client!");
-		}
-		
-	}
 	
 	@Configuration
 	protected static class JavaClassStylePermissionManager {

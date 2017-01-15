@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Import;
 public class BootMSContextAutoConfig extends BootWebCommonAutoConfig {
 	
 	public BootMSContextAutoConfig(){
-		System.out.println("BootMSContextAutoConfig init");
 	}
 
 }

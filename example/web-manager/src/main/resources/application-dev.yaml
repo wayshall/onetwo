@@ -17,6 +17,7 @@ endpoints:
         sensitive: false
 
 security:
+    
     oauth2:
         client:
             client-id: acme
@@ -28,7 +29,7 @@ security:
             
 jfish:
     security:
-        syncPermissionData: true
+        syncPermissionData: false
         csrf:
             disable: true
         logoutUrl: /logout
