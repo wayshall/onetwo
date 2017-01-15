@@ -121,7 +121,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 
 	@Override
-	public int generateIt() {
+	public Workbook generateIt() {
 //		this.initWorkbookData();
 		
 		boolean createSheet = true;
@@ -130,7 +130,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		}
 		if(!createSheet){
 			logger.info("condition[ {} = {} ], ignore create sheet.", tempalte.getCondition(), createSheet);
-			return 0;
+			return null;
 		}
 		SheetDatasource<?> ds = null;
 		if(StringUtils.isBlank(tempalte.getDatasource())){
@@ -183,8 +183,11 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			
 			dataSourceSize = sheet.getLastRowNum();
 		}
+		if(logger.isInfoEnabled()){
+			logger.info("workbook generate data size: {}", dataSourceSize);
+		}
 		
-		return dataSourceSize;
+		return workbookData.getWorkbook();
 	}
 	
 	private Sheet generateSheet(String sheetname, SheetData sdata){

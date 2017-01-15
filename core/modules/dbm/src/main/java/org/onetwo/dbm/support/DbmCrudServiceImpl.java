@@ -58,14 +58,14 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<T> findByProperties(Map<Object, Object> properties) {
-		return super.findByProperties(properties);
+	public List<T> findListByProperties(Map<Object, Object> properties) {
+		return super.findListByProperties(properties);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<T> findByProperties(Object... properties) {
-		return super.findByProperties(properties);
+	public List<T> findListByProperties(Object... properties) {
+		return super.findListByProperties(properties);
 	}
 
 	@Override

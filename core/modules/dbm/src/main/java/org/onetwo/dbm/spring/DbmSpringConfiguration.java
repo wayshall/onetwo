@@ -18,7 +18,6 @@ import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DataBaseConfig;
 import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
-import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDaoImpl;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
@@ -98,10 +97,11 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public DbmEntityManager dbmEntityManager() {
-		DbmEntityManagerImpl jem = new DbmEntityManagerImpl();
-		DbmDaoImplementor dbmDao = dbmDao();
-		jem.setDbmDao(dbmDao);
+	@Autowired
+	public DbmEntityManager dbmEntityManager(DbmDaoImplementor dbmDao) {
+		DbmEntityManagerImpl jem = new DbmEntityManagerImpl(dbmDao);
+//		DbmDaoImplementor dbmDao = dbmDao();
+//		jem.setDbmDao(dbmDao);
 		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
 		//在afterpropertiesset里查找，避免循环依赖
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
@@ -120,18 +120,18 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 
 	@Bean
 	@Autowired
-	public FileNamedQueryManager fileNamedQueryFactory(){
+	public FileNamedQueryManager fileNamedQueryFactory(DbmEntityManager entityManager){
 		/*JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 //		fq.initQeuryFactory(createQueryable);
 		fq.setQueryProvideManager(jfishEntityManager());
 		return fq;*/
-		return dbmEntityManager().getFileNamedQueryManager();
+		return entityManager.getFileNamedQueryManager();
 	}
 	
 	@Bean
 	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(){
-		return Dbms.createServiceRegistry(dataSource, validator);
+		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator);
 	}
 	
 	@Bean
@@ -142,21 +142,13 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		jfishDao.setJdbcTemplate(jdbcTemplate());
 		jfishDao.setDataBaseConfig(defaultDataBaseConfig());
 		jfishDao.setServiceRegistry(dbmInnserServiceRegistry());
-//		jfishDao.setMappedEntryManager(mappedEntryManager());
-//		jfishDao.setDialect(dialect());
-//		jfishDao.setSqlSymbolManager(sqlSymbolManager());
-//		jfishDao.setSequenceNameManager(sequenceNameManager());
 		return jfishDao;
 	}
 	
 	@Bean
 	public DbmJdbcOperations jdbcTemplate(){
-		DbmJdbcTemplate template = new DbmJdbcTemplate();
-		template.setDataSource(dataSource);
+		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnserServiceRegistry().getJdbcParameterSetter());
 		template.setDebug(defaultDataBaseConfig().isLogSql());
-		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
-//		template.setNamedTemplate(namedJdbcTemplate());
-//		template.setLogJdbcSql(logJdbcSql);
 
 		if(defaultDataBaseConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);

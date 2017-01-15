@@ -53,11 +53,11 @@ public class Intro<T> {
 	
 	private final Class<T> clazz;
 	private final Map<String, PropertyDescriptor> propertyDescriptors;
-	private Map<String, Field> _fieldMaps;
+	private volatile Map<String, Field> _fieldMaps;
 	private ReentrantLock _fieldLock = new ReentrantLock();
 
 //	private List<Field> allFields;
-	private Map<String, Field> _allFieldMap;
+	private volatile Map<String, Field> _allFieldMap;
 	private ReentrantLock _allFieldLock = new ReentrantLock();
 	
 	private LoadingCache<String, JFishFieldInfoImpl> fieldInfoCaches = CacheBuilder.newBuilder()

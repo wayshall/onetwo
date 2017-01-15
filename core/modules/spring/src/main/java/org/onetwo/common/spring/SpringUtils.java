@@ -1,7 +1,10 @@
 package org.onetwo.common.spring;
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -9,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,6 +20,8 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
+import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
@@ -42,11 +48,20 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.Property;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
+
+import com.google.common.collect.Maps;
 
 /****
  * 可通过这个类手动获取spring容器里注册的bean
@@ -59,8 +74,65 @@ final public class SpringUtils {
 	protected static Logger logger = JFishLoggerFactory.getLogger(SpringUtils.class);
 	private static String ACTIVE_PROFILES = "spring.profiles.active";
 //	private static String CLASSPATH = "classpath:";
+
+	private static final FormattingConversionService CONVERSION_SERVICE = new DefaultFormattingConversionService();
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
+																			.enableFieldNameAnnotation()
+																			.build();
 	
 	private SpringUtils(){
+	}
+
+	public static FormattingConversionService getFormattingConversionService(){
+		return CONVERSION_SERVICE;
+	}
+	
+
+	public static <T> T convertValue(Object value, Class<T> targetType){
+    	T res = (T)getFormattingConversionService().convert(value, TypeDescriptor.valueOf(value.getClass()), TypeDescriptor.valueOf(targetType));
+    	return res;
+	}
+	
+	public static Object convertValue(Object value, Class<?> clazz, String name, boolean byProperty){
+		TypeDescriptor td = byProperty?typeDescriptorForPerperty(clazz, name):typeDescriptorForField(clazz, name);
+    	Object res = getFormattingConversionService().convert(value, TypeDescriptor.valueOf(value.getClass()), td);
+    	return res;
+	}
+	
+	public static Map<String, Object> toFlatMap(Object obj) {
+		return toFlatMap(obj, o->!LangUtils.isSimpleTypeObject(o));
+	}
+	
+	public static Map<String, Object> toFlatMap(Object obj, Function<Object, Boolean> isNestedObject) {
+		Map<String, Object> map = Maps.newHashMap();
+		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (k, v, ctx)->{
+			Object value = v;
+			TypeDescriptor sourceType = null;
+			if(v.getClass()!=String.class){
+            	Field field = ctx.getField();
+            	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
+    	            sourceType = new TypeDescriptor(field);
+            	}
+            	if(sourceType==null){
+    	            sourceType = new TypeDescriptor(new Property(ctx.getSource().getClass(), ctx.getProperty().getReadMethod(), ctx.getProperty().getWriteMethod()));
+            	}
+            	value = getFormattingConversionService().convert(v, sourceType, TypeDescriptor.valueOf(String.class));
+            }
+        	map.put(k, value);
+		});
+		return map;
+	}
+	
+	public static TypeDescriptor typeDescriptorForPerperty(Class<?> clazz, String propertyName){
+		PropertyDescriptor pd = ReflectUtils.getPropertyDescriptor(clazz, propertyName);
+		TypeDescriptor td = new TypeDescriptor(new Property(clazz, pd.getReadMethod(), pd.getWriteMethod()));
+		return td;
+	}
+	
+	public static TypeDescriptor typeDescriptorForField(Class<?> clazz, String fieldName){
+    	Field field = ReflectUtils.findField(clazz, fieldName);
+		TypeDescriptor td = new TypeDescriptor(field);
+		return td;
 	}
 	
 	public static void setProfiles(String profiles){
@@ -441,6 +513,18 @@ final public class SpringUtils {
 			}
 		}
 		return result;
+	}
+	
+	public static String[] getConstructorNames(Class<?> clazz){
+		return getConstructorNames(clazz, 0);
+	}
+	public static String[] getConstructorNames(Class<?> clazz, int constructorIndex){
+		Constructor<?> targetConstructor = ReflectUtils.getConstructor(clazz, constructorIndex);
+		return getConstructorNames(targetConstructor);
+	}
+	public static String[] getConstructorNames(Constructor<?> targetConstructor){
+		LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+		return discoverer.getParameterNames(targetConstructor);
 	}
 	
 }

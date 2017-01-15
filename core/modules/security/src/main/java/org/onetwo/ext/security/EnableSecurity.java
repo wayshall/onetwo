@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 public @interface EnableSecurity {
 	
 	InterceptMode mode() default InterceptMode.URL;
-	Class<?> configClass() default Object.class;
+	Class<?>[] configClass() default Object.class;
 	boolean enableJavaStylePermissionManage() default true;
 	
 	public static enum InterceptMode {

@@ -1,0 +1,38 @@
+server:
+    port: 8080
+    contextPath: /product-manager
+spring: 
+    datasource: 
+        url: jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+jfish:
+    security:
+        logoutUrl: /logout
+        syncPermissionData: true
+siteConfig:
+    uploadImageAccessPath: http://localhost/img/manager
+    upload:
+        #storeType: ftp
+        #ftpServer: 127.0.0.1
+        #ftpUser: test
+        #ftpPassword: test
+        fileStorePath: G:/temp/upload_files
+        appContextDir: manager
+        #maxUploadSize: 1024
+        
+oauth2-server: http://localhost:9081
+security:
+    oauth2:
+        sso:
+            # loginPath: /article**
+        client:
+            client-id: acme
+            client-secret: acmesecret
+            access-token-uri: ${oauth2-server}/oauth/token
+            user-authorization-uri: ${oauth2-server}/oauth/authorize
+        resource:
+            user-info-uri: ${oauth2-server}/web-admin/me
+            # prefer-token-info: true
+            # token-info-uri: ${oauth2-server}/oauth/check_token

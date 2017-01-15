@@ -13,7 +13,6 @@ package ${servicePackage};
 
 import java.util.Collection;
 
-import org.onetwo.common.db.BaseCrudServiceImpl;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.utils.Page;

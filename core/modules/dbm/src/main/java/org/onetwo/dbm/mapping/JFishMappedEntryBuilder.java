@@ -108,7 +108,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 //				removeMeta = false;
 			}*/
 			
-			entry = _buildMappedEntry(mapEntity);
+			entry = buildMappedEntry(mapEntity);
 		}else if(object instanceof Class){
 			Class entityClass = (Class<?>)object;
 			
@@ -208,9 +208,9 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		JFishMappedEntry entry = createJFishMappedEntry(annotationInfo);
 		this.listenerManager.notifyAfterCreatedMappedEntry(entry);
 		if(byProperty){
-			entry = _buildMappedEntryByProperty(entry);
+			entry = buildMappedEntryByProperty(entry);
 		}else{
-			entry = _buildMappedEntryByField(entry);
+			entry = buildMappedEntryByField(entry);
 		}
 		
 //		TableInfo tableInfo = entry.getTableInfo();
@@ -221,7 +221,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		return entry;
 	}
 
-	protected JFishMappedEntry _buildMappedEntryByProperty(JFishMappedEntry entry) {
+	protected JFishMappedEntry buildMappedEntryByProperty(JFishMappedEntry entry) {
 		Class<?> entityClass = entry.getEntityClass();
 		PropertyDescriptor[] props = ReflectUtils.desribProperties(entityClass);
 		
@@ -237,7 +237,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		return entry;
 	}
 
-	protected JFishMappedEntry _buildMappedEntryByField(JFishMappedEntry entry) {
+	protected JFishMappedEntry buildMappedEntryByField(JFishMappedEntry entry) {
 		Class<?> entityClass = entry.getEntityClass();
 		Collection<Field> fields = ReflectUtils.findFieldsFilterStatic(entityClass);
 		
@@ -316,7 +316,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		col.setPrimaryKey(true);
 	}*/
 
-	protected JFishMappedEntry _buildMappedEntry(Map entity){
+	protected JFishMappedEntry buildMappedEntry(Map entity){
 		throw new IllegalArgumentException("unsupported map entity : " + entity);
 		/*JFishMappedEntry entry = new JFishMappedEntryImpl(entity.getClass());
 		//TODO

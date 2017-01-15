@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
@@ -46,6 +47,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
@@ -1724,6 +1726,31 @@ public class ReflectUtils {
 		return target;
 	}
 
+	public static Constructor<?> getConstructor(Class<?> clazz, int constructorIndex){
+		Constructor<?>[] constroctors = clazz.getConstructors();
+		if(constructorIndex>=constroctors.length){
+			throw new NoSuchElementException("no constructor find. index: " + constructorIndex);
+		}
+		Constructor<?> targetConstructor = constroctors[constructorIndex];
+		return targetConstructor;
+	}
+	
+	public static <T> T newByConstructor(Class<T> clazz, int constructorIndex, Object...initargs){
+		Constructor<?> constructor = getConstructor(clazz, constructorIndex);
+		try {
+			return (T) constructor.newInstance(initargs);
+		} catch (Exception e) {
+			throw new BaseException("new instance error, class:"+constructor.getDeclaringClass()+"");
+		} 
+	}
+	
+	public static Object newInstance(Constructor<?> constructor, Object...initargs){
+		try {
+			return constructor.newInstance(initargs);
+		} catch (Exception e) {
+			throw new BaseException("new instance error, class:"+constructor.getDeclaringClass()+"");
+		} 
+	}
 	
 	public static class IgnoreAnnosCopyer implements PropertyCopyer<PropertyDescriptor> {
 		
@@ -1802,6 +1829,17 @@ public class ReflectUtils {
 			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isIgnoreIfNoSetMethod());
 		}
 	};
+	
+	public static FieldName getFieldNameAnnotation(Class<?> clazz, String name){
+		PropertyDescriptor property = getPropertyDescriptor(clazz, name);
+		FieldName fn = property.getReadMethod().getAnnotation(FieldName.class);
+		if(fn!=null){
+			return fn;
+		}
+		Field field = findField(clazz, name);
+		fn = field.getAnnotation(FieldName.class);
+		return fn;
+	}
 
 	public static void main(String[] args) {
 

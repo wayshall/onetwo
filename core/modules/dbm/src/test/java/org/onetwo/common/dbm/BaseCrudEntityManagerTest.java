@@ -3,17 +3,29 @@ package org.onetwo.common.dbm;
 import java.util.Date;
 import java.util.stream.Stream;
 
+import javax.sql.DataSource;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.db.BaseCrudEntityManager;
+import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.profiling.TimeCounter;
+import org.onetwo.dbm.support.Dbms;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseCrudEntityManagerTest extends AppBaseTest {
 	
-	private BaseCrudEntityManager<UserAutoidEntity, Long> userDao = BaseCrudEntityManager.createCrudManager(UserAutoidEntity.class);
+	@Autowired
+	private DataSource dataSource;
+	
+	private CrudEntityManager<UserAutoidEntity, Long> userDao;
 
+	@Before
+	public void setup(){
+		userDao = Dbms.newCrudManager(UserAutoidEntity.class, dataSource);
+	}
 
 	private UserAutoidEntity createUserAutoidEntity(int i){
 		String userNamePrefix = "BaseCrudEntityManager";;

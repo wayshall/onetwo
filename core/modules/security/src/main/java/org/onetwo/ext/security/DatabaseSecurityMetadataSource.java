@@ -21,12 +21,15 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.expression.Expression;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.object.MappingSqlQuery;
 import org.springframework.security.access.ConfigAttribute;
@@ -52,7 +55,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	private static final String AUTHORITY_RESOURCE_SQL_FILE = "/plugins/security/authority_resource.sql";
 
 	private String resourceQuery;
-//	private String appCode;// ??
+	private List<String> appCodes;
 	
 	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = Maps.newLinkedHashMap();
 	
@@ -81,17 +84,33 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 										+ "perm.sort "
 										+ "FROM admin_permission perm "
 										+ "WHERE perm.resources_pattern is not null "
+										+ (LangUtils.isEmpty(appCodes)?"":"and perm.app_code in ( :appCode ) ")
 //										+ "and perm.resources_pattern!='' " //oracle里是个坑
 										+ "order by perm.sort";
 			}
 		}
 		
 		Assert.hasText(resourceQuery);
-		ResourceMapping mapping = new ResourceMapping(getDataSource(), resourceQuery);
+//		ResourceMapping mapping = new ResourceMapping(getDataSource(), resourceQuery);
+//		List<AuthorityResource> authorities = mapping.execute();
+		ResourceMapping mapping = new ResourceMapping();
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(getDataSource());
+		Map<String, Object> params = new HashMap<String, Object>();
+		if(!LangUtils.isEmpty(appCodes)){
+			params.put("appCode", appCodes);
+		}
+		List<AuthorityResource> authorities = jdbcTemplate.query(resourceQuery, params, mapping);
 		
-		List<AuthorityResource> authorities = mapping.execute();
+		if(authorities.isEmpty()){
+			logger.warn("no authorities fetch, check your application!");
+		}
 		return authorities;
 	}
+	
+	public void setAppCodes(List<String> appCodes) {
+		this.appCodes = appCodes;
+	}
+
 	public void setResourceQuery(String resourceQuery) {
 		this.resourceQuery = resourceQuery;
 	}
@@ -195,17 +214,19 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 	    return true;
     }*/
 	
-	public static class ResourceMapping extends MappingSqlQuery<AuthorityResource> {
+	public static class ResourceMapping extends MappingSqlQuery<AuthorityResource> implements RowMapper<AuthorityResource> {
 		private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
 		private boolean hasAuthorityName;
 
+		public ResourceMapping(){
+		}
 		public ResourceMapping(DataSource ds, String sql) {
 	        super(ds, sql);
 	        hasAuthorityName = sql.contains("authority_name");
         }
 
 		@Override
-        protected AuthorityResource mapRow(ResultSet rs, int rowNum) throws SQLException {
+		public AuthorityResource mapRow(ResultSet rs, int rowNum) throws SQLException {
 			AuthorityResource authoricty = new AuthorityResource();
 			String rp = rs.getString("resources_pattern");
 			List<UrlResourceInfo> urlResourceInfo = urlResourceInfoParser.parseToUrlResourceInfos(rp);

@@ -1,0 +1,165 @@
+
+<@extends parent="/[web-admin]/layout/easyui-js.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       用户表
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+    
+     <div class="easyui-panel" style="height:15%">
+        <form id="searchForm" class="easyui-form" >
+           <table style="padding: 5px;" cellpadding="5px">
+                <tr>
+                    <td>用户名:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="userName" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    <td>昵称:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="nickName" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    <td>电子邮件:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="email" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                   <td>&nbsp;</td>
+                   <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>手机:</td>
+                    <td>
+                        <input class="easyui-textbox searchFieldClass" type="text" name="mobile" 
+                               data-options="required:false,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                    
+                   <td>&nbsp;</td>
+                    <td>
+                        <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                    </td>
+               </tr>
+           </table>
+       </form>
+    </div>
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="后台用户列表" >
+        <thead>
+            <tr>
+                <th field="id" checkbox="true"></th>
+                <th field="userName" >用户名</th>
+                <th field="nickName" >昵称</th>
+                <th field="userTypeName" >用户级别</th>
+                <th field="email" >电子邮件</th>
+                <th field="qq" >qq</th>
+                <th field="mobile" >手机</th>
+                <th field="bankName">银行</th>
+                <th field="bankAccount" >银行账户</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+	<#include "/manager/user-edit-form.html">
+    
+    <script type="text/javascript">
+    
+    $('#btnSearch').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/manager/user.json?'+param;
+        $('#dataGrid').datagrid('options').url = url;
+        $('#dataGrid').datagrid('reload');
+    });
+    
+
+    
+    var reqUrl = '${siteConfig.baseURL}/manager/user.json';
+    var editingId;
+    var toolbar = [
+        
+        {
+            text:'新增',
+            iconCls:'icon-add',
+            handler:function(){
+                $('#addDataDialog').dialog('open').dialog('setTitle', '新增');
+
+                $('#dataForm').form('reset');
+                var url = '${siteConfig.baseURL}/manager/user.json';
+                $('#dataForm').attr('action', url);
+                $('#dataForm').find('input[name="_method"]').val('');
+                $('#userName').textbox({disabled:false}); 
+           }
+        },
+
+        {
+            text:'编辑',
+            iconCls:'icon-edit',
+            handler:function(){
+                if(!$('#dataGrid').isSelectedOne()){
+                    $.messager.alert('警告','请选择一条数据！','warning');
+                   return ;
+                }
+                
+                var dataForm = $('#dataForm');
+                var selected = $('#dataGrid').datagrid('getSelected');
+                
+                $('#addDataDialog').dialog('open').dialog('setTitle', '编辑');
+                
+                var url = '${siteConfig.baseURL}/manager/user/'+selected.id+'.json';
+                dataForm.attr('action', url);
+                dataForm.find('input[name="_method"]').val('put');
+                dataForm.form('load', url);
+        	    $('#userName').textbox({disabled:true}); 
+           }
+        },
+
+        {
+            text:'删除',
+            iconCls:'icon-remove',
+            handler:helper.deleteHandler({
+                        datagrid: '#dataGrid',
+                        url: '${siteConfig.baseURL}/manager/user.json',
+                        idField: 'id',
+                        paramIdName: 'ids'
+                    })
+        }
+        
+    ];
+    
+    var selectedRow = null;
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        pagination: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get',
+        pageSize: 20,
+        pageList: [20, 40, 60, 100],
+        //idField: 'id',
+        toolbar: toolbar
+    }); 
+    $('#addDataDialog').dialog({
+		closed:true, 
+		modal:true, 
+		buttons:'#dlg-buttons'
+    })
+ </script>
+    </@override>
+</@extends>

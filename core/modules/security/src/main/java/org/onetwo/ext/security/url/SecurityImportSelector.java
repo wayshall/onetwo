@@ -25,11 +25,13 @@ public class SecurityImportSelector implements ImportSelector {
 		}else if(mode==InterceptMode.METHOD){
 			classNames.add(MethodBasedSecurityConfig.class.getName());
 		}else{
-			Class<?> configClass = (Class<?>)attributes.get("configClass");
-			if(configClass==Object.class){
+			Class<?>[] configClass = (Class<?>[])attributes.get("configClass");
+			if(configClass==null || configClass.length==0){
 				throw new BaseException("no security config class set!");
 			}
-			classNames.add(configClass.getName());
+			for(Class<?> cls : configClass){
+				classNames.add(cls.getName());
+			}
 		}
 		boolean enableJavaStylePermissionManage = (boolean)attributes.get("enableJavaStylePermissionManage");
 		if(enableJavaStylePermissionManage){

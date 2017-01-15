@@ -3,6 +3,8 @@ package org.onetwo.ext.poi.excel.interfaces;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.apache.poi.ss.usermodel.Workbook;
+
 public interface TemplateGenerator {
 	
 	public String getFormat();
@@ -11,7 +13,7 @@ public interface TemplateGenerator {
 	 * 返回参考的datasource的数量
 	 * @return
 	 */
-	public int generateIt();
+	public Workbook generateIt();
 
 	public void write(OutputStream out);
 

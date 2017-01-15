@@ -16,9 +16,20 @@ endpoints:
     health:
         sensitive: false
 
+security:
+    
+    oauth2:
+        client:
+            client-id: acme
+            client-secret: acmesecret
+            scope: read,write
+            auto-approve-scopes: '.*'
+        authorization:
+            checkTokenAccess: isAuthenticated()
+            
 jfish:
     security:
-        syncPermissionData: true
+        syncPermissionData: false
         csrf:
             disable: true
         logoutUrl: /logout

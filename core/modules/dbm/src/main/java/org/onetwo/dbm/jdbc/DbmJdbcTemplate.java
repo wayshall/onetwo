@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
@@ -38,14 +37,16 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	protected NamedJdbcTemplate namedTemplate;
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 
-	public DbmJdbcTemplate() {
+	/*public DbmJdbcTemplate() {
 	}
-
+*/
 	public DbmJdbcTemplate(DataSource dataSource) {
-		super(dataSource);
+		this(dataSource, new SpringStatementParameterSetter());
 	}
-	public DbmJdbcTemplate(DataSource dataSource, DbmTypeMapping dbmTypeMapping) {
+	
+	public DbmJdbcTemplate(DataSource dataSource, JdbcStatementParameterSetter jdbcParameterSetter) {
 		super(dataSource);
+		this.jdbcParameterSetter = jdbcParameterSetter;
 	}
 	
 	public boolean isDebug() {
@@ -56,9 +57,9 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		this.debug = debug;
 	}
 
-	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
+	/*public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
 		this.jdbcParameterSetter = jdbcParameterSetter;
-	}
+	}*/
 
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();

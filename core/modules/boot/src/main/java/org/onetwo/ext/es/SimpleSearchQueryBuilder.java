@@ -651,6 +651,12 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 
+		public SimpleBooleanQueryBuilder<PB> with(Consumer<SimpleBooleanQueryBuilder<PB>> consumer){
+			Assert.notNull(consumer);
+			consumer.accept(this);
+			return this;
+		}
+		
 		public SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> or(){
 			SimpleBooleanQueryBuilder<SimpleBooleanQueryBuilder<PB>> simpleBooleanQuery = new SimpleBooleanQueryBuilder<>(this);
 			orBoolQuerys.add(simpleBooleanQuery);

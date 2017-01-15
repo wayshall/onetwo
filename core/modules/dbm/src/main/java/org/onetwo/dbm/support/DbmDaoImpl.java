@@ -19,19 +19,20 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.event.JFishDeleteEvent;
+import org.onetwo.dbm.event.JFishDeleteEvent.DeleteType;
 import org.onetwo.dbm.event.JFishEvent;
 import org.onetwo.dbm.event.JFishEventAction;
 import org.onetwo.dbm.event.JFishEventListener;
 import org.onetwo.dbm.event.JFishEventSource;
 import org.onetwo.dbm.event.JFishExtQueryEvent;
+import org.onetwo.dbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.event.JFishFindEvent;
 import org.onetwo.dbm.event.JFishInsertEvent;
 import org.onetwo.dbm.event.JFishInsertOrUpdateEvent;
 import org.onetwo.dbm.event.JFishUpdateEvent;
-import org.onetwo.dbm.event.JFishDeleteEvent.DeleteType;
-import org.onetwo.dbm.event.JFishExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
@@ -79,19 +80,30 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 
 	public DbmDaoImpl(DataSource dataSource){
 		Assert.notNull(dataSource);
+		this.serviceRegistry = SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, null);
 		this.setDataSource(dataSource);
 	}
 
 	public DbmDaoImpl(DataSource dataSource, DBDialect dialect){
 		Assert.notNull(dataSource);
 		Assert.notNull(dialect);
+		this.serviceRegistry = SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, null);
 		this.setDataSource(dataSource);
 	}
-
-	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
-		return new DbmNamedJdbcTemplate(getJdbcTemplate());
+	
+	@Override
+	protected DbmJdbcOperations createJdbcTemplate(DataSource dataSource) {
+		return new DbmJdbcTemplate(dataSource, serviceRegistry.getJdbcParameterSetter());
 	}
 
+	@Override
+	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
+		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(getJdbcTemplate());
+		template.setJdbcParameterSetter(serviceRegistry.getJdbcParameterSetter());
+		return template;
+	}
+
+	@Override
 	protected void checkDaoConfig() {
 		Assert.notNull(getDataSource());
 //		Assert.notNull(dialect);

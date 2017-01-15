@@ -1,0 +1,52 @@
+<meta charset="UTF-8">
+<div id="addDataDialog" class="easyui-dialog" 
+    style="width:50%;height:80%;padding:10px 20px"
+    data-options="closed:true, modal:true, buttons:'#dlg-buttons' ">
+           填写[产品表]信息<hr/>
+       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/manager/product.json" method="post" >
+            <input id="_method" name="_method" type="hidden" />
+           <table cellpadding="5">
+                <tr>
+                    <td>产品名称:</td>
+                    <td>
+                        <input class="easyui-textbox formFieldClass" type="text" name="name" 
+                               data-options="required:true,
+                                             validType:'length[0,50]' "/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>产品单价:</td>
+                    <td>
+                        <input class="easyui-numberbox formFieldClass" type="text" name="price" 
+                               data-options="required:true,
+                               				 precision:2
+                                              "/>
+                               
+                    </td>
+                </tr>
+           </table>
+           <@security.csrfInput/>
+       </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveData();">保存</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="cancel();">取消</a>
+</div>
+<script type="text/javascript">
+    $('#addDataDialog').dialog({
+        width:'50%',
+        height:'80%',
+        onClose: function(){
+            $('#dataForm').form('reset');
+        }
+    })
+    
+    
+    function saveData(){
+        helper.submitEasyForm({dataForm: '#dataForm',dataDialog: '#addDataDialog', datagrid: '#dataGrid'});
+    }
+    function cancel(){
+        $('#addDataDialog').dialog('close');
+    }
+</script>

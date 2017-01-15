@@ -92,7 +92,18 @@ helper.page = {
 	                }
 	            }
 	        })
-	    }
+	    },
+
+		getSelectedRow: function(){
+		    var row = $(this).datagrid('getSelected');
+		    return row;
+		},
+		
+		selectRow: function(index){
+			$(this).datagrid('selectRow',index);// 关键在这里  
+		    var row = $(this).datagrid('getSelected');
+		    return row;
+		}
 		
 	});
 	
@@ -246,6 +257,9 @@ helper.page = {
 	     
 	     remoteMessageHandler: function(cb){
 	    	 return function(data){
+	             if(cb){
+	            	 cb(data);
+	             }
 	    		 if(data.success){
 	    			 if(data.success===true){
 		            	 $.messager.progress('close');
@@ -255,10 +269,6 @@ helper.page = {
 		            	 $.messager.alert('操作出错！',data.message,'warning');
 		             }
 	    		 }
-	             
-	             if(cb){
-	            	 cb(data);
-	             }
 		     }
 	     },
 	     

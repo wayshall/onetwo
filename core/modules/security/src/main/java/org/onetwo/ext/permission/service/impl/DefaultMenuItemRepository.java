@@ -22,7 +22,8 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	
 	@Override
     public List<PermisstionTreeModel> findAllMenus() {
-		List<? extends DefaultIPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
+//		List<? extends DefaultIPermission<?>> permissions = permissionManager.findAppMenus(permissionConfig.getAppCode());
+		List<? extends DefaultIPermission<?>> permissions = permissionManager.findAppMenus(null);
 	    return createMenuTreeBuilder(permissions).buidTree();
 //	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
     }

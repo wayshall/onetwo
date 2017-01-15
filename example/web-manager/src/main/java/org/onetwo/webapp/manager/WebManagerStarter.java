@@ -2,13 +2,14 @@ package org.onetwo.webapp.manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@SpringBootApplication
+@SpringBootApplication(exclude={GroovyTemplateAutoConfiguration.class})
 //@SpringBootApplication(exclude={VelocityAutoConfiguration.class})
 public class WebManagerStarter extends SpringBootServletInitializer {
 	

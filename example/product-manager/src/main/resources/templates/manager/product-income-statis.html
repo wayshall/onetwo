@@ -1,0 +1,45 @@
+
+<@extends parent="/[web-admin]/layout/easyui-js.html">
+    
+    <@override name="charset">
+        <meta charset="UTF-8">
+    </@override>
+    
+    <@override name="title">
+       收益统计
+    </@override>
+    <@override name="main-content">
+       
+  <div class="easyui-panel" style="padding: 5px;" data-options="fit:true">
+     
+    <div class="easyui-panel" style="height:85%" data-options="fit:true"> 
+       <table id="dataGrid"
+              title="收益统计" style="height:400px" >
+        <thead>
+            <tr>
+                <th field="totalIncome" >收入</th>
+                <th field="totalPay" >支出</th>
+                <th field="rate" >收入/支出</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
+    
+  </div>
+        
+                 
+    <script type="text/javascript">
+
+    var reqUrl = '${siteConfig.baseURL}/manager/productIncome/statis.json';
+    $("#dataGrid").datagrid({
+        iconCls: 'icon-ok',
+        rownumbers: true,
+        fitColumns: true,
+        showFooter: true,
+        singleSelect: false,
+        url: reqUrl,
+        method: 'get'
+    }); 
+	 </script>
+    </@override>
+</@extends>

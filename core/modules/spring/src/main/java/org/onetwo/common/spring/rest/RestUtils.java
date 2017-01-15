@@ -3,6 +3,7 @@ package org.onetwo.common.spring.rest;
 import java.util.Arrays;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.springframework.http.HttpEntity;
@@ -26,7 +27,7 @@ public final class RestUtils {
 	public static final HttpHeaders JSON_HEADER;
 	public static final HttpHeaders TEXT_HEADER;
 
-	private static final BeanToMapConvertor beanToMapConvertor = new BeanToMapConvertor();
+	private static final BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().build();
 	
 	static{
 		FORM_HEADER = createHeader(MediaType.APPLICATION_FORM_URLENCODED);
@@ -63,7 +64,7 @@ public final class RestUtils {
 	public static MultiValueMap<String, Object> toMultiValueMap(final Object obj){
 		final MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 //		appendMultiValueMap(params, "", obj);
-		beanToMapConvertor.flatObject("", obj, (key, value)->params.set(key, value));
+		beanToMapConvertor.flatObject("", obj, (key, value, ctx)->params.set(key, value));
 		return params;
 	}
 	
