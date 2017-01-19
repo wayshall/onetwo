@@ -18,6 +18,8 @@ public class ServerConfig {
 	private WebappConfig defaultWebappConfig;
 	private final Collection<WebappConfig> webapps = new HashSet<WebappConfig>();
 	private String tomcatContextClassName;
+	
+	private int maxPostSize = -1;
 
 	public int getPort() {
 		return port;
@@ -27,6 +29,14 @@ public class ServerConfig {
 		this.port = port;
 	}
 	
+	public int getMaxPostSize() {
+		return maxPostSize;
+	}
+
+	public void setMaxPostSize(int maxPostSize) {
+		this.maxPostSize = maxPostSize;
+	}
+
 	public ServerConfig addWebapp(String webappDir, String contextPath){
 		webapps.add(new WebappConfig(webappDir, contextPath));
 		return this;

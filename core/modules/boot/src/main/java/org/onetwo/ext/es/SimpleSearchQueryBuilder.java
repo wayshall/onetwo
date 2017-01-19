@@ -28,17 +28,21 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.HasAggregations;
+import org.elasticsearch.search.aggregations.ValuesSourceAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.metrics.ValuesSourceMetricsAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -99,6 +103,8 @@ public class SimpleSearchQueryBuilder {
 	private List<String> indices = Lists.newArrayList();
 	private List<String> types = Lists.newArrayList();
 	
+	private boolean matchAllIfQueryNotExists = true;
+	
 	private SimpleSearchQueryBuilder() {
 		this(new NativeSearchQueryBuilder());
 	}
@@ -118,6 +124,9 @@ public class SimpleSearchQueryBuilder {
 		return this;
 	}
 	
+	public void setMatchAllIfQueryNotExists(boolean matchAllIfQueryNotExists) {
+		this.matchAllIfQueryNotExists = matchAllIfQueryNotExists;
+	}
 	final public SimpleSearchQueryBuilder withPageable(int pageNo, int pageSize){
 		this.searchQueryBuilder.withPageable(new PageRequest(pageNo, pageSize));
 		return this;
@@ -235,23 +244,66 @@ public class SimpleSearchQueryBuilder {
 	}
 
 	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggs(String name, String field) {
-		return aggs(name, field, null);
+		return agg(name, field, null);
 	}
 
-	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggs(String name, String field, Integer size) {
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> max(String name) {
+		return agg(AggregationBuilders.max(name));
+	}
+
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> min(String name) {
+		return agg(AggregationBuilders.min(name));
+	}
+
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggRanges(String name, String field, List<RangeQueryer> ranges) {
+		RangeBuilder rangeBuilder = AggregationBuilders.range(name);
+		ranges.stream().forEach(r->{
+			if(!r.isValid()){
+				return ;
+			}
+			if(r.getFrom()==null){
+				rangeBuilder.addUnboundedTo(r.getKey(), r.getTo());
+			}else if(r.getTo()==null){
+				rangeBuilder.addUnboundedFrom(r.getKey(), r.getFrom());
+			}else{
+				rangeBuilder.addRange(r.getKey(), r.getFrom(), r.getTo());
+			}
+		});
+		return agg(rangeBuilder).field(field);
+	}
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> extendedStats(String name) {
+		return agg(AggregationBuilders.extendedStats(name));
+	}
+
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> agg(String name, String field, Integer size) {
 		SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggsBuilder = new SimpleAggregationBuilder<>(this, name, field, size);
 		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
 		return aggsBuilder;
 	}
-	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggsNested(String name, String path) {
+
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> agg(AbstractAggregationBuilder aggsBuilder) {
+		SimpleAggregationBuilder<SimpleSearchQueryBuilder> simpleBuilder = new SimpleAggregationBuilder<>(this, aggsBuilder);
+		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(simpleBuilder.aggsBuilder);
+		return simpleBuilder;
+	}
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggNested(String name, String path) {
 		NestedBuilder nested = AggregationBuilders.nested(name).path(path);
 		SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggsBuilder = new SimpleAggregationBuilder<>(this, nested);
 		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
 		return aggsBuilder;
 	}
 	
-	public NativeSearchQuery build(boolean matchAllIfQueryNotExists){
-		if(nativeSearchQuery!=null){
+	@SuppressWarnings("unchecked")
+	public SimpleSearchQueryBuilder forceClearAggregations(){
+		List<AbstractAggregationBuilder> aggregationBuilders = (List<AbstractAggregationBuilder>)ReflectUtils.getFieldValue(searchQueryBuilder, "aggregationBuilders");
+		if(aggregationBuilders!=null){
+			aggregationBuilders.clear();
+		}
+		return this;
+	}
+	
+	public NativeSearchQuery build(boolean rebuild){
+		if(!rebuild && nativeSearchQuery!=null){
 			return nativeSearchQuery;
 		}
 		
@@ -370,6 +422,32 @@ public class SimpleSearchQueryBuilder {
 	        return (Terms)getAggregation(name);
 	    }
 
+	    public <T> T mapAggregation(String name, Class<T> clazz) {
+	    	return mapAggregation(name, agg->{
+	    		T target = ReflectUtils.newInstance(clazz);
+	    		ReflectUtils.copy(target, agg);
+	    		return target;
+	    	});
+	    }
+	    public <T> List<T> mapBuckets(String name, Class<T> clazz) {
+	    	Aggregation agg = getAggregation(name);
+	    	List<? extends Bucket> buckets = getBuckets(agg);
+	    	List<T> datas = buckets.stream().map(bucket->{
+	    		T target = ReflectUtils.newInstance(clazz);
+	    		ReflectUtils.copy(target, (Bucket)bucket);
+	    		return target;
+	    	})
+	    	.collect(Collectors.toList());
+	    	return datas;
+	    }
+	    public <T, A extends Aggregation> T mapAggregation(String name, Function<A, T> mapper) {
+	    	A aggr = getAggregation(name);
+	    	return mapper.apply(aggr);
+	    }
+	   /* public <T> T mapExtendedStats(String name, Function<InternalExtendedStats, T> mapper) {
+	    	return mapAggregation(name, InternalExtendedStats.class, mapper);
+	    }*/
+
 		public <T extends Aggregation> T getAggregationByPath(String path) {
 	    	this.checkAggs();
 	    	List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
@@ -458,6 +536,33 @@ public class SimpleSearchQueryBuilder {
 	    }
     }
     
+    /****
+     * 
+  "aggregations": {
+    "salePriceRange": {
+      "buckets": [
+        {
+          "key": "*-39.0",
+          "to": 39,
+          "to_as_string": "39.0",
+          "doc_count": 10
+        },
+        {
+          "key": "40.0-99.0",
+          "from": 40,
+          "from_as_string": "40.0",
+          "to": 99,
+          "to_as_string": "99.0",
+          "doc_count": 0
+        }
+      ]
+    }
+  }
+     * @author way
+     *
+     * @param <T>
+     * @param <P>
+     */
     public static class BucketMappingObjectBuilder<T, P> {
     	private BucketMapping<T> mapping;
 //    	private List<? extends Bucket> buckets;
@@ -466,10 +571,10 @@ public class SimpleSearchQueryBuilder {
     	private String key;
 //    	private final Aggregation aggregation;
     	
-    	public BucketMappingObjectBuilder(P parent, AggregationsResult aggResult, String key, Class<T> targetClass, String keyField) {
+    	public BucketMappingObjectBuilder(P parent, AggregationsResult aggResult, String aggName, Class<T> targetClass, String keyField) {
 			super();
 			this.parent = parent;
-			this.key = key;
+			this.key = aggName;
 			this.mapping = new BucketMapping<T>(targetClass, keyField);
 			this.aggResult = aggResult;
 //			this.aggregation = aggregation;
@@ -889,9 +994,9 @@ public class SimpleSearchQueryBuilder {
 	}
 
 	public class SimpleAggregationBuilder<PB> extends ExtBaseQueryBuilder<PB> {
-		protected AggregationBuilder<?> aggsBuilder;
-		
-		public SimpleAggregationBuilder(PB parentBuilder, AggregationBuilder<?> aggTerms) {
+		protected AbstractAggregationBuilder aggsBuilder;
+
+		public SimpleAggregationBuilder(PB parentBuilder, AbstractAggregationBuilder aggTerms) {
 			super(parentBuilder);
 			this.aggsBuilder = aggTerms;
 		}
@@ -913,19 +1018,42 @@ public class SimpleSearchQueryBuilder {
 		 * @return
 		 */
 		public SimpleAggregationBuilder(PB parentBuilder, String name, String field, Integer size) {
+			this(parentBuilder, AggregationBuilders.terms(name), field, size);
+		}
+		public SimpleAggregationBuilder(PB parentBuilder, TermsBuilder terms, String field, Integer size) {
 			super(parentBuilder);
-			TermsBuilder terms = AggregationBuilders.terms(name);
 			if(size!=null){
-				terms.field(field).size(size);
-			}else{
+				terms.size(size);
+			}
+			if(StringUtils.isNotBlank(field)){
 				terms.field(field);
 			}
 			terms.order(Terms.Order.count(false));//COUNT_DESC
 			this.aggsBuilder = terms;
 		}
 		
+		public SimpleAggregationBuilder<PB> field(String field){
+			if(this.aggsBuilder instanceof ValuesSourceMetricsAggregationBuilder){
+				((ValuesSourceMetricsAggregationBuilder<?>)this.aggsBuilder).field(field);
+			}else if(this.aggsBuilder instanceof ValuesSourceAggregationBuilder){
+				((ValuesSourceAggregationBuilder<?>)this.aggsBuilder).field(field);
+			}else if(this.aggsBuilder instanceof TermsBuilder){
+				asTermsBuilder().field(field);
+			}else{
+				ReflectUtils.setFieldValue("field", this.aggsBuilder, field);
+			}
+			return this;
+		}
+		
+		public SimpleAggregationBuilder<PB> size(int size){
+			asTermsBuilder().size(size);
+			return this;
+		}
 		private TermsBuilder asTermsBuilder(){
 			return (TermsBuilder) this.aggsBuilder;
+		}
+		private AggregationBuilder<?> asAggregationBuilder(){
+			return (AggregationBuilder<?>) this.aggsBuilder;
 		}
 		
 		public SimpleAggregationBuilder<PB> minDocCount(Long minDocCount){
@@ -952,7 +1080,7 @@ public class SimpleSearchQueryBuilder {
 		public SimpleAggregationBuilder<PB> subAggsNested(String name, String path) {
 			NestedBuilder nested = AggregationBuilders.nested(name).path(path);
 			SimpleAggregationBuilder<PB> subAggs = new SimpleAggregationBuilder<>(this.parentBuilder, nested);
-			this.aggsBuilder.subAggregation(subAggs.aggsBuilder);
+			this.asAggregationBuilder().subAggregation(subAggs.aggsBuilder);
 			return this;
 		}
 
@@ -962,10 +1090,79 @@ public class SimpleSearchQueryBuilder {
 
 		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs(String name, String field, Integer size) {
 			SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs = new SimpleAggregationBuilder<>(this, name, field, size);
-			this.aggsBuilder.subAggregation(subAggs.aggsBuilder);
+			this.asAggregationBuilder().subAggregation(subAggs.aggsBuilder);
 			return subAggs;
 		}
 		
+	}
+	
+	public static class RangeQueryer {
+        private String key;
+        private Double from;
+        private Double to;
+        
+        public RangeQueryer() {
+			super();
+		}
+		public RangeQueryer(Number from, Number to) {
+			this(null, from, to);
+		}
+		public RangeQueryer(String key, Number from, Number to) {
+			super();
+			this.key = key;
+			this.from = (from==null?null:from.doubleValue());
+			this.to = (to==null?null:to.doubleValue());
+		}
+		public boolean isValid(){
+        	return this.from!=null || this.to!=null;
+        }
+		public String getKey() {
+			if(key==null){
+				return (from==null?0:from)+"-"+(to==null || Double.isInfinite(to)?"":to);
+			}
+			return key;
+		}
+		public void setKey(String key) {
+			this.key = key;
+		}
+		public Double getFrom() {
+			return from;
+		}
+		public void setFrom(Double from) {
+			this.from = from;
+		}
+		public Double getTo() {
+			return to;
+		}
+		public void setTo(Double to) {
+			this.to = to;
+		}
+		@Override
+		public String toString() {
+			return "[key=" + key + ", from=" + from + ", to=" + to
+					+ "]";
+		}
+	}
+	
+	public static class RangeResult extends RangeQueryer {
+		private int docCount;
+        public RangeResult() {
+			super();
+		}
+		public RangeResult(Number from, Number to) {
+			super(from, to);
+		}
+		public int getDocCount() {
+			return docCount;
+		}
+		public void setDocCount(int docCount) {
+			this.docCount = docCount;
+		}
+		@Override
+		public String toString() {
+			return "[key=" + getKey() + ", from=" + getFrom() + ", to=" + getTo()
+					+ ", docCount=" + docCount + "]";
+		}
 	}
 
 }

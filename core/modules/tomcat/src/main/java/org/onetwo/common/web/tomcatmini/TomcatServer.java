@@ -153,6 +153,7 @@ public class TomcatServer {
 			Connector connector = tomcat.getConnector();
 			connector.setURIEncoding("UTF-8");
 			connector.setRedirectPort(serverConfig.getRedirectPort());
+			connector.setMaxPostSize(serverConfig.getMaxPostSize());
 			
 			ProtocolHandler protocol = connector.getProtocolHandler();
 			if(protocol instanceof AbstractHttp11Protocol){
@@ -211,6 +212,11 @@ public class TomcatServer {
 		if(webAppDir.exists()){
 			logger.info("add defulat webapp {}, path {} ", serverConfig.getContextPath(), serverConfig.getWebappDir());
 			Context ctx = tomcat.addWebapp(serverConfig.getContextPath(), serverConfig.getWebappDir());
+			/*if(ctx instanceof StandardContext){
+				StandardContext stdCtx = (StandardContext)ctx;
+				Wrapper defaultContainer = (Wrapper)stdCtx.findChild("default");
+				defaultContainer.getMultipartConfigElement().
+			}*/
 			contexts.add(ctx);
 		}
 		for(WebappConfig webapp : serverConfig.getWebapps()){
