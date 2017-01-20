@@ -9,6 +9,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class BaseJdbcTemplateAspectProxy {
 				}else if(returnValue.getClass().isArray()){
 					Class<?> ctype = returnValue.getClass().getComponentType();
 					if(ctype==int.class){
-						str.append(LangUtils.sum((int[])returnValue));
+						str.append(MathUtils.sum((int[])returnValue));
 					}
 				}
 				str.append("\n");

@@ -1,6 +1,8 @@
 package org.onetwo.common.utils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class MathUtils {
@@ -62,6 +64,53 @@ public final class MathUtils {
 	        numb++;
 	    }
 		return primes.toArray(new Long[primes.size()]);
+	}
+
+
+	public static int sum(int... counts){
+		if(counts==null)
+			return 0;
+		int total = 0;
+		for(int c : counts){
+			total += c;
+		}
+		return total;
+	}
+
+	public static long sum(long... counts){
+		if(counts==null)
+			return 0;
+		long total = 0;
+		for(long c : counts){
+			total += c;
+		}
+		return total;
+	}
+
+	public static double sum(double... counts){
+		if(counts==null)
+			return 0;
+		double total = 0;
+		for(double c : counts){
+			total += c;
+		}
+		return total;
+	}
+
+	public static BigDecimal sumNumbers(Number[] counts){
+		BigDecimal total = BigDecimal.ZERO;
+		for(Number c : counts){
+			total.add(BigDecimal.valueOf(c.doubleValue()));
+		}
+		return total;
+	}
+
+	public static BigDecimal sumNumbers(Collection<? extends Number> counts){
+		BigDecimal total = BigDecimal.ZERO;
+		for(Number c : counts){
+			total.add(BigDecimal.valueOf(c.doubleValue()));
+		}
+		return total;
 	}
 	
 	private MathUtils(){

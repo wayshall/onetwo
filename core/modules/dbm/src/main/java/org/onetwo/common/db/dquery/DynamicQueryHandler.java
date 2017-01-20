@@ -27,6 +27,7 @@ import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
@@ -235,7 +236,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		if(dmethod.getResultClass()==int[].class || dmethod.getResultClass()==Integer[].class){
 			return counts;
 		}else{
-			int count = LangUtils.sum(counts);
+			int count = MathUtils.sum(counts);
 			return Types.convertValue(count, dmethod.getResultClass());
 		}
 	}

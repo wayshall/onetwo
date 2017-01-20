@@ -7,6 +7,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.MathUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.dbm.mapping.DataBaseConfig;
@@ -112,7 +113,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 				
 			}*/);
 			for(int[] up : ups)
-				count += LangUtils.sum(up);
+				count += MathUtils.sum(up);
 		}else{
 			for(Object[] arg : args){
 				count += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg));

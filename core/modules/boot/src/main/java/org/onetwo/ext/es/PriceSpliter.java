@@ -6,35 +6,14 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.onetwo.ext.es.SimpleSearchQueryBuilder.RangeQueryer;
 import org.onetwo.ext.es.SimpleSearchQueryBuilder.RangeResult;
 
-import com.google.common.collect.ImmutableMap;
-
 public class PriceSpliter {
-	/***
-	 * 置信水平 : 对应标准分数
-	 */
-	final private static Map<Integer, Double> CONFIDENCE_LEVELS = ImmutableMap.of(95, 1.96,
-																					  90, 1.65,
-																					  80, 1.28);
 
-	/****
-	 * 根据confidenceLevel获取分数
-	 * @param confidenceLevel
-	 * @return
-	 */
-	public static double getZscore(Integer confidenceLevel){
-		if(!CONFIDENCE_LEVELS.containsKey(confidenceLevel)){
-			throw new IllegalArgumentException("error confidenceLevel: " + confidenceLevel);
-		}
-		double zscore = CONFIDENCE_LEVELS.get(confidenceLevel);
-		return zscore;
-	}
 	
 	final private long totalCount;
 	final private List<ImmutablePair<Integer, Integer>> confidenceSections;
@@ -48,43 +27,30 @@ public class PriceSpliter {
 		this.confidenceSections = split(confidenceSection);
 	}
 
-	private ImmutablePair<BigDecimal, BigDecimal> calcConfidenceSection(double avg, double sd){
-		Double zscore = getZscore(95);
-		return calcConfidenceSection(BigDecimal.valueOf(avg), BigDecimal.valueOf(sd), zscore);
-	}
-	
-	
-	/***
-	 * (μ-Ζα/2σ , μ+Ζα/2σ)
-	 * 
+	/****
+	 * 置信区间
 	 * @param avg
 	 * @param sd
-	 * @param zscore
 	 * @return
 	 */
-	private ImmutablePair<BigDecimal, BigDecimal> calcConfidenceSection(BigDecimal avg, BigDecimal sd, double zscore){
-		avg = avg.setScale(2, RoundingMode.HALF_UP);
-		BigDecimal zscoreDecimal = BigDecimal.valueOf(zscore);
-		BigDecimal start = avg.subtract(sd.multiply(zscoreDecimal));
-		if(start.doubleValue()<0){
-			start = BigDecimal.ZERO;
-		}
-		BigDecimal end = avg.add(sd.multiply(zscoreDecimal));
-		ImmutablePair<BigDecimal, BigDecimal> pair = ImmutablePair.of(start, end);
-		return pair;
+	private ImmutablePair<BigDecimal, BigDecimal> calcConfidenceSection(double avg, double sd){
+		Double zscore = ConfidenceLevelUtils.getZscore(95);
+		return ConfidenceLevelUtils.calcConfidenceSection(BigDecimal.valueOf(avg), BigDecimal.valueOf(sd), zscore);
 	}
+	
+	
 	
 	private List<ImmutablePair<Integer, Integer>> split(ImmutablePair<BigDecimal, BigDecimal> section){
 		return split(section, 32);
 	}
 	
 	/***
-	 * 根据平均值切分区间
+	 * 根据最大切分数量，利用平均值，切分区间
 	 * @param section
 	 * @param maxSplitCount
 	 * @return
 	 */
-	private List<ImmutablePair<Integer, Integer>> split(ImmutablePair<BigDecimal, BigDecimal> section, int maxSplitCount){
+	public static List<ImmutablePair<Integer, Integer>> split(ImmutablePair<BigDecimal, BigDecimal> section, int maxSplitCount){
 		int start = section.getLeft().setScale(0, RoundingMode.DOWN).intValue();
 		final int end = section.getRight().setScale(0, RoundingMode.UP).intValue();
 		int interval = (end-start)/maxSplitCount;
