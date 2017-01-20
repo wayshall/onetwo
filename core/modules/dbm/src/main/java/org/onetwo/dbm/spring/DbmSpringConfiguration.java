@@ -16,8 +16,8 @@ import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.dbm.mapping.DataBaseConfig;
-import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
+import org.onetwo.dbm.mapping.DbmConfig;
+import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.support.DbmDaoImpl;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
@@ -47,7 +47,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	private DataBase database;
 
 	@Autowired(required=false)
-	private DataBaseConfig dataBaseConfig;
+	private DbmConfig dbmConfig;
 
 	@Autowired(required=false)
 	private Validator validator;
@@ -89,11 +89,11 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 
 	@Bean
-	public DataBaseConfig defaultDataBaseConfig(){
-		if(dataBaseConfig==null){
-			dataBaseConfig = new DefaultDataBaseConfig();
+	public DbmConfig defaultDbmConfig(){
+		if(dbmConfig==null){
+			dbmConfig = new DefaultDbmConfig();
 		}
-		return dataBaseConfig;
+		return dbmConfig;
 	}
 	
 	@Bean
@@ -131,7 +131,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(){
-		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator);
+		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, dbmConfig.getModelPackagesToScan());
 	}
 	
 	@Bean
@@ -140,7 +140,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource);
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
 		jfishDao.setJdbcTemplate(jdbcTemplate());
-		jfishDao.setDataBaseConfig(defaultDataBaseConfig());
+		jfishDao.setDataBaseConfig(defaultDbmConfig());
 		jfishDao.setServiceRegistry(dbmInnserServiceRegistry());
 		return jfishDao;
 	}
@@ -148,9 +148,9 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Bean
 	public DbmJdbcOperations jdbcTemplate(){
 		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnserServiceRegistry().getJdbcParameterSetter());
-		template.setDebug(defaultDataBaseConfig().isLogSql());
+		template.setDebug(defaultDbmConfig().isLogSql());
 
-		if(defaultDataBaseConfig().isLogSql()){
+		if(defaultDbmConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
 			ajf.setProxyTargetClass(false);
 			ajf.addAspect(DbmJdbcTemplateAspectProxy.class);

@@ -13,12 +13,12 @@ import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DbmetaFetcher;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.dialet.MySQLDialect;
 import org.onetwo.dbm.dialet.OracleDialect;
-import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.JdbcStatementParameterSetter;
 import org.onetwo.dbm.jdbc.SpringJdbcResultSetGetter;
@@ -27,15 +27,17 @@ import org.onetwo.dbm.jdbc.mapper.JFishRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.jpa.JFishSequenceNameManager;
 import org.onetwo.dbm.jpa.JPAMappedEntryBuilder;
-import org.onetwo.dbm.mapping.DataBaseConfig;
+import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
-import org.onetwo.dbm.mapping.DefaultDataBaseConfig;
+import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.mapping.EntityValidator;
 import org.onetwo.dbm.mapping.JFishMappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryManager;
+import org.onetwo.dbm.mapping.MappedEntryManagerListener;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
+import org.onetwo.dbm.richmodel.RichModelMappedEntryListener;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.ImmutableList;
@@ -43,9 +45,9 @@ import com.google.common.collect.Maps;
 
 public class SimpleDbmInnserServiceRegistry {
 
-	public static SimpleDbmInnserServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
+	public static SimpleDbmInnserServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator, String... packagesToScan){
 		SimpleDbmInnserServiceRegistry serviceRegistry = new SimpleDbmInnserServiceRegistry();
-		serviceRegistry.initialize(dataSource, null);
+		serviceRegistry.initialize(dataSource, packagesToScan);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
 		}
@@ -59,16 +61,18 @@ public class SimpleDbmInnserServiceRegistry {
 	private SQLSymbolManager sqlSymbolManager;
 	private SequenceNameManager sequenceNameManager;
 	private DefaultDatabaseDialetManager databaseDialetManager;
-	private DataBaseConfig dataBaseConfig;
+	private DbmConfig dataBaseConfig;
 	private RowMapperFactory rowMapperFactory;
 	private EntityValidator entityValidator;
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	private DbmTypeMapping typeMapping;
 	
-	public void initialize(DataSource dataSource, String[] packagesToScan){
+	private MappedEntryManagerListener mappedEntryManagerListener;	
+	
+	public void initialize(DataSource dataSource, String... packagesToScan){
 		if(dataBaseConfig==null){
-			dataBaseConfig = new DefaultDataBaseConfig();
+			dataBaseConfig = new DefaultDbmConfig();
 		}
 		if(jdbcParameterSetter==null){
 			this.jdbcParameterSetter = new SpringStatementParameterSetter();
@@ -118,6 +122,8 @@ public class SimpleDbmInnserServiceRegistry {
 			
 		}
 		if(ArrayUtils.isNotEmpty(packagesToScan)){
+			mappedEntryManagerListener = new RichModelMappedEntryListener();
+			mappedEntryManager.setMappedEntryManagerListener(mappedEntryManagerListener);
 			mappedEntryManager.scanPackages(packagesToScan);
 		}
 		
@@ -170,7 +176,7 @@ public class SimpleDbmInnserServiceRegistry {
 		return databaseDialetManager;
 	}
 
-	public DataBaseConfig getDataBaseConfig() {
+	public DbmConfig getDataBaseConfig() {
 		return dataBaseConfig;
 	}
 

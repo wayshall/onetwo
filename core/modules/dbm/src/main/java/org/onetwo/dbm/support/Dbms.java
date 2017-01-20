@@ -1,6 +1,7 @@
 package org.onetwo.dbm.support;
 
 import java.io.Serializable;
+import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
@@ -8,12 +9,43 @@ import javax.validation.Validator;
 import org.onetwo.common.db.BaseCrudEntityManager;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.CrudEntityManager;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.dbm.exception.DbmException;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 final public class Dbms {
 	
+	final private static LoadingCache<Class<?>, CrudEntityManager<?, ?>> MANAGER_MAPPER = CacheBuilder.newBuilder()
+																						.weakKeys()
+																						.weakValues()
+																						.build(new CacheLoader<Class<?>, CrudEntityManager<?, ?>>() {
+
+																							@Override
+																							public CrudEntityManager<?, ?> load(Class<?> entityClass) throws Exception {
+																								return Dbms.newCrudManager(entityClass);
+																							}
+																							
+																						});
 	
-	private Dbms(){
+	private static class BaseEntityManagerHoder {
+		private static BaseEntityManager instance = SpringApplication.getInstance().getBean(BaseEntityManager.class);
+	}
+	
+	public static BaseEntityManager obtainBaseEntityManager(){
+		return BaseEntityManagerHoder.instance;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> obtainCrudManager(Class<E> entityClass){
+		try {
+			return (CrudEntityManager<E, ID>)MANAGER_MAPPER.get(entityClass);
+		} catch (ExecutionException e) {
+			throw new BaseException("obtain entityManager error: " + e.getMessage(), e);
+		}
 	}
 	
 	/****
@@ -59,4 +91,6 @@ final public class Dbms {
 		return dao;
 	}
 
+	private Dbms(){
+	}
 }

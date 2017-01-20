@@ -21,7 +21,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.support.DbmEntityManager;
 
 //@TransactionConfiguration(defaultRollback=true)
-public class DbmDaoTest extends AppBaseTest {
+public class DbmDaoTest extends DbmBaseTest {
 	
 	@Resource
 	private DbmEntityManager jfishEntityManager;

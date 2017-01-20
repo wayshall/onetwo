@@ -5,9 +5,12 @@ package org.onetwo.common.dbm;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.onetwo.common.dbm.richmodel.UserAutoidModel;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
+import org.onetwo.dbm.mapping.DbmConfig;
+import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +25,13 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 //@ContextConfiguration(value="classpath:/applicationContext-test.xml")
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class)
 //@Rollback(false)
-public class AppBaseTest extends SpringBaseJUnitTestCase {
+public class DbmRichModelBaseTest extends SpringBaseJUnitTestCase {
 	
 	@Configuration
 	@JFishProfile
 	@ImportResource("classpath:conf/applicationContext-test.xml")
 	@EnableDbm
-	@ComponentScan(basePackageClasses=AppBaseTest.class)
+	@ComponentScan(basePackageClasses=DbmRichModelBaseTest.class)
 	public static class DbmOrmTestInnerContextConfig {
 
 		@Resource
@@ -37,6 +40,12 @@ public class AppBaseTest extends SpringBaseJUnitTestCase {
 		public CacheManager cacheManager() {
 			JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
 			return cache;
+		}
+		@Bean
+		public DbmConfig customDbmConfig(){
+			DefaultDbmConfig config = new DefaultDbmConfig();
+			config.setModelPackagesToScan(UserAutoidModel.class.getPackage().getName());
+			return config;
 		}
 		
 	}

@@ -10,7 +10,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.SimpleArgsPreparedStatementCreator;
-import org.onetwo.dbm.mapping.DataBaseConfig;
+import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.EntrySQLBuilder;
 import org.onetwo.dbm.mapping.JFishMappedEntryMeta;
@@ -70,7 +70,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	}
 	
 	protected boolean isUseBatchUpdate(List<?> args, JFishEventSource es){
-		DataBaseConfig dbc = es.getDataBaseConfig();
+		DbmConfig dbc = es.getDataBaseConfig();
 		return dbc.isBatchEnabled() && args.size()>dbc.getUseBatchThreshold();
 	}
 	

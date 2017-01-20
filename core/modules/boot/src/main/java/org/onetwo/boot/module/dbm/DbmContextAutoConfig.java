@@ -6,6 +6,7 @@ import org.onetwo.dbm.spring.DbmSpringConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +18,8 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(DbmSpringConfiguration.class)
 @Import({DbmSpringConfiguration.class})
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@EnableConfigurationProperties(BootDataBaseConfig.class)
+@EnableConfigurationProperties(BootDbmConfig.class)
+@ConditionalOnProperty(name="dbm.enable", havingValue="true", matchIfMissing=true)
 public class DbmContextAutoConfig {
 	
 	@Autowired

@@ -55,6 +55,7 @@
         <dependency>
           <groupId>com.jayway.restassured</groupId>
           <artifactId>rest-assured</artifactId>
+          <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.springframework.security</groupId>

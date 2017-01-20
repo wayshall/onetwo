@@ -36,7 +36,7 @@ import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.dbm.mapping.DataBaseConfig;
+import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.query.JFishDataQuery;
 import org.onetwo.dbm.query.JFishQuery;
@@ -69,7 +69,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	private SequenceNameManager sequenceNameManager;
 	
 	private DefaultDatabaseDialetManager databaseDialetManager;
-	protected DataBaseConfig dataBaseConfig;
+	protected DbmConfig dataBaseConfig;
 	
 //	protected String[] packagesToScan;
 	
@@ -193,11 +193,11 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		this.sqlSymbolManager = sqlSymbolManager;
 	}
 
-	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
+	public void setDataBaseConfig(DbmConfig dataBaseConfig) {
 		this.dataBaseConfig = dataBaseConfig;
 	}
 
-	public DataBaseConfig getDataBaseConfig() {
+	public DbmConfig getDataBaseConfig() {
 		return dataBaseConfig;
 	}
 

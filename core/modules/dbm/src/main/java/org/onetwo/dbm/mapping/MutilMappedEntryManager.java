@@ -35,27 +35,23 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	private Cache<String, JFishMappedEntry> entryCaches = CacheBuilder.newBuilder().build();
 //	final private SimpleInnserServiceRegistry serviceRegistry;
 //	private DBDialect dialet;
+	private MappedEntryManagerListener mappedEntryManagerListener;
 
 
 	public MutilMappedEntryManager() {
 	}
 	
+	
+	public void setMappedEntryManagerListener(MappedEntryManagerListener mappedEntryManagerListener) {
+		this.mappedEntryManagerListener = mappedEntryManagerListener;
+	}
+
+
 	/***
 	 * first
 	 */
 	@Override
 	public void initialize() {
-		/*if(LangUtils.isEmpty(mappedEntryBuilders)){
-			List<MappedEntryBuilder> builders = LangUtils.newArrayList();
-			MappedEntryBuilder builder = new JFishMappedEntryBuilder(dialet);
-			builder.initialize();
-			builders.add(builder);
-			
-			builder = new JPAMappedEntryBuilder(dialet);
-			builder.initialize();
-			builders.add(builder);
-			this.mappedEntryBuilders = ImmutableList.copyOf(builders);
-		}*/
 	}
 
 
@@ -79,6 +75,10 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			}, packagesToScan);
 			
 
+			if(mappedEntryManagerListener!=null){
+				mappedEntryManagerListener.beforeBuild(this, entryClassNameList);
+			}
+			
 			JFishList<JFishMappedEntry> entryList = JFishList.create();
 			int count = 0;
 			for(ScanedClassContext ctx : entryClassNameList){

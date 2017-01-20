@@ -1,6 +1,6 @@
 package org.onetwo.dbm.mapping;
 
-public interface DataBaseConfig {
+public interface DbmConfig {
 
 
 	/******
@@ -26,6 +26,6 @@ public interface DataBaseConfig {
 	
 	public boolean isWatchSqlFile();
 	
-//	public String[] getModelBasePackages();
+	public String[] getModelPackagesToScan();
 
 }

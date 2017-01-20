@@ -88,6 +88,12 @@
       <artifactId>spring-jdbc</artifactId>
     </dependency>
     
+    <dependency>
+       <groupId>javassist</groupId>
+       <artifactId>javassist</artifactId>
+       <optional>true</optional>
+    </dependency>
+    
     <!-- for test -->
     <dependency>
         <groupId>org.codehaus.groovy</groupId>

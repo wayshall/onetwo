@@ -15,7 +15,7 @@ import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.dbm.support.Dbms;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BaseCrudEntityManagerTest extends AppBaseTest {
+public class BaseCrudEntityManagerTest extends DbmBaseTest {
 	
 	@Autowired
 	private DataSource dataSource;

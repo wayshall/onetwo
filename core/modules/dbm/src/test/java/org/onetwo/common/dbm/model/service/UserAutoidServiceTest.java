@@ -9,13 +9,13 @@ import javax.sql.DataSource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.dbm.AppBaseTest;
+import org.onetwo.common.dbm.DbmBaseTest;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.dbm.support.Dbms;
 import org.onetwo.dbm.support.DbmDao;
 import org.springframework.transaction.annotation.Transactional;
 
-public class UserAutoidServiceTest extends AppBaseTest {
+public class UserAutoidServiceTest extends DbmBaseTest {
 	
 	@Resource
 	private UserAutoidService userAutoidServiceImpl;

@@ -3,6 +3,11 @@ package org.onetwo.plugins.admin.utils;
 import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 
+/****
+ * 简化PermissionConfig配置，提供RootMenuClassProvider接口
+ * @author way
+ *
+ */
 public class WebAdminPermissionConfig extends PermissionConfigAdapter<AdminPermission>{
 	
 	private RootMenuClassProvider rootMenuClassProvider;

@@ -5,11 +5,10 @@ import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProv
 import org.onetwo.webapp.manager.utils.Systems;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 
 @Configuration
 @EnableUrlSecurity
-@EnableAuthorizationServer
+//@EnableAuthorizationServer
 //@EnableUserInfoResource
 public class AppContextConfig  {
 

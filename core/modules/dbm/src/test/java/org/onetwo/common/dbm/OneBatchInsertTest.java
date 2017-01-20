@@ -16,7 +16,7 @@ import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangUtils;
 
 //@TransactionConfiguration(defaultRollback=true)
-public class OneBatchInsertTest extends AppBaseTest {
+public class OneBatchInsertTest extends DbmBaseTest {
 	
 	@Resource
 	private UserAutoidServiceImpl userAutoidServiceImpl;

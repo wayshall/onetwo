@@ -12,7 +12,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
-import org.onetwo.dbm.mapping.DataBaseConfig;
+import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -115,6 +115,6 @@ public interface DbmDaoImplementor extends DbmDao {
 	public DataQuery createAsDataQuery(String sqlString, Class<?> entityClass);
 	
 	public DataQuery createAsDataQuery(String sql, Map<String, Object> values);
-	public DataBaseConfig getDataBaseConfig();
+	public DbmConfig getDataBaseConfig();
 	
 }

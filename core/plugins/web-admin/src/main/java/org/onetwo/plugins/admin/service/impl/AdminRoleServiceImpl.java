@@ -40,6 +40,15 @@ public class AdminRoleServiceImpl {
     @Autowired
     private AdminPermissionDao adminPermissionDao;
     
+
+	@Transactional(readOnly=true)
+	public List<AdminPermission> findAppPermissions(String appCode){
+		List<AdminPermission> permList = baseEntityManager.findList(AdminPermission.class, "appCode", appCode, K.IF_NULL, IfNull.Ignore, K.ASC, "sort");
+		if(permList.isEmpty())
+			throw new RuntimeException("没有任何权限……");
+		return permList;
+	}
+	
     public void findPage(Page<AdminRole> page, AdminRole adminRole){
         baseEntityManager.findPage(AdminRole.class, page);
     }

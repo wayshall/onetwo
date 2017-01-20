@@ -21,7 +21,7 @@ import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 
-public class DbmEntityManagerTest extends AppBaseTest {
+public class DbmEntityManagerTest extends DbmBaseTest {
 
 	@Resource
 	private BaseEntityManager entityManager;

@@ -33,13 +33,13 @@ jfish:
         csrf:
             disable: true
         logoutUrl: /logout
-siteConfig:
-    uploadImageAccessPath: http://localhost/img/manager
-    upload:
-        #storeType: ftp
-        #ftpServer: 127.0.0.1
-        #ftpUser: test
-        #ftpPassword: test
-        fileStorePath: G:/temp/upload_files
-        appContextDir: manager
-        #maxUploadSize: 1024
+    siteConfig:
+        uploadImageAccessPath: http://localhost/img/manager
+        upload:
+            #storeType: ftp
+            #ftpServer: 127.0.0.1
+            #ftpUser: test
+            #ftpPassword: test
+            fileStorePath: G:/temp/upload_files
+            appContextDir: manager
+            #maxUploadSize: 1024

@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author way
  *
  */
-@ConfigurationProperties(prefix="siteConfig")
+@ConfigurationProperties(prefix="jfish.siteConfig")
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {
 	/*public static final String BASEURL = "baseURL";

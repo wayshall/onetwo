@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.ext.security.EnableSecurity;
-import org.onetwo.ext.security.EnableSecurity.InterceptMode;
+import org.onetwo.ext.security.EnableSecurity.ConfigOptions;
 import org.onetwo.ext.security.config.PermissionContextConfig;
 import org.onetwo.ext.security.method.MethodBasedSecurityConfig;
 import org.springframework.context.annotation.ImportSelector;
@@ -18,11 +18,11 @@ public class SecurityImportSelector implements ImportSelector {
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 		Map<String, Object> attributes = importingClassMetadata.getAnnotationAttributes(EnableSecurity.class.getName(), false);
-		InterceptMode mode = (InterceptMode)attributes.get("mode");
+		ConfigOptions mode = (ConfigOptions)attributes.get("mode");
 		List<String> classNames = new ArrayList<>();
-		if(mode==InterceptMode.URL){
+		if(mode==ConfigOptions.URL){
 			classNames.add(UrlBasedSecurityConfig.class.getName());
-		}else if(mode==InterceptMode.METHOD){
+		}else if(mode==ConfigOptions.METHOD){
 			classNames.add(MethodBasedSecurityConfig.class.getName());
 		}else{
 			Class<?>[] configClass = (Class<?>[])attributes.get("configClass");

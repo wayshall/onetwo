@@ -354,15 +354,14 @@ public class ReflectUtils {
 	 * @param stopClass
 	 * @return
 	 */
-	public static Class<?> getSuperClassGenricType(final Class<?> clazz,
-			final int index, final Class<?> stopClass) {
+	public static Class<?> getSuperClassGenricType(final Class<?> clazz, final int index, Class<?> stopClass) {
 		if(clazz.equals(stopClass))
 			return clazz;
 		
 		Type genType = clazz.getGenericSuperclass();
 
 		if (!(genType instanceof ParameterizedType)) {
-			if (stopClass.isAssignableFrom((Class) genType)) {
+			if (stopClass!=null && stopClass.isAssignableFrom((Class) genType)) {
 				while (!(genType instanceof ParameterizedType)) {
 					genType = ((Class) genType).getGenericSuperclass();
 					if (genType == null)

@@ -37,9 +37,11 @@ public class UserDetailPrincipalExtractor implements PrincipalExtractor {
 		Long userId = Types.convertValue(map.get("userId"), Long.class);
 		String username = SpringUtils.convertValue(map.get("username"), String.class);
 		Collection<Map<String, Object>> authorities = (Collection<Map<String, Object>>)map.get("authorities");
+		
 		Collection<? extends GrantedAuthority> authorityCollection = authorities.stream().map(g->{
 			return new SimpleGrantedAuthority(g.get("authority").toString());
 		}).collect(Collectors.toSet());
+		
 		LoginUserDetails userDetail = new LoginUserDetails(userId, username, "N/A", authorityCollection);
 		return userDetailClass==null?userDetail:ReflectUtils.newByConstructor(userDetailClass, 0, userDetail);
 	}

@@ -13,6 +13,7 @@ import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -139,18 +140,14 @@ public class SpringApplication {
 	}
 
 	public <T> T getBean(Class<T> clazz, boolean throwIfError) {
-		T bean = null;
-		String beanName = StringUtils.uncapitalize(clazz.getSimpleName());
-//			Map map = this.getAppContext().getBeansOfType(clazz);
-		Map map = getBeansMap(clazz);
-		if (map == null || map.isEmpty())
-			return (T) getBean(beanName, throwIfError);
-		else
-			bean = (T) map.get(beanName);
-		if (bean == null)
-			bean = (T) map.values().iterator().next();
-		
-		return bean;
+		try {
+			return instance.appContext.getBean(clazz);
+		} catch (BeansException e) {
+			if(throwIfError){
+				throw e;
+			}
+			return null;
+		}
 	}
 	
 	public synchronized <T> T getOrRegisteredBean(Class<T> beanClass){

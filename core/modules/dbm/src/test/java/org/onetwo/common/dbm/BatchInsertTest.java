@@ -13,7 +13,7 @@ import org.onetwo.common.dbm.model.service.UserAutoidServiceImpl;
 import org.onetwo.common.utils.Page;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-public class BatchInsertTest extends AppBaseTest {
+public class BatchInsertTest extends DbmBaseTest {
 
 	@Resource
 	private UserAutoidServiceImpl userAutoidServiceImpl;

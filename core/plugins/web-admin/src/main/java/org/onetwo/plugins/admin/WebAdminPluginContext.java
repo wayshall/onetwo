@@ -25,12 +25,11 @@ import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
 import org.onetwo.plugins.admin.service.impl.PermissionManagerImpl;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
@@ -39,10 +38,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @AutoConfigureAfter(DbmContextAutoConfig.class)
-//@ConditionalOnBean(PermissionContextAutoConfig.class)
+@ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
 public class WebAdminPluginContext {
 	
-	final private Logger logger = LoggerFactory.getLogger(this.getClass());
+//	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired(required=false)
 	private SecurityConfig securityConfig;
@@ -113,8 +112,8 @@ public class WebAdminPluginContext {
 	@Configuration
 	protected static class JavaClassStylePermissionManager {
 		@Bean
-		@ConditionalOnBean(RootMenuClassProvider.class)
 		@Autowired
+		@ConditionalOnBean(RootMenuClassProvider.class)
 		public WebAdminPermissionConfig webAdminPermissionConfig(RootMenuClassProvider provider){
 			WebAdminPermissionConfig config = new WebAdminPermissionConfig();
 			config.setRootMenuClassProvider(provider);

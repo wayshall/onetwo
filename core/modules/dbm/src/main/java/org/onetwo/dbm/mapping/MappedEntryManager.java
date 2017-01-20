@@ -8,6 +8,7 @@ public interface MappedEntryManager {
 	public void scanPackages(String... packagesToScan);
 	public JFishMappedEntry findEntry(Object object);
 	public JFishMappedEntry getEntry(Object object);
+	public void setMappedEntryManagerListener(MappedEntryManagerListener mappedEntryManagerListener);
 //	public JFishMappedEntry buildMappedEntry(Class<?> entityClass, boolean byProperty);
 	
 

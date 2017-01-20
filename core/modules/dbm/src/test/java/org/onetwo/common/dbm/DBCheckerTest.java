@@ -12,7 +12,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.util.Assert;
 
 @TransactionConfiguration(defaultRollback=true)
-public class DBCheckerTest extends AppBaseTest {
+public class DBCheckerTest extends DbmBaseTest {
 	
 	@Resource
 	private DataSource dataSource;
