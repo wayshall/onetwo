@@ -1,7 +1,5 @@
 package org.onetwo.boot.core.web;
 
-import java.util.List;
-
 import javax.servlet.Filter;
 
 import org.onetwo.boot.core.BootContextConfig;
@@ -21,7 +19,6 @@ import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,15 +29,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
@@ -56,7 +48,6 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	private HttpEncodingProperties httpEncodingProperties;
 	
 	public BootWebUIContextAutoConfig(){
-		System.out.println("BootWebUIContextAutoConfig init");
 	}
 	/*@Bean
 	public BootSiteConfig bootSiteConfig(){

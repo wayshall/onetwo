@@ -10,7 +10,7 @@ import org.onetwo.common.db.BaseCrudEntityManager;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.dbm.exception.DbmException;
 
 import com.google.common.cache.CacheBuilder;
@@ -32,7 +32,7 @@ final public class Dbms {
 																						});
 	
 	private static class BaseEntityManagerHoder {
-		private static BaseEntityManager instance = SpringApplication.getInstance().getBean(BaseEntityManager.class);
+		private static BaseEntityManager instance = Springs.getInstance().getBean(BaseEntityManager.class);
 	}
 	
 	public static BaseEntityManager obtainBaseEntityManager(){

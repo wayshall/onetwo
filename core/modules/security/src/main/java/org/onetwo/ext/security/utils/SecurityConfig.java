@@ -3,7 +3,7 @@ package org.onetwo.ext.security.utils;
 import lombok.Data;
 import lombok.ToString;
 
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -53,7 +53,7 @@ public class SecurityConfig {
 		this.afterLoginUrl = afterLoginUrl;
 	}
 	public boolean isCasEnabled(){
-		return SpringApplication.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
+		return Springs.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
 	}
 	
 	@Data

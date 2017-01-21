@@ -22,5 +22,11 @@ public class ScanedClassContext {
 		return this.metadataReader.getResource().getInputStream();
 	}
 	
-
+	public String getSuperClassName(){
+		return this.metadataReader.getClassMetadata().getSuperClassName();
+	}
+	
+	public boolean isSubClassOf(String superClassName){
+		return superClassName.equals(getSuperClassName());
+	}
 }

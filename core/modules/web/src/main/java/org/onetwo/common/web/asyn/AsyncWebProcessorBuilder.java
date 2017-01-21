@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.task.AsyncTaskExecutor;
 
@@ -84,7 +84,7 @@ public class AsyncWebProcessorBuilder {
 
 	public AsyncWebProcessor<?> build(){
 		if(asyncTaskExecutor==null){
-			asyncTaskExecutor = SpringApplication.getInstance().getBean(AsyncTaskExecutor.class);
+			asyncTaskExecutor = Springs.getInstance().getBean(AsyncTaskExecutor.class);
 		}
 		if(StringUtils.isBlank(asynCallback)){
 			asynCallback = AsyncUtils.getAsyncCallbackName(DEFAULT_ASYNCALLBACK);

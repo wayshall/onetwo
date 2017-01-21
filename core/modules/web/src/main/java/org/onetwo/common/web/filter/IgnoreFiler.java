@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.PostfixMatcher;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
@@ -72,8 +72,8 @@ public abstract class IgnoreFiler implements Filter{
 	}*/
 	
 	protected void initWebFilterInitializers(FilterConfig config){
-		filterInitializers = (List<WebFilterInitializers>) SpringApplication.getInstance().getBeans(WebFilterInitializers.class);
-		webFilters = (List<WebFilter>) SpringApplication.getInstance().getBeans(WebFilter.class);
+		filterInitializers = (List<WebFilterInitializers>) Springs.getInstance().getBeans(WebFilterInitializers.class);
+		webFilters = (List<WebFilter>) Springs.getInstance().getBeans(WebFilter.class);
 		
 		/*if(filterInitializers==null || filterInitializers.isEmpty())
 			return ;*/

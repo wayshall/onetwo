@@ -13,7 +13,7 @@ import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	protected volatile BaseEntityManager baseEntityManager;
 
 	public BaseCrudEntityManager(Class<T> entityClass){
-		this(entityClass, SpringApplication.getInstance().getBean(BaseEntityManager.class));
+		this(entityClass, Springs.getInstance().getBean(BaseEntityManager.class));
 	}
 	
 	public BaseCrudEntityManager(Class<T> entityClass, BaseEntityManager baseEntityManager){
@@ -47,7 +47,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	public BaseEntityManager getBaseEntityManager() {
 		BaseEntityManager bem = this.baseEntityManager;
 		if(bem==null){
-			bem = SpringApplication.getInstance().getBean(BaseEntityManager.class);
+			bem = Springs.getInstance().getBean(BaseEntityManager.class);
 			Objects.requireNonNull(bem, "BaseEntityManager not found");
 			if(this.baseEntityManager==null){
 				this.baseEntityManager = bem;

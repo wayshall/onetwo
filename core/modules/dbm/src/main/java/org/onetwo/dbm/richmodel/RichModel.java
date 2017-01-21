@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.db.builder.WhereCauseBuilder;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.NotImplementedDbmOperationException;
@@ -13,7 +13,7 @@ import org.onetwo.dbm.support.BaseModel;
 
 abstract public class RichModel<E, ID extends Serializable> extends BaseModel<E, ID> {
 	
-	protected static Class<?> getStaticEntityClass(){
+	protected static Class<?> obtainStaticEntityClass(){
 		throw new NotImplementedDbmOperationException();
 	}
 	public static int batchInsert(Collection<?> entities){
@@ -62,11 +62,11 @@ abstract public class RichModel<E, ID extends Serializable> extends BaseModel<E,
 	}
 	
 	protected static ValidatorWrapper getValidator(){
-		return SpringApplication.getInstance().getValidator();
+		return Springs.getInstance().getValidator();
 	}
 	
 	public static int removeAll(){
-		return entityManager().removeAll(getStaticEntityClass());
+		return entityManager().removeAll(obtainStaticEntityClass());
 	}
 	
 	public static boolean exists(Object...params){

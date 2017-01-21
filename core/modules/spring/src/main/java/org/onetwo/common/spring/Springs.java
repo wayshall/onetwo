@@ -27,11 +27,11 @@ import org.springframework.util.ClassUtils;
  *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class SpringApplication {
+public class Springs {
 
-	protected static Logger logger = JFishLoggerFactory.getLogger(SpringApplication.class);
+	protected static Logger logger = JFishLoggerFactory.getLogger(Springs.class);
 
-	private static SpringApplication instance = new SpringApplication();
+	private static Springs instance = new Springs();
 
 	private ApplicationContext appContext;
 	
@@ -43,10 +43,14 @@ public class SpringApplication {
 	
 	private ContextHolder contextHolder;
 	
-	private SpringApplication() {
+	private Springs() {
+	}
+	
+	public static <T> T using(Class<T> clazz){
+		return getInstance().getBean(clazz);
 	}
 
-	public static SpringApplication getInstance() {
+	public static Springs getInstance() {
 		if(!instance.initialized){
 			throw new BaseException("application context has not init ...");
 		}

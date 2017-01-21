@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
@@ -62,7 +62,7 @@ public class DbmMultipleDatasource implements DataSource, Ordered, InitializingB
 		if(datasources!=null && switcher!=null && StringUtils.isNotBlank(switcher.getCurrentSwitcherName())){
 			switch (switcher.getType()) {
 			case TransactionManager:
-				PlatformTransactionManager pt = (PlatformTransactionManager)SpringApplication.getInstance().getBean(switcher.getCurrentSwitcherName());
+				PlatformTransactionManager pt = (PlatformTransactionManager)Springs.getInstance().getBean(switcher.getCurrentSwitcherName());
 				if(HibernateTransactionManager.class.isInstance(pt)){
 					ds = ((HibernateTransactionManager)pt).getDataSource();
 				}else if(DataSourceTransactionManager.class.isInstance(pt)){

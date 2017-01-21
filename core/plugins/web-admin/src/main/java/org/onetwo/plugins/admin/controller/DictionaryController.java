@@ -9,8 +9,8 @@ import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.MappableMap;
-import org.onetwo.easyui.EasyModel;
 import org.onetwo.easyui.EasyDataGrid;
+import org.onetwo.easyui.EasyModel;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.DictMgr;
 import org.onetwo.plugins.admin.entity.DataDictionary;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller

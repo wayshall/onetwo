@@ -6,7 +6,7 @@ import javax.servlet.ServletContext;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
@@ -40,7 +40,7 @@ public class ConfigInitializer  {
 			throw new BaseException("the ConfigInitializer must be invoke afater WebApplicationContext init!");
 		}
 //		SpringApplication.initApplication(app);
-		SpringApplication.initApplicationIfNotInitialized(app);
+		Springs.initApplicationIfNotInitialized(app);
 		
 		SiteConfigProvider<?> webConfigProvider = SpringUtils.getBean(app, SiteConfigProvider.class);
 		if(webConfigProvider!=null){

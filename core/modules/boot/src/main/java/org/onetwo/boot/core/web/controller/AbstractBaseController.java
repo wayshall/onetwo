@@ -25,7 +25,7 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
@@ -198,7 +198,7 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected ValidatorWrapper getValidator(){
-		 return SpringApplication.getInstance().getValidator();
+		 return Springs.getInstance().getValidator();
 	}
 	
 	protected <T> ValidationBindingResult validate(T object, Class<?>... groups){

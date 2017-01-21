@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 import org.onetwo.common.jackson.JsonDateOnlySerializer;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 
 import projects.manager.service.impl.ProductServiceImpl;
 import projects.manager.service.impl.UserServiceImpl;
@@ -41,7 +41,7 @@ public class ProductActive implements Serializable  {
     public String getActiveUserName(){
     	if(activeUserId==null)
     		return "";
-    	return SpringApplication.getInstance()
+    	return Springs.getInstance()
     							.getBean(UserServiceImpl.class)
     							.findById(activeUserId)
     							.map(u->u.getUserName())
@@ -51,7 +51,7 @@ public class ProductActive implements Serializable  {
     public String getProductName(){
     	if(productId==null)
     		return null;
-    	return SpringApplication.getInstance()
+    	return Springs.getInstance()
     							.getBean(ProductServiceImpl.class)
     							.findById(productId)
     							.map(p->p.getName())

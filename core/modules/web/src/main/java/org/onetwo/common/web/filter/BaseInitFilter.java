@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.UtilTimerStack;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
@@ -52,7 +52,7 @@ public class BaseInitFilter extends IgnoreFiler {
 
 	protected void onFilterInitialize(FilterConfig config) {
 //		WebApplicationContext webapp = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
-		siteConfig = SpringApplication.getInstance().getBean(SiteConfig.class);
+		siteConfig = Springs.getInstance().getBean(SiteConfig.class);
 		Assert.notNull(siteConfig, "siteConfig not initialize yet!");
 		this.preventXssRequest = siteConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
 		UtilTimerStack.active(siteConfig.getConfig(TIME_PROFILER, false, boolean.class));

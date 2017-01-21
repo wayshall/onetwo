@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 import org.onetwo.common.jackson.JsonDateOnlySerializer;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 
 import projects.manager.service.impl.ProductServiceImpl;
 
@@ -39,7 +39,7 @@ public class ProductIncome implements Serializable  {
     public String getProductName(){
     	if(productId==null)
     		return null;
-    	return SpringApplication.getInstance()
+    	return Springs.getInstance()
     							.getBean(ProductServiceImpl.class)
     							.findById(productId)
     							.map(p->p.getName())

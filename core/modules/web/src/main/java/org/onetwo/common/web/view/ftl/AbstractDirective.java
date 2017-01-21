@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.log.MyLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
@@ -28,11 +28,11 @@ abstract public class AbstractDirective implements TemplateDirectiveModel {
 	abstract public String getDirectiveName();
 	
 	protected <T> T getBean(Class<T> beanClass){
-		return (T)SpringApplication.getInstance().getBean(beanClass);
+		return (T)Springs.getInstance().getBean(beanClass);
 	}
 	
 	protected <T> T getHighestBean(Class<T> beanClass){
-		return (T)SpringApplication.getInstance().getSpringHighestOrder(beanClass);
+		return (T)Springs.getInstance().getSpringHighestOrder(beanClass);
 	}
 	
 	protected String getRequiredParameterByString(Map params, String name){

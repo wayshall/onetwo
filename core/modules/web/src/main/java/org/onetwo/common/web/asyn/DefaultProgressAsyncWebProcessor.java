@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -24,7 +24,7 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor<S
 	}
 
 	public DefaultProgressAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder) {
-		this(out, holder, SpringApplication.getInstance().getBean(AsyncTaskExecutor.class));
+		this(out, holder, Springs.getInstance().getBean(AsyncTaskExecutor.class));
 	}
 	public DefaultProgressAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor) {
 		super(out, holder, asyncTaskExecutor);

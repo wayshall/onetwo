@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.plugins.admin.service.impl.DictionaryCachingServiceImpl;
 import org.onetwo.plugins.admin.vo.DictInfo;
@@ -17,7 +17,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 final public class DataUtils {
 	
 	public static DictionaryCachingServiceImpl getDictionaryCachingService(){
-		return SpringApplication.getInstance().getBean(DictionaryCachingServiceImpl.class, true);
+		return Springs.getInstance().getBean(DictionaryCachingServiceImpl.class, true);
 	}
 
 	public static DictionaryList readDictResource(Resource config){

@@ -53,6 +53,7 @@ public class DynamicQueryObjectRegister {
 
 
 	public void registerQueryBeans() {
+		logger.info("start to register dao bean ....");
 		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(database.getName());
 		sqlfiles.entrySet().forEach(f->{
 			/*final String fileName = f.getName();

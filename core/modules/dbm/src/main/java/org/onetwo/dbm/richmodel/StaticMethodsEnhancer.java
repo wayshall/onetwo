@@ -23,23 +23,23 @@ public class StaticMethodsEnhancer implements ModelEnhancer {
 	public void enhance(EnhanceContext context) {
 		CtClass ctClass = context.getCtClass();
 		
-		this.addMethod("protected static Class getStaticEntityClass(){ return "+context.getClassName()+".class; }", ctClass);
+		this.addMethod("protected static Class obtainStaticEntityClass(){ return "+context.getClassName()+".class; }", ctClass);
 		
 		this.addMethod("public static int batchInsert(java.util.Collection entities) { return (("+DBM_DAO_CLASS+")entityManager().getRawManagerObject()).batchInsert(entities); }", ctClass);
 		
-		this.addMethod("public static Number count(Object[] params) { return entityManager().countRecord(getStaticEntityClass(), params); }", ctClass);
+		this.addMethod("public static Number count(Object[] params) { return entityManager().countRecord(obtainStaticEntityClass(), params); }", ctClass);
 		
-		this.addMethod("public static java.util.List findList(Object[] properties) { return entityManager().findList(getStaticEntityClass(), properties); }", ctClass);
+		this.addMethod("public static java.util.List findList(Object[] properties) { return entityManager().findList(obtainStaticEntityClass(), properties); }", ctClass);
 		
-		this.addMethod("public static void findPage("+PAGE_CLASS+" page, Object[] properties) { entityManager().findPage(getStaticEntityClass(), page, properties); }", ctClass);
+		this.addMethod("public static void findPage("+PAGE_CLASS+" page, Object[] properties) { entityManager().findPage(obtainStaticEntityClass(), page, properties); }", ctClass);
 		
-		this.addMethod("public static int removeAll() { return entityManager().removeAll(getStaticEntityClass()); }", ctClass);
+		this.addMethod("public static int removeAll() { return entityManager().removeAll(obtainStaticEntityClass()); }", ctClass);
 
-		this.addMethod("public static Object findById(java.io.Serializable id) { return entityManager().findById(getStaticEntityClass(), id); }", ctClass);
-		this.addMethod("public static Object loadById(java.io.Serializable id) { return entityManager().load(getStaticEntityClass(), id); }", ctClass);
-		this.addMethod("public static Object removeById(java.io.Serializable id) { return entityManager().removeById(getStaticEntityClass(), id); }", ctClass);
-		this.addMethod("public static Object findOne(Object[] properties) { return entityManager().findOne(getStaticEntityClass(), properties); }", ctClass);
-		this.addMethod("public static "+WCB_CLASS+" where() { return "+QUERYS_CLASS+".from(entityManager(), getStaticEntityClass()).where(); }", ctClass);
+		this.addMethod("public static Object findById(java.io.Serializable id) { return entityManager().findById(obtainStaticEntityClass(), id); }", ctClass);
+		this.addMethod("public static Object loadById(java.io.Serializable id) { return entityManager().load(obtainStaticEntityClass(), id); }", ctClass);
+		this.addMethod("public static Object removeById(java.io.Serializable id) { return entityManager().removeById(obtainStaticEntityClass(), id); }", ctClass);
+		this.addMethod("public static Object findOne(Object[] properties) { return entityManager().findOne(obtainStaticEntityClass(), properties); }", ctClass);
+		this.addMethod("public static "+WCB_CLASS+" where() { return "+QUERYS_CLASS+".from(entityManager(), obtainStaticEntityClass()).where(); }", ctClass);
 		
 		logger.info("model["+context.getClassName()+"] enhance static methods");
 		ctClass.defrost();

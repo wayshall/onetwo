@@ -8,7 +8,7 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 	
 
 	public DefaultAsyncWebProcessor(PrintWriter out, AsyncMessageTunnel<MSG> holder, String asynCallback) {
-		this(out, holder, SpringApplication.getInstance().getBean(AsyncTaskExecutor.class));
+		this(out, holder, Springs.getInstance().getBean(AsyncTaskExecutor.class));
 		if(StringUtils.isNotBlank(asynCallback))
 			this.asynCallback = asynCallback;
 	}

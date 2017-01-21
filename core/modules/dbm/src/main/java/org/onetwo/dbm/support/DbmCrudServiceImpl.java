@@ -11,7 +11,7 @@ import org.onetwo.common.db.BaseCrudEntityManager;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.exception.BusinessException;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
@@ -134,7 +134,7 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 	}
 	
 	protected ValidationBindingResult validate(Object obj, Class<?>... groups){
-		ValidationBindingResult validations = SpringApplication.getInstance().getValidator().validate(obj);
+		ValidationBindingResult validations = Springs.getInstance().getValidator().validate(obj);
 		return validations;
 	}
 	

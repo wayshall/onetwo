@@ -34,8 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-//@ImportResource({"classpath:jfish-spring.xml", "classpath:applicationContext.xml" })
-//@Import(JFishProfiles.class)
 //@EnableConfigurationProperties({DataBaseConfig.class})
 public class DbmSpringConfiguration implements ApplicationContextAware, InitializingBean/*, ImportAware*/ {
 

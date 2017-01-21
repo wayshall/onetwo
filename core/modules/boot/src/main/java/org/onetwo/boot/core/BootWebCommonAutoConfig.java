@@ -20,7 +20,7 @@ import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
@@ -52,7 +52,7 @@ public class BootWebCommonAutoConfig {
 	
 	@PostConstruct
 	public void init(){
-		SpringApplication.initApplicationIfNotInitialized(applicationContext);
+		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 	
 	

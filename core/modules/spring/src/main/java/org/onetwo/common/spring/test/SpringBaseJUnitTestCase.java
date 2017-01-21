@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.junit.Before;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -23,7 +23,7 @@ public abstract class SpringBaseJUnitTestCase extends AbstractTransactionalJUnit
 
 	@Before
 	public void setupOnApplication(){
-		SpringApplication.initApplication(applicationContext);
+		Springs.initApplication(applicationContext);
 	}
 	
 	@Override

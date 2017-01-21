@@ -5,7 +5,7 @@ import javax.servlet.ServletContext;
 import lombok.ToString;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.common.spring.SpringApplication;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.filter.WebContextConfigProvider;
 import org.onetwo.ext.security.utils.SecurityConfig;
@@ -40,7 +40,7 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	}
 	
 	public boolean isCasEnabled(){
-		return SpringApplication.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
+		return Springs.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
 	}
 	
 

@@ -12,6 +12,7 @@ import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.dialet.DBDialect;
@@ -34,11 +35,14 @@ import org.onetwo.dbm.mapping.EntityValidator;
 import org.onetwo.dbm.mapping.JFishMappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.mapping.MappedEntryManagerListener;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
+import org.onetwo.dbm.richmodel.MultiMappedEntryListener;
+import org.onetwo.dbm.richmodel.RichModelCheckMappedEntryManagerListener;
 import org.onetwo.dbm.richmodel.RichModelMappedEntryListener;
+import org.slf4j.Logger;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -54,6 +58,7 @@ public class SimpleDbmInnserServiceRegistry {
 		return serviceRegistry;
 	}
 	
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	final private Map<String, Object> services = Maps.newConcurrentMap();
 
 	private DBDialect dialect;
@@ -67,8 +72,6 @@ public class SimpleDbmInnserServiceRegistry {
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	private DbmTypeMapping typeMapping;
-	
-	private MappedEntryManagerListener mappedEntryManagerListener;	
 	
 	public void initialize(DataSource dataSource, String... packagesToScan){
 		if(dataBaseConfig==null){
@@ -122,8 +125,14 @@ public class SimpleDbmInnserServiceRegistry {
 			
 		}
 		if(ArrayUtils.isNotEmpty(packagesToScan)){
-			mappedEntryManagerListener = new RichModelMappedEntryListener();
-			mappedEntryManager.setMappedEntryManagerListener(mappedEntryManagerListener);
+			MultiMappedEntryListener ml = new MultiMappedEntryListener();
+			if(ClassUtils.isPresent("javassist.ClassPool", null)){
+				ml.addListener(new RichModelMappedEntryListener());
+			}else{
+				ml.addListener(new RichModelCheckMappedEntryManagerListener());
+//				logger.error("you must be add javassist to classpath if you want to use richmodel support!");
+			}
+			mappedEntryManager.setMappedEntryManagerListener(ml);
 			mappedEntryManager.scanPackages(packagesToScan);
 		}
 		
