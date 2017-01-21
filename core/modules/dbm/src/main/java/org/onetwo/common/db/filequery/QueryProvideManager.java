@@ -7,7 +7,7 @@ import org.onetwo.dbm.mapping.DbmTypeMapping;
 public interface QueryProvideManager {
 
 	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass);
-	public DataQuery createQuery(String ejbqlString);
+	public DataQuery createQuery(String sqlString);
 	public FileNamedQueryManager getFileNamedQueryManager();
 	
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();

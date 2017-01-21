@@ -12,7 +12,7 @@ import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
-import org.onetwo.common.db.builder.QueryBuilderFactory;
+import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -197,7 +197,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public QueryBuilder createQueryBuilder(Class<?> entityClass) {
-		QueryBuilder query = QueryBuilderFactory.from(this, entityClass);
+		QueryBuilder query = Querys.from(this, entityClass);
 		return query;
 	}
 	

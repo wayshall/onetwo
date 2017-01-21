@@ -15,6 +15,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.support.DbmDao;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +55,12 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 			}
 		}
 		return bem;
+	}
+
+	@Transactional
+	@Override
+	public int batchInsert(Collection<T> entities) {
+		return getBaseEntityManager().getRawManagerObject(DbmDao.class).batchInsert(entities);
 	}
 
 	@Transactional(readOnly=true)
@@ -202,7 +209,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 
 	@Transactional(readOnly=true)
 	@Override
-	public List<T> findListByExample(T example) {
+	public List<T> findListByExample(Object example) {
 		return Querys.from(baseEntityManager, entityClass)
 				.where()
 				.addFields(example)
@@ -214,7 +221,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 
 	@Transactional(readOnly=true)
 	@Override
-	public Page<T> findPageByExample(Page<T> page, T example) {
+	public Page<T> findPageByExample(Page<T> page, Object example) {
 		return Querys.from(baseEntityManager, entityClass)
 						.where()
 						.addFields(example)

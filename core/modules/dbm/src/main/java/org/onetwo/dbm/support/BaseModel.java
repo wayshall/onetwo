@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Transient;
 
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.reflect.ReflectUtils;
 
 abstract public class BaseModel<E, ID extends Serializable> {
@@ -18,6 +19,9 @@ abstract public class BaseModel<E, ID extends Serializable> {
 	@SuppressWarnings("unchecked")
 	public BaseModel() {
 		this.entityClass = (Class<E>)ReflectUtils.getSuperClassGenricType(this.getClass(), null);
+	}
+	protected CrudEntityManager<E, ID> obtainCrudManager(){
+		return Dbms.obtainCrudManager(entityClass);
 	}
 	public void save(){
 		entityManager().save(this);

@@ -10,6 +10,8 @@ import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.utils.Page;
 
 public interface CrudEntityManager<T, PK extends Serializable> {
+	
+	public int batchInsert(Collection<T> entities);
  
 	public T load(PK id);
 	
@@ -52,13 +54,13 @@ public interface CrudEntityManager<T, PK extends Serializable> {
 	
 	public List<T> findListByProperties(QueryBuilder squery);
 	
-	public List<T> findListByExample(T example);
+	public List<T> findListByExample(Object example);
 
 	public Page<T> findPage(final Page<T> page, Object... properties);
 
 	public Page<T> findPage(final Page<T> page, Map<Object, Object> properties);
 	
-	public Page<T> findPageByExample(final Page<T> page, T example);
+	public Page<T> findPageByExample(final Page<T> page, Object example);
 	
 	public void findPage(final Page<T> page, QueryBuilder query);
 

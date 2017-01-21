@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
+import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.dbm.richmodel.UserAutoidModel;
 import org.onetwo.common.utils.Page;
@@ -33,7 +34,7 @@ public class RichModelTest extends DbmRichModelBaseTest {
 	@Test
 	public void testEnhanceMethods(){
 		int i = 1;
-		String userNamePrefix = "RichModelTest";;
+		String userNamePrefix = "RichModelTest";
 		UserAutoidModel user = new UserAutoidModel();
 		user.setUserName(userNamePrefix+"-insert-"+i);
 		user.setPassword("password-insert-"+i);
@@ -48,12 +49,10 @@ public class RichModelTest extends DbmRichModelBaseTest {
 		UserAutoidModel dbuser = UserAutoidModel.findById(user.getId());
 		assertThat(dbuser.getUserName()).isEqualTo(user.getUserName());
 		
-		dbuser = UserAutoidModel.where()
-									.field("id").equalTo(user.getId())
-								.end()
-								.toQuery()
-								.one();
-		assertThat(dbuser.getUserName()).isEqualTo(user.getUserName());
+		UserAutoidEntity userExample = new UserAutoidEntity();
+		userExample.setId(dbuser.getId());
+		List<UserAutoidModel> users = UserAutoidModel.findListByExample(userExample);
+		assertThat(dbuser.getUserName()).isEqualTo(users.get(0).getUserName());
 		
 		dbuser.remove();
 		List<UserAutoidModel> userlist = UserAutoidModel.findList("id", user.getId());
@@ -67,6 +66,11 @@ public class RichModelTest extends DbmRichModelBaseTest {
 		
 		Page<UserAutoidModel> page = new Page<UserAutoidModel>();
 		UserAutoidModel.findPage(page, "userName", user.getUserName());
+		assertThat(page.getSize()).isEqualTo(1);
+		
+		userExample = new UserAutoidEntity();
+		userExample.setUserName(user.getUserName());
+		UserAutoidModel.findPageByExample(page, userExample);
 		assertThat(page.getSize()).isEqualTo(1);
 		
 		UserAutoidModel.removeAll();

@@ -19,7 +19,7 @@ import com.google.common.cache.LoadingCache;
 
 final public class Dbms {
 	
-	final private static LoadingCache<Class<?>, CrudEntityManager<?, ?>> MANAGER_MAPPER = CacheBuilder.newBuilder()
+	final private static LoadingCache<Class<?>, CrudEntityManager<?, ?>> CRUD_MANAGER_MAPPER = CacheBuilder.newBuilder()
 																						.weakKeys()
 																						.weakValues()
 																						.build(new CacheLoader<Class<?>, CrudEntityManager<?, ?>>() {
@@ -27,6 +27,18 @@ final public class Dbms {
 																							@Override
 																							public CrudEntityManager<?, ?> load(Class<?> entityClass) throws Exception {
 																								return Dbms.newCrudManager(entityClass);
+																							}
+																							
+																						});
+	
+	final private static LoadingCache<DataSource, BaseEntityManager> ENTITY_MANAGER_MAPPER = CacheBuilder.newBuilder()
+																						.weakKeys()
+																						.weakValues()
+																						.build(new CacheLoader<DataSource, BaseEntityManager>() {
+
+																							@Override
+																							public BaseEntityManager load(DataSource ds) throws Exception {
+																								return Dbms.newEntityManager(ds);
 																							}
 																							
 																						});
@@ -39,10 +51,28 @@ final public class Dbms {
 		return BaseEntityManagerHoder.instance;
 	}
 	
+	public static BaseEntityManager obtainBaseEntityManager(DataSource dataSource) {
+		try {
+			return ENTITY_MANAGER_MAPPER.get(dataSource);
+		} catch (ExecutionException e) {
+			throw new BaseException("obtain BaseEntityManager error: " + e.getMessage(), e);
+		}
+	}
+	public static BaseEntityManager newEntityManager(DataSource dataSource) {
+		DbmDaoImplementor dbmDao = (DbmDaoImplementor)newDao(dataSource);
+		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(dbmDao);
+		try {
+			entityManager.afterPropertiesSet();
+		} catch (Exception e) {
+			throw new DbmException("init CrudEntityManager error: " +e.getMessage());
+		}
+		return entityManager;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> obtainCrudManager(Class<E> entityClass){
 		try {
-			return (CrudEntityManager<E, ID>)MANAGER_MAPPER.get(entityClass);
+			return (CrudEntityManager<E, ID>)CRUD_MANAGER_MAPPER.get(entityClass);
 		} catch (ExecutionException e) {
 			throw new BaseException("obtain entityManager error: " + e.getMessage(), e);
 		}
@@ -67,17 +97,6 @@ final public class Dbms {
 	}
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> newCrudManager(Class<E> entityClass, BaseEntityManager baseEntityManager){
 		return new BaseCrudEntityManager<>(entityClass, baseEntityManager);
-	}
-	
-	public static DbmEntityManager newEntityManager(DataSource dataSource) {
-		DbmDaoImplementor dbmDao = (DbmDaoImplementor)newDao(dataSource);
-		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(dbmDao);
-		try {
-			entityManager.afterPropertiesSet();
-		} catch (Exception e) {
-			throw new DbmException("init EntityManager error: " +e.getMessage());
-		}
-		return entityManager;
 	}
 	
 	public static DbmDao newDao(DataSource dataSource){
