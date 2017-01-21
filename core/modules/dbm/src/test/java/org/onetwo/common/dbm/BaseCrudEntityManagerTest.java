@@ -8,11 +8,9 @@ import javax.sql.DataSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.profiling.TimeCounter;
-import org.onetwo.dbm.support.Dbms;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseCrudEntityManagerTest extends DbmBaseTest {
@@ -20,11 +18,11 @@ public class BaseCrudEntityManagerTest extends DbmBaseTest {
 	@Autowired
 	private DataSource dataSource;
 	
-	private CrudEntityManager<UserAutoidEntity, Long> userDao;
+//	private CrudEntityManager<UserAutoidEntity, Long> userDao;
 
 	@Before
 	public void setup(){
-		userDao = Dbms.newCrudManager(UserAutoidEntity.class, dataSource);
+//		userDao = Dbms.newCrudManager(UserAutoidEntity.class);
 	}
 
 	private UserAutoidEntity createUserAutoidEntity(int i){
@@ -54,11 +52,11 @@ public class BaseCrudEntityManagerTest extends DbmBaseTest {
 		Stream.iterate(1, item->item+1).limit(insertCount).forEach(item->{
 			UserAutoidEntity entity = createUserAutoidEntity(item);
 			entity.setUserName(userName);
-			userDao.save(entity);
+			UserAutoidEntity.crudManager.save(entity);
 		});
 		t.stop();
 		
-		UserAutoidEntity user = userDao.findOne("userName", userName);
+		UserAutoidEntity user = UserAutoidEntity.crudManager.findOne("userName", userName);
 		Assert.assertEquals(UserStatus.NORMAL, user.getStatus());
 		
 //		int count = userDao.removeAll();

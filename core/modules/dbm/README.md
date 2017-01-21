@@ -11,6 +11,7 @@
 - 内置支持分页查询。
 - 接口支持批量插入
 - Java8不需要使用类似@Param注解标识参数
+- 提供充血模型支持
 
    
 
@@ -38,7 +39,7 @@
 ##实体映射
 ```java   
 @Entity   
-@Table(name="TEST\_USER\_AUTOID")   
+@Table(name="TEST_USER_AUTOID")   
 public class UserAutoidEntity {
 
 	@Id
@@ -68,8 +69,13 @@ java的字段名使用驼峰的命名风格，而数据库使用下划线的风�
 后来为了证明我也不是真的很懒，也写了和@Entity、@Table、@Column对应的注解，分别是：@DbmEntity（@Entity和@Table合一），@DbmColumn。。。
 
 ##BaseEntityManager接口
-大多数数据库操作都可以通过BaseEntityManager接口来完成。
+大多数数据库操作都可以通过BaseEntityManager接口来完成。   
+BaseEntityManager可直接注入。   
 ```java    
+
+	
+	@Resource
+	private BaseEntityManager entityManager;
 
 	@Test
 	public void testSample(){
@@ -110,6 +116,42 @@ java的字段名使用驼峰的命名风格，而数据库使用下划线的风�
 		
 	}
 ```
+
+##CrudEntityManager接口
+CrudEntityManager是在BaseEntityManager基础上封装crud的接口，是给喜欢简单快捷的人使用的。   
+CrudEntityManager实例可在数据源已配置的情况下通过简单的方法获取：
+
+```java   
+@Entity   
+@Table(name="TEST_USER_AUTOID")   
+public class UserAutoidEntity {
+
+	final static public CrudEntityManager<UserAutoidEntity, Long> crudManager = Dbms.newCrudManager(UserAutoidEntity.class);
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY) 
+	@Column(name="ID")
+	protected Long id;
+	@Length(min=1, max=50)
+	protected String userName;
+	@Length(min=0, max=50)
+	@Email
+	protected String email;
+	protected String mobile;
+	protected UserStatus status;
+
+	//省略getter和setter
+}   
+```   
+然后通过静态变量直接访问crud接口：   
+```Java    
+
+	UserAutoidEntity.crudManager.save(entity);
+	UserAutoidEntity user = UserAutoidEntity.crudManager.findOne("userName", userName);
+
+```   
+
+
 
 ##接口和sql绑定
 支持类似mybatis的sql语句与接口绑定，但sql文件不是写在丑陋的xml里，而是直接写在sql文件里，这样用eclipse或者相关支持sql的编辑器打开时，就可以语法高亮，更容易阅读。

@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.onetwo.common.db.CrudEntityManager;
+import org.onetwo.dbm.support.Dbms;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
@@ -22,11 +24,15 @@ import org.springframework.format.annotation.DateTimeFormat;
  * 用户表
  * @Entity
  */
+@SuppressWarnings("serial")
 //@SequenceGenerator(name="UserEntityGenerator", pkColumnValue="SEQ_ADMIN_USER")
 //@DataQueryFilter(fields={K.JOIN_FETCH, ".app.code"}, values={"apps:app", WebConstant.APP_CODE})
 @Entity
 @Table(name="TEST_USER_AUTOID")
 public class UserAutoidEntity implements Serializable {
+	
+
+	final static public CrudEntityManager<UserAutoidEntity, Long> crudManager = Dbms.newCrudManager(UserAutoidEntity.class);
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY) 

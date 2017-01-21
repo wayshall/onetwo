@@ -5,7 +5,6 @@ package org.onetwo.common.dbm;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.onetwo.common.dbm.richmodel.UserAutoidModel;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
@@ -44,7 +43,7 @@ public class DbmRichModelBaseTest extends SpringBaseJUnitTestCase {
 		@Bean
 		public DbmConfig customDbmConfig(){
 			DefaultDbmConfig config = new DefaultDbmConfig();
-			config.setModelPackagesToScan(UserAutoidModel.class.getPackage().getName());
+			config.setModelPackagesToScan("org.onetwo.common.dbm.richmodel");
 			return config;
 		}
 		

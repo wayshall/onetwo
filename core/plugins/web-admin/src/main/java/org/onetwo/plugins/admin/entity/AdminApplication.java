@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.db.CrudEntityManager;
+import org.onetwo.dbm.support.BaseModel;
 import org.onetwo.dbm.support.Dbms;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
@@ -27,10 +28,10 @@ import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 @Entity
 @Table(name="admin_application")
 @Data
-@EqualsAndHashCode
-public class AdminApplication implements Serializable {
+@EqualsAndHashCode(callSuper=true)
+public class AdminApplication extends BaseModel<AdminApplication, String> implements Serializable {
 
-	final public static CrudEntityManager<AdminApplication, String> MANAGER = Dbms.newCrudManager(AdminApplication.class);
+	final public static CrudEntityManager<AdminApplication, String> MANAGER = Dbms.obtainCrudManager(AdminApplication.class);
 
 	@Id
 	@NotBlank

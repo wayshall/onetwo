@@ -4,69 +4,61 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Transient;
-
-import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.builder.WhereCauseBuilder;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringApplication;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.exception.NotImplementedDbmOperationException;
+import org.onetwo.dbm.support.BaseModel;
 
-@SuppressWarnings("unchecked")
-abstract public class RichModel<E, ID extends Serializable> {
+abstract public class RichModel<E, ID extends Serializable> extends BaseModel<E, ID> {
 	
-	public static Class<?> getEntityClass(){
-		throw new NotImplementedYetException();
+	protected static Class<?> getStaticEntityClass(){
+		throw new NotImplementedDbmOperationException();
 	}
 	public static int batchInsert(Collection<?> entities){
 //		return ((DbmDao)entityManager().getRawManagerObject()).batchInsert(entities);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static Number count(Object...params){
 //		return entityManager().countRecord(getEntityClass(), params);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static <T> List<T> findList(Object... properties){
 //		return (List<T>)entityManager().findList(getEntityClass(), properties);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static void findPage(Page<?> page, Object... properties){
 //		entityManager().findPage(getEntityClass(), page, properties);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static <T> T findById(Serializable id){
 //		return (T)entityManager().findById(getEntityClass(), id);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static <T> T loadById(Serializable id){
 //		return (T)entityManager().load(getEntityClass(), id);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static <T> T removeById(Serializable id){
 //		return (T)entityManager().removeById(getEntityClass(), id);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	public static <T> T findOne(Object... properties){
 //		return (T)entityManager().findOne(getEntityClass(), properties);
-		throw new NotImplementedYetException();
+		throw new NotImplementedDbmOperationException();
 	}
 
 	public static WhereCauseBuilder where(){
-		return Querys.from(entityManager(), getEntityClass()).where();
-	}
-
-	protected static BaseEntityManager entityManager(){
-		return Dbms.obtainBaseEntityManager();
+//		return Querys.from(entityManager(), getEntityClass()).where();
+		throw new NotImplementedDbmOperationException();
 	}
 	
 	protected static ValidatorWrapper getValidator(){
@@ -74,7 +66,7 @@ abstract public class RichModel<E, ID extends Serializable> {
 	}
 	
 	public static int removeAll(){
-		return entityManager().removeAll(getEntityClass());
+		return entityManager().removeAll(getStaticEntityClass());
 	}
 	
 	public static boolean exists(Object...params){
@@ -83,19 +75,5 @@ abstract public class RichModel<E, ID extends Serializable> {
 			return true;
 		return false;
 	}
-
-	@Transient
-	private Class<E> entityClass;
 	
-	public RichModel() {
-		this.entityClass = (Class<E>)ReflectUtils.getSuperClassGenricType(this.getClass(), null);
-	}
-	
-	public void save(){
-		entityManager().save(this);
-	}
-	
-	public void remove(){
-		entityManager().remove(this);
-	}
 }

@@ -1,6 +1,7 @@
 package org.onetwo.common.utils;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class Page<T> implements Serializable {
 	protected String order = null;
 	protected boolean autoCount = true;
 
-	protected List<T> result;
+	protected List<T> result = Collections.emptyList();
 	protected long totalCount = 0;
 	
 	protected int first = -1;
