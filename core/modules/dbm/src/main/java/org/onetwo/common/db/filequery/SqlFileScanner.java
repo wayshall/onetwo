@@ -6,7 +6,7 @@ import org.onetwo.common.propconf.ResourceAdapter;
 
 public interface SqlFileScanner {
 	public String SQL_POSTFIX = ".sql";
-	public String JFISH_SQL_POSTFIX = ".jfish"+SQL_POSTFIX;
+	/*public String JFISH_SQL_POSTFIX = ".jfish"+SQL_POSTFIX;*/
 
 	/****
 	 * 根据配置扫描文件
@@ -14,5 +14,10 @@ public interface SqlFileScanner {
 	 * @return
 	 */
 	Map<String, ResourceAdapter<?>> scanMatchSqlFiles(String dialectDir);
+	
+	public <T extends ResourceAdapter<?>> T getClassPathResource(String dialect, String classPath);
+	
+	String getSqlPostfix();
 
+	String getJfishPostfix();
 }

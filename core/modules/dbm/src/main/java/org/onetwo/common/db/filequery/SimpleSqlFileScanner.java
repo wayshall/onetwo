@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
+import org.onetwo.common.spring.utils.SpringResourceAdapterImpl;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.slf4j.Logger;
+import org.springframework.core.io.ClassPathResource;
 
 import com.google.common.collect.Maps;
 
@@ -22,7 +24,8 @@ public class SimpleSqlFileScanner implements SqlFileScanner {
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	protected ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
 	protected String dir = "sql";
-//	protected String postfix = JFISH_SQL_POSTFIX;
+	protected String sqlPostfix = SQL_POSTFIX;
+	protected String jfishPostfix = ".jfish"+sqlPostfix;
 	
 
 	public SimpleSqlFileScanner(ClassLoader classLoader) {
@@ -30,7 +33,22 @@ public class SimpleSqlFileScanner implements SqlFileScanner {
 		this.classLoader = classLoader;
 	}
 
+	@Override
+	public ResourceAdapter<?> getClassPathResource(String dialect, String classPath) {
+		String postfix = getDialetSqlPostfix(dialect);
+		String path = dir+"/"+classPath+postfix;
+		ClassPathResource cpr = new ClassPathResource(path);
+		SpringResourceAdapterImpl springRes = new SpringResourceAdapterImpl(cpr, postfix);
+		return springRes;
+	}
 
+	public String getSqlPostfix() {
+		return sqlPostfix;
+	}
+
+	public String getJfishPostfix() {
+		return jfishPostfix;
+	}
 
 	/****
 	 * 根据配置扫描文件
@@ -62,11 +80,19 @@ public class SimpleSqlFileScanner implements SqlFileScanner {
 	protected Map<String, ResourceAdapter<?>> scanCommonSqlFiles() throws Exception {
 		String sqldirPath = FileUtils.getResourcePath(classLoader, dir);
 
-		String postfix = JFISH_SQL_POSTFIX;
+		String postfix = jfishPostfix;
 		ResourceAdapter<?>[] sqlfileArray = scanSqlFilesByDir(sqldirPath, postfix);
 		if(logger.isInfoEnabled())
 			logger.info("find {} [{}] named file in dir {}", sqlfileArray.length, postfix, sqldirPath);
 		return map(Arrays.asList(sqlfileArray), postfix);
+	}
+	
+	protected String getDialetSqlPostfix(String dialect){
+		if(StringUtils.isBlank(dialect)){
+			return jfishPostfix;
+		}
+		String postfix = "."+dialect+sqlPostfix;
+		return postfix;
 	}
 
 	protected Map<String, ResourceAdapter<?>> scanDialetSqlFiles(String dialectDir)  throws Exception {
@@ -74,7 +100,8 @@ public class SimpleSqlFileScanner implements SqlFileScanner {
 			return null;
 		}
 
-		String postfix = "."+dialectDir+SQL_POSTFIX;
+//		String postfix = "."+dialectDir+SQL_POSTFIX;
+		String postfix = getDialetSqlPostfix(dialectDir);
 		String sqldirPath = FileUtils.getResourcePath(classLoader, dir);
 /*		String overridePath = sqldirPath+"/"+dialectDir;
 		logger.info("scan database dialect dir : " + overridePath);

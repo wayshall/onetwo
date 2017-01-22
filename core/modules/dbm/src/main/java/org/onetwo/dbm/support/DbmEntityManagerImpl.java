@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.sql.DataSource;
+
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
@@ -46,7 +48,11 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	public DbmEntityManagerImpl(DbmDaoImplementor dbmDao){
 		this.dbmDao = dbmDao;
 	}
-	
+
+	@Override
+	public DataSource getDataSource() {
+		return this.dbmDao.getDataSource();
+	}
 	
 	@Override
 	public void update(Object entity) {

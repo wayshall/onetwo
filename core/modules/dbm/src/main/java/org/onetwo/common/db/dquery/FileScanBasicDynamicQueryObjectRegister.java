@@ -2,6 +2,7 @@ package org.onetwo.common.db.dquery;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
@@ -22,7 +23,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class DynamicQueryObjectRegister {
+public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegistor {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private SqlFileScanner sqlFileScanner = new SpringBasedSqlFileScanner(ClassUtils.getDefaultClassLoader());
@@ -39,11 +40,11 @@ public class DynamicQueryObjectRegister {
 	private BeanDefinitionRegistry registry;
 //	private ApplicationContext applicationContext;
 	
-	public DynamicQueryObjectRegister(BeanDefinitionRegistry registry) {
+	public FileScanBasicDynamicQueryObjectRegister(BeanDefinitionRegistry registry) {
 		this.registry = registry;
 	}
 
-	public DynamicQueryObjectRegister(ApplicationContext applicationContext) {
+	public FileScanBasicDynamicQueryObjectRegister(ApplicationContext applicationContext) {
 		this.registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
 	}
 
@@ -52,15 +53,18 @@ public class DynamicQueryObjectRegister {
 	}
 
 
-	public void registerQueryBeans() {
+	@Override
+	public boolean registerQueryBeans() {
 		logger.info("start to register dao bean ....");
 		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(database.getName());
-		sqlfiles.entrySet().forEach(f->{
-			/*final String fileName = f.getName();
-			String className = StringUtils.substring(fileName, 0, fileName.length()-SqlFileScanner.JFISH_SQL_POSTFIX.length());*/
+		boolean scaned = false;
+		for(Entry<String, ResourceAdapter<?>> f: sqlfiles.entrySet()){
 			String className = f.getKey();
 			if(NamespacePropertiesManager.GLOBAL_NS_KEY.equalsIgnoreCase(className)){
-				return ;
+				continue;
+			}
+			if(registry.containsBeanDefinition(className)){
+				continue;
 			}
 			final Class<?> interfaceClass = ReflectUtils.loadClass(className);
 			BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(JDKDynamicProxyCreator.class)
@@ -72,7 +76,11 @@ public class DynamicQueryObjectRegister {
 								.getBeanDefinition();
 			registry.registerBeanDefinition(className, beandef);
 			logger.info("register dao bean: {} -> {}", className, f.getValue().getFile());
-		});
+			if(!scaned){
+				scaned = true;
+			}
+		}
+		return scaned;
 		
 	}
 }

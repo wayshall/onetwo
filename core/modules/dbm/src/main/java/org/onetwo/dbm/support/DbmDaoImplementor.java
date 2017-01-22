@@ -3,6 +3,8 @@ package org.onetwo.dbm.support;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -116,5 +118,6 @@ public interface DbmDaoImplementor extends DbmDao {
 	
 	public DataQuery createAsDataQuery(String sql, Map<String, Object> values);
 	public DbmConfig getDataBaseConfig();
-	
+
+	public DataSource getDataSource();
 }

@@ -8,10 +8,9 @@ public class DynamicQueryObjectRegisterListener implements ApplicationListener<D
 	@Override
 	public void onApplicationEvent(DbmDaoCreateEvent event) {
 		DbmDaoCreateEvent dbevent = (DbmDaoCreateEvent) event;
-		DynamicQueryObjectRegister register = new DynamicQueryObjectRegister(event.getRegistry());
+		FileScanBasicDynamicQueryObjectRegister register = new FileScanBasicDynamicQueryObjectRegister(event.getRegistry());
 		register.setDatabase(dbevent.getDaoImplementor().getDialect().getDbmeta().getDataBase());
 		register.registerQueryBeans();
-		
 	}
 
 }

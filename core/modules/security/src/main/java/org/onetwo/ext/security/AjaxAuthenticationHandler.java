@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.util.StringUtils;
 
 /****
  * 验证成功或失败后的处理器
@@ -45,8 +46,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
 	
 	private String authenticationFailureUrl;
-	private String defaultTargetUrl;
-	private boolean alwaysUse = false;
+//	private boolean alwaysUse = false;
 //	private MessageSourceAccessor exceptionMessageAccessor;
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
@@ -62,8 +62,8 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public AjaxAuthenticationHandler(String authenticationFailureUrl, String defaultSuccessUrl, boolean alwaysUse) {
 	    super();
 	    this.authenticationFailureUrl = authenticationFailureUrl;
-	    this.defaultTargetUrl = defaultSuccessUrl;
-	    this.alwaysUse = alwaysUse;
+	    this.setDefaultTargetUrl(defaultSuccessUrl);
+	    this.setAlwaysUseDefaultTargetUrl(alwaysUse);
     }
 
 	/*public void setExceptionMessageAccessor(MessageSourceAccessor exceptionMessageAccessor) {
@@ -77,9 +77,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler();
 	    }
 		SavedRequestAwareAuthenticationSuccessHandler srHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-	    if(defaultTargetUrl!=null){
-	    	srHandler.setDefaultTargetUrl(defaultTargetUrl);
-	    	srHandler.setAlwaysUseDefaultTargetUrl(alwaysUse);
+	    if(getDefaultTargetUrl()!=null){
+	    	srHandler.setDefaultTargetUrl(getDefaultTargetUrl());
+	    	srHandler.setAlwaysUseDefaultTargetUrl(isAlwaysUseDefaultTargetUrl());
 	    }
 	    //set HttpSessionRequestCache to save pre request url
 	    srHandler.setRequestCache(requestCache);
@@ -89,12 +89,18 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
-			SavedRequest saveRequest = this.requestCache.getRequest(request, response);
-			String redirectUrl = this.defaultTargetUrl;
-			if(saveRequest!=null){
+			String redirectUrl = this.getDefaultTargetUrl();
+			String targetUrlParameter = getTargetUrlParameter();
+			if (isAlwaysUseDefaultTargetUrl()
+					|| (targetUrlParameter != null && StringUtils.hasText(request
+							.getParameter(targetUrlParameter)))) {
+				redirectUrl = determineTargetUrl(request, response);
+			}else{
+				SavedRequest saveRequest = this.requestCache.getRequest(request, response);
 				redirectUrl = saveRequest.getRedirectUrl();
 				clearAuthenticationAttributes(request);
 			}
+			
 			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
 //											.data(authentication.getPrincipal())
 											.data(redirectUrl)
@@ -142,13 +148,4 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public void setAuthenticationFailureUrl(String authenticationFailureUrl) {
 		this.authenticationFailureUrl = authenticationFailureUrl;
 	}
-	public void setDefaultTargetUrl(String defaultTargetUrl) {
-		this.defaultTargetUrl = defaultTargetUrl;
-	}
-	public void setAlwaysUse(boolean alwaysUse) {
-		this.alwaysUse = alwaysUse;
-	}
-	
-	
-
 }

@@ -24,6 +24,8 @@ public class SecurityConfig {
 	private String loginUrl = LOGIN_PATH;
 	private String loginProcessUrl = LOGIN_PROCESS_PATH;
 	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
+	
+	private boolean alwaysUseDefaultTargetUrl = true;
 
 	//AccessDenied redirectErrorUrl
 	private String redirectErrorUrl;

@@ -31,6 +31,7 @@ import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -60,6 +61,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.Maps;
 
@@ -525,6 +527,15 @@ final public class SpringUtils {
 	public static String[] getConstructorNames(Constructor<?> targetConstructor){
 		LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
 		return discoverer.getParameterNames(targetConstructor);
+	}
+	
+
+	public static Class<?> getTargetClass(Object candidate) {
+		Class<?> targetClass = AopUtils.getTargetClass(candidate);
+		if(ClassUtils.isCglibProxyClass(targetClass)){
+			targetClass = candidate.getClass().getSuperclass();
+		}
+		return targetClass;
 	}
 	
 }

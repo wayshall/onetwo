@@ -20,7 +20,7 @@ public class SpringBasedSqlFileScanner extends SimpleSqlFileScanner {
 
 	protected Map<String, ResourceAdapter<?>> scanCommonSqlFiles() throws Exception{
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + dir;
-		String postfix = JFISH_SQL_POSTFIX;
+		String postfix = this.jfishPostfix;
 		
 		String sqldirPath = locationPattern+"/**/*"+postfix;
 		Resource[] sqlfileArray = resourcePatternResolver.getResources(sqldirPath);
@@ -34,7 +34,8 @@ public class SpringBasedSqlFileScanner extends SimpleSqlFileScanner {
 			return null;
 		}
 		String locationPattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + dir;
-		String postfix = "."+dialectDir+SQL_POSTFIX;
+//		String postfix = "."+dialectDir+SQL_POSTFIX;
+		String postfix = getDialetSqlPostfix(dialectDir);
 		
 		String sqldirPath = locationPattern+"/**/*"+postfix;
 		logger.info("scan database dialect dir : " + sqldirPath);

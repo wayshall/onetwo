@@ -1,10 +1,12 @@
 package org.onetwo.dbm.spring;
 
+import java.util.Map;
+
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.dquery.DynamicQueryObjectRegister;
+import org.onetwo.common.db.dquery.AnnotationScanBasicDynamicQueryObjectRegisterTrigger;
+import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
@@ -14,7 +16,6 @@ import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
-import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
@@ -32,17 +33,24 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotationMetadata;
 
 @Configuration
 //@EnableConfigurationProperties({DataBaseConfig.class})
-public class DbmSpringConfiguration implements ApplicationContextAware, InitializingBean/*, ImportAware*/ {
+public class DbmSpringConfiguration implements ApplicationContextAware, InitializingBean, ImportAware {
+
+	/*volatile private static boolean dbmRepostoryScaned = false;
+	
+	public static boolean isDbmRepostoryScaned() {
+		return dbmRepostoryScaned;
+	}
+	public static void setDbmRepostoryScaned(boolean dbmRepostoryScaned) {
+		DbmSpringConfiguration.dbmRepostoryScaned = dbmRepostoryScaned;
+	}*/
 
 	private ApplicationContext applicationContext;
-
-//	@Autowired
-	private DataSource dataSource;
-	
-	private DataBase database;
 
 	@Autowired(required=false)
 	private DbmConfig dbmConfig;
@@ -50,42 +58,50 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired(required=false)
 	private Validator validator;
 	
-	public DbmSpringConfiguration(DataSource dataSource){
-		this.dataSource = dataSource;
+	private String[] packagesToScan;
+	
+	public DbmSpringConfiguration(){
 	}
 
 
-	/*@Override
+	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
-		Map<String, Object> annotationAttributes = importMetadata
-				.getAnnotationAttributes(EnableJFishDbm.class.getName());
+		Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
 		AnnotationAttributes attrs = AnnotationAttributes.fromMap(annotationAttributes);
-		this.database = (DataBase)attrs.get("database");
-	}*/
-
+		this.packagesToScan = attrs.getStringArray("packagesToScan");
+	}
+	
+	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-		
-		if(dataSource!=null){
-			this.database = JdbcUtils.getDataBase(dataSource);
-			DynamicQueryObjectRegister register = new DynamicQueryObjectRegister(applicationContext);
-			register.setDatabase(database);
-			register.registerQueryBeans();
-		}
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+	}
+	
+	@Bean
+	public AnnotationScanBasicDynamicQueryObjectRegisterTrigger annotationScanBasicDynamicQueryObjectRegisterTrigger(){
+		AnnotationScanBasicDynamicQueryObjectRegisterTrigger register = new AnnotationScanBasicDynamicQueryObjectRegisterTrigger(applicationContext);
+		register.setPackagesToScan(packagesToScan);
+		return register;
+	}
+	
+	@Bean
+	public DynamicQueryObjectRegisterListener dynamicQueryObjectRegisterListener(){
+		return new DynamicQueryObjectRegisterListener();
 	}
 
 	public ApplicationContext getApplicationContex() {
 		return applicationContext;
 	}
 
-	public DataSource getDataSource() {
-		return dataSource;
-	}
+	/*@Bean
+	public AnnotationScanBasicDynamicQueryObjectRegister dynamicQueryObjectRegister(){
+		AnnotationScanBasicDynamicQueryObjectRegister register = new AnnotationScanBasicDynamicQueryObjectRegister(this.applicationContext);
+		return register;
+	}*/
 
 	@Bean
 	public DbmConfig defaultDbmConfig(){
@@ -129,24 +145,25 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(){
-		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, dbmConfig.getModelPackagesToScan());
+	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(DataSource dataSource){
+		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, defaultDbmConfig().getModelPackagesToScan());
 	}
 	
 	@Bean
 	@Autowired
-	public DbmDaoImplementor dbmDao() {
+	public DbmDaoImplementor dbmDao(DataSource dataSource) {
 		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource);
-		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate());
-		jfishDao.setJdbcTemplate(jdbcTemplate());
+		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
+		jfishDao.setJdbcTemplate(jdbcTemplate(dataSource));
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
-		jfishDao.setServiceRegistry(dbmInnserServiceRegistry());
+		jfishDao.setServiceRegistry(dbmInnserServiceRegistry(dataSource));
 		return jfishDao;
 	}
 	
 	@Bean
-	public DbmJdbcOperations jdbcTemplate(){
-		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnserServiceRegistry().getJdbcParameterSetter());
+	@Autowired
+	public DbmJdbcOperations jdbcTemplate(DataSource dataSource){
+		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnserServiceRegistry(dataSource).getJdbcParameterSetter());
 		template.setDebug(defaultDbmConfig().isLogSql());
 
 		if(defaultDbmConfig().isLogSql()){
@@ -161,9 +178,10 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public NamedJdbcTemplate namedJdbcTemplate(){
-		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate());
-		template.setJdbcParameterSetter(dbmInnserServiceRegistry().getJdbcParameterSetter());
+	@Autowired
+	public NamedJdbcTemplate namedJdbcTemplate(DataSource dataSource){
+		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate(dataSource));
+		template.setJdbcParameterSetter(dbmInnserServiceRegistry(dataSource).getJdbcParameterSetter());
 
 		/*if(logJdbcSql){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);

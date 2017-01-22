@@ -73,7 +73,8 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@Bean
 	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
 		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().getLoginUrl(), 
-																			getSecurityConfig().getAfterLoginUrl());
+																			getSecurityConfig().getAfterLoginUrl(),
+																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
 		return handler;
 	}
 }

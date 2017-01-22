@@ -190,4 +190,5 @@ public interface DbmDao {
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
 	
 	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties);
+	
 }

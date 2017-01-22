@@ -22,6 +22,11 @@ public class SpringResourceAdapterImpl extends ResourceAdapterImpl<Resource> {
 	public SpringResourceAdapterImpl(Resource resource, String postfix) {
 		super(resource, postfix);
 	}
+	
+
+	public boolean exists(){
+		return this.resource.exists();
+	}
 
 	@Override
 	public List<String> readAsList(){

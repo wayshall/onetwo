@@ -39,6 +39,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		this.createSequence(seqName);
 	}
 	
+
 	/*****
 	 * 创建序列，for oracle
 	 * @param sequenceName

@@ -190,7 +190,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 
 
 	protected PropertiesNamespaceInfo<T> parseSqlFile(ResourceAdapter<?> f, boolean throwIfExist){
-		logger.info("parse named sql file: {}" + f.getName());
+		logger.info("parse named sql file: {}", f.getName());
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
 		boolean globalNamespace = isGlobalNamespace(namespace);

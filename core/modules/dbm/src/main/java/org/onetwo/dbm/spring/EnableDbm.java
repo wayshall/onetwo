@@ -13,4 +13,5 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Import({DbmSpringConfiguration.class})
 public @interface EnableDbm {
+	String[] packagesToScan() default "";
 }
