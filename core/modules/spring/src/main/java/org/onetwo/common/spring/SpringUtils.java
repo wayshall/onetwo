@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -536,6 +537,19 @@ final public class SpringUtils {
 			targetClass = candidate.getClass().getSuperclass();
 		}
 		return targetClass;
+	}
+	
+	public static void scanAnnotationPackages(ApplicationContext applicationContext, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
+		ListableBeanFactory beanFactory = (ListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+		scanAnnotationPackages(beanFactory, annoClass, consumer);
+	}
+	public static void scanAnnotationPackages(ListableBeanFactory beanFactory, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
+		String[] beanNames = beanFactory.getBeanNamesForAnnotation(annoClass);
+		for(String beanName : beanNames){
+			Object bean = beanFactory.getBean(beanName);
+			Class<?> beanClass = SpringUtils.getTargetClass(bean);
+			consumer.accept(bean, beanClass);
+		}
 	}
 	
 }

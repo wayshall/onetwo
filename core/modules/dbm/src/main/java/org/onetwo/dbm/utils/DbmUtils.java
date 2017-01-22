@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,12 +19,16 @@ import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.UpdateCountException;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
+import org.onetwo.dbm.spring.EnableDbm;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
@@ -170,6 +175,21 @@ final public class DbmUtils {
 			
 		}
 		return value;
+	}
+	
+	public static List<String> scanEnableDbmPackages(ApplicationContext applicationContext){
+		ListableBeanFactory bf = (ListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+		return scanEnableDbmPackages(bf);
+	}
+	public static List<String> scanEnableDbmPackages(ListableBeanFactory beanFactory){
+		List<String> packageNames = new ArrayList<String>();
+		SpringUtils.scanAnnotationPackages(beanFactory, EnableDbm.class, (beanDef, beanClass)->{
+			String packageName = beanClass.getPackage().getName();
+			if(!packageName.startsWith("org.onetwo.")){
+				packageNames.add(packageName);
+			}
+		});
+		return packageNames;
 	}
 
 	private DbmUtils(){

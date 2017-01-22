@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({DbmSpringConfiguration.class})
+@Import({DbmSpringConfiguration.class, DynamicQueryObjectRegisterConfigration.class})
 public @interface EnableDbm {
-	String[] packagesToScan() default "";
+	String[] packagesToScan() default {};
 }

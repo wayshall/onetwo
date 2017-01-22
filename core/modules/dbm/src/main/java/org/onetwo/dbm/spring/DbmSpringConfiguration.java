@@ -1,17 +1,19 @@
 package org.onetwo.dbm.spring;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-import org.onetwo.common.db.dquery.AnnotationScanBasicDynamicQueryObjectRegisterTrigger;
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
@@ -24,6 +26,7 @@ import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.onetwo.dbm.support.DbmEntityManagerImpl;
 import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,25 +71,32 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
 		Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
 		AnnotationAttributes attrs = AnnotationAttributes.fromMap(annotationAttributes);
+		if(attrs==null){
+			return ;
+		}
 		this.packagesToScan = attrs.getStringArray("packagesToScan");
+		if(ArrayUtils.isEmpty(this.packagesToScan)){
+			List<String> packageNames = DbmUtils.scanEnableDbmPackages(applicationContext);
+			this.packagesToScan = packageNames.toArray(new String[0]);
+		}
 	}
 	
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	}
 	
-	@Bean
+	/*@Bean
 	public AnnotationScanBasicDynamicQueryObjectRegisterTrigger annotationScanBasicDynamicQueryObjectRegisterTrigger(){
 		AnnotationScanBasicDynamicQueryObjectRegisterTrigger register = new AnnotationScanBasicDynamicQueryObjectRegisterTrigger(applicationContext);
-		register.setPackagesToScan(packagesToScan);
 		return register;
-	}
+	}*/
 	
 	@Bean
 	public DynamicQueryObjectRegisterListener dynamicQueryObjectRegisterListener(){
@@ -103,12 +113,12 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		return register;
 	}*/
 
-	@Bean
 	public DbmConfig defaultDbmConfig(){
+//		DbmConfigFactory dbmConfigFactory = Springs.getInstance().getBean(DbmConfig.class);
 		if(dbmConfig==null){
-			dbmConfig = new DefaultDbmConfig();
+			this.dbmConfig = new DefaultDbmConfig();
 		}
-		return dbmConfig;
+		return this.dbmConfig;
 	}
 	
 	@Bean
@@ -146,7 +156,14 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(DataSource dataSource){
-		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, defaultDbmConfig().getModelPackagesToScan());
+		String[] modelPackages = null;
+		if(ArrayUtils.isNotEmpty(defaultDbmConfig().getModelPackagesToScan())){
+			modelPackages = ArrayUtils.addAll(modelPackages, defaultDbmConfig().getModelPackagesToScan());
+		}
+		if(ArrayUtils.isNotEmpty(this.packagesToScan)){
+			modelPackages = ArrayUtils.addAll(modelPackages, this.packagesToScan);
+		}
+		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, modelPackages);
 	}
 	
 	@Bean

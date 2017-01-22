@@ -13,6 +13,7 @@ import org.onetwo.common.db.dquery.repostory.AnnotationScanBasicDynamicQueryObje
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.dbm.spring.EnableDbm;
+import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -42,12 +43,7 @@ public class AnnotationScanBasicDynamicQueryObjectRegisterTrigger implements Bea
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		List<String> packs = new ArrayList<>();
-		this.scanAnnotationPackages(beanFactory, EnableDbm.class, (beanDef, beanClass)->{
-			String packageName = beanClass.getPackage().getName();
-			if(!packageName.startsWith("org.onetwo")){
-				packs.add(packageName);
-			}
-		});
+		packs.addAll(DbmUtils.scanEnableDbmPackages(beanFactory));
 		this.scanAnnotationPackages(beanFactory, QueryRepositoryPackages.class, (beanDef, beanClass)->{
 			QueryRepositoryPackages qrp = beanClass.getAnnotation(QueryRepositoryPackages.class);
 			Stream.of(qrp.value()).forEach(p->{
@@ -69,12 +65,7 @@ public class AnnotationScanBasicDynamicQueryObjectRegisterTrigger implements Bea
 	}
 	
 	private void scanAnnotationPackages(ConfigurableListableBeanFactory beanFactory, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
-		String[] beanNames = beanFactory.getBeanNamesForAnnotation(annoClass);
-		for(String beanName : beanNames){
-			Object bean = beanFactory.getBean(beanName);
-			Class<?> beanClass = SpringUtils.getTargetClass(bean);
-			consumer.accept(bean, beanClass);
-		}
+		SpringUtils.scanAnnotationPackages(beanFactory, annoClass, consumer);
 	}
 
 }

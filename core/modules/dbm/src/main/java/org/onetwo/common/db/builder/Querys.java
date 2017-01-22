@@ -14,12 +14,12 @@ import org.onetwo.dbm.support.Dbms;
 final public class Querys {
 
 	public static QueryBuilder from(BaseEntityManager baseEntityManager, Class<?> entityClass){
-		QueryBuilderImpl q = new QueryBuilderImpl(baseEntityManager.narrowAs(InnerBaseEntityManager.class), entityClass);
+		QueryBuilderImpl q = new QueryBuilderImpl(baseEntityManager==null?null:baseEntityManager.narrowAs(InnerBaseEntityManager.class), entityClass);
 		return q;
 	}
 
 	public static QueryBuilder from(Class<?> entityClass){
-		return from(Dbms.obtainBaseEntityManager(), entityClass);
+		return from((BaseEntityManager)null, entityClass);
 	}
 
 	public static QueryBuilder from(DataSource dataSource, Class<?> entityClass){

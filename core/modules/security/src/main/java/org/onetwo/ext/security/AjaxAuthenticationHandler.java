@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -27,7 +28,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.util.StringUtils;
 
 /****
  * 验证成功或失败后的处理器
@@ -62,7 +62,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public AjaxAuthenticationHandler(String authenticationFailureUrl, String defaultSuccessUrl, boolean alwaysUse) {
 	    super();
 	    this.authenticationFailureUrl = authenticationFailureUrl;
-	    this.setDefaultTargetUrl(defaultSuccessUrl);
+	    if(StringUtils.isNotBlank(defaultSuccessUrl)){
+	    	this.setDefaultTargetUrl(defaultSuccessUrl);
+	    }
 	    this.setAlwaysUseDefaultTargetUrl(alwaysUse);
     }
 
@@ -92,7 +94,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			String redirectUrl = this.getDefaultTargetUrl();
 			String targetUrlParameter = getTargetUrlParameter();
 			if (isAlwaysUseDefaultTargetUrl()
-					|| (targetUrlParameter != null && StringUtils.hasText(request
+					|| (targetUrlParameter != null && StringUtils.isNotBlank(request
 							.getParameter(targetUrlParameter)))) {
 				redirectUrl = determineTargetUrl(request, response);
 			}else{
