@@ -23,7 +23,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegistor {
+public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegister {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private SqlFileScanner sqlFileScanner = new SpringBasedSqlFileScanner(ClassUtils.getDefaultClassLoader());

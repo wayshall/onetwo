@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.dquery.DynamicMethod;
-import org.onetwo.common.db.dquery.DynamicQueryObjectRegistor;
+import org.onetwo.common.db.dquery.DynamicQueryObjectRegister;
 import org.onetwo.common.db.dquery.annotation.QueryRepository;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -21,7 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class AnnotationScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegistor {
+public class AnnotationScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegister {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private JFishResourcesScanner resourcesScanner = new JFishResourcesScanner();
