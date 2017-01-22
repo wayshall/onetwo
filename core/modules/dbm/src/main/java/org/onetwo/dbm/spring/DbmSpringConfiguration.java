@@ -39,7 +39,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 
 	private ApplicationContext applicationContext;
 
-	@Autowired
+//	@Autowired
 	private DataSource dataSource;
 	
 	private DataBase database;
@@ -50,7 +50,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired(required=false)
 	private Validator validator;
 	
-	public DbmSpringConfiguration(){
+	public DbmSpringConfiguration(DataSource dataSource){
+		this.dataSource = dataSource;
 	}
 
 
