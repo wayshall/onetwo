@@ -73,21 +73,21 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 //	protected String[] packagesToScan;
 	
-	private SimpleDbmInnserServiceRegistry serviceRegistry;
+	private SimpleDbmInnerServiceRegistry serviceRegistry;
 	
 	/*public JFishDaoImpl(){
 	}*/
 
 	public DbmDaoImpl(DataSource dataSource){
 		Assert.notNull(dataSource);
-		this.serviceRegistry = SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, null);
+		this.serviceRegistry = SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, null);
 		this.setDataSource(dataSource);
 	}
 
 	public DbmDaoImpl(DataSource dataSource, DBDialect dialect){
 		Assert.notNull(dataSource);
 		Assert.notNull(dialect);
-		this.serviceRegistry = SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, null);
+		this.serviceRegistry = SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, null);
 		this.setDataSource(dataSource);
 	}
 	
@@ -692,11 +692,11 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		this.packagesToScan = packagesToScan;
 	}*/
 
-	public SimpleDbmInnserServiceRegistry getServiceRegistry() {
+	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
 	}
 
-	public void setServiceRegistry(SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public void setServiceRegistry(SimpleDbmInnerServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
 

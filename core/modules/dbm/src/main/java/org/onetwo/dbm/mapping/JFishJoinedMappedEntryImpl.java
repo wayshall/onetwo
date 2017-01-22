@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
 /****
  * 连接表映射？
@@ -18,7 +18,7 @@ public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl imp
 	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
 	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
 	
-	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	

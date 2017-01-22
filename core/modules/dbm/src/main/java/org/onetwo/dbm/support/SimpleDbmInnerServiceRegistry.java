@@ -1,13 +1,14 @@
 package org.onetwo.dbm.support;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -47,10 +48,13 @@ import org.springframework.util.ClassUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
-public class SimpleDbmInnserServiceRegistry {
+public class SimpleDbmInnerServiceRegistry {
 
-	public static SimpleDbmInnserServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator, String... packagesToScan){
-		SimpleDbmInnserServiceRegistry serviceRegistry = new SimpleDbmInnserServiceRegistry();
+	public static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
+		return createServiceRegistry(dataSource, validator, null);
+	}
+	public static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator, Collection<String> packagesToScan){
+		SimpleDbmInnerServiceRegistry serviceRegistry = new SimpleDbmInnerServiceRegistry();
 		serviceRegistry.initialize(dataSource, packagesToScan);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
@@ -73,7 +77,7 @@ public class SimpleDbmInnserServiceRegistry {
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	private DbmTypeMapping typeMapping;
 	
-	public void initialize(DataSource dataSource, String... packagesToScan){
+	public void initialize(DataSource dataSource, Collection<String> packagesToScan){
 		if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDbmConfig();
 		}
@@ -124,7 +128,7 @@ public class SimpleDbmInnserServiceRegistry {
 			this.mappedEntryManager = _mappedEntryManager;
 			
 		}
-		if(ArrayUtils.isNotEmpty(packagesToScan)){
+		if(CollectionUtils.isNotEmpty(packagesToScan)){
 			MultiMappedEntryListener ml = new MultiMappedEntryListener();
 			if(ClassUtils.isPresent("javassist.ClassPool", null)){
 				ml.addListener(new RichModelMappedEntryListener());
@@ -133,7 +137,10 @@ public class SimpleDbmInnserServiceRegistry {
 //				logger.error("you must be add javassist to classpath if you want to use richmodel support!");
 			}
 			mappedEntryManager.setMappedEntryManagerListener(ml);
-			mappedEntryManager.scanPackages(packagesToScan);
+			mappedEntryManager.scanPackages(packagesToScan.toArray(new String[0]));
+			if(logger.isInfoEnabled()){
+				logger.info("scan model package: {}", packagesToScan);
+			}
 		}
 		
 		//init sql symbol
@@ -204,11 +211,11 @@ public class SimpleDbmInnserServiceRegistry {
 		return (T) services.get(name);
 	}
 
-	public <T> SimpleDbmInnserServiceRegistry register(T service) {
+	public <T> SimpleDbmInnerServiceRegistry register(T service) {
 		return register(service.getClass().getName(), service);
 	}
 
-	public <T> SimpleDbmInnserServiceRegistry register(String name, T service) {
+	public <T> SimpleDbmInnerServiceRegistry register(String name, T service) {
 		Assert.hasText(name);
 		Assert.notNull(service);
 		services.put(name, service);

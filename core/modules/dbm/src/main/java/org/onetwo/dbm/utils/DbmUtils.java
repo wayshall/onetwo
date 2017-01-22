@@ -15,8 +15,10 @@ import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
+import org.onetwo.common.db.dquery.annotation.DbmPackages;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -184,8 +186,36 @@ final public class DbmUtils {
 	public static List<String> scanEnableDbmPackages(ListableBeanFactory beanFactory){
 		List<String> packageNames = new ArrayList<String>();
 		SpringUtils.scanAnnotationPackages(beanFactory, EnableDbm.class, (beanDef, beanClass)->{
-			String packageName = beanClass.getPackage().getName();
-			if(!packageName.startsWith("org.onetwo.")){
+			EnableDbm enableDbm = beanClass.getAnnotation(EnableDbm.class);
+			String[] modelPacks = enableDbm.packagesToScan();
+			if(ArrayUtils.isNotEmpty(modelPacks)){
+				for(String pack : modelPacks){
+					packageNames.add(pack);
+				}
+			}else{
+				String packageName = beanClass.getPackage().getName();
+				if(!packageName.startsWith("org.onetwo.")){
+					packageNames.add(packageName);
+				}
+			}
+		});
+		return packageNames;
+	}
+	public static List<String> scanDbmPackages(ApplicationContext applicationContext){
+		ListableBeanFactory bf = (ListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+		return scanDbmPackages(bf);
+	}
+	public static List<String> scanDbmPackages(ListableBeanFactory beanFactory){
+		List<String> packageNames = new ArrayList<String>();
+		SpringUtils.scanAnnotationPackages(beanFactory, DbmPackages.class, (beanDef, beanClass)->{
+			DbmPackages dbmPackages = beanClass.getAnnotation(DbmPackages.class);
+			String[] modelPacks = dbmPackages.value();
+			if(ArrayUtils.isNotEmpty(modelPacks)){
+				for(String pack : modelPacks){
+					packageNames.add(pack);
+				}
+			}else{
+				String packageName = beanClass.getPackage().getName();
 				packageNames.add(packageName);
 			}
 		});

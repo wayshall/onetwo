@@ -26,6 +26,10 @@ public interface DbmConfig {
 	
 	public boolean isWatchSqlFile();
 	
+	/****
+	 * package to scan only for model
+	 * @return
+	 */
 	public String[] getModelPackagesToScan();
 
 }

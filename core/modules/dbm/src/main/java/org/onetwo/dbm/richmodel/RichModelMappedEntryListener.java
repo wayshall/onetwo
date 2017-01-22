@@ -1,7 +1,8 @@
 package org.onetwo.dbm.richmodel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -22,6 +23,7 @@ public class RichModelMappedEntryListener implements MappedEntryManagerListener,
 	
 	private MultiEnhancer enhancer = new MultiEnhancer();
 	private ClassPool classPool;
+	private Set<CtClass> classes = new HashSet<CtClass>(50);
 	
 	public RichModelMappedEntryListener() {
 		super();
@@ -33,10 +35,12 @@ public class RichModelMappedEntryListener implements MappedEntryManagerListener,
 	
 
 	@Override
-	public void beforeBuild(MappedEntryManager mappedEntryManager, List<ScanedClassContext> clssNameList) {
-		List<CtClass> classes = new ArrayList<CtClass>(clssNameList.size());
+	public void beforeBuild(MappedEntryManager mappedEntryManager, Collection<ScanedClassContext> clssNameList) {
 		CtClass ctclass = null;
 		for(ScanedClassContext ctx : clssNameList){
+			if(classes.contains(ctx)){
+				continue;
+			}
 			try {
 				ctclass = enhanceClass(ctx);
 				if(ctclass!=null){

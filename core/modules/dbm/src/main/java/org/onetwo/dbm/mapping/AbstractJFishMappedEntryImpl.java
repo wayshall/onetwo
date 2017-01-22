@@ -26,7 +26,7 @@ import org.onetwo.dbm.event.DbmEntityListener;
 import org.onetwo.dbm.event.JFishEventAction;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 
@@ -74,7 +74,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
 		this.sqlTypeMapping = serviceRegistry.getTypeMapping();

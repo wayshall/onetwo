@@ -1,7 +1,7 @@
 package org.onetwo.common.db.dquery.repostory;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.dquery.DynamicMethod;
@@ -57,7 +57,7 @@ public class AnnotationScanBasicDynamicQueryObjectRegister implements DynamicQue
 			return false;
 		}
 		logger.info("start to register dao bean ....");
-		List<Class<?>> dbmRepositoryClasses = resourcesScanner.scan((metadataReader, res, index)->{
+		Collection<Class<?>> dbmRepositoryClasses = resourcesScanner.scan((metadataReader, res, index)->{
 			if(metadataReader.getAnnotationMetadata().hasAnnotation(QueryRepository.class.getName())){
 				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
 				return cls;

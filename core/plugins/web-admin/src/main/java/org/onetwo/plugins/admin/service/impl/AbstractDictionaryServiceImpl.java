@@ -1,4 +1,5 @@
 package org.onetwo.plugins.admin.service.impl;
+import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.convert.Types;
@@ -37,15 +38,15 @@ abstract public class AbstractDictionaryServiceImpl implements DictionaryImportS
 		//enum
 		if(StringUtils.isNotBlank(datas.getScanEnumPackages())){
 			String[] packages = StringUtils.split(datas.getScanEnumPackages(), ",");
-			List<DictTypeInfo> dictList = scanEnums(packages);
+			Collection<DictTypeInfo> dictList = scanEnums(packages);
 			totalCount += importDatas(dictList);
 		}
 		
 		return totalCount;
 	}
 	
-	private List<DictTypeInfo> scanEnums(String... basePackages){
-		List<DictTypeInfo> dtlist = this.classScaner.scan(new ScanResourcesCallback<DictTypeInfo>(){
+	private Collection<DictTypeInfo> scanEnums(String... basePackages){
+		Collection<DictTypeInfo> dtlist = this.classScaner.scan(new ScanResourcesCallback<DictTypeInfo>(){
 
 			@Override
 			public DictTypeInfo doWithCandidate(MetadataReader metadataReader, org.springframework.core.io.Resource resource, int count) {
@@ -108,7 +109,7 @@ abstract public class AbstractDictionaryServiceImpl implements DictionaryImportS
 		return dtlist;
 	}
 
-	public int importDatas(List<DictTypeInfo> datas){
+	public int importDatas(Collection<DictTypeInfo> datas){
 		int totalCount = 0;
 		if(LangUtils.isEmpty(datas))
 			return totalCount;

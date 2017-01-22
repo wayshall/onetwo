@@ -1,18 +1,13 @@
 package org.onetwo.common.db.dquery;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.dquery.annotation.QueryRepositoryPackages;
 import org.onetwo.common.db.dquery.repostory.AnnotationScanBasicDynamicQueryObjectRegister;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.dbm.spring.EnableDbm;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -42,20 +37,14 @@ public class AnnotationScanBasicDynamicQueryObjectRegisterTrigger implements Bea
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		List<String> packs = new ArrayList<>();
+		Set<String> packs = new HashSet<>();
 		packs.addAll(DbmUtils.scanEnableDbmPackages(beanFactory));
-		this.scanAnnotationPackages(beanFactory, QueryRepositoryPackages.class, (beanDef, beanClass)->{
-			QueryRepositoryPackages qrp = beanClass.getAnnotation(QueryRepositoryPackages.class);
-			Stream.of(qrp.value()).forEach(p->{
-				packs.add(p);
-			});
-		});
-		if(!packs.isEmpty()){
-			if(this.packagesToScan!=null){
-				Collections.addAll(packs, this.packagesToScan);
-			}
-			this.packagesToScan = packs.toArray(new String[0]);
+		packs.addAll(DbmUtils.scanDbmPackages(beanFactory));
+		
+		if(this.packagesToScan!=null){
+			Collections.addAll(packs, this.packagesToScan);
 		}
+		this.packagesToScan = packs.toArray(new String[0]);
 
 		if(ArrayUtils.isNotEmpty(packagesToScan)){
 			AnnotationScanBasicDynamicQueryObjectRegister register = new AnnotationScanBasicDynamicQueryObjectRegister(registry);
@@ -64,8 +53,4 @@ public class AnnotationScanBasicDynamicQueryObjectRegisterTrigger implements Bea
 		}
 	}
 	
-	private void scanAnnotationPackages(ConfigurableListableBeanFactory beanFactory, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
-		SpringUtils.scanAnnotationPackages(beanFactory, annoClass, consumer);
-	}
-
 }

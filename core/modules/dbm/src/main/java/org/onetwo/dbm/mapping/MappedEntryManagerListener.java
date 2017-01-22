@@ -1,9 +1,9 @@
 package org.onetwo.dbm.mapping;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface MappedEntryManagerListener {
 
-	public void beforeBuild(MappedEntryManager mappedEntryManager, List<ScanedClassContext> clssNameList);
+	public void beforeBuild(MappedEntryManager mappedEntryManager, Collection<ScanedClassContext> clssNameList);
 	
 }

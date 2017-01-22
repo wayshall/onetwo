@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.xml;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
@@ -13,7 +13,7 @@ final public class JaxbMapperFactory {
 	private final static ResourcesScanner scaner = new JFishResourcesScanner();
 	
 	public static JaxbMapper createMapper(String...basePackages){
-		List<Class<?>> xmlClasses = scaner.scan(JaxbClassFilter.Instance, basePackages);
+		Collection<Class<?>> xmlClasses = scaner.scan(JaxbClassFilter.Instance, basePackages);
 		/*if(LangUtils.isEmpty(xmlClasses))
 			throw new JFishException("can not find any xml class.");*/
 		try {

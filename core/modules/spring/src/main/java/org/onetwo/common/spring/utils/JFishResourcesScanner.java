@@ -1,8 +1,8 @@
 package org.onetwo.common.spring.utils;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -39,7 +39,7 @@ public class JFishResourcesScanner implements ResourcesScanner {
 
 
 	@Override
-	public List<Class<?>> scanClasses(String... packagesToScan) {
+	public Collection<Class<?>> scanClasses(String... packagesToScan) {
 		return scan(true, new ScanResourcesCallback<Class<?>>() {
 
 			/*@Override
@@ -56,7 +56,7 @@ public class JFishResourcesScanner implements ResourcesScanner {
 		}, packagesToScan);
 	}
 	@Override
-	public List<Resource> scanResources(String... packagesToScan) {
+	public Collection<Resource> scanResources(String... packagesToScan) {
 		return scan(false, new ScanResourcesCallback<Resource>(){
 
 			@Override
@@ -69,17 +69,17 @@ public class JFishResourcesScanner implements ResourcesScanner {
 	
 
 	@Override
-	public <T> List<T> scan(ScanResourcesCallback<T> filter, String... packagesToScan) {
+	public <T> Collection<T> scan(ScanResourcesCallback<T> filter, String... packagesToScan) {
 		return scan(true, filter, packagesToScan);
 	}
 
 	@Override
-	public <T> List<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan) {
+	public <T> Collection<T> scan(boolean readMetaData, ScanResourcesCallback<T> filter, String... packagesToScan) {
 		Assert.notNull(filter);
 		if(LangUtils.isEmpty(packagesToScan))
-			return Collections.emptyList();
+			return Collections.emptySet();
 		
-		List<T> classesToBound = new ArrayList<T>();
+		Collection<T> classesToBound = new HashSet<T>();
 		try {
 			int count = 0;
 			for (String pack : packagesToScan) {

@@ -1,5 +1,6 @@
 package org.onetwo.dbm.richmodel;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.dbm.mapping.MappedEntryManager;
@@ -17,7 +18,7 @@ public class MultiMappedEntryListener implements MappedEntryManagerListener {
 	}
 
 	@Override
-	public void beforeBuild(MappedEntryManager mappedEntryManager, List<ScanedClassContext> clssNameList) {
+	public void beforeBuild(MappedEntryManager mappedEntryManager, Collection<ScanedClassContext> clssNameList) {
 		listeners.forEach(l->l.beforeBuild(mappedEntryManager, clssNameList));
 	}
 	

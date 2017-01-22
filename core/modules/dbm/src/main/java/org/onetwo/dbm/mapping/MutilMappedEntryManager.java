@@ -1,5 +1,6 @@
 package org.onetwo.dbm.mapping;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -63,7 +64,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		Assert.notEmpty(mappedEntryBuilders, "no mapped entry builders ...");
 		
 		if (!LangUtils.isEmpty(packagesToScan)) {
-			List<ScanedClassContext> entryClassNameList = scanner.scan(new ScanResourcesCallback<ScanedClassContext>() {
+			Collection<ScanedClassContext> entryClassNameList = scanner.scan(new ScanResourcesCallback<ScanedClassContext>() {
 
 				@Override
 				public ScanedClassContext doWithCandidate(MetadataReader metadataReader, Resource resource, int count) {

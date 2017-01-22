@@ -41,7 +41,7 @@ import org.onetwo.dbm.mapping.version.DateVersionableType;
 import org.onetwo.dbm.mapping.version.IntegerVersionableType;
 import org.onetwo.dbm.mapping.version.LongVersionableType;
 import org.onetwo.dbm.mapping.version.VersionableType;
-import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 
@@ -59,7 +59,7 @@ public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
 		versionTypes = Collections.unmodifiableMap(tem);
 	}
 	
-	public JPAMappedEntryBuilder(SimpleDbmInnserServiceRegistry serviceRegistry) {
+	public JPAMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry) {
 		super(serviceRegistry);
 	}
 

@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.dozer;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -22,7 +22,7 @@ public class DozerFacotry {
 	public static DozerBean createDozerBean(ClassLoader cld, String...basePackages){
 		if(cld==null)
 			cld = ClassUtils.getDefaultClassLoader();
-		List<DozerClassMapper> dozerClasses = scaner.scan(new ScanResourcesCallback<DozerClassMapper>() {
+		Collection<DozerClassMapper> dozerClasses = scaner.scan(new ScanResourcesCallback<DozerClassMapper>() {
 
 			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {

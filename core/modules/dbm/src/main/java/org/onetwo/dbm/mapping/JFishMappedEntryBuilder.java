@@ -24,7 +24,7 @@ import org.onetwo.dbm.annotation.DbmQueryable;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.query.JFishQueryableMappedEntryImpl;
-import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.slf4j.Logger;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
@@ -44,13 +44,13 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	private MappedEntryBuilderListenerManager listenerManager;
 	
 	final private Map<String, MappedEntryBuilderListener> builderListeners = new LinkedHashMap<>();
-	protected final SimpleDbmInnserServiceRegistry serviceRegistry;
+	protected final SimpleDbmInnerServiceRegistry serviceRegistry;
 
 	public Map<String, MappedEntryBuilderListener> getRegister() {
 		return builderListeners;
 	}
 
-	public JFishMappedEntryBuilder(SimpleDbmInnserServiceRegistry serviceRegistry){
+	public JFishMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry){
 		this.serviceRegistry = serviceRegistry;
 		this.dialect = this.serviceRegistry.getDialect();
 	}

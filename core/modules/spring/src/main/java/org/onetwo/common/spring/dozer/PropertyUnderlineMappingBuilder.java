@@ -2,7 +2,6 @@ package org.onetwo.common.spring.dozer;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,10 +16,10 @@ import org.onetwo.common.utils.StringUtils;
 public class PropertyUnderlineMappingBuilder extends BeanMappingBuilder {
 	public static final String UNDERLINE = "_";
 
-	private List<DozerClassMapper> mappers;
+	private Collection<DozerClassMapper> mappers;
 	
 	
-	public PropertyUnderlineMappingBuilder(List<DozerClassMapper> mappers) {
+	public PropertyUnderlineMappingBuilder(Collection<DozerClassMapper> mappers) {
 		super();
 		this.mappers = mappers;
 	}

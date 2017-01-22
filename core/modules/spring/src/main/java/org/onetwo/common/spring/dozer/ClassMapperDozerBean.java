@@ -1,5 +1,6 @@
 package org.onetwo.common.spring.dozer;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
@@ -9,10 +10,10 @@ public class ClassMapperDozerBean extends DozerBean {
 	private PropertyUnderlineMappingBuilder builder;
 	
 
-	public ClassMapperDozerBean(List<DozerClassMapper> dozerClasses) {
+	public ClassMapperDozerBean(Collection<DozerClassMapper> dozerClasses) {
 		this(dozerClasses, null);
 	}
-	public ClassMapperDozerBean(List<DozerClassMapper> dozerClasses, List<String> mappingFiles) {
+	public ClassMapperDozerBean(Collection<DozerClassMapper> dozerClasses, List<String> mappingFiles) {
 		super(mappingFiles);
 		if(LangUtils.isNotEmpty(dozerClasses)){
 			this.builder = new PropertyUnderlineMappingBuilder(dozerClasses);

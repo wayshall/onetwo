@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission.parser;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -125,7 +126,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 			return rootMenu;
 		}
 		
-		List<PermClassParser> childMenuPackageMenus = scaner.scan(new ScanResourcesCallback<PermClassParser>(){
+		Collection<PermClassParser> childMenuPackageMenus = scaner.scan(new ScanResourcesCallback<PermClassParser>(){
 
 			/*@Override
 			public boolean isCandidate(MetadataReader metadataReader) {

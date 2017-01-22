@@ -105,7 +105,7 @@ final public class Dbms {
 	
 	public static DbmDao newDao(DataSource dataSource, Validator validator){
 		DbmDaoImpl dao = new DbmDaoImpl(dataSource);
-		dao.setServiceRegistry(SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator));
+		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, validator));
 		dao.initialize();
 		return dao;
 	}

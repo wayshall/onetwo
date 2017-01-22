@@ -1,7 +1,10 @@
 package org.onetwo.dbm.spring;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
@@ -25,7 +28,7 @@ import org.onetwo.dbm.support.DbmDaoImpl;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.onetwo.dbm.support.DbmEntityManagerImpl;
-import org.onetwo.dbm.support.SimpleDbmInnserServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
@@ -37,7 +40,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 
 @Configuration
@@ -61,7 +63,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired(required=false)
 	private Validator validator;
 	
-	private String[] packagesToScan;
+//	private String[] packagesToScan;
+	private List<String> packageNames = new ArrayList<String>();
 	
 	public DbmSpringConfiguration(){
 	}
@@ -69,16 +72,15 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 
 	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
-		Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
+		/*Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
 		AnnotationAttributes attrs = AnnotationAttributes.fromMap(annotationAttributes);
 		if(attrs==null){
 			return ;
 		}
-		this.packagesToScan = attrs.getStringArray("packagesToScan");
-		if(ArrayUtils.isEmpty(this.packagesToScan)){
-			List<String> packageNames = DbmUtils.scanEnableDbmPackages(applicationContext);
-			this.packagesToScan = packageNames.toArray(new String[0]);
-		}
+		String[] packagesToScan = attrs.getStringArray("packagesToScan");
+		if(ArrayUtils.isEmpty(packagesToScan)){
+			packageNames.addAll(DbmUtils.scanEnableDbmPackages(applicationContext));
+		}*/
 	}
 	
 	
@@ -102,7 +104,14 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	public DynamicQueryObjectRegisterListener dynamicQueryObjectRegisterListener(){
 		return new DynamicQueryObjectRegisterListener();
 	}
-
+	
+	/*@Bean
+	public AnnotationScanBasicDynamicQueryObjectRegisterTrigger annotationScanBasicDynamicQueryObjectRegisterTrigger(){
+		AnnotationScanBasicDynamicQueryObjectRegisterTrigger register = new AnnotationScanBasicDynamicQueryObjectRegisterTrigger(applicationContext);
+		register.setPackageNames(getAllDbmPackageNames());
+		return register;
+	}*/
+	
 	public ApplicationContext getApplicationContex() {
 		return applicationContext;
 	}
@@ -155,15 +164,20 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public SimpleDbmInnserServiceRegistry dbmInnserServiceRegistry(DataSource dataSource){
-		String[] modelPackages = null;
-		if(ArrayUtils.isNotEmpty(defaultDbmConfig().getModelPackagesToScan())){
-			modelPackages = ArrayUtils.addAll(modelPackages, defaultDbmConfig().getModelPackagesToScan());
+	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DataSource dataSource){
+		return SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, validator, getAllDbmPackageNames());
+	}
+	
+	private Collection<String> getAllDbmPackageNames(){
+		Collection<String> packageNames = new HashSet<>();
+		packageNames.addAll(this.packageNames);
+		String[] modelPackages = defaultDbmConfig().getModelPackagesToScan();
+		if(ArrayUtils.isNotEmpty(modelPackages)){
+			packageNames.addAll(Arrays.asList(modelPackages));
 		}
-		if(ArrayUtils.isNotEmpty(this.packagesToScan)){
-			modelPackages = ArrayUtils.addAll(modelPackages, this.packagesToScan);
-		}
-		return SimpleDbmInnserServiceRegistry.createServiceRegistry(dataSource, validator, modelPackages);
+		packageNames.addAll(DbmUtils.scanEnableDbmPackages(applicationContext));
+		packageNames.addAll(DbmUtils.scanDbmPackages(applicationContext));
+		return packageNames;
 	}
 	
 	@Bean
@@ -173,14 +187,14 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
 		jfishDao.setJdbcTemplate(jdbcTemplate(dataSource));
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
-		jfishDao.setServiceRegistry(dbmInnserServiceRegistry(dataSource));
+		jfishDao.setServiceRegistry(dbmInnerServiceRegistry(dataSource));
 		return jfishDao;
 	}
 	
 	@Bean
 	@Autowired
 	public DbmJdbcOperations jdbcTemplate(DataSource dataSource){
-		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnserServiceRegistry(dataSource).getJdbcParameterSetter());
+		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
 		template.setDebug(defaultDbmConfig().isLogSql());
 
 		if(defaultDbmConfig().isLogSql()){
@@ -198,7 +212,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired
 	public NamedJdbcTemplate namedJdbcTemplate(DataSource dataSource){
 		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate(dataSource));
-		template.setJdbcParameterSetter(dbmInnserServiceRegistry(dataSource).getJdbcParameterSetter());
+		template.setJdbcParameterSetter(dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
 
 		/*if(logJdbcSql){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
