@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	DbmEntityManagerTest.class,
 //	OneBatchInsertTest.class,
 	BatchInsertTest.class,
-	BaseCrudEntityManagerTest.class
+	BaseCrudEntityManagerTest.class,
+	RichModelTest.class
 })
 public class DbmTestCase {
 

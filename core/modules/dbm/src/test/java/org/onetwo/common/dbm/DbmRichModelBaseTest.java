@@ -8,8 +8,6 @@ import javax.sql.DataSource;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
-import org.onetwo.dbm.mapping.DbmConfig;
-import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +27,7 @@ public class DbmRichModelBaseTest extends SpringBaseJUnitTestCase {
 	@Configuration
 	@JFishProfile
 	@ImportResource("classpath:conf/applicationContext-test.xml")
-	@EnableDbm
+	@EnableDbm(packagesToScan="org.onetwo.common.dbm.richmodel")
 	@ComponentScan(basePackageClasses=DbmRichModelBaseTest.class)
 	public static class DbmOrmTestInnerContextConfig {
 
@@ -39,12 +37,6 @@ public class DbmRichModelBaseTest extends SpringBaseJUnitTestCase {
 		public CacheManager cacheManager() {
 			JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
 			return cache;
-		}
-		@Bean
-		public DbmConfig customDbmConfig(){
-			DefaultDbmConfig config = new DefaultDbmConfig();
-			config.setModelPackagesToScan("org.onetwo.common.dbm.richmodel");
-			return config;
 		}
 		
 	}

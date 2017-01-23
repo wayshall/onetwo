@@ -89,13 +89,8 @@ final public class Dbms {
 	 * @param entityClass
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> newCrudManager(Class<E> entityClass){
-		CrudEntityManager<E, ID> crudManager = new BaseCrudEntityManager<>(entityClass);
-		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
-		SpringUtils.registerAndInitSingleton(Springs.getInstance().getAppContext(), beanName, crudManager);
-		crudManager = (CrudEntityManager<E, ID>)Springs.getInstance().getBean(beanName);
-		return crudManager;
+		return new BaseCrudEntityManager<>(entityClass);
 	}
 	public static Pair<String, BeanDefinition> createCrudEntityManagerBeanBeanDefinition(Class<?> entityClass){
 		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
