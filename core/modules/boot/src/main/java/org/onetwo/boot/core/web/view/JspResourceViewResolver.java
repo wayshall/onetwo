@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.common.web.utils.UserAgentUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -18,8 +19,15 @@ public class JspResourceViewResolver extends InternalResourceViewResolver {
 	
 	private String pcPostfix = ".pc";
 	private String mobilePostfix = ".wap";
+	private boolean enableMobileDispatche = false;
 
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		if(!enableMobileDispatche){
+			return super.resolveViewName(viewName, locale);
+		}
+		if(viewName.startsWith(AbstractBaseController.REDIRECT)){
+			return super.resolveViewName(viewName, locale);
+		}
 		String themeViewName = viewName;
 		if(themeViewName.endsWith(pcPostfix) || themeViewName.endsWith(mobilePostfix)){
 			themeViewName = viewName;
@@ -75,6 +83,10 @@ public class JspResourceViewResolver extends InternalResourceViewResolver {
 
 	public void setMobilePostfix(String mobilePostfix) {
 		this.mobilePostfix = mobilePostfix;
+	}
+
+	public void setEnableMobileDispatche(boolean enableMobileDispatche) {
+		this.enableMobileDispatche = enableMobileDispatche;
 	}
 	
 }
