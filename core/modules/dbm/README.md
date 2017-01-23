@@ -14,6 +14,9 @@
 - 提供充血模型支持
 
    
+##示例项目   
+单独使用dbm的示例项目
+[boot-dbm-sample](https://github.com/wayshall/boot-dbm-sample)
 
 ##maven
 ```xml
@@ -222,5 +225,47 @@ public interface UserAutoidDao {
 
    
 搞掂！   
+
+##充血模型支持   
+
+dbm对充血模型提供一定的api支持，可尝试使用。   
+使用充血模型，需要下面几个步骤：
+###1、需要在Configuration类配置model所在的包位置
+单独使用dbm的项目，只要model类在@EnableDbm注解所在的配置类的包（包括子包）下面即可，dbm会自动扫描。
+```Java
+@EnableDbm
+public class DbmSampleApplication {
+}  
+```    
+
+若使用jfish的项目，因为用了spring boot的autoconfig，可以使用@DbmPackages注解配置
+```Java   
+@Configuration
+@DbmPackages({"org.onetwo4j.sample.model"})
+public class AppContextConfig {
+}
+```
+###2、继承RichModel类
+```Java
+
+@Entity
+@Table(name="web_user")
+public class User extends RichModel<User, Long> {
+}
+   
+```
+
+###3、使用api
+```Java   
+//根据id查找实体   
+User user = User.findById(id);   
+//保存实体   
+new User().save();   
+//统计
+int count = User.count().intValue();   
+//查找, K.IF_NULL属性是告诉dbm当查询值userName为null或者空时，该如何处理。IfNull.Ignore表示忽略
+List<User> users = User.findList("userName", userName, K.IF_NULL, IfNull.Ignore);
+   
+```
 
 ###待续。。。

@@ -1,7 +1,25 @@
-# onetwo
+# onetwo（jfish）
 ------
-基于spring boot的快速开发   
+基于spring boot的快速开发框架   
 spring-boot技术交流群：  8060215
+
+
+##maven   
+当前snapshot版本：**4.3.8-SNAPSHOT**   
+
+若使用snapshot版本，请添加snapshotRepository仓储：   
+```xml   
+<snapshotRepository>
+     <id>oss</id>
+     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+ </snapshotRepository>   
+```   
+
+##示例项目   
+基于jfish的web示例项目：
+[web-sample](https://github.com/wayshall/onetwo-web-sample)  
+基于jfish的后台管理示例项目：
+[web-manager](https://github.com/wayshall/onetwo-web-manager)   
 
 
 ##[common模块](https://github.com/wayshall/onetwo/tree/master/core/modules/common)
@@ -13,7 +31,10 @@ spring-boot技术交流群：  8060215
    
 ##[dbm模块](https://github.com/wayshall/onetwo/tree/master/core/modules/dbm)
 
-基于spring jdbc实现的简单orm
+基于spring jdbc实现的简单orm   
+
+单独使用dbm的示例项目：
+[boot-dbm-sample](https://github.com/wayshall/boot-dbm-sample)
 
 ##[security模块](https://github.com/wayshall/onetwo/tree/master/core/modules/security)
 基于spring security实现的动态rbac和基于Java代码的权限管理  
