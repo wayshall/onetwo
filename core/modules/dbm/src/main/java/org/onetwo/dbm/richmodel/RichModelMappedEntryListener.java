@@ -11,13 +11,10 @@ import javassist.CtClass;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.mapping.MappedEntryManagerListener;
 import org.onetwo.dbm.mapping.ScanedClassContext;
 import org.slf4j.Logger;
-import org.springframework.core.Ordered;
 
-public class RichModelMappedEntryListener implements MappedEntryManagerListener, Ordered {
+public class RichModelMappedEntryListener implements PackageScanedProcessor {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -34,8 +31,7 @@ public class RichModelMappedEntryListener implements MappedEntryManagerListener,
 	}
 	
 
-	@Override
-	public void beforeBuild(MappedEntryManager mappedEntryManager, Collection<ScanedClassContext> clssNameList) {
+	public void processClasses(Collection<ScanedClassContext> clssNameList) {
 		CtClass ctclass = null;
 		for(ScanedClassContext ctx : clssNameList){
 			if(classes.contains(ctx)){
@@ -69,9 +65,5 @@ public class RichModelMappedEntryListener implements MappedEntryManagerListener,
 		return ctclass;
 	}
 	
-	@Override
-	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
-	}
 	
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.DataQuery;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
@@ -71,7 +72,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	private DefaultDatabaseDialetManager databaseDialetManager;
 	protected DbmConfig dataBaseConfig;
 	
-//	protected String[] packagesToScan;
+	protected String[] packagesToScan;
 	
 	private SimpleDbmInnerServiceRegistry serviceRegistry;
 	
@@ -80,20 +81,23 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 
 	public DbmDaoImpl(DataSource dataSource){
 		Assert.notNull(dataSource);
-		this.serviceRegistry = SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, null);
 		this.setDataSource(dataSource);
 	}
 
-	public DbmDaoImpl(DataSource dataSource, DBDialect dialect){
+	public DbmDaoImpl(DataSource dataSource, SimpleDbmInnerServiceRegistry serviceRegistry){
 		Assert.notNull(dataSource);
-		Assert.notNull(dialect);
-		this.serviceRegistry = SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, null);
+		Assert.notNull(serviceRegistry);
 		this.setDataSource(dataSource);
+		this.serviceRegistry = serviceRegistry;
 	}
 	
+	public void setPackagesToScan(String[] packagesToScan) {
+		this.packagesToScan = packagesToScan;
+	}
+
 	@Override
 	protected DbmJdbcOperations createJdbcTemplate(DataSource dataSource) {
-		return new DbmJdbcTemplate(dataSource, serviceRegistry.getJdbcParameterSetter());
+		return new DbmJdbcTemplate(dataSource, getServiceRegistry().getJdbcParameterSetter());
 	}
 
 	@Override
@@ -115,15 +119,20 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	protected void initDao() throws Exception {
 		/*this.serviceRegistry = new SimpleDbmInnserServiceRegistry();
 		this.serviceRegistry.initialize(getDataSource(), packagesToScan);*/
+		SimpleDbmInnerServiceRegistry serviceRegistry = getServiceRegistry();
 		Assert.notNull(serviceRegistry);
 		
-		this.dataBaseConfig = this.serviceRegistry.getDataBaseConfig();
-		this.databaseDialetManager = this.serviceRegistry.getDatabaseDialetManager();
-		this.dialect = this.serviceRegistry.getDialect();
-		this.mappedEntryManager = this.serviceRegistry.getMappedEntryManager();
-		this.sqlSymbolManager = this.serviceRegistry.getSqlSymbolManager();
-		this.setRowMapperFactory(this.serviceRegistry.getRowMapperFactory());
-		this.sequenceNameManager = this.serviceRegistry.getSequenceNameManager();
+		this.dataBaseConfig = serviceRegistry.getDataBaseConfig();
+		this.databaseDialetManager = serviceRegistry.getDatabaseDialetManager();
+		this.dialect = serviceRegistry.getDialect();
+		this.mappedEntryManager = serviceRegistry.getMappedEntryManager();
+		this.sqlSymbolManager = serviceRegistry.getSqlSymbolManager();
+		this.setRowMapperFactory(serviceRegistry.getRowMapperFactory());
+		this.sequenceNameManager = serviceRegistry.getSequenceNameManager();
+		
+		if(ArrayUtils.isNotEmpty(packagesToScan)){
+			mappedEntryManager.scanPackages(packagesToScan);
+		}
 		
 		/*if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDataBaseConfig();
@@ -693,6 +702,10 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}*/
 
 	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
+		SimpleDbmInnerServiceRegistry registry = this.serviceRegistry;
+		if(registry==null){
+			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource);
+		}
 		return serviceRegistry;
 	}
 

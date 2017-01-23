@@ -1,5 +1,6 @@
 package org.onetwo.dbm.mapping;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,10 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		Assert.notEmpty(mappedEntryBuilders, "no mapped entry builders ...");
 		
 		if (!LangUtils.isEmpty(packagesToScan)) {
+			if(logger.isInfoEnabled()){
+				logger.info("scan model package: {}", Arrays.asList(packagesToScan));
+			}
+			
 			Collection<ScanedClassContext> entryClassNameList = scanner.scan(new ScanResourcesCallback<ScanedClassContext>() {
 
 				@Override

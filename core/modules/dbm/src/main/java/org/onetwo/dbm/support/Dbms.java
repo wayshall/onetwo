@@ -4,14 +4,18 @@ import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
-import javax.validation.Validator;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.db.BaseCrudEntityManager;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.dbm.exception.DbmException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -26,7 +30,9 @@ final public class Dbms {
 
 																							@Override
 																							public CrudEntityManager<?, ?> load(Class<?> entityClass) throws Exception {
-																								return Dbms.newCrudManager(entityClass);
+																								Pair<String, BeanDefinition> beanDef = createCrudEntityManagerBeanBeanDefinition(entityClass);
+																								CrudEntityManager<?, ?> crudManager = (CrudEntityManager<?, ?>)Springs.getInstance().getBean(beanDef.getLeft());
+																								return crudManager;
 																							}
 																							
 																						});
@@ -83,8 +89,24 @@ final public class Dbms {
 	 * @param entityClass
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> newCrudManager(Class<E> entityClass){
-		return new BaseCrudEntityManager<>(entityClass);
+		CrudEntityManager<E, ID> crudManager = new BaseCrudEntityManager<>(entityClass);
+		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
+		SpringUtils.registerAndInitSingleton(Springs.getInstance().getAppContext(), beanName, crudManager);
+		crudManager = (CrudEntityManager<E, ID>)Springs.getInstance().getBean(beanName);
+		return crudManager;
+	}
+	public static Pair<String, BeanDefinition> createCrudEntityManagerBeanBeanDefinition(Class<?> entityClass){
+		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
+		BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(BaseCrudEntityManager.class)
+				.addConstructorArgValue(entityClass)
+				.setScope(BeanDefinition.SCOPE_SINGLETON)
+//				.setRole(BeanDefinition.ROLE_APPLICATION)
+				.getBeanDefinition();
+		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(Springs.getInstance().getAppContext());
+		registry.registerBeanDefinition(beanName, beandef);
+		return Pair.of(beanName, beandef);
 	}
 	/*****
 	 * 使用指定的数据源创建CrudEntityManager
@@ -99,13 +121,10 @@ final public class Dbms {
 		return new BaseCrudEntityManager<>(entityClass, baseEntityManager);
 	}
 	
-	public static DbmDao newDao(DataSource dataSource){
-		return newDao(dataSource, null);
-	}
 	
-	public static DbmDao newDao(DataSource dataSource, Validator validator){
+	public static DbmDao newDao(DataSource dataSource){
 		DbmDaoImpl dao = new DbmDaoImpl(dataSource);
-		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, validator));
+		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource));
 		dao.initialize();
 		return dao;
 	}

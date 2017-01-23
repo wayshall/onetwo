@@ -16,7 +16,7 @@ public class DefaultDbmConfig implements DbmConfig {
 	private boolean useBatchOptimize = true;
 	private boolean logSql = true;
 	private boolean watchSqlFile = true;
-	private String[] modelPackagesToScan;
+//	private String[] modelPackagesToScan;
 	
 
 	public DefaultDbmConfig(){
@@ -31,13 +31,13 @@ public class DefaultDbmConfig implements DbmConfig {
 		this.useBatchOptimize = batchEnabled;
 	}
 
-	public String[] getModelPackagesToScan() {
+	/*public String[] getModelPackagesToScan() {
 		return modelPackagesToScan;
 	}
 
 	public void setModelPackagesToScan(String... modelPackagesToScan) {
 		this.modelPackagesToScan = modelPackagesToScan;
-	}
+	}*/
 
 	@Override
 	public int getUseBatchThreshold() {

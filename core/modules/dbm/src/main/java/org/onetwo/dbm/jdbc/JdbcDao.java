@@ -29,6 +29,7 @@ public class JdbcDao {
 	protected NamedJdbcTemplate namedParameterJdbcTemplate;
 	
 	private RowMapperFactory rowMapperFactory;
+	protected DataSource dataSource;
 	
 
 	@PostConstruct
@@ -62,6 +63,7 @@ public class JdbcDao {
 
 //	@Resource(name="dataSource")
 	final public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 		if (this.jdbcTemplate == null || dataSource != this.jdbcTemplate.getDataSource()) {
 			this.jdbcTemplate = createJdbcTemplate(dataSource);
 			initTemplateConfig();
@@ -73,7 +75,7 @@ public class JdbcDao {
 	}
 
 	public final DataSource getDataSource() {
-		return (this.jdbcTemplate != null ? this.jdbcTemplate.getDataSource() : null);
+		return dataSource;
 	}
 	
 	public final void setJdbcTemplate(DbmJdbcOperations jdbcTemplate) {

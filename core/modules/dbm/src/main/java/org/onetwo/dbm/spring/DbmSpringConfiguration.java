@@ -1,15 +1,10 @@
 package org.onetwo.dbm.spring;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -28,6 +23,7 @@ import org.onetwo.dbm.support.DbmDaoImpl;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.onetwo.dbm.support.DbmEntityManagerImpl;
+import org.onetwo.dbm.support.Jsr303EntityValidator;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
@@ -64,7 +60,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	private Validator validator;
 	
 //	private String[] packagesToScan;
-	private List<String> packageNames = new ArrayList<String>();
+//	private List<String> packageNames = new ArrayList<String>();
 	
 	public DbmSpringConfiguration(){
 	}
@@ -165,29 +161,31 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DataSource dataSource){
-		return SimpleDbmInnerServiceRegistry.createServiceRegistry(dataSource, validator, getAllDbmPackageNames());
+		SimpleDbmInnerServiceRegistry serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource);
+		if(validator!=null){
+			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
+		}
+		return serviceRegistry;
 	}
 	
 	private Collection<String> getAllDbmPackageNames(){
-		Collection<String> packageNames = new HashSet<>();
-		packageNames.addAll(this.packageNames);
-		String[] modelPackages = defaultDbmConfig().getModelPackagesToScan();
+		Collection<String> packageNames = DbmUtils.getAllDbmPackageNames(applicationContext);
+//		packageNames.addAll(this.packageNames);
+		/*String[] modelPackages = defaultDbmConfig().getModelPackagesToScan();
 		if(ArrayUtils.isNotEmpty(modelPackages)){
 			packageNames.addAll(Arrays.asList(modelPackages));
-		}
-		packageNames.addAll(DbmUtils.scanEnableDbmPackages(applicationContext));
-		packageNames.addAll(DbmUtils.scanDbmPackages(applicationContext));
+		}*/
 		return packageNames;
 	}
 	
 	@Bean
 	@Autowired
 	public DbmDaoImplementor dbmDao(DataSource dataSource) {
-		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource);
+		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource, dbmInnerServiceRegistry(dataSource));
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
 		jfishDao.setJdbcTemplate(jdbcTemplate(dataSource));
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
-		jfishDao.setServiceRegistry(dbmInnerServiceRegistry(dataSource));
+		jfishDao.setPackagesToScan(getAllDbmPackageNames().toArray(new String[0]));
 		return jfishDao;
 	}
 	

@@ -358,6 +358,10 @@ final public class SpringUtils {
 	}
 	
 
+	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
+		return registerBeanDefinition(bdr, beanName, beanClass, params);
+	}
 	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);

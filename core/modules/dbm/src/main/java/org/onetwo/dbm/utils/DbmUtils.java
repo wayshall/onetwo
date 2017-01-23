@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EnumType;
@@ -177,6 +179,17 @@ final public class DbmUtils {
 			
 		}
 		return value;
+	}
+	
+	public static Collection<String> getAllDbmPackageNames(ApplicationContext applicationContext){
+		ListableBeanFactory bf = (ListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+		return getAllDbmPackageNames(bf);
+	}
+	public static Collection<String> getAllDbmPackageNames(ListableBeanFactory beanFactory){
+		Collection<String> packageNames = new HashSet<>();
+		packageNames.addAll(DbmUtils.scanEnableDbmPackages(beanFactory));
+		packageNames.addAll(DbmUtils.scanDbmPackages(beanFactory));
+		return packageNames;
 	}
 	
 	public static List<String> scanEnableDbmPackages(ApplicationContext applicationContext){

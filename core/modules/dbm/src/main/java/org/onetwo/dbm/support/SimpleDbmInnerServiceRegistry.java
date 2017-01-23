@@ -1,19 +1,18 @@
 package org.onetwo.dbm.support;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.dialet.DBDialect;
@@ -39,30 +38,46 @@ import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
 import org.onetwo.dbm.richmodel.MultiMappedEntryListener;
-import org.onetwo.dbm.richmodel.RichModelCheckMappedEntryManagerListener;
-import org.onetwo.dbm.richmodel.RichModelMappedEntryListener;
-import org.slf4j.Logger;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class SimpleDbmInnerServiceRegistry {
+	
 
-	public static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
-		return createServiceRegistry(dataSource, validator, null);
+	final private static LoadingCache<DataSource, SimpleDbmInnerServiceRegistry> SERVICE_REGISTRY_MAPPER = CacheBuilder.newBuilder()
+																						.weakKeys()
+																						.weakValues()
+																						.build(new CacheLoader<DataSource, SimpleDbmInnerServiceRegistry>() {
+
+																							@Override
+																							public SimpleDbmInnerServiceRegistry load(DataSource ds) throws Exception {
+																								return SimpleDbmInnerServiceRegistry.createServiceRegistry(ds, null);
+																							}
+																							
+																						});
+
+	public static SimpleDbmInnerServiceRegistry obtainServiceRegistry(DataSource dataSource){
+		try {
+			return SERVICE_REGISTRY_MAPPER.get(dataSource);
+		} catch (ExecutionException e) {
+			throw new BaseException("obtain SimpleDbmInnerServiceRegistry error: " + e.getMessage(), e);
+		}
 	}
-	public static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator, Collection<String> packagesToScan){
+	private static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
 		SimpleDbmInnerServiceRegistry serviceRegistry = new SimpleDbmInnerServiceRegistry();
-		serviceRegistry.initialize(dataSource, packagesToScan);
+		serviceRegistry.initialize(dataSource);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
 		}
 		return serviceRegistry;
 	}
 	
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	final private Map<String, Object> services = Maps.newConcurrentMap();
 
 	private DBDialect dialect;
@@ -77,7 +92,7 @@ public class SimpleDbmInnerServiceRegistry {
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	private DbmTypeMapping typeMapping;
 	
-	public void initialize(DataSource dataSource, Collection<String> packagesToScan){
+	public void initialize(DataSource dataSource){
 		if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDbmConfig();
 		}
@@ -128,20 +143,8 @@ public class SimpleDbmInnerServiceRegistry {
 			this.mappedEntryManager = _mappedEntryManager;
 			
 		}
-		if(CollectionUtils.isNotEmpty(packagesToScan)){
-			MultiMappedEntryListener ml = new MultiMappedEntryListener();
-			if(ClassUtils.isPresent("javassist.ClassPool", null)){
-				ml.addListener(new RichModelMappedEntryListener());
-			}else{
-				ml.addListener(new RichModelCheckMappedEntryManagerListener());
-//				logger.error("you must be add javassist to classpath if you want to use richmodel support!");
-			}
-			mappedEntryManager.setMappedEntryManagerListener(ml);
-			mappedEntryManager.scanPackages(packagesToScan.toArray(new String[0]));
-			if(logger.isInfoEnabled()){
-				logger.info("scan model package: {}", packagesToScan);
-			}
-		}
+		MultiMappedEntryListener ml = new MultiMappedEntryListener();
+		mappedEntryManager.setMappedEntryManagerListener(ml);
 		
 		//init sql symbol
 		if(sqlSymbolManager==null){

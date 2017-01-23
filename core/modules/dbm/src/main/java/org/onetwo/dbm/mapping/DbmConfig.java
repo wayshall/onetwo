@@ -30,6 +30,6 @@ public interface DbmConfig {
 	 * package to scan only for model
 	 * @return
 	 */
-	public String[] getModelPackagesToScan();
+//	public String[] getModelPackagesToScan();
 
 }
