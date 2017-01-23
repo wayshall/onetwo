@@ -162,7 +162,7 @@ public class UserAutoidEntity {
 ###1、定义一个接口   
 包名：test.dao   
 ```java   
-
+@QueryRepository
 public interface UserAutoidDao {
 
 	@ExecuteUpdate
