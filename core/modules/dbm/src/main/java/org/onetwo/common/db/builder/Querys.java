@@ -19,7 +19,7 @@ final public class Querys {
 	}
 
 	public static QueryBuilder from(Class<?> entityClass){
-		return from((BaseEntityManager)null, entityClass);
+		return from(Dbms.obtainBaseEntityManager(), entityClass);
 	}
 
 	public static QueryBuilder from(DataSource dataSource, Class<?> entityClass){

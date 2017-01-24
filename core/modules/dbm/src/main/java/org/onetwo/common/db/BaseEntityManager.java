@@ -78,7 +78,7 @@ public interface BaseEntityManager extends QueryProvideManager {
 	public <T> List<T> selectFieldsToEntity(Class<?> entityClass, Object[] selectFields, Object... properties);
 	
 
-	public void findPage(final Class<?> entityClass, final Page<?> page, Object... properties);
+	public <T> void findPage(final Class<T> entityClass, final Page<T> page, Object... properties);
 
 	public <T> void findPageByProperties(final Class<T>  entityClass, final Page<T> page, Map<Object, Object> properties);
 	

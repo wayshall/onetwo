@@ -38,6 +38,9 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 	
 	private Map<String, Object> queryConfig;
 	
+	/****
+	 * 是否缓存查询对象，避免重复解释，暂时没实现
+	 */
 	private boolean cacheable;
 
 //	protected StringBuilder couontSelect;
@@ -59,7 +62,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 		this.firstResult = getValueAndRemoveKeyFromParams(K.FIRST_RESULT, firstResult);
 		this.maxResults = getValueAndRemoveKeyFromParams(K.MAX_RESULTS, maxResults);
 		this.countValue = getValueAndRemoveKeyFromParams(K.COUNT, countValue);
-		this.cacheable = getValueAndRemoveKeyFromParams(K.CACHEABLE, cacheable);
+//		this.cacheable = getValueAndRemoveKeyFromParams(K.CACHEABLE, cacheable);
 		
 		//query config
 		Object qc = getValueAndRemoveKeyFromParams(K.QUERY_CONFIG, queryConfig);
@@ -92,9 +95,9 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 
 
 	public ExtQuery build() {
-		String fname = "build ext query";
+		/*String fname = "build ext query";
 		if(isDebug())
-			UtilTimerStack.push(fname);
+			UtilTimerStack.push(fname);*/
 		
 		//re-init-query if rebuild
 		if(hasBuilt()){
@@ -120,8 +123,8 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			logger.info("params : " + this.paramsValue.getValues());
 		}
 
-		if(isDebug())
-			UtilTimerStack.pop(fname);
+		/*if(isDebug())
+			UtilTimerStack.pop(fname);*/
 		
 		this.hasBuilt = true;
 		return this;
@@ -174,6 +177,7 @@ public class SelectExtQueryImpl extends AbstractExtQuery implements SelectExtQue
 			
 			int fieldStartIndex = 0;
 			if(selectList[0] instanceof Class){
+				//仅用于 hql 写法支持
 				Class returnClass = (Class) selectList[0];
 				fieldStartIndex = 1;
 				if(Map.class.isAssignableFrom(returnClass)){

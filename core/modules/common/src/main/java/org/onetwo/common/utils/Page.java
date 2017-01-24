@@ -34,12 +34,12 @@ public class Page<T> implements Serializable {
 		}
 		return page;
 	}
-	public static <E> Page<E> create(int pageNo){
+	public static <E> Page<E> create(Integer pageNo){
 		Page<E> page = new Page<>();
 		page.setPageNo(pageNo);
 		return page;
 	}
-	public static <E> Page<E> create(int pageNo, int pageSize){
+	public static <E> Page<E> create(Integer pageNo, Integer pageSize){
 		Page<E> page = new Page<>();
 		page.setPageNo(pageNo);
 		page.setPageSize(pageSize);
@@ -80,7 +80,10 @@ public class Page<T> implements Serializable {
 		return pageNo;
 	}
 
-	public void setPageNo(final int pageNo) {
+	public void setPageNo(final Integer pageNo) {
+		if(pageNo==null){
+			return ;
+		}
 		this.pageNo = pageNo;
 
 		if (pageNo < 1) {
@@ -102,7 +105,10 @@ public class Page<T> implements Serializable {
 		return pageSize;
 	}
 
-	public void setPageSize(final int pageSize) {
+	public void setPageSize(final Integer pageSize) {
+		if(pageSize==null){
+			return ;
+		}
 		if(pageSize<=0)
 			this.pageSize = DEFAULT_PAGE_SIZE;
 		else

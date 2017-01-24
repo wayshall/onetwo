@@ -290,7 +290,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	@Override
-	public void findPage(Class<?> entityClass, Page<?> page, Object... properties) {
+	public <T> void findPage(Class<T> entityClass, Page<T> page, Object... properties) {
 		dbmDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
 	}
 

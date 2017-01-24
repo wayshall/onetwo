@@ -9,6 +9,7 @@ import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,6 +21,9 @@ public class QueryActionImpl implements QueryAction {
 	private SelectExtQuery extQuery;
 
 	public QueryActionImpl(InnerBaseEntityManager baseEntityManager, Class<?> entityClass, String alias, Map<Object, Object> properties){
+		if(baseEntityManager==null){
+			throw new DbmException("to create QueryAction, the baseEntityManager can not be null!");
+		}
 		this.baseEntityManager = baseEntityManager;
 		extQuery = getSQLSymbolManager().createSelectQuery(entityClass, alias, properties);
 		extQuery.build();

@@ -46,7 +46,12 @@ public interface QueryBuilder {
 	public QueryBuilderJoin leftJoin(String table, String alias);
 
 //	public QueryBuilder build();
+	/***
+	 * alias toSelect
+	 * @return
+	 */
 	public QueryAction toQuery();
+	public QueryAction toSelect();
 	
 	public Map<Object, Object> getParams();
 	

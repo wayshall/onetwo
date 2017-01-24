@@ -28,7 +28,7 @@ public interface ExtQuery {
 		public static final String NO_PREFIX = ".";//不会加 "ent."
 
 		public static final String FUNC = "&";
-		public static final String RAW_FUNC = "#";// raw sql function
+//		public static final String RAW_FUNC = "#";// raw sql function
 		public static final String PREFIX_REF = "@";//加上 "ent."
 
 		public static final String QUERY_CONFIG = ":query_config";
@@ -42,10 +42,10 @@ public interface ExtQuery {
 
 		public static final String SELECT = ":select";
 		public static final String UNSELECT = ":unselect";
-		public static final String SQL_SELECT = ":sql-select";
+		public static final String SQL_SELECT = ":sql-select";//value is RawSqlWrapper
 		public static final String DISTINCT = ":distinct";
 		public static final String COUNT = ":count";
-		public static final String CACHEABLE = ":cacheable";
+//		public static final String CACHEABLE = ":cacheable";//是否缓存查询对象，避免重复解释，暂时没实现
 		
 		public static final String ASC = ":asc";
 		public static final String DESC = ":desc";
@@ -54,12 +54,12 @@ public interface ExtQuery {
 		public static final String DATA_FILTER = ":dataFilter";
 //		public static final String INCLUDE = ":include";
 		
-		public static final String SQL_JOIN = ":sql-join";
-		public static final String JOIN_IN = ":join-in";
-		public static final String FETCH = ":fetch";
-		public static final String LEFT_JOIN_FETCH = ":left-join-fetch";
-		public static final String JOIN_FETCH = ":join-fetch";//i
-		public static final String JOIN = ":join";
+		public static final String SQL_JOIN = ":sql-join";//value is RawSqlWrapper
+		public static final String JOIN_IN = ":join-in"; //hql的join in写法
+		public static final String FETCH = ":fetch";//put(":fetch", "obj1") hql的left join fetch obj1写法 
+		public static final String LEFT_JOIN_FETCH = ":left-join-fetch";// put(":left-join-fetch", "obj1") hql的left join fetch obj1写法 
+		public static final String JOIN_FETCH = ":join-fetch";//i hql join fetch 写法
+		public static final String JOIN = ":join"; // hql join写法
 		public static final String LEFT_JOIN = ":left-join";//o
 		
 		/****

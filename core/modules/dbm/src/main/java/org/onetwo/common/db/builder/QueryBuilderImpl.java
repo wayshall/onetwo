@@ -212,7 +212,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 
 	@Override
 	public QueryAction toQuery(){
-//		this.throwIfHasBuild();
+		return createQueryAction();
+	}
+
+	@Override
+	public QueryAction toSelect(){
 		return createQueryAction();
 	}
 	
