@@ -12,8 +12,8 @@ import org.onetwo.common.spring.utils.ScanResourcesCallback;
 import org.onetwo.dbm.mapping.ScanedClassContext;
 import org.onetwo.dbm.richmodel.PackageScanedProcessor;
 import org.onetwo.dbm.richmodel.RichModel;
-import org.onetwo.dbm.richmodel.RichModelCheckMappedEntryManagerListener;
-import org.onetwo.dbm.richmodel.RichModelMappedEntryListener;
+import org.onetwo.dbm.richmodel.RichModelCheckProcessor;
+import org.onetwo.dbm.richmodel.RichModelEnhanceProcessor;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -69,9 +69,9 @@ public class RichModelAndQueryObjectScanTrigger implements BeanFactoryPostProces
 		PackageScanedProcessor processor = null;
 		Collection<ScanedClassContext> richModels = this.scanRichModelClasses();
 		if(ClassUtils.isPresent("javassist.ClassPool", null)){
-			processor = new RichModelMappedEntryListener();
+			processor = new RichModelEnhanceProcessor();
 		}else{
-			processor = new RichModelCheckMappedEntryManagerListener();
+			processor = new RichModelCheckProcessor();
 		}
 		processor.processClasses(richModels);
 	}

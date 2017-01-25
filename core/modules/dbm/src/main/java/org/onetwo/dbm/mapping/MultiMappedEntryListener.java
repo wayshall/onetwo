@@ -1,11 +1,7 @@
-package org.onetwo.dbm.richmodel;
+package org.onetwo.dbm.mapping;
 
 import java.util.Collection;
 import java.util.List;
-
-import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.mapping.MappedEntryManagerListener;
-import org.onetwo.dbm.mapping.ScanedClassContext;
 
 import com.google.common.collect.Lists;
 

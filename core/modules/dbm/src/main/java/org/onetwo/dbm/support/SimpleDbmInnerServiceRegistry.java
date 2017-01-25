@@ -35,9 +35,9 @@ import org.onetwo.dbm.mapping.EntityValidator;
 import org.onetwo.dbm.mapping.JFishMappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryManager;
+import org.onetwo.dbm.mapping.MultiMappedEntryListener;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
-import org.onetwo.dbm.richmodel.MultiMappedEntryListener;
 import org.springframework.util.Assert;
 
 import com.google.common.cache.CacheBuilder;
