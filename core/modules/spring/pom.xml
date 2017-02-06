@@ -35,7 +35,7 @@
 	  <groupId>javax.validation</groupId>
 	  <artifactId>validation-api</artifactId>
 	</dependency>
-	
+    
 	<dependency>
 	  <groupId>net.sf.dozer</groupId>
 	  <artifactId>dozer</artifactId>

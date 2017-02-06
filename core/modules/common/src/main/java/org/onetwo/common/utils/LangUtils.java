@@ -1243,7 +1243,7 @@ public class LangUtils {
 		Arrays.sort(array, DescBeanOrderComparator);
 	}
 	
-	public static void await(int seconds){
+	public static void await(long seconds){
 		try {
 			Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
 		} catch (InterruptedException e) {
