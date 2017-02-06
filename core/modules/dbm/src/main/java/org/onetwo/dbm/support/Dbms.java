@@ -53,10 +53,19 @@ final public class Dbms {
 		private static BaseEntityManager instance = Springs.getInstance().getBean(BaseEntityManager.class);
 	}
 	
+	/***
+	 * 获取默认的BaseEntityManager实例
+	 * @return
+	 */
 	public static BaseEntityManager obtainBaseEntityManager(){
 		return BaseEntityManagerHoder.instance;
 	}
 	
+	/****
+	 * 获取数据源对应的BaseEntityManager实例，dbm会根据传入的数据库创建一个BaseEntityManager实例
+	 * @param dataSource
+	 * @return
+	 */
 	public static BaseEntityManager obtainBaseEntityManager(DataSource dataSource) {
 		try {
 			return ENTITY_MANAGER_MAPPER.get(dataSource);
@@ -64,6 +73,12 @@ final public class Dbms {
 			throw new BaseException("obtain BaseEntityManager error: " + e.getMessage(), e);
 		}
 	}
+	/***
+	 * 创建BaseEntityManager对象
+	 * 注意BaseEntityManager对象都不包含事务拦截
+	 * @param dataSource
+	 * @return
+	 */
 	public static BaseEntityManager newEntityManager(DataSource dataSource) {
 		DbmDaoImplementor dbmDao = (DbmDaoImplementor)newDao(dataSource);
 		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(dbmDao);
@@ -86,13 +101,15 @@ final public class Dbms {
 	
 	/****
 	 * 使用spring配置的数据源创建CrudEntityManager
+	 * 注意这样直接new创建的CrudEntityManager没有事务拦截，请在已配置事务的环境中使用
 	 * @param entityClass
 	 * @return
 	 */
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> newCrudManager(Class<E> entityClass){
 		return new BaseCrudEntityManager<>(entityClass);
 	}
-	public static Pair<String, BeanDefinition> createCrudEntityManagerBeanBeanDefinition(Class<?> entityClass){
+	
+	static Pair<String, BeanDefinition> createCrudEntityManagerBeanBeanDefinition(Class<?> entityClass){
 		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
 		BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(BaseCrudEntityManager.class)
 				.addConstructorArgValue(entityClass)
@@ -105,6 +122,7 @@ final public class Dbms {
 	}
 	/*****
 	 * 使用指定的数据源创建CrudEntityManager
+	 * 注意这样直接new创建的CrudEntityManager没有事务拦截，请在已配置事务的环境中使用
 	 * @param entityClass
 	 * @param dataSource
 	 * @return
