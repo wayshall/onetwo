@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.annotation.DbmRepository;
+import org.onetwo.common.db.dquery.annotation.QueryRepository;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
@@ -50,11 +51,17 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 	}
 	
 	private Optional<DbmRepositoryAttrs> findDbmRepositoryAttrs(){
-		DbmRepository queryProvider = this.interfaceClass.getAnnotation(DbmRepository.class);
-		if(queryProvider==null){
-			return Optional.empty();
+		DbmRepository dbmRepository = this.interfaceClass.getAnnotation(DbmRepository.class);
+		if(dbmRepository==null){
+			QueryRepository queryRepository = this.interfaceClass.getAnnotation(QueryRepository.class);
+			if(queryRepository==null){
+				return Optional.empty();
+			}
+			DbmRepositoryAttrs attrs = new DbmRepositoryAttrs(queryRepository.provideManager(), queryRepository.dataSource());
+			return Optional.of(attrs);
+//			return Optional.empty();
 		}
-		DbmRepositoryAttrs attrs = new DbmRepositoryAttrs(queryProvider.provideManager(), queryProvider.dataSource());
+		DbmRepositoryAttrs attrs = new DbmRepositoryAttrs(dbmRepository.provideManager(), dbmRepository.dataSource());
 		return Optional.of(attrs);
 	}
 
