@@ -12,6 +12,11 @@ import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.dbm.richmodel.UserAutoidModel;
 import org.onetwo.common.utils.Page;
 
+/***
+ * 这个测试要单独运行，否则richmodel的类会因为其它test的运行而在增强前加载过了
+ * @author way
+ *
+ */
 //@Rollback(false)
 public class RichModelTest extends DbmRichModelBaseTest {
 	

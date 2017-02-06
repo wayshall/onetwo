@@ -154,7 +154,9 @@ public class UserAutoidEntity {
 
 ```   
 
-
+`
+注意这样直接new创建的CrudEntityManager没有事务拦截，请在已配置事务的环境中使用.   
+`
 
 ##接口和sql绑定
 支持类似mybatis的sql语句与接口绑定，但sql文件不是写在丑陋的xml里，而是直接写在sql文件里，这样用eclipse或者相关支持sql的编辑器打开时，就可以语法高亮，更容易阅读。
@@ -162,7 +164,7 @@ public class UserAutoidEntity {
 ###1、定义一个接口   
 包名：test.dao   
 ```java   
-@QueryRepository
+@DbmRepository
 public interface UserAutoidDao {
 
 	@ExecuteUpdate
@@ -183,7 +185,8 @@ sql/test.dao.UserAutoidDao.jfish.sql
 - dbm会根据sql文件名去掉.jfish.sql后缀后作为类名，绑定对应的接口类，此处为：test.dao.UserAutoidDao    
 - @name: 表示此sql绑定的方法，此处表示会绑定到UserAutoidDao.removeByUserName方法    
 - \[\#if\]...\[/\#if\]，是freemarker的语法，表示条件判断。此处表示，如果userName的值不为空，才生成“user_name like ？” 这个条件   
-- :userName，spring jdgc的命名参数，和接口的方法参数绑定 
+- :userName，spring jdg
+- c的命名参数，和接口的方法参数绑定 
 - @ExecuteUpdate注解表示这个方法会以jdbc的executeUpdate方法执行，实际上可以忽略，因为dbm会识别某些update，insert，delete等前缀的方法名来判断。
 
 ###3、调用   

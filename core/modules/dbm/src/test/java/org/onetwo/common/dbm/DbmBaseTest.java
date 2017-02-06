@@ -27,7 +27,7 @@ public class DbmBaseTest extends SpringBaseJUnitTestCase {
 	@Configuration
 	@JFishProfile
 	@ImportResource("classpath:conf/applicationContext-test.xml")
-	@EnableDbm
+	@EnableDbm(packagesToScan="org.onetwo.common.dbm")
 	@ComponentScan(basePackageClasses=DbmBaseTest.class)
 	public static class DbmOrmTestInnerContextConfig {
 

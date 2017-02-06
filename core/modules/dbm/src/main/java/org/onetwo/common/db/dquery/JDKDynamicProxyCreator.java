@@ -1,11 +1,12 @@
 package org.onetwo.common.db.dquery;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.db.dquery.annotation.QueryRepository;
+import org.onetwo.common.db.dquery.annotation.DbmRepository;
 import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
@@ -47,6 +48,15 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		this.interfaceClass = interfaceClass;
 		this.methodCache = methodCache;
 	}
+	
+	private Optional<DbmRepositoryAttrs> findDbmRepositoryAttrs(){
+		DbmRepository queryProvider = this.interfaceClass.getAnnotation(DbmRepository.class);
+		if(queryProvider==null){
+			return Optional.empty();
+		}
+		DbmRepositoryAttrs attrs = new DbmRepositoryAttrs(queryProvider.provideManager(), queryProvider.dataSource());
+		return Optional.of(attrs);
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -58,16 +68,17 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		}
 		
 		QueryProvideManager queryProvideManager;
-		QueryRepository queryProvider = this.interfaceClass.getAnnotation(QueryRepository.class);
-		if(queryProvider==null){
+		Optional<DbmRepositoryAttrs> dbmRepositoryAttrs = findDbmRepositoryAttrs();
+		if(!dbmRepositoryAttrs.isPresent()){
 			queryProvideManager = SpringUtils.getBean(applicationContext, QueryProvideManager.class);
 		}else{
-			if(StringUtils.isNotBlank(queryProvider.provideManager())){
-				queryProvideManager = SpringUtils.getBean(applicationContext, queryProvider.provideManager());
-			}else if(StringUtils.isNotBlank(queryProvider.dataSource())){
-				DataSource dataSource = SpringUtils.getBean(applicationContext, queryProvider.dataSource());
+			DbmRepositoryAttrs attrs = dbmRepositoryAttrs.get();
+			if(StringUtils.isNotBlank(attrs.provideManager())){
+				queryProvideManager = SpringUtils.getBean(applicationContext, attrs.provideManager());
+			}else if(StringUtils.isNotBlank(attrs.dataSource())){
+				DataSource dataSource = SpringUtils.getBean(applicationContext, attrs.dataSource());
 				if(dataSource==null){
-					throw new DbmException("no dataSource found: " + queryProvider.dataSource());
+					throw new DbmException("no dataSource found: " + attrs.dataSource());
 				}
 				queryProvideManager = Dbms.obtainBaseEntityManager(dataSource);
 			}else{
@@ -133,5 +144,22 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 	/*public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
 		this.queryProvideManager = queryProvideManager;
 	}*/
+	
+	static class DbmRepositoryAttrs {
+		final private String provideManager;
+		final private String dataSource;
+		
+		public DbmRepositoryAttrs(String provideManager, String dataSource) {
+			super();
+			this.provideManager = provideManager;
+			this.dataSource = dataSource;
+		}
+		public String provideManager() {
+			return provideManager;
+		}
+		public String dataSource() {
+			return dataSource;
+		}
+	}
 	
 }
