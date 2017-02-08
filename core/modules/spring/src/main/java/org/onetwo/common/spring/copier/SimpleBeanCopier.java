@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -80,7 +81,6 @@ public class SimpleBeanCopier {
 //	private boolean ignoreNull;
 	private PropertyFilter propertyFilter = SimplePropertyFilters.IGNORE_NULL;
 	private PropertyValueCopier propertyValueCopier = new CommonPropertyValueSetter();
-	
 
 	public SimpleBeanCopier() {
 	}
@@ -99,6 +99,12 @@ public class SimpleBeanCopier {
 		return fromObject(src, ReflectUtils.newInstance(targetClass));
 	}
 	
+	/****
+	 * 
+	 * @param src src object can be a map or java bean
+	 * @param target
+	 * @return
+	 */
 	public <T> T fromObject(Object src, T target){
 		BeanWrapper targetBeanWrapper = SpringUtils.newBeanWrapper(target);
 		
@@ -129,17 +135,37 @@ public class SimpleBeanCopier {
 		this.propertyFilter = propertyFilter;
 	}
 	
+	/****
+	 * 是否浅拷贝，只拷贝值或引用
+	 * @param property
+	 * @param cloneable
+	 * @return
+	 */
 	protected boolean isCopyValueOrRef(PropertyDescriptor property, Cloneable cloneable){
 //		return cloneable==null || isSimpleType(property.getPropertyType());
-		return cloneable==null;
+		return isValueTypes(property.getPropertyType()) || cloneable==null;
 	}
 	
-	protected boolean isContainerKeyCopyValueOrRef(Cloneable cloneable){
-		return cloneable==null || !cloneable.keyCloneable();
+	protected boolean isValueTypes(Object val){
+		Class<?> cls = Class.class.isInstance(val)?(Class<?>)val:val.getClass();
+		return LangUtils.getSimpleClass().contains(cls);
+	}
+	/****
+	 * 是否浅拷贝
+	 * @param cloneable
+	 * @return
+	 */
+	protected boolean isContainerKeyCopyValueOrRef(Cloneable cloneable, Object key){
+		return (key!=null && isValueTypes(key)) || cloneable==null || !cloneable.keyCloneable();
 	}
 	
-	protected boolean isContainerValueCopyValueOrRef(Cloneable cloneable){
-		return cloneable==null || !cloneable.valueCloneable();
+	/****
+	 * 是否浅拷贝
+	 * @param cloneable
+	 * @return
+	 */
+	protected boolean isContainerValueCopyValueOrRef(Cloneable cloneable, Object value){
+		return (value!=null && isValueTypes(value)) || cloneable==null || !cloneable.valueCloneable();
 	}
 	
 	protected Cloneable getCloneableAnnotation(Object target, PropertyDescriptor property){
@@ -158,7 +184,7 @@ public class SimpleBeanCopier {
 		int length = Array.getLength(srcValue);
 		Object array = Array.newInstance(propertyType.getComponentType(), length);
 		
-		if(isContainerValueCopyValueOrRef(cloneable)){
+		if(isContainerValueCopyValueOrRef(cloneable, srcValue)){
 			for (int i = 0; i < length; i++) {
 				Array.set(array, i, Array.get(srcValue, i));
 			}
@@ -177,7 +203,7 @@ public class SimpleBeanCopier {
 	protected void copyCollection(BeanWrapper targetBeanWrapper, Class<? extends Collection<?>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Collection<?> srcValue){
 		Collection<Object> cols = CopyUtils.newCollections((Class<? extends Collection<?>>)propertyType);
 		
-		if(isContainerValueCopyValueOrRef(cloneable)){
+		if(isContainerValueCopyValueOrRef(cloneable, srcValue)){
 			cols.addAll(srcValue);
 		}else{
 			if(toProperty.getReadMethod().getGenericReturnType() instanceof ParameterizedType){
@@ -204,9 +230,10 @@ public class SimpleBeanCopier {
 	
 	protected void copyMap(BeanWrapper targetBeanWrapper, Class<? extends Map<Object, Object>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
 		Map<Object, Object> map = CopyUtils.newMap(propertyType);
-		if(isContainerKeyCopyValueOrRef(cloneable) && isContainerValueCopyValueOrRef(cloneable)){
+		if(isContainerKeyCopyValueOrRef(cloneable, null) && isContainerValueCopyValueOrRef(cloneable, null)){
 			map.putAll(srcValue);
 		}else{
+			//for declare type is diff
 			if(toProperty.getReadMethod().getGenericReturnType() instanceof ParameterizedType){
 				ParameterizedType ptype = (ParameterizedType)toProperty.getReadMethod().getGenericReturnType();
 				Type keyType = ptype.getActualTypeArguments()[0];
@@ -215,40 +242,41 @@ public class SimpleBeanCopier {
 				Object key = null;
 				Object value = null;
 				for(Map.Entry<?, ?> entry : srcValue.entrySet()){
-					if(isContainerKeyCopyValueOrRef(cloneable)){
+					if(isContainerKeyCopyValueOrRef(cloneable, entry.getKey())){
+						key = entry.getKey();
+					}else{
 //						key = newBeanCopier((Class<?>)keyType).fromObject(entry.getKey());
 						key = fromObject(entry.getKey(), (Class<?>)keyType);
-					}else{
-						key = entry.getKey();
 					}
-					if(isContainerValueCopyValueOrRef(cloneable)){
+					if(isContainerValueCopyValueOrRef(cloneable, entry.getValue())){
+						value = entry.getValue();
+					}else{
 //						value = newBeanCopier((Class<?>)valueType).fromObject(entry.getValue());
 						value = fromObject(entry.getValue(), (Class<?>)valueType);
-					}else{
-						value = entry.getValue();
 					}
 					map.put(key, value);
 				}
 			}else{
-				//不是泛型的话，直接使用源对象的类型来复制
+				//直接使用源对象的类型来复制  from 4.3.9
 				Object key = null;
 				Object value = null;
 				for(Map.Entry<?, ?> entry : srcValue.entrySet()){
-					if(isContainerKeyCopyValueOrRef(cloneable)){
+					if(isContainerKeyCopyValueOrRef(cloneable, entry.getKey())){
+						key = entry.getKey();
+					}else{
 //						key = newBeanCopier(entry.getKey().getClass()).fromObject(entry.getKey());
 						key = fromObject(entry.getKey(), entry.getKey().getClass());
-					}else{
-						key = entry.getKey();
 					}
-					if(isContainerValueCopyValueOrRef(cloneable)){
+					if(isContainerValueCopyValueOrRef(cloneable, entry.getValue())){
+						value = entry.getValue();
+					}else{
 //						value = newBeanCopier(entry.getValue().getClass()).fromObject(entry.getValue());
 						value = fromObject(entry.getValue(), entry.getValue().getClass());
-					}else{
-						value = entry.getValue();
 					}
 					map.put(key, value);
 				}
 			}
+			
 		}
 		
 //		ReflectionUtils.invokeMethod(toProperty.getWriteMethod(), target, map);
@@ -278,7 +306,10 @@ public class SimpleBeanCopier {
 	 */
 	private Object getPropertyValue(BeanWrapper srcBean, String targetPropertyName){
 		Object srcValue = null;
-		if(srcBean.isReadableProperty(targetPropertyName)){
+		if(srcBean.getWrappedInstance() instanceof Map){
+			Map<?, ?> map = (Map<?, ?>)srcBean.getWrappedInstance();
+			srcValue = map.get(targetPropertyName);
+		}else if(srcBean.isReadableProperty(targetPropertyName)){
 			srcValue = srcBean.getPropertyValue(targetPropertyName);
 		}
 		return srcValue;

@@ -28,6 +28,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -46,6 +47,8 @@ import org.elasticsearch.search.aggregations.metrics.ValuesSourceMetricsAggregat
 import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder.SuggestionBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.beans.BeanWrapper;
@@ -239,6 +242,16 @@ public class SimpleSearchQueryBuilder {
 	public SimpleSearchQueryBuilder withSortBuilder(SortBuilder sortBuilder){
 		if(sortBuilder==null)
 			return this;
+		this.searchQueryBuilder.withSort(sortBuilder);
+		return this;
+	}
+	
+	public SimpleSearchQueryBuilder withScriptSort(String script, SortOrder order){
+		if(StringUtils.isBlank(script))
+			return this;
+		Script sortScript = new Script(script);
+		SortBuilder sortBuilder = SortBuilders.scriptSort(sortScript, "number");
+		sortBuilder.order(order);
 		this.searchQueryBuilder.withSort(sortBuilder);
 		return this;
 	}
@@ -1040,7 +1053,7 @@ public class SimpleSearchQueryBuilder {
 			}else if(this.aggsBuilder instanceof TermsBuilder){
 				asTermsBuilder().field(field);
 			}else{
-				ReflectUtils.setFieldValue("field", this.aggsBuilder, field);
+				ReflectUtils.setFieldValue(this.aggsBuilder, "field", field);
 			}
 			return this;
 		}

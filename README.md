@@ -27,6 +27,9 @@ spring-boot技术交流群：  8060215
 
 ##[common模块](https://github.com/wayshall/onetwo/tree/master/core/modules/common)
 通用模块，一些工具类封装。
+
+##[spring模块](https://github.com/wayshall/onetwo/tree/master/core/modules/spring)
+依赖到spring相关的封装
    
 
 ##[poi模块](https://github.com/wayshall/onetwo/tree/master/core/modules/poi)

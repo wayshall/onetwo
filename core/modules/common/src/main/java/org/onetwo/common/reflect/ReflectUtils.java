@@ -279,7 +279,7 @@ public class ReflectUtils {
 		if (exp) {
 			exp = false;
 			try {
-				setFieldValue(propName, element, value);
+				setBeanFieldValue(propName, element, value);
 			} catch (Exception e) {
 				exp = true;
 			}
@@ -499,6 +499,11 @@ public class ReflectUtils {
 			mName = BOOLEAN_READMETHOD_KEY + mName;
 		else
 			mName = READMETHOD_KEY + mName;
+		return findMethod(false, objClass, mName);
+	}
+	public static Method findSetMethod(Class objClass, Field field) {
+		String mName = StringUtils.capitalize(field.getName());
+		mName = WRITEMETHOD_KEY + mName;
 		return findMethod(false, objClass, mName);
 	}
 
@@ -923,7 +928,7 @@ public class ReflectUtils {
 			fvalue = getFieldValue(src, field.getKey());
 			if(fvalue==null && ignoreNull)
 				continue;
-			setFieldValue(field.getValue(), dest, fvalue);
+			setBeanFieldValue(field.getValue(), dest, fvalue);
 		}
 	}
 
@@ -1167,23 +1172,26 @@ public class ReflectUtils {
 		return fields;*/
 	}
 
-	public static Field findField(Class clazz, Class fieldType,
+	public static Collection<Field> findFieldsByType(Class clazz, Class fieldType,
 			boolean throwIfNotfound) {
 		List<Class> classes = findSuperClasses(clazz);
 		classes.add(0, clazz);
 
 		Field[] fs = null;
+		Collection<Field> fields = new HashSet<Field>();
 		for (Class cls : classes) {
 			fs = cls.getDeclaredFields();
 			for (Field f : fs) {
-				if (f.getType().isAssignableFrom(fieldType))
-					return f;
+				if (f.getType().isAssignableFrom(fieldType)){
+//					return f;
+					fields.add(f);
+				}
 			}
 		}
-		if (throwIfNotfound)
+		if (fields.isEmpty() && throwIfNotfound)
 			throw new ServiceException("can not find class[" + clazz
 					+ "]'s fieldType [" + fieldType + "]");
-		return null;
+		return fields;
 	}
 
 	public static List<String> getPropertiesName(Object obj) {
@@ -1303,21 +1311,27 @@ public class ReflectUtils {
 		}
 	}
 
-	public static void setFieldValue(String fieldName, Object obj, Object value) {
-		setBean(obj, fieldName, value);
+	/*****
+	 * @see #setFieldValue
+	 * @param fieldName
+	 * @param obj
+	 * @param value
+	 */
+	@Deprecated
+	public static void setBeanFieldValue(String fieldName, Object obj, Object value) {
+		setFieldValue(obj, fieldName, value);
 	}
 
-	public static void setBean(Object obj, String fieldName, Object value) {
+	public static void setFieldValue(Object obj, String fieldName, Object value) {
 		Field field = findField(getObjectClass(obj), fieldName, true);
-		setFieldValue(field, obj, value);
+		setFieldValue(obj, field, value);
 	}
 
-	public static void setBean(Object obj, Class fieldType, Object value) {
-		Field field = findField(getObjectClass(obj), fieldType, true);
-		setFieldValue(field, obj, value);
+	public static void setFieldValue(Object obj, Class fieldType, Object value) {
+		findFieldsByType(getObjectClass(obj), fieldType, true).forEach(f->setFieldValue(obj, f, value));
 	}
 
-	public static void setFieldValue(Field f, Object obj, Object value) {
+	public static void setFieldValue(Object obj, Field f, Object value) {
 		Assert.notNull(f);
 		try {
 			if (!f.isAccessible())
@@ -1328,8 +1342,9 @@ public class ReflectUtils {
 		}
 	}
 
-	public static void setBean(Object obj, Field f, Object value) {
-		setFieldValue(f, obj, value);
+	@Deprecated
+	public static void setBeanFieldValue(Field f, Object obj, Object value) {
+		setFieldValue(obj, f, value);
 	}
 
 	public static Object getFieldValue(Object obj, String fieldName) {
@@ -1373,12 +1388,17 @@ public class ReflectUtils {
 	public static Object getFieldValueByGetter(Object obj, Field f,
 			boolean throwIfError) {
 		try {
-			String getterName = "get"
+			/*String getterName = "get"
 					+ org.onetwo.common.utils.StringUtils.toCamel(f
-							.getName(), true);
-			Method getter = findMethod(getObjectClass(obj), getterName);
+							.getName(), true);*/
+			Method getter = findGetMethod(getObjectClass(obj), f);//findMethod(getObjectClass(obj), getterName);
+			if(getter==null && throwIfError){
+				throw new BaseException("can not find getter for field: "+f.getName()+", class:"+obj.getClass());
+			}
 			Object val = invokeMethod(getter, obj);
 			return val;
+		} catch (BaseException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			if (throwIfError)
 				throw new ServiceException("get value of field[" + f
@@ -1391,14 +1411,20 @@ public class ReflectUtils {
 	public static void setFieldValueBySetter(Object obj, Field f, Object value,
 			boolean throwIfError) {
 		try {
-			String setterName = "set"
+			/*String setterName = WRITEMETHOD_KEY
 					+ org.onetwo.common.utils.StringUtils.toCamel(f
 							.getName(), true);
-			Method setter = findMethod(getObjectClass(obj), setterName, f.getType());
+			Method setter = findMethod(getObjectClass(obj), setterName, f.getType());*/
+			Method setter = findSetMethod(getObjectClass(obj), f);
+			if(setter==null && throwIfError){
+				throw new BaseException("can not find setter for field: "+f.getName()+", class:"+obj.getClass());
+			}
 			invokeMethod(setter, obj, value);
+		} catch (BaseException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw new ServiceException("get value of field[" + f
+				throw new ServiceException("set value of field[" + f
 						+ "] error: " + ex.getMessage(), ex);
 		}
 	}
@@ -1489,7 +1515,7 @@ public class ReflectUtils {
 							pathObj = getFieldValue(f, parentObj, true);
 							if(pathObj==null && newIfNull){
 								pathObj = newInstance(f.getType());
-								setFieldValue(f, parentObj, pathObj);
+								setBeanFieldValue(f, parentObj, pathObj);
 							}
 						}else{
 //							pathObj = invokeMethod(path, parentObj);
@@ -1530,7 +1556,7 @@ public class ReflectUtils {
 			}else{
 				Field f = findField(parentObj.getClass(), setPropertyName, false);
 				if(f!=null){
-					setFieldValue(f, parentObj, value);
+					setBeanFieldValue(f, parentObj, value);
 				}else{
 					if(tryMethod && value!=null){
 						Method mehtod = findMethod(true, getObjectClass(parentObj), setPropertyName, findTypes(value));
@@ -1566,11 +1592,11 @@ public class ReflectUtils {
 		// Map properties = M.c(objects);
 		for (Field f : fields) {
 			if (properties.containsKey(f.getName())) {
-				ReflectUtils.setFieldValue(f, inst, processValue(f, properties.get(f.getName())));
+				ReflectUtils.setBeanFieldValue(f, inst, processValue(f, properties.get(f.getName())));
 				continue;
 			}
 			if (properties.containsKey(f.getType())) {
-				ReflectUtils.setFieldValue(f, inst, processValue(f, properties.get(f.getType())));
+				ReflectUtils.setBeanFieldValue(f, inst, processValue(f, properties.get(f.getType())));
 				continue;
 			}
 		}

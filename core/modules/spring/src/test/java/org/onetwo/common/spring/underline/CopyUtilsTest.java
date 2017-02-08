@@ -1,11 +1,16 @@
 package org.onetwo.common.spring.underline;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +30,36 @@ public class CopyUtilsTest {
 		System.out.println("rs: " + rs);
 		ParameterizedType ptype = (ParameterizedType)pd.getReadMethod().getGenericReturnType();
 		System.out.println("type: " + ptype.getActualTypeArguments()[0]);
+	}
+	
+	@Test
+	public void testCopyMap(){
+		Map<String, Object> map = new HashMap<>();
+		map.put("age", 111);
+		map.put("birthday", new Date());
+		map.put("userName", "test");
+		CapitalBean target = new CapitalBean();
+		BeanCopierBuilder.fromObject(map)
+						.ignoreNullValue()
+						.to(target);
+		assertThat(target.getAge()).isEqualTo(map.get("age"));
+		assertThat(target.getBirthday()).isEqualTo(map.get("birthday"));
+		assertThat(target.getUserName()).isEqualTo(map.get("userName"));
+		
+		CapitalBean bean1 = new CapitalBean();
+		bean1.setMap(map);
+		CapitalBean bean2 = BeanCopierBuilder.fromObject(bean1)
+												.ignoreNullValue()
+												.toNewInstance();
+		assertThat(bean2.getAge()).isEqualTo(bean1.getAge());
+		assertThat(bean2.getBirthday()).isEqualTo(bean1.getBirthday());
+		assertThat(bean2.getUserName()).isEqualTo(bean1.getUserName());
+		
+		/*assertTrue(bean2.getMap()==bean1.getMap());
+		assertTrue(bean2.getMap().get("birthday")==bean1.getMap().get("birthday"));*/
+
+		assertTrue(bean2.getMap()!=bean1.getMap());
+		assertTrue(bean2.getMap().get("birthday")==bean1.getMap().get("birthday"));
 	}
 	
 	@Test
@@ -423,6 +458,9 @@ public class CopyUtilsTest {
 		
 		@Cloneable
 		private List<CapitalBean2> datas;
+
+		@Cloneable
+		private Map<String, Object> map;
 		
 		@Override
 		public CapitalBean clone()  {
@@ -473,6 +511,12 @@ public class CopyUtilsTest {
 		}
 		public void setPassword(String password) {
 			this.password = password;
+		}
+		public Map<String, Object> getMap() {
+			return map;
+		}
+		public void setMap(Map<String, Object> map) {
+			this.map = map;
 		}
 		
 	}

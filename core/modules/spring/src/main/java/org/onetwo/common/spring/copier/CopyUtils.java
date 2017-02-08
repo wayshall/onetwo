@@ -47,8 +47,8 @@ public class CopyUtils {
     	public static <E> BeanCopierBuilder<E> newBuilder(){
     		return new BeanCopierBuilder<E>();
     	}
-    	public static <E> BeanCopierBuilder<E> fromObject(E obj){
-    		return new BeanCopierBuilder<E>().from(obj);
+    	public static <E> BeanCopierBuilder<E> fromObject(E src){
+    		return new BeanCopierBuilder<E>().from(src);
     	}
     }
     public static class PageCopierBuilder<T> extends BaseCopierBuilder<PageCopierBuilder<T>> {

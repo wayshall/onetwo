@@ -19,6 +19,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.slf4j.Logger;
 
+@Deprecated
 @SuppressWarnings("unchecked")
 public class MyUtils {
 	protected static Logger logger = JFishLoggerFactory.getLogger(MyUtils.class);
@@ -399,7 +400,7 @@ public class MyUtils {
 		Object srcValue = null;
 		for(Field field : fields){
 			srcValue = ReflectUtils.getFieldValue(src, field.getName());
-			ReflectUtils.setFieldValue(field, dest, srcValue);
+			ReflectUtils.setBeanFieldValue(field, dest, srcValue);
 		}
 	}
 	

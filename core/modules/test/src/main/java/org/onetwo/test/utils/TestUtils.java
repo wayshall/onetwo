@@ -36,11 +36,11 @@ public abstract class TestUtils {
 //		Map properties = M.c(objects);
 		for(Field f :fields){
 			if(properties.containsKey(f.getName())){
-				ReflectUtils.setFieldValue(f, inst, properties.get(f.getName()));
+				ReflectUtils.setBeanFieldValue(f, inst, properties.get(f.getName()));
 				continue;
 			}
 			if(properties.containsKey(f.getType())){
-				ReflectUtils.setFieldValue(f, inst, properties.get(f.getType()));
+				ReflectUtils.setBeanFieldValue(f, inst, properties.get(f.getType()));
 				continue;
 			}
 		}

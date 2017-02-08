@@ -11,12 +11,12 @@ import org.onetwo.common.utils.CUtils;
 public class BaseTest {
 
 	public BaseTest injectField(Object obj, String propName, Object value){
-		ReflectUtils.setBean(obj, propName, value);
+		ReflectUtils.setFieldValue(obj, propName, value);
 		return this;
 	}
 
 	public BaseTest injectField(Object obj, Class fieldType, Object value){
-		ReflectUtils.setBean(obj, fieldType, value);
+		ReflectUtils.setFieldValue(obj, fieldType, value);
 		return this;
 	}
 

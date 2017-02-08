@@ -14,7 +14,7 @@ abstract public interface UnderlineInitBinder {
 			binding.initConversion(conversionService);
 		}
 //		Reflection.setField(binder, "bindingResult", binding);
-		ReflectUtils.setFieldValue("bindingResult", binder, binding);
+		ReflectUtils.setBeanFieldValue("bindingResult", binder, binding);
 	}
 	
 
