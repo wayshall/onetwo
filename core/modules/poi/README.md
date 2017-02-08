@@ -8,7 +8,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-dbm</artifactId>
-    <version>4.3.6</version>
+    <version>4.3.8-SNAPSHOT</version>
 </dependency>   
 
 ```

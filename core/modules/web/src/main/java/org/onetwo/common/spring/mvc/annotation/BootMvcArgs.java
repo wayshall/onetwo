@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.annotation;
+package org.onetwo.common.spring.mvc.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

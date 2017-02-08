@@ -1,6 +1,6 @@
 package org.onetwo.ext.security.mvc.args;
 
-import org.onetwo.common.spring.web.mvc.annotation.BootMvcArgs;
+import org.onetwo.common.spring.mvc.annotation.BootMvcArgs;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.core.MethodParameter;

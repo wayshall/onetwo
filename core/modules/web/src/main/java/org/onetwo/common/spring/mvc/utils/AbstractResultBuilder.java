@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.utils;
+package org.onetwo.common.spring.mvc.utils;
 
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;

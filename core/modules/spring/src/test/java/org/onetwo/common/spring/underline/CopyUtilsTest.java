@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.copier.Cloneable;
 import org.onetwo.common.spring.copier.CopyUtils;
+import org.onetwo.common.spring.copier.CopyUtils.BeanCopierBuilder;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.ConversionNotSupportedException;
 
@@ -82,6 +83,7 @@ public class CopyUtilsTest {
 		srcBean.setCreateTime(createTime);
 		
 		UnderlineBean target = CopyUtils.copy(UnderlineBean.class, srcBean);
+		
 
 		Assert.assertEquals(userName, target.getUser_name());
 		Assert.assertEquals(id, target.getId());
@@ -92,6 +94,21 @@ public class CopyUtilsTest {
 		Assert.assertEquals(srcBean.getUserName(), target.getUser_name());
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
 		Assert.assertEquals(srcBean.getCreateTime(), target.getCreate_time());
+		
+		target = new UnderlineBean();
+		BeanCopierBuilder.fromObject(srcBean)
+						.propertyNameConvertor(CopyUtils.UNDERLINE_CONVERTOR)
+						.to(target);  
+		Assert.assertEquals(userName, target.getUser_name());
+		Assert.assertEquals(id, target.getId());
+		Assert.assertEquals(createTime, target.getCreate_time());
+		Assert.assertEquals(now, target.getBirthday());
+		
+		Assert.assertEquals(srcBean.getId(), target.getId());
+		Assert.assertEquals(srcBean.getUserName(), target.getUser_name());
+		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
+		Assert.assertEquals(srcBean.getCreateTime(), target.getCreate_time());
+		
 		
 		srcBean = CopyUtils.copy(new CapitalBean(), target);
 

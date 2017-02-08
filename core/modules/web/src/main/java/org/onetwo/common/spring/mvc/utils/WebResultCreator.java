@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.utils;
+package org.onetwo.common.spring.mvc.utils;
 
 import java.util.List;
 import java.util.Map;

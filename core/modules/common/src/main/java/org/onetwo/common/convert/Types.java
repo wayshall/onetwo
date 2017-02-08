@@ -32,15 +32,7 @@ public class Types {
 	}
 
 	public static <T> T asValue(Object source, Class<T> clazz, T defValue) {
-		try {
-			if(source==null)
-				return defValue;
-			T val = convertor().convert(source, clazz);
-			return val==null?defValue:val;
-		} catch (Exception e) {
-			logger.error("convert source[{}] to class[{}] error: " + e.getMessage(), source, clazz);
-			return defValue;
-		}
+		return convertValue(source, clazz, defValue);
 	}
 
 	public static <T> T[] asArray(Object source, Class<T> clazz) {

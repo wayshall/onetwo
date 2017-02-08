@@ -10,7 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.web.filter.SpringMultipartFilterProxy;
+import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.slf4j.Logger;
 import org.springframework.web.filter.CharacterEncodingFilter;

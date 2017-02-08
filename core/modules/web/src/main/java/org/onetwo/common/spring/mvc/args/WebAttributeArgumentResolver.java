@@ -1,6 +1,6 @@
-package org.onetwo.common.spring.web.mvc.args;
+package org.onetwo.common.spring.mvc.args;
 
-import org.onetwo.common.spring.web.mvc.annotation.WebAttribute;
+import org.onetwo.common.spring.mvc.annotation.WebAttribute;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;

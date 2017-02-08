@@ -5,14 +5,17 @@ spring-boot技术交流群：  8060215
 
 
 ##maven   
-当前snapshot版本：**4.3.8-SNAPSHOT**   
+当前snapshot版本：**4.3.9-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   
-<snapshotRepository>
+<repository>
      <id>oss</id>
      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
- </snapshotRepository>   
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+</repository>   
 ```   
 
 ##示例项目   

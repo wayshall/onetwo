@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.log;
+package org.onetwo.common.spring.mvc.log;
 
 public interface AccessLogger {
 

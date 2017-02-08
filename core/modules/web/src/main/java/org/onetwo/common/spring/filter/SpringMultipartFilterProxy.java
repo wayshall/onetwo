@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.filter;
+package org.onetwo.common.spring.filter;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.web.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.mvc.utils.WebResultCreator;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.onetwo.boot.core.web.controller.DateInitBinder;
-import org.onetwo.common.spring.web.mvc.utils.DataWrapper;
+import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.MappableMap;

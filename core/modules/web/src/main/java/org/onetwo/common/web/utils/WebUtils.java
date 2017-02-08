@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.exception.ExceptionCodeMark;
-import org.onetwo.common.spring.web.mvc.utils.WebResultCreator.SimpleResultBuilder;
+import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
 
 
 final public class WebUtils {

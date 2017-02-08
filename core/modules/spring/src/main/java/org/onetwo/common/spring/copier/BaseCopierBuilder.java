@@ -187,7 +187,7 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 			return targetObject;
 		}
 		
-		public void to(T target){
+		public <E> void to(E target){
 			build().fromObject(fromObject, target);
 		}
 

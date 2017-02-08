@@ -4,7 +4,7 @@
 	
     <groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-plugin-parent</artifactId>
-	<version>4.3.8-SNAPSHOT</version>
+	<version>4.3.9-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-plugin-parent</name>
@@ -66,7 +66,7 @@
 		<dependency>
 	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.3.8-SNAPSHOT</version>
+	         <version>4.3.9-SNAPSHOT</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>

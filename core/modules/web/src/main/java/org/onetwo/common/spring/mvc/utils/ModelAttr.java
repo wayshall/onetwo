@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.utils;
+package org.onetwo.common.spring.mvc.utils;
 
 public class ModelAttr {
 	public static final String MESSAGE = "message";

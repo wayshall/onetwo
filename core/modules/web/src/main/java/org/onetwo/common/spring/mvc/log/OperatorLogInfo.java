@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.web.mvc.log;
+package org.onetwo.common.spring.mvc.log;
 
 import java.io.Serializable;
 import java.util.Date;
