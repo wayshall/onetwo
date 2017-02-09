@@ -34,6 +34,9 @@ public class PriceSpliter {
 	 * @return
 	 */
 	private ImmutablePair<BigDecimal, BigDecimal> calcConfidenceSection(double avg, double sd){
+		if(Double.isNaN(avg) || Double.isNaN(sd)){
+			throw new IllegalArgumentException("avg or sd is not a number: "+avg+", "+sd);
+		}
 		Double zscore = ConfidenceLevelUtils.getZscore(95);
 		return ConfidenceLevelUtils.calcConfidenceSection(BigDecimal.valueOf(avg), BigDecimal.valueOf(sd), zscore);
 	}

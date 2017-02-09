@@ -61,6 +61,25 @@ public class CopyUtilsTest {
 		assertTrue(bean2.getMap()!=bean1.getMap());
 		assertTrue(bean2.getMap().get("birthday")==bean1.getMap().get("birthday"));
 	}
+
+	@Test
+	public void testCopyPropertyDiffMap(){
+		CapitalBean bean1 = new CapitalBean();
+		Map<String, CapitalBean2> map2 = new HashMap<>();
+		CapitalBean2 oneBean = new CapitalBean2();
+		oneBean.setId(33L);
+		oneBean.setSubName("oneBean");
+		map2.put("one", oneBean);
+		bean1.setMap2(map2);
+		TestMapBean mapBean = BeanCopierBuilder.fromObject(bean1)
+												.ignoreNullValue()
+												.propertyNameWithUnderline()
+												.toClass(TestMapBean.class);
+		CapitalBean2 bean1One = bean1.getMap2().get("one");
+		UnderlineBean2 mapBeanOne = mapBean.getMap2().get("one");
+		assertThat(bean1One.getId()).isEqualTo(mapBeanOne.getId());
+		assertThat(bean1One.getSubName()).isEqualTo(mapBeanOne.getSub_name());
+	}
 	
 	@Test
 	public void testClone(){
@@ -448,6 +467,20 @@ public class CopyUtilsTest {
 		});
 	}
 
+
+
+	public static class TestMapBean implements Serializable, java.lang.Cloneable {
+		@Cloneable
+		private Map<String, UnderlineBean2> map2;
+
+		public Map<String, UnderlineBean2> getMap2() {
+			return map2;
+		}
+
+		public void setMap2(Map<String, UnderlineBean2> map2) {
+			this.map2 = map2;
+		}
+	}
 	public static class CapitalBean implements Serializable, java.lang.Cloneable {
 		private long id;
 		private Integer age;
@@ -461,6 +494,8 @@ public class CopyUtilsTest {
 
 		@Cloneable
 		private Map<String, Object> map;
+
+		private Map<String, CapitalBean2> map2;
 		
 		@Override
 		public CapitalBean clone()  {
@@ -517,6 +552,12 @@ public class CopyUtilsTest {
 		}
 		public void setMap(Map<String, Object> map) {
 			this.map = map;
+		}
+		public Map<String, CapitalBean2> getMap2() {
+			return map2;
+		}
+		public void setMap2(Map<String, CapitalBean2> map2) {
+			this.map2 = map2;
 		}
 		
 	}

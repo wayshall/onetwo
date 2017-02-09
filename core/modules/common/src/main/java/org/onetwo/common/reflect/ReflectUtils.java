@@ -1256,7 +1256,7 @@ public class ReflectUtils {
 	 * @param target
 	 * @return
 	 */
-	public static Class getObjectClass(Object target) {
+	public static <T> Class<T> getObjectClass(Object target) {
 		if(target==null)
 			return null;
 		Class targetClass = null;

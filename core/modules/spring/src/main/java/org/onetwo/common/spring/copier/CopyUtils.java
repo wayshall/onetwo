@@ -138,7 +138,8 @@ public class CopyUtils {
     }
 
     public static final PropertyNameConvertor UNDERLINE_CONVERTOR = SeperatorNamedConvertor.UNDERLINE_CONVERTOR;
-    public static final SimpleBeanCopier BEAN_COPIER = SimpleBeanCopier.unmodifyCopier(new SimpleBeanCopier(UNDERLINE_CONVERTOR));
+//    public static final SimpleBeanCopier BEAN_COPIER = SimpleBeanCopier.unmodifyCopier(new SimpleBeanCopier(UNDERLINE_CONVERTOR));
+    public static final SimpleBeanCopier BEAN_COPIER = BeanCopierBuilder.newBuilder().propertyNameConvertor(UNDERLINE_CONVERTOR).build();
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
@@ -178,7 +179,8 @@ public class CopyUtils {
 	}
 	
     public static <T> T copy(Class<T> targetClass, Object src){
-    	return copy(newInstance(targetClass), src, UNDERLINE_CONVERTOR);
+//    	return copy(newInstance(targetClass), src, UNDERLINE_CONVERTOR);
+    	return BEAN_COPIER.fromObject(src, newInstance(targetClass));
     }
 
 

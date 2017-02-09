@@ -7,5 +7,5 @@ import org.springframework.beans.BeanWrapper;
 
 public interface PropertyValueCopier {
 
-	void copyPropertyValue(BeanWrapper targetBeanWrapper, PropertyDescriptor targetProperty, Object value);
+	void copyPropertyValue(SimpleBeanCopier beanCopier, BeanWrapper targetBeanWrapper, PropertyDescriptor targetProperty, Object value);
 }

@@ -116,10 +116,14 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		return (B)this;
 	}
 
-	final public B nameWithSeperator(String seperator){
+	final public B propertyNameWithSeperator(String seperator){
 		this.checkPropertyNameConvertorNotNull();
 		this.propertyNameConvertor = new SeperatorNamedConvertor(seperator);
 		return (B)this;
+	}
+
+	final public B propertyNameWithUnderline(){
+		return propertyNameConvertor(SeperatorNamedConvertor.UNDERLINE_CONVERTOR);
 	}
 	
 	private void checkPropertyNameConvertorNotNull(){
