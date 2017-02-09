@@ -1,5 +1,6 @@
 package org.onetwo.ext.es;
 
+
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -38,6 +39,8 @@ import org.elasticsearch.search.aggregations.HasAggregations;
 import org.elasticsearch.search.aggregations.ValuesSourceAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
@@ -51,6 +54,8 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder.SuggestionBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.Page;
@@ -73,7 +78,7 @@ import com.google.common.collect.Maps;
 
 
 public class SimpleSearchQueryBuilder {
-//	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
+	private static final Logger logger = LoggerFactory.getLogger(SimpleSearchQueryBuilder.class);
 
 	public static SimpleSearchQueryBuilder newBuilder(){
 		return new SimpleSearchQueryBuilder();
@@ -156,6 +161,10 @@ public class SimpleSearchQueryBuilder {
 		}
 		return booleanQuery;
 	}
+
+	public BoolQueryBuilder retriveBoolQuery(){
+		return bool().boolQuery;
+	}
 	
 	public SimpleSearchQueryBuilder boolTerm(String field, Object value){
 		bool().mustTerm(field, value);
@@ -232,6 +241,13 @@ public class SimpleSearchQueryBuilder {
 		return this;
 	}
 	
+	public SimpleSearchQueryBuilder when(boolean condition, Runnable runnable){
+		if(condition){
+			runnable.run();
+		}
+		return this;
+	}
+	
 	public SimpleSearchQueryBuilder sort(Sort sort){
 		if(sort==null)
 			return this;
@@ -256,7 +272,7 @@ public class SimpleSearchQueryBuilder {
 		return this;
 	}
 
-	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggs(String name, String field) {
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> agg(String name, String field) {
 		return agg(name, field, null);
 	}
 
@@ -288,21 +304,31 @@ public class SimpleSearchQueryBuilder {
 		return agg(AggregationBuilders.extendedStats(name));
 	}
 
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggFilters(String name) {
+		FiltersAggregationBuilder filtersAgg = AggregationBuilders.filters(name);
+		return agg(filtersAgg);
+	}
+
+	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggFilter(String name) {
+		FilterAggregationBuilder filterAgg = AggregationBuilders.filter(name);
+		return agg(filterAgg);
+	}
+	
 	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> agg(String name, String field, Integer size) {
 		SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggsBuilder = new SimpleAggregationBuilder<>(this, name, field, size);
-		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
+		this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
 		return aggsBuilder;
 	}
 
 	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> agg(AbstractAggregationBuilder aggsBuilder) {
 		SimpleAggregationBuilder<SimpleSearchQueryBuilder> simpleBuilder = new SimpleAggregationBuilder<>(this, aggsBuilder);
-		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(simpleBuilder.aggsBuilder);
+		this.searchQueryBuilder.addAggregation(simpleBuilder.aggsBuilder);
 		return simpleBuilder;
 	}
 	public SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggNested(String name, String path) {
 		NestedBuilder nested = AggregationBuilders.nested(name).path(path);
 		SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggsBuilder = new SimpleAggregationBuilder<>(this, nested);
-		SimpleSearchQueryBuilder.this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
+		this.searchQueryBuilder.addAggregation(aggsBuilder.aggsBuilder);
 		return aggsBuilder;
 	}
 	
@@ -428,7 +454,12 @@ public class SimpleSearchQueryBuilder {
 
 	    public <T extends Aggregation> T getAggregation(String name) {
 	    	this.checkAggs();
-	        return aggregations.get(name);
+	    	List<String> paths = AggregationPath.parse(name).getPathElementsAsStringList();
+	    	if(paths.size()==1){
+	    		return aggregations.get(name);
+	    	}else{
+	    		return getAggregationByPath(paths);
+	    	}
 	    }
 
 	    public Terms getTerms(String name) {
@@ -455,15 +486,21 @@ public class SimpleSearchQueryBuilder {
 	    }
 	    public <T, A extends Aggregation> T mapAggregation(String name, Function<A, T> mapper) {
 	    	A aggr = getAggregation(name);
+	    	if(aggr==null){
+	    		return null;
+	    	}
 	    	return mapper.apply(aggr);
 	    }
 	   /* public <T> T mapExtendedStats(String name, Function<InternalExtendedStats, T> mapper) {
 	    	return mapAggregation(name, InternalExtendedStats.class, mapper);
 	    }*/
 
-		public <T extends Aggregation> T getAggregationByPath(String path) {
-	    	this.checkAggs();
+	    public <T extends Aggregation> T getAggregationByPath(String path) {
 	    	List<String> paths = AggregationPath.parse(path).getPathElementsAsStringList();
+	    	return getAggregationByPath(paths);
+	    }
+		public <T extends Aggregation> T getAggregationByPath(List<String> paths) {
+	    	this.checkAggs();
 	    	T agg = aggregations.get(paths.get(0));
 	    	for (int i = 1; i < paths.size(); i++) {
 	    		String attr = paths.get(i);
@@ -503,14 +540,27 @@ public class SimpleSearchQueryBuilder {
 	     */
 	    public Object[] getRawKeysByPath(String path) {
 	    	this.checkAggs();
-	    	return (Object[])aggregations.getProperty(path+"._key");
+	    	try {
+		    	return (Object[])aggregations.getProperty(path+"._key");
+			} catch (IllegalArgumentException e) {
+				logger.error("getRawKeysByPath error. path: {}, msg: {}", path, e.getMessage());
+				return null;
+			}
 	    }
+	    /****
+	     * path1>path2
+	     * @param path
+	     * @return
+	     */
 	    public Object[] getKeysByPath(String path) {
 	    	this.checkAggs();
 		    Object[] keys = getRawKeysByPath(path);
 		    if(keys==null || keys.length==0){
 			    return null;
 		    }else{
+		    	if(!keys[0].getClass().isArray()){
+		    		return keys;
+		    	}
 		        int size = AggregationPath.parse(path).getPathElementsAsStringList().size();
 		        for (int i = 0; i < size; i++) {
 		    	    if(i!=size-1){
@@ -1068,6 +1118,23 @@ public class SimpleSearchQueryBuilder {
 		private AggregationBuilder<?> asAggregationBuilder(){
 			return (AggregationBuilder<?>) this.aggsBuilder;
 		}
+		private FiltersAggregationBuilder asFiltersAggregationBuilder(){
+			return (FiltersAggregationBuilder)this.aggsBuilder;
+		}
+		private FilterAggregationBuilder asFilterAggregationBuilder(){
+			return (FilterAggregationBuilder)this.aggsBuilder;
+		}
+		
+		public SimpleAggregationBuilder<PB> filter(QueryBuilder filter){
+			if(aggsBuilder instanceof FiltersAggregationBuilder){
+				asFiltersAggregationBuilder().filter(filter);
+			}else if(aggsBuilder instanceof FilterAggregationBuilder){
+				asFilterAggregationBuilder().filter(filter);
+			}else{
+				throw new UnsupportedOperationException();
+			}
+			return this;
+		}
 		
 		public SimpleAggregationBuilder<PB> minDocCount(Long minDocCount){
 			if(minDocCount!=null){
@@ -1097,15 +1164,26 @@ public class SimpleSearchQueryBuilder {
 			return this;
 		}
 
-		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs(String name, String field) {
-			return subAggs(name, field, null);
+		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAgg(String name, String field) {
+			return subAgg(name, field, null);
 		}
 
-		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs(String name, String field, Integer size) {
+		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAgg(String name, String field, Integer size) {
 			SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs = new SimpleAggregationBuilder<>(this, name, field, size);
 			this.asAggregationBuilder().subAggregation(subAggs.aggsBuilder);
 			return subAggs;
 		}
+
+		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAgg(AbstractAggregationBuilder aggsBuilder) {
+			SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggs = new SimpleAggregationBuilder<>(this, aggsBuilder);
+			this.asAggregationBuilder().subAggregation(subAggs.aggsBuilder);
+			return subAggs;
+		}
+		
+		public SimpleAggregationBuilder<SimpleAggregationBuilder<PB>> subAggExtendedStats(String name) {
+			return subAgg(AggregationBuilders.extendedStats(name));
+		}
+		
 		
 	}
 	
@@ -1131,7 +1209,7 @@ public class SimpleSearchQueryBuilder {
         }
 		public String getKey() {
 			if(key==null){
-				return (from==null?0:from)+"-"+(to==null || Double.isInfinite(to)?"":to);
+				return (from==null?0:from.longValue())+"-"+(to==null || Double.isInfinite(to)?"":to.longValue());
 			}
 			return key;
 		}
