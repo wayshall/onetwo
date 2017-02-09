@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -538,37 +539,39 @@ public class SimpleSearchQueryBuilder {
 	     * @param path
 	     * @return 返回的数组，里面的值可能是数组，深度对应路径深度
 	     */
-	    public Object[] getRawKeysByPath(String path) {
+	    public Optional<Object[]> getRawKeysByPath(String path) {
 	    	this.checkAggs();
 	    	try {
-		    	return (Object[])aggregations.getProperty(path+"._key");
+		    	return Optional.ofNullable((Object[])aggregations.getProperty(path+"._key"));
 			} catch (IllegalArgumentException e) {
 				logger.error("getRawKeysByPath error. path: {}, msg: {}", path, e.getMessage());
-				return null;
+				return Optional.empty();
 			}
 	    }
 	    /****
 	     * path1>path2
 	     * @param path
-	     * @return
+	     * @return 返回的数组，里面的值可能是数组，深度对应路径深度
 	     */
-	    public Object[] getKeysByPath(String path) {
+	    public Optional<Object[]> getKeysByPath(String path) {
 	    	this.checkAggs();
-		    Object[] keys = getRawKeysByPath(path);
-		    if(keys==null || keys.length==0){
-			    return null;
-		    }else{
-		    	if(!keys[0].getClass().isArray()){
-		    		return keys;
-		    	}
-		        int size = AggregationPath.parse(path).getPathElementsAsStringList().size();
-		        for (int i = 0; i < size; i++) {
-		    	    if(i!=size-1){
-		    		    keys = (Object[])keys[0];
-		    	    }
-		        }
-		        return keys;
+	    	Optional<Object[]> keysOpt = getRawKeysByPath(path);
+		    if(!keysOpt.isPresent() || keysOpt.get().length==0){
+			    return Optional.empty();
 		    }
+
+	    	Object[] keys = keysOpt.get();
+	    	//return if not nested array
+	    	if(!keys[0].getClass().isArray()){
+	    		return keysOpt;
+	    	}
+	        int size = AggregationPath.parse(path).getPathElementsAsStringList().size();
+	        for (int i = 0; i < size; i++) {
+	    	    if(i!=size-1){
+	    		    keys = (Object[])keys[0];
+	    	    }
+	        }
+	        return Optional.of(keys);
 	    }
 
 	    /****
@@ -576,14 +579,16 @@ public class SimpleSearchQueryBuilder {
 	     * @param path
 	     * @return 
 	     */
-	    public <T> T getKeyByPath(String path) {
+	    public <T> Optional<T> getKeyByPath(String path) {
 	    	this.checkAggs();
-		    Object[] keys = getKeysByPath(path);
+		    /*Object[] keys = getKeysByPath(path);
 		    if(keys==null || keys.length==0){
 			    return null;
 		    }else{
 		        return (T)keys[0];
-		    }
+		    }*/
+//		    return getKeysByPath(path).map(keys->(T)keys[0]).orElse(null);
+	    	return getKeysByPath(path).map(keys->(T)keys[0]);
 	    }
 
 	    public Nested getNestedAggregation(String name) {
@@ -1126,6 +1131,9 @@ public class SimpleSearchQueryBuilder {
 		}
 		
 		public SimpleAggregationBuilder<PB> filter(QueryBuilder filter){
+			if(filter==null){
+				return this;
+			}
 			if(aggsBuilder instanceof FiltersAggregationBuilder){
 				asFiltersAggregationBuilder().filter(filter);
 			}else if(aggsBuilder instanceof FilterAggregationBuilder){
