@@ -9,7 +9,6 @@ import org.onetwo.ext.security.EnableSecurity;
 import org.onetwo.ext.security.EnableSecurity.ConfigOptions;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 @Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value = { java.lang.annotation.ElementType.TYPE })
@@ -18,6 +17,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Import({BootPermissionContextConfig.class})
 @EnableSecurity(mode=ConfigOptions.CUSTOM, configClass=BootMethodBasedSecurityConfig.class, enableJavaStylePermissionManage=false)
 @Configuration
-@EnableGlobalMethodSecurity
+//@EnableGlobalMethodSecurity //此注解必须写在GlobalMethodSecurityConfiguration子类，否则无法起作用
 public @interface EnableMethodSecurity {
 }

@@ -10,9 +10,15 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
-//@EnableGlobalMethodSecurity(securedEnabled=true)
+/*****
+ * 此注解必须写在GlobalMethodSecurityConfiguration子类，否则无法起作用
+ * @author way
+ *
+ */
+@EnableGlobalMethodSecurity(securedEnabled=true)
 @Configuration
 @Import(SecurityCommonContextConfig.class)
 public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration {
