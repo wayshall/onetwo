@@ -47,6 +47,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	public DbmBeanPropertyRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass) {
 		this.mappedClass = mappedClass;
 		this.jdbcResultSetGetter = jdbcResultSetGetter;
+		this.initialize(mappedClass);
 	}
 
 	protected String lowerCaseName(String name) {

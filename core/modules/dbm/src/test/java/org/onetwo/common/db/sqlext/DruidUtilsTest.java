@@ -1,5 +1,7 @@
 package org.onetwo.common.db.sqlext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -14,10 +16,12 @@ import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.util.JdbcUtils;
 
@@ -91,7 +95,14 @@ public class DruidUtilsTest {
 		System.out.println("new sql: "+countSql);
 		
 	}
-	
+
+	@Test
+	public void testGroupByCountSql(){
+		String sql = "SELECT * FROM product_active pa GROUP BY pa.ACTIVE_DATE";
+		SQLSelectStatement selectStatement = DruidUtils.changeAsCountStatement(sql, "");
+		System.out.println("new sql: "+selectStatement);
+//		assertThat(selectStatement.toString()).isEqualTo("SELECT count(1) FROM (SELECT * FROM product_active pa GROUP BY pa.ACTIVE_DATE ) countView");
+	}
 
 	@Test
 	public void testGroupUnion2CountSql(){
@@ -107,21 +118,41 @@ public class DruidUtilsTest {
 		SQLSelectStatement selectStatement = (SQLSelectStatement)statements.get(0);
 		SQLSelect select = selectStatement.getSelect();
 		SQLSelectQueryBlock query = (SQLSelectQueryBlock)select.getQuery();
+		query.setOrderBy(null);
+		if(query.getGroupBy()!=null){
+			SQLSelectQueryBlock countquery = new SQLSelectQueryBlock();	
+			SQLSelectStatement countSql = new SQLSelectStatement(new SQLSelect(countquery));
+			
+			SQLSelectItem countItem = new SQLSelectItem();
+			SQLAggregateExpr countMethod = new SQLAggregateExpr("count");
+			countMethod.setParent(countItem);
+			countMethod.addArgument(new SQLIntegerExpr(1));
+			countItem.setParent(countquery);
+			countItem.setExpr(countMethod);
+			
+			SQLSubqueryTableSource sub = new SQLSubqueryTableSource(select);
+			sub.setAlias("countView");
+			
+			countquery.addSelectItem(countItem);
+			countquery.setFrom(sub);
+			
+			return countSql;
+		}
 		List<SQLSelectItem> items = query.getSelectList();
 		items.clear();
 		
 		SQLSelectItem countItem = new SQLSelectItem();
 		SQLAggregateExpr countMethod = new SQLAggregateExpr("count");
 		countMethod.setParent(countItem);
-//		countMethod.addArgument(new SQLIntegerExpr(1));
-		countMethod.addArgument(new SQLIdentifierExpr("id"));
-
+		countMethod.addArgument(new SQLIntegerExpr(1));
+//		countMethod.addArgument(new SQLIdentifierExpr("id"));
 		countItem.setParent(query);
 		countItem.setExpr(countMethod);
+		
 		items.add(countItem);
 		
-		query.setOrderBy(null);
 		
 		return selectStatement;
 	}
+	
 }
