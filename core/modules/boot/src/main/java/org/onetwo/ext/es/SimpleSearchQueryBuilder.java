@@ -241,10 +241,10 @@ public class SimpleSearchQueryBuilder {
 		this.sorts.add(sort);
 		return this;
 	}
-	
-	public SimpleSearchQueryBuilder when(boolean condition, Runnable runnable){
+
+	public SimpleSearchQueryBuilder when(boolean condition, Consumer<SimpleSearchQueryBuilder> consumer){
 		if(condition){
-			runnable.run();
+			consumer.accept(this);
 		}
 		return this;
 	}
