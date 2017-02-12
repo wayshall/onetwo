@@ -25,6 +25,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.util.ClassUtils;
 
+/***
+ * triggee richmodel and query object that basic @DbmRepository to init.
+ * query object that basic file scan is trigger by dbmdao created 
+ * @author way
+ *
+ */
 public class RichModelAndQueryObjectScanTrigger implements BeanFactoryPostProcessor {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 

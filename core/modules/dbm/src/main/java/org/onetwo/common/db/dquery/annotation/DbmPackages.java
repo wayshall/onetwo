@@ -9,7 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DbmPackages {
 	
-	String[] value();
-	
+	String[] value() default {};
+
+//	Class<?>[] basePackageClasses() default {};
 	
 }

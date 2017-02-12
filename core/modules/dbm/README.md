@@ -24,7 +24,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-dbm</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.9-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -155,7 +155,8 @@ public class UserAutoidEntity {
 ```   
 
 `
-注意这样直接new创建的CrudEntityManager没有事务拦截，请在已配置事务的环境中使用.   
+注意这样直接new创建的CrudEntityManager没有事务拦截，请在已配置事务的环境中使用。   
+或者使用Dbms的obtainCrudManager方法来获取带事务的接口。
 `
 
 ##接口和sql绑定
@@ -231,7 +232,7 @@ public interface UserAutoidDao {
 
 ##充血模型支持   
 
-dbm对充血模型提供一定的api支持，可尝试使用。   
+dbm对充血模型提供一定的api支持，如果觉得好玩，可尝试使用。   
 使用充血模型，需要下面几个步骤：
 ###1、需要在Configuration类配置model所在的包位置
 单独使用dbm的项目，只要model类在@EnableDbm注解所在的配置类的包（包括子包）下面即可，dbm会自动扫描。

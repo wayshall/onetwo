@@ -4,10 +4,11 @@ package org.onetwo.plugins.admin.dao;
 import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.db.dquery.annotation.DbmRepository;
 import org.onetwo.common.db.dquery.annotation.Param;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 
-
+@DbmRepository
 public interface AdminPermissionDao {
 
 	List<AdminPermission> findAppPermissionsByUserId(@Param("appCode")String appCode, @Param("userId")long userId);

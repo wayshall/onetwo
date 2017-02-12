@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web;
 
 import javax.servlet.Filter;
 
-import org.onetwo.boot.bugfix.FixGroovyWebConfiguration;
 import org.onetwo.boot.core.BootContextConfig;
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
 import org.onetwo.boot.core.config.BootBusinessConfig;
@@ -38,7 +37,8 @@ import org.springframework.core.Ordered;
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
-@Import({BootContextConfig.class, PluginContextConfig.class, FixGroovyWebConfiguration.class})
+@Import({BootContextConfig.class, PluginContextConfig.class})
+//@Import({BootContextConfig.class, PluginContextConfig.class, FixGroovyWebConfiguration.class})
 //@Import({BootContextConfig.class})
 @ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
 @ConditionalOnClass(CommonWebFilterInitializer.class)

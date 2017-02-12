@@ -9,6 +9,8 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.dquery.annotation.DbmPackages;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
@@ -39,6 +41,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @AutoConfigureAfter(DbmContextAutoConfig.class)
 @ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
+@DbmPackages
 public class WebAdminPluginContext {
 	
 //	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -47,11 +50,16 @@ public class WebAdminPluginContext {
 	private SecurityConfig securityConfig;
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
+
 	/****
 	 * trigger baseEntityManager init and load the sql file
 	 */
 	@Autowired
 	private BaseEntityManager baseEntityManager;
+	
+	@Autowired
+	public WebAdminPluginContext(){
+	}
 	
 	@PostConstruct
 	public void init(){
@@ -86,7 +94,10 @@ public class WebAdminPluginContext {
 	@Configuration
 	@Conditional(NotEnableOauth2SsoCondition.class)
 	protected static class WebAdminManagerModule {
-
+		
+		public WebAdminManagerModule(){
+		}
+		
 		@Bean
 		@ConditionalOnMissingBean(UserDetailsService.class)
 		public UserDetailsService userDetailsService(){
