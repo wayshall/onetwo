@@ -3,14 +3,10 @@ package org.onetwo.plugins.admin;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.BaseEntityManager;
-import org.onetwo.common.db.dquery.annotation.DbmPackages;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
@@ -27,6 +23,7 @@ import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
 import org.onetwo.plugins.admin.service.impl.PermissionManagerImpl;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,8 +38,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @AutoConfigureAfter(DbmContextAutoConfig.class)
 @ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
-@DbmPackages
-public class WebAdminPluginContext {
+public class WebAdminPluginContext implements InitializingBean {
 	
 //	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -57,12 +53,11 @@ public class WebAdminPluginContext {
 	@Autowired
 	private BaseEntityManager baseEntityManager;
 	
-	@Autowired
 	public WebAdminPluginContext(){
 	}
-	
-	@PostConstruct
-	public void init(){
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		if(securityConfig!=null){
 			String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
 //			logger.info("targetUrl: "+targetUrl);
@@ -77,6 +72,31 @@ public class WebAdminPluginContext {
 	}
 	
 
+	/*@Configuration
+	protected static class JavaClassStylePermissionManager {
+		
+	}*/
+	
+	@Bean
+	@Autowired
+	@ConditionalOnBean(RootMenuClassProvider.class)
+	public WebAdminPermissionConfig webAdminPermissionConfig(RootMenuClassProvider provider){
+		WebAdminPermissionConfig config = new WebAdminPermissionConfig();
+		config.setRootMenuClassProvider(provider);
+		return config;
+	}
+	
+	@Bean
+	@Autowired
+	public PermissionManagerImpl permissionManagerImpl(List<PermissionConfig<AdminPermission>> configs){
+		PermissionManagerImpl manager = new PermissionManagerImpl();
+		List<MenuInfoParser<AdminPermission>> parsers = configs.stream().map(cfg->{
+			return new DefaultMenuInfoParser<AdminPermission>(cfg);
+		})
+		.collect(Collectors.toList());
+		manager.setParsers(parsers);
+		return manager;
+	}
 	
 	/*@Bean
 	@ConditionalOnBean(DictionaryService.class)
@@ -120,28 +140,5 @@ public class WebAdminPluginContext {
 	}
 	
 	
-	@Configuration
-	protected static class JavaClassStylePermissionManager {
-		@Bean
-		@Autowired
-		@ConditionalOnBean(RootMenuClassProvider.class)
-		public WebAdminPermissionConfig webAdminPermissionConfig(RootMenuClassProvider provider){
-			WebAdminPermissionConfig config = new WebAdminPermissionConfig();
-			config.setRootMenuClassProvider(provider);
-			return config;
-		}
-		
-		@Bean
-		@Autowired
-		public PermissionManagerImpl permissionManagerImpl(List<PermissionConfig<AdminPermission>> configs){
-			PermissionManagerImpl manager = new PermissionManagerImpl();
-			List<MenuInfoParser<AdminPermission>> parsers = configs.stream().map(cfg->{
-				return new DefaultMenuInfoParser<AdminPermission>(cfg);
-			})
-			.collect(Collectors.toList());
-			manager.setParsers(parsers);
-			return manager;
-		}
-	}
 
 }
