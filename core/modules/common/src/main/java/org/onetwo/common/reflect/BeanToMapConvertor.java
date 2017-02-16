@@ -37,7 +37,7 @@ public class BeanToMapConvertor {
 	private String propertyAccesor = ".";
 	private String prefix = "";
 	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
-	private Function<Object, Object> valueConvertor;
+	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 	private Function<Object, Boolean> flatableObject;
 	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 	private boolean freezed;
@@ -66,7 +66,7 @@ public class BeanToMapConvertor {
 		this.checkFreezed();
 		this.propertyAcceptor = propertyAcceptor;
 	}
-	public void setValueConvertor(Function<Object, Object> valueConvertor) {
+	public void setValueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 		this.checkFreezed();
 		this.valueConvertor = valueConvertor;
 	}
@@ -100,8 +100,10 @@ public class BeanToMapConvertor {
 		for (PropertyDescriptor prop : props) {
 			val = ReflectUtils.getProperty(obj, prop);
 			if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
-				if(valueConvertor!=null)
-					val = valueConvertor.apply(val);
+				if(valueConvertor!=null){
+					Object newVal = valueConvertor.apply(prop, val);
+					val = (newVal!=null?newVal:val);
+				}
 				rsMap.put(prop.getName(), val);
 			}
 		}
@@ -190,7 +192,8 @@ public class BeanToMapConvertor {
 				Object val = ReflectUtils.getProperty(obj, prop);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
 					if(valueConvertor!=null){
-						val = valueConvertor.apply(val);
+						Object newVal = valueConvertor.apply(prop, val);
+						val = (newVal!=null?newVal:val);
 					}
 					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
 					if(StringUtils.isBlank(prefixName)){
@@ -255,7 +258,7 @@ public class BeanToMapConvertor {
 			return this;
 		}
 
-		public BeanToMapBuilder valueConvertor(Function<Object, Object> valueConvertor) {
+		public BeanToMapBuilder valueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 			beanToFlatMap.setValueConvertor(valueConvertor);
 			return this;
 		}
