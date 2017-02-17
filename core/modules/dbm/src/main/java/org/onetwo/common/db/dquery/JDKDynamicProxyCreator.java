@@ -50,6 +50,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		this.methodCache = methodCache;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private Optional<DbmRepositoryAttrs> findDbmRepositoryAttrs(){
 		DbmRepository dbmRepository = this.interfaceClass.getAnnotation(DbmRepository.class);
 		if(dbmRepository==null){

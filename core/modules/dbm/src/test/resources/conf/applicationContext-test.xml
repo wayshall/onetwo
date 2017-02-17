@@ -28,6 +28,11 @@
 	    <ref bean="dataSource" />
 	   </property>
 	</bean>
+    
+    <bean id="dataSource2" class="org.onetwo.common.ds.DatasourceFactoryBean">
+        <property name="implementClass" value="org.apache.tomcat.jdbc.pool.DataSource"/>
+        <property name="prefix" value="test."/>
+    </bean>
 	
 	<beans profile="product">
 		<bean id="dataSource" class="org.onetwo.common.ds.DatasourceFactoryBean">

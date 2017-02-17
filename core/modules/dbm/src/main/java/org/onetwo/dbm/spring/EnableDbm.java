@@ -13,6 +13,12 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Import({DbmSpringConfiguration.class, DynamicQueryObjectRegisterConfigration.class})
 public @interface EnableDbm {
+	
+	/****
+	 * dataSource bean name
+	 * @return
+	 */
+	String value() default "";
 	/****
 	 * package to scan model and repository
 	 * @return

@@ -4,10 +4,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanPropertiesMapper;
-import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
 
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private DataSource dataSource;
 	
@@ -38,24 +36,6 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		
 		BeanPropertiesMapper mapper = new BeanPropertiesMapper(config, prefix);
 		mapper.mapToObject(dataSource);
-		/*BeanWrapper bw = SpringUtils.newBeanWrapper(dataSource);
-		Enumeration<?> names = config.propertyNames();
-		while(names.hasMoreElements()){
-			String propertyName = names.nextElement().toString();
-			String value = config.getProperty(propertyName);
-			if(hasPrefix){
-				if(propertyName.startsWith(prefix)){
-					propertyName = propertyName.substring(prefix.length());
-					bw.setPropertyValue(propertyName, value);
-					logger.info("set property: {}={} ", propertyName, value);
-				}else{
-//					logger.info("ignore property: {}={}", propertyName, value);
-				}
-			}else{
-				bw.setPropertyValue(propertyName, value);
-				logger.info("set property: {}={} ", propertyName, value);
-			}
-		}*/
 	}
 
 	@Override

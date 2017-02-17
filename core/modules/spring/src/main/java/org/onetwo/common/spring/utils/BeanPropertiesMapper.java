@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.utils;
 
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -15,10 +16,16 @@ public class BeanPropertiesMapper {
 	
 	final private Properties config;
 	final private String prefix;
+	private boolean ignoreFoundProperty = false;
+	
 	public BeanPropertiesMapper(Properties config, String prefix) {
+		this(config, prefix, false);
+	}
+	public BeanPropertiesMapper(Properties config, String prefix, boolean ignoreFoundProperty) {
 		super();
 		this.config = config;
 		this.prefix = prefix;
+		this.ignoreFoundProperty = ignoreFoundProperty;
 	}
 	
 	public void mapToObject(Object obj) {
@@ -33,20 +40,29 @@ public class BeanPropertiesMapper {
 			if(hasPrefix){
 				if(propertyName.startsWith(prefix)){
 					propertyName = propertyName.substring(prefix.length());
-					bw.setPropertyValue(propertyName, value);
-					if(logger.isDebugEnabled()){
-						logger.debug("set property: {}={} ", propertyName, value);
-					}
-				}else{
-//					logger.info("ignore property: {}={}", propertyName, value);
+					setPropertyValue(bw, propertyName, value);
 				}
 			}else{
-				bw.setPropertyValue(propertyName, value);
-				if(logger.isDebugEnabled()){
-					logger.debug("set property: {}={} ", propertyName, value);
-				}
+				setPropertyValue(bw, propertyName, value);
 			}
 		}
+	}
+	
+	protected void setPropertyValue(BeanWrapper bw, String propertyName, Object value){
+		if(!bw.isWritableProperty(propertyName)){
+			if(!ignoreFoundProperty){
+				throw new NoSuchElementException("no setter found for property: " + propertyName);
+			}
+			logger.debug("ignore property: {}={} ", propertyName, value);
+			return ;
+		}
+		bw.setPropertyValue(propertyName, value);
+		if(logger.isDebugEnabled()){
+			logger.debug("set property: {}={} ", propertyName, value);
+		}
+	}
+	public void setIgnoreFoundProperty(boolean ignoreFoundProperty) {
+		this.ignoreFoundProperty = ignoreFoundProperty;
 	}
 	
 }

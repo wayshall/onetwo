@@ -1,10 +1,12 @@
 package org.onetwo.dbm.spring;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
@@ -12,6 +14,8 @@ import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
@@ -62,6 +66,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 //	private String[] packagesToScan;
 //	private List<String> packageNames = new ArrayList<String>();
 	
+	private String dataSourceName;
+	
 	public DbmSpringConfiguration(){
 	}
 
@@ -77,6 +83,9 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		if(ArrayUtils.isEmpty(packagesToScan)){
 			packageNames.addAll(DbmUtils.scanEnableDbmPackages(applicationContext));
 		}*/
+		Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
+		dataSourceName = (String)annotationAttributes.get("value");
+		System.out.println("dataSource:"+dataSourceName);
 	}
 	
 	
@@ -180,7 +189,16 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	@Autowired
-	public DbmDaoImplementor dbmDao(DataSource dataSource) {
+	public DbmDaoImplementor dbmDao(Map<String, DataSource> dataSources) {
+		if(LangUtils.isEmpty(dataSources)){
+			throw new DbmException("no dataSource found, you must be configure a dataSource!");
+		}
+		DataSource dataSource = null;
+		if(StringUtils.isBlank(dataSourceName)){
+			dataSource = dataSources.size()==1?dataSources.values().iterator().next():dataSources.get("dataSource");
+		}else{
+			dataSource = dataSources.get(dataSourceName);
+		}
 		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource, dbmInnerServiceRegistry(dataSource));
 		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
 		jfishDao.setJdbcTemplate(jdbcTemplate(dataSource));
