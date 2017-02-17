@@ -4,6 +4,10 @@
 spring-boot技术交流群：  8060215
 
 
+##环境要求
+JDK8+
+
+
 ##maven   
 当前snapshot版本：**4.3.9-SNAPSHOT**   
 
@@ -47,6 +51,8 @@ spring-boot技术交流群：  8060215
    
 
 ##[boot模块](https://github.com/wayshall/onetwo/tree/master/core/modules/boot)
-boot模块，基于boot上封装了一点点的插件机制。
+boot模块，基于boot和freemarker上封装了一点点的插件机制。
    
 
+##[web-admin插件](https://github.com/wayshall/onetwo/tree/master/core/plugins/web-admin)
+基于boot模块的插件机制，使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
