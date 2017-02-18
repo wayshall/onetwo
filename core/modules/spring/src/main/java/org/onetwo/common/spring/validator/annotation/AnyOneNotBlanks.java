@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.validator;
+package org.onetwo.common.spring.validator.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

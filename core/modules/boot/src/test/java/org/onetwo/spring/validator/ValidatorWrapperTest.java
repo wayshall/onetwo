@@ -5,10 +5,10 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.spring.validator.AnyOneNotBlank;
-import org.onetwo.common.spring.validator.AnyOneNotBlanks;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;
+import org.onetwo.common.spring.validator.annotation.AnyOneNotBlanks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;

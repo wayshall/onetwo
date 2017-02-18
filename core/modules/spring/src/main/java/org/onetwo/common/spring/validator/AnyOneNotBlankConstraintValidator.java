@@ -6,6 +6,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 
