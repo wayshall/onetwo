@@ -71,7 +71,7 @@ abstract public class AbstractJFishEventListener implements JFishEventListener {
 	
 	protected boolean isUseBatchUpdate(List<?> args, JFishEventSource es){
 		DbmConfig dbc = es.getDataBaseConfig();
-		return dbc.isBatchEnabled() && args.size()>dbc.getUseBatchThreshold();
+		return dbc.isUseBatchOptimize() && args.size()>dbc.getUseBatchThreshold();
 	}
 	
 

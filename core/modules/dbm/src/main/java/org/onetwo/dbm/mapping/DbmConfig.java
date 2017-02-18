@@ -13,7 +13,7 @@ public interface DbmConfig {
 	 * 是否开启batch插入，默认开启
 	 * @return
 	 */
-	public boolean isBatchEnabled();
+	public boolean isUseBatchOptimize();
 	
 	/****
 	 * 批量处理时，每次提交的数据量
@@ -31,5 +31,7 @@ public interface DbmConfig {
 	 * @return
 	 */
 //	public String[] getModelPackagesToScan();
+	
+	public String getDataSource();
 
 }

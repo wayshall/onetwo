@@ -17,6 +17,7 @@ public class DefaultDbmConfig implements DbmConfig {
 	private boolean logSql = true;
 	private boolean watchSqlFile = true;
 //	private String[] modelPackagesToScan;
+	private String dataSource;
 	
 
 	public DefaultDbmConfig(){
@@ -44,15 +45,18 @@ public class DefaultDbmConfig implements DbmConfig {
 		return useBatchThreshold;
 	}
 
-	@Override
-	public boolean isBatchEnabled() {
-		return useBatchOptimize;
-	}
-
 	public int getProcessSizePerBatch() {
 		return processSizePerBatch;
 	}
 
+	@Override
+	public boolean isUseBatchOptimize() {
+		return useBatchOptimize;
+	}
+
+	public void setUseBatchOptimize(boolean useBatchOptimize) {
+		this.useBatchOptimize = useBatchOptimize;
+	}
 
 	public void setUseBatchThreshold(int useBatchThreshold) {
 		this.useBatchThreshold = useBatchThreshold;
@@ -80,6 +84,14 @@ public class DefaultDbmConfig implements DbmConfig {
 
 	public void setBatchEnabled(boolean batchEnabled) {
 		this.useBatchOptimize = batchEnabled;
+	}
+
+	public String getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
 	}
 
 }

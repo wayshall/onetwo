@@ -83,9 +83,12 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		if(ArrayUtils.isEmpty(packagesToScan)){
 			packageNames.addAll(DbmUtils.scanEnableDbmPackages(applicationContext));
 		}*/
-		Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
-		dataSourceName = (String)annotationAttributes.get("value");
-		System.out.println("dataSource:"+dataSourceName);
+		if(importMetadata!=null){
+			Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
+			if(annotationAttributes!=null){
+				dataSourceName = (String)annotationAttributes.get("value");
+			}
+		}
 	}
 	
 	
@@ -194,6 +197,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 			throw new DbmException("no dataSource found, you must be configure a dataSource!");
 		}
 		DataSource dataSource = null;
+		String dataSourceName = getDataSourceName();
 		if(StringUtils.isBlank(dataSourceName)){
 			dataSource = dataSources.size()==1?dataSources.values().iterator().next():dataSources.get("dataSource");
 		}else{
@@ -205,6 +209,14 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
 		jfishDao.setPackagesToScan(getAllDbmPackageNames().toArray(new String[0]));
 		return jfishDao;
+	}
+	
+	private String getDataSourceName(){
+		String ds = defaultDbmConfig().getDataSource();
+		if(StringUtils.isBlank(ds)){
+			ds = this.dataSourceName;
+		}
+		return ds;
 	}
 	
 	@Bean

@@ -8,6 +8,8 @@ import javax.sql.DataSource;
 import org.onetwo.common.spring.cache.JFishSimpleCacheManagerImpl;
 import org.onetwo.common.spring.config.JFishProfile;
 import org.onetwo.common.spring.test.SpringBaseJUnitTestCase;
+import org.onetwo.dbm.mapping.DbmConfig;
+import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,11 @@ public class DbmBaseTest extends SpringBaseJUnitTestCase {
 		public CacheManager cacheManager() {
 			JFishSimpleCacheManagerImpl cache = new JFishSimpleCacheManagerImpl();
 			return cache;
+		}
+		
+		@Bean
+		public DbmConfig dbmConfig(){
+			return new DefaultDbmConfig();
 		}
 		
 	}
