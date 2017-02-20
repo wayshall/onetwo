@@ -25,7 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author way
  *
  */
-@ConfigurationProperties(prefix="jfish.siteConfig")
+//@ConfigurationProperties(prefix="jfish.siteConfig")
+@ConfigurationProperties(prefix="jfish.site")
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {
 	/*public static final String BASEURL = "baseURL";
@@ -37,7 +38,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
 
-	public static final String ENABLE_UPLOAD_PREFIX = "siteConfig.upload";
+	public static final String ENABLE_UPLOAD_PREFIX = "jfish.site.upload";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
