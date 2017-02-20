@@ -40,7 +40,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	protected String getStoreDir(StoringFileContext context){
 //		Assert.notNull(context.getStoreFilePathStrategy(), "strategy can not be null");
 		if(StringUtils.isBlank(storeBaseDir)){
-			throw new BaseException("store dir must be config, but : " + storeBaseDir);
+			throw new BaseException("store dir must be config, but blank ");
 		}
 		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
 		if(strategy==null){
