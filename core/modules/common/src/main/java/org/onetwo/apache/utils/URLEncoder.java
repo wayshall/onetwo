@@ -42,6 +42,7 @@ public class URLEncoder {
      'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static final URLEncoder DEFAULT = new URLEncoder();
+    public static final URLEncoder SAFE_PARAMS_ENCODER = new URLEncoder();
     static {
         DEFAULT.addSafeCharacter('~');
         DEFAULT.addSafeCharacter('-');
@@ -49,6 +50,18 @@ public class URLEncoder {
         DEFAULT.addSafeCharacter('.');
         DEFAULT.addSafeCharacter('*');
         DEFAULT.addSafeCharacter('/');
+        
+
+        SAFE_PARAMS_ENCODER.addSafeCharacter('~');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('-');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('_');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('.');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('*');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('/');
+        //for params
+        SAFE_PARAMS_ENCODER.addSafeCharacter('&');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('?');
+        SAFE_PARAMS_ENCODER.addSafeCharacter('=');
     }
 
     //Array containing the safe characters set.

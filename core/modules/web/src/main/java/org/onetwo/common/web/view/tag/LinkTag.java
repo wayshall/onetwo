@@ -3,6 +3,7 @@ package org.onetwo.common.web.view.tag;
 import javax.servlet.jsp.JspException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.apache.utils.URLEncoder;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
@@ -28,11 +29,12 @@ public class LinkTag extends BaseBodyTag {
 			}
 			linkAddress += linkAddress.contains("?")?"&":"?";
 			linkAddress += qs;
-			writeHref(tagWriter, linkAddress);
 		}
+		writeHref(tagWriter, linkAddress);
 	}
 	
 	private void writeHref(TagWriter tagWriter, String linkAddress) throws JspException{
+		linkAddress = URLEncoder.SAFE_PARAMS_ENCODER.encode(linkAddress);
 		tagWriter.writeAttribute("href", linkAddress);
 	}
 
