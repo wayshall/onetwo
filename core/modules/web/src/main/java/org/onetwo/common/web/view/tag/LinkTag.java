@@ -12,6 +12,7 @@ public class LinkTag extends BaseBodyTag {
 	
 	private String href;
 	private boolean keepQueryString = true;
+	private boolean encodeUrl = true;
 	
 	public LinkTag() {
 		super("a");
@@ -34,7 +35,9 @@ public class LinkTag extends BaseBodyTag {
 	}
 	
 	private void writeHref(TagWriter tagWriter, String linkAddress) throws JspException{
-		linkAddress = URLEncoder.SAFE_PARAMS_ENCODER.encode(linkAddress);
+		if(encodeUrl){
+			linkAddress = URLEncoder.SAFE_PARAMS_ENCODER.encode(linkAddress);
+		}
 		tagWriter.writeAttribute("href", linkAddress);
 	}
 
@@ -44,6 +47,10 @@ public class LinkTag extends BaseBodyTag {
 
 	public void setKeepQueryString(boolean keepQueryString) {
 		this.keepQueryString = keepQueryString;
+	}
+
+	public void setEncodeUrl(boolean encodeUrl) {
+		this.encodeUrl = encodeUrl;
 	}
 
 }
