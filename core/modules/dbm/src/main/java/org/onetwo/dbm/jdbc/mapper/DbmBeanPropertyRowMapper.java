@@ -126,7 +126,8 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 
 		for (int index = 1; index <= columnCount; index++) {
 			String column = DbmUtils.lookupColumnName(rsmd, index);
-			String field = lowerCaseName(column.replaceAll(" ", ""));
+//			String field = lowerCaseName(column.replaceAll(" ", ""));
+			String field = lowerCaseName(column);
 			PropertyDescriptor pd = this.mappedFields.get(field);
 			if (pd != null) {
 				try {
