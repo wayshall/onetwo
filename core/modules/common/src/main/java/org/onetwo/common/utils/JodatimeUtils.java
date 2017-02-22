@@ -18,13 +18,15 @@ public class JodatimeUtils {
 	
 	public static DateTime atStartOfDate(Date date){
 		Objects.requireNonNull(date);
-		DateTime dt = new DateTime(date).withTimeAtStartOfDay();
+//		DateTime dt = new DateTime(date).withTimeAtStartOfDay();
+		DateTime dt = new DateTime(date).millisOfDay().withMinimumValue();
 		return dt;
 	}
 	
 	public static DateTime atEndOfDate(Date date){
 		Objects.requireNonNull(date);
-		DateTime dt = new DateTime(date).withTimeAtStartOfDay().plusDays(1).minusMillis(1);
+//		DateTime dt = new DateTime(date).withTimeAtStartOfDay().plusDays(1).minusMillis(1);
+		DateTime dt = new DateTime(date).millisOfDay().withMaximumValue();
 		return dt;
 	}
 	

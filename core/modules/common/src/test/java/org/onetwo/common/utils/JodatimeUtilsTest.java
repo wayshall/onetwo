@@ -45,8 +45,11 @@ public class JodatimeUtilsTest {
 		cal.set(1970, 0, 1);
 		System.out.println("cal:"+cal.getTime().toLocaleString());*/
 		
-		DateTime dt = DateTime.now().millisOfDay().withMinimumValue();;
+		DateTime dt = DateTime.now().millisOfDay().withMinimumValue();
 		System.out.println(JodatimeUtils.formatDateTime(dt.toDate()));
+		dt = dt.millisOfDay().withMaximumValue();
+		System.out.println(JodatimeUtils.formatDateTime(dt.toDate()));
+		System.out.println(JodatimeUtils.formatDateTime(JodatimeUtils.atEndOfDate(dt.toDate()).toDate()));
 		
 		DateTime date = JodatimeUtils.parse("2015-03-18");
 		System.out.println("date: " + date.getDayOfMonth());
