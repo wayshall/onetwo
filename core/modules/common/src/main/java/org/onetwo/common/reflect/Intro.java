@@ -60,6 +60,8 @@ public class Intro<T> {
 	private volatile Map<String, Field> _allFieldMap;
 	private ReentrantLock _allFieldLock = new ReentrantLock();
 	
+	private volatile Map<String, JFishProperty> jfishProperties;
+	
 	private LoadingCache<String, JFishFieldInfoImpl> fieldInfoCaches = CacheBuilder.newBuilder()
 																				.build(new CacheLoader<String, JFishFieldInfoImpl>() {
 																					@Override
@@ -235,6 +237,19 @@ public class Intro<T> {
 	}
 	
 
+	public Map<String, JFishProperty> getJFishProperties(){
+		Map<String, JFishProperty> jproperties = this.jfishProperties;
+		if(jproperties!=null){
+			return jproperties;
+		}
+		jproperties = Maps.newHashMap();
+		for (PropertyDescriptor pd : getPropertyArray()) {
+			JFishProperty jproperty = getJFishProperty(pd.getName(), false);
+			jproperties.put(pd.getName(), jproperty);
+		}
+		this.jfishProperties = jproperties;
+		return jproperties;
+	}
 	public JFishProperty getJFishProperty(String propName, boolean isField){
 		JFishProperty prop = null;
 		if(isField){

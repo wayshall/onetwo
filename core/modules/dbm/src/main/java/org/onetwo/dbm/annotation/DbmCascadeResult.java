@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DbmMapping {
-	
-	String columnPrefix();
+public @interface DbmCascadeResult {
+	String idField() default "id";
+	String columnPrefix() default "";
 	
 }

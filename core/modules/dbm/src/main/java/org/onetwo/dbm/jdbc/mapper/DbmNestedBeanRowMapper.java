@@ -3,17 +3,16 @@ package org.onetwo.dbm.jdbc.mapper;
 import java.beans.PropertyDescriptor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ClassIntroManager;
 import org.onetwo.common.reflect.Intro;
-import org.onetwo.dbm.annotation.DbmMapping;
+import org.onetwo.common.utils.JFishProperty;
+import org.onetwo.dbm.annotation.DbmCascadeResult;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
+import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +28,8 @@ import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
+
+import com.google.common.collect.Maps;
 
 public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -37,9 +37,9 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	protected ConversionService conversionService = new DefaultConversionService();
 
 	protected Class<T> mappedClass;
-	protected Map<String, PrefixBeanRowMapperWrapper> fieldRowMapperMappings;
 //	private DbmTypeMapping sqlTypeMapping;
 	protected JdbcResultSetGetter jdbcResultSetGetter;
+	protected PropertySetter propertySetter;
 
 	/*public DbmBeanPropertyRowMapper() {
 		super();
@@ -51,10 +51,6 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		this.initialize(mappedClass);
 	}
 
-	protected String lowerCaseName(String name) {
-		return name.toLowerCase(Locale.US);
-	}
-
 	public ConversionService getConversionService() {
 		return conversionService;
 	}
@@ -63,67 +59,77 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		this.conversionService = conversionService;
 	}
 
-	protected void initialize(Class<T> mappedClass) {
-		this.mappedClass = mappedClass;
+	
+	
+	class PropertySetter {
+		private String idField = "id";
+		private String columnPrefix = "";
+		private Intro<?> classIntro;
+		private Map<String, JFishProperty> simpleFields = Maps.newHashMap();
+		private Map<String, PropertySetter> complexFields = Maps.newHashMap();
 		
-		PrefixBeanRowMapperWrapper mainClassWrapper = new PrefixBeanRowMapperWrapper(new DbmBeanPropertyRowMapper<>(jdbcResultSetGetter, mappedClass));
-		
-		this.fieldRowMapperMappings = new HashMap<>();
-		Intro<?> intro = ClassIntroManager.getInstance().getIntro(mappedClass);
-		for (PropertyDescriptor pd : intro.getProperties()) {
-			PrefixBeanRowMapperWrapper wrapper = null;
-			if (pd.getWriteMethod() != null) {
-				DbmMapping dbmMapping = pd.getReadMethod().getAnnotation(DbmMapping.class);
-				if(dbmMapping!=null){
-					wrapper = new PrefixBeanRowMapperWrapper(new DbmBeanPropertyRowMapper<>(jdbcResultSetGetter, pd.getPropertyType()));
+		public PropertySetter(String idField, String columnPrefix,
+				Class<?> mappedClass) {
+			super();
+			this.idField = idField;
+			this.columnPrefix = columnPrefix;
+			this.classIntro = ClassIntroManager.getInstance().getIntro(mappedClass);
+		}
+
+		protected void initialize(Class<?> mappedClass) {
+			for (PropertyDescriptor pd : classIntro.getProperties()) {
+				if(pd.getWriteMethod()==null){
+					continue;
+				}
+				JFishProperty jproperty = classIntro.getJFishProperty(pd.getName(), false);
+				if(jproperty.hasAnnotation(DbmCascadeResult.class)){
+					DbmCascadeResult result = jproperty.getAnnotation(DbmCascadeResult.class);
+					PropertySetter setter = new PropertySetter(result.idField(), appendPrefix(result.columnPrefix()), jproperty.getType());
+					complexFields.put(jproperty.getName(), setter);
 				}else{
-					wrapper = mainClassWrapper;
-				}
-				this.fieldRowMapperMappings.put(pd.getName(), wrapper);
-				String underscoredName = underscoreName(pd.getName());
-				if (!lowerCaseName(pd.getName()).equals(underscoredName)) {
-					this.fieldRowMapperMappings.put(underscoredName, wrapper);
+					this.simpleFields.put(JdbcUtils.lowerCaseName(pd.getName()), jproperty);
 				}
 			}
 		}
+		
+		protected String appendPrefix(String name){
+			return columnPrefix + name;
+		}
+		
+		public Object mapResult(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper){
+			Object id = null;
+			Object mappedObject = classIntro.newInstance();
+			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
+			initBeanWrapper(bw);
+			
+			for(Entry<String, JFishProperty> entry : simpleFields.entrySet()){
+				JFishProperty jproperty = entry.getValue();
+				String field = JdbcUtils.lowerCaseName(appendPrefix(entry.getKey()));
+				if(names.containsKey(field)){
+					int index = names.get(field);
+					setPropertyValue(bw, resutSetWrapper, index, jproperty);
+					
+				}else if(names.containsKey(JdbcUtils.underscoreName(field))){
+					int index = names.get(field);
+					setPropertyValue(bw, resutSetWrapper, index, jproperty);
+				}
+			}
+			return mappedObject;
+		}
+
+		protected void setPropertyValue(BeanWrapper bw, ResultSetWrappingSqlRowSet resutSetWrapper, int index, JFishProperty jproperty) {
+			Object value = getColumnValue(resutSetWrapper, index, jproperty.getPropertyDescriptor());
+			bw.setPropertyValue(jproperty.getName(), value);
+		}
 	}
 
-	/**
-	 * Convert a name in camelCase to an underscored name in lower case.
-	 * Any upper case letters are converted to lower case with a preceding underscore.
-	 * @param name the original name
-	 * @return the converted name
-	 * @since 4.2
-	 * @see #lowerCaseName
-	 */
-	protected String underscoreName(String name) {
-		if (!StringUtils.hasLength(name)) {
-			return "";
-		}
-		StringBuilder result = new StringBuilder();
-		result.append(lowerCaseName(name.substring(0, 1)));
-		for (int i = 1; i < name.length(); i++) {
-			String s = name.substring(i, i + 1);
-			String slc = lowerCaseName(s);
-			if (!s.equals(slc)) {
-				result.append("_").append(slc);
-			}
-			else {
-				result.append(s);
-			}
-		}
-		return result.toString();
-	}
 
-	protected void initBeanWrapper(BeanWrapper bw) {
-		ConversionService cs = getConversionService();
-		if (cs != null) {
-			bw.setConversionService(cs);
-		}
+	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) {
+		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
 	}
 	
 	@Override
-	public T mapRow(ResultSet rs, int rowNumber) throws SQLException {
+	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Assert.state(this.mappedClass != null, "Mapped class was not specified");
 		T mappedObject = BeanUtils.instantiate(this.mappedClass);
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
@@ -132,11 +138,12 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		ResultSetWrappingSqlRowSet resutSetWrapper = new ResultSetWrappingSqlRowSet(rs);
 		SqlRowSetMetaData rsmd = resutSetWrapper.getMetaData();
 		int columnCount = resutSetWrapper.getMetaData().getColumnCount();
-
+		Map<String, Integer> names = DbmUtils.lookupColumnNames(rsmd);
+		
 		for (int index = 1; index <= columnCount; index++) {
 			String column = DbmUtils.lookupColumnName(rsmd, index);
 //			String field = lowerCaseName(column.replaceAll(" ", ""));
-			String field = lowerCaseName(column);
+			String field = JdbcUtils.lowerCaseName(column);
 			PropertyDescriptor pd = this.mappedFields.get(field);
 			if (pd != null) {
 				try {
@@ -178,58 +185,12 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 
 		return mappedObject;
 	}
-	
-	/*protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) throws SQLException {
-		final Object value = JdbcUtils.getResultSetValue(rs, index, pd.getPropertyType());
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		Object actualValue = DbmUtils.convertPropertyValue(jproperty, value);
-		return actualValue;
-	}*/
-	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) throws SQLException {
-		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
-		/*JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(jproperty.getType(), sqlType);
-		Object value = typeHandler.getResult(rs, index);
-		return value;*/
-	}
 
-	public static class DbmMappingData {
-		private final String columnPrefix;
-
-		public DbmMappingData(DbmMapping dbmMapping) {
-			super();
-			this.columnPrefix = dbmMapping.columnPrefix();
-		}
-		
-		public boolean isMatchColumnPrefix(String columnName){
-			return columnName.startsWith(columnPrefix);
-		}
-		
-	}
-	public static class PrefixColumnPropertySetter {
-		final private DbmMappingData mapping;
-		final private DbmBeanPropertyRowMapper<?> rowMapper;
-
-		public PrefixColumnPropertySetter(DbmBeanPropertyRowMapper<?> rowMapper) {
-			this.mapping = null;
-			this.rowMapper = rowMapper;
-		}
-		public PrefixColumnPropertySetter(DbmMapping mapping, DbmBeanPropertyRowMapper<?> rowMapper) {
-			this(new DbmMappingData(mapping), rowMapper);
-		}
-		public PrefixColumnPropertySetter(DbmMappingData mapping, DbmBeanPropertyRowMapper<?> rowMapper) {
-			super();
-			this.mapping = mapping;
-			this.rowMapper = rowMapper;
-		}
-		
-		public boolean match(String columName){
-			if(mapping==null){
-				return true;
-			}
-			return mapping.isMatchColumnPrefix(columName);
+	protected void initBeanWrapper(BeanWrapper bw) {
+		ConversionService cs = getConversionService();
+		if (cs != null) {
+			bw.setConversionService(cs);
 		}
 	}
-
 
 }

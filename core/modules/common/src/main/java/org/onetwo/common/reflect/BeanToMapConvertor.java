@@ -17,6 +17,11 @@ import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+/*****
+ * see also spring utils toFlatMap
+ * @author way
+ *
+ */
 public class BeanToMapConvertor {
 	
 	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {

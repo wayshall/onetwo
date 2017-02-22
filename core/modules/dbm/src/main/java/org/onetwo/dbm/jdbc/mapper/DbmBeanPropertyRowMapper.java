@@ -5,12 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
+import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -26,7 +26,6 @@ import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -50,9 +49,6 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		this.initialize(mappedClass);
 	}
 
-	protected String lowerCaseName(String name) {
-		return name.toLowerCase(Locale.US);
-	}
 
 	public ConversionService getConversionService() {
 		return conversionService;
@@ -69,9 +65,9 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(mappedClass);
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getWriteMethod() != null) {
-				this.mappedFields.put(lowerCaseName(pd.getName()), pd);
+				this.mappedFields.put(JdbcUtils.lowerCaseName(pd.getName()), pd);
 				String underscoredName = underscoreName(pd.getName());
-				if (!lowerCaseName(pd.getName()).equals(underscoredName)) {
+				if (!JdbcUtils.lowerCaseName(pd.getName()).equals(underscoredName)) {
 					this.mappedFields.put(underscoredName, pd);
 				}
 				this.mappedProperties.add(pd.getName());
@@ -88,22 +84,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	 * @see #lowerCaseName
 	 */
 	protected String underscoreName(String name) {
-		if (!StringUtils.hasLength(name)) {
-			return "";
-		}
-		StringBuilder result = new StringBuilder();
-		result.append(lowerCaseName(name.substring(0, 1)));
-		for (int i = 1; i < name.length(); i++) {
-			String s = name.substring(i, i + 1);
-			String slc = lowerCaseName(s);
-			if (!s.equals(slc)) {
-				result.append("_").append(slc);
-			}
-			else {
-				result.append(s);
-			}
-		}
-		return result.toString();
+		return JdbcUtils.underscoreName(name);
 	}
 
 	protected void initBeanWrapper(BeanWrapper bw) {
@@ -127,7 +108,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		for (int index = 1; index <= columnCount; index++) {
 			String column = DbmUtils.lookupColumnName(rsmd, index);
 //			String field = lowerCaseName(column.replaceAll(" ", ""));
-			String field = lowerCaseName(column);
+			String field = JdbcUtils.lowerCaseName(column);
 			PropertyDescriptor pd = this.mappedFields.get(field);
 			if (pd != null) {
 				try {

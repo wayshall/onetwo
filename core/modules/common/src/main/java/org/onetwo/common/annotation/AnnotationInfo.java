@@ -1,19 +1,23 @@
 package org.onetwo.common.annotation;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 
 @SuppressWarnings("unchecked")
 public class AnnotationInfo {
 
 	private final Class<?> sourceClass;
-	private final List<Annotation> annotations;
+//	private final List<Annotation> annotations;
+	private final Map<Class<? extends Annotation>, Annotation> annotationMap;
 	
 
 	public AnnotationInfo(Class<?> sourceClass) {
@@ -23,12 +27,16 @@ public class AnnotationInfo {
 	public AnnotationInfo(Class<?> sourceClass, Annotation...annoArray) {
 		this.sourceClass = sourceClass;
 		if(LangUtils.isEmpty(annoArray)){
-			this.annotations = Collections.EMPTY_LIST;
-			return ;
+//			this.annotations = Collections.EMPTY_LIST;
+			this.annotationMap = Collections.emptyMap();
+		}else{
+//			this.annotations = new ArrayList<Annotation>(annoArray.length);
+			this.annotationMap = Maps.newHashMap();
+			for(Annotation a : annoArray){
+//				annotations.add(a);
+				annotationMap.put(a.annotationType(), a);
+			}
 		}
-		this.annotations = new ArrayList<Annotation>(annoArray.length);
-		for(Annotation a : annoArray)
-			annotations.add(a);
 	}
 
 
@@ -38,7 +46,7 @@ public class AnnotationInfo {
 
 
 	public List<Annotation> getAnnotations() {
-		return annotations;
+		return ImmutableList.copyOf(annotationMap.values());
 	}
 	
 	public boolean hasAnnotation(Class<? extends Annotation> annoClass){
@@ -47,10 +55,11 @@ public class AnnotationInfo {
 	
 	public <T extends Annotation> T getAnnotation(Class<T> annoClass){
 		Assert.notNull(annoClass, "annotation class can not be null");
-		for(Annotation anno : getAnnotations()){
+		/*for(Annotation anno : getAnnotations()){
 			if(annoClass.isInstance(anno))
 				return (T)anno;
 		}
-		return null;
+		return null;*/
+		return (T)this.annotationMap.get(annoClass);
 	}
 }
