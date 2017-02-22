@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 public class TomcatServer {
 	
 	public static class TomcatServerBuilder {
+		
 		private ServerConfig serverConfig = new ServerConfig();
 		static private Map<String, String> initParametersMapper = new HashMap<String, String>();
 
