@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ClassIntroManager;
+import org.onetwo.common.reflect.Intro;
+import org.onetwo.dbm.annotation.DbmMapping;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
@@ -28,15 +31,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
+public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	protected ConversionService conversionService = new DefaultConversionService();
-	protected boolean primitivesDefaultedForNullValue = true;
 
 	protected Class<T> mappedClass;
-	protected Set<String> mappedProperties;
-	protected Map<String, PropertyDescriptor> mappedFields;
+	protected Map<String, PrefixBeanRowMapperWrapper> fieldRowMapperMappings;
 //	private DbmTypeMapping sqlTypeMapping;
 	protected JdbcResultSetGetter jdbcResultSetGetter;
 
@@ -44,7 +45,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		super();
 	}*/
 
-	public DbmBeanPropertyRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass) {
+	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass) {
 		this.mappedClass = mappedClass;
 		this.jdbcResultSetGetter = jdbcResultSetGetter;
 		this.initialize(mappedClass);
@@ -64,17 +65,25 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 
 	protected void initialize(Class<T> mappedClass) {
 		this.mappedClass = mappedClass;
-		this.mappedFields = new HashMap<String, PropertyDescriptor>();
-		this.mappedProperties = new HashSet<String>();
-		PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(mappedClass);
-		for (PropertyDescriptor pd : pds) {
+		
+		PrefixBeanRowMapperWrapper mainClassWrapper = new PrefixBeanRowMapperWrapper(new DbmBeanPropertyRowMapper<>(jdbcResultSetGetter, mappedClass));
+		
+		this.fieldRowMapperMappings = new HashMap<>();
+		Intro<?> intro = ClassIntroManager.getInstance().getIntro(mappedClass);
+		for (PropertyDescriptor pd : intro.getProperties()) {
+			PrefixBeanRowMapperWrapper wrapper = null;
 			if (pd.getWriteMethod() != null) {
-				this.mappedFields.put(lowerCaseName(pd.getName()), pd);
+				DbmMapping dbmMapping = pd.getReadMethod().getAnnotation(DbmMapping.class);
+				if(dbmMapping!=null){
+					wrapper = new PrefixBeanRowMapperWrapper(new DbmBeanPropertyRowMapper<>(jdbcResultSetGetter, pd.getPropertyType()));
+				}else{
+					wrapper = mainClassWrapper;
+				}
+				this.fieldRowMapperMappings.put(pd.getName(), wrapper);
 				String underscoredName = underscoreName(pd.getName());
 				if (!lowerCaseName(pd.getName()).equals(underscoredName)) {
-					this.mappedFields.put(underscoredName, pd);
+					this.fieldRowMapperMappings.put(underscoredName, wrapper);
 				}
-				this.mappedProperties.add(pd.getName());
 			}
 		}
 	}
@@ -183,5 +192,44 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		Object value = typeHandler.getResult(rs, index);
 		return value;*/
 	}
+
+	public static class DbmMappingData {
+		private final String columnPrefix;
+
+		public DbmMappingData(DbmMapping dbmMapping) {
+			super();
+			this.columnPrefix = dbmMapping.columnPrefix();
+		}
+		
+		public boolean isMatchColumnPrefix(String columnName){
+			return columnName.startsWith(columnPrefix);
+		}
+		
+	}
+	public static class PrefixColumnPropertySetter {
+		final private DbmMappingData mapping;
+		final private DbmBeanPropertyRowMapper<?> rowMapper;
+
+		public PrefixColumnPropertySetter(DbmBeanPropertyRowMapper<?> rowMapper) {
+			this.mapping = null;
+			this.rowMapper = rowMapper;
+		}
+		public PrefixColumnPropertySetter(DbmMapping mapping, DbmBeanPropertyRowMapper<?> rowMapper) {
+			this(new DbmMappingData(mapping), rowMapper);
+		}
+		public PrefixColumnPropertySetter(DbmMappingData mapping, DbmBeanPropertyRowMapper<?> rowMapper) {
+			super();
+			this.mapping = mapping;
+			this.rowMapper = rowMapper;
+		}
+		
+		public boolean match(String columName){
+			if(mapping==null){
+				return true;
+			}
+			return mapping.isMatchColumnPrefix(columName);
+		}
+	}
+
 
 }

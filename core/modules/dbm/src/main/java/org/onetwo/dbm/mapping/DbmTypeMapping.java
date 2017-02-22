@@ -10,7 +10,6 @@ import org.onetwo.dbm.utils.DBUtils;
 import com.google.common.collect.Maps;
 
 
-@SuppressWarnings("unchecked")
 public class DbmTypeMapping {
 	
 	/*private  final Map<Class<?>, SqlJavaTypeMapper<?>> basicTypes = Maps.newHashMap();

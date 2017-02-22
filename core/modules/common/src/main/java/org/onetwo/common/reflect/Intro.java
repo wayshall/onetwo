@@ -65,6 +65,9 @@ public class Intro<T> {
 																					@Override
 																					public JFishFieldInfoImpl load(String propName) throws Exception {
 																						Field field = getField(propName);
+																						if(field==null){
+																							return null;
+																						}
 																						return new JFishFieldInfoImpl(clazz, field);
 																					}
 																				});
@@ -74,6 +77,9 @@ public class Intro<T> {
 																					@Override
 																					public JFishPropertyInfoImpl load(String propName) throws Exception {
 																						PropertyDescriptor pd = getProperty(propName);
+																						if(pd==null){
+																							return null;
+																						}
 																						return new JFishPropertyInfoImpl(clazz, pd);
 																					}
 																				});
@@ -228,6 +234,7 @@ public class Intro<T> {
 		return propertyDescriptors.containsKey(propName);
 	}
 	
+
 	public JFishProperty getJFishProperty(String propName, boolean isField){
 		JFishProperty prop = null;
 		if(isField){
