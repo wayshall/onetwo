@@ -23,6 +23,7 @@ import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.JFishFieldInfoImpl;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyInfoImpl;
@@ -35,6 +36,7 @@ import org.onetwo.common.utils.list.JFishList;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -52,8 +54,8 @@ public class Intro<T> {
 	public static final String WRITEMETHOD_KEY = "set";
 	
 	private final Class<T> clazz;
-	private final Map<String, PropertyDescriptor> propertyDescriptors;
-	private volatile Map<String, Field> _fieldMaps;
+	private Map<String, PropertyDescriptor> propertyDescriptors;
+	private volatile Map<String, Field> fieldMaps;
 	private ReentrantLock _fieldLock = new ReentrantLock();
 
 //	private List<Field> allFields;
@@ -89,7 +91,7 @@ public class Intro<T> {
 	public Intro(Class<T> clazz) {
 		Assert.notNull(clazz);
 		this.clazz = clazz;
-		this.propertyDescriptors = loadPropertyDescriptors();
+//		this.propertyDescriptors = loadPropertyDescriptors0();
 //		this.fields = loadFields();
 	}
 
@@ -97,7 +99,34 @@ public class Intro<T> {
 		return clazz;
 	}
 	
-	private Map<String, PropertyDescriptor> loadPropertyDescriptors(){
+	public boolean isMap(){
+		return Map.class.isAssignableFrom(clazz);
+	}
+	
+	public boolean isCollection(){
+		return Collection.class.isAssignableFrom(clazz);
+	}
+	
+	public boolean isArray(){
+		return clazz.isArray();
+	}
+	
+
+	private void loadPropertyDescriptors() {
+		if(propertyDescriptors!=null)
+			return ;
+		
+		_allFieldLock.lock();
+		try {
+			if(propertyDescriptors!=null)//dbcheck
+				return ;
+			this.propertyDescriptors = this.loadPropertyDescriptors0();
+		} finally{
+			_allFieldLock.unlock();
+		}
+	}
+	
+	private Map<String, PropertyDescriptor> loadPropertyDescriptors0(){
 		if(clazz==Object.class || clazz.isInterface() || clazz.isPrimitive())
 			return Collections.emptyMap();
 		BeanInfo beanInfo = null;
@@ -119,11 +148,13 @@ public class Intro<T> {
 	public List<Field> getAllFields() {
 		_loadAllFields();
 		
-		return JFishList.wrap(_allFieldMap.values());
+//		return JFishList.wrap(_allFieldMap.values());
+		return ImmutableList.copyOf(_allFieldMap.values());
 	}
 	
 	public List<String> getAllPropertyNames() {
-		return JFishList.wrap(propertyDescriptors.keySet());
+//		return JFishList.wrap(propertyDescriptors.keySet());
+		return ImmutableList.copyOf(this.getPropertyDescriptors().keySet());
 	}
 	
 
@@ -134,7 +165,7 @@ public class Intro<T> {
 	
 	@SuppressWarnings("unchecked")
 	public JFishList<PropertyDescriptor> getPropertyDescriptors(final Class<? extends Annotation>... ignoreAnnotations){
-		return JFishList.wrap(this.propertyDescriptors.values()).filter(new It<PropertyDescriptor>() {
+		return JFishList.wrap(this.getPropertyDescriptors().values()).filter(new It<PropertyDescriptor>() {
 			
 			@Override
 			public boolean doIt(PropertyDescriptor element, int index) {
@@ -180,16 +211,16 @@ public class Intro<T> {
 	}
 
 	private void _loadFields(){
-		if(_fieldMaps!=null)
+		if(fieldMaps!=null)
 			return ;
 		
 		this._fieldLock.lock();
 		try{
-			if(_fieldMaps!=null)
+			if(fieldMaps!=null)
 				return ;
 
 			if(clazz==Object.class || clazz.isPrimitive()){
-				_fieldMaps = Collections.emptyMap();
+				fieldMaps = Collections.emptyMap();
 				return ;
 			}
 			Field[] fields = clazz.getDeclaredFields();
@@ -197,7 +228,7 @@ public class Intro<T> {
 			for(Field field : fields){
 				maps.put(field.getName(), field);
 			}
-			this._fieldMaps = ImmutableMap.copyOf(maps);
+			this.fieldMaps = ImmutableMap.copyOf(maps);
 		}finally{
 			this._fieldLock.unlock();
 		}
@@ -206,23 +237,24 @@ public class Intro<T> {
 
 	public Map<String, Field> getFieldMaps() {
 		_loadFields();
-		return _fieldMaps;
+		return fieldMaps;
 	}
 	
 	public Map<String, PropertyDescriptor> getPropertyDescriptors() {
+		this.loadPropertyDescriptors();
 		return propertyDescriptors;
 	}
 
 	public Collection<PropertyDescriptor> getProperties(){
-		return propertyDescriptors.values();
+		return getPropertyDescriptors().values();
 	}
 
 	public PropertyDescriptor[] getPropertyArray(){
-		return propertyDescriptors.values().toArray(new PropertyDescriptor[propertyDescriptors.size()]);
+		return getPropertyDescriptors().values().toArray(new PropertyDescriptor[propertyDescriptors.size()]);
 	}
 
 	public PropertyDescriptor getProperty(String propName){
-		return propertyDescriptors.get(propName);
+		return getPropertyDescriptors().get(propName);
 	}
 
 	public PropertyDescriptor checkProperty(String propName){
@@ -233,7 +265,7 @@ public class Intro<T> {
 	}
 
 	public boolean hasProperty(String propName){
-		return propertyDescriptors.containsKey(propName);
+		return getPropertyDescriptors().containsKey(propName);
 	}
 	
 
@@ -251,6 +283,9 @@ public class Intro<T> {
 		return jproperties;
 	}
 	public JFishProperty getJFishProperty(String propName, boolean isField){
+		if(StringUtils.isBlank(propName)){
+			return null;
+		}
 		JFishProperty prop = null;
 		if(isField){
 			/* 改用cache，修复大量获取字段时性能极差的问题
@@ -259,7 +294,7 @@ public class Intro<T> {
 			try {
 				prop = fieldInfoCaches.get(propName);
 			} catch (ExecutionException e) {
-				throw new BaseException("no field error", e);
+				throw new BaseException("getJFishProperty error", e);
 			}
 		}else{
 			/*PropertyDescriptor pd = getProperty(propName);
@@ -267,7 +302,7 @@ public class Intro<T> {
 			try {
 				prop = propertyInfoCaches.get(propName);
 			} catch (ExecutionException e) {
-				throw new BaseException("no property error", e);
+				throw new BaseException("getJFishProperty error", e);
 			}
 		}
 		return prop;
@@ -301,7 +336,7 @@ public class Intro<T> {
 		if(includeParent){
 			return getAllFieldMap().containsKey(fieldName);
 		}else{
-			return _fieldMaps.containsKey(fieldName);
+			return fieldMaps.containsKey(fieldName);
 		}
 	}
 
@@ -359,15 +394,6 @@ public class Intro<T> {
 			throw new RuntimeException("invoke method error: " + ex.getMessage(), ex);
 		}
 	}
-	public static <T> T newInstance(Class<T> clazz) {
-		T instance = null;
-		try {
-			instance = clazz.newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("instantce class error : " + clazz, e);
-		}
-		return instance;
-	}
 
 	public Object getFieldValue(Object obj, String fieldName) {
 		return getFieldValue(obj, fieldName, true);
@@ -397,9 +423,21 @@ public class Intro<T> {
 		setFieldValue(field, clazz, value);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public T newInstance(){
-		T bean = (T)newInstance(clazz);
-		return bean;
+		T instance = null;
+		if(isCollection()){
+			instance = clazz.cast(CUtils.newCollections((Class<Collection>)clazz));
+		}else if(isMap()){
+			instance = clazz.cast(CUtils.newMap((Class<Map>)clazz));
+		}else{
+			try {
+				instance = clazz.newInstance();
+			} catch (Exception e) {
+				throw new RuntimeException("instantce class error : " + clazz, e);
+			}
+		}
+		return instance;
 	}
 	
 	
@@ -524,20 +562,12 @@ public class Intro<T> {
 	}
 
 	public Collection<String> desribPropertyNames() {
-		return this.propertyDescriptors.keySet();
+		return this.getPropertyDescriptors().keySet();
 	}
 
-	public boolean isCollectionType(){
-		return Collection.class.isAssignableFrom(clazz);
-	}
-
-	public boolean isMapType(){
-		return Map.class.isAssignableFrom(clazz);
-	}
-	
 	public void copy(Object source, Object target, PropertyCopyer<PropertyDescriptor> copyer){
 		Collection<String> sourceProperties = ReflectUtils.getIntro(source.getClass()).desribPropertyNames();
-		for(PropertyDescriptor targetProperty : this.propertyDescriptors.values()){//propertyDescriptors is target
+		for(PropertyDescriptor targetProperty : this.getPropertyDescriptors().values()){//propertyDescriptors is target
 			if(sourceProperties.contains(targetProperty.getName()))
 				copyer.copy(source, target, targetProperty);
 		}

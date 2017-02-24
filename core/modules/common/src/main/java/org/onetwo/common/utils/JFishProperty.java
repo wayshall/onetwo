@@ -39,6 +39,7 @@ public interface JFishProperty {
 	public Field getField();
 	public Type getGenericType();
 	public Type[] getParameterTypes();
+	public Type getParameterType(int index);
 	public Type getFirstParameterType();
 	public Intro<?> getFirstParameterTypeClassWrapper();
 

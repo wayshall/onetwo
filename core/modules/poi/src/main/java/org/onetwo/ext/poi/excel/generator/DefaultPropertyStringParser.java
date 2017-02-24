@@ -81,7 +81,7 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 		} catch (ExecutionException e) {
 			logger.error("parseColumnwidth error : " + e.getMessage());
 		}
-		return Collections.EMPTY_MAP;
+		return Collections.emptyMap();
 	}
 	
 	public Map<String, String> parseStyle(String styleString){
@@ -91,7 +91,7 @@ public class DefaultPropertyStringParser implements PropertyStringParser {
 		} catch (ExecutionException e) {
 			logger.error("parseStyle error : " + e.getMessage());
 		}
-		return Collections.EMPTY_MAP;
+		return Collections.emptyMap();
 	}
 	
 }

@@ -49,7 +49,7 @@ public class BeanWrapperTest {
 			Assert.fail();
 		} catch (Exception e) {
 		}*/
-		bw = SpringUtils.newBeanWrapper(attrs);
+		bw = SpringUtils.newBeanMapWrapper(attrs);
 		bw.setPropertyValue("id", "11");
 		Assert.assertEquals(attrs.get("id"), "11");
 		
@@ -101,7 +101,7 @@ public class BeanWrapperTest {
 		user.setUserName("userName1");
 		map.put("user", user);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map);
+		bw = SpringUtils.newBeanMapWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		
 		bw.setPropertyValue("id", 11L);
@@ -121,7 +121,7 @@ public class BeanWrapperTest {
 		map.put("user", user);
 		map.put("userMap", map);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map);
+		bw = SpringUtils.newBeanMapWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		
 		Object userName = bw.getPropertyValue("user.userName");
@@ -161,7 +161,7 @@ public class BeanWrapperTest {
 		Map<String, Object> map = LangUtils.newHashMap();
 		map.put("users", userList);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map);
+		bw = SpringUtils.newBeanMapWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		
 		Object userName = bw.getPropertyValue("users[0].userName");
@@ -192,7 +192,7 @@ public class BeanWrapperTest {
 		Map<String, Object> map = LangUtils.newHashMap();
 		map.put("numbs", userList);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map);
+		bw = SpringUtils.newBeanMapWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		bw.setPropertyValue("numbs[0]", 1L);
 		Long number = (Long)bw.getPropertyValue("numbs[0]");
@@ -202,7 +202,7 @@ public class BeanWrapperTest {
 		userList = null;
 		map.put("numbs", userList);
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(map);
-		bw = SpringUtils.newBeanWrapper(map);
+		bw = SpringUtils.newBeanMapWrapper(map);
 		bw.setAutoGrowNestedPaths(true);
 		bw.setPropertyValue("numbs[1]", 1L);
 		number = (Long)bw.getPropertyValue("numbs[1]");

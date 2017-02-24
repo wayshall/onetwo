@@ -50,6 +50,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		Type[] types = getParameterTypes();
 		return LangUtils.isEmpty(types)?null:types[0];
 	}
+	
+	public Type getParameterType(int index) {
+		Type[] types = getParameterTypes();
+		return types.length-1<index?null:types[index];
+	}
 
 	public Intro<?> getFirstParameterTypeClassWrapper() {
 		return Intro.wrap((Class<?>)getFirstParameterType());
@@ -60,11 +65,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	}
 
 	public boolean isCollectionType(){
-		return propertyClassWrapper!=null && propertyClassWrapper.isCollectionType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isCollection();
 	}
 
 	public boolean isMapType(){
-		return propertyClassWrapper!=null && propertyClassWrapper.isMapType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isMap();
 	}
 	
 }

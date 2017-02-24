@@ -251,7 +251,7 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 
 
 	@Override
-	public Class getPropertyType(String propertyName) throws BeansException {
+	public Class<?> getPropertyType(String propertyName) throws BeansException {
 		if(mapData){
 			return null;
 		}else{
