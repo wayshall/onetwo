@@ -54,15 +54,12 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 //		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
 		Assert.notNull(invokeContext);
 
+		invokeContext.setParser(parser);
 		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
-		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
+		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, invokeContext);
 
-		/*if(args.length==1 && LangUtils.isMap(args[0])){
-			jq.setParameters((Map)args[0]);
-		}else{
-			jq.setQueryAttributes(LangUtils.asMap(args));
-		}*/
 		jq.setQueryAttributes(invokeContext.getParsedParams());
+//		jq.setRowMapper(rowMapper);
 		return jq.getRawQuery(JFishDataQuery.class);
 	}
 	

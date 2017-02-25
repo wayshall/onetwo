@@ -26,6 +26,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.EntityNotFoundException;
+import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.query.JFishDataQuery;
 import org.onetwo.dbm.query.JFishNamedFileQueryManagerImpl;
@@ -388,10 +389,14 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
 	}
 
-
 	@Override
 	public DbmTypeMapping getSqlTypeMapping() {
 		return this.dbmDao.getDialect().getTypeMapping();
+	}
+
+	@Override
+	public RowMapperFactory getRowMapperFactory() {
+		return this.dbmDao.getRowMapperFactory();
 	}
 
 }

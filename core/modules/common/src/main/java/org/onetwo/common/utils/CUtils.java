@@ -270,6 +270,9 @@ final public class CUtils {
 	}
 	
 	public static <T> Collection<T> newCollections(Class<? extends Collection> clazz){
+		return newCollections(clazz, null);
+	}
+	public static <T> Collection<T> newCollections(Class<? extends Collection> clazz, Integer size){
 		if(clazz==null){
 			return new ArrayList<T>();
 		}
@@ -281,21 +284,21 @@ final public class CUtils {
 		}
 		
 		if(List.class.isAssignableFrom(clazz)){
-			return new ArrayList<T>();
+			return size==null?new ArrayList<T>():new ArrayList<T>(size);
 		}else if(SortedSet.class.isAssignableFrom(clazz)){
 			return new TreeSet<T>();
 		}else if(Set.class.isAssignableFrom(clazz)){
-			return new HashSet<T>();
+			return size==null?new HashSet<T>():new HashSet<T>(size);
 		}else if(Queue.class.isAssignableFrom(clazz)){
-			return new ArrayDeque<T>();
+			return size==null?new ArrayDeque<T>():new ArrayDeque<T>(size);
 		}else{
-			return new ArrayList<T>();
+			return size==null?new ArrayList<T>():new ArrayList<T>(size);
 		}
 	}
 
 	public static <T> Collection<T> toCollection(Object object) {
 		if(object==null)
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		List list = null;
 		if (Collection.class.isAssignableFrom(object.getClass())) {
 			return (Collection<T>)object;

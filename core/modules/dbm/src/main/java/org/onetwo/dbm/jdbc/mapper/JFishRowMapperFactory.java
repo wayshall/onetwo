@@ -1,7 +1,10 @@
 package org.onetwo.dbm.jdbc.mapper;
 
+import org.onetwo.common.db.dquery.DynamicMethod;
+import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.dbm.annotation.DbmCascadeResult;
 import org.onetwo.dbm.annotation.DbmRowMapper;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
@@ -50,7 +53,15 @@ public class JFishRowMapperFactory extends JdbcDaoRowMapperFactory {
 		return rowMapper;
 	}
 	
+	@Override
+	public RowMapper<?> createRowMapper(NamedQueryInvokeContext invokeContext) {
+		DynamicMethod dmethod = invokeContext.getDynamicMethod();
+		DbmCascadeResult dbmCascadeResult = dmethod.getMethod().getAnnotation(DbmCascadeResult.class);
+		if(dbmCascadeResult==null){
+			return super.createRowMapper(invokeContext);
+		}
+		DbmNestedBeanRowMapper<?> rowMapper = new DbmNestedBeanRowMapper<>(jdbcResultSetGetter, dmethod.getResultClass(), dbmCascadeResult);
+		return rowMapper;
+	}
 	
-	
-
 }

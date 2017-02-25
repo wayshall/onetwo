@@ -629,12 +629,12 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return q;
 	}
 
-	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type){
+	public <T> RowMapper<T> getRowMapper(Class<T> type){
 		return getDefaultRowMapper(type, false);
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return (RowMapper<T>)this.getRowMapperFactory().createDefaultRowMapper(type);
+		return (RowMapper<T>)this.getRowMapperFactory().createRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {

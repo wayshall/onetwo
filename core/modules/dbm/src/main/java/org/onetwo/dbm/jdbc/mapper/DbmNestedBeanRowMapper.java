@@ -50,10 +50,10 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		super();
 	}*/
 
-	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass) {
+	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass, DbmCascadeResult dbmCascadeResult) {
 		this.mappedClass = mappedClass;
 		this.jdbcResultSetGetter = jdbcResultSetGetter;
-		this.resultClassMapper = new ResultClassMapper(idField, columnPrefix, mappedClass);
+		this.resultClassMapper = new ResultClassMapper(dbmCascadeResult.idField(), dbmCascadeResult.columnPrefix(), mappedClass);
 	}
 
 	public ConversionService getConversionService() {

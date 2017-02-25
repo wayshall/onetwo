@@ -14,6 +14,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -55,7 +56,7 @@ public interface DbmDaoImplementor extends DbmDao {
 	
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
-	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type);
+	public <T> RowMapper<T> getRowMapper(Class<T> type);
 	
 	public DBDialect getDialect();
 	
@@ -120,4 +121,6 @@ public interface DbmDaoImplementor extends DbmDao {
 	public DbmConfig getDataBaseConfig();
 
 	public DataSource getDataSource();
+	
+	public RowMapperFactory getRowMapperFactory();
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.util.Assert;
 
@@ -14,6 +15,7 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 	final private DynamicMethod dynamicMethod;
 	final private Object[] parameterValues;
 	final private Map<Object, Object> parsedParams;
+	private TemplateParser parser;
 	
 	public MethodDynamicQueryInvokeContext(DynamicMethod dynamicMethod, Object[] parameterValues) {
 		super();
@@ -70,6 +72,14 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 
 	public Map<Object, Object> getParsedParams() {
 		return parsedParams;
+	}
+
+	public TemplateParser getParser() {
+		return parser;
+	}
+
+	public void setParser(TemplateParser parser) {
+		this.parser = parser;
 	}
 	
 }

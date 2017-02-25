@@ -66,23 +66,25 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 	}
 	
 	protected DataQuery createDataQueryIfNecessarry(){
+		if(dataQuery!=null){
+			return dataQuery;
+		}
 		FileNamedSqlGenerator sqlGen = new DefaultFileNamedSqlGenerator(info, countQuery, parser, getParserContext(), 
 																				resultClass, ascFields, desFields, params, baseEntityManager.getDataBase());
 		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
-			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
-			
+			DataQuery dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
 			int position = 0;
 			for(Object value : sqlAndValues.asList()){
 				dataQuery.setParameter(position++, value);
 			}
-			
 			setLimitResult();
+			this.dataQuery = dataQuery;
 			return dataQuery;
 		}
 
 		String parsedSql = sqlAndValues.getParsedSql();
-		dataQuery = createDataQuery(parsedSql, resultClass);
+		DataQuery dataQuery = createDataQuery(parsedSql, resultClass);
 		
 		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql, baseEntityManager.getSqlParamterPostfixFunctionRegistry());
 		BeanWrapper paramBean = SpringUtils.newBeanMapWrapper(sqlAndValues.asMap());
@@ -102,7 +104,8 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		}
 		
 		setLimitResult();
-		
+
+		this.dataQuery = dataQuery;
 		return dataQuery;
 	}
 	private void setLimitResult(){

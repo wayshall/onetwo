@@ -18,7 +18,7 @@ public class JFishFindEventListener extends AbstractJFishEventListener {
 		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 		findEvent.setJoined(entry.isJoined());
 
-		RowMapper rowMapper = es.getDefaultRowMapper(event.getEntityClass());
+		RowMapper rowMapper = es.getRowMapper(event.getEntityClass());
 		if(findEvent.isFindAll()){
 			JdbcStatementContext<Object[]> fetch = entry.makeFetchAll();
 			List list = (List) es.getJFishJdbcTemplate().query(fetch.getSql(), fetch.getValue(), rowMapper);

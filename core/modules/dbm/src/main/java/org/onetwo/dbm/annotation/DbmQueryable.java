@@ -7,11 +7,13 @@ import static java.lang.annotation.ElementType.*;
 
 /**********
  * only for named query
+ * @see {@linkplain org.onetwo.dbm.mapping.MappedType MappedType.QUERYABLE_ONLY}
  * @author wayshall
  *
  */
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface DbmQueryable {
 
 	String table() default "";

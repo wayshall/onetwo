@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DataQuery;
+import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 
 public interface QueryProvideManager {
@@ -19,4 +20,6 @@ public interface QueryProvideManager {
 	public DataSource getDataSource();
 	
 	public DbmTypeMapping getSqlTypeMapping();
+
+	public RowMapperFactory getRowMapperFactory();
 }

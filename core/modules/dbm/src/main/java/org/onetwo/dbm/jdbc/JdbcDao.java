@@ -53,11 +53,11 @@ public class JdbcDao {
 	}
 	
 	public <T> List<T> query(String sql, Class<T> entityClass, Object... args){
-		return this.jdbcTemplate.query(sql, getDefaultRowMapper(entityClass), args);
+		return this.jdbcTemplate.query(sql, getRowMapper(entityClass), args);
 	}
 
-	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type){
-		return (RowMapper<T>)this.rowMapperFactory.createDefaultRowMapper(type);
+	protected <T> RowMapper<T> getRowMapper(Class<T> type){
+		return (RowMapper<T>)this.rowMapperFactory.createRowMapper(type);
 	}
 
 

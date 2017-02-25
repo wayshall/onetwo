@@ -113,11 +113,8 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 	public SQLSymbolManager getSQLSymbolManager();
 	
-
+	public <T> T narrowAs(Class<T> entityManagerClass);
 
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);
-	
-	public <T> T narrowAs(Class<T> entityManagerClass);
-	
 }
