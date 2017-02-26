@@ -475,7 +475,7 @@ public class Java78Test {
 	
 	@Test
 	public void testThreadLocalRandom(){
-		LangOps.repeatRun(100, ()->{
+		LangOps.ntimesRun(100, ()->{
 			int val = ThreadLocalRandom.current().nextInt(0, 100);
 			System.out.println("val:"+val);
 		});

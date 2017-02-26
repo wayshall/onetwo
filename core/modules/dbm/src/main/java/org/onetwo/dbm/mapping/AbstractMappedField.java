@@ -58,6 +58,9 @@ abstract public class AbstractMappedField implements DbmMappedField{
 		}
 	}
 
+	public boolean isEnumerated(){
+		return Enum.class.isAssignableFrom(propertyInfo.getType());
+	}
 //	abstract public Class getMappedType();
 	
 	/*abstract public Method getReadMethod();
@@ -72,7 +75,21 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	
 	@Override
 	public Object getValue(Object entity){
-		return propertyInfo.getValue(entity);
+		Object value = propertyInfo.getValue(entity);
+		if(isEnumerated()){
+			Object actualValue = null;
+			DbmEnumType etype = getEnumType();
+			Enum<?> enumValue = (Enum<?>) value;
+			if(etype==DbmEnumType.ORDINAL){
+				actualValue = enumValue.ordinal();
+			}else if(etype==DbmEnumType.STRING){
+				actualValue = enumValue.name();
+			}else{
+				throw new DbmException("error enum type: " + etype);
+			}
+			return actualValue;
+		}
+		return value;
 	}
 	
 	/*@Override
@@ -303,4 +320,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 		this.versionableType = versionableType;
 	}
 
+	public DbmEnumType getEnumType() {
+		throw new UnsupportedOperationException();
+	}
 }

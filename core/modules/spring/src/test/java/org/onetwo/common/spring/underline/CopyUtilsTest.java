@@ -438,11 +438,11 @@ public class CopyUtilsTest {
 		srcBean.setCreateTime(createTime);
 		
 		int count = 100000;
-		LangOps.repeatRun("copyFrom", count, ()->{
+		LangOps.ntimesRun("copyFrom", count, ()->{
 			CopyUtils.copyFrom(srcBean).toNewInstance();
 		});
 		
-		LangOps.repeatRun("deepClone", count, ()->{
+		LangOps.ntimesRun("deepClone", count, ()->{
 			CopyUtils.deepClone(srcBean);
 		});
 		
@@ -458,11 +458,11 @@ public class CopyUtilsTest {
 		srcBean.setDatas(datas);
 		
 
-		LangOps.repeatRun("copyFrom", count, ()->{
+		LangOps.ntimesRun("copyFrom", count, ()->{
 			CopyUtils.copyFrom(srcBean).toNewInstance();
 		});
 		
-		LangOps.repeatRun("deepClone", count, ()->{
+		LangOps.ntimesRun("deepClone", count, ()->{
 			CopyUtils.deepClone(srcBean);
 		});
 	}

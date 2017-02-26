@@ -22,7 +22,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
@@ -100,7 +99,7 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 				ResultSet keys = ps.getGeneratedKeys();
 				if (keys != null) {
 					try {
-						RowMapperResultSetExtractor<Map<String, Object>> rse = new RowMapperResultSetExtractor<Map<String, Object>>(getColumnMapRowMapper(), 1);
+						DbmListRowMapperResultSetExtractor<Map<String, Object>> rse = new DbmListRowMapperResultSetExtractor<Map<String, Object>>(getColumnMapRowMapper(), 1);
 						generatedKeys.addAll(rse.extractData(keys));
 					}
 					finally {
@@ -155,11 +154,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	public int updateWith(String sql, Object[] args, final AroundPreparedStatementExecute action) throws DataAccessException {
 		SimpleArgsPreparedStatementCreator psc = new SimpleArgsPreparedStatementCreator(sql, args);
 		return updateWith(psc, action);
-	}
-	
-
-	public <T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
-		return super.query(sql, args, rowMapper);
 	}
 	
 	public int update(String sql, Object... args) throws DataAccessException {
@@ -253,4 +247,27 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 			}
 		};
 	}
+
+	/****
+	 * use DbmListRowMapperResultSetExtractor instead of RowMapperResultSetExtractor 
+	 */
+	@Override
+	public <T> List<T> query(String sql, RowMapper<T> rowMapper) throws DataAccessException {
+		return query(sql, new DbmListRowMapperResultSetExtractor<T>(rowMapper));
+	}
+
+	@Override
+	public <T> List<T> query(PreparedStatementCreator psc, RowMapper<T> rowMapper) throws DataAccessException {
+		return query(psc, new DbmListRowMapperResultSetExtractor<T>(rowMapper));
+	}
+
+	@Override
+	public <T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
+		return query(sql, args, new DbmListRowMapperResultSetExtractor<T>(rowMapper));
+	}
+	@Override
+	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) throws DataAccessException {
+		return query(sql, args, new DbmListRowMapperResultSetExtractor<T>(rowMapper));
+	}
+
 }

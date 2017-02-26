@@ -20,19 +20,14 @@ import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.Maps;
 
@@ -65,63 +60,15 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Assert.state(this.mappedClass != null, "Mapped class was not specified");
-		T mappedObject = BeanUtils.instantiate(this.mappedClass);
-		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
-		initBeanWrapper(bw);
-
 		ResultSetWrappingSqlRowSet resutSetWrapper = new ResultSetWrappingSqlRowSet(rs);
 		SqlRowSetMetaData rsmd = resutSetWrapper.getMetaData();
-		int columnCount = resutSetWrapper.getMetaData().getColumnCount();
 		Map<String, Integer> names = DbmUtils.lookupColumnNames(rsmd);
 		
-		mappedObject = propertySetter.mapResult(names, resutSetWrapper);
-		
-		for (int index = 1; index <= columnCount; index++) {
-			String column = DbmUtils.lookupColumnName(rsmd, index);
-//			String field = lowerCaseName(column.replaceAll(" ", ""));
-			String field = JdbcUtils.lowerCaseName(column);
-			PropertyDescriptor pd = this.mappedFields.get(field);
-			if (pd != null) {
-				try {
-					Object value = getColumnValue(resutSetWrapper, index, pd);
-					if (rowNumber == 0 && logger.isDebugEnabled()) {
-						logger.debug("Mapping column '" + column + "' to property '" + pd.getName() +
-								"' of type [" + ClassUtils.getQualifiedName(pd.getPropertyType()) + "]");
-					}
-					try {
-						bw.setPropertyValue(pd.getName(), value);
-					}
-					catch (TypeMismatchException ex) {
-						if (value == null && this.primitivesDefaultedForNullValue) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Intercepted TypeMismatchException for row " + rowNumber +
-										" and column '" + column + "' with null value when setting property '" +
-										pd.getName() + "' of type [" +
-										ClassUtils.getQualifiedName(pd.getPropertyType()) +
-										"] on object: " + mappedObject, ex);
-							}
-						}
-						else {
-							throw ex;
-						}
-					}
-				}
-				catch (NotWritablePropertyException ex) {
-					throw new DataRetrievalFailureException(
-							"Unable to map column '" + column + "' to property '" + pd.getName() + "'", ex);
-				}
-			}
-			else {
-				// No PropertyDescriptor found
-				if (rowNumber == 0 && logger.isDebugEnabled()) {
-					logger.debug("No property found for column '" + column + "' mapped to field '" + field + "'");
-				}
-			}
-		}
-
+		T mappedObject = (T)this.resultClassMapper.mapResult(names, resutSetWrapper);
 		return mappedObject;
 	}
 
@@ -274,7 +221,6 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 			return columnPrefix + name;
 		}
 		
-		@SuppressWarnings("unchecked")
 		public Object mapResult(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper){
 			Integer hash = null;
 			Object entity = null;

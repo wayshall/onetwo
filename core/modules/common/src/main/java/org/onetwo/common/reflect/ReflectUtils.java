@@ -140,8 +140,8 @@ public class ReflectUtils {
 		}
 	}
 
-	public static <T> Collection<T> getProperties(Collection elements, String propName) {
-		Collection<T> values = new ArrayList<T>(elements.size());
+	public static <T> List<T> getProperties(Collection elements, String propName) {
+		List<T> values = new ArrayList<T>(elements.size());
 		T val = null;
 		for(Object obj : elements){
 			val = (T)getPropertyValue(obj, propName);
@@ -150,8 +150,8 @@ public class ReflectUtils {
 		return values;
 	}
 
-	public static <T> Collection<T> w(Object[] elements, String propName) {
-		Collection<T> values = new ArrayList<T>(elements.length);
+	public static <T> List<T> getProperties(Object[] elements, String propName) {
+		List<T> values = new ArrayList<T>(elements.length);
 		T val = null;
 		for(Object obj : elements){
 			val = (T)getPropertyValue(obj, propName);
