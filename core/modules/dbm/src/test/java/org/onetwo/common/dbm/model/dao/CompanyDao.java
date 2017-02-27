@@ -13,19 +13,19 @@ public interface CompanyDao {
 	List<CompanyVO> findNestedCompanies();*/
 	
 	@DbmResultMapping(value={
-			@DbmNestedResult(property="company", idField="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
+			@DbmNestedResult(property="company", id="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
 	})
 	List<DepartmentVO> findDepartmentsWithComapny();
 
 	@DbmResultMapping(value={
 			@DbmNestedResult(property="employees", columnPrefix="emply_", nestedType=NestedType.COLLECTION),
-			@DbmNestedResult(property="company", idField="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
+			@DbmNestedResult(property="company", id="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
 	})
 	List<DepartmentVO> findNestedDepartments();
 
 	@DbmResultMapping(value={
-			@DbmNestedResult(property="employees", idField="id", columnPrefix="emply_", nestedType=NestedType.COLLECTION),
-			@DbmNestedResult(property="company", idField="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
+			@DbmNestedResult(property="employees", id="id", columnPrefix="emply_", nestedType=NestedType.COLLECTION),
+			@DbmNestedResult(property="company", id="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
 	})
 	List<DepartmentVO> findNestedDepartmentsWithEmployeeId();
 

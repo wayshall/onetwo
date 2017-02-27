@@ -8,7 +8,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DbmNestedResult {
 	String property();
-	String idField() default "";
+	/***
+	 * 指定类的某个属性作为唯一键
+	 * @return
+	 */
+	String id() default "";
 	String columnPrefix() default "";
 	NestedType nestedType();
 	
