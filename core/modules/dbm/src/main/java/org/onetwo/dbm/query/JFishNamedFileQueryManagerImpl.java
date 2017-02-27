@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
-import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.DbmNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.utils.Assert;
@@ -55,7 +55,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		Assert.notNull(invokeContext);
 
 		invokeContext.setParser(parser);
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
+		DbmNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
 		DbmFileQueryWrapperImpl jq = new DbmFileQueryWrapperImpl(getCreateQueryable(), nameInfo, count, invokeContext);
 
 		jq.setQueryAttributes(invokeContext.getParsedParams());
@@ -120,7 +120,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 
 	@Override
-	public NamespacePropertiesManager<JFishNamedFileQueryInfo> getNamespacePropertiesManager() {
+	public NamespacePropertiesManager<DbmNamedFileQueryInfo> getNamespacePropertiesManager() {
 		return sqlFileManager;
 	}
 

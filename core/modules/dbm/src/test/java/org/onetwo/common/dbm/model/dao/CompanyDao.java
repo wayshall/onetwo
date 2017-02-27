@@ -23,4 +23,10 @@ public interface CompanyDao {
 	})
 	List<DepartmentVO> findNestedDepartments();
 
+	@DbmResultMapping(value={
+			@DbmNestedResult(property="employees", idField="id", columnPrefix="emply_", nestedType=NestedType.COLLECTION),
+			@DbmNestedResult(property="company", idField="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)
+	})
+	List<DepartmentVO> findNestedDepartmentsWithEmployeeId();
+
 }

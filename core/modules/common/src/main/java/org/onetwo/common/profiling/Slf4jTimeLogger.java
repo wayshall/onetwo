@@ -28,5 +28,9 @@ public class Slf4jTimeLogger implements TimeLogger {
 		logger.info(msg, args);
 	}
 
+	public Logger getLogger() {
+		return logger;
+	}
+
 
 }

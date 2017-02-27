@@ -22,7 +22,7 @@ public class MultipCommentsSqlFileParserTest {
 		
 		DialetNamedSqlConf conf = new DialetNamedSqlConf(false);
 		
-		CommonNamespaceProperties<JFishNamedFileQueryInfo> np = new CommonNamespaceProperties<>("org.onetwo.common.jfishdbm.model.dao.UserAutoidDao");
+		CommonNamespaceProperties<DbmNamedFileQueryInfo> np = new CommonNamespaceProperties<>("org.onetwo.common.jfishdbm.model.dao.UserAutoidDao");
 		parser.parseToNamespaceProperty(conf, np, f);
 		Assert.assertEquals(3, np.getNamedProperties().size());
 		Assert.assertEquals("insert into test_user_autoid (birthday, email, gender, mobile, nick_name, password, status, user_name) values (:birthday, :email, :gender, :mobile, :nickName, :password, :status, :userName) ", np.getNamedProperty("batchInsert").getValue());

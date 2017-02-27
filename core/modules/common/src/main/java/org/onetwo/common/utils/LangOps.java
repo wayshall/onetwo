@@ -59,10 +59,15 @@ final public class LangOps {
 	}
 	
 	public static void timeIt(String tag, Closure closure){
+		
+	}
+	public static void timeIt(String tag, Integer times, Closure closure){
 		TimeCounter tc = new TimeCounter(tag);
 		tc.start();
 		try {
-			closure.execute();
+			for (int i = 0; i < times; i++) {
+				closure.execute();
+			}
 		} finally{
 			tc.stop();
 		}

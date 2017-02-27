@@ -53,14 +53,14 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 	}*/
 
 	@Override
-	public JFishNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContex) {
+	public DbmNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContex) {
 		String qname = invokeContex.getQueryName();
-		JFishNamedFileQueryInfo queryInfo = sqlFileManager.getNamedQueryInfo(qname);
+		DbmNamedFileQueryInfo queryInfo = sqlFileManager.getNamedQueryInfo(qname);
 		return queryInfo;
 	}
 	@Override
 	public FileNamedSqlGenerator createFileNamedSqlGenerator(NamedQueryInvokeContext invokeContext) {
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
+		DbmNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
 		FileNamedSqlGenerator g = new DefaultFileNamedSqlGenerator(nameInfo, false, parser, invokeContext.getParsedParams(), queryProvideManager.getDataBase());
 		return g;
 	}

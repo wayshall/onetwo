@@ -8,14 +8,14 @@ import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-public class TemplateInNamedQueryParser implements TemplateHashModel {
+public class FragmentTemplateParser implements TemplateHashModel {
 	public static final String DOT = ".";
 	
 	private final TemplateParser parser;
 	private final ParserContext parserContext;
-	private final JFishNamedFileQueryInfo query;
+	private final DbmNamedFileQueryInfo query;
 	
-	public TemplateInNamedQueryParser(TemplateParser parser, ParserContext parserContext, JFishNamedFileQueryInfo query) {
+	public FragmentTemplateParser(TemplateParser parser, ParserContext parserContext, DbmNamedFileQueryInfo query) {
 		super();
 		this.parser = parser;
 		this.parserContext = parserContext;
@@ -36,10 +36,13 @@ public class TemplateInNamedQueryParser implements TemplateHashModel {
 	private void checkKeyIfNamespaceScope(String key){
 		String qname = getQueryName(key);
 		String subkey = key.substring(qname.length()+DOT.length());
-		if(!subkey.startsWith(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
-			throw new FileNamedQueryException("only can access "+JFishNamedFileQueryInfo.FRAGMENT_KEY+" of query, error key: " + key);
+		if(!subkey.startsWith(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
+			throw new FileNamedQueryException("only can access "+DbmNamedFileQueryInfo.FRAGMENT_KEY+" of query, error key: " + key);
 		}
 	}
+	/****
+	 * {@link DbmNamedFileQueryInfo#getFragment()}
+	 */
 	@Override
 	public TemplateModel get(String key) throws TemplateModelException {
 		String value = null;

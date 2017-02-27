@@ -20,13 +20,13 @@ public interface FileNamedQueryManager {
 	 * @param invokeContext
 	 * @return
 	 */
-	public JFishNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
+	public DbmNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
 	/***
 	 * 通过queryName查找
 	 * @param queryName
 	 * @return
 	 */
-	public NamespacePropertiesManager<JFishNamedFileQueryInfo> getNamespacePropertiesManager();
+	public NamespacePropertiesManager<DbmNamedFileQueryInfo> getNamespacePropertiesManager();
 
 	public DbmQueryWrapper createQuery(NamedQueryInvokeContext invokeContext);
 	

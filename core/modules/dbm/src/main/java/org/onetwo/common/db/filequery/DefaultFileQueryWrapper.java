@@ -35,16 +35,14 @@ public class DefaultFileQueryWrapper extends AbstractDbmQueryWrapper implements 
 	private int maxRecords;
 	private Class<?> resultClass;
 	
-	protected JFishNamedFileQueryInfo info;
+	protected DbmNamedFileQueryInfo info;
 	private TemplateParser parser;
 	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
 
-	private RowMapper<?> rowMapper;
-
-	public DefaultFileQueryWrapper(QueryProvideManager baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
+	public DefaultFileQueryWrapper(QueryProvideManager baseEntityManager, DbmNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;

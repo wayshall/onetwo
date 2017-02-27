@@ -75,11 +75,29 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 
 			assertThat(depart.getEmployees()).isNotNull();
 			depart.getEmployees().stream().forEach(employee->{
-				if(depart.getId()==null || employee.getDepartmentId()==null){
-					System.out.println("test");
-				}
 				assertThat(employee.getDepartmentId()).isEqualTo(depart.getId());
 			});
+		});
+		
+
+		departments = companyDao.findNestedDepartmentsWithEmployeeId();
+		assertThat(departments.size()).isEqualTo(100);
+		departments.stream().forEach(depart->{
+			assertThat(depart.getCompany()).isNotNull();
+			assertThat(depart.getCompany().getId()).isEqualTo(depart.getCompanyId());
+
+			assertThat(depart.getEmployees()).isNotNull();
+			depart.getEmployees().stream().forEach(employee->{
+				assertThat(employee.getDepartmentId()).isEqualTo(depart.getId());
+			});
+		});
+		
+
+		LangOps.timeIt("findNestedDepartmentsWithEmployeeId", 1, ()->{
+			companyDao.findNestedDepartmentsWithEmployeeId();
+		});
+		LangOps.timeIt("findNestedDepartments", 1, ()->{
+			companyDao.findNestedDepartments();
 		});
 	}
 	
