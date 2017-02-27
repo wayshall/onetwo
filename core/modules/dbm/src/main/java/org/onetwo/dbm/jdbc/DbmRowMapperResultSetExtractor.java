@@ -39,7 +39,7 @@ public class DbmRowMapperResultSetExtractor<C extends Collection<T>, T> implemen
 
 	protected void addToResult(C result, T val){
 		if(val==null)
-			return ;	
+			return ;
 		result.add(val);
 	}
 

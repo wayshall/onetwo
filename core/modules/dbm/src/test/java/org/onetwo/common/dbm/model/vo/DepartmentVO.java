@@ -2,8 +2,6 @@ package org.onetwo.common.dbm.model.vo;
 
 import java.util.List;
 
-import org.onetwo.dbm.annotation.DbmCascadeResult;
-
 
 public class DepartmentVO {
 	
@@ -11,8 +9,9 @@ public class DepartmentVO {
 	protected String name;
 	protected Integer employeeNumber;
 	protected Long companyId;
-	@DbmCascadeResult(idField="id", columnPrefix="emply_")
 	protected List<EmployeeVO> employees;
+	
+	protected CompanyVO company;
   
 	public DepartmentVO(){
 	}
@@ -55,6 +54,14 @@ public class DepartmentVO {
 
 	public void setEmployees(List<EmployeeVO> employees) {
 		this.employees = employees;
+	}
+
+	public CompanyVO getCompany() {
+		return company;
+	}
+
+	public void setCompany(CompanyVO company) {
+		this.company = company;
 	}
 
 }

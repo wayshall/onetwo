@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
@@ -14,6 +15,7 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	protected AnnotationInfo annotationInfo;
 	protected Intro<?> propertyClassWrapper;
 	private final String name;
+	protected Optional<JFishProperty> correspondingJFishProperty;
 	
 	
 	public AbstractJFishProperty(String name, Intro<?> beanClassWrapper) {

@@ -8,18 +8,23 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.onetwo.common.dbm.model.dao.CompanyDao;
 import org.onetwo.common.dbm.model.entity.CompanyEntity;
 import org.onetwo.common.dbm.model.entity.DepartmentEntity;
 import org.onetwo.common.dbm.model.entity.EmployeeEntity;
 import org.onetwo.common.dbm.model.entity.EmployeeEntity.EmployeeGenders;
-import org.onetwo.common.dbm.model.vo.CompanyVO;
+import org.onetwo.common.dbm.model.vo.DepartmentVO;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
+@Rollback(false)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DbmNestedMappingTest extends DbmBaseTest {
 
 	@Resource
@@ -27,11 +32,15 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 	@Autowired
 	private CompanyDao companyDao;
 	
-	@Test
-	public void test(){
-		/*dbmEntityManager.removeAll(EmployeeEntity.class);
+	public void clear(){
+		dbmEntityManager.removeAll(EmployeeEntity.class);
 		dbmEntityManager.removeAll(DepartmentEntity.class);
-		dbmEntityManager.removeAll(CompanyEntity.class);*/
+		dbmEntityManager.removeAll(CompanyEntity.class);
+	}
+	
+	@Test
+	public void test1Saves(){
+		this.clear();
 		
 		List<CompanyEntity> companies = LangOps.ntimesMap(10, i->{
 			return createCompany(i);
@@ -44,10 +53,37 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 		Collection<String> dbnames = ReflectUtils.getProperties(dbcompanies, "name");
 		assertThat(dbnames).containsAll(names);
 		
-		List<CompanyVO> nestedCompanies = companyDao.findNestedCompanies();
+//		List<CompanyVO> nestedCompanies = companyDao.findNestedCompanies();
 	}
 	
-	private CompanyEntity createCompany(int index){
+
+	@Test
+	public void test2find(){
+		List<DepartmentVO> departments = companyDao.findDepartmentsWithComapny();
+		assertThat(departments.size()).isEqualTo(100);
+		departments.stream().forEach(depart->{
+			assertThat(depart.getCompany()).isNotNull();
+			assertThat(depart.getCompany().getId()).isEqualTo(depart.getCompanyId());
+		});
+		
+
+		departments = companyDao.findNestedDepartments();
+		assertThat(departments.size()).isEqualTo(100);
+		departments.stream().forEach(depart->{
+			assertThat(depart.getCompany()).isNotNull();
+			assertThat(depart.getCompany().getId()).isEqualTo(depart.getCompanyId());
+
+			assertThat(depart.getEmployees()).isNotNull();
+			depart.getEmployees().stream().forEach(employee->{
+				if(depart.getId()==null || employee.getDepartmentId()==null){
+					System.out.println("test");
+				}
+				assertThat(employee.getDepartmentId()).isEqualTo(depart.getId());
+			});
+		});
+	}
+	
+	public CompanyEntity createCompany(int index){
 		int employeeNumber = 10;
 		CompanyEntity company = new CompanyEntity();
 		company.setName("测试公司-"+index);
@@ -55,26 +91,26 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 		company.setDescription("一个测试公司-"+index);
 		dbmEntityManager.save(company);
 		
-		List<DepartmentEntity> departments = LangOps.ntimesMap(10, i->{
+		LangOps.ntimesMap(10, i->{
 			return createDepartment(company.getId(), i);
 		});
-		dbmEntityManager.saves(departments);
 		return company;
 	}
 	
-	private DepartmentEntity createDepartment(Long companyId, int index){
+	public DepartmentEntity createDepartment(Long companyId, int index){
 		DepartmentEntity department = new DepartmentEntity();
 		department.setName("部门-"+index);
 		department.setEmployeeNumber(10);
 		department.setCompanyId(companyId);
+		dbmEntityManager.save(department);
 		List<EmployeeEntity> employees = LangOps.ntimesMap(10, i->{
-			return createEmployee(companyId, i);
+			return createEmployee(department.getId(), i);
 		});
 		dbmEntityManager.saves(employees);
 		return department;
 	}
 	
-	private EmployeeEntity createEmployee(Long departmentId, int index){
+	public EmployeeEntity createEmployee(Long departmentId, int index){
 		EmployeeEntity employee = new EmployeeEntity();
 		employee.setName("员工-"+index);
 		employee.setBirthday(new Date());

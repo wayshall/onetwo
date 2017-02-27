@@ -47,7 +47,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
 		Long id = null;
 			try {
-				DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+				DbmQueryWrapper dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
 				dq.executeUpdate();
 				
 				dq = this.createSQLQuery(sql, null);
@@ -152,8 +152,8 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		page.setResult(datalist);
 	}
 	
-	protected DataQuery createQuery(SelectExtQuery extQuery){
-		DataQuery q = null;
+	protected DbmQueryWrapper createQuery(SelectExtQuery extQuery){
+		DbmQueryWrapper q = null;
 		q = this.createQuery(extQuery.getSql(), extQuery.getParamsValue().asMap());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());

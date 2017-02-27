@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
@@ -91,7 +91,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 							});
 			if(Page.class==rClass){
 				throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
-			}else if(DataQuery.class==rClass){
+			}else if(DbmQueryWrapper.class==rClass){
 				compClass = null;
 			}
 		}

@@ -2,7 +2,7 @@ package org.onetwo.common.db.filequery;
 
 import java.util.List;
 
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
@@ -38,7 +38,7 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 
 	@Override
 	public <E> E findOne(NamedQueryInvokeContext invokeContex) {
-		DataQuery jq = this.createQuery(invokeContex);
+		DbmQueryWrapper jq = this.createQuery(invokeContex);
 		E entity = null;
 		List<E> list = jq.getResultList();
 		if(LangUtils.hasElement(list))

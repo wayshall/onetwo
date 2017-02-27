@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -14,7 +15,9 @@ import org.onetwo.common.reflect.ClassIntroManager;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
-import org.onetwo.dbm.annotation.DbmCascadeResult;
+import org.onetwo.dbm.annotation.DbmNestedResult;
+import org.onetwo.dbm.annotation.DbmNestedResult.NestedType;
+import org.onetwo.dbm.annotation.DbmResultMapping;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.JdbcUtils;
@@ -34,32 +37,32 @@ import com.google.common.collect.Maps;
 public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected ConversionService conversionService = new DefaultConversionService();
+	private static ConversionService conversionService = new DefaultConversionService();
 
 	protected Class<T> mappedClass;
 //	private DbmTypeMapping sqlTypeMapping;
 	protected JdbcResultSetGetter jdbcResultSetGetter;
 	protected ResultClassMapper resultClassMapper;
+//	protected Map<Class<?>, ResultClassMapper> resultClassMapperMap = Maps.newHashMap();
 
 	/*public DbmBeanPropertyRowMapper() {
 		super();
 	}*/
 
-	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass, DbmCascadeResult dbmCascadeResult) {
+	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass, DbmResultMapping dbmResultMapping) {
 		this.mappedClass = mappedClass;
 		this.jdbcResultSetGetter = jdbcResultSetGetter;
-		this.resultClassMapper = new ResultClassMapper(dbmCascadeResult.idField(), dbmCascadeResult.columnPrefix(), mappedClass);
+		ClassMapperContext context = new ClassMapperContext(jdbcResultSetGetter, dbmResultMapping);
+		ResultClassMapper resultClassMapper = new RootResultClassMapper(context, dbmResultMapping.idField(), dbmResultMapping.columnPrefix(), mappedClass);
+//		resultClassMapperMap.put(mappedClass, resultClassMapper);
+		resultClassMapper.initialize();
+		this.resultClassMapper = resultClassMapper;
 	}
 
-	public ConversionService getConversionService() {
+	public static ConversionService getConversionService() {
 		return conversionService;
 	}
 
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -72,23 +75,61 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		return mappedObject;
 	}
 
-	protected void initBeanWrapper(BeanWrapper bw) {
+	protected static BeanWrapper createBeanWrapper(Object mappedObject) {
+		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
+		return bw;
+	}
+	protected static void initBeanWrapper(BeanWrapper bw) {
 		ConversionService cs = getConversionService();
 		if (cs != null) {
 			bw.setConversionService(cs);
 		}
 	}
 
-
-	
-	class PropertyResultClassMapper extends ResultClassMapper {
-		final private JFishProperty belongToProperty;
-		public PropertyResultClassMapper(String idField, String columnPrefix, JFishProperty belongToProperty) {
-			this(idField, columnPrefix, belongToProperty, belongToProperty.getType());
+	static class ClassMapperContext {
+		protected JdbcResultSetGetter jdbcResultSetGetter;
+		protected Map<String, DbmNestedResult> accessPathResultClassMapperMap = Maps.newHashMap();
+		public ClassMapperContext(JdbcResultSetGetter jdbcResultSetGetter, DbmResultMapping dbmResultMapping) {
+			super();
+			this.jdbcResultSetGetter = jdbcResultSetGetter;
+			for(DbmNestedResult nested : dbmResultMapping.value()){
+				this.accessPathResultClassMapperMap.put(nested.property(), nested);
+			}
 		}
-		public PropertyResultClassMapper(String idField, String columnPrefix, JFishProperty belongToProperty, Class<?> propertyType) {
-			super(idField, columnPrefix, propertyType);
+		
+		public DbmNestedResult getDbmNestedResult(String accessPath){
+			return this.accessPathResultClassMapperMap.get(accessPath);
+		}
+		
+	}
+
+
+	static class RootResultClassMapper extends ResultClassMapper {
+
+		public RootResultClassMapper(ClassMapperContext context,
+				String idField, String columnPrefix, Class<?> mappedClass) {
+			super(context, idField, columnPrefix, mappedClass);
+		}
+
+		@Override
+		protected Object afterMapResult(Object entity, Integer hash, boolean isNew){
+			if(!isNew){
+				return null;
+			}
+			return entity;
+		}
+	}
+	static class PropertyResultClassMapper extends ResultClassMapper {
+		final private ResultClassMapper parentMapper;
+		final private JFishProperty belongToProperty;
+		public PropertyResultClassMapper(ResultClassMapper parentMapper, String idField, String columnPrefix, JFishProperty belongToProperty) {
+			this(parentMapper, idField, columnPrefix, belongToProperty, belongToProperty.getType());
+		}
+		public PropertyResultClassMapper(ResultClassMapper parentMapper, String idField, String columnPrefix, JFishProperty belongToProperty, Class<?> propertyType) {
+			super(parentMapper.context, idField, columnPrefix, propertyType);
 			this.belongToProperty = belongToProperty;
+			this.parentMapper = parentMapper;
+			this.accessPathPrefix = getAcessPath(parentMapper.accessPathPrefix, belongToProperty.getName());
 		}
 		public JFishProperty getBelongToProperty() {
 			return belongToProperty;
@@ -98,41 +139,50 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 				parent.setPropertyValue(belongToProperty.getName(), propertyValue);
 			}
 		}
+		public ResultClassMapper getParentMapper() {
+			return parentMapper;
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	class CollectionPropertyResultClassMapper extends PropertyResultClassMapper {
+	static class CollectionPropertyResultClassMapper extends PropertyResultClassMapper {
 		private Intro<? extends Collection> collectionClassIntro;
 		public CollectionPropertyResultClassMapper(
+				ResultClassMapper parentMapper, 
 				String idField, String columnPrefix,
 				JFishProperty belongToProperty) {
-			super(idField, columnPrefix, belongToProperty, (Class<?>)belongToProperty.getFirstParameterType());
+			super(parentMapper, idField, columnPrefix, belongToProperty, (Class<?>)belongToProperty.getFirstParameterType());
 			if(belongToProperty.getFirstParameterType()==null){
 				throw new DbmException("the collection property must be a parameterType: " + belongToProperty.getName());
 			}
-			collectionClassIntro = (Intro<? extends Collection>)belongToProperty.getBeanClassWrapper();
+			collectionClassIntro = (Intro<? extends Collection>)belongToProperty.getTypeClassWrapper();
 		}
 		
 		public void linkToParent(BeanWrapper parent, Object propertyValue){
 			if(propertyValue==null){
 				return ;
 			}
-			Collection values = (Collection)parent.getPropertyValue(getBelongToProperty().getName());
+			String propName = getBelongToProperty().getName();
+			Collection values = (Collection)parent.getPropertyValue(propName);
 			if(values==null){
 				values = collectionClassIntro.newInstance();
+				parent.setPropertyValue(propName, values);
 			}
-			values.add(propertyValue);
+			if(!values.contains(propertyValue)){
+				values.add(propertyValue);
+			}
 		}
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	class MapPropertyResultClassMapper extends PropertyResultClassMapper {
+	static class MapPropertyResultClassMapper extends PropertyResultClassMapper {
 		private Intro<? extends Map> collectionClassIntro;
 		private Class<?> keyClass;
 		public MapPropertyResultClassMapper(
+				ResultClassMapper parentMapper, 
 				String idField, String columnPrefix,
 				JFishProperty belongToProperty) {
-			super(idField, columnPrefix, belongToProperty, (Class<?>)belongToProperty.getParameterType(1));
+			super(parentMapper, idField, columnPrefix, belongToProperty, (Class<?>)belongToProperty.getParameterType(1));
 			this.keyClass = (Class<?>)belongToProperty.getParameterType(0);
 			if(keyClass==null || getResultClass()==null){
 				throw new DbmException("the Map property must be a parameterType: " + belongToProperty.getName());
@@ -151,32 +201,37 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 			if(id==null){
 				throw new DbmException("id value can not be null for map : " + this.getBelongToProperty().getName());
 			}
+			String propName = getBelongToProperty().getName();
 			id = Types.convertValue(id, keyClass);
 			Map values = (Map)parent.getPropertyValue(getBelongToProperty().getName());
 			if(values==null){
 				values = collectionClassIntro.newInstance();
+				parent.setPropertyValue(propName, values);
 			}
 			values.put(id, propertyValue);
 		}
 	}
 	
-	class ResultClassMapper {
+	static class ResultClassMapper {
 		private String idField = "";
 		private String columnPrefix = "";
 		private Intro<?> classIntro;
 		private JFishProperty idProperty;
 		private Map<String, JFishProperty> simpleFields = Maps.newHashMap();
 		private Map<String, PropertyResultClassMapper> complexFields = Maps.newHashMap();
-		private Map<Integer, BeanWrapper> datas = Maps.newHashMap();
+		protected Map<Integer, BeanWrapper> datas = Maps.newHashMap();
 		private Class<?> resultClass;
+		protected String accessPathPrefix;
+		protected final ClassMapperContext context;
 		
-		public ResultClassMapper(String idField, String columnPrefix, Class<?> mappedClass) {
+		public ResultClassMapper(ClassMapperContext context, String idField, String columnPrefix, Class<?> mappedClass) {
 			super();
 			this.idField = idField;
 			this.columnPrefix = columnPrefix;
 //			this.classIntro = ClassIntroManager.getInstance().getIntro(mappedClass);
 //			this.initialize(mappedClass);
 			this.resultClass = mappedClass;
+			this.context = context;
 		}
 
 		public Class<?> getResultClass() {
@@ -191,6 +246,11 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 			return idProperty!=null;
 		}
 		
+		public static String getAcessPath(String accessPathPrefix, String propName){
+			String acessPath = StringUtils.isBlank(accessPathPrefix)?propName:accessPathPrefix + "." + propName;
+			return acessPath;
+		}
+		
 		public void initialize() {
 			this.classIntro = ClassIntroManager.getInstance().getIntro(resultClass);
 			this.idProperty = this.classIntro.getJFishProperty(idField, false);
@@ -198,16 +258,18 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 				if(pd.getWriteMethod()==null){
 					continue;
 				}
-				JFishProperty jproperty = classIntro.getJFishProperty(pd.getName(), false);
-				if(jproperty.hasAnnotation(DbmCascadeResult.class)){
-					DbmCascadeResult result = jproperty.getAnnotation(DbmCascadeResult.class);
+				JFishProperty jproperty = getActualJFishProperty(pd.getName());
+				String accessPath = getAcessPath(accessPathPrefix, jproperty.getName());
+				DbmNestedResult result = context.getDbmNestedResult(accessPath);
+				if(result!=null){
 					PropertyResultClassMapper propertyMapper = null;
-					if(jproperty.isCollectionType()){
-						propertyMapper = new CollectionPropertyResultClassMapper(result.idField(), appendPrefix(result.columnPrefix()), jproperty);
-					}else if(jproperty.isMapType()){
-						
+					NestedType nestedType = result.nestedType();
+					if(nestedType==NestedType.COLLECTION){
+						propertyMapper = new CollectionPropertyResultClassMapper(this, result.idField(), appendPrefix(result.columnPrefix()), jproperty);
+					}else if(nestedType==NestedType.MAP){
+						propertyMapper = new MapPropertyResultClassMapper(this, result.idField(), appendPrefix(result.columnPrefix()), jproperty);
 					}else{
-						propertyMapper = new PropertyResultClassMapper(result.idField(), appendPrefix(result.columnPrefix()), jproperty);
+						propertyMapper = new PropertyResultClassMapper(this, result.idField(), appendPrefix(result.columnPrefix()), jproperty);
 					}
 					propertyMapper.initialize();
 					complexFields.put(jproperty.getName(), propertyMapper);
@@ -217,71 +279,111 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 			}
 		}
 		
+		private JFishProperty getActualJFishProperty(String propName){
+			JFishProperty jproperty = classIntro.getJFishProperty(propName, false);
+			JFishProperty actualProperty = jproperty;
+			if(!jproperty.hasAnnotation(DbmNestedResult.class) 
+					&& jproperty.getCorrespondingJFishProperty().isPresent()
+					&& jproperty.getCorrespondingJFishProperty().get().hasAnnotation(DbmNestedResult.class)){
+				actualProperty = jproperty.getCorrespondingJFishProperty().get();
+			}
+			return actualProperty;
+		}
+		
 		protected String appendPrefix(String name){
 			return columnPrefix + name;
+		}
+		
+		protected Object afterMapResult(Object entity, Integer hash, boolean isNew){
+			return entity;
 		}
 		
 		public Object mapResult(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper){
 			Integer hash = null;
 			Object entity = null;
 			BeanWrapper bw = null;
+			boolean isNew = true;
 			if(hasIdField()){
-				Object idValue = getPropertyValue(names, resutSetWrapper, idProperty);
-				hash = idValue==null?null:idValue.hashCode();
-				if(!datas.containsKey(hash)){
-					bw = mapClassObject(names, resutSetWrapper);
-					datas.put(hash, bw);
-					entity = bw.getWrappedInstance();
-				}else{
+				String actualColumnName = getActualColumnName(names, idProperty);
+				if(actualColumnName==null){
+					throw new DbmException("no id column found on resultSet for specified id field: " + idField+", columnPrefix:"+columnPrefix);
+				}
+				int index = names.get(actualColumnName);
+				Object idValue = context.jdbcResultSetGetter.getColumnValue(resutSetWrapper, index, idProperty.getPropertyDescriptor());
+				if(idValue==null){
+					throw new DbmException("id column can not be null for specified id field: " + idField+", columnPrefix:"+columnPrefix);
+				}
+				hash = idValue.hashCode();
+				if(datas.containsKey(hash)){
 					bw = datas.get(hash);
+					isNew = false;
+				}else{
+					bw = mapResultClassObject(names, resutSetWrapper);
+					datas.put(hash, bw);
 				}
 			}else{
-				bw = mapClassObject(names, resutSetWrapper);
-				hash = HashCodeBuilder.reflectionHashCode(entity);
-				if(!datas.containsKey(hash)){
-					datas.put(hash, bw);
-					entity = bw.getWrappedInstance();
-				}else{
+				bw = mapResultClassObject(names, resutSetWrapper);
+				if(bw==null){
+					return null;
+				}
+				hash = HashCodeBuilder.reflectionHashCode(bw.getWrappedInstance());
+				if(datas.containsKey(hash)){
 					bw = datas.get(hash);
+					isNew = false;
+				}else{
+					datas.put(hash, bw);
 				}
 			}
+			entity = bw.getWrappedInstance();
 			for(PropertyResultClassMapper pm : this.complexFields.values()){
 				Object propertyValue = pm.mapResult(names, resutSetWrapper);
 				pm.linkToParent(bw, propertyValue);
 			}
-			return entity;
+			return afterMapResult(entity, hash, isNew);
 		}
-		protected BeanWrapper mapClassObject(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper){
-			Object mappedObject = classIntro.newInstance();
-			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
-			initBeanWrapper(bw);
-			
+		protected BeanWrapper mapResultClassObject(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper){
+			BeanWrapper bw = null;
+			boolean hasColumn = false;
 			for(Entry<String, JFishProperty> entry : simpleFields.entrySet()){
 				JFishProperty jproperty = entry.getValue();
-				Object value = getPropertyValue(names, resutSetWrapper, jproperty);
+				String actualColumnName = getActualColumnName(names, jproperty);
+				if(actualColumnName==null){
+					continue;
+				}else if(!hasColumn){
+					hasColumn = true;
+				}
+				int index = names.get(actualColumnName);
+				Object value = context.jdbcResultSetGetter.getColumnValue(resutSetWrapper, index, jproperty.getPropertyDescriptor());
 				if(value!=null){
+					if(bw==null){
+						Object mappedObject = classIntro.newInstance();
+						bw = createBeanWrapper(mappedObject);
+					}
 					bw.setPropertyValue(jproperty.getName(), value);
 				}
 			}
 			return bw;
 		}
-		public Object getPropertyValue(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper, JFishProperty jproperty){
-			Object value = null;
-			String field = JdbcUtils.lowerCaseName(appendPrefix(jproperty.getName()));
-			if(names.containsKey(field)){
-				int index = names.get(field);
-				value = getColumnValue(resutSetWrapper, index, jproperty.getPropertyDescriptor());
-			}else if(names.containsKey(JdbcUtils.underscoreName(field))){
-				int index = names.get(field);
-				value = getColumnValue(resutSetWrapper, index, jproperty.getPropertyDescriptor());
+		
+		private String getActualColumnName(Map<String, Integer> names, JFishProperty jproperty){
+			String fullName = appendPrefix(jproperty.getName());
+			String columName = JdbcUtils.lowerCaseName(fullName);
+			if(names.containsKey(columName)){
+				return columName;
 			}
-			return value;
+			columName = JdbcUtils.underscoreName(fullName);
+			if(names.containsKey(columName)){
+				return columName;
+			}
+			return null;
 		}
+		/*public Object getPropertyValue(Map<String, Integer> names, ResultSetWrappingSqlRowSet resutSetWrapper, JFishProperty jproperty, String colName){
+			Object value = null;
+			Integer index = names.get(colName);
+			value = getColumnValue(resutSetWrapper, index, jproperty.getPropertyDescriptor());
+			return value;
+		}*/
 
 	}
 
-
-	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) {
-		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
-	}
 }

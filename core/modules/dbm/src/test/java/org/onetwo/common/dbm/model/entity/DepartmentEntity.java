@@ -8,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
-import org.onetwo.common.db.CrudEntityManager;
-import org.onetwo.dbm.support.Dbms;
 
 
 /*****
@@ -20,9 +18,6 @@ import org.onetwo.dbm.support.Dbms;
 @Table(name="department")
 public class DepartmentEntity extends BaseEntity {
 	
-
-	final static public CrudEntityManager<DepartmentEntity, Long> crudManager = Dbms.newCrudManager(DepartmentEntity.class);
-
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY) 
 	@Column(name="ID")

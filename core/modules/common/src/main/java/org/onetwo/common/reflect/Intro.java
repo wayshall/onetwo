@@ -39,6 +39,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class Intro<T> {
 	
@@ -70,7 +71,7 @@ public class Intro<T> {
 																					public JFishFieldInfoImpl load(String propName) throws Exception {
 																						Field field = getField(propName);
 																						if(field==null){
-																							return null;
+																							throw new NoSuchElementException("class:"+clazz+", field:"+propName);
 																						}
 																						return new JFishFieldInfoImpl(clazz, field);
 																					}
@@ -82,7 +83,7 @@ public class Intro<T> {
 																					public JFishPropertyInfoImpl load(String propName) throws Exception {
 																						PropertyDescriptor pd = getProperty(propName);
 																						if(pd==null){
-																							return null;
+																							throw new NoSuchElementException("class:"+clazz+", property:"+propName);
 																						}
 																						return new JFishPropertyInfoImpl(clazz, pd);
 																					}
@@ -301,7 +302,12 @@ public class Intro<T> {
 			return new JFishPropertyInfoImpl(clazz, pd);*/
 			try {
 				prop = propertyInfoCaches.get(propName);
-			} catch (ExecutionException e) {
+			} catch (UncheckedExecutionException e) {
+				if(e.getCause() instanceof NoSuchElementException){
+					return null;
+				}
+				throw e;
+			}catch (ExecutionException e) {
 				throw new BaseException("getJFishProperty error", e);
 			}
 		}

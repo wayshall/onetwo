@@ -4,7 +4,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 
-abstract public class AbstractDataQuery implements DataQuery{
+abstract public class AbstractDbmQueryWrapper implements DbmQueryWrapper{
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -21,7 +21,7 @@ abstract public class AbstractDataQuery implements DataQuery{
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public DataQuery setPageParameter(final Page page) {
+	public DbmQueryWrapper setPageParameter(final Page page) {
 		if(!page.isPagination())
 			return this;
 		return setLimited(page.getFirst()-1, page.getPageSize());
