@@ -79,19 +79,52 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 			bw.setConversionService(cs);
 		}
 	}
+	
+	static class DbmNestedResultData {
+		final private String property;
+		final private String id;
+		final private String columnPrefix;
+		final private NestedType nestedType;
+		public DbmNestedResultData(DbmNestedResult nested) {
+			this(nested.property(), nested.id(), nested.columnPrefix(), nested.nestedType());
+		}
+		public DbmNestedResultData(String property, String id, String columnPrefix, NestedType nestedType) {
+			super();
+			this.property = property;
+			this.id = id;
+			this.columnPrefix = columnPrefix;
+			this.nestedType = nestedType;
+		}
+		public String getProperty() {
+			return property;
+		}
+		public String getId() {
+			return id;
+		}
+		public String getColumnPrefix() {
+			return columnPrefix;
+		}
+		public String getColumnPrefix(String defValue) {
+			return StringUtils.isBlank(columnPrefix)?defValue:columnPrefix;
+		}
+		public NestedType getNestedType() {
+			return nestedType;
+		}
+		
+	}
 
 	static class ClassMapperContext {
 		protected JdbcResultSetGetter jdbcResultSetGetter;
-		protected Map<String, DbmNestedResult> accessPathResultClassMapperMap = Maps.newHashMap();
+		protected Map<String, DbmNestedResultData> accessPathResultClassMapperMap = Maps.newHashMap();
 		public ClassMapperContext(JdbcResultSetGetter jdbcResultSetGetter, DbmResultMapping dbmResultMapping) {
 			super();
 			this.jdbcResultSetGetter = jdbcResultSetGetter;
 			for(DbmNestedResult nested : dbmResultMapping.value()){
-				this.accessPathResultClassMapperMap.put(nested.property(), nested);
+				this.accessPathResultClassMapperMap.put(nested.property(), new DbmNestedResultData(nested));
 			}
 		}
 		
-		public DbmNestedResult getDbmNestedResult(String accessPath){
+		public DbmNestedResultData getDbmNestedResult(String accessPath){
 			return this.accessPathResultClassMapperMap.get(accessPath);
 		}
 		
@@ -254,16 +287,16 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 				}
 				JFishProperty jproperty = getActualJFishProperty(pd.getName());
 				String accessPath = getAcessPath(accessPathPrefix, jproperty.getName());
-				DbmNestedResult result = context.getDbmNestedResult(accessPath);
+				DbmNestedResultData result = context.getDbmNestedResult(accessPath);
 				if(result!=null){
 					PropertyResultClassMapper propertyMapper = null;
-					NestedType nestedType = result.nestedType();
+					NestedType nestedType = result.getNestedType();
 					if(nestedType==NestedType.COLLECTION){
-						propertyMapper = new CollectionPropertyResultClassMapper(this, result.id(), appendPrefix(result.columnPrefix()), jproperty);
+						propertyMapper = new CollectionPropertyResultClassMapper(this, result.getId(), appendPrefix(result.getColumnPrefix(jproperty.getName())), jproperty);
 					}else if(nestedType==NestedType.MAP){
-						propertyMapper = new MapPropertyResultClassMapper(this, result.id(), appendPrefix(result.columnPrefix()), jproperty);
+						propertyMapper = new MapPropertyResultClassMapper(this, result.getId(), appendPrefix(result.getColumnPrefix(jproperty.getName())), jproperty);
 					}else{
-						propertyMapper = new PropertyResultClassMapper(this, result.id(), appendPrefix(result.columnPrefix()), jproperty);
+						propertyMapper = new PropertyResultClassMapper(this, result.getId(), appendPrefix(result.getColumnPrefix(jproperty.getName())), jproperty);
 					}
 					propertyMapper.initialize();
 					complexFields.put(jproperty.getName(), propertyMapper);
