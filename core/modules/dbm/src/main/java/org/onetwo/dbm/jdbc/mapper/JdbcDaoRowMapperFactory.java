@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.map.CamelMap;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -33,7 +34,7 @@ public class JdbcDaoRowMapperFactory implements RowMapperFactory {
 	}
 
 	@Override
-	public RowMapper<?> createDefaultRowMapper(Class<?> type) {
+	public RowMapper<?> createRowMapper(Class<?> type) {
 		RowMapper<?> rowMapper = null;
 		if(type==null || type==Object.class){
 //			rowMapper = new SingleColumnRowMapper(Object.class);
@@ -55,6 +56,11 @@ public class JdbcDaoRowMapperFactory implements RowMapperFactory {
 			rowMapper = getBeanPropertyRowMapper(type);
 		}
 		return rowMapper;
+	}
+
+	@Override
+	public RowMapper<?> createRowMapper(NamedQueryInvokeContext invokeContext) {
+		return createRowMapper(invokeContext.getDynamicMethod().getResultClass());
 	}
 
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> entityClass) {

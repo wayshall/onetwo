@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
@@ -26,10 +26,11 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.EntityNotFoundException;
+import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
-import org.onetwo.dbm.query.JFishDataQuery;
+import org.onetwo.dbm.query.DbmQueryWrapperImpl;
 import org.onetwo.dbm.query.JFishNamedFileQueryManagerImpl;
-import org.onetwo.dbm.query.JFishQuery;
+import org.onetwo.dbm.query.DbmQuery;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -177,24 +178,24 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	@Override
-	public DataQuery createSQLQuery(String sqlString, Class<?> entityClass) {
-		JFishQuery jq = getDbmDao().createJFishQuery(sqlString, entityClass);
-		DataQuery query = new JFishDataQuery(jq);
+	public DbmQueryWrapper createSQLQuery(String sqlString, Class<?> entityClass) {
+		DbmQuery jq = getDbmDao().createDbmQuery(sqlString, entityClass);
+		DbmQueryWrapper query = new DbmQueryWrapperImpl(jq);
 		return query;
 	}
 
 	
-	protected DataQuery createQuery(SelectExtQuery extQuery){
+	protected DbmQueryWrapper createQuery(SelectExtQuery extQuery){
 		return getDbmDao().createAsDataQuery(extQuery);
 	}
 
 	@Override
-	public DataQuery createQuery(String sqlString) {
+	public DbmQueryWrapper createQuery(String sqlString) {
 		return this.createSQLQuery(sqlString, null);
 	}
 
 	@Override
-	public DataQuery createNamedQuery(String name) {
+	public DbmQueryWrapper createNamedQuery(String name) {
 		/*JFishNamedFileQueryInfo nameInfo = getFileNamedQueryFactory().getNamedQueryInfo(name);
 		return getFileNamedQueryFactory().createQuery(nameInfo);*/
 		throw new UnsupportedOperationException("jfish named query unsupported by this way!");
@@ -257,7 +258,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
 		Long id = null;
 		try {
-			DataQuery dq = this.createSQLQuery(sql, null);
+			DbmQueryWrapper dq = this.createSQLQuery(sql, null);
 			id = ((Number)dq.getSingleResult()).longValue();
 //			logger.info("createSequences id : "+id);
 		} catch (Exception e) {
@@ -285,7 +286,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	@Override
-	public DataQuery createQuery(String sql, Map<String, Object> values) {
+	public DbmQueryWrapper createQuery(String sql, Map<String, Object> values) {
 		return dbmDao.createAsDataQuery(sql, values);
 	}
 
@@ -325,7 +326,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	public <T> T findUnique(String sql, Object... values) {
-		DataQuery dq = dbmDao.createAsDataQuery(sql, (Class<?>)null);
+		DbmQueryWrapper dq = dbmDao.createAsDataQuery(sql, (Class<?>)null);
 		dq.setParameters(values);
 		return dq.getSingleResult();
 	}
@@ -388,10 +389,14 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
 	}
 
-
 	@Override
 	public DbmTypeMapping getSqlTypeMapping() {
 		return this.dbmDao.getDialect().getTypeMapping();
+	}
+
+	@Override
+	public RowMapperFactory getRowMapperFactory() {
+		return this.dbmDao.getRowMapperFactory();
 	}
 
 }

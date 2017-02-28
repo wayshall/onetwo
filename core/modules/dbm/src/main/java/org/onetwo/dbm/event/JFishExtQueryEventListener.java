@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.exception.NotUniqueResultException;
 import org.onetwo.common.db.sqlext.ExtQuery;
 import org.onetwo.common.db.sqlext.SelectExtQuery;

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
@@ -18,7 +19,6 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 	private final Method writeMethod;
 	private final Class<?> propertyType;
 	private final PropertyDescriptor property;
-
 
 	public JFishPropertyInfoImpl(Class<?> beanClass, String propName){
 		this(Intro.wrap(beanClass), ReflectUtils.findProperty(beanClass, propName));
@@ -98,6 +98,20 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 	@Override
 	public Field getField() {
 		return beanClassWrapper.getField(getName());
+	}
+
+	@Override
+	public Optional<JFishProperty> getCorrespondingJFishProperty() {
+		Optional<JFishProperty> fieldOpt = this.correspondingJFishProperty;
+		if(fieldOpt==null){
+			Field field = getField();
+			if(field==null){
+				return Optional.empty();
+			}
+			fieldOpt = Optional.of(new JFishFieldInfoImpl(getBeanClass(), field));
+			this.correspondingJFishProperty = fieldOpt;
+		}
+		return this.correspondingJFishProperty;
 	}
 
 	public List<Annotation> getAnnotations() {

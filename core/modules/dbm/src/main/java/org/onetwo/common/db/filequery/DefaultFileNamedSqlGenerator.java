@@ -19,10 +19,10 @@ import org.slf4j.Logger;
  *
  */
 public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
-	public static final String PARSER_ACCESS_KEY = "fragment";
+	public static final String PARSER_ACCESS_KEY = DbmNamedFileQueryInfo.FRAGMENT_KEY;
 	
 	private static final Logger logger = JFishLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
-	protected JFishNamedFileQueryInfo info;
+	protected DbmNamedFileQueryInfo info;
 	protected boolean countQuery;
 	private TemplateParser parser;
 	private ParserContext parserContext;
@@ -36,7 +36,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
 	
 	
 	
-	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(DbmNamedFileQueryInfo info, boolean countQuery,
 			TemplateParser parser, Map<Object, Object> params, DataBase dataBase) {
 		super();
 		this.info = info;
@@ -49,7 +49,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
 		this.dataBase = dataBase;
 	}
 
-	public DefaultFileNamedSqlGenerator(JFishNamedFileQueryInfo info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(DbmNamedFileQueryInfo info, boolean countQuery,
 			TemplateParser parser, ParserContext parserContext,
 			Class<?> resultClass, String[] ascFields, String[] desFields,
 			Map<Object, Object> params, DataBase dataBase) {
@@ -89,7 +89,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
 			
 			this.parserContext.put(SqlFunctionFactory.CONTEXT_KEY, SqlFunctionFactory.getSqlFunctionDialet(dataBase));
 			this.parserContext.putAll(params);
-			TemplateInNamedQueryParser attrParser = new TemplateInNamedQueryParser(parser, parserContext, info);
+			FragmentTemplateParser attrParser = new FragmentTemplateParser(parser, parserContext, info);
 			this.parserContext.put(PARSER_ACCESS_KEY, attrParser);
 			
 			if(countQuery){

@@ -5,6 +5,7 @@ import java.util.Date;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 public class TimeCounter {
 
@@ -25,7 +26,7 @@ public class TimeCounter {
 	private long costTime;
 	private boolean printMemory;
 	private StringBuilder message = new StringBuilder();
-    private TimeLogger timeLogger = TimeLogger.INSTANCE;
+    private TimeLogger timeLogger;
 
 
 	public TimeCounter(Object target) {
@@ -35,10 +36,22 @@ public class TimeCounter {
 		super();
 		this.target = target;
 		this.timeLogger = new Slf4jTimeLogger(logger);
+		this.checkTimeLogger();
+		
 	}
 	public TimeCounter(Object target, boolean printMemory) {
 		this.target = target;
 		this.printMemory = printMemory;
+		this.checkTimeLogger();
+	}
+	
+	private final void checkTimeLogger(){
+		Slf4jTimeLogger logger = new Slf4jTimeLogger();
+		if(logger.getLogger() instanceof NOPLogger){
+			this.timeLogger = new TimerOutputer();
+		}else{
+			this.timeLogger = logger;
+		}
 	}
 
 	

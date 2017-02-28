@@ -11,8 +11,10 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,6 +31,7 @@ import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.UpdateCountException;
+import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -141,7 +144,16 @@ final public class DbmUtils {
 		}
 		return value;
 	}
-	
+
+
+	public static Map<String, Integer> lookupColumnNames(SqlRowSetMetaData resultSetMetaData) throws SQLException {
+		int columnCount = resultSetMetaData.getColumnCount();
+		Map<String, Integer> names = new HashMap<String, Integer>();
+		for (int index = 1; index <= columnCount; index++) {
+			names.put(JdbcUtils.lowerCaseName(lookupColumnName(resultSetMetaData, index)), index);
+		}
+		return names;
+	}
 
 	public static String lookupColumnName(SqlRowSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
 		String name = resultSetMetaData.getColumnLabel(columnIndex);

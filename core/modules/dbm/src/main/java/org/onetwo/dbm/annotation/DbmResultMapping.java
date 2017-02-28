@@ -1,16 +1,13 @@
-package org.onetwo.common.db.dquery.annotation;
+package org.onetwo.dbm.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-/****
- * 必须是第一个参数
- * @author way
- *
- */
-@Target(ElementType.PARAMETER)
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Dispatcher {
+public @interface DbmResultMapping {
+	String idField() default "";
+	String columnPrefix() default "";
+	DbmNestedResult[] value();
 }

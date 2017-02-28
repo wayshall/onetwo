@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFileQueryInfo> {
+public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQueryInfo> {
 	
 	public static class SimpleDirectiveExtractor implements SqlDirectiveExtractor {
 		public static final String DIRECTIVE_PREFIX = SimpleSqlFileLineLexer.COMMENT + ">";//-->
@@ -47,7 +47,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 	protected SqlDirectiveExtractor sqlDirectiveExtractor = new SimpleDirectiveExtractor();
 	
 	@Override
-	public void parseToNamespaceProperty(JFishPropertyConf<JFishNamedFileQueryInfo> conf, PropertiesNamespaceInfo<JFishNamedFileQueryInfo> np, ResourceAdapter<?> f) {
+	public void parseToNamespaceProperty(JFishPropertyConf<DbmNamedFileQueryInfo> conf, PropertiesNamespaceInfo<DbmNamedFileQueryInfo> np, ResourceAdapter<?> f) {
 		if(!f.getName().endsWith(conf.getPostfix())){
 			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
 			return ;
@@ -75,15 +75,22 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 		
 	}
 	
-	protected void parseQueryStatement(SimpleSqlFileLineLexer lineLexer, JFishPropertyConf<JFishNamedFileQueryInfo> conf, 
-										PropertiesNamespaceInfo<JFishNamedFileQueryInfo> np, ResourceAdapter<?> f){
+	protected void parseQueryStatement(SimpleSqlFileLineLexer lineLexer, JFishPropertyConf<DbmNamedFileQueryInfo> conf, 
+										PropertiesNamespaceInfo<DbmNamedFileQueryInfo> np, ResourceAdapter<?> f){
 		List<String> comments = lineLexer.getLineBuf();
 		JFishProperties config = parseComments(comments);
 		//name
-		String name = config.getAndThrowIfEmpty(JFishNamedFileQueryInfo.NAME_KEY);
-		config.remove(JFishNamedFileQueryInfo.NAME_KEY);
+		//没有发现 @name 属性的注释，抛错……
+//		String name = config.getAndThrowIfEmpty(DbmNamedFileQueryInfo.NAME_KEY);
+		String name = config.getProperty(DbmNamedFileQueryInfo.NAME_KEY);
+		//没有发现 @name 属性的注释，忽略
+		if(StringUtils.isBlank(name)){
+			scanSqlContent(lineLexer);
+			return ;
+		}
+		config.remove(DbmNamedFileQueryInfo.NAME_KEY);
 		
-		JFishNamedFileQueryInfo bean = np.getNamedProperty(name);
+		DbmNamedFileQueryInfo bean = np.getNamedProperty(name);
 		String sqlPropertyName = "value";
 		if(bean==null){
 			bean = ReflectUtils.newInstance(conf.getPropertyBeanClass());
@@ -96,9 +103,9 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 			np.put(bean.getName(), bean, true);
 
 			//别名
-			if(config.containsKey(JFishNamedFileQueryInfo.ALIAS_KEY)){
-				bean.setAliasList(config.getStringList(JFishNamedFileQueryInfo.ALIAS_KEY, ","));
-				config.remove(JFishNamedFileQueryInfo.ALIAS_KEY);
+			if(config.containsKey(DbmNamedFileQueryInfo.ALIAS_KEY)){
+				bean.setAliasList(config.getStringList(DbmNamedFileQueryInfo.ALIAS_KEY, ","));
+				config.remove(DbmNamedFileQueryInfo.ALIAS_KEY);
 			}
 			
 			/*if(config.containsKey(JFishNamedFileQueryInfo.MATCHER_KEY)){
@@ -108,23 +115,23 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 				config.remove(JFishNamedFileQueryInfo.MATCHER_KEY);
 				
 			}*/
-			if(config.containsKey(JFishNamedFileQueryInfo.PROPERTY_KEY)
-					|| config.containsKey(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
+			if(config.containsKey(DbmNamedFileQueryInfo.PROPERTY_KEY)
+					|| config.containsKey(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
 				throw new FileNamedQueryException("no parent query["+bean.getName()+"] found, the @property or @fragment tag must defined in a subquery, near at "
 						+ "line : " + lineLexer.getLineReader().getLineNumber());
 			}
 		}else{
-			if(config.containsKey(JFishNamedFileQueryInfo.PROPERTY_KEY)){
+			if(config.containsKey(DbmNamedFileQueryInfo.PROPERTY_KEY)){
 				//property:propertyName
-				sqlPropertyName = config.getProperty(JFishNamedFileQueryInfo.PROPERTY_KEY);
-				config.remove(JFishNamedFileQueryInfo.PROPERTY_KEY);
+				sqlPropertyName = config.getProperty(DbmNamedFileQueryInfo.PROPERTY_KEY);
+				config.remove(DbmNamedFileQueryInfo.PROPERTY_KEY);
 				
-			}else if(config.containsKey(JFishNamedFileQueryInfo.FRAGMENT_KEY)){
+			}else if(config.containsKey(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
 				//fragment[fragmentValue]=sql
-				sqlPropertyName = JFishNamedFileQueryInfo.FRAGMENT_KEY + "[" + 
-															config.getProperty(JFishNamedFileQueryInfo.FRAGMENT_KEY)
+				sqlPropertyName = DbmNamedFileQueryInfo.FRAGMENT_KEY + "[" + 
+															config.getProperty(DbmNamedFileQueryInfo.FRAGMENT_KEY)
 																	+ "]";
-				config.remove(JFishNamedFileQueryInfo.FRAGMENT_KEY);
+				config.remove(DbmNamedFileQueryInfo.FRAGMENT_KEY);
 				
 			}else{
 				throw new FileNamedQueryException("named query["+name+"]'s  must be specify a @property or @fragment."
@@ -144,6 +151,15 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 			this.setNamedInfoProperty(beanBw, prop, config.getProperty(prop));
 		}
 		
+		String sqlContent = scanSqlContent(lineLexer);
+//		bean.setValue(buf.toString());
+		beanBw.setPropertyValue(sqlPropertyName, sqlContent);
+		
+		if(debug)
+			logger.info("value: {}", bean.getValue());
+	}
+	
+	private String scanSqlContent(SimpleSqlFileLineLexer lineLexer){
 		StringBuilder buf = new StringBuilder();
 		while(lineLexer.nextLineToken()){
 			if(lineLexer.getLineToken()==LineToken.EOF){
@@ -163,11 +179,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<JFishNamedFile
 				throw new FileNamedQueryException("error syntax: " + lineLexer.getLineToken());
 			}
 		}
-//		bean.setValue(buf.toString());
-		beanBw.setPropertyValue(sqlPropertyName, buf.toString());
-		
-		if(debug)
-			logger.info("value: {}", bean.getValue());
+		return buf.toString();
 	}
 	
 	

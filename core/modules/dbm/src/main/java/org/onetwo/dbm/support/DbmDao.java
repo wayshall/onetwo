@@ -8,7 +8,7 @@ import java.util.Map;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.query.JFishQuery;
+import org.onetwo.dbm.query.DbmQuery;
 
 public interface DbmDao {
 
@@ -79,10 +79,10 @@ public interface DbmDao {
 	 * @param sql
 	 * @return
 	 */
-	public JFishQuery createJFishQuery(String sql);
+	public DbmQuery createDbmQuery(String sql);
 	
 	
-	public JFishQuery createJFishQuery(DynamicQuery query);
+	public DbmQuery createDbmQuery(DynamicQuery query);
 	
 	/***********
 	 * 返回一个<code>JFishQuery</code>查询对象
@@ -90,7 +90,7 @@ public interface DbmDao {
 	 * @param entityClass
 	 * @return
 	 */
-	public JFishQuery createJFishQuery(String sql, Class<?> entityClass);
+	public DbmQuery createDbmQuery(String sql, Class<?> entityClass);
 	
 	/******
 	 * 根据对象属性插入一条数据到数据库，但不会select主键，返回的对象没有id

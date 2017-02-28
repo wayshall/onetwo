@@ -86,4 +86,7 @@ public interface DbmMappedField {
 	public boolean isVersionControll();
 	public <T> VersionableType<T> getVersionableType();
 	public void setVersionableType(VersionableType<?> versionableType);
+	
+	public boolean isEnumerated();
+	public DbmEnumType getEnumType();
 }

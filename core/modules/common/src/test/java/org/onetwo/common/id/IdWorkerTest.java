@@ -9,7 +9,7 @@ public class IdWorkerTest {
 	public void testId(){
 		IdWorker idw = new IdWorker(1, 1);
 		
-		LangOps.repeatRun(100, ()->{
+		LangOps.ntimesRun(100, ()->{
 			System.out.println("id:"+idw.nextId());
 		});
 	}

@@ -29,7 +29,10 @@ public class SetRowMapperResultSetExtractor<T> implements ResultSetExtractor<Set
 		Set<T> results = (this.rowsExpected > 0 ? new HashSet<T>(this.rowsExpected) : new HashSet<T>());
 		int rowNum = 0;
 		while (rs.next()) {
-			results.add(this.rowMapper.mapRow(rs, rowNum++));
+			T row = this.rowMapper.mapRow(rs, rowNum++);
+			if(row!=null){
+				results.add(row);
+			}
 		}
 		return results;
 	}

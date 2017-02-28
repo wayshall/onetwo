@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.common.db.AbstractDataQuery;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.AbstractDbmQueryWrapper;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
@@ -18,13 +18,14 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.jdbc.core.RowMapper;
 
-public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrderByable {
+public class DefaultFileQueryWrapper extends AbstractDbmQueryWrapper implements QueryOrderByable {
 
 //	private DynamicQuery query;
 //	private JFishNamedFileQueryInfo info;
 	protected QueryProvideManager baseEntityManager;
-	private DataQuery dataQuery;
+	private DbmQueryWrapper dataQuery;
 	
 	protected boolean countQuery;
 
@@ -34,14 +35,14 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 	private int maxRecords;
 	private Class<?> resultClass;
 	
-	protected JFishNamedFileQueryInfo info;
+	protected DbmNamedFileQueryInfo info;
 	private TemplateParser parser;
 	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
 
-	public DefaultFileQueryImpl(QueryProvideManager baseEntityManager, JFishNamedFileQueryInfo info, boolean count, TemplateParser parser) {
+	public DefaultFileQueryWrapper(QueryProvideManager baseEntityManager, DbmNamedFileQueryInfo info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;
@@ -60,29 +61,31 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 //	abstract protected DataQuery createDataQuery(String sql, Class<?> mappedClass);
 
 	
-	protected DataQuery createDataQuery(String sql, Class<?> mappedClass){
-		DataQuery dataQuery = this.baseEntityManager.createSQLQuery(sql, mappedClass);
+	protected DbmQueryWrapper createDataQuery(String sql, Class<?> mappedClass){
+		DbmQueryWrapper dataQuery = this.baseEntityManager.createSQLQuery(sql, mappedClass);
 		return dataQuery;
 	}
 	
-	protected DataQuery createDataQueryIfNecessarry(){
+	protected DbmQueryWrapper createDataQueryIfNecessarry(){
+		if(dataQuery!=null){
+			return dataQuery;
+		}
 		FileNamedSqlGenerator sqlGen = new DefaultFileNamedSqlGenerator(info, countQuery, parser, getParserContext(), 
 																				resultClass, ascFields, desFields, params, baseEntityManager.getDataBase());
 		ParsedSqlContext sqlAndValues = sqlGen.generatSql();
 		if(sqlAndValues.isListValue()){
-			dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
-			
+			DbmQueryWrapper dataQuery = createDataQuery(sqlAndValues.getParsedSql(), resultClass);
 			int position = 0;
 			for(Object value : sqlAndValues.asList()){
 				dataQuery.setParameter(position++, value);
 			}
-			
 			setLimitResult();
+			this.dataQuery = dataQuery;
 			return dataQuery;
 		}
 
 		String parsedSql = sqlAndValues.getParsedSql();
-		dataQuery = createDataQuery(parsedSql, resultClass);
+		DbmQueryWrapper dataQuery = createDataQuery(parsedSql, resultClass);
 		
 		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql, baseEntityManager.getSqlParamterPostfixFunctionRegistry());
 		BeanWrapper paramBean = SpringUtils.newBeanMapWrapper(sqlAndValues.asMap());
@@ -102,7 +105,8 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		}
 		
 		setLimitResult();
-		
+
+		this.dataQuery = dataQuery;
 		return dataQuery;
 	}
 	private void setLimitResult(){
@@ -112,12 +116,12 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 			dataQuery.setMaxResults(maxRecords);
 	}
 
-	public DataQuery setParameter(int index, Object value) {
+	public DbmQueryWrapper setParameter(int index, Object value) {
 		this.params.put(index, value);
 		return this;
 	}
 
-	public DataQuery setParameter(String name, Object value) {
+	public DbmQueryWrapper setParameter(String name, Object value) {
 		JNamedQueryKey key = JNamedQueryKey.ofKey(name);
 		if(key!=null){
 			this.processQueryKey(key, value);
@@ -139,22 +143,22 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		return createDataQueryIfNecessarry().getResultList();
 	}
 
-	public DataQuery setFirstResult(int firstResult) {
+	public DbmQueryWrapper setFirstResult(int firstResult) {
 		this.firstRecord = firstResult;
 		return this;
 	}
 
-	public DataQuery setMaxResults(int maxResults) {
+	public DbmQueryWrapper setMaxResults(int maxResults) {
 		this.maxRecords = maxResults;
 		return this;
 	}
 
-	public DataQuery setResultClass(Class<?> resultClass) {
+	public DbmQueryWrapper setResultClass(Class<?> resultClass) {
 		this.resultClass = resultClass;
 		return this;
 	}
 
-	public DataQuery setParameters(Map<String, Object> params) {
+	public DbmQueryWrapper setParameters(Map<String, Object> params) {
 		for(Entry<String, Object> entry : params.entrySet()){
 			setParameter(entry.getKey(), entry.getValue());
 		}
@@ -204,7 +208,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 //		}
 	}
 	
-	public DataQuery setParameters(List<Object> params) {
+	public DbmQueryWrapper setParameters(List<Object> params) {
 		int position = 1;
 		for(Object value : params){
 			setParameter(position, value);
@@ -230,7 +234,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 	
 
 	@Override
-	public DataQuery setParameters(Object[] params) {
+	public DbmQueryWrapper setParameters(Object[] params) {
 		if(ArrayUtils.hasNotElement(params))
 			return this;
 		int position = 1;
@@ -240,7 +244,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		return this;
 	}
 
-	public DataQuery setLimited(final Integer first, final Integer max) {
+	public DbmQueryWrapper setLimited(final Integer first, final Integer max) {
 		this.firstRecord = first;
 		this.maxRecords = max;
 		return this;
@@ -253,7 +257,7 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 		return (T)dataQuery;
 	}
 	@Override
-	public DataQuery setQueryConfig(Map<String, Object> configs) {
+	public DbmQueryWrapper setQueryConfig(Map<String, Object> configs) {
 		return null;
 	}
 
@@ -266,6 +270,11 @@ public class DefaultFileQueryImpl extends AbstractDataQuery implements QueryOrde
 			parserContext = ParserContext.create();
 		}
 		return parserContext;
+	}
+
+	@Override
+	public void setRowMapper(RowMapper<?> rowMapper) {
+		this.dataQuery.setRowMapper(rowMapper);
 	}
 
 }

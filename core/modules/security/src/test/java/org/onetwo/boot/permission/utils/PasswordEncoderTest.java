@@ -19,13 +19,13 @@ public class PasswordEncoderTest {
 		TimeCounter time = new TimeCounter("sha");
 		int times = 1;
 		time.start();
-		LangOps.repeatRun(times, ()->{
+		LangOps.ntimesRun(times, ()->{
 			def.encode(pwd);
 		});
 		time.stop();
 		
 		time.restart("bcrypt");
-		LangOps.repeatRun(times, ()->{
+		LangOps.ntimesRun(times, ()->{
 			String str = encoder.encode(pwd);
 			System.out.println(str.length()+":"+str);
 		});

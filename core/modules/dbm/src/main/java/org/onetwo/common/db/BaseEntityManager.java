@@ -102,8 +102,8 @@ public interface BaseEntityManager extends QueryProvideManager {
 //	public DataQuery createMappingSQLQuery(String sqlString, String resultSetMapping);
 	
 	
-	public DataQuery createNamedQuery(String name);
-	public DataQuery createQuery(String sql, Map<String, Object> values);
+	public DbmQueryWrapper createNamedQuery(String name);
+	public DbmQueryWrapper createQuery(String sql, Map<String, Object> values);
 	
 	public Long getSequences(String sequenceName, boolean createIfNotExist);
 	public Long getSequences(Class<?> entityClass, boolean createIfNotExist);
@@ -113,11 +113,8 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 	public SQLSymbolManager getSQLSymbolManager();
 	
-
+	public <T> T narrowAs(Class<T> entityManagerClass);
 
 	public <T> T getRawManagerObject();
 	public <T> T getRawManagerObject(Class<T> rawClass);
-	
-	public <T> T narrowAs(Class<T> entityManagerClass);
-	
 }

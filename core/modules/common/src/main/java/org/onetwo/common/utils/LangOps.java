@@ -59,20 +59,25 @@ final public class LangOps {
 	}
 	
 	public static void timeIt(String tag, Closure closure){
+		
+	}
+	public static void timeIt(String tag, Integer times, Closure closure){
 		TimeCounter tc = new TimeCounter(tag);
 		tc.start();
 		try {
-			closure.execute();
+			for (int i = 0; i < times; i++) {
+				closure.execute();
+			}
 		} finally{
 			tc.stop();
 		}
 	}
 
-	public static void repeatRun(Integer times, Closure closure){
-		repeatRun(null, times, closure);
+	public static void ntimesRun(Integer times, Closure closure){
+		ntimesRun(null, times, closure);
 	}
 	
-	public static void repeatRun(String printTimeTag, Integer times, Closure closure){
+	public static void ntimesRun(String printTimeTag, Integer times, Closure closure){
 		TimeCounter t = StringUtils.isNotBlank(printTimeTag)?new TimeCounter(printTimeTag).startIt():null;
 		Stream.iterate(1, i->i+1).limit(times)
 									.forEach(i->{
@@ -81,6 +86,12 @@ final public class LangOps {
 		if(t!=null){
 			t.stop();
 		}
+	}
+	
+	public static <R> List<R> ntimesMap(Integer times, Function<Integer, R> mapper){
+		return Stream.iterate(1, i->i+1).limit(times)
+									.map(mapper)
+									.collect(Collectors.toList());
 	}
 	
 //	public static long sum(Iterable<T>)

@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
@@ -39,9 +39,9 @@ import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.query.JFishDataQuery;
-import org.onetwo.dbm.query.JFishQuery;
-import org.onetwo.dbm.query.JFishQueryImpl;
+import org.onetwo.dbm.query.DbmQueryWrapperImpl;
+import org.onetwo.dbm.query.DbmQuery;
+import org.onetwo.dbm.query.DbmQueryImpl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -451,7 +451,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 	
 	public <T> T findUnique(DynamicQuery query){
-		return createJFishQuery(query).getSingleResult();
+		return createDbmQuery(query).getSingleResult();
 	}
 	
 	public <T> T findUnique(String sql, Object[] args, RowMapper<T> row){
@@ -485,7 +485,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 	
 	public <T> List<T> findList(DynamicQuery query){
-		return createJFishQuery(query).getResultList();
+		return createDbmQuery(query).getResultList();
 	}
 	
 	public <T> List<T> findList(String sql, Object[] args, Class<T> type){
@@ -516,7 +516,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		if(totalCount<1)
 			return ;
 //		List<T> results = findList(queryValue);a
-		JFishQuery jq = createJFishQuery(queryValue.getSql(), queryValue.getResultClass());
+		DbmQuery jq = createDbmQuery(queryValue.getSql(), queryValue.getResultClass());
 		/*if(queryValue.isNamed()){
 			jq.setParameters(queryValue.asMap());
 		}else{
@@ -574,17 +574,17 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return update;
 	}
 	
-	public JFishQuery createJFishQuery(String sql){
-		return createJFishQuery(sql, null);
+	public DbmQuery createDbmQuery(String sql){
+		return createDbmQuery(sql, null);
 	}
 	
-	public JFishQuery createJFishQuery(String sql, Class<?> entityClass){
-		return new JFishQueryImpl(this, sql, entityClass);
+	public DbmQuery createDbmQuery(String sql, Class<?> entityClass){
+		return new DbmQueryImpl(this, sql, entityClass);
 	}
 	
-	public JFishQuery createJFishQuery(DynamicQuery query){
+	public DbmQuery createDbmQuery(DynamicQuery query){
 		query.compile();
-		JFishQuery jq = createJFishQuery(query.getTransitionSql(), query.getEntityClass());
+		DbmQuery jq = createDbmQuery(query.getTransitionSql(), query.getEntityClass());
 		jq.setParameters(query.getValues());
 		if(query.isPage()){
 			jq.setFirstResult(query.getFirstRecord());
@@ -598,8 +598,8 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return q;
 	}
 	
-	public DataQuery createAsDataQuery(SelectExtQuery extQuery){
-		DataQuery q = null;
+	public DbmQueryWrapper createAsDataQuery(SelectExtQuery extQuery){
+		DbmQueryWrapper q = null;
 		/*if(extQuery.isSqlQuery()){
 			q = this.createAsDataQuery(extQuery.getSql(), extQuery.getEntityClass());
 			q.setParameters((List)extQuery.getParamsValue().getValues());
@@ -608,7 +608,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		}*/
 		q = this.createAsDataQuery(extQuery.getSql(), (Map)extQuery.getParamsValue().getValues());
 		
-		JFishQuery jq = q.getRawQuery(JFishQuery.class);
+		DbmQuery jq = q.getRawQuery(DbmQuery.class);
 		jq.setResultClass(extQuery.getEntityClass());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());
@@ -617,24 +617,24 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return q;
 	}
 	
-	public DataQuery createAsDataQuery(String sqlString, Class entityClass) {
-		JFishQuery jq = createJFishQuery(sqlString, entityClass);
-		DataQuery query = new JFishDataQuery(jq);
+	public DbmQueryWrapper createAsDataQuery(String sqlString, Class entityClass) {
+		DbmQuery jq = createDbmQuery(sqlString, entityClass);
+		DbmQueryWrapper query = new DbmQueryWrapperImpl(jq);
 		return query;
 	}
 	
-	public DataQuery createAsDataQuery(String sql, Map<String, Object> values){
-		DataQuery q = createAsDataQuery(sql, (Class)null);
+	public DbmQueryWrapper createAsDataQuery(String sql, Map<String, Object> values){
+		DbmQueryWrapper q = createAsDataQuery(sql, (Class)null);
 		q.setParameters(values);
 		return q;
 	}
 
-	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type){
+	public <T> RowMapper<T> getRowMapper(Class<T> type){
 		return getDefaultRowMapper(type, false);
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return (RowMapper<T>)this.getRowMapperFactory().createDefaultRowMapper(type);
+		return (RowMapper<T>)this.getRowMapperFactory().createRowMapper(type);
 	}
 
 	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {

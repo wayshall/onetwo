@@ -10,14 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.QueryConfigData;
 import org.onetwo.common.db.QueryContextVariable;
 import org.onetwo.common.db.dquery.DynamicMethod.DynamicMethodParameter;
 import org.onetwo.common.db.dquery.annotation.AsCountQuery;
 import org.onetwo.common.db.dquery.annotation.BatchObject;
 import org.onetwo.common.db.dquery.annotation.ExecuteUpdate;
-import org.onetwo.common.db.dquery.annotation.Dispatcher;
+import org.onetwo.common.db.dquery.annotation.QueryDispatcher;
 import org.onetwo.common.db.dquery.annotation.Param;
 import org.onetwo.common.db.dquery.annotation.QueryConfig;
 import org.onetwo.common.db.filequery.JNamedQueryKey;
@@ -91,7 +91,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 							});
 			if(Page.class==rClass){
 				throw new FileNamedQueryException("define Page Type at the first parameter and return void if you want to pagination: " + method.toGenericString());
-			}else if(DataQuery.class==rClass){
+			}else if(DbmQueryWrapper.class==rClass){
 				compClass = null;
 			}
 		}
@@ -138,7 +138,7 @@ public class DynamicMethod extends AbstractMethodResolver<DynamicMethodParameter
 	
 	private void checkAndFindQuerySwitch(List<DynamicMethodParameter> parameters){
 		this.dispatcherParamter = parameters.stream().filter(p->{
-								if(p.hasParameterAnnotation(Dispatcher.class)){
+								if(p.hasParameterAnnotation(QueryDispatcher.class)){
 									if(p.getParameterIndex()!=0){
 										throw new FileNamedQueryException("Dispatcher must be first parameter but actual index is " + (p.getParameterIndex()+1));
 									}/*else if(p.getParameterType()!=String.class){

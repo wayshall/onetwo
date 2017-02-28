@@ -24,7 +24,7 @@ import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.JdbcStatementParameterSetter;
 import org.onetwo.dbm.jdbc.SpringJdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.SpringStatementParameterSetter;
-import org.onetwo.dbm.jdbc.mapper.JFishRowMapperFactory;
+import org.onetwo.dbm.jdbc.mapper.DbmRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.jpa.JFishSequenceNameManager;
 import org.onetwo.dbm.jpa.JPAMappedEntryBuilder;
@@ -156,7 +156,7 @@ public class SimpleDbmInnerServiceRegistry {
 		}
 		
 //		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.rowMapperFactory = new JFishRowMapperFactory(mappedEntryManager, jdbcResultSetGetter);
+		this.rowMapperFactory = new DbmRowMapperFactory(mappedEntryManager, jdbcResultSetGetter);
 
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JFishSequenceNameManager();

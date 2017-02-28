@@ -23,6 +23,7 @@ import org.onetwo.dbm.annotation.DbmEntity;
 import org.onetwo.dbm.annotation.DbmQueryable;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.query.JFishQueryableMappedEntryImpl;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.slf4j.Logger;
@@ -172,6 +173,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 	 * @param entityClass
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo){
 		AbstractJFishMappedEntryImpl entry = null;
 		Class<?> entityClass = annotationInfo.getSourceClass();
@@ -179,7 +181,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		DbmQueryable jqueryable = entityClass.getAnnotation(DbmQueryable.class);
 
 		if(jentity==null && jqueryable==null)
-			throw new BaseException("it's not a valid entity : " + entityClass);
+			throw new DbmException("it's not a valid entity : " + entityClass);
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){

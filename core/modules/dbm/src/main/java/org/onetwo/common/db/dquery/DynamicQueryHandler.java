@@ -7,13 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
@@ -23,12 +22,14 @@ import org.onetwo.common.db.filequery.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
@@ -36,7 +37,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Sets;
 
 public class DynamicQueryHandler implements InvocationHandler {
 	
@@ -92,12 +92,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 			return this.doInvoke(proxy, dmethod, args);
 		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
-		}*/catch (Throwable e) {
-			if(e instanceof FileNamedQueryException){
-				throw (FileNamedQueryException)e;
-			}else{
-				throw new FileNamedQueryException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
-			}
+		}*/
+		catch (FileNamedQueryException e) {
+			throw e;
+		}
+		catch (DbmException e) {
+			throw e;
+		}catch (Throwable e) {
+			throw new FileNamedQueryException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
 		}
 		
 	}
@@ -111,6 +113,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Object doInvoke(Object proxy, DynamicMethod dmethod, Object[] args) throws Throwable {
 		MethodDynamicQueryInvokeContext invokeContext = new MethodDynamicQueryInvokeContext(dmethod, args);
 		
@@ -125,7 +128,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 //		Object[] methodArgs = null;
 		
 		if(dmethod.isBatch()){
-			//先特殊处理，待修改
+			//先特殊处理
 //			result = handleBatch(dmethod, args, parsedQueryName, parsedParams);
 			result = handleBatch(invokeContext);
 		}else{
@@ -137,23 +140,26 @@ public class DynamicQueryHandler implements InvocationHandler {
 				result = em.getFileNamedQueryManager().findPage(page, invokeContext);
 				
 			}else if(Collection.class.isAssignableFrom(resultClass)){
-				result = em.getFileNamedQueryManager().findList(invokeContext);
-				
-			}else if(Set.class.isAssignableFrom(resultClass)){
 				List<?> datalist = em.getFileNamedQueryManager().findList(invokeContext);
-				result = Sets.newHashSet(datalist);
+				if(resultClass.isAssignableFrom(datalist.getClass())){
+					result = datalist;
+				}else{
+					Collection<Object> collections = CUtils.newCollections((Class<Collection<Object>>)resultClass, datalist.size());
+					collections.addAll(datalist);
+					result = collections;
+				}
 				
-			}else if(DataQuery.class.isAssignableFrom(resultClass)){
-				DataQuery dq = em.getFileNamedQueryManager().createQuery(invokeContext);
+			}else if(DbmQueryWrapper.class.isAssignableFrom(resultClass)){
+				DbmQueryWrapper dq = em.getFileNamedQueryManager().createQuery(invokeContext);
 				return dq;
 				
 			}else if(dmethod.isExecuteUpdate()){
-				DataQuery dq = em.getFileNamedQueryManager().createQuery(invokeContext);
+				DbmQueryWrapper dq = em.getFileNamedQueryManager().createQuery(invokeContext);
 				result = dq.executeUpdate();
 				
 			}else if(dmethod.isAsCountQuery()){
 //				parsedQueryName.setMappedEntity(dmethod.getResultClass());
-				DataQuery dq = em.getFileNamedQueryManager().createCountQuery(invokeContext);
+				DbmQueryWrapper dq = em.getFileNamedQueryManager().createCountQuery(invokeContext);
 				result = dq.getSingleResult();
 				result = Types.convertValue(result, resultClass);
 			}else{

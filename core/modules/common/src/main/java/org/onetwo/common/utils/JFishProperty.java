@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
@@ -39,10 +40,17 @@ public interface JFishProperty {
 	public Field getField();
 	public Type getGenericType();
 	public Type[] getParameterTypes();
+	public Type getParameterType(int index);
 	public Type getFirstParameterType();
 	public Intro<?> getFirstParameterTypeClassWrapper();
 
 	public boolean isCollectionType();
 	public boolean isMapType();
+	
+	/****
+	 * field对应的property，或property对应的field
+	 * @return
+	 */
+	public Optional<JFishProperty> getCorrespondingJFishProperty();
 
 }

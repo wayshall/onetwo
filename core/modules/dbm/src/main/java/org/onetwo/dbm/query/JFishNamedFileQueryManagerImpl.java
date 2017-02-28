@@ -2,10 +2,10 @@ package org.onetwo.dbm.query;
 
 import java.util.List;
 
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
-import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.DbmNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.utils.Assert;
@@ -26,11 +26,11 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 
 	@Override
-	public JFishDataQuery createQuery(NamedQueryInvokeContext invokeContext){
+	public DbmQueryWrapperImpl createQuery(NamedQueryInvokeContext invokeContext){
 		return createDataQuery(false, invokeContext);
 	}
 	
-	public JFishDataQuery createCountQuery(NamedQueryInvokeContext invokeContext){
+	public DbmQueryWrapperImpl createCountQuery(NamedQueryInvokeContext invokeContext){
 		return createDataQuery(true, invokeContext);
 	}
 
@@ -50,20 +50,17 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		return jq.getRawQuery(JFishDataQuery.class);
 	}*/
 	
-	public JFishDataQuery createDataQuery(boolean count, NamedQueryInvokeContext invokeContext){
+	public DbmQueryWrapperImpl createDataQuery(boolean count, NamedQueryInvokeContext invokeContext){
 //		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
 		Assert.notNull(invokeContext);
 
-		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
-		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
+		invokeContext.setParser(parser);
+		DbmNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
+		DbmFileQueryWrapperImpl jq = new DbmFileQueryWrapperImpl(getCreateQueryable(), nameInfo, count, invokeContext);
 
-		/*if(args.length==1 && LangUtils.isMap(args[0])){
-			jq.setParameters((Map)args[0]);
-		}else{
-			jq.setQueryAttributes(LangUtils.asMap(args));
-		}*/
 		jq.setQueryAttributes(invokeContext.getParsedParams());
-		return jq.getRawQuery(JFishDataQuery.class);
+//		jq.setRowMapper(rowMapper);
+		return jq.getRawQuery(DbmQueryWrapperImpl.class);
 	}
 	
 
@@ -76,21 +73,21 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 	@Override
 	public <T> List<T> findList(NamedQueryInvokeContext invokeContext) {
-		DataQuery jq = this.createQuery(invokeContext);
+		DbmQueryWrapper jq = this.createQuery(invokeContext);
 		return jq.getResultList();
 	}
 
 
 	@Override
 	public <T> T findUnique(NamedQueryInvokeContext invokeContext) {
-		DataQuery jq = this.createQuery(invokeContext);
+		DbmQueryWrapper jq = this.createQuery(invokeContext);
 		return jq.getSingleResult();
 	}
 
 
 	@Override
 	public <T> Page<T> findPage(Page<T> page, NamedQueryInvokeContext invokeContext) {
-		DataQuery jq = this.createCountQuery(invokeContext);
+		DbmQueryWrapper jq = this.createCountQuery(invokeContext);
 		Long total = jq.getSingleResult();
 		total = (total==null?0:total);
 		page.setTotalCount(total);
@@ -107,7 +104,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 	
 //	@Override
 	public <T> Page<T> findPage(Page<T> page, NamedQueryInvokeContext invokeContext, RowMapper<T> rowMapper) {
-		JFishDataQuery jq = this.createCountQuery(invokeContext);
+		DbmQueryWrapperImpl jq = this.createCountQuery(invokeContext);
 		Long total = jq.getSingleResult();
 		page.setTotalCount(total);
 		if(total!=null && total>0){
@@ -123,7 +120,7 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 
 
 	@Override
-	public NamespacePropertiesManager<JFishNamedFileQueryInfo> getNamespacePropertiesManager() {
+	public NamespacePropertiesManager<DbmNamedFileQueryInfo> getNamespacePropertiesManager() {
 		return sqlFileManager;
 	}
 

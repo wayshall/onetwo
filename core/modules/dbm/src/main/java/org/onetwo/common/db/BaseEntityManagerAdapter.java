@@ -14,7 +14,6 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.Page;
 import org.slf4j.Logger;
 
@@ -48,7 +47,7 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		String sql = getSequenceNameManager().getSequenceSql(sequenceName);
 		Long id = null;
 			try {
-				DataQuery dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
+				DbmQueryWrapper dq = this.createSQLQuery(getSequenceNameManager().getCreateSequence(sequenceName), null);
 				dq.executeUpdate();
 				
 				dq = this.createSQLQuery(sql, null);
@@ -153,8 +152,8 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 		page.setResult(datalist);
 	}
 	
-	protected DataQuery createQuery(SelectExtQuery extQuery){
-		DataQuery q = null;
+	protected DbmQueryWrapper createQuery(SelectExtQuery extQuery){
+		DbmQueryWrapper q = null;
 		q = this.createQuery(extQuery.getSql(), extQuery.getParamsValue().asMap());
 		if(extQuery.needSetRange()){
 			q.setLimited(extQuery.getFirstResult(), extQuery.getMaxResults());
@@ -178,11 +177,11 @@ public abstract class BaseEntityManagerAdapter implements InnerBaseEntityManager
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
 	public <T> T findUnique(Class<T> entityClass, Object... properties) {
-		return this.findUniqueByProperties(entityClass, MyUtils.convertParamMap(properties));
+		return this.findUniqueByProperties(entityClass, CUtils.asMap(properties));
 	}
 	
 	public <T> T findOne(Class<T> entityClass, Object... properties) {
-		return this.findOneByProperties(entityClass, MyUtils.convertParamMap(properties));
+		return this.findOneByProperties(entityClass, CUtils.asMap(properties));
 	}
 
 	public <T> T findOneByProperties(Class<T> entityClass, Map<Object, Object> properties) {

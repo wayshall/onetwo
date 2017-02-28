@@ -14,7 +14,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
-public class StringTemplateLoaderFileSqlParser<T extends JFishNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements TemplateParser, NamespacePropertiesFileListener<T> {
+public class StringTemplateLoaderFileSqlParser<T extends DbmNamedFileQueryInfo> extends AbstractFreemarkerTemplateConfigurer implements TemplateParser, NamespacePropertiesFileListener<T> {
 
 //	public static final String QUERY_POSTFIX = ".query";//for ftl
 	

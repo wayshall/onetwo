@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
@@ -13,7 +14,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 public class JFishFieldInfoImpl extends AbstractJFishProperty {
 
 	private final Field field;
-	private final String name;
+//	private final String name;
 	
 
 	public JFishFieldInfoImpl(Class<?> beanClass, String fieldName){
@@ -26,7 +27,7 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 
 	public JFishFieldInfoImpl(Intro<?> beanClassWrapper, Field field){
 		super(field.getName(), beanClassWrapper);
-		this.name = field.getName();
+//		this.name = field.getName();
 		if(!field.isAccessible()){
 			field.setAccessible(true);
 		}
@@ -49,11 +50,6 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	@Override
 	public Class<?> getBeanClass() {
 		return beanClassWrapper.getClazz();
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override
@@ -92,7 +88,22 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 
 	@Override
 	public PropertyDescriptor getPropertyDescriptor() {
-		return beanClassWrapper.getProperty(name);
+		return beanClassWrapper.getProperty(getName());
+	}
+	
+
+	@Override
+	public Optional<JFishProperty> getCorrespondingJFishProperty() {
+		Optional<JFishProperty> fieldOpt = this.correspondingJFishProperty;
+		if(fieldOpt==null){
+			PropertyDescriptor field = getPropertyDescriptor();
+			if(field==null){
+				return Optional.empty();
+			}
+			fieldOpt = Optional.of(new JFishPropertyInfoImpl(getBeanClass(), field));
+			this.correspondingJFishProperty = fieldOpt;
+		}
+		return this.correspondingJFishProperty;
 	}
 
 	@Override

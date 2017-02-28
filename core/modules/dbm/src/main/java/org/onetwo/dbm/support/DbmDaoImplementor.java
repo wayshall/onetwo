@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.DataQuery;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -14,6 +14,7 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -55,7 +56,7 @@ public interface DbmDaoImplementor extends DbmDao {
 	
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
-	public <T> RowMapper<T> getDefaultRowMapper(Class<T> type);
+	public <T> RowMapper<T> getRowMapper(Class<T> type);
 	
 	public DBDialect getDialect();
 	
@@ -112,12 +113,14 @@ public interface DbmDaoImplementor extends DbmDao {
 	 * @param extQuery
 	 * @return
 	 */
-	public DataQuery createAsDataQuery(SelectExtQuery extQuery);
+	public DbmQueryWrapper createAsDataQuery(SelectExtQuery extQuery);
 	
-	public DataQuery createAsDataQuery(String sqlString, Class<?> entityClass);
+	public DbmQueryWrapper createAsDataQuery(String sqlString, Class<?> entityClass);
 	
-	public DataQuery createAsDataQuery(String sql, Map<String, Object> values);
+	public DbmQueryWrapper createAsDataQuery(String sql, Map<String, Object> values);
 	public DbmConfig getDataBaseConfig();
 
 	public DataSource getDataSource();
+	
+	public RowMapperFactory getRowMapperFactory();
 }

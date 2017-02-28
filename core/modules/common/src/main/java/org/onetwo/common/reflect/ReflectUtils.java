@@ -11,25 +11,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NavigableSet;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -147,8 +140,8 @@ public class ReflectUtils {
 		}
 	}
 
-	public static <T> Collection<T> getProperties(Collection elements, String propName) {
-		Collection<T> values = new ArrayList<T>(elements.size());
+	public static <T> List<T> getProperties(Collection elements, String propName) {
+		List<T> values = new ArrayList<T>(elements.size());
 		T val = null;
 		for(Object obj : elements){
 			val = (T)getPropertyValue(obj, propName);
@@ -157,8 +150,8 @@ public class ReflectUtils {
 		return values;
 	}
 
-	public static <T> Collection<T> w(Object[] elements, String propName) {
-		Collection<T> values = new ArrayList<T>(elements.length);
+	public static <T> List<T> getProperties(Object[] elements, String propName) {
+		List<T> values = new ArrayList<T>(elements.length);
 		T val = null;
 		for(Object obj : elements){
 			val = (T)getPropertyValue(obj, propName);
@@ -1021,22 +1014,9 @@ public class ReflectUtils {
 		}
 		return fieldNames;
 	}
-	
-	public static <T extends Collection> T newCollections(Class<?> clazz){
-		if(!Collection.class.isAssignableFrom(clazz))
-			throw new BaseException("class must be a Collection type: " + clazz);
-		
-		if(clazz==List.class){
-			return (T)new ArrayList();
-		}else if(clazz==Set.class){
-			return (T) new HashSet();
-		}else if(clazz==SortedSet.class || clazz==NavigableSet.class){
-			return (T) new TreeSet();
-		}else if(clazz==Queue.class || clazz==Deque.class){
-			return (T) new ArrayDeque();
-		}else{
-			return (T)newInstance(clazz);
-		}
+
+	public static <T> Collection<T> newCollections(Class<? extends Collection> clazz){
+		return CUtils.newCollections(clazz);
 	}
 	
 	public static <T extends Collection> T newList(Class<T> clazz){

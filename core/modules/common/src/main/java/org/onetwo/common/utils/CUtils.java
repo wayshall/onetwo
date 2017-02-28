@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,13 +15,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.RandomAccess;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.IndexableReturnableClosure;
 import org.onetwo.common.utils.func.ReturnableClosure;
@@ -106,10 +114,24 @@ final public class CUtils {
 		return arrayIntoMap(CUtils.newMap(mapClass), params);
 	}
 	
-	public static <K, V> Map<K, V> newMap(Class<? extends Map> mapClass){
-		if(mapClass==null)
+	public static <K, V> Map<K, V> newMap(Class<? extends Map> clazz){
+		if(clazz==null)
 			return new HashMap<K, V>();
-		return (Map<K, V>)ReflectUtils.newInstance(mapClass);
+
+		if(!Map.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a map type: " + clazz);
+		
+		if(!clazz.isInterface()){
+			return ReflectUtils.newInstance(clazz);
+		}
+		
+		if(ConcurrentMap.class.isAssignableFrom(clazz)){
+			return new ConcurrentHashMap<K, V>();
+		}else if(SortedMap.class.isAssignableFrom(clazz)){
+			return new TreeMap<K, V>();
+		}else{
+			return new HashMap<K, V>();
+		}
 	}
 	
 
@@ -246,10 +268,37 @@ final public class CUtils {
 	public static List tolist(Object object, boolean trimNull) {
 		return tolist(object, trimNull, NULL_LIST);
 	}
+	
+	public static <T> Collection<T> newCollections(Class<? extends Collection> clazz){
+		return newCollections(clazz, null);
+	}
+	public static <T> Collection<T> newCollections(Class<? extends Collection> clazz, Integer size){
+		if(clazz==null){
+			return new ArrayList<T>();
+		}
+		if(!Collection.class.isAssignableFrom(clazz))
+			throw new BaseException("class must be a Collection type: " + clazz);
+		
+		if(!clazz.isInterface()){
+			return ReflectUtils.newInstance(clazz);
+		}
+		
+		if(List.class.isAssignableFrom(clazz)){
+			return size==null?new ArrayList<T>():new ArrayList<T>(size);
+		}else if(SortedSet.class.isAssignableFrom(clazz)){
+			return new TreeSet<T>();
+		}else if(Set.class.isAssignableFrom(clazz)){
+			return size==null?new HashSet<T>():new HashSet<T>(size);
+		}else if(Queue.class.isAssignableFrom(clazz)){
+			return size==null?new ArrayDeque<T>():new ArrayDeque<T>(size);
+		}else{
+			return size==null?new ArrayList<T>():new ArrayList<T>(size);
+		}
+	}
 
 	public static <T> Collection<T> toCollection(Object object) {
 		if(object==null)
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		List list = null;
 		if (Collection.class.isAssignableFrom(object.getClass())) {
 			return (Collection<T>)object;

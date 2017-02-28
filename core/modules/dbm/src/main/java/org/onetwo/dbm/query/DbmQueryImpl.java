@@ -14,12 +14,12 @@ import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 
 @SuppressWarnings("unchecked")
-public class JFishQueryImpl implements JFishQuery {
+public class DbmQueryImpl implements DbmQuery {
 	private static final int INVALID_VALUE = -1;
 	private static final int INVALID_VALUE_MAX_RESULTS = 0;
 
-	private static final String FIRST_RESULT_NAME = "JFishQueryFirstResult";
-	private static final String MAX_RESULT_NAME = "JFishQueryMaxResult";
+	private static final String FIRST_RESULT_NAME = "DbmQueryFirstResult";
+	private static final String MAX_RESULT_NAME = "DbmQueryMaxResult";
 	
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -38,7 +38,7 @@ public class JFishQueryImpl implements JFishQuery {
 	private RowMapper<?> rowMapper;
 //	private QType qtype;
 
-	public JFishQueryImpl(DbmDaoImplementor jFishDao, String sqlString, Class<?> resultClass) {
+	public DbmQueryImpl(DbmDaoImplementor jFishDao, String sqlString, Class<?> resultClass) {
 		super();
 		this.JFishDaoImplementor = jFishDao;
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
@@ -51,7 +51,7 @@ public class JFishQueryImpl implements JFishQuery {
 	 * field = :1 and field = :2
 	 */
 	@Override
-	public JFishQuery setParameter(Integer index, Object value){
+	public DbmQuery setParameter(Integer index, Object value){
 //		this.checkQueryType(PlaceHolder.POSITION);
 //		createParameterIfNull();
 		this.parameters.setValue(index, value);
@@ -62,19 +62,19 @@ public class JFishQueryImpl implements JFishQuery {
 	 * field = :name1 and field = :name2
 	 */
 	@Override
-	public JFishQuery setParameter(String name, Object value){
+	public DbmQuery setParameter(String name, Object value){
 //		createParameterIfNull();
 		this.parameters.setValue(name, value);
 		return this;
 	}
 	
-	public JFishQuery setParameters(Map<String, Object> params){
+	public DbmQuery setParameters(Map<String, Object> params){
 //		createParameterIfNull();
 		this.parameters.setValue(params);
 		return this;
 	}
 	
-	public JFishQuery setParameters(List<?> params){
+	public DbmQuery setParameters(List<?> params){
 		Assert.notNull(params);
 		for(int index=0; index<params.size(); index++){
 			setParameter(index, params.get(index));
@@ -181,7 +181,7 @@ public class JFishQueryImpl implements JFishQuery {
 	 * @see org.onetwo.common.fish.JFishQuery#setFirstResult(int)
 	 */
 	@Override
-	public JFishQuery setFirstResult(int firstResult) {
+	public DbmQuery setFirstResult(int firstResult) {
 		this.firstResult = firstResult;
 		return this;
 	}
@@ -197,12 +197,12 @@ public class JFishQueryImpl implements JFishQuery {
 	 * @see org.onetwo.common.fish.JFishQuery#setMaxResult(int)
 	 */
 	@Override
-	public JFishQuery setMaxResults(int maxResults) {
+	public DbmQuery setMaxResults(int maxResults) {
 		this.maxResults = maxResults;
 		return this;
 	}
 
-	public JFishQuery setResultClass(Class<?> resultClass) {
+	public DbmQuery setResultClass(Class<?> resultClass) {
 		this.resultClass = resultClass;
 		return this;
 	}

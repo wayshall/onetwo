@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.annotation.DbmRepository;
 import org.onetwo.common.db.dquery.annotation.QueryRepository;
-import org.onetwo.common.db.filequery.JFishNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.DbmNamedFileQueryInfo;
 import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
 import org.onetwo.common.db.filequery.PropertiesNamespaceInfo;
 import org.onetwo.common.db.filequery.QueryProvideManager;
@@ -105,7 +105,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 		Assert.notNull(sqlFile);
 
 		logger.info("initialize dynamic query proxy[{}] for : {}", beanName, sqlFile);
-		PropertiesNamespaceInfo<JFishNamedFileQueryInfo> info = namedSqlFileManager.buildSqlFile(sqlFile);
+		PropertiesNamespaceInfo<DbmNamedFileQueryInfo> info = namedSqlFileManager.buildSqlFile(sqlFile);
 //		interfaceClass = ReflectUtils.loadClass(info.getNamespace());
 		if(!interfaceClass.getName().equals(info.getNamespace())){
 			throw new FileNamedQueryException("namespace error:  interface->" + interfaceClass+", namespace->"+info.getNamespace());

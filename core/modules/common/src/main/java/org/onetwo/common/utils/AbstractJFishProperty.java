@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
@@ -14,6 +15,7 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	protected AnnotationInfo annotationInfo;
 	protected Intro<?> propertyClassWrapper;
 	private final String name;
+	protected Optional<JFishProperty> correspondingJFishProperty;
 	
 	
 	public AbstractJFishProperty(String name, Intro<?> beanClassWrapper) {
@@ -50,6 +52,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		Type[] types = getParameterTypes();
 		return LangUtils.isEmpty(types)?null:types[0];
 	}
+	
+	public Type getParameterType(int index) {
+		Type[] types = getParameterTypes();
+		return types.length-1<index?null:types[index];
+	}
 
 	public Intro<?> getFirstParameterTypeClassWrapper() {
 		return Intro.wrap((Class<?>)getFirstParameterType());
@@ -60,11 +67,11 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	}
 
 	public boolean isCollectionType(){
-		return propertyClassWrapper!=null && propertyClassWrapper.isCollectionType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isCollection();
 	}
 
 	public boolean isMapType(){
-		return propertyClassWrapper!=null && propertyClassWrapper.isMapType();
+		return propertyClassWrapper!=null && propertyClassWrapper.isMap();
 	}
 	
 }
