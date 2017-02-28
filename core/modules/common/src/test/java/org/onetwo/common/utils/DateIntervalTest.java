@@ -60,6 +60,12 @@ public class DateIntervalTest {
 
 	@Test
 	public void testDateInterval2(){
+		DateInterval interval0 = DateInterval.in("2017-02-28", "2017-03-31");
+		interval0.eachDate((date, index)->{
+			System.out.println(index+": " + date.toLocaleString());
+			return true;
+		});
+		
 		DateInterval interval = DateInterval.in("2012-11-11 16:50:50", "2013-5-28 16:50:50");
 		final long differ = interval.getStandardDays();
 		System.out.println("differ: " + differ);

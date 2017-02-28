@@ -29,6 +29,7 @@ import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
@@ -91,12 +92,14 @@ public class DynamicQueryHandler implements InvocationHandler {
 			return this.doInvoke(proxy, dmethod, args);
 		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
-		}*/catch (Throwable e) {
-			if(e instanceof FileNamedQueryException){
-				throw (FileNamedQueryException)e;
-			}else{
-				throw new FileNamedQueryException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
-			}
+		}*/
+		catch (FileNamedQueryException e) {
+			throw e;
+		}
+		catch (DbmException e) {
+			throw e;
+		}catch (Throwable e) {
+			throw new FileNamedQueryException("invoke query["+dmethod.getQueryName()+"] error : " + e.getMessage(), e);
 		}
 		
 	}

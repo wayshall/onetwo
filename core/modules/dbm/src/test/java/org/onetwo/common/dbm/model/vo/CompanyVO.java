@@ -1,6 +1,7 @@
 package org.onetwo.common.dbm.model.vo;
 
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -11,6 +12,7 @@ public class CompanyVO {
 	protected String description;
 	protected int employeeNumber;
 	protected List<DepartmentVO> departments;
+	protected Map<Long, DepartmentVO> departmentMap;
   
 	public CompanyVO(){
 	}
@@ -53,6 +55,14 @@ public class CompanyVO {
 
 	public void setDepartments(List<DepartmentVO> departments) {
 		this.departments = departments;
+	}
+
+	public Map<Long, DepartmentVO> getDepartmentMap() {
+		return departmentMap;
+	}
+
+	public void setDepartmentMap(Map<Long, DepartmentVO> departmentMap) {
+		this.departmentMap = departmentMap;
 	}
 
 }

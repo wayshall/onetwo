@@ -57,6 +57,44 @@ left join
 
 
 
+/*****
+ * @name: findNestedCompanies
+ */
+select 
+        comp.*,
+    depart.id as departments_id,
+        depart.company_id as departments_company_id,
+        depart.`name` as departments_name,
+    emply.name as emply_name,
+    emply.join_date as emply_join_date,
+    emply.department_id as emply_department_id
+from 
+        company comp
+left join 
+    department depart on comp.id=depart.company_id
+left join
+    employee emply on emply.department_id=depart.id
+
+
+
+/*****
+ * @name: findNestedCompaniesWithDepartmentMap
+ */
+select 
+        comp.*,
+    depart.id as departments_id,
+        depart.company_id as departments_company_id,
+        depart.`name` as departments_name,
+    emply.name as emply_name,
+    emply.join_date as emply_join_date,
+    emply.department_id as emply_department_id
+from 
+        company comp
+left join 
+    department depart on comp.id=depart.company_id
+left join
+    employee emply on emply.department_id=depart.id
+
 
 
 

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,6 +17,7 @@ import org.onetwo.common.dbm.model.entity.CompanyEntity;
 import org.onetwo.common.dbm.model.entity.DepartmentEntity;
 import org.onetwo.common.dbm.model.entity.EmployeeEntity;
 import org.onetwo.common.dbm.model.entity.EmployeeEntity.EmployeeGenders;
+import org.onetwo.common.dbm.model.vo.CompanyVO;
 import org.onetwo.common.dbm.model.vo.DepartmentVO;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangOps;
@@ -92,12 +94,56 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 			});
 		});
 		
+		List<CompanyVO> companies = companyDao.findNestedCompanies();
+		assertThat(companies.size()).isEqualTo(10);
+		companies.stream().forEach(company->{
+			assertThat(company.getDepartments()).isNotNull();
+			assertThat(company.getDepartments().size()).isEqualTo(10);
+			
+			company.getDepartments().stream().forEach(depart->{
+//				assertThat(depart.getCompany()).isNotNull();
+				assertThat(company.getId()).isEqualTo(depart.getCompanyId());
+
+				assertThat(depart.getEmployees()).isNotNull();
+				assertThat(depart.getEmployees().size()).isEqualTo(10);
+				depart.getEmployees().stream().forEach(employee->{
+					assertThat(employee.getDepartmentId()).isEqualTo(depart.getId());
+				});
+			});
+		});
+		
 
 		LangOps.timeIt("findNestedDepartmentsWithEmployeeId", 1, ()->{
 			companyDao.findNestedDepartmentsWithEmployeeId();
 		});
 		LangOps.timeIt("findNestedDepartments", 1, ()->{
 			companyDao.findNestedDepartments();
+		});
+	}
+	
+
+	@Test
+	public void test3findMap(){
+		List<CompanyVO> companies = companyDao.findNestedCompaniesWithDepartmentMap();
+		assertThat(companies.size()).isEqualTo(10);
+		companies.stream().forEach(company->{
+			assertThat(company.getDepartments()).isNull();
+			assertThat(company.getDepartmentMap()).isNotNull();
+			assertThat(company.getDepartmentMap().size()).isEqualTo(10);
+			
+			Map<Long, DepartmentVO> departMap = company.getDepartmentMap();
+			departMap.entrySet().stream().forEach(entry->{
+				DepartmentVO depart = entry.getValue();
+//				assertThat(depart.getCompany()).isNotNull();
+				assertThat(depart.getId()).isEqualTo(entry.getKey());
+				assertThat(company.getId()).isEqualTo(depart.getCompanyId());
+
+				assertThat(depart.getEmployees()).isNotNull();
+				assertThat(depart.getEmployees().size()).isEqualTo(10);
+				depart.getEmployees().stream().forEach(employee->{
+					assertThat(employee.getDepartmentId()).isEqualTo(depart.getId());
+				});
+			});
 		});
 	}
 	
