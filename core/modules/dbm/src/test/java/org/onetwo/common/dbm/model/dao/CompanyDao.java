@@ -1,17 +1,21 @@
 package org.onetwo.common.dbm.model.dao;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.onetwo.common.db.dquery.annotation.DbmRepository;
 import org.onetwo.common.dbm.model.vo.CompanyVO;
 import org.onetwo.common.dbm.model.vo.DepartmentVO;
 import org.onetwo.dbm.annotation.DbmNestedResult;
 import org.onetwo.dbm.annotation.DbmNestedResult.NestedType;
 import org.onetwo.dbm.annotation.DbmResultMapping;
 
+@DbmRepository
 public interface CompanyDao {
 	
-	/*@DbmCascadeResult
-	List<CompanyVO> findNestedCompanies();*/
+	List<CompanyVO> findCompaniesByLikeName(String name);
+	
+	List<CompanyVO> findCompaniesByNames(Collection<String> names);
 	
 	@DbmResultMapping(value={
 			@DbmNestedResult(property="company", id="id", columnPrefix="comp_", nestedType=NestedType.ASSOCIATION)

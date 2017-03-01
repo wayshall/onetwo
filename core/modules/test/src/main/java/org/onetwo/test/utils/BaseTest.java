@@ -10,12 +10,12 @@ import org.onetwo.common.utils.CUtils;
 @SuppressWarnings({"rawtypes"})
 public class BaseTest {
 
-	public BaseTest injectField(Object obj, String propName, Object value){
+	public BaseTest setFieldValue(Object obj, String propName, Object value){
 		ReflectUtils.setFieldValue(obj, propName, value);
 		return this;
 	}
 
-	public BaseTest injectField(Object obj, Class fieldType, Object value){
+	public BaseTest setFieldValue(Object obj, Class fieldType, Object value){
 		ReflectUtils.setFieldValue(obj, fieldType, value);
 		return this;
 	}

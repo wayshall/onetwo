@@ -2,7 +2,9 @@ package org.onetwo.common.dbm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +61,29 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 	
 
 	@Test
-	public void test2find(){
+	public void testfindWithoutNestedMapping(){
+		String name = "测试公司";//测试公司-
+		List<CompanyVO> companies = this.companyDao.findCompaniesByLikeName(name);
+		assertThat(companies.size()).isEqualTo(10);
+		companies.stream().forEach(company->{
+			assertThat(company.getDepartments()).isNull();
+		});
+		
+		companies = this.companyDao.findCompaniesByNames(Collections.emptyList());
+		assertThat(companies.size()).isEqualTo(10);
+		companies.stream().forEach(company->{
+			assertThat(company.getDepartments()).isNull();
+		});
+		
+		companies = this.companyDao.findCompaniesByNames(Arrays.asList("测试公司-1", "测试公司-2"));
+		assertThat(companies.size()).isEqualTo(2);
+		companies.stream().forEach(company->{
+			assertThat(company.getDepartments()).isNull();
+		});
+	}
+	
+	@Test
+	public void testfindListWithNestedMapping(){
 		List<DepartmentVO> departments = companyDao.findDepartmentsWithComapny();
 		assertThat(departments.size()).isEqualTo(100);
 		departments.stream().forEach(depart->{
@@ -122,7 +146,7 @@ public class DbmNestedMappingTest extends DbmBaseTest {
 	
 
 	@Test
-	public void test3findMap(){
+	public void testfindMapWithNestedMapping(){
 		List<CompanyVO> companies = companyDao.findNestedCompaniesWithDepartmentMap();
 		assertThat(companies.size()).isEqualTo(10);
 		companies.stream().forEach(company->{
