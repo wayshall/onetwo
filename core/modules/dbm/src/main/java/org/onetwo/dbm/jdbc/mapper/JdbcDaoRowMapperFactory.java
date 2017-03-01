@@ -60,7 +60,7 @@ public class JdbcDaoRowMapperFactory implements RowMapperFactory {
 
 	@Override
 	public RowMapper<?> createRowMapper(NamedQueryInvokeContext invokeContext) {
-		return createRowMapper(invokeContext.getDynamicMethod().getResultClass());
+		return createRowMapper(invokeContext.getDynamicMethod().getComponentClass());
 	}
 
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> entityClass) {

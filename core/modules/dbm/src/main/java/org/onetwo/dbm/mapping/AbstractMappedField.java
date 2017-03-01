@@ -76,7 +76,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	@Override
 	public Object getValue(Object entity){
 		Object value = propertyInfo.getValue(entity);
-		if(isEnumerated()){
+		if(isEnumerated() && value!=null){
 			Object actualValue = null;
 			DbmEnumType etype = getEnumType();
 			Enum<?> enumValue = (Enum<?>) value;

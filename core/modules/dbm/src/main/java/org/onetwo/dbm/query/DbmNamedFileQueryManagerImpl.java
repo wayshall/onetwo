@@ -13,15 +13,11 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 
 
-public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory {
+public class DbmNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory {
 
 
-	public JFishNamedFileQueryManagerImpl(JFishNamedSqlFileManager sqlFileManager) {
+	public DbmNamedFileQueryManagerImpl(JFishNamedSqlFileManager sqlFileManager) {
 		super(sqlFileManager);
-		/*if(sqlFileManager!=null){
-			this.parser = (TemplateParser)sqlFileManager.getListener();
-			this.sqlFileManager = sqlFileManager;
-		}*/
 	}
 
 
@@ -34,22 +30,6 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		return createDataQuery(true, invokeContext);
 	}
 
-	/*@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JFishDataQuery createDataQuery(boolean count, JFishNamedFileQueryInfo nameInfo, Object... args){
-//		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
-//		Assert.notNull(type);
-
-//		JFishNamedFileQueryInfo nameInfo = getNamedQueryInfo(queryName);
-		JFishFileQueryImpl jq = new JFishFileQueryImpl(getCreateQueryable(), nameInfo, count, parser);
-
-		if(args.length==1 && LangUtils.isMap(args[0])){
-			jq.setParameters((Map)args[0]);
-		}else{
-			jq.setQueryAttributes(LangUtils.asMap(args));
-		}
-		return jq.getRawQuery(JFishDataQuery.class);
-	}*/
-	
 	public DbmQueryWrapperImpl createDataQuery(boolean count, NamedQueryInvokeContext invokeContext){
 //		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
 		Assert.notNull(invokeContext);
@@ -63,14 +43,6 @@ public class JFishNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFacto
 		return jq.getRawQuery(DbmQueryWrapperImpl.class);
 	}
 	
-
-	/*@Override
-	public DataQuery createQuery(JFishNamedFileQueryInfo nameInfo, PlaceHolder type, Object... args){
-		return createDataQuery(false, nameInfo, type, args);
-	}*/
-	
-
-
 	@Override
 	public <T> List<T> findList(NamedQueryInvokeContext invokeContext) {
 		DbmQueryWrapper jq = this.createQuery(invokeContext);

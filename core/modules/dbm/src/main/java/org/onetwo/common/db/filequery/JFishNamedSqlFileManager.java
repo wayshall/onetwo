@@ -55,7 +55,7 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	}
 
 	public DbmNamedFileQueryInfo getNamedQueryInfo(String name) {
-		DbmNamedFileQueryInfo info = super.getJFishProperty(name);
+		DbmNamedFileQueryInfo info = super.getNamedQueryInfo(name);
 		if(info==null)
 			throw new FileNamedQueryException("namedQuery not found : " + name);
 		return info;

@@ -11,7 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
 //	OneBatchInsertTest.class,
 	BatchInsertTest.class,
 	BaseCrudEntityManagerTest.class,
-	RichModelTest.class
+	DbmNestedMappingTest.class
+//	RichModelTest.class
 })
 public class DbmTestCase {
 

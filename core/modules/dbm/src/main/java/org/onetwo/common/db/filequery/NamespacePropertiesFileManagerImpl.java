@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 
-public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*extends AbstractPropertiesManager<T>*/ implements NamespacePropertiesManager<T>{
+public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> implements NamespacePropertiesManager<T>{
 
 	
 	public static final String COMMENT = "--";
@@ -71,21 +71,6 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 		return conf;
 	}
 
-	/*public void build(){
-		Assert.notNull(conf);
-//		this.namedQueryCache = new ConcurrentHashMap<String, T>();
-		ResourceAdapter<?>[] sqlfileArray = scanMatchSqlFiles(conf);
-		this.namespaceProperties = this.parseSqlFiles(sqlfileArray);
-		this.buildSqlFileMonitor(sqlfileArray);
-
-		if(this.listener!=null){
-			this.listener.afterBuild(namespaceProperties, sqlfileArray);
-		}
-		logger.info("all named query : ");
-		for(T prop : this.namedQueryCache.values()){
-			logger.info(prop.toString());
-		}
-	}*/
 
 	@Override
 	public PropertiesNamespaceInfo<T> buildSqlFile(ResourceAdapter<?> sqlFile){
@@ -268,16 +253,18 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> /*e
 			}
 		});
 	}*/
-
-	public T getJFishProperty(String fullname) {
+	@Override
+	public T getNamedQueryInfo(String fullname) {
 		T info = namedQueryCache.get(fullname);
 		return info;
 	}
-	
+
+	@Override
 	public boolean contains(String fullname){
 		return namedQueryCache.containsKey(fullname);
 	}
-	
+
+	@Override
 	public boolean containsNamespace(String namespace){
 		return namespaceProperties.containsKey(namespace);
 	}

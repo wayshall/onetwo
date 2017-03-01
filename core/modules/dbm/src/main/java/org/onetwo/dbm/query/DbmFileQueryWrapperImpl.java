@@ -9,8 +9,6 @@ import org.onetwo.common.utils.Assert;
 
 public class DbmFileQueryWrapperImpl extends DefaultFileQueryWrapper {
 
-//	private JFishNamedFileQueryInfo info;
-//	private QueryProvideManager baseEntityManager;
 	private NamedQueryInvokeContext invokeContext;
 	
 
@@ -23,7 +21,9 @@ public class DbmFileQueryWrapperImpl extends DefaultFileQueryWrapper {
 	
 	protected DbmQueryWrapper createDataQuery(String sql, Class<?> mappedClass){
 		DbmQueryWrapper dataQuery = this.baseEntityManager.createSQLQuery(sql, mappedClass);
-		dataQuery.setRowMapper(baseEntityManager.getRowMapperFactory().createRowMapper(invokeContext));
+		if(!countQuery){
+			dataQuery.setRowMapper(baseEntityManager.getRowMapperFactory().createRowMapper(invokeContext));
+		}
 		return dataQuery;
 	}
 

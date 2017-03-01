@@ -29,7 +29,7 @@ import org.onetwo.dbm.exception.EntityNotFoundException;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.query.DbmQueryWrapperImpl;
-import org.onetwo.dbm.query.JFishNamedFileQueryManagerImpl;
+import org.onetwo.dbm.query.DbmNamedFileQueryManagerImpl;
 import org.onetwo.dbm.query.DbmQuery;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -85,7 +85,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 //		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 		
 		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(dbmDao.getDataBaseConfig().isWatchSqlFile());
-		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
+		DbmNamedFileQueryManagerImpl fq = new DbmNamedFileQueryManagerImpl(sqlFileManager);
 		fq.setQueryProvideManager(this);
 		this.fileNamedQueryManager = fq;
 			

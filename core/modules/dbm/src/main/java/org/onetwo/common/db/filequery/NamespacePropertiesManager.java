@@ -8,7 +8,7 @@ public interface NamespacePropertiesManager<T extends NamespaceProperty> /*exten
 
 	public static final String GLOBAL_NS_KEY = "global";
 
-	public T getJFishProperty(String name);
+	public T getNamedQueryInfo(String name);
 	public boolean contains(String fullname);
 //	public void build();
 	public PropertiesNamespaceInfo<T> buildSqlFile(ResourceAdapter<?> sqlFile);
