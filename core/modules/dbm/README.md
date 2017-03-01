@@ -11,7 +11,7 @@
 - [实体映射](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#实体映射)
 - [BaseEntityManager接口](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#baseentitymanager接口)
 - [CrudEntityManager接口](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#crudentitymanager接口)
-- [DbmRepository-接口和sql绑定](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#DbmRepository-接口和sql绑定)
+- [DbmRepository-接口和sql绑定](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#dbmrepository-接口和sql绑定)
 - [查询映射](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#查询映射)
 - [复杂的嵌套查询映射](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#复杂的嵌套查询映射)
 - [批量插入](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#批量插入)
@@ -193,8 +193,20 @@ public interface UserAutoidDao {
 然后在sql目录里新建一个UserAutoidDao全类名的.jfish.sql文件，完整路径和文件为：
 sql/test.dao.UserAutoidDao.jfish.sql
 文件内容为：    
-![removeByUserName](doc/sql.removeByUserName.jpg)
 
+```sql
+/*****
+ * @name: removeByUserName
+ * 批量删除
+ */
+    delete from test_user_autoid 
+        where 1=1 
+		---这里的userName变量就是接口里的userName参数
+        [#if userName?has_content]
+			---这里的userName命名查询参数也是接口里的userName参数
+         and user_name like :userName
+        [/#if]
+```
 
 
 解释：   
@@ -223,7 +235,7 @@ public class UserAutoidServiceImpl {
 ```
 
 `
-   提示：如果你不想传入 "%userName%"，可以把sql文件里的命名参数“:userName”改成“:userName?likeString”试试。
+   提示：如果你不想传入 "%userName%"，可以把sql文件里的命名参数“:userName”改成“:userName?likeString”试试，后面的?likeString是调用dbm内置的likeString方法，该方法会自动在传入的参数前后加上'%'。
 `
 
 ##查询映射
