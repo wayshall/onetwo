@@ -59,7 +59,7 @@ public class WebAdminPluginContext implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(securityConfig!=null){
-			String targetUrl = bootSiteConfig.getBaseURL()+"/web-admin/index";
+			String targetUrl = "/web-admin/index";
 //			logger.info("targetUrl: "+targetUrl);
 			this.securityConfig.setAfterLoginUrl(targetUrl);
 		}

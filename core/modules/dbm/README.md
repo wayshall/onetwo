@@ -34,6 +34,20 @@
 [boot-dbm-sample](https://github.com/wayshall/boot-dbm-sample)
 
 ##maven
+当前snapshot版本：4.4.0-SNAPSHOT
+
+若使用snapshot版本，请添加snapshotRepository仓储：
+```xml
+<repository>
+     <id>oss</id>
+     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+</repository>   
+```
+
+添加依赖：   
 ```xml
 
 <dependency>
@@ -43,6 +57,8 @@
 </dependency>
 
 ```
+spring的依赖请自行添加。
+
 ##一行代码启用
 在已配置好数据源的前提下，只需要在spring配置类（即有@Configuration注解的类）上加上注解@EnableDbm即可。
 ```java     

@@ -191,6 +191,12 @@
           <optional>true</optional>
 	    </dependency>
 	    
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <optional>true</optional>
+        </dependency>
+	    
         <!-- test -->
         <dependency>
           <groupId>com.jayway.restassured</groupId>

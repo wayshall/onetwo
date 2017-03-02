@@ -39,6 +39,14 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		return bootSiteConfig.getBaseURL() + StringUtils.appendStartWithSlash(url);
 	}
 	
+	public String getAfterLoginUrl(){
+		String url = super.getAfterLoginUrl();
+		if(!url.startsWith(bootSiteConfig.getBaseURL())){
+			url = bootSiteConfig.getBaseURL() + url;
+		}
+		return url;
+	}
+	
 	public boolean isCasEnabled(){
 		return Springs.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
 	}
