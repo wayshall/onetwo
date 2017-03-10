@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -78,10 +79,13 @@ final public class LangOps {
 	}
 	
 	public static void ntimesRun(String printTimeTag, Integer times, Closure closure){
+		ntimesRun(printTimeTag, times, i->closure.execute());
+	}
+	public static void ntimesRun(String printTimeTag, Integer times, Consumer<Integer> consumer){
 		TimeCounter t = StringUtils.isNotBlank(printTimeTag)?new TimeCounter(printTimeTag).startIt():null;
 		Stream.iterate(1, i->i+1).limit(times)
 									.forEach(i->{
-										closure.execute();
+										consumer.accept(i);
 									});
 		if(t!=null){
 			t.stop();

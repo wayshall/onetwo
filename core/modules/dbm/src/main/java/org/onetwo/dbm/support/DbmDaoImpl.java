@@ -8,8 +8,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -39,9 +39,10 @@ import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.query.DbmQueryWrapperImpl;
 import org.onetwo.dbm.query.DbmQuery;
 import org.onetwo.dbm.query.DbmQueryImpl;
+import org.onetwo.dbm.query.DbmQueryWrapperImpl;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -704,7 +705,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
 		SimpleDbmInnerServiceRegistry registry = this.serviceRegistry;
 		if(registry==null){
-			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource);
+			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource));
 		}
 		return serviceRegistry;
 	}

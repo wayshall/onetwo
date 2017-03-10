@@ -2,6 +2,7 @@ package org.onetwo.ext.rocketmq;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.ext.rocketmq.producer.RocketMQProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,7 +18,10 @@ public class ProductProduerTest {
 	
 	@Test
 	public void testSendMessage(){
-		rocketMQProducerService.sendMessage("product", "index-update", 2L);
+		rocketMQProducerService.sendMessage("PRODUCT", "index-update", 2L);
+		LangOps.ntimesRun("test", 1000, index->{
+			rocketMQProducerService.sendMessage("PRODUCT-TOPIC", "", index);
+		});
 //		rocketMQProducerService.sendMessage(MQTopic.PRODUCT.name(), MQTag.UPDATE_INDEX.name(), 2L);
 	}
 	

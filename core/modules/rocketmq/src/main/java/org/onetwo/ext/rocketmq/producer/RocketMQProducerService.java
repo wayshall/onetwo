@@ -101,7 +101,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 		if(errorHandler!=null){
 			errorHandler.accept(e);
 		}else{
-			throw new ServiceException(errorMsg);
+			throw new ServiceException(errorMsg, e);
 		}
 	}
 	

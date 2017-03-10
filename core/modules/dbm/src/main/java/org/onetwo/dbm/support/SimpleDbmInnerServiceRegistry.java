@@ -13,6 +13,7 @@ import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.dialet.DBDialect;
@@ -38,6 +39,7 @@ import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.mapping.MultiMappedEntryListener;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import com.google.common.cache.CacheBuilder;
@@ -47,30 +49,30 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class SimpleDbmInnerServiceRegistry {
-	
 
-	final private static LoadingCache<DataSource, SimpleDbmInnerServiceRegistry> SERVICE_REGISTRY_MAPPER = CacheBuilder.newBuilder()
+	final private static LoadingCache<DbmServiceRegistryCreateContext, SimpleDbmInnerServiceRegistry> SERVICE_REGISTRY_MAPPER = CacheBuilder.newBuilder()
 																						.weakKeys()
 																						.weakValues()
-																						.build(new CacheLoader<DataSource, SimpleDbmInnerServiceRegistry>() {
+																						.build(new CacheLoader<DbmServiceRegistryCreateContext, SimpleDbmInnerServiceRegistry>() {
 
 																							@Override
-																							public SimpleDbmInnerServiceRegistry load(DataSource ds) throws Exception {
-																								return SimpleDbmInnerServiceRegistry.createServiceRegistry(ds, null);
+																							public SimpleDbmInnerServiceRegistry load(DbmServiceRegistryCreateContext ctx) throws Exception {
+																								return SimpleDbmInnerServiceRegistry.createServiceRegistry(ctx);
 																							}
 																							
 																						});
 
-	public static SimpleDbmInnerServiceRegistry obtainServiceRegistry(DataSource dataSource){
+	public static SimpleDbmInnerServiceRegistry obtainServiceRegistry(DbmServiceRegistryCreateContext context){
 		try {
-			return SERVICE_REGISTRY_MAPPER.get(dataSource);
+			return SERVICE_REGISTRY_MAPPER.get(context);
 		} catch (ExecutionException e) {
 			throw new BaseException("obtain SimpleDbmInnerServiceRegistry error: " + e.getMessage(), e);
 		}
 	}
-	private static SimpleDbmInnerServiceRegistry createServiceRegistry(DataSource dataSource, Validator validator){
+	private static SimpleDbmInnerServiceRegistry createServiceRegistry(DbmServiceRegistryCreateContext context){
 		SimpleDbmInnerServiceRegistry serviceRegistry = new SimpleDbmInnerServiceRegistry();
-		serviceRegistry.initialize(dataSource);
+		serviceRegistry.initialize(context.getDataSource());
+		Validator validator = context.getEntityValidator();
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
 		}
@@ -243,6 +245,56 @@ public class SimpleDbmInnerServiceRegistry {
 	public void setTypeMapping(DbmTypeMapping typeMapping) {
 		this.typeMapping = typeMapping;
 	}
+
 	
+	public static class DbmServiceRegistryCreateContext {
+		final private DataSource dataSource;
+		final private ApplicationContext applicationContext;
+		public DbmServiceRegistryCreateContext(DataSource dataSource) {
+			this(null, dataSource);
+		}
+		public DbmServiceRegistryCreateContext(ApplicationContext applicationContext, DataSource dataSource) {
+			super();
+			this.dataSource = dataSource;
+			this.applicationContext = applicationContext;
+		}
+		public DataSource getDataSource() {
+			return dataSource;
+		}
+		public ApplicationContext getApplicationContext() {
+			return applicationContext;
+		}
+		public Validator getEntityValidator(){
+			if(applicationContext==null){
+				return null;
+			}
+			return SpringUtils.getBean(applicationContext, Validator.class);
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((dataSource == null) ? 0 : dataSource.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DbmServiceRegistryCreateContext other = (DbmServiceRegistryCreateContext) obj;
+			if (dataSource == null) {
+				if (other.dataSource != null)
+					return false;
+			} else if (!dataSource.equals(other.dataSource))
+				return false;
+			return true;
+		}
+		
+	}
 
 }

@@ -13,6 +13,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -137,7 +138,7 @@ final public class Dbms {
 	
 	public static DbmDao newDao(DataSource dataSource){
 		DbmDaoImpl dao = new DbmDaoImpl(dataSource);
-		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource));
+		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource)));
 		dao.initialize();
 		return dao;
 	}

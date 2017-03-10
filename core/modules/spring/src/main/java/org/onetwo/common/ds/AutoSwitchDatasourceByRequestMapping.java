@@ -8,14 +8,12 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class AutoSwitchDatasourceByRequestMapping extends SwitcherProxyImpl{
 
-//	private String timeKey = "controller";
-	
 //	@Before("org.onetwo.common.jdbc.JFishPointcut.autoSwitchDatasourceByRequestMapping()")
 	public void switchDatasource(JoinPoint jp){
 		this.processSwitchInfo(jp);
 	}
 
-	@Around("org.onetwo.common.jdbc.JFishPointcut.byRequestMapping()")
+	@Around("org.onetwo.common.ds.SwitchPoincut.byRequestMapping()")
 	public Object autoSwitch(ProceedingJoinPoint pjp) throws Throwable{
 		try{
 			processSwitchInfo(pjp);

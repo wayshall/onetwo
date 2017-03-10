@@ -29,6 +29,7 @@ import org.onetwo.dbm.support.DbmEntityManager;
 import org.onetwo.dbm.support.DbmEntityManagerImpl;
 import org.onetwo.dbm.support.Jsr303EntityValidator;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
@@ -173,7 +174,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DataSource dataSource){
-		SimpleDbmInnerServiceRegistry serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(dataSource);
+		DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, dataSource);
+		SimpleDbmInnerServiceRegistry serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(context);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
 		}

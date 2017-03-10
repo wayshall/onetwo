@@ -15,6 +15,12 @@ public interface SqlFileScanner {
 	 */
 	Map<String, ResourceAdapter<?>> scanMatchSqlFiles(String dialectDir);
 	
+	/***
+	 * 根据数据库和类路径加载对应是sql文件，如果dialet为null，默认会查找.jfish.sql后缀
+	 * @param dialect
+	 * @param classPath
+	 * @return
+	 */
 	public <T extends ResourceAdapter<?>> T getClassPathResource(String dialect, String classPath);
 	
 	String getSqlPostfix();

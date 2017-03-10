@@ -33,6 +33,7 @@ public class SimpleSqlFileScanner implements SqlFileScanner {
 		this.classLoader = classLoader;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResourceAdapter<?> getClassPathResource(String dialect, String classPath) {
 		String postfix = getDialetSqlPostfix(dialect);

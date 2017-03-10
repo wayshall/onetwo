@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
@@ -21,6 +21,7 @@ import org.springframework.core.Ordered;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.ClassUtils;
 
 public class DbmMultipleDatasource implements DataSource, Ordered, InitializingBean, ApplicationContextAware {
 
@@ -51,6 +52,7 @@ public class DbmMultipleDatasource implements DataSource, Ordered, InitializingB
 		}
 		
 		Assert.notNull(contextHolder, "contextHolder can not be null.");
+		Assert.notEmpty(datasources, "datasources can not be empty.");
 	}
 
 	public DataSource getCurrentDatasource(){
@@ -59,28 +61,35 @@ public class DbmMultipleDatasource implements DataSource, Ordered, InitializingB
 		
 		SwitcherInfo switcher = contextHolder.getContextAttribute(SwitcherInfo.CURRENT_SWITCHER_INFO);
 		DataSource ds = masterDatasource;
-		if(datasources!=null && switcher!=null && StringUtils.isNotBlank(switcher.getCurrentSwitcherName())){
-			switch (switcher.getType()) {
-			case TransactionManager:
-				PlatformTransactionManager pt = (PlatformTransactionManager)Springs.getInstance().getBean(switcher.getCurrentSwitcherName());
-				if(HibernateTransactionManager.class.isInstance(pt)){
-					ds = ((HibernateTransactionManager)pt).getDataSource();
-				}else if(DataSourceTransactionManager.class.isInstance(pt)){
-					ds = ((DataSourceTransactionManager)pt).getDataSource();
-				}else{
-					throw new UnsupportedOperationException("TransactionManager: " + switcher.getCurrentSwitcherName());
-				}
-				break;
-
-			default:
-				String dsName = switcher.getCurrentSwitcherName();// + DATASOURCE_KEY;
-				if(datasources.containsKey(dsName))
-					ds = datasources.get(dsName);
-				break;
+		if(switcher==null || StringUtils.isBlank(switcher.getCurrentSwitcherName())){
+			return ds;
+		}
+		switch (switcher.getType()) {
+		case TransactionManager:
+			PlatformTransactionManager pt = (PlatformTransactionManager)Springs.getInstance().getBean(switcher.getCurrentSwitcherName());
+			if(isHibernateTransactionManager(pt)){
+				ds = ((HibernateTransactionManager)pt).getDataSource();
+			}else if(DataSourceTransactionManager.class.isInstance(pt)){
+				ds = ((DataSourceTransactionManager)pt).getDataSource();
+			}else{
+				throw new UnsupportedOperationException("TransactionManager: " + switcher.getCurrentSwitcherName());
 			}
-			
+			break;
+
+		default:
+			String dsName = switcher.getCurrentSwitcherName();// + DATASOURCE_KEY;
+			if(datasources.containsKey(dsName))
+				ds = datasources.get(dsName);
+			break;
 		}
 		return ds;
+	}
+	
+	private boolean isHibernateTransactionManager(PlatformTransactionManager pt){
+		if(!ClassUtils.isPresent("org.hibernate.SessionFactory", ClassUtils.getDefaultClassLoader())){
+			return false;
+		}
+		return HibernateTransactionManager.class.isInstance(pt);
 	}
 	
 	public void setMasterDatasource(DataSource masterDatasource) {

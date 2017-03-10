@@ -18,7 +18,7 @@ public class AutoSwitchDatasourceByTransactional extends SwitcherProxyImpl{
 		this.processSwitchInfo(jp);
 	}
 
-	@Around("org.onetwo.common.jdbc.JFishPointcut.byTransactional()")
+	@Around("org.onetwo.common.ds.SwitchPoincut.byTransactional()")
 	public Object autoSwitch(ProceedingJoinPoint pjp) throws Throwable{
 		try{
 			processSwitchInfo(pjp);

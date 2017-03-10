@@ -39,6 +39,13 @@ public class AnnotationBasicJDKDynamicProxyCreator extends JDKDynamicProxyCreato
 		return sqlRes;
 	}
 	
+	/***
+	 * 先根据数据库查找，如果没找到，则默认查找
+	 * @param database
+	 * @param filePath
+	 * @param throwIfNotfound
+	 * @return
+	 */
 	private SpringResourceAdapterImpl getClassPathResource(DataBase database, String filePath, boolean throwIfNotfound){
 		SpringResourceAdapterImpl sqlRes = null;
 		if(database!=null){
