@@ -11,6 +11,4 @@ public @interface DbmPackages {
 	
 	String[] value() default {};
 
-//	Class<?>[] basePackageClasses() default {};
-	
 }

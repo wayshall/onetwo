@@ -199,8 +199,8 @@ final public class DbmUtils {
 	}
 	public static Collection<String> getAllDbmPackageNames(ListableBeanFactory beanFactory){
 		Collection<String> packageNames = new HashSet<>();
-		packageNames.addAll(DbmUtils.scanEnableDbmPackages(beanFactory));
-		packageNames.addAll(DbmUtils.scanDbmPackages(beanFactory));
+		packageNames.addAll(scanEnableDbmPackages(beanFactory));
+		packageNames.addAll(scanDbmPackages(beanFactory));
 		return packageNames;
 	}
 	
