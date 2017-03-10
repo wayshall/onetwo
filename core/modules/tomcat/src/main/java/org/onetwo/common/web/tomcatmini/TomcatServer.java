@@ -48,6 +48,14 @@ public class TomcatServer {
 			this.serverConfig.addWebapp(webappDir, contextPath);
 			return this;
 		}
+		public TomcatServerBuilder addWebappByProjectDir(String webappDir, String contextPath){
+			this.serverConfig.addWebappByProjectDir(webappDir, contextPath);
+			return this;
+		}
+		public TomcatServerBuilder addProjectBaseWebapp(String webappDir, String contextPath){
+			this.serverConfig.addProjectBaseWebapp(webappDir, contextPath);
+			return this;
+		}
 
 		public TomcatServerBuilder config(Consumer<ServerConfig> configer){
 			configer.accept(this.serverConfig);

@@ -41,6 +41,11 @@ public class ServerConfig {
 		webapps.add(new WebappConfig(webappDir, contextPath));
 		return this;
 	}
+	public ServerConfig addWebappByProjectDir(String projectDir, String contextPath){
+		String realPath = getProjectMainDir(projectDir)+appendStartWith("webapp", "/");
+		webapps.add(new WebappConfig(realPath, contextPath));
+		return this;
+	}
 	
 	public ServerConfig addProjectBaseWebapp(String webappDir){
 		String realPath = getProjectMainDir()+appendStartWith(webappDir, "/");
@@ -70,7 +75,12 @@ public class ServerConfig {
 	}
 	
 	public String getProjectMainDir(){
-		String mainDir = getProjectDir().getPath() + "/src/main";
+		String mainDir = getProjectMainDir(getProjectDir().getPath());
+		return mainDir;
+	}
+	
+	public String getProjectMainDir(String projectDir){
+		String mainDir = projectDir + "/src/main";
 		return mainDir;
 	}
 
