@@ -25,8 +25,8 @@ public class JdbcDao {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected DbmJdbcOperations jdbcTemplate;
-	protected NamedJdbcTemplate namedParameterJdbcTemplate;
+	protected DbmJdbcOperations dbmJdbcOperations;
+//	protected NamedJdbcTemplate namedParameterJdbcTemplate;
 	
 	private RowMapperFactory rowMapperFactory;
 	protected DataSource dataSource;
@@ -52,9 +52,9 @@ public class JdbcDao {
 		}
 	}
 	
-	public <T> List<T> query(String sql, Class<T> entityClass, Object... args){
-		return this.jdbcTemplate.query(sql, getRowMapper(entityClass), args);
-	}
+	/*public <T> List<T> query(String sql, Class<T> entityClass, Object... args){
+		return this.dbmJdbcOperations.query(sql, getRowMapper(entityClass), args);
+	}*/
 
 	protected <T> RowMapper<T> getRowMapper(Class<T> type){
 		return (RowMapper<T>)this.rowMapperFactory.createRowMapper(type);
@@ -64,13 +64,13 @@ public class JdbcDao {
 //	@Resource(name="dataSource")
 	final public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
-		if (this.jdbcTemplate == null || dataSource != this.jdbcTemplate.getDataSource()) {
-			this.jdbcTemplate = createJdbcTemplate(dataSource);
-			initTemplateConfig();
+		if (this.dbmJdbcOperations == null || dataSource != this.dbmJdbcOperations.getDataSource()) {
+			this.dbmJdbcOperations = createDbmJdbcOperations(dataSource);
+//			initTemplateConfig();
 		}
 	}
 
-	protected DbmJdbcOperations createJdbcTemplate(DataSource dataSource) {
+	protected DbmJdbcOperations createDbmJdbcOperations(DataSource dataSource) {
 		return new DbmJdbcTemplate(dataSource);
 	}
 
@@ -78,18 +78,18 @@ public class JdbcDao {
 		return dataSource;
 	}
 	
-	public final void setJdbcTemplate(DbmJdbcOperations jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-		initTemplateConfig();
+	public final void setDbmJdbcOperations(DbmJdbcOperations jdbcTemplate) {
+		this.dbmJdbcOperations = jdbcTemplate;
+//		initTemplateConfig();
 	}
 
-	public final DbmJdbcOperations getJdbcTemplate() {
-	  return this.jdbcTemplate;
+	public final DbmJdbcOperations getDbmJdbcOperations() {
+	  return this.dbmJdbcOperations;
 	}
 
-	protected void initTemplateConfig() {
+	/*protected void initTemplateConfig() {
 		if(this.namedParameterJdbcTemplate==null){
-			this.namedParameterJdbcTemplate = new DbmNamedJdbcTemplate(getJdbcTemplate());
+			this.namedParameterJdbcTemplate = new DbmNamedJdbcTemplate(dbmJdbcOperations);
 		}
 	}
 	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
@@ -98,10 +98,10 @@ public class JdbcDao {
 
 	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
 	  return namedParameterJdbcTemplate;
-	}
+	}*/
 
 	protected void checkDaoConfig() {
-		if (this.jdbcTemplate == null) {
+		if (this.dbmJdbcOperations == null) {
 			throw new IllegalArgumentException("'dataSource' or 'jdbcTemplate' is required");
 		}
 	}
@@ -118,9 +118,9 @@ public class JdbcDao {
 		DataSourceUtils.releaseConnection(con, getDataSource());
 	}
 
-	public void setNamedParameterJdbcTemplate(NamedJdbcTemplate namedParameterJdbcTemplate) {
+	/*public void setNamedParameterJdbcTemplate(NamedJdbcTemplate namedParameterJdbcTemplate) {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-	}
+	}*/
 
 	public RowMapperFactory getRowMapperFactory() {
 		return rowMapperFactory;

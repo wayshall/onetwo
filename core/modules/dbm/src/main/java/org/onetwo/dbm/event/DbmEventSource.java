@@ -5,7 +5,7 @@ import java.util.Map;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.dbm.support.DbmDaoImplementor;
 
-public interface JFishEventSource extends DbmDaoImplementor {
+public interface DbmEventSource extends DbmDaoImplementor {
 	
 	/*********
 	 * 保存对象和关联属性的对象到数据库，<br/>

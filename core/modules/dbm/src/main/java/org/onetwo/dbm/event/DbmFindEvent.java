@@ -1,9 +1,9 @@
 package org.onetwo.dbm.event;
 
-public class JFishFindEvent extends JFishEvent {
+public class DbmFindEvent extends DbmEvent {
 
-	public JFishFindEvent(Object object, JFishEventSource eventSource) {
-		super(object, JFishEventAction.find, eventSource);
+	public DbmFindEvent(Object object, DbmEventSource eventSource) {
+		super(object, DbmEventAction.find, eventSource);
 	}
 
 	private Object resultObject;

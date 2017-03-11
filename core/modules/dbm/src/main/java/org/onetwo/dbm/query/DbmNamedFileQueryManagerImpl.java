@@ -6,7 +6,7 @@ import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
 import org.onetwo.common.db.filequery.DbmNamedFileQueryInfo;
-import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
+import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
 import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.Page;
@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 public class DbmNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory {
 
 
-	public DbmNamedFileQueryManagerImpl(JFishNamedSqlFileManager sqlFileManager) {
+	public DbmNamedFileQueryManagerImpl(DbmNamedSqlFileManager sqlFileManager) {
 		super(sqlFileManager);
 	}
 

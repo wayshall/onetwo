@@ -15,13 +15,13 @@ import org.springframework.jdbc.support.KeyHolder;
  * @author wayshall
  *
  */
-public class JFishInsertEventListener extends InsertEventListener{
+public class DbmInsertEventListener extends InsertEventListener{
 
-	protected void beforeDoInsert(JFishInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
 	}
 	
-	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
-		JFishEventSource es = event.getEventSource();
+	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
+		DbmEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		
 		Object entity = event.getObject();
@@ -39,7 +39,7 @@ public class JFishInsertEventListener extends InsertEventListener{
 				int index = 0;
 				for(Object[] arg : args){
 					KeyHolder keyHolder = new GeneratedKeyHolder();
-					updateCount += es.getJFishJdbcTemplate().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg), keyHolder);
+					updateCount += es.getDbmJdbcOperations().updateWith(new SimpleArgsPreparedStatementCreator(sql, arg), keyHolder);
 					if(keyHolder.getKey()!=null)
 						entry.setId(objects.get(index++), keyHolder.getKey());
 				}

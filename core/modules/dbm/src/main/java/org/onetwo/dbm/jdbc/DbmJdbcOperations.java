@@ -1,15 +1,44 @@
 package org.onetwo.dbm.jdbc;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.KeyHolder;
 
-public interface DbmJdbcOperations extends JdbcOperations {
+public interface DbmJdbcOperations /*extends JdbcOperations*/ {
+	
+	int[] batchUpdate(String sql, Map<String, ?>[] batchValues);
+	
+	int update(String sql, Map<String, ?> paramMap) throws DataAccessException;
+	
+	<T> T query(String sql, Map<String, ?> paramMap, ResultSetExtractor<T> rse) throws DataAccessException;
+	
+	<T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException;
+	
+	<T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException;
+	
+	public Object execute(String sql, Map<String, ?> paramMap) throws DataAccessException ;
+	
 
+	
+	
+	void execute(String sql) throws DataAccessException;
+	<T> T queryForObject(String sql, Class<T> requiredType) throws DataAccessException;
+	<T> List<T> queryForList(String sql, Class<T> elementType, Object... args) throws DataAccessException;
+	
+	int update(String sql, Object... args) throws DataAccessException;
+
+	<T> T queryForObject(String sql, Class<T> requiredType, Object... args) throws DataAccessException;
+	<T> T queryForObject(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException;
+	
+	<T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException;
+	
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException;
 
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc) throws DataAccessException;
@@ -25,5 +54,7 @@ public interface DbmJdbcOperations extends JdbcOperations {
 	public void setDataSource(DataSource dataSource);
 
 	public DataSource getDataSource();
+	
+//	public DbmNamedJdbcOperations getDbmNamedJdbcOperations();
 	
 }

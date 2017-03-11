@@ -1,6 +1,6 @@
 package org.onetwo.dbm.event;
 
-public class JFishEntityListenerAdapter implements DbmEntityListener {
+public class DbmEntityListenerAdapter implements DbmEntityListener {
 
 	@Override
 	public void beforeInsert(Object entity) {

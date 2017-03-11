@@ -6,16 +6,16 @@ import java.util.List;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.event.JFishEventSource;
-import org.onetwo.dbm.event.JFishInsertEvent;
-import org.onetwo.dbm.event.JFishInsertEventListener;
+import org.onetwo.dbm.event.DbmEventSource;
+import org.onetwo.dbm.event.DbmInsertEvent;
+import org.onetwo.dbm.event.DbmInsertEventListener;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.BadSqlGrammarException;
 
-public class JFishOracleInsertEventListener extends JFishInsertEventListener {
+public class JFishOracleInsertEventListener extends DbmInsertEventListener {
 
-	protected void beforeDoInsert(JFishInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
 		Object entity = event.getObject();
 
 		if(entry.isEntity() && entry.getIdentifyField().isGeneratedValueFetchBeforeInsert()){
@@ -39,8 +39,8 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 	 * 每次插入的返回值都是{@linkplain java.sql.Statement#SUCCESS_NO_INFO -2}
 	 */
 	@Override
-	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
-		JFishEventSource es = event.getEventSource();
+	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
+		DbmEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		Object entity = event.getObject();
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);
@@ -54,18 +54,18 @@ public class JFishOracleInsertEventListener extends JFishInsertEventListener {
 		event.setUpdateCount(count);
 	}
 	
-	public Long fetchIdentifyBeforeInsert(JFishInsertEvent event, JFishMappedEntry entry){
-		JFishEventSource es = event.getEventSource();
+	public Long fetchIdentifyBeforeInsert(DbmInsertEvent event, JFishMappedEntry entry){
+		DbmEventSource es = event.getEventSource();
 		Long id = null;
 		try {
-			id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
+			id = es.getDbmJdbcOperations().queryForObject(entry.getStaticSeqSql(), Long.class);
 		} catch (BadSqlGrammarException e) {
 			//ORA-02289: 序列不存在
 			SQLException sqe = e.getSQLException();
 			int vendorCode = Types.convertValue(ReflectUtils.getFieldValue(sqe, "vendorCode"), int.class);
 			if(vendorCode==2289){
-				es.getJFishJdbcTemplate().execute(entry.getStaticCreateSeqSql());
-				id = es.getJFishJdbcTemplate().queryForObject(entry.getStaticSeqSql(), Long.class);
+				es.getDbmJdbcOperations().execute(entry.getStaticCreateSeqSql());
+				id = es.getDbmJdbcOperations().queryForObject(entry.getStaticSeqSql(), Long.class);
 				if(id==null)
 					throw e;
 			}

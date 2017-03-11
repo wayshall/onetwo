@@ -16,7 +16,7 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.filequery.FileNamedQueryManager;
-import org.onetwo.common.db.filequery.JFishNamedSqlFileManager;
+import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -84,7 +84,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		//不在set方法里设置，避免循环依赖
 //		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 		
-		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(dbmDao.getDataBaseConfig().isWatchSqlFile());
+		DbmNamedSqlFileManager sqlFileManager = DbmNamedSqlFileManager.createNamedSqlFileManager(dbmDao.getDataBaseConfig().isWatchSqlFile());
 		DbmNamedFileQueryManagerImpl fq = new DbmNamedFileQueryManagerImpl(sqlFileManager);
 		fq.setQueryProvideManager(this);
 		this.fileNamedQueryManager = fq;

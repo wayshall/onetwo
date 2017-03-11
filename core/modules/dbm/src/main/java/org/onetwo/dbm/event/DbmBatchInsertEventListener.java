@@ -14,11 +14,11 @@ import org.onetwo.dbm.mapping.JdbcStatementContext;
  * @author wayshall
  *
  */
-public class JFishBatchInsertEventListener extends JFishInsertEventListener{
+public class DbmBatchInsertEventListener extends DbmInsertEventListener{
 
 
 	@Override
-	public void onInsert(JFishInsertEvent event) {
+	public void onInsert(DbmInsertEvent event) {
 		JFishMappedEntry entry = event.getEventSource().getMappedEntryManager().findEntry(event.getObject());
 		if(entry==null){
 			event.setUpdateCount(0);
@@ -28,17 +28,17 @@ public class JFishBatchInsertEventListener extends JFishInsertEventListener{
 	}
 	
 	@Override
-	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
+	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
 		Object entity = event.getObject();
 		if(!LangUtils.isMultiple(entity)){
 			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}
-		JFishEventSource es = event.getEventSource();
+		DbmEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		this.batchInsert(event, entry, es);
 	}
 	
-	protected void batchInsert(JFishInsertEvent event, JFishMappedEntry entry, JFishEventSource es) {
+	protected void batchInsert(DbmInsertEvent event, JFishMappedEntry entry, DbmEventSource es) {
 		Object entity = event.getObject();
 		
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);

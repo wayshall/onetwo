@@ -5,15 +5,14 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
@@ -66,9 +65,9 @@ public interface DbmDaoImplementor extends DbmDao {
 	
 	public int executeUpdate(DbmQueryValue queryValue);
 
-	public DbmJdbcOperations getJFishJdbcTemplate();
+	public DbmJdbcOperations getDbmJdbcOperations();
 	
-	public NamedJdbcTemplate getNamedParameterJdbcTemplate();
+//	public DbmNamedJdbcOperations getNamedParameterJdbcTemplate();
 	
 	public SQLSymbolManager getSqlSymbolManager();
 	

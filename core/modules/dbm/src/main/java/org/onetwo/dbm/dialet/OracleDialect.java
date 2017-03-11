@@ -4,8 +4,8 @@ import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.event.JFishEventAction;
-import org.onetwo.dbm.event.JFishdbEventListenerManager;
+import org.onetwo.dbm.event.DbmEventAction;
+import org.onetwo.dbm.event.DbmdbEventListenerManager;
 import org.onetwo.dbm.event.oracle.JFishOracleBatchInsertEventListener;
 import org.onetwo.dbm.event.oracle.JFishOracleInsertEventListener;
 import org.onetwo.dbm.mapping.DbmTypeMapping.OracleSqlTypeMapping;
@@ -81,10 +81,10 @@ public class OracleDialect extends AbstractDBDialect {
 	}
 
 	@Override
-	protected void onDefaultDbEventListenerManager(JFishdbEventListenerManager listMg){
+	protected void onDefaultDbEventListenerManager(DbmdbEventListenerManager listMg){
 		super.onDefaultDbEventListenerManager(listMg);
-		listMg.register(JFishEventAction.insert, LangUtils.newArrayList(new JFishOracleInsertEventListener()));
-		listMg.register(JFishEventAction.batchInsert, LangUtils.newArrayList(new JFishOracleBatchInsertEventListener()));
+		listMg.register(DbmEventAction.insert, LangUtils.newArrayList(new JFishOracleInsertEventListener()));
+		listMg.register(DbmEventAction.batchInsert, LangUtils.newArrayList(new JFishOracleBatchInsertEventListener()));
 	}
 	/*protected DbEventListenerManager createDefaultDbEventListenerManager() {
 		JFishdbEventListenerManager listenerManager = new JFishdbEventListenerManager() {

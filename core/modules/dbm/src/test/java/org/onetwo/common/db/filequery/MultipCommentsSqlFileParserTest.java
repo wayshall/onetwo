@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.onetwo.common.db.filequery.JFishNamedSqlFileManager.DialetNamedSqlConf;
+import org.onetwo.common.db.filequery.DbmNamedSqlFileManager.DialetNamedSqlConf;
 import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.CommonNamespaceProperties;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.propconf.ResourceAdapter;

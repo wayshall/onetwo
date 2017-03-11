@@ -5,14 +5,14 @@ import java.util.List;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.event.JFishInsertEvent;
+import org.onetwo.dbm.event.DbmInsertEvent;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 
 public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventListener {
 	
-	protected void beforeDoInsert(JFishInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
 		Object entity = event.getObject();
 
 		List<Object> list = LangUtils.asList(entity);
@@ -20,7 +20,7 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 		TimeCounter counter = new TimeCounter("select batch seq...");
 		counter.start();
 		String seq_sql = entry.getStaticSeqSql() + " connect by rownum <= ?";
-		List<Long> seqs = event.getEventSource().getJFishJdbcTemplate().queryForList(seq_sql, Long.class, list.size());
+		List<Long> seqs = event.getEventSource().getDbmJdbcOperations().queryForList(seq_sql, Long.class, list.size());
 		Assert.isTrue(list.size()==seqs.size(), "the size of seq is not equals to data, seq size:"+seqs.size()+", data size:"+list.size());
 		counter.stop();
 		
@@ -37,7 +37,7 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 	 * 每次插入的返回值都是{@linkplain java.sql.Statement#SUCCESS_NO_INFO -2}
 	 */
 	@Override
-	protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry) {
+	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
 		if(!LangUtils.isMultiple(event.getObject())){
 			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}

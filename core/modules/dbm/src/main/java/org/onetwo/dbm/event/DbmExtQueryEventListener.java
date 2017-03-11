@@ -11,16 +11,16 @@ import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.event.JFishExtQueryEvent.ExtQueryType;
+import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.exception.DbmException;
 
-public class JFishExtQueryEventListener extends AbstractJFishEventListener {
+public class DbmExtQueryEventListener extends AbstractJFishEventListener {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void doEvent(JFishEvent event) {
-		JFishExtQueryEvent extEvent = (JFishExtQueryEvent) event;
-		JFishEventSource es = event.getEventSource();
+	public void doEvent(DbmEvent event) {
+		DbmExtQueryEvent extEvent = (DbmExtQueryEvent) event;
+		DbmEventSource es = event.getEventSource();
 //		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 
 		Map<Object, Object> props = extEvent.getProperties()==null?new LinkedHashMap<Object, Object>():extEvent.getProperties();

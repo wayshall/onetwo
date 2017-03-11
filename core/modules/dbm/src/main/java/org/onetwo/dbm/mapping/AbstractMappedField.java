@@ -13,7 +13,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
-import org.onetwo.dbm.event.JFishEventAction;
+import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.version.VersionableType;
 import org.onetwo.dbm.utils.DbmUtils;
@@ -136,16 +136,16 @@ abstract public class AbstractMappedField implements DbmMappedField{
 		return convertSqlParameterValue(fieldValue);
 	}*/
 	
-	public Object fireDbmEntityFieldEvents(Object fieldValue, JFishEventAction eventAction){
+	public Object fireDbmEntityFieldEvents(Object fieldValue, DbmEventAction eventAction){
 //		boolean doListener = false;
-		if(JFishEventAction.insert==eventAction){
+		if(DbmEventAction.insert==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
 					fieldValue = fl.beforeFieldInsert(propertyInfo, fieldValue);
 //					doListener = true;
 				}
 			}
-		}else if(JFishEventAction.update==eventAction){
+		}else if(DbmEventAction.update==eventAction){
 			if(!getFieldListeners().isEmpty()){
 				for(DbmEntityFieldListener fl : getFieldListeners()){
 					fieldValue = fl.beforeFieldUpdate(propertyInfo, fieldValue);

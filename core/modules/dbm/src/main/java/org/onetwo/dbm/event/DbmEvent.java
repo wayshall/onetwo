@@ -3,20 +3,20 @@ package org.onetwo.dbm.event;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 
-public class JFishEvent {
+public class DbmEvent {
 //	private static final String RELATED_FIELD_PROPERTY_SYMBOL = ".";
 
 	private Object object;
 	private Class<?> entityClass;
-	private JFishEventAction action;
-	private JFishEventSource eventSource;
+	private DbmEventAction action;
+	private DbmEventSource eventSource;
 	private int updateCount;
 
 	private boolean joined;
 //	private String[] relatedFields;
 //	private boolean relatedReferenceOnly;//是否只保存引用，只对jointable有用……
 	
-	public JFishEvent(Object object, JFishEventAction action, JFishEventSource eventSource) {
+	public DbmEvent(Object object, DbmEventAction action, DbmEventSource eventSource) {
 		super();
 		this.object = object;
 		if(object!=null){
@@ -30,15 +30,15 @@ public class JFishEvent {
 		return object;
 	}
 
-	public JFishEventAction getAction() {
+	public DbmEventAction getAction() {
 		return action;
 	}
 
-	public JFishEventSource getEventSource() {
+	public DbmEventSource getEventSource() {
 		return eventSource;
 	}
 
-	public void setAction(JFishEventAction action) {
+	public void setAction(DbmEventAction action) {
 		this.action = action;
 	}
 

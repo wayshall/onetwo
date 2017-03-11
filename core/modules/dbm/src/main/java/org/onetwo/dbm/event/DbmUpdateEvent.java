@@ -1,12 +1,12 @@
 package org.onetwo.dbm.event;
 
-public class JFishUpdateEvent extends JFishEvent{
+public class DbmUpdateEvent extends DbmEvent{
 
 	private boolean dynamicUpdate;
 //	private boolean batchUpdate;
 	
-	public JFishUpdateEvent(Object object, JFishEventSource eventSource) {
-		super(object, JFishEventAction.update, eventSource);
+	public DbmUpdateEvent(Object object, DbmEventSource eventSource) {
+		super(object, DbmEventAction.update, eventSource);
 	}
 	
 	public boolean isDynamicUpdate() {

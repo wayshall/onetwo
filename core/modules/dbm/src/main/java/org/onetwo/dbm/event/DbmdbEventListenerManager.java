@@ -6,11 +6,11 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.RegisterManager;
 import org.onetwo.common.utils.map.CollectionMap;
 
-public class JFishdbEventListenerManager implements RegisterManager<JFishEventAction, Collection<JFishEventListener>> /*DbEventListenerManager*/ {
+public class DbmdbEventListenerManager implements RegisterManager<DbmEventAction, Collection<DbmEventListener>> /*DbEventListenerManager*/ {
 
 //	private Map<JFishEventAction, ?> registerMap = ArrayListMultimap.create();
-	private static final JFishEventListener[] EMPTY_LISTENERS = new JFishEventListener[]{};
-	private CollectionMap<JFishEventAction, JFishEventListener> registerMap = CollectionMap.newListMap();
+	private static final DbmEventListener[] EMPTY_LISTENERS = new DbmEventListener[]{};
+	private CollectionMap<DbmEventAction, DbmEventListener> registerMap = CollectionMap.newListMap();
 	
 	/*protected JFishInsertOrUpdateListener[] insertOrUpdateEventListeners;
 	protected InsertEventListener[] insertEventListeners;
@@ -26,21 +26,21 @@ public class JFishdbEventListenerManager implements RegisterManager<JFishEventAc
 	
 
 	@Override
-	public CollectionMap<JFishEventAction, JFishEventListener> getRegister() {
+	public CollectionMap<DbmEventAction, DbmEventListener> getRegister() {
 		return registerMap;
 	}
 	
-	public JFishdbEventListenerManager registerListeners(JFishEventAction action, JFishEventListener...eventListeners){
+	public DbmdbEventListenerManager registerListeners(DbmEventAction action, DbmEventListener...eventListeners){
 		registerMap.putElements(action, eventListeners);
 		return this;
 	}
 	
-	public JFishEventListener[] getListeners(JFishEventAction action){
-		Collection<JFishEventListener> listenerList = getRegistered(action);
+	public DbmEventListener[] getListeners(DbmEventAction action){
+		Collection<DbmEventListener> listenerList = getRegistered(action);
 		if(LangUtils.isEmpty(listenerList)){
 			return EMPTY_LISTENERS;
 		}
-		return listenerList.toArray(new JFishEventListener[listenerList.size()]);
+		return listenerList.toArray(new DbmEventListener[listenerList.size()]);
 	}
 	
 }

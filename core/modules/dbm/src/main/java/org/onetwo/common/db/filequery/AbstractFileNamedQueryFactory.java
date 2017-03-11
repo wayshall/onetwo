@@ -11,10 +11,10 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 
 //	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
 	private QueryProvideManager queryProvideManager;
-	protected JFishNamedSqlFileManager sqlFileManager;
+	protected DbmNamedSqlFileManager sqlFileManager;
 	protected TemplateParser parser;
 
-	public AbstractFileNamedQueryFactory(JFishNamedSqlFileManager sqlFileManager) {
+	public AbstractFileNamedQueryFactory(DbmNamedSqlFileManager sqlFileManager) {
 		super();
 //		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
 		if(sqlFileManager!=null){
@@ -76,7 +76,7 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 	}
 
 
-	public JFishNamedSqlFileManager getSqlFileManager() {
+	public DbmNamedSqlFileManager getSqlFileManager() {
 		return sqlFileManager;
 	}
 

@@ -8,7 +8,7 @@ import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.event.JFishEventAction;
+import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Object[]>> {
@@ -17,7 +17,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		SQLBuilder sb = sqlBuilderFactory.createQMark(entry.getTableInfo().getName(), entry.getTableInfo().getAlias(), dtype);
 		return create(entry, sb);
 	}*/
-	public static JdbcStatementContextBuilder create(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder){
+	public static JdbcStatementContextBuilder create(DbmEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder){
 		JdbcStatementContextBuilder dsql = new JdbcStatementContextBuilder(eventAction, entry, sqlBuilder);
 		return dsql;
 	}
@@ -27,9 +27,9 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 	private Map<DbmMappedField, Object> columnValues = CUtils.newLinkedHashMap();
 	private List<Object> causeValues = new ArrayList<Object>(5);
 	private List<Object[]> values;
-	private final JFishEventAction eventAction;
+	private final DbmEventAction eventAction;
 
-	private JdbcStatementContextBuilder(JFishEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder) {
+	private JdbcStatementContextBuilder(DbmEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder) {
 		super();
 		this.entry = entry;
 		this.sqlBuilder = sqlBuilder;
@@ -64,10 +64,10 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 				field.setValue(entity, val);
 			}
 			if(field.isVersionControll()){
-				if(JFishEventAction.insert==getEventAction()){
+				if(DbmEventAction.insert==getEventAction()){
 					val = field.getVersionableType().getVersionValule(val);
 					field.setValue(entity, val);//write the version value into the entity
-				}else if(JFishEventAction.update==getEventAction()){
+				}else if(DbmEventAction.update==getEventAction()){
 					Assert.notNull(val, "version field["+field.getName()+"] can't be null: " + entry.getEntityName());
 					val = field.getVersionableType().getVersionValule(val);
 //					field.setValue(entity, val);
@@ -163,7 +163,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		return sqlBuilder;
 	}
 
-	public JFishEventAction getEventAction() {
+	public DbmEventAction getEventAction() {
 		return eventAction;
 	}
 }

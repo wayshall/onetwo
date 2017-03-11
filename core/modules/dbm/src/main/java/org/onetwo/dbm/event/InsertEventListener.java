@@ -8,13 +8,13 @@ import org.onetwo.dbm.mapping.JFishMappedEntry;
 abstract public class InsertEventListener extends AbstractJFishEventListener {
 	
 	@Override
-	public void doEvent(JFishEvent event) {
-		this.onInsert((JFishInsertEvent)event);
+	public void doEvent(DbmEvent event) {
+		this.onInsert((DbmInsertEvent)event);
 	}
 
-	public void onInsert(JFishInsertEvent event) {
+	public void onInsert(DbmInsertEvent event) {
 		Object entity = event.getObject();
-		JFishEventSource es = event.getEventSource();
+		DbmEventSource es = event.getEventSource();
 		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
 		event.setJoined(entry.isJoined());
 		
@@ -31,7 +31,7 @@ abstract public class InsertEventListener extends AbstractJFishEventListener {
 		this.executeJFishEntityListener(false, event, entity, entry.getEntityListeners());
 	}
 	
-	abstract protected void doInsert(JFishInsertEvent event, JFishMappedEntry entry);
+	abstract protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry);
 
 	
 	/*protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){

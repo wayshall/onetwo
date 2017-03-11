@@ -31,8 +31,8 @@ import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
-import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
-import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
+import org.onetwo.dbm.jdbc.DbmJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
@@ -45,21 +45,13 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private LoadingCache<Method, DynamicMethod> methodCache;
 	private QueryProvideManager em;
 	private Object proxyObject;
-//	private List<Method> excludeMethods = new ArrayList<Method>();
-//	private List<Method> includeMethods = new ArrayList<Method>();
-//	private ParameterNameDiscoverer pnd = new LocalVariableTableParameterNameDiscoverer();
-//	private Map<String, Method> methodCache = new HashMap<String, Method>();
-	private NamedJdbcTemplate namedJdbcTemplate;
+	private DbmJdbcOperations dbmJdbcOperations;
 	
-	public DynamicQueryHandler(QueryProvideManager em, LoadingCache<Method, DynamicMethod> methodCache, NamedJdbcTemplate namedJdbcTemplate, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvideManager em, LoadingCache<Method, DynamicMethod> methodCache, DbmJdbcOperations namedJdbcTemplate, Class<?>... proxiedInterfaces){
 		this.em = em;
 		this.methodCache = methodCache;
 		
-		/*includeMethods = Stream.of(proxiedInterfaces)
-								.map(i->i.getDeclaredMethods())
-								.flatMap(array->Stream.of(array))
-								.collect(Collectors.toList());*/
-		this.namedJdbcTemplate = namedJdbcTemplate;
+		this.dbmJdbcOperations = namedJdbcTemplate;
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
 	}
@@ -185,10 +177,10 @@ public class DynamicQueryHandler implements InvocationHandler {
 		FileNamedSqlGenerator sqlGen = em.getFileNamedQueryManager().createFileNamedSqlGenerator(invokeContext);
 		ParsedSqlContext sv = sqlGen.generatSql();
 //		JdbcDao jdao = this.jdao;
-		NamedJdbcTemplate namedJdbcTemplate = this.namedJdbcTemplate;
-		if(namedJdbcTemplate==null){
+		DbmJdbcOperations dbmJdbcTemplate = this.dbmJdbcOperations;
+		if(dbmJdbcTemplate==null){
 			DataSource ds = Springs.getInstance().getBean(DataSource.class, false);
-			namedJdbcTemplate = new DbmNamedJdbcTemplate(ds);
+			dbmJdbcTemplate = new DbmJdbcTemplate(ds);
 		}
 		
 		if(logger.isDebugEnabled()){
@@ -231,7 +223,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		@SuppressWarnings("unchecked")
 //		int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
-		int[] counts = namedJdbcTemplate.batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
+		int[] counts = dbmJdbcTemplate.batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 
 		t.stop(false);
 		

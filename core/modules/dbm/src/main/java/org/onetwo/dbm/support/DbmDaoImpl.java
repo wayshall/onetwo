@@ -19,24 +19,22 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
-import org.onetwo.dbm.event.JFishDeleteEvent;
-import org.onetwo.dbm.event.JFishDeleteEvent.DeleteType;
-import org.onetwo.dbm.event.JFishEvent;
-import org.onetwo.dbm.event.JFishEventAction;
-import org.onetwo.dbm.event.JFishEventListener;
-import org.onetwo.dbm.event.JFishEventSource;
-import org.onetwo.dbm.event.JFishExtQueryEvent;
-import org.onetwo.dbm.event.JFishExtQueryEvent.ExtQueryType;
-import org.onetwo.dbm.event.JFishFindEvent;
-import org.onetwo.dbm.event.JFishInsertEvent;
-import org.onetwo.dbm.event.JFishInsertOrUpdateEvent;
-import org.onetwo.dbm.event.JFishUpdateEvent;
+import org.onetwo.dbm.event.DbmEvent;
+import org.onetwo.dbm.event.DbmEventAction;
+import org.onetwo.dbm.event.DbmEventListener;
+import org.onetwo.dbm.event.DbmInsertEvent;
+import org.onetwo.dbm.event.DbmInsertOrUpdateEvent;
+import org.onetwo.dbm.event.DbmUpdateEvent;
+import org.onetwo.dbm.event.DbmDeleteEvent;
+import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
+import org.onetwo.dbm.event.DbmEventSource;
+import org.onetwo.dbm.event.DbmExtQueryEvent;
+import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
+import org.onetwo.dbm.event.DbmFindEvent;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
-import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcDao;
-import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.query.DbmQuery;
@@ -57,7 +55,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
+public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 
 	private DBDialect dialect;
 	private MappedEntryManager mappedEntryManager;
@@ -97,16 +95,16 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 
 	@Override
-	protected DbmJdbcOperations createJdbcTemplate(DataSource dataSource) {
+	protected DbmJdbcOperations createDbmJdbcOperations(DataSource dataSource) {
 		return new DbmJdbcTemplate(dataSource, getServiceRegistry().getJdbcParameterSetter());
 	}
 
-	@Override
+	/*@Override
 	protected NamedJdbcTemplate createNamedJdbcTemplate(DataSource dataSource) {
 		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(getJdbcTemplate());
 		template.setJdbcParameterSetter(serviceRegistry.getJdbcParameterSetter());
 		return template;
-	}
+	}*/
 
 	@Override
 	protected void checkDaoConfig() {
@@ -135,54 +133,6 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 			mappedEntryManager.scanPackages(packagesToScan);
 		}
 		
-		/*if(dataBaseConfig==null){
-			dataBaseConfig = new DefaultDataBaseConfig();
-		}
-		if(databaseDialetManager==null){
-			this.databaseDialetManager = new DefaultDatabaseDialetManager();
-			this.databaseDialetManager.register(DataBase.MySQL.getName(), new MySQLDialect());
-			this.databaseDialetManager.register(DataBase.Oracle.getName(), new OracleDialect());
-		}
-		
-		
-//		super.initDao();
-		if(this.dialect==null){
-			DBMeta dbmeta = DbmetaFetcher.create(getDataSource()).getDBMeta();
-//			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
-			this.dialect = this.databaseDialetManager.getRegistered(dbmeta.getDbName());
-			if (this.dialect == null) {
-				throw new IllegalArgumentException("'dialect' is required");
-			}
-//			LangUtils.cast(dialect, InnerDBDialet.class).setDbmeta(dbmeta);
-			this.dialect.getDbmeta().setVersion(dbmeta.getVersion());
-			this.dialect.initialize();
-		}
-		
-		//mappedEntryManager
-		if(mappedEntryManager==null){
-			this.mappedEntryManager = new MutilMappedEntryManager(this.dialect);
-			this.mappedEntryManager.initialize();
-		}
-		if(ArrayUtils.isNotEmpty(packagesToScan)){
-			mappedEntryManager.scanPackages(packagesToScan);
-		}
-		
-		//init sql symbol
-		if(sqlSymbolManager==null){
-			JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
-//			newSqlSymbolManager.setDialect(dialect);
-			newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
-			newSqlSymbolManager.setListeners(Arrays.asList(new DataQueryFilterListener()));
-			this.sqlSymbolManager = newSqlSymbolManager;
-		}
-		
-//		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.setRowMapperFactory(new JFishRowMapperFactory(mappedEntryManager));
-
-		if(this.sequenceNameManager==null){
-			this.sequenceNameManager = new JFishSequenceNameManager();
-		}*/
-//		this.entityManagerWraper = new EntityManagerOperationImpl(this, sequenceNameManager);
 	}
 	
 
@@ -219,7 +169,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	public <T> int insertOrUpdate(T entity, boolean dymanicIfUpdate){
 		if(LangUtils.isNullOrEmptyObject(entity))
 			throw new DbmException("entity can not be null or empty: " + entity);
-		JFishInsertOrUpdateEvent event = new JFishInsertOrUpdateEvent(entity, dymanicIfUpdate, this);
+		DbmInsertOrUpdateEvent event = new DbmInsertOrUpdateEvent(entity, dymanicIfUpdate, this);
 //		event.setRelatedFields(relatedFields);
 		this.fireEvents(event);
 		return event.getUpdateCount();
@@ -231,7 +181,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 	protected <T> int insert(T entity, boolean fetchId){
 		Assert.notNull(entity);
-		JFishInsertEvent event = new JFishInsertEvent(entity, this);
+		DbmInsertEvent event = new DbmInsertEvent(entity, this);
 		event.setFetchId(fetchId);
 //		event.setRelatedFields(relatedFields);
 		this.fireEvents(event);
@@ -280,17 +230,17 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	@Override
 	public <T> int batchInsert(Collection<T> entities){
 //		Assert.notNull(entities);
-		JFishInsertEvent event = new JFishInsertEvent(entities, this);
-		event.setAction(JFishEventAction.batchInsert);
+		DbmInsertEvent event = new DbmInsertEvent(entities, this);
+		event.setAction(DbmEventAction.batchInsert);
 //		this.fireBatchInsertEvent(event);
 		this.fireEvents(event);
 		return event.getUpdateCount();
 	}
 	
 	public <T> int batchUpdate(Collection<T> entities){
-		JFishUpdateEvent event = new JFishUpdateEvent(entities, this);
+		DbmUpdateEvent event = new DbmUpdateEvent(entities, this);
 		event.setDynamicUpdate(false);
-		event.setAction(JFishEventAction.batchUpdate);
+		event.setAction(DbmEventAction.batchUpdate);
 		this.fireEvents(event);
 		return event.getUpdateCount();
 	}
@@ -301,9 +251,9 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		}
 	}*/
 	
-	protected void fireEvents(JFishEvent event){
-		JFishEventListener[] listeners = dialect.getJfishdbEventListenerManager().getListeners(event.getAction());
-		for(JFishEventListener listern : listeners){
+	protected void fireEvents(DbmEvent event){
+		DbmEventListener[] listeners = dialect.getDbmEventListenerManager().getListeners(event.getAction());
+		for(DbmEventListener listern : listeners){
 			listern.doEvent(event);
 		}
 	}
@@ -321,7 +271,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	@Override
 	public int update(Object entity, boolean dymanicUpdate){
 		Assert.notNull(entity);
-		JFishUpdateEvent event = new JFishUpdateEvent(entity, this);
+		DbmUpdateEvent event = new DbmUpdateEvent(entity, this);
 		event.setDynamicUpdate(dymanicUpdate);
 //		event.setRelatedFields(relatedFields);
 		this.fireEvents(event);
@@ -330,7 +280,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 	public int delete(Object entity){
 		Assert.notNull(entity);
-		JFishDeleteEvent deleteEvent = new JFishDeleteEvent(entity, this);
+		DbmDeleteEvent deleteEvent = new DbmDeleteEvent(entity, this);
 //		deleteEvent.setRelatedFields(relatedFields);
 		this.fireEvents(deleteEvent);
 		return deleteEvent.getUpdateCount();
@@ -338,7 +288,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 	public int delete(Class<?> entityClass, Object id){
 		Assert.notNull(id);
-		JFishDeleteEvent deleteEvent = new JFishDeleteEvent(id, this);
+		DbmDeleteEvent deleteEvent = new DbmDeleteEvent(id, this);
 		deleteEvent.setEntityClass(entityClass);
 		deleteEvent.setDeleteType(DeleteType.byIdentify);
 		this.fireEvents(deleteEvent);
@@ -346,7 +296,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 	
 	public int deleteAll(Class<?> entityClass){
-		JFishDeleteEvent deleteEvent = new JFishDeleteEvent(null, this);
+		DbmDeleteEvent deleteEvent = new DbmDeleteEvent(null, this);
 		deleteEvent.setEntityClass(entityClass);
 		deleteEvent.setDeleteType(DeleteType.deleteAll);
 		this.fireEvents(deleteEvent);
@@ -355,7 +305,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 	@Override
 	public <T> T findById(Class<T> entityClass, Serializable id){
-		JFishFindEvent event = new JFishFindEvent(id, this);
+		DbmFindEvent event = new DbmFindEvent(id, this);
 		event.setEntityClass(entityClass);
 		this.fireEvents(event);
 		return (T)event.getResultObject();
@@ -363,7 +313,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	
 
 	public <T> List<T> findAll(Class<T> entityClass){
-		JFishFindEvent event = new JFishFindEvent(null, this);
+		DbmFindEvent event = new DbmFindEvent(null, this);
 		event.setFindAll(true);
 		event.setEntityClass(entityClass);
 		this.fireEvents(event);
@@ -371,13 +321,13 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 	
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties){
-		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.DEFUALT, entityClass, properties, this);
+		DbmExtQueryEvent event = new DbmExtQueryEvent(ExtQueryType.DEFUALT, entityClass, properties, this);
 		this.fireEvents(event);
 		return (List<T>)event.getResultObject();
 	}
 	
 	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties){
-		JFishExtQueryEvent event = new JFishExtQueryEvent(page, ExtQueryType.PAGINATION, entityClass, properties, this);
+		DbmExtQueryEvent event = new DbmExtQueryEvent(page, ExtQueryType.PAGINATION, entityClass, properties, this);
 		this.fireEvents(event);
 	}
 	
@@ -385,13 +335,13 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	 * 查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties){
-		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.UNIQUE, entityClass, properties, this);
+		DbmExtQueryEvent event = new DbmExtQueryEvent(ExtQueryType.UNIQUE, entityClass, properties, this);
 		this.fireEvents(event);
 		return (T)event.getResultObject();
 	}
 	
 	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties){
-		JFishExtQueryEvent event = new JFishExtQueryEvent(ExtQueryType.COUNT, entityClass, properties, this);
+		DbmExtQueryEvent event = new DbmExtQueryEvent(ExtQueryType.COUNT, entityClass, properties, this);
 		this.fireEvents(event);
 		return (Number)event.getResultObject();
 	}
@@ -410,7 +360,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper){
 		T result = null;
 		try{
-			result = this.getNamedParameterJdbcTemplate().queryForObject(sql, params, rowMapper);
+			result = this.dbmJdbcOperations.queryForObject(sql, params, rowMapper);
 		}catch(EmptyResultDataAccessException e){
 			logger.error("findUnique : "+e.getMessage());
 		}
@@ -458,7 +408,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	public <T> T findUnique(String sql, Object[] args, RowMapper<T> row){
 		T result = null;
 		try{
-			result = this.getJFishJdbcTemplate().queryForObject(sql, args, row);
+			result = this.getDbmJdbcOperations().queryForObject(sql, args, row);
 		}catch(EmptyResultDataAccessException e){
 			logger.warn("findUnique : "+e.getMessage());
 		}
@@ -468,7 +418,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	public <T> List<T> findList(String sql, Object[] args, RowMapper<T> rowMapper){
 		List<T> result = null;
 		try {
-			result = this.getJFishJdbcTemplate().query(sql, args, rowMapper);
+			result = this.getDbmJdbcOperations().query(sql, args, rowMapper);
 		} catch (Exception e) {
 			handleException("findList", sql, e);
 		}
@@ -494,7 +444,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 	}
 	
 	public <T> List<T> findList(String sql, Map<String, ?> params, RowMapper<T> rowMapper){
-		List<T> result = this.getNamedParameterJdbcTemplate().query(sql, params, rowMapper);
+		List<T> result = this.dbmJdbcOperations.query(sql, params, rowMapper);
 		return result;
 	}
 	
@@ -534,7 +484,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		}else{
 			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rse);
 		}*/
-		return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rse);
+		return this.dbmJdbcOperations.query(queryValue.getSql(), queryValue.asMap(), rse);
 	}
 	
 	/****
@@ -546,7 +496,7 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		}else{
 			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
 		}*/
-		return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
+		return this.dbmJdbcOperations.query(queryValue.getSql(), queryValue.asMap(), rowMapper);
 	}
 	
 	public int executeUpdate(DbmQueryValue queryValue){
@@ -556,22 +506,22 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		}else{
 			update = this.getJFishJdbcTemplate().update(queryValue.getSql(), queryValue.asList().toArray());
 		}*/
-		update = this.getNamedParameterJdbcTemplate().update(queryValue.getSql(), queryValue.asMap());
+		update = this.dbmJdbcOperations.update(queryValue.getSql(), queryValue.asMap());
 		return update;
 	}
 	
 	public int executeUpdate(String sql, Map<String, ?> params){
-		int update = this.getNamedParameterJdbcTemplate().update(sql, params);
+		int update = this.dbmJdbcOperations.update(sql, params);
 		return update;
 	}
 	
 	public int executeUpdate(String sql, Object...args){
-		int update = this.getJFishJdbcTemplate().update(sql, args);
+		int update = this.getDbmJdbcOperations().update(sql, args);
 		return update;
 	}
 	
 	public int executeUpdate(DynamicQuery query){
-		int update = this.getJFishJdbcTemplate().update(query.getTransitionSql(), query.getValues().toArray());
+		int update = this.getDbmJdbcOperations().update(query.getTransitionSql(), query.getValues().toArray());
 		return update;
 	}
 	
@@ -638,18 +588,6 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return (RowMapper<T>)this.getRowMapperFactory().createRowMapper(type);
 	}
 
-	/*protected JdbcTemplate createJdbcTemplate(DataSource dataSource) {
-		return new JFishJdbcTemplate(dataSource){
-			public boolean isPrintSql(){
-				return dialect.isPrintSql();
-			}
-		};
-	}*/
-
-	public final DbmJdbcOperations getJFishJdbcTemplate() {
-	  return this.jdbcTemplate;
-	}
-
 	protected RowMapper getColumnMapRowMapper() {
 		return new ColumnMapRowMapper();
 	}
@@ -662,45 +600,20 @@ public class DbmDaoImpl extends JdbcDao implements JFishEventSource, DbmDao {
 		return dialect;
 	}
 
-	/*
-	protected DBMeta getDBMeta(){
-		Connection dbcon = null;
-		DBMeta dbmeta = new DBMeta();
-		try {
-			dbcon = getConnection();
-			DatabaseMetaData meta = dbcon.getMetaData();
-			dbmeta.setDbName(meta.getDatabaseProductName());
-			dbmeta.setVersion(meta.getDatabaseProductVersion());
-			logger.info("database : " + dbmeta);
-		} catch (Exception e) {
-			LangUtils.throwBaseException("initialize error : " + e.getMessage() , e);
-		} finally{
-			releaseConnection(dbcon);
-		}
-		return dbmeta;
-	}*/
-
 
 	public SQLSymbolManager getSqlSymbolManager() {
 		return sqlSymbolManager;
 	}
 
-//	public EntityManagerOperationImpl getEntityManagerWraper() {
-//		return entityManagerWraper;
-//	}
 
 	public SequenceNameManager getSequenceNameManager() {
 		return sequenceNameManager;
 	}
 
-	@Override
-	public NamedJdbcTemplate getNamedParameterJdbcTemplate() {
-		return this.namedParameterJdbcTemplate;
+	public DbmJdbcOperations getNamedParameterJdbcTemplate() {
+		return this.dbmJdbcOperations;
 	}
 
-	/*public void setPackagesToScan(String... packagesToScan) {
-		this.packagesToScan = packagesToScan;
-	}*/
 
 	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
 		SimpleDbmInnerServiceRegistry registry = this.serviceRegistry;

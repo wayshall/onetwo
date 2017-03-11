@@ -23,7 +23,7 @@ import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.annotation.DbmValidatorEnabled;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.event.DbmEntityListener;
-import org.onetwo.dbm.event.JFishEventAction;
+import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
@@ -404,7 +404,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	
 	@Override
 	public JdbcStatementContext<List<Object[]>> makeFetch(Object objects, boolean isIdentify){
-		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.find, this, getStaticFetchSqlBuilder());
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(DbmEventAction.find, this, getStaticFetchSqlBuilder());
 		
 		if(LangUtils.isMultiple(objects)){
 			List<Object> list = LangUtils.asList(objects);
@@ -432,7 +432,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	public JdbcStatementContext<List<Object[]>> makeInsert(Object entity){
 		this.throwIfQueryableOnly();
 		EntrySQLBuilderImpl insertSqlBuilder = getStaticInsertSqlBuilder();
-		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.insert, this, insertSqlBuilder);
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(DbmEventAction.insert, this, insertSqlBuilder);
 		if(LangUtils.isMultiple(entity)){
 			List<Object> list = LangUtils.asList(entity);
 			if(LangUtils.isEmpty(list))
@@ -477,7 +477,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	public JdbcStatementContext<List<Object[]>> makeDelete(Object objects, boolean isIdentify){
 		this.throwIfQueryableOnly();
 		
-		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.delete, this, getStaticDeleteSqlBuilder());
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(DbmEventAction.delete, this, getStaticDeleteSqlBuilder());
 		
 		if(LangUtils.isMultiple(objects)){
 			List<Object> list = LangUtils.asList(objects);
@@ -515,7 +515,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	public JdbcStatementContext<List<Object[]>> makeUpdate(Object entity){
 		this.throwIfQueryableOnly();
 		
-		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(JFishEventAction.update, this, getStaticUpdateSqlBuilder());
+		JdbcStatementContextBuilder dsb = JdbcStatementContextBuilder.create(DbmEventAction.update, this, getStaticUpdateSqlBuilder());
 		
 		if(LangUtils.isMultiple(entity)){
 			List<Object> list = LangUtils.asList(entity);
@@ -566,14 +566,14 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 
 	protected JdbcStatementContextBuilder makeDymanicUpdateJdbcStatementContextBuilder(Object entity){
 		EntrySQLBuilderImpl sb = sqlBuilderFactory.createQMark(this, this.getTableInfo().getAlias(), SqlBuilderType.update);
-		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(JFishEventAction.update, this, sb);
+		JdbcStatementContextBuilder sqlBuilder = JdbcStatementContextBuilder.create(DbmEventAction.update, this, sb);
 		Object val = null;
 		for(DbmMappedField mfield : this.mappedColumns.values()){
 			
 //			val = mfield.getColumnValue(entity);
 //			val = mfield.getValueForJdbcAndFireDbmEventAction(entity, JFishEventAction.update);
 			val = mfield.getValue(entity);
-			if(mfield.fireDbmEntityFieldEvents(val, JFishEventAction.update)!=val){
+			if(mfield.fireDbmEntityFieldEvents(val, DbmEventAction.update)!=val){
 				mfield.setValue(entity, val);
 			}
 			if(mfield.isIdentify()){

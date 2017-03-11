@@ -33,7 +33,7 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private boolean debug;
-	protected NamedJdbcTemplate namedTemplate;
+	protected DbmNamedJdbcTemplate dbmNamedJdbcOperations;
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 
 	/*public DbmJdbcTemplate() {
@@ -66,7 +66,7 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	}
 
 	protected void initTemplateConfig() {
-		if(namedTemplate==null){
+		if(dbmNamedJdbcOperations==null){
 			DbmNamedJdbcTemplate t = new DbmNamedJdbcTemplate(this);
 			t.setDebug(this.isDebug());
 			/*if(logJdbcSql){
@@ -75,7 +75,7 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 				ajf.addAspect(JFishJdbcTemplateProxy.class);
 				t = ajf.getProxy();
 			}*/
-			this.namedTemplate = t;
+			this.dbmNamedJdbcOperations = t;
 		}
 	}
  
@@ -177,14 +177,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	}
 	
 
-	public NamedJdbcTemplate getNamedTemplate() {
-		return namedTemplate;
-	}
-
-	public void setNamedTemplate(NamedJdbcTemplate namedTemplate) {
-		this.namedTemplate = namedTemplate;
-	}
-
 	protected Connection getConnection(){
 		Connection con = DataSourceUtils.getConnection(getDataSource());
 		return con;
@@ -269,5 +261,38 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) throws DataAccessException {
 		return query(sql, args, new DbmListRowMapperResultSetExtractor<T>(rowMapper));
 	}
+
+	@Override
+	public int[] batchUpdate(String sql, Map<String, ?>[] batchValues) {
+		return this.dbmNamedJdbcOperations.batchUpdate(sql, batchValues);
+	}
+
+	@Override
+	public int update(String sql, Map<String, ?> paramMap) throws DataAccessException {
+		return this.dbmNamedJdbcOperations.update(sql, paramMap);
+	}
+
+	@Override
+	public <T> T query(String sql, Map<String, ?> paramMap, ResultSetExtractor<T> rse) throws DataAccessException {
+		return this.dbmNamedJdbcOperations.query(sql, paramMap, rse);
+	}
+
+	@Override
+	public <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException {
+		return this.dbmNamedJdbcOperations.query(sql, paramMap, rowMapper);
+	}
+
+	@Override
+	public <T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException {
+		return this.dbmNamedJdbcOperations.queryForObject(sql, paramMap, rowMapper);
+	}
+
+	@Override
+	public Object execute(String sql, Map<String, ?> paramMap) throws DataAccessException {
+		return this.dbmNamedJdbcOperations.execute(sql, paramMap);
+	}
+	
+	
+	
 
 }

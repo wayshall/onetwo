@@ -16,7 +16,7 @@ public interface DbmDao {
 	 * 保存对象和关联属性的对象到数据库，<br/>
 	 * 无论是主对象还是关联对象，会根据id是否为null值去判断是保存还是更新，<br/>
 	 * 更新时只会更新不为null的字段。<br/>
-	 * 相当于{@link org.onetwo.dbm.event.JFishEventSource#insertOrUpdate insertOrUpdate(entity, true, relatedFields)}
+	 * 相当于{@link org.onetwo.dbm.event.DbmEventSource#insertOrUpdate insertOrUpdate(entity, true, relatedFields)}
 	 * 
 	 * @param entity
 	 * @return

@@ -1,11 +1,11 @@
 package org.onetwo.dbm.event;
 
-public class JFishInsertEvent extends JFishEvent{
+public class DbmInsertEvent extends DbmEvent{
 
 	private boolean fetchId;
 	
-	public JFishInsertEvent(Object object, JFishEventSource eventSource) {
-		super(object, JFishEventAction.insert, eventSource);
+	public DbmInsertEvent(Object object, DbmEventSource eventSource) {
+		super(object, DbmEventAction.insert, eventSource);
 	}
 
 	public boolean isFetchId() {

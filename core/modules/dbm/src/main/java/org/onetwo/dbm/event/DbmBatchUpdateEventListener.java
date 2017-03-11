@@ -4,10 +4,10 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 
-public class JFishBatchUpdateEventListener extends UpdateEventListener {
+public class DbmBatchUpdateEventListener extends UpdateEventListener {
 
 	@Override
-	public void doEvent(JFishEvent event) {
+	public void doEvent(DbmEvent event) {
 		JFishMappedEntry entry = event.getEventSource().getMappedEntryManager().findEntry(event.getObject());
 		if(entry==null){
 			event.setUpdateCount(0);
@@ -17,7 +17,7 @@ public class JFishBatchUpdateEventListener extends UpdateEventListener {
 	}
 	
 	@Override
-	protected void doUpdate(JFishUpdateEvent event, JFishMappedEntry entry){
+	protected void doUpdate(DbmUpdateEvent event, JFishMappedEntry entry){
 		Object entity = event.getObject();
 		if(!LangUtils.isMultiple(entity)){
 			throw new DbmException("batch update's args must be a Collection or Array!");

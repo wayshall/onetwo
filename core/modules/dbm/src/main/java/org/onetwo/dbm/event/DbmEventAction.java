@@ -1,6 +1,6 @@
 package org.onetwo.dbm.event;
 
-public enum JFishEventAction {
+public enum DbmEventAction {
 
 	insertOrUpdate,
 	insert,

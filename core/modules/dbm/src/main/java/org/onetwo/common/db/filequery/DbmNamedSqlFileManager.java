@@ -9,13 +9,13 @@ import org.onetwo.dbm.exception.FileNamedQueryException;
  *
  * @param <T>
  */
-public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl<DbmNamedFileQueryInfo> {
+public class DbmNamedSqlFileManager extends NamespacePropertiesFileManagerImpl<DbmNamedFileQueryInfo> {
 	
 
-	public static JFishNamedSqlFileManager createNamedSqlFileManager(boolean watchSqlFile) {
+	public static DbmNamedSqlFileManager createNamedSqlFileManager(boolean watchSqlFile) {
 		StringTemplateLoaderFileSqlParser<DbmNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<DbmNamedFileQueryInfo>();
 		listener.initialize();
-		JFishNamedSqlFileManager sqlfileMgr = new JFishNamedSqlFileManager(new DialetNamedSqlConf(watchSqlFile), listener, listener);
+		DbmNamedSqlFileManager sqlfileMgr = new DbmNamedSqlFileManager(new DialetNamedSqlConf(watchSqlFile), listener, listener);
 //		sqlfileMgr.setDataSource(dataSource);
 		return sqlfileMgr;
 	}
@@ -25,7 +25,7 @@ public class JFishNamedSqlFileManager extends NamespacePropertiesFileManagerImpl
 	private TemplateParser sqlStatmentParser;
 	
 
-	public JFishNamedSqlFileManager(DialetNamedSqlConf conf, TemplateParser sqlStatmentParser, NamespacePropertiesFileListener<DbmNamedFileQueryInfo> listener) {
+	public DbmNamedSqlFileManager(DialetNamedSqlConf conf, TemplateParser sqlStatmentParser, NamespacePropertiesFileListener<DbmNamedFileQueryInfo> listener) {
 		super(conf, listener);
 //		this.databaseType = conf.getDatabaseType();
 		this.setSqlFileParser(new MultipCommentsSqlFileParser());

@@ -12,7 +12,7 @@ import org.onetwo.dbm.exception.DbmException;
  * @author weishao
  *
  */
-public class JFishSequenceNameManager extends SequenceNameManager {
+public class JPASequenceNameManager extends SequenceNameManager {
 	
 
 //	protected SQLFile sqlFile = SQLFile.getInstance();

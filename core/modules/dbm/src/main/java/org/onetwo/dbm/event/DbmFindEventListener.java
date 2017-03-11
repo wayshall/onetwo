@@ -7,26 +7,26 @@ import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.core.RowMapper;
 
-public class JFishFindEventListener extends AbstractJFishEventListener {
+public class DbmFindEventListener extends AbstractJFishEventListener {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void doEvent(JFishEvent event) {
-		JFishFindEvent findEvent = (JFishFindEvent) event;
+	public void doEvent(DbmEvent event) {
+		DbmFindEvent findEvent = (DbmFindEvent) event;
 		Object entity = event.getObject();
-		JFishEventSource es = event.getEventSource();
+		DbmEventSource es = event.getEventSource();
 		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 		findEvent.setJoined(entry.isJoined());
 
 		RowMapper rowMapper = es.getRowMapper(event.getEntityClass());
 		if(findEvent.isFindAll()){
 			JdbcStatementContext<Object[]> fetch = entry.makeFetchAll();
-			List list = (List) es.getJFishJdbcTemplate().query(fetch.getSql(), fetch.getValue(), rowMapper);
+			List list = (List) es.getDbmJdbcOperations().query(fetch.getSql(), fetch.getValue(), rowMapper);
 			findEvent.setResultObject(list);
 		}else{
 			JdbcStatementContext<List<Object[]>> fetch = entry.makeFetch(entity, !findEvent.isJoined());
 			for(Object[] args : fetch.getValue()){
-				List list = (List) es.getJFishJdbcTemplate().query(fetch.getSql(), args, rowMapper);
+				List list = (List) es.getDbmJdbcOperations().query(fetch.getSql(), args, rowMapper);
 				if(LangUtils.isNotEmpty(list))
 					findEvent.setResultObject(list.get(0));
 			}

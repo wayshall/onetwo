@@ -19,8 +19,6 @@ import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
-import org.onetwo.dbm.jdbc.DbmNamedJdbcTemplate;
-import org.onetwo.dbm.jdbc.NamedJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.support.DbmDaoImpl;
@@ -206,8 +204,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 			dataSource = dataSources.get(dataSourceName);
 		}
 		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource, dbmInnerServiceRegistry(dataSource));
-		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
-		jfishDao.setJdbcTemplate(jdbcTemplate(dataSource));
+//		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
+		jfishDao.setDbmJdbcOperations(jdbcTemplate(dataSource));
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
 		jfishDao.setPackagesToScan(getAllDbmPackageNames().toArray(new String[0]));
 		return jfishDao;
@@ -238,21 +236,21 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		return template;
 	}
 	
-	@Bean
+	/*@Bean
 	@Autowired
-	public NamedJdbcTemplate namedJdbcTemplate(DataSource dataSource){
+	public DbmNamedJdbcOperations namedJdbcTemplate(DataSource dataSource){
 		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate(dataSource));
 		template.setJdbcParameterSetter(dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
 
-		/*if(logJdbcSql){
+		if(logJdbcSql){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
 			ajf.setProxyTargetClass(false);
 			ajf.addAspect(JFishJdbcTemplateProxy.class);
 			return ajf.getProxy();
-		}*/
+		}
 		
 		return template;
-	}
+	}*/
 
 	@Bean
 	public SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry(){

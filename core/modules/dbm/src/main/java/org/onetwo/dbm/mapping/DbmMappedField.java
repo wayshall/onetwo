@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
-import org.onetwo.dbm.event.JFishEventAction;
+import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.mapping.version.VersionableType;
 
 public interface DbmMappedField {
@@ -81,7 +81,7 @@ public interface DbmMappedField {
 	 * @param eventAction
 	 * @return newFieldValue
 	 */
-	public Object fireDbmEntityFieldEvents(Object fieldValue, JFishEventAction eventAction);
+	public Object fireDbmEntityFieldEvents(Object fieldValue, DbmEventAction eventAction);
 
 	public boolean isVersionControll();
 	public <T> VersionableType<T> getVersionableType();

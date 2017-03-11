@@ -8,13 +8,13 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 
-public class JFishDeleteEventListener extends AbstractJFishEventListener {
+public class DbmDeleteEventListener extends AbstractJFishEventListener {
 
 	@Override
-	public void doEvent(JFishEvent event) {
-		JFishDeleteEvent deleteEvent = (JFishDeleteEvent) event;
+	public void doEvent(DbmEvent event) {
+		DbmDeleteEvent deleteEvent = (DbmDeleteEvent) event;
 		Object entity = event.getObject();
-		JFishEventSource es = event.getEventSource();
+		DbmEventSource es = event.getEventSource();
 		JFishMappedEntry entry = es.getMappedEntryManager().findEntry(entity!=null?entity:event.getEntityClass());
 		if(entry==null)
 			entry = es.getMappedEntryManager().findEntry(entity);
@@ -23,9 +23,9 @@ public class JFishDeleteEventListener extends AbstractJFishEventListener {
 		this.doDelete(deleteEvent, entry);
 	}
 	
-	public void doDelete(JFishDeleteEvent deleteEvent, JFishMappedEntry entry){
+	public void doDelete(DbmDeleteEvent deleteEvent, JFishMappedEntry entry){
 		Object entity = deleteEvent.getObject();
-		JFishEventSource es = deleteEvent.getEventSource();
+		DbmEventSource es = deleteEvent.getEventSource();
 		
 		int count = 0;
 		if(deleteEvent.isDeleteAll()){

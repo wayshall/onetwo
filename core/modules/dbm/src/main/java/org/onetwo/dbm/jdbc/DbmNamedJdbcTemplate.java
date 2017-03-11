@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
  * @author weishao
  *
  */
-public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate implements NamedJdbcTemplate{
+public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private JdbcStatementParameterSetter jdbcParameterSetter = new SpringStatementParameterSetter();

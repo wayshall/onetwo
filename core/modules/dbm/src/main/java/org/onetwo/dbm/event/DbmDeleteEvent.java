@@ -1,6 +1,6 @@
 package org.onetwo.dbm.event;
 
-public class JFishDeleteEvent extends JFishEvent{
+public class DbmDeleteEvent extends DbmEvent{
 	
 	public static enum DeleteType {
 		byEntity,
@@ -8,8 +8,8 @@ public class JFishDeleteEvent extends JFishEvent{
 		deleteAll,
 	}
 
-	public JFishDeleteEvent(Object object, JFishEventSource eventSource) {
-		super(object, JFishEventAction.delete, eventSource);
+	public DbmDeleteEvent(Object object, DbmEventSource eventSource) {
+		super(object, DbmEventAction.delete, eventSource);
 	}
 
 	private DeleteType deleteType = DeleteType.byEntity;//DeleteType.byIdentify;//

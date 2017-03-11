@@ -16,15 +16,15 @@ import org.onetwo.dbm.mapping.JdbcStatementContext;
  * @author wayshall
  *
  */
-public class JFishUpdateEventListener extends UpdateEventListener {
+public class DbmUpdateEventListener extends UpdateEventListener {
 
 	/*****
 	 * 不是调用批量接口更新的，取用循环插入的方式，通过调用updateSingleEntity方法来检查是否更新成功！
 	 */
 	@Override
-	protected void doUpdate(JFishUpdateEvent event, JFishMappedEntry entry){
+	protected void doUpdate(DbmUpdateEvent event, JFishMappedEntry entry){
 		Object entity = event.getObject();
-		JFishEventSource es = event.getEventSource();
+		DbmEventSource es = event.getEventSource();
 //		JdbcStatementContext<List<Object[]>> update = null;
 		int count = 0;
 		if(event.isDynamicUpdate()){
@@ -53,21 +53,21 @@ public class JFishUpdateEventListener extends UpdateEventListener {
 	}
 
 	/*********
-	 * 更新单个实体，如果更新条数少于1，则表示更新失败，抛出{@link EntityNotFoundException JFishEntityNotFoundException}
+	 * 更新单个实体，如果更新条数少于1，则表示更新失败，抛出{@link EntityNotFoundException EntityNotFoundException}
 	 * @param dymanic
 	 * @param es
 	 * @param entry
 	 * @param singleEntity
 	 * @return
 	 */
-	private int updateSingleEntity(boolean dymanic, JFishEventSource es, JFishMappedEntry entry, Object singleEntity){
+	private int updateSingleEntity(boolean dymanic, DbmEventSource es, JFishMappedEntry entry, Object singleEntity){
 		Object currentTransactionVersion = null;
 
 		if(entry.isVersionControll()){
 			DbmMappedField versionField = entry.getVersionField();
 			JdbcStatementContext<Object[]> versionContext = entry.makeSelectVersion(singleEntity);
 			//因为在同一个事务里，实际上得到的version还是旧的，只是防止程序员自己修改version字段
-			currentTransactionVersion = es.getJFishJdbcTemplate().queryForObject(versionContext.getSql(), versionField.getColumnType(), entry.getId(singleEntity));
+			currentTransactionVersion = es.getDbmJdbcOperations().queryForObject(versionContext.getSql(), versionField.getColumnType(), entry.getId(singleEntity));
 			Object entityVersion = entry.getVersionField().getValue(singleEntity);
 			
 			if(!versionField.getVersionableType().isEquals(entityVersion, currentTransactionVersion)){

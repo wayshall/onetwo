@@ -2,7 +2,7 @@ package org.onetwo.dbm.event;
 
 import java.util.Map;
 
-public class JFishExtQueryEvent extends JFishEvent {
+public class DbmExtQueryEvent extends DbmEvent {
 	
 	public enum ExtQueryType {
 		DEFUALT,
@@ -15,11 +15,11 @@ public class JFishExtQueryEvent extends JFishEvent {
 	private Object resultObject;
 	private final ExtQueryType extQueryType;
 	
-	public JFishExtQueryEvent(ExtQueryType extQueryType, Class<?> entityClass, Map<Object, Object> properties, JFishEventSource eventSource) {
+	public DbmExtQueryEvent(ExtQueryType extQueryType, Class<?> entityClass, Map<Object, Object> properties, DbmEventSource eventSource) {
 		this(null, extQueryType, entityClass, properties, eventSource);
 	}
-	public JFishExtQueryEvent(Object obj, ExtQueryType extQueryType, Class<?> entityClass, Map<Object, Object> properties, JFishEventSource eventSource) {
-		super(obj, JFishEventAction.extQuery, eventSource);
+	public DbmExtQueryEvent(Object obj, ExtQueryType extQueryType, Class<?> entityClass, Map<Object, Object> properties, DbmEventSource eventSource) {
+		super(obj, DbmEventAction.extQuery, eventSource);
 		this.setEntityClass(entityClass);
 		this.properties = properties;
 		this.extQueryType = extQueryType;
