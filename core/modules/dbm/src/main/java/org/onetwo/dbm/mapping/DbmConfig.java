@@ -1,7 +1,11 @@
 package org.onetwo.dbm.mapping;
 
+import org.onetwo.dbm.spring.EnableDbmAttributes;
+
 public interface DbmConfig {
 
+	public EnableDbmAttributes getEnableDbmAttributes();
+	public void onEnableDbmAttributes(EnableDbmAttributes attributes);
 
 	/******
 	 * 当保存或者删除接口参数是列表时，size大于临界值userBatchThreshold的将会自动转为调用jdbc batch

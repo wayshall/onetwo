@@ -1,5 +1,7 @@
 package org.onetwo.dbm.mapping;
 
+import org.onetwo.dbm.spring.EnableDbmAttributes;
+
 
 public class DefaultDbmConfig implements DbmConfig {
 	/*public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
@@ -19,6 +21,7 @@ public class DefaultDbmConfig implements DbmConfig {
 //	private String[] modelPackagesToScan;
 	private String dataSource;
 	
+	private EnableDbmAttributes enableDbmAttributes;
 
 	public DefaultDbmConfig(){
 	}
@@ -39,6 +42,15 @@ public class DefaultDbmConfig implements DbmConfig {
 	public void setModelPackagesToScan(String... modelPackagesToScan) {
 		this.modelPackagesToScan = modelPackagesToScan;
 	}*/
+
+	@Override
+	public void onEnableDbmAttributes(EnableDbmAttributes attributes) {
+		this.enableDbmAttributes = attributes;
+	}
+
+	public EnableDbmAttributes getEnableDbmAttributes() {
+		return enableDbmAttributes;
+	}
 
 	@Override
 	public int getUseBatchThreshold() {

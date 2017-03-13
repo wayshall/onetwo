@@ -66,7 +66,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 //	private String[] packagesToScan;
 //	private List<String> packageNames = new ArrayList<String>();
 	
-	private String dataSourceName;
+	private EnableDbmAttributes enableDbmAttributes;
 	
 	public DbmSpringConfiguration(){
 	}
@@ -86,7 +86,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		if(importMetadata!=null){
 			Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes(EnableDbm.class.getName());
 			if(annotationAttributes!=null){
-				dataSourceName = (String)annotationAttributes.get("value");
+				String dataSourceName = (String)annotationAttributes.get("value");
+				enableDbmAttributes = new EnableDbmAttributes(dataSourceName, (String[])annotationAttributes.get("packagesToScan"));
 			}
 		}
 	}
@@ -135,6 +136,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		if(dbmConfig==null){
 			this.dbmConfig = new DefaultDbmConfig();
 		}
+		this.dbmConfig.onEnableDbmAttributes(enableDbmAttributes);
 		return this.dbmConfig;
 	}
 	
@@ -239,7 +241,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	private String getDataSourceName(){
 		String ds = defaultDbmConfig().getDataSource();
 		if(StringUtils.isBlank(ds)){
-			ds = this.dataSourceName;
+			ds = this.enableDbmAttributes.getDataSourceName();
 		}
 		return ds;
 	}
