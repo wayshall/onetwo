@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.onetwo.common.annotation.AnnotationInfo;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
@@ -21,8 +20,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.annotation.DbmColumn;
 import org.onetwo.dbm.annotation.DbmEntity;
 import org.onetwo.dbm.annotation.DbmQueryable;
-import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
+import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.query.JFishQueryableMappedEntryImpl;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
@@ -32,7 +31,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 
 @SuppressWarnings("rawtypes")
-public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterManager<String, MappedEntryBuilderListener> {
+public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManager<String, MappedEntryBuilderListener> {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -51,7 +50,7 @@ public class JFishMappedEntryBuilder implements MappedEntryBuilder, RegisterMana
 		return builderListeners;
 	}
 
-	public JFishMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry){
+	public DbmMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry){
 		this.serviceRegistry = serviceRegistry;
 		this.dialect = this.serviceRegistry.getDialect();
 	}

@@ -22,6 +22,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+/****
+ * 如果需要使用多数据源，注意配置ChainedTransactionManager
+ * @author way
+ *
+ */
 final public class Dbms {
 	
 	final private static LoadingCache<Class<?>, CrudEntityManager<?, ?>> CRUD_MANAGER_MAPPER = CacheBuilder.newBuilder()
@@ -81,8 +86,8 @@ final public class Dbms {
 	 * @return
 	 */
 	public static BaseEntityManager newEntityManager(DataSource dataSource) {
-		DbmDaoImplementor dbmDao = (DbmDaoImplementor)newDao(dataSource);
-		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(dbmDao);
+		DbmSessionFactory sf = newSessionFactory(dataSource);
+		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(sf);
 		try {
 			entityManager.afterPropertiesSet();
 		} catch (Exception e) {
@@ -136,11 +141,11 @@ final public class Dbms {
 	}
 	
 	
-	public static DbmDao newDao(DataSource dataSource){
-		DbmDaoImpl dao = new DbmDaoImpl(dataSource);
-		dao.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource)));
-		dao.initialize();
-		return dao;
+	public static DbmSessionFactory newSessionFactory(DataSource dataSource){
+		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(Springs.getInstance().getAppContext(), null, dataSource);
+		sf.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource)));
+		sf.afterPropertiesSet();
+		return sf;
 	}
 
 	private Dbms(){

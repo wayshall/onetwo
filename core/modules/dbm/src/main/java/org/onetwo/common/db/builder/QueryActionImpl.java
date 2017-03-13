@@ -82,12 +82,12 @@ public class QueryActionImpl implements QueryAction {
 		return qv;
 	}
 	public <T> T extractAs(ResultSetExtractor<T> rse){
-		T res = this.getDbmEntityManager().getDbmDao().find(convertAsDbmQueryValue(getExtQuery()), rse);
+		T res = this.getDbmEntityManager().getCurrentSession().find(convertAsDbmQueryValue(getExtQuery()), rse);
 		return res;
 	}
 	
 	public <T> List<T> listWith(RowMapper<T> rowMapper){
-		List<T> res = this.getDbmEntityManager().getDbmDao().findList(convertAsDbmQueryValue(getExtQuery()), rowMapper);
+		List<T> res = this.getDbmEntityManager().getCurrentSession().findList(convertAsDbmQueryValue(getExtQuery()), rowMapper);
 		return res;
 	}
 	protected DbmEntityManager getDbmEntityManager(){

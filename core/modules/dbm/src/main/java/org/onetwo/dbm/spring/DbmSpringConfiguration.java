@@ -21,10 +21,10 @@ import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
-import org.onetwo.dbm.support.DbmDaoImpl;
-import org.onetwo.dbm.support.DbmDaoImplementor;
 import org.onetwo.dbm.support.DbmEntityManager;
 import org.onetwo.dbm.support.DbmEntityManagerImpl;
+import org.onetwo.dbm.support.DbmSessionFactory;
+import org.onetwo.dbm.support.DbmSessionFactoryImpl;
 import org.onetwo.dbm.support.Jsr303EntityValidator;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 //@EnableConfigurationProperties({DataBaseConfig.class})
@@ -139,8 +140,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	@Autowired
-	public DbmEntityManager dbmEntityManager(DbmDaoImplementor dbmDao) {
-		DbmEntityManagerImpl jem = new DbmEntityManagerImpl(dbmDao);
+	public DbmEntityManager dbmEntityManager(DbmSessionFactory sessionFactory) {
+		DbmEntityManagerImpl jem = new DbmEntityManagerImpl(sessionFactory);
 //		DbmDaoImplementor dbmDao = dbmDao();
 //		jem.setDbmDao(dbmDao);
 		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
@@ -148,7 +149,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 //		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 
 		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
-		DbmDaoCreateEvent event = new DbmDaoCreateEvent(dbmDao, registry);
+		DbmDaoCreateEvent event = new DbmDaoCreateEvent(sessionFactory, registry);
 		this.applicationContext.publishEvent(event);
 		
 		return jem;
@@ -192,7 +193,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	@Bean
 	@Autowired
-	public DbmDaoImplementor dbmDao(Map<String, DataSource> dataSources) {
+	public DbmSessionFactory dbmSessionFactory(ApplicationContext applicationContext, PlatformTransactionManager transactionManager, Map<String, DataSource> dataSources){
 		if(LangUtils.isEmpty(dataSources)){
 			throw new DbmException("no dataSource found, you must be configure a dataSource!");
 		}
@@ -203,13 +204,37 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		}else{
 			dataSource = dataSources.get(dataSourceName);
 		}
-		DbmDaoImpl jfishDao = new DbmDaoImpl(dataSource, dbmInnerServiceRegistry(dataSource));
+		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(applicationContext, transactionManager, dataSource);
+		sf.setPackagesToScan(getAllDbmPackageNames().toArray(new String[0]));
+		sf.setDataBaseConfig(defaultDbmConfig());
+		
+//		ConfigurableListableBeanFactory cbf = (ConfigurableListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
+//		cbf.registerResolvableDependency(DbmSession.class, new DbmSessionObjectFactory(sf));
+		
+		return sf;
+	}
+	
+	
+	/*@Bean
+	@Autowired
+	public DbmSessionImplementor dbmDao(Map<String, DataSource> dataSources) {
+		if(LangUtils.isEmpty(dataSources)){
+			throw new DbmException("no dataSource found, you must be configure a dataSource!");
+		}
+		DataSource dataSource = null;
+		String dataSourceName = getDataSourceName();
+		if(StringUtils.isBlank(dataSourceName)){
+			dataSource = dataSources.size()==1?dataSources.values().iterator().next():dataSources.get("dataSource");
+		}else{
+			dataSource = dataSources.get(dataSourceName);
+		}
+		DbmSessionImpl jfishDao = new DbmSessionImpl(dataSource, dbmInnerServiceRegistry(dataSource));
 //		jfishDao.setNamedParameterJdbcTemplate(namedJdbcTemplate(dataSource));
 		jfishDao.setDbmJdbcOperations(jdbcTemplate(dataSource));
 		jfishDao.setDataBaseConfig(defaultDbmConfig());
 		jfishDao.setPackagesToScan(getAllDbmPackageNames().toArray(new String[0]));
 		return jfishDao;
-	}
+	}*/
 	
 	private String getDataSourceName(){
 		String ds = defaultDbmConfig().getDataSource();

@@ -10,7 +10,11 @@ import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.query.DbmQuery;
 
-public interface DbmDao {
+public interface DbmSession {
+	
+	public void flush();
+	public DbmSessionFactory getSessionFactory();
+	public DbmTransaction beginTransaction();
 
 	/*****
 	 * 保存对象和关联属性的对象到数据库，<br/>

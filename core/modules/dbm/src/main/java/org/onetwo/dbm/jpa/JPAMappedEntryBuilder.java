@@ -34,7 +34,7 @@ import org.onetwo.dbm.mapping.BaseColumnInfo;
 import org.onetwo.dbm.mapping.ColumnInfo;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.JFishMappedEntry;
-import org.onetwo.dbm.mapping.JFishMappedEntryBuilder;
+import org.onetwo.dbm.mapping.DbmMappedEntryBuilder;
 import org.onetwo.dbm.mapping.JFishMappedEntryImpl;
 import org.onetwo.dbm.mapping.TableInfo;
 import org.onetwo.dbm.mapping.version.DateVersionableType;
@@ -45,7 +45,7 @@ import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 
-public class JPAMappedEntryBuilder extends JFishMappedEntryBuilder {
+public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 	
 	private static final Map<Class<?>, VersionableType<? extends Object>> versionTypes;
 	static {

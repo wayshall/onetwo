@@ -147,7 +147,7 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 	
 	protected JFishMappedEntry getMappedEntry(){
 		DbmEntityManager dem = (DbmEntityManager)this.getBaseEntityManager();
-		return dem.getDbmDao().getMappedEntryManager().getEntry(entityClass);
+		return dem.getCurrentSession().getMappedEntryManager().getEntry(entityClass);
 	}
 	
 	protected QueryBuilder createQueryBuilder(){

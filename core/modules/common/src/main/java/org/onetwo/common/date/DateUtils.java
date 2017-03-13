@@ -77,6 +77,8 @@ abstract public class DateUtils {
 	public static final String DATETIME = "yyyyMMddHHmmss";
 	public static final String TIMEONLY = "HHmmss";
 
+	public static final String DATEMILLS = "yyyyMMddHHmmssSSS";
+
 	public static final int UNIT_SECOND = 1000;
 	public static final int UNIT_MINUTE = 60 * 1000;
 	public static final int UNIT_HOUR = 60 * 60 * 1000;

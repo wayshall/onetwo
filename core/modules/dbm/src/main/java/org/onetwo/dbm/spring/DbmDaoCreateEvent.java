@@ -1,6 +1,6 @@
 package org.onetwo.dbm.spring;
 
-import org.onetwo.dbm.support.DbmDaoImplementor;
+import org.onetwo.dbm.support.DbmSessionFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationEvent;
 
@@ -14,8 +14,8 @@ public class DbmDaoCreateEvent extends ApplicationEvent {
 		this.registry = registry;
 	}
 
-	public DbmDaoImplementor getDaoImplementor(){
-		return (DbmDaoImplementor)super.getSource();
+	public DbmSessionFactory getDbmSessionFactory(){
+		return (DbmSessionFactory)super.getSource();
 	}
 
 	public BeanDefinitionRegistry getRegistry() {

@@ -15,7 +15,8 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.support.DbmDao;
+import org.onetwo.dbm.support.DbmSession;
+import org.onetwo.dbm.support.DbmSessionFactory;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	@Transactional
 	@Override
 	public int batchInsert(Collection<T> entities) {
-		return getBaseEntityManager().getRawManagerObject(DbmDao.class).batchInsert(entities);
+		return getBaseEntityManager().getRawManagerObject(DbmSessionFactory.class).getCurrentSession().batchInsert(entities);
 	}
 
 	@Transactional(readOnly=true)

@@ -8,7 +8,7 @@ public interface DbmEntityManager extends BaseEntityManager {
 	
 //	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params);
 	
-	public DbmDaoImplementor getDbmDao();
+	public DbmSessionImplementor getCurrentSession();
 	
 	public QueryBuilder createQueryBuilder(Class<?> entityClass);
 	

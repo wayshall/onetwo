@@ -6,17 +6,17 @@ import java.util.List;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.support.DbmDao;
+import org.onetwo.dbm.support.DbmSession;
 
 public class UserAutoidServiceNoSpringImpl implements UserAutoidService {
 	
 	/*@Resource
 	private UserAutoidDao userAutoidDao;*/
 
-	private DbmDao jfishDao;
+	private DbmSession jfishDao;
 	
 	
-	public UserAutoidServiceNoSpringImpl(DbmDao jfishDao) {
+	public UserAutoidServiceNoSpringImpl(DbmSession jfishDao) {
 		super();
 		this.jfishDao = jfishDao;
 	}

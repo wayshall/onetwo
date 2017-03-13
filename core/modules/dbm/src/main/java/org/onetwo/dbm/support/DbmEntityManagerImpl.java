@@ -10,13 +10,13 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.BaseEntityManagerAdapter;
 import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.DbmQueryValue;
+import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.db.builder.Querys;
-import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
+import org.onetwo.common.db.filequery.FileNamedQueryManager;
 import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
@@ -27,17 +27,16 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.exception.EntityNotFoundException;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
-import org.onetwo.dbm.mapping.DbmTypeMapping;
-import org.onetwo.dbm.query.DbmQueryWrapperImpl;
 import org.onetwo.dbm.query.DbmNamedFileQueryManagerImpl;
 import org.onetwo.dbm.query.DbmQuery;
+import org.onetwo.dbm.query.DbmQueryWrapperImpl;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 //@SuppressWarnings({"rawtypes", "unchecked"})
 public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements DbmEntityManager, InitializingBean , DisposableBean {
 
-	private DbmDaoImplementor dbmDao;
+	private DbmSessionFactory sessionFactory;
 //	private EntityManagerOperationImpl entityManagerWraper;
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 //	private ApplicationContext applicationContext;
@@ -46,18 +45,22 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 //	private boolean watchSqlFile = false;
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
-	public DbmEntityManagerImpl(DbmDaoImplementor dbmDao){
-		this.dbmDao = dbmDao;
+	public DbmEntityManagerImpl(DbmSessionFactory sessionFactory){
+		this.sessionFactory = sessionFactory;
 	}
 
 	@Override
 	public DataSource getDataSource() {
-		return this.dbmDao.getDataSource();
+		return this.sessionFactory.getDataSource();
+	}
+	
+	public DbmSessionImplementor getCurrentSession(){
+		return (DbmSessionImplementor)sessionFactory.getCurrentSession();
 	}
 	
 	@Override
 	public void update(Object entity) {
-		this.dbmDao.update(entity);
+		this.getCurrentSession().update(entity);
 //		throwIfEffectiveCountError("update", 1, rs);
 	}
 
@@ -70,12 +73,12 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public DataBase getDataBase() {
-		return dbmDao.getDialect().getDbmeta().getDataBase();
+		return sessionFactory.getDialect().getDbmeta().getDataBase();
 	}
 
 
 	public void afterPropertiesSet() throws Exception{
-		Objects.requireNonNull(dbmDao, "dbmDao");
+		Objects.requireNonNull(sessionFactory, "sessionFactory");
 		/*FileNamedQueryFactoryListener listener = SpringUtils.getBean(applicationContext, FileNamedQueryFactoryListener.class);
 		this.fileNamedQueryFactory = new JFishNamedFileQueryManagerImpl(this, jfishDao.getDialect().getDbmeta().getDb(), watchSqlFile, listener);
 		this.fileNamedQueryFactory.initQeuryFactory(this);*/
@@ -84,7 +87,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		//不在set方法里设置，避免循环依赖
 //		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
 		
-		DbmNamedSqlFileManager sqlFileManager = DbmNamedSqlFileManager.createNamedSqlFileManager(dbmDao.getDataBaseConfig().isWatchSqlFile());
+		DbmNamedSqlFileManager sqlFileManager = DbmNamedSqlFileManager.createNamedSqlFileManager(sessionFactory.getDataBaseConfig().isWatchSqlFile());
 		DbmNamedFileQueryManagerImpl fq = new DbmNamedFileQueryManagerImpl(sqlFileManager);
 		fq.setQueryProvideManager(this);
 		this.fileNamedQueryManager = fq;
@@ -96,7 +99,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 	
 	public <T> List<T> findAll(Class<T> entityClass){
-		return dbmDao.findAll(entityClass);
+		return getCurrentSession().findAll(entityClass);
 	}
 	
 	@Override
@@ -111,12 +114,12 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public <T> T findById(Class<T> entityClass, Serializable id) {
-		return getDbmDao().findById(entityClass, id);
+		return getCurrentSession().findById(entityClass, id);
 	}
 
 	@Override
 	public <T> T save(T entity) {
-		getDbmDao().save(entity);
+		getCurrentSession().save(entity);
 		/*int expectsize = LangUtils.size(entity);
 		throwIfEffectiveCountError("save", expectsize, rs);*/
 		return entity;
@@ -128,14 +131,14 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public <T> void persist(T entity) {
-		getDbmDao().insert(entity);
+		getCurrentSession().insert(entity);
 		/*int expectsize = LangUtils.size(entity);
 		throwIfEffectiveCountError("persist", expectsize, rs);*/
 	}
 
 	@Override
 	public void remove(Object entity) {
-		getDbmDao().delete(entity);
+		getCurrentSession().delete(entity);
 		/*int rs = getDbmDao().delete(entity);
 		int expectsize = LangUtils.size(entity);
 		throwIfEffectiveCountError("remove", expectsize, rs);*/
@@ -143,15 +146,15 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public int removeAll(Class<?> entityClass) {
-		return getDbmDao().deleteAll(entityClass);
+		return getCurrentSession().deleteAll(entityClass);
 	}
 
 	@Override
 	public <T> T removeById(Class<T> entityClass, Serializable id) {
-		T entity = getDbmDao().findById(entityClass, id);
+		T entity = getCurrentSession().findById(entityClass, id);
 		if(entity==null)
 			return null;
-		getDbmDao().delete(entity);
+		getCurrentSession().delete(entity);
 		/*int rs = getDbmDao().delete(entity);
 		throwIfEffectiveCountError("removeById", 1, rs);*/
 		return entity;
@@ -172,21 +175,21 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	 */
 	@Override
 	public <T> T merge(T entity) {
-		getDbmDao().dymanicUpdate(entity);
+		getCurrentSession().dymanicUpdate(entity);
 //		throwIfEffectiveCountError("merge", 1, rs);
 		return entity;
 	}
 
 	@Override
 	public DbmQueryWrapper createSQLQuery(String sqlString, Class<?> entityClass) {
-		DbmQuery jq = getDbmDao().createDbmQuery(sqlString, entityClass);
+		DbmQuery jq = getCurrentSession().createDbmQuery(sqlString, entityClass);
 		DbmQueryWrapper query = new DbmQueryWrapperImpl(jq);
 		return query;
 	}
 
 	
 	protected DbmQueryWrapper createQuery(SelectExtQuery extQuery){
-		return getDbmDao().createAsDataQuery(extQuery);
+		return getCurrentSession().createAsDataQuery(extQuery);
 	}
 
 	@Override
@@ -214,28 +217,10 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 	
 	public SQLSymbolManager getSQLSymbolManager(){
-		return this.dbmDao.getSqlSymbolManager();
+		return sessionFactory.getSqlSymbolManager();
 	}
 	
 	
-/*
-	@Override
-	public SequenceNameManager getSequenceNameManager() {
-		return jfishDao.getSequenceNameManager();
-	}*/
-
-	public DbmDaoImplementor getDbmDao() {
-		return dbmDao;
-	}
-
-	/*public void setDbmDao(DbmDaoImplementor jFishDao) {
-		this.dbmDao = jFishDao;
-	}*/
-
-/*
-	public void setSQLSymbolManager(SQLSymbolManager sQLSymbolManager) {
-		SQLSymbolManager = sQLSymbolManager;
-	}*/
 
 	@Override
 	public FileNamedQueryManager getFileNamedQueryManager() {
@@ -244,7 +229,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public SequenceNameManager getSequenceNameManager(){
-		return dbmDao.getSequenceNameManager();
+		return sessionFactory.getSequenceNameManager();
 	}
 	
 	@Override
@@ -287,17 +272,17 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 
 	@Override
 	public DbmQueryWrapper createQuery(String sql, Map<String, Object> values) {
-		return dbmDao.createAsDataQuery(sql, values);
+		return getCurrentSession().createAsDataQuery(sql, values);
 	}
 
 	@Override
 	public <T> void findPage(Class<T> entityClass, Page<T> page, Object... properties) {
-		dbmDao.findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
+		getCurrentSession().findPageByProperties(entityClass, page, CUtils.asLinkedMap(properties));
 	}
 
 	@Override
 	public <T> void findPageByProperties(Class<T> entityClass, Page<T> page, Map<Object, Object> properties) {
-		dbmDao.findPageByProperties(entityClass, page, properties);
+		getCurrentSession().findPageByProperties(entityClass, page, properties);
 	}
 
 	/*public <T> void removeList(Collection<T> entities) {
@@ -307,26 +292,26 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}*/
 	
 	public <T> List<T> findList(DbmQueryValue queryValue) {
-		return getDbmDao().findList(queryValue);
+		return getCurrentSession().findList(queryValue);
 	}
 	
 	public <T> T findUnique(DbmQueryValue queryValue) {
-		return getDbmDao().findUnique(queryValue);
+		return getCurrentSession().findUnique(queryValue);
 	}
 	
 	public <T> void findPage(Page<T> page, DbmQueryValue squery) {
-		getDbmDao().findPage(page, squery);
+		getCurrentSession().findPage(page, squery);
 	}
 
 	/****
 	 *  查找唯一记录，如果找不到返回null，如果多于一条记录，抛出异常。
 	 */
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties) {
-		return dbmDao.findUniqueByProperties(entityClass, properties);
+		return getCurrentSession().findUniqueByProperties(entityClass, properties);
 	}
 
 	public <T> T findUnique(String sql, Object... values) {
-		DbmQueryWrapper dq = dbmDao.createAsDataQuery(sql, (Class<?>)null);
+		DbmQueryWrapper dq = getCurrentSession().createAsDataQuery(sql, (Class<?>)null);
 		dq.setParameters(values);
 		return dq.getSingleResult();
 	}
@@ -341,7 +326,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	 * 返回结果不为null
 	 */
 	public <T> List<T> findListByProperties(Class<T> entityClass, Map<Object, Object> properties) {
-		return dbmDao.findByProperties(entityClass, properties);
+		return getCurrentSession().findByProperties(entityClass, properties);
 	}
 
 	public <T> List<T> findByExample(Class<T> entityClass, Object obj) {
@@ -355,19 +340,13 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 	public Number countRecordByProperties(Class<?> entityClass, Map<Object, Object> properties) {
-		return dbmDao.countByProperties(entityClass, properties);
+		return getCurrentSession().countByProperties(entityClass, properties);
 	}
-
-	/*@Override
-	public <T> Page<T> findPageByQName(String queryName, RowMapper<T> rowMapper, Page<T> page, Object... params) {
-		JFishNamedFileQueryInfo nameInfo = getFileNamedQueryFactory().getNamedQueryInfo(queryName);
-		return getFileNamedQueryFactory().findPage(nameInfo, page, params);
-	}*/
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getRawManagerObject() {
-		return (T)dbmDao;
+		return (T)sessionFactory;
 	}
 
 	@Override
@@ -389,14 +368,10 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
 	}
 
-	@Override
-	public DbmTypeMapping getSqlTypeMapping() {
-		return this.dbmDao.getDialect().getTypeMapping();
-	}
 
 	@Override
 	public RowMapperFactory getRowMapperFactory() {
-		return this.dbmDao.getRowMapperFactory();
+		return this.sessionFactory.getRowMapperFactory();
 	}
 
 }

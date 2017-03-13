@@ -13,14 +13,15 @@ import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-public interface DbmDaoImplementor extends DbmDao {
+public interface DbmSessionImplementor extends DbmSession {
 
+//	public void initialize();
+	
 	public MappedEntryManager getMappedEntryManager();
 	
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
@@ -54,8 +55,6 @@ public interface DbmDaoImplementor extends DbmDao {
 	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse);
 	
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
-	
-	public <T> RowMapper<T> getRowMapper(Class<T> type);
 	
 	public DBDialect getDialect();
 	
@@ -121,5 +120,4 @@ public interface DbmDaoImplementor extends DbmDao {
 
 	public DataSource getDataSource();
 	
-	public RowMapperFactory getRowMapperFactory();
 }

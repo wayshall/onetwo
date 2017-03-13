@@ -33,7 +33,7 @@ import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.mapping.EntityValidator;
-import org.onetwo.dbm.mapping.JFishMappedEntryBuilder;
+import org.onetwo.dbm.mapping.DbmMappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.mapping.MultiMappedEntryListener;
@@ -133,7 +133,7 @@ public class SimpleDbmInnerServiceRegistry {
 //			this.mappedEntryManager.initialize();
 			
 			List<MappedEntryBuilder> builders = LangUtils.newArrayList();
-			MappedEntryBuilder builder = new JFishMappedEntryBuilder(this);
+			MappedEntryBuilder builder = new DbmMappedEntryBuilder(this);
 			builder.initialize();
 			builders.add(builder);
 			

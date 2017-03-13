@@ -13,7 +13,7 @@ import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.support.DbmDao;
+import org.onetwo.dbm.support.DbmSessionFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	@Resource
 	private DataSource dataSource;
 	@Resource
-	private DbmDao dbmDao;
+	private DbmSessionFactory sessionFactory;
 	
 	@Resource
 	private UserAutoidDao2 userAutoidDao2;
@@ -44,7 +44,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int deleteAll(){
-		return this.dbmDao.deleteAll(UserAutoidEntity.class);
+		return this.sessionFactory.getCurrentSession().deleteAll(UserAutoidEntity.class);
 	}
 	
 	/* (non-Javadoc)
@@ -67,7 +67,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			
 			list.add(user);
 		}
-		int insertCount = dbmDao.save(list);
+		int insertCount = sessionFactory.getCurrentSession().save(list);
 		return insertCount;
 	}
 	
@@ -76,7 +76,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public List<UserAutoidEntity> findUserAutoIdEntity(String userName, Date birthday){
-		return dbmDao.findByProperties(UserAutoidEntity.class, CUtils.asMap(
+		return sessionFactory.getCurrentSession().findByProperties(UserAutoidEntity.class, CUtils.asMap(
 																"userName:like", userName,
 																"birthday", birthday
 																));
@@ -87,7 +87,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int update(List<UserAutoidEntity> users){
-		return dbmDao.update(users);
+		return sessionFactory.getCurrentSession().update(users);
 	}
 	
 	/* (non-Javadoc)
@@ -95,7 +95,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int delete(List<UserAutoidEntity> users){
-		return dbmDao.delete(users);
+		return sessionFactory.getCurrentSession().delete(users);
 	}
 	
 	public int daoBatchInsert(String userNamePrefix, UserStatus status, Date birthday, int count){ 

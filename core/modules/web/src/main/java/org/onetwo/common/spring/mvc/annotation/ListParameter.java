@@ -13,8 +13,13 @@ import java.util.List;
 @Documented
 public @interface ListParameter {
 
+	/****
+	 * the param name prefix witch will bind to list element 
+	 * @return
+	 */
 	public String value() default "";
 	
+	@SuppressWarnings("rawtypes")
 	public Class<? extends List> type() default ArrayList.class; 
 	
 }

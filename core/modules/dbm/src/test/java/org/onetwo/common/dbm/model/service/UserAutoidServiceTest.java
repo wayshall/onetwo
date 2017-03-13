@@ -12,7 +12,7 @@ import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.dbm.DbmBaseTest;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.dbm.support.Dbms;
-import org.onetwo.dbm.support.DbmDao;
+import org.onetwo.dbm.support.DbmSession;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UserAutoidServiceTest extends DbmBaseTest {
@@ -31,7 +31,7 @@ public class UserAutoidServiceTest extends DbmBaseTest {
 	@Test
 	@Transactional
 	public void testCrudNoSpring(){
-		DbmDao jfishDao = Dbms.newDao(dataSource);
+		DbmSession jfishDao = Dbms.newSessionFactory(dataSource).openSession();
 		UserAutoidService us = new UserAutoidServiceNoSpringImpl(jfishDao);
 		this._testCrud(us);
 	}

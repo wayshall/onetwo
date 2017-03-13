@@ -2,12 +2,13 @@ package org.onetwo.dbm.support;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.sql.DynamicQuery;
@@ -18,34 +19,37 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
-import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
+import org.onetwo.dbm.event.DbmDeleteEvent;
+import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
 import org.onetwo.dbm.event.DbmEvent;
 import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.event.DbmEventListener;
-import org.onetwo.dbm.event.DbmInsertEvent;
-import org.onetwo.dbm.event.DbmInsertOrUpdateEvent;
-import org.onetwo.dbm.event.DbmUpdateEvent;
-import org.onetwo.dbm.event.DbmDeleteEvent;
-import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
 import org.onetwo.dbm.event.DbmEventSource;
 import org.onetwo.dbm.event.DbmExtQueryEvent;
 import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.event.DbmFindEvent;
+import org.onetwo.dbm.event.DbmInsertEvent;
+import org.onetwo.dbm.event.DbmInsertOrUpdateEvent;
+import org.onetwo.dbm.event.DbmUpdateEvent;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.jdbc.AbstractDbmSession;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
-import org.onetwo.dbm.jdbc.JdbcDao;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.query.DbmQuery;
 import org.onetwo.dbm.query.DbmQueryImpl;
 import org.onetwo.dbm.query.DbmQueryWrapperImpl;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
 /****
@@ -55,43 +59,48 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
+public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource, DbmSession {
 
-	private DBDialect dialect;
-	private MappedEntryManager mappedEntryManager;
-//	private ApplicationContext applicationContext;
-//	private FileNamedQueryFactory fileNamedQueryFactory;
-	
-	private SQLSymbolManager sqlSymbolManager;
-	
-	
-//	private EntityManagerOperationImpl entityManagerWraper;
-	private SequenceNameManager sequenceNameManager;
-	
-	private DefaultDatabaseDialetManager databaseDialetManager;
-	protected DbmConfig dataBaseConfig;
-	
-	protected String[] packagesToScan;
-	
-	private SimpleDbmInnerServiceRegistry serviceRegistry;
-	
-	/*public JFishDaoImpl(){
-	}*/
+	final private DbmSessionFactory sessionFactory;
+	private DbmTransaction transaction;
+	final private long id;
+	final private Date timestamp = new Date();
 
-	public DbmDaoImpl(DataSource dataSource){
-		Assert.notNull(dataSource);
-		this.setDataSource(dataSource);
-	}
-
-	public DbmDaoImpl(DataSource dataSource, SimpleDbmInnerServiceRegistry serviceRegistry){
-		Assert.notNull(dataSource);
-		Assert.notNull(serviceRegistry);
-		this.setDataSource(dataSource);
-		this.serviceRegistry = serviceRegistry;
+	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id){
+		Assert.notNull(sessionFactory);
+		this.sessionFactory = sessionFactory;
+		this.id = id;
+		this.setDataSource(sessionFactory.getDataSource());
 	}
 	
-	public void setPackagesToScan(String[] packagesToScan) {
-		this.packagesToScan = packagesToScan;
+	public long getId() {
+		return id;
+	}
+
+	public DbmSessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	@Override
+	public void flush() {
+	}
+
+	@Override
+	public DbmTransaction beginTransaction() {
+		if(transaction!=null){
+			throw new DbmException("the transaction has began in this session: " + id);
+		}
+		TransactionStatus status = null;
+		boolean containerAutoCommit = false;
+		if(TransactionSynchronizationManager.isActualTransactionActive()){
+			status = TransactionAspectSupport.currentTransactionStatus();
+			containerAutoCommit = true;
+		}else{
+			TransactionDefinition definition = new DefaultTransactionDefinition();
+			status = sessionFactory.getTransactionManager().getTransaction(definition);
+		}
+		transaction = new DbmTransactionImpl(sessionFactory.getTransactionManager(), status, containerAutoCommit);
+		return transaction;
 	}
 
 	@Override
@@ -115,50 +124,8 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	}
 
 	@Override
-	protected void initDao() throws Exception {
-		/*this.serviceRegistry = new SimpleDbmInnserServiceRegistry();
-		this.serviceRegistry.initialize(getDataSource(), packagesToScan);*/
-		SimpleDbmInnerServiceRegistry serviceRegistry = getServiceRegistry();
-		Assert.notNull(serviceRegistry);
-		
-		this.dataBaseConfig = serviceRegistry.getDataBaseConfig();
-		this.databaseDialetManager = serviceRegistry.getDatabaseDialetManager();
-		this.dialect = serviceRegistry.getDialect();
-		this.mappedEntryManager = serviceRegistry.getMappedEntryManager();
-		this.sqlSymbolManager = serviceRegistry.getSqlSymbolManager();
-		this.setRowMapperFactory(serviceRegistry.getRowMapperFactory());
-		this.sequenceNameManager = serviceRegistry.getSequenceNameManager();
-		
-		if(ArrayUtils.isNotEmpty(packagesToScan)){
-			mappedEntryManager.scanPackages(packagesToScan);
-		}
-		
-	}
-	
-
-	public DefaultDatabaseDialetManager getDatabaseDialetManager() {
-		return databaseDialetManager;
-	}
-
-	public void setDatabaseDialetManager(
-			DefaultDatabaseDialetManager databaseDialetManager) {
-		this.databaseDialetManager = databaseDialetManager;
-	}
-
-	public void setMappedEntryManager(MappedEntryManager mappedEntryManager) {
-		this.mappedEntryManager = mappedEntryManager;
-	}
-
-	public void setSqlSymbolManager(SQLSymbolManager sqlSymbolManager) {
-		this.sqlSymbolManager = sqlSymbolManager;
-	}
-
-	public void setDataBaseConfig(DbmConfig dataBaseConfig) {
-		this.dataBaseConfig = dataBaseConfig;
-	}
-
 	public DbmConfig getDataBaseConfig() {
-		return dataBaseConfig;
+		return this.sessionFactory.getDataBaseConfig();
 	}
 
 	public <T> int save(T entity){
@@ -252,7 +219,7 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	}*/
 	
 	protected void fireEvents(DbmEvent event){
-		DbmEventListener[] listeners = dialect.getDbmEventListenerManager().getListeners(event.getAction());
+		DbmEventListener[] listeners = getDialect().getDbmEventListenerManager().getListeners(event.getAction());
 		for(DbmEventListener listern : listeners){
 			listern.doEvent(event);
 		}
@@ -392,11 +359,6 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	public Number count(DbmQueryValue queryValue){
 		Number count = null;
 		SingleColumnRowMapper mapper = new SingleColumnRowMapper<Number>(Number.class);
-		/*if(queryValue.isPosition()){
-			count = (Number)findUnique(queryValue.getCountSql(), queryValue.asList().toArray(), mapper);
-		}else{
-			count = (Number)findUnique(queryValue.getCountSql(), queryValue.asMap(), mapper);
-		}*/
 		count = (Number)findUnique(queryValue.getCountSql(), queryValue.asMap(), mapper);
 		return count;
 	}
@@ -453,11 +415,6 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	}
 	
 	public <T> List<T> findList(DbmQueryValue queryValue){
-		/*if(queryValue.isPosition()){
-			return findList(queryValue.getSql(), queryValue.asList().toArray(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
-		}else{
-			return findList(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
-		}*/
 		return findList(queryValue.getSql(), queryValue.asMap(), (RowMapper<T>)getDefaultRowMapper(queryValue.getResultClass(), false));
 	}
 	
@@ -468,22 +425,12 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 			return ;
 //		List<T> results = findList(queryValue);a
 		DbmQuery jq = createDbmQuery(queryValue.getSql(), queryValue.getResultClass());
-		/*if(queryValue.isNamed()){
-			jq.setParameters(queryValue.asMap());
-		}else{
-			jq.setParameters(queryValue.asList());
-		}*/
 		jq.setParameters(queryValue.asMap());
 		List<T> results = jq.setFirstResult(page.getFirst()-1).setMaxResults(page.getPageSize()).getResultList();
 		page.setResult(results);
 	}
 	
 	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse){
-		/*if(queryValue.isPosition()){
-			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rse);
-		}else{
-			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rse);
-		}*/
 		return this.dbmJdbcOperations.query(queryValue.getSql(), queryValue.asMap(), rse);
 	}
 	
@@ -491,21 +438,11 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	 * Extractor: RowMapperResultSetExtractor
 	 */
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper){
-		/*if(queryValue.isPosition()){
-			return this.getJdbcTemplate().query(queryValue.getSql(), queryValue.asList().toArray(), rowMapper);
-		}else{
-			return this.getNamedParameterJdbcTemplate().query(queryValue.getSql(), queryValue.asMap(), rowMapper);
-		}*/
 		return this.dbmJdbcOperations.query(queryValue.getSql(), queryValue.asMap(), rowMapper);
 	}
 	
 	public int executeUpdate(DbmQueryValue queryValue){
 		int update = 0;
-		/*if(queryValue.isNamed()){
-			update = this.getNamedParameterJdbcTemplate().update(queryValue.getSql(), queryValue.asMap());
-		}else{
-			update = this.getJFishJdbcTemplate().update(queryValue.getSql(), queryValue.asList().toArray());
-		}*/
 		update = this.dbmJdbcOperations.update(queryValue.getSql(), queryValue.asMap());
 		return update;
 	}
@@ -585,7 +522,7 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	}
 	
 	protected <T> RowMapper<T> getDefaultRowMapper(Class<T> type, boolean unique){
-		return (RowMapper<T>)this.getRowMapperFactory().createRowMapper(type);
+		return (RowMapper<T>)this.sessionFactory.getRowMapperFactory().createRowMapper(type);
 	}
 
 	protected RowMapper getColumnMapRowMapper() {
@@ -593,21 +530,21 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 	}
 
 	public MappedEntryManager getMappedEntryManager() {
-		return this.mappedEntryManager;
+		return this.sessionFactory.getMappedEntryManager();
 	}
 
 	public DBDialect getDialect() {
-		return dialect;
+		return this.sessionFactory.getDialect();
 	}
 
 
 	public SQLSymbolManager getSqlSymbolManager() {
-		return sqlSymbolManager;
+		return sessionFactory.getSqlSymbolManager();
 	}
 
 
 	public SequenceNameManager getSequenceNameManager() {
-		return sequenceNameManager;
+		return sessionFactory.getSequenceNameManager();
 	}
 
 	public DbmJdbcOperations getNamedParameterJdbcTemplate() {
@@ -616,15 +553,13 @@ public class DbmDaoImpl extends JdbcDao implements DbmEventSource, DbmDao {
 
 
 	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
-		SimpleDbmInnerServiceRegistry registry = this.serviceRegistry;
-		if(registry==null){
-			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource));
-		}
-		return serviceRegistry;
+		return sessionFactory.getServiceRegistry();
 	}
 
-	public void setServiceRegistry(SimpleDbmInnerServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
+	@Override
+	public String toString() {
+		String id = DateUtils.format(DateUtils.DATEMILLS, timestamp)+"-"+getId();
+		return "DbmSessionImpl [id=" + id + "]";
 	}
 
 }

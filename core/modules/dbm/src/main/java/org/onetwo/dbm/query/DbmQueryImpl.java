@@ -9,7 +9,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.dialet.DBDialect;
-import org.onetwo.dbm.support.DbmDaoImplementor;
+import org.onetwo.dbm.support.DbmSessionImplementor;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -24,7 +24,7 @@ public class DbmQueryImpl implements DbmQuery {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private DbmDaoImplementor JFishDaoImplementor;
+	private DbmSessionImplementor JFishDaoImplementor;
 	private DBDialect dbDialect;
 	private String sqlString;
 //	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
@@ -38,7 +38,7 @@ public class DbmQueryImpl implements DbmQuery {
 	private RowMapper<?> rowMapper;
 //	private QType qtype;
 
-	public DbmQueryImpl(DbmDaoImplementor jFishDao, String sqlString, Class<?> resultClass) {
+	public DbmQueryImpl(DbmSessionImplementor jFishDao, String sqlString, Class<?> resultClass) {
 		super();
 		this.JFishDaoImplementor = jFishDao;
 		this.dbDialect = this.JFishDaoImplementor.getDialect();
@@ -142,7 +142,7 @@ public class DbmQueryImpl implements DbmQuery {
 		return sql;
 	}
 
-	public DbmDaoImplementor getJFishDaoImplementor() {
+	public DbmSessionImplementor getJFishDaoImplementor() {
 		return JFishDaoImplementor;
 	}
 
