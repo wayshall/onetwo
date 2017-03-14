@@ -13,48 +13,44 @@ import org.springframework.jdbc.support.KeyHolder;
 
 public interface DbmJdbcOperations /*extends JdbcOperations*/ {
 	
-	int[] batchUpdate(String sql, Map<String, ?>[] batchValues);
-	
-	int update(String sql, Map<String, ?> paramMap) throws DataAccessException;
-	
 	<T> T query(String sql, Map<String, ?> paramMap, ResultSetExtractor<T> rse) throws DataAccessException;
 	
 	<T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException;
 	
 	<T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException;
 	
-	public Object execute(String sql, Map<String, ?> paramMap) throws DataAccessException ;
-	
-
-	
-	
-	void execute(String sql) throws DataAccessException;
-	<T> T queryForObject(String sql, Class<T> requiredType) throws DataAccessException;
+//	<T> T queryForObject(String sql, Class<T> requiredType) throws DataAccessException;
 	<T> List<T> queryForList(String sql, Class<T> elementType, Object... args) throws DataAccessException;
-	
-	int update(String sql, Object... args) throws DataAccessException;
 
 	<T> T queryForObject(String sql, Class<T> requiredType, Object... args) throws DataAccessException;
+	
 	<T> T queryForObject(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException;
 	
 	<T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException;
+
+	void execute(String sql) throws DataAccessException;
+	Object execute(String sql, Map<String, ?> paramMap) throws DataAccessException ;
 	
-	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException;
+	int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException;
 
-	public int updateWith(final SimpleArgsPreparedStatementCreator spsc) throws DataAccessException;
+	int updateWith(final SimpleArgsPreparedStatementCreator spsc) throws DataAccessException;
 
-	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final AroundPreparedStatementExecute action) throws DataAccessException;
+	int updateWith(final SimpleArgsPreparedStatementCreator spsc, final AroundPreparedStatementExecute action) throws DataAccessException;
 
-	public int updateWith(String sql, Object[] args, final AroundPreparedStatementExecute action) throws DataAccessException;
+	int updateWith(String sql, Object[] args, final AroundPreparedStatementExecute action) throws DataAccessException;
 
-//	public <T> List<T> fqueryWith(String sql, Class<T> entityClass, Object... args);
+	int[] batchUpdate(String sql, Map<String, ?>[] batchValues) throws DataAccessException;
+
+	int update(String sql, Object... args) throws DataAccessException;
 	
-	public <T> int[][] batchUpdateWith(String sql, Collection<T[]> batchArgs, int batchSize) throws DataAccessException;
+	int update(String sql, Map<String, ?> paramMap) throws DataAccessException;
 	
-	public void setDataSource(DataSource dataSource);
+	<T> int[][] batchUpdateWith(String sql, Collection<T[]> batchArgs, int batchSize) throws DataAccessException;
+	
+	void setDataSource(DataSource dataSource);
 
-	public DataSource getDataSource();
+	DataSource getDataSource();
 	
-//	public DbmNamedJdbcOperations getDbmNamedJdbcOperations();
+//	DbmNamedJdbcOperations getDbmNamedJdbcOperations();
 	
 }

@@ -7,12 +7,12 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.event.DbmInsertEvent;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 
-public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventListener {
+public class OracleBatchInsertEventListener extends OracleInsertEventListener {
 	
-	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, DbmMappedEntry entry){
 		Object entity = event.getObject();
 
 		List<Object> list = LangUtils.asList(entity);
@@ -37,7 +37,7 @@ public class JFishOracleBatchInsertEventListener extends JFishOracleInsertEventL
 	 * 每次插入的返回值都是{@linkplain java.sql.Statement#SUCCESS_NO_INFO -2}
 	 */
 	@Override
-	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
+	protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry) {
 		if(!LangUtils.isMultiple(event.getObject())){
 			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}

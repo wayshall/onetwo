@@ -65,6 +65,7 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	private DbmTransaction transaction;
 	final private long id;
 	final private Date timestamp = new Date();
+	private boolean debug;
 
 	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id){
 		Assert.notNull(sessionFactory);
@@ -75,6 +76,14 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	
 	public long getId() {
 		return id;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	public DbmSessionFactory getSessionFactory() {

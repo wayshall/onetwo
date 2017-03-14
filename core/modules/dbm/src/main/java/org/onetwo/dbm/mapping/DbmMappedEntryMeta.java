@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 
-public interface JFishMappedEntryMeta {
+public interface DbmMappedEntryMeta {
 
 	public Collection<AbstractMappedField> getFields();
 	public Collection<AbstractMappedField> getFields(DbmMappedFieldType... type);
@@ -21,7 +21,7 @@ public interface JFishMappedEntryMeta {
 	public DbmMappedField getFieldByColumnName(String columnName);
 
 
-	public JFishMappedEntryMeta addMappedField(AbstractMappedField field);
+	public DbmMappedEntryMeta addMappedField(AbstractMappedField field);
 
 	public Class<?> getEntityClass();
 	

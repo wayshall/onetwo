@@ -6,8 +6,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.event.DbmdbEventListenerManager;
-import org.onetwo.dbm.event.oracle.JFishOracleBatchInsertEventListener;
-import org.onetwo.dbm.event.oracle.JFishOracleInsertEventListener;
+import org.onetwo.dbm.event.oracle.OracleBatchInsertEventListener;
+import org.onetwo.dbm.event.oracle.OracleInsertEventListener;
 import org.onetwo.dbm.mapping.DbmTypeMapping.OracleSqlTypeMapping;
 
 
@@ -83,8 +83,8 @@ public class OracleDialect extends AbstractDBDialect {
 	@Override
 	protected void onDefaultDbEventListenerManager(DbmdbEventListenerManager listMg){
 		super.onDefaultDbEventListenerManager(listMg);
-		listMg.register(DbmEventAction.insert, LangUtils.newArrayList(new JFishOracleInsertEventListener()));
-		listMg.register(DbmEventAction.batchInsert, LangUtils.newArrayList(new JFishOracleBatchInsertEventListener()));
+		listMg.register(DbmEventAction.insert, LangUtils.newArrayList(new OracleInsertEventListener()));
+		listMg.register(DbmEventAction.batchInsert, LangUtils.newArrayList(new OracleBatchInsertEventListener()));
 	}
 	/*protected DbEventListenerManager createDefaultDbEventListenerManager() {
 		JFishdbEventListenerManager listenerManager = new JFishdbEventListenerManager() {

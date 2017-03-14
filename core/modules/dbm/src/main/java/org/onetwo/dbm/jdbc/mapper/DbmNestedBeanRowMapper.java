@@ -39,22 +39,24 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	
 	private static ConversionService conversionService = new DefaultConversionService();
 
+	public static ConversionService getConversionService() {
+		return conversionService;
+	}
+	
 	protected Class<T> mappedClass;
-	protected JdbcResultSetGetter jdbcResultSetGetter;
+	protected DbmResultMapping dbmResultMapping;
+	
 	protected ResultClassMapper resultClassMapper;
 
 	public DbmNestedBeanRowMapper(JdbcResultSetGetter jdbcResultSetGetter, Class<T> mappedClass, DbmResultMapping dbmResultMapping) {
 		this.mappedClass = mappedClass;
-		this.jdbcResultSetGetter = jdbcResultSetGetter;
+		this.dbmResultMapping = dbmResultMapping;
+		
 		ClassMapperContext context = new ClassMapperContext(jdbcResultSetGetter, dbmResultMapping);
 		ResultClassMapper resultClassMapper = new RootResultClassMapper(context, dbmResultMapping.idField(), dbmResultMapping.columnPrefix(), mappedClass);
 //		resultClassMapperMap.put(mappedClass, resultClassMapper);
 		resultClassMapper.initialize();
 		this.resultClassMapper = resultClassMapper;
-	}
-
-	public static ConversionService getConversionService() {
-		return conversionService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,6 +82,40 @@ public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 		}
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((dbmResultMapping == null) ? 0 : dbmResultMapping.hashCode());
+		result = prime * result
+				+ ((mappedClass == null) ? 0 : mappedClass.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DbmNestedBeanRowMapper<?> other = (DbmNestedBeanRowMapper<?>) obj;
+		if (dbmResultMapping == null) {
+			if (other.dbmResultMapping != null)
+				return false;
+		} else if (!dbmResultMapping.equals(other.dbmResultMapping))
+			return false;
+		if (mappedClass == null) {
+			if (other.mappedClass != null)
+				return false;
+		} else if (!mappedClass.equals(other.mappedClass))
+			return false;
+		return true;
+	}
+
 	static class DbmNestedResultData {
 		final private String property;
 		final private String id;

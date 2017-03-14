@@ -14,7 +14,7 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.springframework.transaction.annotation.Transactional;
 
 abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends BaseCrudEntityManager<T, PK> {
@@ -145,7 +145,7 @@ abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends Bas
 		}
 	}
 	
-	protected JFishMappedEntry getMappedEntry(){
+	protected DbmMappedEntry getMappedEntry(){
 		DbmEntityManager dem = (DbmEntityManager)this.getBaseEntityManager();
 		return dem.getCurrentSession().getMappedEntryManager().getEntry(entityClass);
 	}

@@ -13,7 +13,7 @@ public class MappedEntryBuilderListenerManager {
 		this.mappedEntryBuilderListener = mappedEntryBuilderListener;
 	}
 	
-	public void notifyAfterCreatedMappedEntry(JFishMappedEntry entry){
+	public void notifyAfterCreatedMappedEntry(DbmMappedEntry entry){
 		if(LangUtils.isEmpty(mappedEntryBuilderListener))
 			return ;
 		for(MappedEntryBuilderListener l : mappedEntryBuilderListener){
@@ -21,7 +21,7 @@ public class MappedEntryBuilderListenerManager {
 		}
 	}
 	
-	public void notifyAfterBuildMappedField(JFishMappedEntry entry, DbmMappedField mfield){
+	public void notifyAfterBuildMappedField(DbmMappedEntry entry, DbmMappedField mfield){
 		if(LangUtils.isEmpty(mappedEntryBuilderListener))
 			return ;
 		for(MappedEntryBuilderListener l : mappedEntryBuilderListener){
@@ -29,7 +29,7 @@ public class MappedEntryBuilderListenerManager {
 		}
 	}
 	
-	public void notifyAfterBuildMappedEntry(JFishMappedEntry entry){
+	public void notifyAfterBuildMappedEntry(DbmMappedEntry entry){
 		if(LangUtils.isEmpty(mappedEntryBuilderListener))
 			return ;
 		for(MappedEntryBuilderListener l : mappedEntryBuilderListener){

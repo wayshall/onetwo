@@ -9,8 +9,8 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.DbmMappedField;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
@@ -23,19 +23,19 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private JFishMappedEntry entry;
+	private DbmMappedEntry entry;
 	private boolean debug = false;
 //	private DbmTypeMapping sqlTypeMapping;
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	
-	public EntryRowMapper(JFishMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter) {
+	public EntryRowMapper(DbmMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter) {
 		super();
 		this.entry = entry;
 		this.jdbcResultSetGetter = jdbcResultSetGetter;
 	}
 
 
-	public EntryRowMapper(JFishMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter, boolean debug) {
+	public EntryRowMapper(DbmMappedEntry entry, JdbcResultSetGetter jdbcResultSetGetter, boolean debug) {
 		super();
 		this.entry = entry;
 		this.debug = debug;
@@ -107,32 +107,9 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 		return StringUtils.toCamel(column, false);
 	}
 	
-	/*protected void setRelatedProperty(ResultSet rs, int index, Object entity, String propName) throws SQLException{
-		Object targetEntity = entity;
-		int dot = propName.lastIndexOf(".");
-		if(dot!=-1){
-			String parentPath = propName.substring(0, dot);
-			targetEntity = ReflectUtils.getExpr(entity, parentPath, true);
-			propName = propName.substring(dot+1);
-		}
-		PropertyDescriptor prop = ReflectUtils.findProperty(targetEntity.getClass(), propName);
-		if(prop==null)
-			return ;
-		Object value = getColumnValue(rs, index, prop.getPropertyType());
-		ReflectUtils.setProperty(targetEntity, prop, value);
-//		System.out.println("tareget:" + targetEntity);
-	}*/
-
-	public JFishMappedEntry getEntry() {
+	public DbmMappedEntry getEntry() {
 		return entry;
 	}
-
-
-	/*protected Object getColumnValue(ResultSet rs, int index, Class<?> type) throws SQLException {
-		return JdbcUtils.getResultSetValue(rs, index, type);
-	}*/
-	
-
 
 	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd, int sqlType) throws SQLException {
 		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
@@ -142,23 +119,39 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 		return value;*/
 	}
 
-	/*protected Object getColumnValue(ResultSet rs, int index, PropertyDescriptor pd, int sqlType) throws SQLException {
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		JFishMappedProperty mappedProperty = new JFishMappedProperty(entry, jproperty);
-		return getColumnValue(rs, index, mappedProperty);
-	}*/
-
-
 	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, DbmMappedField field) throws SQLException {
 		return jdbcResultSetGetter.getColumnValue(rs, index, field);
 		/*TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(field.getColumnType(), field.getColumn().getSqlType());
 		Object value = typeHandler.getResult(rs, index);
 		return value;*/
 	}
-	/*protected Object getColumnValue(ResultSet rs, int index, DbmMappedField field) throws SQLException {
-		final Object value = JdbcUtils.getResultSetValue(rs, index, field.getColumnType());
-//		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		Object actualValue = DbmUtils.convertPropertyValue(field.getPropertyInfo(), value);
-		return actualValue;
-	}*/
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((entry == null) ? 0 : entry.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EntryRowMapper other = (EntryRowMapper) obj;
+		if (entry == null) {
+			if (other.entry != null)
+				return false;
+		} else if (!entry.equals(other.entry))
+			return false;
+		return true;
+	}
+	
+	
 }

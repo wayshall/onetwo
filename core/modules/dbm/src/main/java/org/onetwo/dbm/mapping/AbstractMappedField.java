@@ -22,7 +22,7 @@ import org.onetwo.dbm.utils.DbmUtils;
 @SuppressWarnings("unchecked")
 abstract public class AbstractMappedField implements DbmMappedField{
 	
-	private final JFishMappedEntry entry;
+	private final DbmMappedEntry entry;
 	
 	private String name;
 	private String label;
@@ -42,7 +42,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 	
 	private VersionableType<? extends Object> versionableType;
 	
-	public AbstractMappedField(JFishMappedEntry entry, JFishProperty propertyInfo) {
+	public AbstractMappedField(DbmMappedEntry entry, JFishProperty propertyInfo) {
 		super();
 		this.entry = entry;
 		this.propertyInfo = propertyInfo;
@@ -211,7 +211,7 @@ abstract public class AbstractMappedField implements DbmMappedField{
 
 
 	@Override
-	public JFishMappedEntry getEntry() {
+	public DbmMappedEntry getEntry() {
 		return entry;
 	}
 

@@ -29,7 +29,7 @@ public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 	public static final String QMARK = "?";
 
 	protected String alias = "this_";
-	protected JFishMappedEntryMeta entry;
+	protected DbmMappedEntryMeta entry;
 	protected String tableName;
 	protected DbmMappedField identifyField;
 	protected List<DbmMappedField> fields = LangUtils.newArrayList();
@@ -44,7 +44,7 @@ public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 	
 	private DBDialect dialet;
 	
-	EntrySQLBuilderImpl(JFishMappedEntryMeta entry, String alias, boolean namedPlaceHoder, SqlBuilderType type){
+	EntrySQLBuilderImpl(DbmMappedEntryMeta entry, String alias, boolean namedPlaceHoder, SqlBuilderType type){
 		this.entry = entry;
 		this.alias = alias;
 		this.namedPlaceHoder = namedPlaceHoder;
@@ -319,7 +319,7 @@ public class EntrySQLBuilderImpl implements EntrySQLBuilder {
 		return updateValues[valueIndex];
 	}
 
-	public JFishMappedEntryMeta getEntry() {
+	public DbmMappedEntryMeta getEntry() {
 		return entry;
 	}
 	

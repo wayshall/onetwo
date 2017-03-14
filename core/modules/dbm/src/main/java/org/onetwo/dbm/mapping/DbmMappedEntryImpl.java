@@ -9,7 +9,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
-public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
+public class DbmMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 	
 
 	private EntrySQLBuilderImpl staticInsertSqlBuilder;
@@ -22,7 +22,7 @@ public class JFishMappedEntryImpl extends AbstractJFishMappedEntryImpl implement
 	private EntrySQLBuilderImpl staticCreateSeqSqlBuilder;
 	private EntrySQLBuilderImpl staticSelectVersionSqlBuilder;
 	
-	public JFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public DbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 

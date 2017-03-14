@@ -3,7 +3,7 @@ package org.onetwo.dbm.event;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -15,7 +15,7 @@ public class DbmFindEventListener extends AbstractJFishEventListener {
 		DbmFindEvent findEvent = (DbmFindEvent) event;
 		Object entity = event.getObject();
 		DbmEventSource es = event.getEventSource();
-		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
+		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 		findEvent.setJoined(entry.isJoined());
 
 		RowMapper rowMapper = es.getSessionFactory().getRowMapper(event.getEntityClass());

@@ -30,7 +30,7 @@ public interface DbmMappedField {
 
 	public String getName();
 
-	public JFishMappedEntry getEntry();
+	public DbmMappedEntry getEntry();
 
 	public String getLabel();
 

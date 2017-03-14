@@ -79,13 +79,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		}
 	}
  
-	/*
-	public int update(String sql, Object[] args, final KeyHolder generatedKeyHolder) throws DataAccessException {
-		ArgsPreparedStatementCreator psc = new ArgsPreparedStatementCreator(sql, args);
-		return this.update(psc, generatedKeyHolder);
-	}*/
-
-
 	@Override
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException {
 		return updateWith(spsc, new AroundPreparedStatementExecute() {

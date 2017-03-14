@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.exception.EntityInsertException;
 import org.onetwo.dbm.jdbc.SimpleArgsPreparedStatementCreator;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,10 +17,10 @@ import org.springframework.jdbc.support.KeyHolder;
  */
 public class DbmInsertEventListener extends InsertEventListener{
 
-	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, DbmMappedEntry entry){
 	}
 	
-	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
+	protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry) {
 		DbmEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		

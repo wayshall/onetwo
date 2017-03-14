@@ -15,9 +15,9 @@ public interface SQLBuilderFactory {
 		createSeq
 	}
 	
-	public EntrySQLBuilder createNamed(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);
+	public EntrySQLBuilder createNamed(DbmMappedEntryMeta entry, String alias, SqlBuilderType type);
 
-	public EntrySQLBuilderImpl createQMark(JFishMappedEntryMeta entry, String alias, SqlBuilderType type);
+	public EntrySQLBuilderImpl createQMark(DbmMappedEntryMeta entry, String alias, SqlBuilderType type);
 	
 //	@Deprecated
 //	public TableSQLBuilder createNamed(String table, String alias, SqlBuilderType type);

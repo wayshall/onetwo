@@ -13,16 +13,16 @@ public class UserAutoidServiceNoSpringImpl implements UserAutoidService {
 	/*@Resource
 	private UserAutoidDao userAutoidDao;*/
 
-	private DbmSession jfishDao;
+	private DbmSession session;
 	
 	
-	public UserAutoidServiceNoSpringImpl(DbmSession jfishDao) {
+	public UserAutoidServiceNoSpringImpl(DbmSession session) {
 		super();
-		this.jfishDao = jfishDao;
+		this.session = session;
 	}
 
 	public int deleteAll(){
-		return this.jfishDao.deleteAll(UserAutoidEntity.class);
+		return this.session.deleteAll(UserAutoidEntity.class);
 	}
 	
 	public int saveList(String userNamePrefix, Date birthday, int count){ 
@@ -40,23 +40,23 @@ public class UserAutoidServiceNoSpringImpl implements UserAutoidService {
 			
 			list.add(user);
 		}
-		int insertCount = jfishDao.save(list);
+		int insertCount = session.save(list);
 		return insertCount;
 	}
 	
 	public List<UserAutoidEntity> findUserAutoIdEntity(String userName, Date birthday){
-		return jfishDao.findByProperties(UserAutoidEntity.class, CUtils.asMap(
+		return session.findByProperties(UserAutoidEntity.class, CUtils.asMap(
 																"userName:like", userName,
 																"birthday", birthday
 																));
 	}
 	
 	public int update(List<UserAutoidEntity> users){
-		return jfishDao.update(users);
+		return session.update(users);
 	}
 	
 	public int delete(List<UserAutoidEntity> users){
-		return jfishDao.delete(users);
+		return session.delete(users);
 	}
 
 }

@@ -18,7 +18,7 @@ public interface MappedEntryBuilder extends Initializable {
 	
 //	public String getCacheKey(Object entity);
 
-	public JFishMappedEntry buildMappedEntry(Object entity);
+	public DbmMappedEntry buildMappedEntry(Object entity);
 	
 //	public void afterAllBuildMappedEntry(JFishMappedEntry entry);
 	

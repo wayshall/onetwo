@@ -9,7 +9,7 @@ public class JFishMappedProperty extends AbstractMappedField {
 	
 	private DbmEnumType enumType;
 	
-	public JFishMappedProperty(JFishMappedEntry entry, JFishProperty prop){
+	public JFishMappedProperty(DbmMappedEntry entry, JFishProperty prop){
 		super(entry, prop);
 		if(prop.hasAnnotation(Enumerated.class)){
 			Enumerated enumerated = prop.getAnnotation(Enumerated.class);

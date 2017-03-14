@@ -6,7 +6,7 @@ import org.onetwo.common.db.sqlext.DefaultExtQueryDialetImpl;
 import org.onetwo.common.db.sqlext.DefaultSQLSymbolManagerImpl;
 import org.onetwo.common.db.sqlext.ExtQueryDialet;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 
 public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
@@ -28,7 +28,7 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 
 	@Override
 	public SelectExtQuery createSelectQuery(Class<?> entityClass, String alias, Map<Object, Object> properties) {
-		JFishMappedEntry entry = null;
+		DbmMappedEntry entry = null;
 		if(mappedEntryManager!=null){
 			entry = this.mappedEntryManager.getEntry(entityClass);
 		}

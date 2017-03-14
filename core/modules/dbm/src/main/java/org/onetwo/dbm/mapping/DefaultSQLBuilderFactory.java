@@ -4,7 +4,7 @@ public class DefaultSQLBuilderFactory implements SQLBuilderFactory {
 
 
 	@Override
-	public EntrySQLBuilder createNamed(JFishMappedEntryMeta entry, String alias, SqlBuilderType type){
+	public EntrySQLBuilder createNamed(DbmMappedEntryMeta entry, String alias, SqlBuilderType type){
 		return new EntrySQLBuilderImpl(entry, alias, true, type);
 	}
 	
@@ -12,7 +12,7 @@ public class DefaultSQLBuilderFactory implements SQLBuilderFactory {
 	 * TODO: 可根据type创建不同的sqlBuilder
 	 */
 	@Override
-	public EntrySQLBuilderImpl createQMark(JFishMappedEntryMeta entry, String alias, SqlBuilderType type){
+	public EntrySQLBuilderImpl createQMark(DbmMappedEntryMeta entry, String alias, SqlBuilderType type){
 		return new EntrySQLBuilderImpl(entry, alias, false, type);
 	}
 	/*@Override

@@ -23,7 +23,7 @@ import org.onetwo.dbm.annotation.DbmQueryable;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.query.JFishQueryableMappedEntryImpl;
+import org.onetwo.dbm.query.DbmQueryableMappedEntryImpl;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.slf4j.Logger;
 import org.springframework.core.Ordered;
@@ -90,9 +90,9 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	/* (non-Javadoc)
 	 * @see org.onetwo.common.db.wheel.MappedEntityManager#getEntry(java.lang.Object)
 	 */
-	public JFishMappedEntry getEntry(Object objects){
+	public DbmMappedEntry getEntry(Object objects){
 		Assert.notNull(objects, "entity can not be null");
-		JFishMappedEntry entry = null;
+		DbmMappedEntry entry = null;
 		
 		Object object = LangUtils.getFirst(objects);
 		if(!isSupported(object)){
@@ -139,13 +139,13 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	
 
 	@Override
-	public JFishMappedEntry buildMappedEntry(Object object) {
+	public DbmMappedEntry buildMappedEntry(Object object) {
 		Object entity = LangUtils.getFirst(object);
 		Class<?> entityClass = ReflectUtils.getObjectClass(entity);
 		return buildMappedEntry(entityClass, byProperty);
 	}
 	
-	protected void afterBuildMappedEntry(DBDialect dbDialect, JFishMappedEntry entry){
+	protected void afterBuildMappedEntry(DBDialect dbDialect, DbmMappedEntry entry){
 		this.checkIdStrategy(dbDialect, entry); 
 	}
 	
@@ -154,7 +154,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	 * @param dbDialect
 	 * @param entry
 	 */
-	protected void checkIdStrategy(DBDialect dbDialect, JFishMappedEntry entry){
+	protected void checkIdStrategy(DBDialect dbDialect, DbmMappedEntry entry){
 		if(entry.getIdentifyField()==null)
 			return ;
 		if(entry.getIdentifyField().getStrategyType()!=null && !dbDialect.isSupportedIdStrategy(entry.getIdentifyField().getStrategyType())){
@@ -173,8 +173,8 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
-	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo){
-		AbstractJFishMappedEntryImpl entry = null;
+	protected DbmMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo){
+		AbstractDbmMappedEntryImpl entry = null;
 		Class<?> entityClass = annotationInfo.getSourceClass();
 		DbmEntity jentity = entityClass.getAnnotation(DbmEntity.class);
 		DbmQueryable jqueryable = entityClass.getAnnotation(DbmQueryable.class);
@@ -184,14 +184,14 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 
 		TableInfo tableInfo = newTableInfo(annotationInfo);
 		if(jqueryable!=null){
-			entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+			entry = new DbmQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		}else{
 			if(jentity.type()==MappedType.QUERYABLE_ONLY){
-				entry = new JFishQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+				entry = new DbmQueryableMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}/*else if(jentity.type()==MappedType.JOINED){
 				entry = new JFishJoinedMappedEntryImpl(annotationInfo, tableInfo);
 			}*/else{
-				entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+				entry = new DbmMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 			}
 		}
 		entry.setSqlBuilderFactory(this.dialect.getSqlBuilderFactory());
@@ -204,9 +204,9 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	 * @param byProperty
 	 * @return
 	 */
-	public JFishMappedEntry buildMappedEntry(Class<?> entityClass, boolean byProperty) {
+	public DbmMappedEntry buildMappedEntry(Class<?> entityClass, boolean byProperty) {
 		AnnotationInfo annotationInfo = new AnnotationInfo(entityClass);
-		JFishMappedEntry entry = createJFishMappedEntry(annotationInfo);
+		DbmMappedEntry entry = createJFishMappedEntry(annotationInfo);
 		this.listenerManager.notifyAfterCreatedMappedEntry(entry);
 		if(byProperty){
 			entry = buildMappedEntryByProperty(entry);
@@ -222,7 +222,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 		return entry;
 	}
 
-	protected JFishMappedEntry buildMappedEntryByProperty(JFishMappedEntry entry) {
+	protected DbmMappedEntry buildMappedEntryByProperty(DbmMappedEntry entry) {
 		Class<?> entityClass = entry.getEntityClass();
 		PropertyDescriptor[] props = ReflectUtils.desribProperties(entityClass);
 		
@@ -238,7 +238,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 		return entry;
 	}
 
-	protected JFishMappedEntry buildMappedEntryByField(JFishMappedEntry entry) {
+	protected DbmMappedEntry buildMappedEntryByField(DbmMappedEntry entry) {
 		Class<?> entityClass = entry.getEntityClass();
 		Collection<Field> fields = ReflectUtils.findFieldsFilterStatic(entityClass);
 		
@@ -317,7 +317,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 		col.setPrimaryKey(true);
 	}*/
 
-	protected JFishMappedEntry buildMappedEntry(Map entity){
+	protected DbmMappedEntry buildMappedEntry(Map entity){
 		throw new IllegalArgumentException("unsupported map entity : " + entity);
 		/*JFishMappedEntry entry = new JFishMappedEntryImpl(entity.getClass());
 		//TODO
@@ -343,7 +343,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	 * @return
 	 */
 
-	protected AbstractMappedField createAndBuildMappedField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField createAndBuildMappedField(DbmMappedEntry entry, JFishProperty prop){
 		if(ignoreMappedField(prop))
 			return null;
 		
@@ -360,7 +360,7 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 		return mfield;
 	}
 	
-	protected AbstractMappedField newMappedField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newMappedField(DbmMappedEntry entry, JFishProperty prop){
 		JFishMappedProperty mfield = new JFishMappedProperty(entry, prop);
 		return mfield;
 	}

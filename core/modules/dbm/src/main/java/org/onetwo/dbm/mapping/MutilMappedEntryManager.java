@@ -34,7 +34,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	private ResourcesScanner scanner = ResourcesScanner.CLASS_CANNER;
 //	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	
-	private Cache<String, JFishMappedEntry> entryCaches = CacheBuilder.newBuilder().build();
+	private Cache<String, DbmMappedEntry> entryCaches = CacheBuilder.newBuilder().build();
 //	final private SimpleInnserServiceRegistry serviceRegistry;
 //	private DBDialect dialet;
 	private MappedEntryManagerListener mappedEntryManagerListener;
@@ -85,13 +85,13 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 				mappedEntryManagerListener.beforeBuild(this, entryClassNameList);
 			}
 			
-			JFishList<JFishMappedEntry> entryList = JFishList.create();
+			JFishList<DbmMappedEntry> entryList = JFishList.create();
 			int count = 0;
 			for(ScanedClassContext ctx : entryClassNameList){
 				String clsName = ctx.getClassName();
 				Class<?> clazz = ReflectUtils.loadClass(clsName);
 				
-				JFishMappedEntry entry = buildMappedEntry(clazz);
+				DbmMappedEntry entry = buildMappedEntry(clazz);
 				if(entry==null)
 					throw new DbmException("can not build the entity : " + clazz);
 				buildEntry(entry);
@@ -105,13 +105,13 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			}
 
 			//锁定
-			for(JFishMappedEntry entry : entryList){
+			for(DbmMappedEntry entry : entryList){
 				entry.freezing();
 			}
 		}
 
 	}
-	private void buildEntry(JFishMappedEntry entry){
+	private void buildEntry(DbmMappedEntry entry){
 		try {
 			entry.buildEntry();
 		} catch (Exception e) {
@@ -119,7 +119,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 		}
 	}
 
-	private void putInCache(String key, JFishMappedEntry entry) {
+	private void putInCache(String key, DbmMappedEntry entry) {
 		this.entryCaches.put(key, entry);
 	}
 
@@ -133,7 +133,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	}
 
 	@Override
-	public JFishMappedEntry findEntry(Object object) {
+	public DbmMappedEntry findEntry(Object object) {
 		try {
 			return getEntry(object);
 		} catch (NoMappedEntryException e) {
@@ -147,9 +147,9 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	}
 
 	@Override
-	public JFishMappedEntry getEntry(Object objects) {
+	public DbmMappedEntry getEntry(Object objects) {
 		Assert.notNull(objects, "the object arg can not be null!");
-		JFishMappedEntry entry = null;
+		DbmMappedEntry entry = null;
 		
 		Object object = LangUtils.getFirst(objects);
 		if(object==null)
@@ -176,7 +176,7 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 			if(entry==null){
 				final Object entityObject = object;
 				entry = entryCaches.get(key, ()->{
-					JFishMappedEntry value = buildMappedEntry(entityObject);
+					DbmMappedEntry value = buildMappedEntry(entityObject);
 	
 					if (value == null)
 						throw new NoMappedEntryException("can find build entry for this object, may be no mapping : " + entityObject.getClass());
@@ -225,8 +225,8 @@ public class MutilMappedEntryManager implements MappedEntryBuilder, MappedEntryM
 	}
 
 	@Override
-	public JFishMappedEntry buildMappedEntry(Object object) {
-		JFishMappedEntry entry = null;
+	public DbmMappedEntry buildMappedEntry(Object object) {
+		DbmMappedEntry entry = null;
 		for (MappedEntryBuilder em : mappedEntryBuilders) {
 			if (!em.isSupported(object))
 				continue;

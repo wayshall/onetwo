@@ -33,9 +33,9 @@ import org.onetwo.dbm.mapping.AbstractMappedField;
 import org.onetwo.dbm.mapping.BaseColumnInfo;
 import org.onetwo.dbm.mapping.ColumnInfo;
 import org.onetwo.dbm.mapping.DbmMappedField;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.DbmMappedEntryBuilder;
-import org.onetwo.dbm.mapping.JFishMappedEntryImpl;
+import org.onetwo.dbm.mapping.DbmMappedEntryImpl;
 import org.onetwo.dbm.mapping.TableInfo;
 import org.onetwo.dbm.mapping.version.DateVersionableType;
 import org.onetwo.dbm.mapping.version.IntegerVersionableType;
@@ -64,7 +64,7 @@ public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 	}
 
 	@Override
-	protected AbstractMappedField newMappedField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newMappedField(DbmMappedEntry entry, JFishProperty prop){
 		AbstractMappedField mfield = null;
 		if(prop.hasAnnotation(ManyToOne.class)){
 			mfield = this.newManyToOneField(entry, prop);
@@ -80,19 +80,19 @@ public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 		return mfield;
 	}
 	
-	protected AbstractMappedField newManyToOneField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newManyToOneField(DbmMappedEntry entry, JFishProperty prop){
 		throw new UnsupportedOperationException("unsupported many to one : " + entry.getEntityClass());
 	}
 	
-	protected AbstractMappedField newManyToManyField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newManyToManyField(DbmMappedEntry entry, JFishProperty prop){
 		throw new UnsupportedOperationException("unsupported many to many : " + entry.getEntityClass());
 	}
 	
-	protected AbstractMappedField newOneToManyField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newOneToManyField(DbmMappedEntry entry, JFishProperty prop){
 		throw new UnsupportedOperationException("unsupported one to many : " + entry.getEntityClass());
 	}
 	
-	protected AbstractMappedField newOneToOneField(JFishMappedEntry entry, JFishProperty prop){
+	protected AbstractMappedField newOneToOneField(DbmMappedEntry entry, JFishProperty prop){
 		throw new UnsupportedOperationException("unsupported one to one : " + entry.getEntityClass());
 	}
 
@@ -110,7 +110,7 @@ public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 	
 
 	@Override
-	public JFishMappedEntry buildMappedEntry(Object object) {
+	public DbmMappedEntry buildMappedEntry(Object object) {
 		Object entity = LangUtils.getFirst(object);
 		Class<?> entityClass = ReflectUtils.getObjectClass(entity);
 		Optional<Field> idField = Intro.wrap(entityClass).getAllFields()
@@ -122,9 +122,9 @@ public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 	}
 	
 	@Override
-	protected JFishMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
+	protected DbmMappedEntry createJFishMappedEntry(AnnotationInfo annotationInfo) {
 		TableInfo tableInfo = newTableInfo(annotationInfo);
-		JFishMappedEntryImpl entry = new JFishMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
+		DbmMappedEntryImpl entry = new DbmMappedEntryImpl(annotationInfo, tableInfo, serviceRegistry);
 		entry.setSqlBuilderFactory(this.getDialect().getSqlBuilderFactory());
 		return entry;
 	}

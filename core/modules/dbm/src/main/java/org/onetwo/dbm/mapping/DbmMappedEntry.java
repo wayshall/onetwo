@@ -7,7 +7,7 @@ import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.event.DbmEntityListener;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
-public interface JFishMappedEntry extends JFishMappedEntryMeta {
+public interface DbmMappedEntry extends DbmMappedEntryMeta {
 	
 	public DbmTypeMapping getSqlTypeMapping();
 

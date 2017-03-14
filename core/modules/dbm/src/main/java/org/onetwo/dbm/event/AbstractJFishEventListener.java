@@ -13,7 +13,7 @@ import org.onetwo.dbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.EntrySQLBuilder;
-import org.onetwo.dbm.mapping.JFishMappedEntryMeta;
+import org.onetwo.dbm.mapping.DbmMappedEntryMeta;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
@@ -164,7 +164,7 @@ abstract public class AbstractJFishEventListener implements DbmEventListener {
 	
 
 	protected void updateEntityVersionIfNecessary(EntrySQLBuilder builder, Object[] updateValues, Object singleEntity){
-		JFishMappedEntryMeta entry = builder.getEntry();
+		DbmMappedEntryMeta entry = builder.getEntry();
 		if(entry.isVersionControll()){
 			Object versionValue = builder.getVersionValue(updateValues);
 			entry.getVersionField().setValue(singleEntity, versionValue);

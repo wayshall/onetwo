@@ -2,7 +2,7 @@ package org.onetwo.dbm.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.Ordered;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -18,7 +18,7 @@ public class DbmTransactionSynchronization extends TransactionSynchronizationAda
 	
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
+		return DataSourceUtils.CONNECTION_SYNCHRONIZATION_ORDER - 100;
 	}
 
 	@Override
@@ -43,12 +43,10 @@ public class DbmTransactionSynchronization extends TransactionSynchronizationAda
 
 	@Override
 	public void afterCompletion(int status) {
-		if(!this.sessionHolder.isOpen()){
-			if(logger.isDebugEnabled()){
-				logger.debug("spring transaction synchronization closing for dbmSession: {}, and dbmSession flush.", this.sessionHolder.getSession());
-			}
-			TransactionSynchronizationManager.unbindResource(this.sessionHolder.getSessionFactory());
-			this.sessionHolder.reset();
+		if(logger.isDebugEnabled()){
+			logger.debug("spring transaction synchronization closing for dbmSession: {}, and dbmSession flush.", this.sessionHolder.getSession());
 		}
+		TransactionSynchronizationManager.unbindResource(this.sessionHolder.getSessionFactory());
+		this.sessionHolder.reset();
 	}
 }

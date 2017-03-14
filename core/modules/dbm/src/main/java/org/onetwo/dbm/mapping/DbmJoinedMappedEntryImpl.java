@@ -11,14 +11,14 @@ import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
  * @author way
  *
  */
-public class JFishJoinedMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
+public class DbmJoinedMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 
 	private EntrySQLBuilderImpl staticInsertSqlBuilder;
 	private EntrySQLBuilderImpl staticFetchSqlBuilder;
 	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
 	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
 	
-	public JFishJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public DbmJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	

@@ -3,7 +3,7 @@ package org.onetwo.dbm.event;
 import java.io.Serializable;
 
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 
 abstract public class InsertEventListener extends AbstractJFishEventListener {
 	
@@ -15,7 +15,7 @@ abstract public class InsertEventListener extends AbstractJFishEventListener {
 	public void onInsert(DbmInsertEvent event) {
 		Object entity = event.getObject();
 		DbmEventSource es = event.getEventSource();
-		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
+		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
 		event.setJoined(entry.isJoined());
 		
 		if(entry.isJoined()){
@@ -31,7 +31,7 @@ abstract public class InsertEventListener extends AbstractJFishEventListener {
 		this.executeJFishEntityListener(false, event, entity, entry.getEntityListeners());
 	}
 	
-	abstract protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry);
+	abstract protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry);
 
 	
 	/*protected int invokeInsert(JFishInsertEvent event, String sql, List<Object[]> args, JFishEventSource es){

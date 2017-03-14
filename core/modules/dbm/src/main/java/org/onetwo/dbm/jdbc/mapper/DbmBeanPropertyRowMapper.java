@@ -31,13 +31,14 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	protected ConversionService conversionService = new DefaultConversionService();
+//	private DbmTypeMapping sqlTypeMapping;
+	protected JdbcResultSetGetter jdbcResultSetGetter;
+	
+	
 	protected boolean primitivesDefaultedForNullValue = true;
-
 	protected Class<T> mappedClass;
 	protected Set<String> mappedProperties;
 	protected Map<String, PropertyDescriptor> mappedFields;
-//	private DbmTypeMapping sqlTypeMapping;
-	protected JdbcResultSetGetter jdbcResultSetGetter;
 
 	/*public DbmBeanPropertyRowMapper() {
 		super();
@@ -151,18 +152,59 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 		return mappedObject;
 	}
 	
-	/*protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) throws SQLException {
-		final Object value = JdbcUtils.getResultSetValue(rs, index, pd.getPropertyType());
-		JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
-		Object actualValue = DbmUtils.convertPropertyValue(jproperty, value);
-		return actualValue;
-	}*/
 	protected Object getColumnValue(ResultSetWrappingSqlRowSet rs, int index, PropertyDescriptor pd) throws SQLException {
 		return jdbcResultSetGetter.getColumnValue(rs, index, pd);
 		/*JFishProperty jproperty = Intro.wrap(pd.getWriteMethod().getDeclaringClass()).getJFishProperty(pd.getName(), false);
 		TypeHandler<?> typeHandler = sqlTypeMapping.getTypeHander(jproperty.getType(), sqlType);
 		Object value = typeHandler.getResult(rs, index);
 		return value;*/
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((mappedClass == null) ? 0 : mappedClass.hashCode());
+		result = prime * result
+				+ ((mappedFields == null) ? 0 : mappedFields.hashCode());
+		result = prime
+				* result
+				+ ((mappedProperties == null) ? 0 : mappedProperties.hashCode());
+		result = prime * result
+				+ (primitivesDefaultedForNullValue ? 1231 : 1237);
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DbmBeanPropertyRowMapper other = (DbmBeanPropertyRowMapper) obj;
+		if (mappedClass == null) {
+			if (other.mappedClass != null)
+				return false;
+		} else if (!mappedClass.equals(other.mappedClass))
+			return false;
+		if (mappedFields == null) {
+			if (other.mappedFields != null)
+				return false;
+		} else if (!mappedFields.equals(other.mappedFields))
+			return false;
+		if (mappedProperties == null) {
+			if (other.mappedProperties != null)
+				return false;
+		} else if (!mappedProperties.equals(other.mappedProperties))
+			return false;
+		if (primitivesDefaultedForNullValue != other.primitivesDefaultedForNullValue)
+			return false;
+		return true;
 	}
 
 }

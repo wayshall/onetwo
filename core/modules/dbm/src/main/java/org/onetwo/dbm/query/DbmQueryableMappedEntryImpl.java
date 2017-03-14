@@ -3,22 +3,22 @@ package org.onetwo.dbm.query;
 import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
-import org.onetwo.dbm.mapping.AbstractJFishMappedEntryImpl;
+import org.onetwo.dbm.mapping.AbstractDbmMappedEntryImpl;
 import org.onetwo.dbm.mapping.AbstractMappedField;
 import org.onetwo.dbm.mapping.EntrySQLBuilder;
 import org.onetwo.dbm.mapping.EntrySQLBuilderImpl;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.MappedType;
 import org.onetwo.dbm.mapping.TableInfo;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
-public class JFishQueryableMappedEntryImpl extends AbstractJFishMappedEntryImpl implements JFishMappedEntry {
+public class DbmQueryableMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 
 	private EntrySQLBuilderImpl staticFetchSqlBuilder;
 	
 
-	public JFishQueryableMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public DbmQueryableMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	

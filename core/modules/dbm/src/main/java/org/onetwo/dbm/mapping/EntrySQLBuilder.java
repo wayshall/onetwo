@@ -10,7 +10,7 @@ public interface EntrySQLBuilder {
 
 	public SqlBuilderType getType();
 	
-	public JFishMappedEntryMeta getEntry();
+	public DbmMappedEntryMeta getEntry();
 	
 	public Object getVersionValue(Object[] updateValues);
 

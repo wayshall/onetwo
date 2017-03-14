@@ -17,19 +17,19 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		SQLBuilder sb = sqlBuilderFactory.createQMark(entry.getTableInfo().getName(), entry.getTableInfo().getAlias(), dtype);
 		return create(entry, sb);
 	}*/
-	public static JdbcStatementContextBuilder create(DbmEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder){
+	public static JdbcStatementContextBuilder create(DbmEventAction eventAction, AbstractDbmMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder){
 		JdbcStatementContextBuilder dsql = new JdbcStatementContextBuilder(eventAction, entry, sqlBuilder);
 		return dsql;
 	}
 	
-	private AbstractJFishMappedEntryImpl entry;
+	private AbstractDbmMappedEntryImpl entry;
 	private EntrySQLBuilderImpl sqlBuilder;
 	private Map<DbmMappedField, Object> columnValues = CUtils.newLinkedHashMap();
 	private List<Object> causeValues = new ArrayList<Object>(5);
 	private List<Object[]> values;
 	private final DbmEventAction eventAction;
 
-	private JdbcStatementContextBuilder(DbmEventAction eventAction, AbstractJFishMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder) {
+	private JdbcStatementContextBuilder(DbmEventAction eventAction, AbstractDbmMappedEntryImpl entry, EntrySQLBuilderImpl sqlBuilder) {
 		super();
 		this.entry = entry;
 		this.sqlBuilder = sqlBuilder;
@@ -155,7 +155,7 @@ public class JdbcStatementContextBuilder implements JdbcStatementContext<List<Ob
 		return values.toArray();
 	}
 
-	public JFishMappedEntry getEntry() {
+	public DbmMappedEntry getEntry() {
 		return entry;
 	}
 

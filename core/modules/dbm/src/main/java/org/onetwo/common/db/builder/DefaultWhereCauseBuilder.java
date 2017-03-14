@@ -6,7 +6,7 @@ import org.onetwo.common.db.builder.QueryBuilderImpl.SubQueryBuilder;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.support.DbmSessionFactory;
 
 public class DefaultWhereCauseBuilder implements WhereCauseBuilder {
@@ -28,7 +28,7 @@ public class DefaultWhereCauseBuilder implements WhereCauseBuilder {
 	@Override
 	public DefaultWhereCauseBuilder addFields(Object entity){
 		DbmSessionFactory sf = queryBuilder.getBaseEntityManager().getRawManagerObject(DbmSessionFactory.class);
-		JFishMappedEntry entry = sf.getMappedEntryManager().getEntry(entity);
+		DbmMappedEntry entry = sf.getMappedEntryManager().getEntry(entity);
 		Map<String, Object> fieldMap = ReflectUtils.toMap(entity, (p, v)->{
 			return v!=null && entry.contains(p.getName());
 		});

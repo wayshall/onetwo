@@ -8,7 +8,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.exception.EntityNotFoundException;
 import org.onetwo.dbm.exception.EntityVersionException;
 import org.onetwo.dbm.mapping.DbmMappedField;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 
 /*****
@@ -22,7 +22,7 @@ public class DbmUpdateEventListener extends UpdateEventListener {
 	 * 不是调用批量接口更新的，取用循环插入的方式，通过调用updateSingleEntity方法来检查是否更新成功！
 	 */
 	@Override
-	protected void doUpdate(DbmUpdateEvent event, JFishMappedEntry entry){
+	protected void doUpdate(DbmUpdateEvent event, DbmMappedEntry entry){
 		Object entity = event.getObject();
 		DbmEventSource es = event.getEventSource();
 //		JdbcStatementContext<List<Object[]>> update = null;
@@ -60,7 +60,7 @@ public class DbmUpdateEventListener extends UpdateEventListener {
 	 * @param singleEntity
 	 * @return
 	 */
-	private int updateSingleEntity(boolean dymanic, DbmEventSource es, JFishMappedEntry entry, Object singleEntity){
+	private int updateSingleEntity(boolean dymanic, DbmEventSource es, DbmMappedEntry entry, Object singleEntity){
 		Object currentTransactionVersion = null;
 
 		if(entry.isVersionControll()){

@@ -120,19 +120,21 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	public DbmSession getCurrentSession(){
 		DbmSessionResourceHolder sessionHolder = (DbmSessionResourceHolder)TransactionSynchronizationManager.getResource(this);
 		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction()){
+//			sessionHolder.requested();
 			return sessionHolder.getSession();
 		}
 		if(!TransactionSynchronizationManager.isSynchronizationActive()){
 			throw new DbmException("no transaction synchronization in current thread!");
 		}
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());
+		session.setDebug(getDataBaseConfig().isLogSql());
 		sessionHolder = new DbmSessionResourceHolder(session);
 		TransactionSynchronizationManager.bindResource(this, sessionHolder);
 		
 		DbmTransactionSynchronization synchronization = new DbmTransactionSynchronization(sessionHolder);
 		sessionHolder.setSynchronizedWithTransaction(true);
 		TransactionSynchronizationManager.registerSynchronization(synchronization);
-		sessionHolder.requested();
+//		sessionHolder.requested();
 		
 		return session;
 	}
@@ -140,6 +142,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	@Override
 	public DbmSession openSession(){
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());
+		session.setDebug(getDataBaseConfig().isLogSql());
 		return session;
 	}
 	

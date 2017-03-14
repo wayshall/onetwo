@@ -31,7 +31,7 @@ import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
+abstract public class AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 	public static final Comparator SORT_BY_LENGTH = new Comparator<AbstractMappedField>() {
 
 		@Override
@@ -74,7 +74,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractJFishMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public AbstractDbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
 		this.sqlTypeMapping = serviceRegistry.getTypeMapping();
@@ -267,7 +267,7 @@ abstract public class AbstractJFishMappedEntryImpl implements JFishMappedEntry {
 	}
 	
 	@Override
-	public JFishMappedEntry addMappedField(AbstractMappedField field){
+	public DbmMappedEntry addMappedField(AbstractMappedField field){
 		Assert.notNull(field);
 		
 		this.mappedFields.put(field.getName(), field);

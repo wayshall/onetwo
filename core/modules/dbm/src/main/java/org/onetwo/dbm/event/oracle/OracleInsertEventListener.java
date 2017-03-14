@@ -9,13 +9,13 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.event.DbmEventSource;
 import org.onetwo.dbm.event.DbmInsertEvent;
 import org.onetwo.dbm.event.DbmInsertEventListener;
-import org.onetwo.dbm.mapping.JFishMappedEntry;
+import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.BadSqlGrammarException;
 
-public class JFishOracleInsertEventListener extends DbmInsertEventListener {
+public class OracleInsertEventListener extends DbmInsertEventListener {
 
-	protected void beforeDoInsert(DbmInsertEvent event, JFishMappedEntry entry){
+	protected void beforeDoInsert(DbmInsertEvent event, DbmMappedEntry entry){
 		Object entity = event.getObject();
 
 		if(entry.isEntity() && entry.getIdentifyField().isGeneratedValueFetchBeforeInsert()){
@@ -39,7 +39,7 @@ public class JFishOracleInsertEventListener extends DbmInsertEventListener {
 	 * 每次插入的返回值都是{@linkplain java.sql.Statement#SUCCESS_NO_INFO -2}
 	 */
 	@Override
-	protected void doInsert(DbmInsertEvent event, JFishMappedEntry entry) {
+	protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry) {
 		DbmEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		Object entity = event.getObject();
@@ -54,7 +54,7 @@ public class JFishOracleInsertEventListener extends DbmInsertEventListener {
 		event.setUpdateCount(count);
 	}
 	
-	public Long fetchIdentifyBeforeInsert(DbmInsertEvent event, JFishMappedEntry entry){
+	public Long fetchIdentifyBeforeInsert(DbmInsertEvent event, DbmMappedEntry entry){
 		DbmEventSource es = event.getEventSource();
 		Long id = null;
 		try {
