@@ -78,7 +78,7 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 			this.dbmNamedJdbcOperations = t;
 		}
 	}
- 
+	
 	@Override
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final KeyHolder generatedKeyHolder) throws DataAccessException {
 		return updateWith(spsc, new AroundPreparedStatementExecute() {
@@ -109,13 +109,13 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 
 	@Override
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc) throws DataAccessException {
-		final PreparedStatementSetter pss = this.newArgPreparedStatementSetter(spsc.getArgs());
+		final PreparedStatementSetter pss = this.newArgPreparedStatementSetter(spsc.getSqlParameters());
 		return update(spsc, pss);
 	}
 	
 	@Override
 	public int updateWith(final SimpleArgsPreparedStatementCreator spsc, final AroundPreparedStatementExecute action) throws DataAccessException {
-		final PreparedStatementSetter pss = this.newArgPreparedStatementSetter(spsc.getArgs());
+		final PreparedStatementSetter pss = this.newArgPreparedStatementSetter(spsc.getSqlParameters());
 		return execute(spsc, new PreparedStatementCallback<Integer>() {
 			public Integer doInPreparedStatement(PreparedStatement ps) throws SQLException {
 				try {
@@ -143,17 +143,13 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		});
 	}
 	
+	
 	@Override
 	public int updateWith(String sql, Object[] args, final AroundPreparedStatementExecute action) throws DataAccessException {
 		SimpleArgsPreparedStatementCreator psc = new SimpleArgsPreparedStatementCreator(sql, args);
 		return updateWith(psc, action);
 	}
 	
-	public int update(String sql, Object... args) throws DataAccessException {
-		return super.update(sql, args);
-	}
-	
-
 	public <T> int[][] batchUpdateWith(String sql, Collection<T[]> batchArgs, int batchSize) throws DataAccessException {
 		int[][] ups = super.batchUpdate(sql, batchArgs, batchSize, new ParameterizedPreparedStatementSetter<T[]>(){
 
@@ -168,17 +164,29 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		});
 		return ups;
 	}
-	
 
-	protected Connection getConnection(){
-		Connection con = DataSourceUtils.getConnection(getDataSource());
-		return con;
-	}
 
-	protected void closeConnection(Connection con){
-		DataSourceUtils.releaseConnection(con, getDataSource());
+	/****
+	 * for update*
+	 * to execute
+	 * 
+	 * psc SqlProvider
+	 * pss SqlParametersProvider
+	 */
+	@Override
+	protected int update(final PreparedStatementCreator psc, final PreparedStatementSetter pss) throws DataAccessException {
+		return super.update(psc, pss);
 	}
 	
+	@Override
+	public <T> T execute(PreparedStatementCreator psc, PreparedStatementCallback<T> action) throws DataAccessException {
+		return super.execute(psc, action);
+	}
+	
+	/*****
+	 * for query*
+	 * to execute
+	 */
 	public <T> T query(PreparedStatementCreator psc, final PreparedStatementSetter pss, final ResultSetExtractor<T> rse) throws DataAccessException {
 
 		Assert.notNull(rse, "ResultSetExtractor must not be null");
@@ -233,6 +241,11 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		};
 	}
 
+	
+	
+	
+	//------------------------------not dbmJdbcOperations----------------------------------//
+	
 	/****
 	 * use DbmListRowMapperResultSetExtractor instead of RowMapperResultSetExtractor 
 	 */
@@ -285,7 +298,14 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		return this.dbmNamedJdbcOperations.execute(sql, paramMap);
 	}
 	
-	
+	protected Connection getConnection(){
+		Connection con = DataSourceUtils.getConnection(getDataSource());
+		return con;
+	}
+
+	protected void closeConnection(Connection con){
+		DataSourceUtils.releaseConnection(con, getDataSource());
+	}
 	
 
 }

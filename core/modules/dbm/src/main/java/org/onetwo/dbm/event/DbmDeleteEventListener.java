@@ -8,7 +8,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 
-public class DbmDeleteEventListener extends AbstractJFishEventListener {
+public class DbmDeleteEventListener extends AbstractDbmEventListener {
 
 	@Override
 	public void doEvent(DbmEvent event) {

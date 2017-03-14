@@ -4,13 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.util.Assert;
 
-public class SimpleArgsPreparedStatementCreator implements PreparedStatementCreator, SqlProvider {
+public class SimpleArgsPreparedStatementCreator implements PreparedStatementCreator, SqlProvider, SqlParametersProvider {
 
 	private final String sql;
 	private final Object[] args;
@@ -39,7 +41,11 @@ public class SimpleArgsPreparedStatementCreator implements PreparedStatementCrea
 		return this.sql;
 	}
 
-	public Object[] getArgs() {
+	public Object[] getSqlParameters() {
 		return args;
+	}
+	
+	public List<?> getSqlParameterList() {
+		return Arrays.asList(args);
 	}
 }

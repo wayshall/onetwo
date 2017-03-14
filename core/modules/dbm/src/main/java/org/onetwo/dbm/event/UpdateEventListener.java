@@ -2,7 +2,7 @@ package org.onetwo.dbm.event;
 
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 
-abstract public class UpdateEventListener extends AbstractJFishEventListener {
+abstract public class UpdateEventListener extends AbstractDbmEventListener {
 	
 	@Override
 	public void doEvent(DbmEvent event) {

@@ -19,7 +19,7 @@ import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractJFishEventListener implements DbmEventListener {
+abstract public class AbstractDbmEventListener implements DbmEventListener {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	

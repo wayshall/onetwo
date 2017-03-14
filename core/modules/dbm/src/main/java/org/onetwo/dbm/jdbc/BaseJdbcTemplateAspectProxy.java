@@ -124,7 +124,7 @@ public class BaseJdbcTemplateAspectProxy {
 					}else if(SimpleArgsPreparedStatementCreator.class.isInstance(arg)){
 						SimpleArgsPreparedStatementCreator c = (SimpleArgsPreparedStatementCreator) arg;
 						sql = c.getSql();
-						mArgs = c.getArgs();
+						mArgs = c.getSqlParameters();
 					}else if(SqlProvider.class.isInstance(arg)){
 						sql = ((SqlProvider) arg).getSql();
 						if(PreparedStatementSetter.class.isInstance(arg)){
@@ -167,7 +167,7 @@ public class BaseJdbcTemplateAspectProxy {
 	}
 	
 	protected void printSql(String name, SimpleArgsPreparedStatementCreator spsc){
-		printSql(name, spsc.getSql(), spsc.getArgs());
+		printSql(name, spsc.getSql(), spsc.getSqlParameters());
 	}
 	
 	protected void printSql(String name, String sql, Object args){

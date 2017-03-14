@@ -7,7 +7,7 @@ import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.springframework.jdbc.core.RowMapper;
 
-public class DbmFindEventListener extends AbstractJFishEventListener {
+public class DbmFindEventListener extends AbstractDbmEventListener {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override

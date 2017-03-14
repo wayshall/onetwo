@@ -24,6 +24,11 @@ import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 import org.springframework.util.Assert;
 
+/****
+ * 复制自spring PreparedStatementCreatorFactory的实现，主要是增加JdbcStatementParameterSetter接口，统一参数设置入口
+ * @author way
+ *
+ */
 public class DbmPreparedStatementCreatorFactory {
 	/** The SQL, which won't change when the parameters change */
 	private final String sql;
@@ -175,8 +180,8 @@ public class DbmPreparedStatementCreatorFactory {
 	/**
 	 * PreparedStatementCreator implementation returned by this class.
 	 */
-	private class PreparedStatementCreatorImpl
-			implements PreparedStatementCreator, PreparedStatementSetter, SqlProvider, ParameterDisposer {
+	class PreparedStatementCreatorImpl
+			implements PreparedStatementCreator, PreparedStatementSetter, SqlProvider, ParameterDisposer, SqlParametersProvider {
 
 		private final String actualSql;
 
@@ -294,6 +299,20 @@ public class DbmPreparedStatementCreatorFactory {
 		@Override
 		public void cleanupParameters() {
 			StatementCreatorUtils.cleanupParameters(this.parameters);
+		}
+
+		public String getActualSql() {
+			return actualSql;
+		}
+
+		@Override
+		public Object[] getSqlParameters() {
+			return parameters.toArray();
+		}
+
+		@Override
+		public List<?> getSqlParameterList() {
+			return parameters;
 		}
 
 		@Override

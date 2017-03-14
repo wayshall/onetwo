@@ -4,7 +4,7 @@ import org.onetwo.dbm.exception.EntityInsertException;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.springframework.dao.DuplicateKeyException;
 
-public class DbmInsertOrUpdateListener extends AbstractJFishEventListener {
+public class DbmInsertOrUpdateListener extends AbstractDbmEventListener {
 
 	@Override
 	protected int onInnerEventWithSingle(Object entity, DbmEvent event){

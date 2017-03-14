@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 
-abstract public class InsertEventListener extends AbstractJFishEventListener {
+abstract public class InsertEventListener extends AbstractDbmEventListener {
 	
 	@Override
 	public void doEvent(DbmEvent event) {

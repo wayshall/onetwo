@@ -14,7 +14,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.exception.DbmException;
 
-public class DbmExtQueryEventListener extends AbstractJFishEventListener {
+public class DbmExtQueryEventListener extends AbstractDbmEventListener {
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -53,7 +53,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 
 /****
- * 基于jdbc的数据访问基类
  * 
  * @author weishao
  *

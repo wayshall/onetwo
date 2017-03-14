@@ -20,8 +20,24 @@ public interface DbmJdbcOperations /*extends JdbcOperations*/ {
 	<T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper) throws DataAccessException;
 	
 //	<T> T queryForObject(String sql, Class<T> requiredType) throws DataAccessException;
+	/***
+	 * 
+	 * @param sql
+	 * @param elementType SingleColumnRowMapper
+	 * @param args
+	 * @return
+	 * @throws DataAccessException
+	 */
 	<T> List<T> queryForList(String sql, Class<T> elementType, Object... args) throws DataAccessException;
 
+	/***
+	 * 
+	 * @param sql
+	 * @param requiredType SingleColumnRowMapper
+	 * @param args
+	 * @return
+	 * @throws DataAccessException
+	 */
 	<T> T queryForObject(String sql, Class<T> requiredType, Object... args) throws DataAccessException;
 	
 	<T> T queryForObject(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException;

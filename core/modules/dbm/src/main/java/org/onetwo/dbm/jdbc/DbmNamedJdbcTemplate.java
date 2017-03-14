@@ -14,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -81,9 +82,20 @@ public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate {
 			logger.info("sql: {}", sqlToUse);
 			logger.info("sql params: {}", ArrayUtils.toString(params));
 		}
+
+		/*PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sqlToUse, declaredParameters);
+		return pscf.newPreparedStatementCreator(params);*/
+		
 		return this.createPreparedStatementCreator(sqlToUse, params, declaredParameters);
 	}
 	
+	/****
+	 * 增加JdbcStatementParameterSetter接口，统一参数设置入口
+	 * @param sqlToUse
+	 * @param params
+	 * @param declaredParameters
+	 * @return
+	 */
 	protected PreparedStatementCreator createPreparedStatementCreator(String sqlToUse, Object[] params, List<SqlParameter> declaredParameters) {
 		DbmPreparedStatementCreatorFactory pscf = new DbmPreparedStatementCreatorFactory(sqlToUse, declaredParameters);
 		pscf.setParameterSetter(jdbcParameterSetter);
