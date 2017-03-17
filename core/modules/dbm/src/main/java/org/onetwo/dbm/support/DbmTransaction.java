@@ -1,9 +1,11 @@
 package org.onetwo.dbm.support;
 
+import java.sql.Connection;
+
 
 public interface DbmTransaction {
 	
-//	Connection getConnection();
+	Connection getConnection();
 	
 	void commit();
 	

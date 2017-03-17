@@ -15,6 +15,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 public class JdbcDaoRowMapperFactory implements RowMapperFactory {
+	
+	private static final HashsetRowMapper HASHSET_ROW_MAPPER = new HashsetRowMapper();
+	private static final ListRowMapper LIST_ROW_MAPPER = new ListRowMapper();
+	private static final ObjectArrayRowMapper OBJECT_ARRAY_ROW_MAPPER = new ObjectArrayRowMapper();
+	private static final CamelNameRowMapper CAMEL_NAME_ROW_MAPPER = new CamelNameRowMapper();
+	private static final UnknowTypeRowMapper UNKNOW_TYPE_ROW_MAPPER = new UnknowTypeRowMapper();
 
 	
 	public JdbcDaoRowMapperFactory() {
@@ -38,20 +44,20 @@ public class JdbcDaoRowMapperFactory implements RowMapperFactory {
 		RowMapper<?> rowMapper = null;
 		if(type==null || type==Object.class){
 //			rowMapper = new SingleColumnRowMapper(Object.class);
-			rowMapper = new UnknowTypeRowMapper();
+			rowMapper = UNKNOW_TYPE_ROW_MAPPER;
 		}else if(isSingleColumnRowType(type)){
 			//唯一，而且返回类型是简单类型，则返回单列的RowMapper
 			rowMapper = new SingleColumnRowMapper<>(type);
 		}else if(LangUtils.isMapClass(type)){
 //			rowMapper = new ColumnMapRowMapper();
-			rowMapper = new CamelNameRowMapper();
+			rowMapper = CAMEL_NAME_ROW_MAPPER;
 			
 		}else if(Object[].class==type){
-			rowMapper = new ObjectArrayRowMapper();
+			rowMapper = OBJECT_ARRAY_ROW_MAPPER;
 		}else if(List.class.isAssignableFrom(type)){
-			rowMapper = new ListRowMapper();
+			rowMapper = LIST_ROW_MAPPER;
 		}else if(Collection.class.isAssignableFrom(type)){
-			rowMapper = new HashsetRowMapper();
+			rowMapper = HASHSET_ROW_MAPPER;
 		}else{
 			rowMapper = getBeanPropertyRowMapper(type);
 		}

@@ -14,7 +14,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,22 +32,12 @@ public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate {
 
 	private JdbcStatementParameterSetter jdbcParameterSetter = new SpringStatementParameterSetter();
 
-	private boolean debug;
-	
 	public DbmNamedJdbcTemplate(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	public DbmNamedJdbcTemplate(JdbcOperations classicJdbcTemplate) {
 		super(classicJdbcTemplate);
-	}
-
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
 	}
 
 	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
@@ -78,7 +67,7 @@ public class DbmNamedJdbcTemplate extends NamedParameterJdbcTemplate {
 		List<SqlParameter> declaredParameters = NamedParameterUtils.buildSqlParameterList(parsedSql, paramSource);
 		/*DbmPreparedStatementCreatorFactory pscf = new DbmPreparedStatementCreatorFactory(sqlToUse, declaredParameters);
 		return pscf.newPreparedStatementCreator(params);*/
-		if(isDebug() || logger.isDebugEnabled()){
+		if(logger.isDebugEnabled()){
 			logger.info("sql: {}", sqlToUse);
 			logger.info("sql params: {}", ArrayUtils.toString(params));
 		}

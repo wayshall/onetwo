@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -88,6 +89,16 @@ public class Intro<T> {
 																						return new JFishPropertyInfoImpl(clazz, pd);
 																					}
 																				});
+	
+	private LoadingCache<FindMethodKey, Method> methodCaches = CacheBuilder.newBuilder()
+																		.build(new CacheLoader<FindMethodKey, Method>(){
+
+																			@Override
+																			public Method load(FindMethodKey key)throws Exception {
+																				return ReflectUtils.findMethod(false, key.clazz, key.methodName, key.paramTypes);
+																			}
+																			
+																		});
 
 	public Intro(Class<T> clazz) {
 		Assert.notNull(clazz);
@@ -579,6 +590,14 @@ public class Intro<T> {
 		}
 	}
 	
+	public Method findMethod(String name, Class<?>... paramTypes) {
+		FindMethodKey key = new FindMethodKey(clazz, name, paramTypes);
+		try {
+			return methodCaches.get(key);
+		} catch (ExecutionException e) {
+			throw new BaseException("no method["+name+"] in class: " + clazz + ", paramTypes:"+Arrays.asList(paramTypes), e);
+		}
+	}
 	public List<Class<?>> findSuperClasses() {
 		return findSuperClasses(Object.class);
 	}
@@ -618,5 +637,52 @@ public class Intro<T> {
 	
 	public String toString(){
 		return "class wraper["+clazz+"]";
+	}
+	
+	static class FindMethodKey {
+		final private Class<?> clazz;
+		final private String methodName;
+		final private Class<?>[] paramTypes;
+		public FindMethodKey(Class<?> clazz, String methodName,
+				Class<?>[] paramTypes) {
+			super();
+			this.clazz = clazz;
+			this.methodName = methodName;
+			this.paramTypes = paramTypes;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+			result = prime * result
+					+ ((methodName == null) ? 0 : methodName.hashCode());
+			result = prime * result + Arrays.hashCode(paramTypes);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FindMethodKey other = (FindMethodKey) obj;
+			if (clazz == null) {
+				if (other.clazz != null)
+					return false;
+			} else if (!clazz.equals(other.clazz))
+				return false;
+			if (methodName == null) {
+				if (other.methodName != null)
+					return false;
+			} else if (!methodName.equals(other.methodName))
+				return false;
+			if (!Arrays.equals(paramTypes, other.paramTypes))
+				return false;
+			return true;
+		}
+		
 	}
 }

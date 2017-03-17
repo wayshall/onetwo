@@ -8,16 +8,15 @@ import java.util.Collection;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-public class DbmRowMapperResultSetExtractor<C extends Collection<T>, T> implements ResultSetExtractor<C>{
+public class DbmRowMapperResultSetExtractor<C extends Collection<T>, T> extends AbstractResultSetExtractor<T> implements ResultSetExtractor<C>{
 
-	protected final RowMapper<T> rowMapper;
 	protected final int rowsExpected;
 
 	public DbmRowMapperResultSetExtractor(RowMapper<T> rowMapper) {
 		this(rowMapper, 0);
 	}
 	public DbmRowMapperResultSetExtractor(RowMapper<T> rowMapper, int rowsExpected) {
-		this.rowMapper = rowMapper;
+		super(rowMapper);
 		this.rowsExpected = rowsExpected;
 	}
 	

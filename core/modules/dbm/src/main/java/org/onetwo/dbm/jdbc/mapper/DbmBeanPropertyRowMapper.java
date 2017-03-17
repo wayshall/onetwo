@@ -186,7 +186,7 @@ public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DbmBeanPropertyRowMapper other = (DbmBeanPropertyRowMapper) obj;
+		DbmBeanPropertyRowMapper<?> other = (DbmBeanPropertyRowMapper<?>) obj;
 		if (mappedClass == null) {
 			if (other.mappedClass != null)
 				return false;

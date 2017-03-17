@@ -1,6 +1,5 @@
 package org.onetwo.ext.es;
 
-
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -241,7 +241,7 @@ public class SimpleSearchQueryBuilder {
 		this.sorts.add(sort);
 		return this;
 	}
-
+	
 	public SimpleSearchQueryBuilder when(boolean condition, Consumer<SimpleSearchQueryBuilder> consumer){
 		if(condition){
 			consumer.accept(this);
@@ -766,7 +766,7 @@ public class SimpleSearchQueryBuilder {
 
 	public class SimpleBooleanQueryBuilder<PB> extends ExtBaseQueryBuilder<PB> {
 		private BoolQueryBuilder boolQuery = boolQuery();
-		private List<SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>>> nestedQuerys = Lists.newArrayList();
+		private Map<String, SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>>> nestedQuerys = Maps.newHashMap();
 
 		private Supplier<Boolean> conditionSupplier;
 		
@@ -809,7 +809,7 @@ public class SimpleSearchQueryBuilder {
 		}
 
 		private void build(){
-			this.nestedQuerys.stream()
+			this.nestedQuerys.values().stream()
 								.filter(nested->nested.boolQuery.hasClauses())
 								.forEach(nested->{
 									nested.bool().build();
@@ -849,8 +849,11 @@ public class SimpleSearchQueryBuilder {
 		}
 
 		public SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nested(String path){
-			SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nestedBuilder = new SimpleNestedQueryBuilder<>(this, path);
-			nestedQuerys.add(nestedBuilder);
+			SimpleNestedQueryBuilder<SimpleBooleanQueryBuilder<PB>> nestedBuilder = nestedQuerys.get(path);
+			if(nestedBuilder==null){
+				nestedBuilder = new SimpleNestedQueryBuilder<>(this, path);
+				nestedQuerys.put(path, nestedBuilder);
+			}
 			return nestedBuilder;
 		}
 
@@ -1022,6 +1025,13 @@ public class SimpleSearchQueryBuilder {
 				return this;
 			}
 			return rangeBuilder(name, range->range.from(from).to(to));
+		}
+		
+		public SimpleBooleanQueryBuilder<PB> range(String name, Pair<?, ?> pair){
+			if(pair==null || (pair.getLeft()==null && pair.getRight()==null)){
+				return this;
+			}
+			return rangeBuilder(name, range->range.from(pair.getLeft()).to(pair.getRight()));
 		}
 		public SimpleBooleanQueryBuilder<PB> rangeBuilder(String name, Function<RangeQueryBuilder, RangeQueryBuilder> func){
 			RangeQueryBuilder range = new RangeQueryBuilder(name);
@@ -1217,7 +1227,7 @@ public class SimpleSearchQueryBuilder {
         }
 		public String getKey() {
 			if(key==null){
-				return (from==null?0:from.longValue())+"-"+(to==null || Double.isInfinite(to)?"":to.longValue());
+				return (from==null?0:from.longValue())+"-"+(to==null || Double.isInfinite(to)?"以上":to.longValue());
 			}
 			return key;
 		}

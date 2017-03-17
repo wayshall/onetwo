@@ -1,5 +1,6 @@
 package org.onetwo.dbm.support;
 
+import java.sql.Connection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -119,26 +121,43 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 
 	public DbmSession getCurrentSession(){
 		DbmSessionResourceHolder sessionHolder = (DbmSessionResourceHolder)TransactionSynchronizationManager.getResource(this);
-		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction()){
+		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction() 
+				&& !DataSourceUtils.isConnectionTransactional(sessionHolder.getConnection(), dataSource)){//multip ds
 //			sessionHolder.requested();
+			if(!TransactionSynchronizationManager.isSynchronizationActive()){
+				
+			}
 			return sessionHolder.getSession();
 		}
 		if(!TransactionSynchronizationManager.isSynchronizationActive()){
 			throw new DbmException("no transaction synchronization in current thread!");
 		}
+
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());
 		session.setDebug(getDataBaseConfig().isLogSql());
-		sessionHolder = new DbmSessionResourceHolder(session);
-		TransactionSynchronizationManager.bindResource(this, sessionHolder);
+		registerSessionSynchronization(session);
 		
+		return session;
+	}
+	
+	DbmTransactionSynchronization registerSessionSynchronization(DbmSession session){
+		Connection connection = DataSourceUtils.getConnection(this.dataSource);
+		//sessionHolder
+		DbmSessionResourceHolder sessionHolder = new DbmSessionResourceHolder(session, connection);
+		TransactionSynchronizationManager.bindResource(this, sessionHolder);
+		//synchronization
 		DbmTransactionSynchronization synchronization = new DbmTransactionSynchronization(sessionHolder);
 		sessionHolder.setSynchronizedWithTransaction(true);
 		TransactionSynchronizationManager.registerSynchronization(synchronization);
 //		sessionHolder.requested();
 		
-		return session;
+		return synchronization;
 	}
 	
+	
+	/***
+	 * 需要自己手动管理实务
+	 */
 	@Override
 	public DbmSession openSession(){
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());

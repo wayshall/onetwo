@@ -7,11 +7,8 @@ import java.util.Set;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.util.Assert;
 
-public class SetRowMapperResultSetExtractor<T> implements ResultSetExtractor<Set<T>>{
-
-	private final RowMapper<T> rowMapper;
+public class SetRowMapperResultSetExtractor<T> extends AbstractResultSetExtractor<T> implements ResultSetExtractor<Set<T>>{
 
 	private final int rowsExpected;
 
@@ -20,8 +17,7 @@ public class SetRowMapperResultSetExtractor<T> implements ResultSetExtractor<Set
 	}
 	
 	public SetRowMapperResultSetExtractor(RowMapper<T> rowMapper, int rowsExpected) {
-		Assert.notNull(rowMapper, "RowMapper is required");
-		this.rowMapper = rowMapper;
+		super(rowMapper);
 		this.rowsExpected = rowsExpected;
 	}
 

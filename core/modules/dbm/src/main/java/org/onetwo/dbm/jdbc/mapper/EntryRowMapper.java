@@ -144,7 +144,7 @@ public class EntryRowMapper<T> implements RowMapper<T>{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EntryRowMapper other = (EntryRowMapper) obj;
+		EntryRowMapper<?> other = (EntryRowMapper<?>) obj;
 		if (entry == null) {
 			if (other.entry != null)
 				return false;

@@ -63,7 +63,7 @@ public interface DbmJdbcOperations /*extends JdbcOperations*/ {
 	
 	<T> int[][] batchUpdateWith(String sql, Collection<T[]> batchArgs, int batchSize) throws DataAccessException;
 	
-	void setDataSource(DataSource dataSource);
+//	void setDataSource(DataSource dataSource);
 
 	DataSource getDataSource();
 	

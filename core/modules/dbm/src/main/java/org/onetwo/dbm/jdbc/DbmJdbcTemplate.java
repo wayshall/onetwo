@@ -29,10 +29,8 @@ import org.springframework.util.Assert;
 
 public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	
-	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private boolean debug;
 	protected DbmNamedJdbcTemplate dbmNamedJdbcOperations;
 	private JdbcStatementParameterSetter jdbcParameterSetter;
 
@@ -48,14 +46,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		this.jdbcParameterSetter = jdbcParameterSetter;
 	}
 	
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
 	/*public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
 		this.jdbcParameterSetter = jdbcParameterSetter;
 	}*/
@@ -68,13 +58,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 	protected void initTemplateConfig() {
 		if(dbmNamedJdbcOperations==null){
 			DbmNamedJdbcTemplate t = new DbmNamedJdbcTemplate(this);
-			t.setDebug(this.isDebug());
-			/*if(logJdbcSql){
-				AspectJProxyFactory ajf = new AspectJProxyFactory(t);
-				ajf.setProxyTargetClass(true);
-				ajf.addAspect(JFishJdbcTemplateProxy.class);
-				t = ajf.getProxy();
-			}*/
 			this.dbmNamedJdbcOperations = t;
 		}
 	}
@@ -210,10 +193,10 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 					
 					T result = rse.extractData(rsToUse);
 					
-					if(isDebug()){
-						logger.info("===>>> executeQuery cost time (milliseconds): " + (quyeryEnd-queryStart));
+					if(logger.isDebugEnabled()){
+						logger.debug("===>>> executeQuery cost time (milliseconds): " + (quyeryEnd-queryStart));
 						long costTime = System.currentTimeMillis()-quyeryEnd;
-						logger.info("===>>> extractData cost time (milliseconds): " + costTime);
+						logger.debug("===>>> extractData cost time (milliseconds): " + costTime);
 					}
 					
 					return result;

@@ -1,18 +1,35 @@
 package org.onetwo.dbm.jdbc.mapper;
 
+import java.util.concurrent.ExecutionException;
+
 import org.onetwo.common.db.dquery.DynamicMethod;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.annotation.DbmResultMapping;
 import org.onetwo.dbm.annotation.DbmRowMapper;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 public class DbmRowMapperFactory extends JdbcDaoRowMapperFactory {
 
+	private LoadingCache<Class<?>, RowMapper<?>> beanPropertyRowMapperCache = CacheBuilder.newBuilder()
+																						.build(new CacheLoader<Class<?>, RowMapper<?>>(){
+
+																							@Override
+																							public RowMapper<?> load(Class<?> type)
+																									throws Exception {
+																								return getBeanPropertyRowMapper0(type);
+																							}
+																							
+																						});
 	private MappedEntryManager mappedEntryManager;
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	
@@ -30,8 +47,14 @@ public class DbmRowMapperFactory extends JdbcDaoRowMapperFactory {
 		this.mappedEntryManager = mappedEntryManager;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected RowMapper<?> getBeanPropertyRowMapper(Class<?> type) {
+		try {
+			return beanPropertyRowMapperCache.get(type);
+		} catch (ExecutionException e) {
+			throw new DbmException("no BeanPropertyRowMapper found for type:"+type);
+		}
+	}
+	protected RowMapper<?> getBeanPropertyRowMapper0(Class<?> type) {
 		RowMapper<?> rowMapper = null;
 		if(getMappedEntryManager().isSupportedMappedEntry(type)){
 			DbmMappedEntry entry = this.getMappedEntryManager().getEntry(type);
