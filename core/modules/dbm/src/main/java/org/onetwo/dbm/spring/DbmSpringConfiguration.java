@@ -250,7 +250,6 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired
 	public DbmJdbcOperations jdbcTemplate(DataSource dataSource){
 		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
-		template.setDebug(defaultDbmConfig().isLogSql());
 
 		if(defaultDbmConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);

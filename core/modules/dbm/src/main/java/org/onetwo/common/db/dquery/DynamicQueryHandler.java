@@ -3,6 +3,7 @@ package org.onetwo.common.db.dquery;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +34,13 @@ import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
+import org.onetwo.dbm.support.DbmSession;
+import org.onetwo.dbm.support.DbmSessionFactory;
+import org.onetwo.dbm.support.DbmTransaction;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionSystemException;
 
 import com.google.common.cache.LoadingCache;
 
@@ -59,11 +65,27 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		/*if(!includeMethods.contains(method)){
-			logger.info("ignore method {} ...", method.toString());
-			return ReflectUtils.invokeMethod(method, this, args);
-		}*/
-		
+		DbmSessionFactory sf = em.getRawManagerObject(DbmSessionFactory.class);
+		if(sf.isTransactionManagerEqualsCurrentTransactionManager()){
+			return invoke0(proxy, method, args);
+		}else{
+			/*TransactionTemplate tt = new TransactionTemplate(sf.getTransactionManager());
+			tt.afterPropertiesSet();
+			return tt.execute(status->invoke0(proxy, method, args));*/
+			DbmSession session = sf.openSession();
+			DbmTransaction transaction = session.beginTransaction();
+			try {
+				Object result = invoke0(proxy, method, args);
+				transaction.commit();
+				return result;
+			} catch (Throwable e) {
+				rollbackOnException(transaction, e);
+				throw new UndeclaredThrowableException(e, "TransactionCallback threw undeclared checked exception");
+			}
+		}
+	}
+	
+	private Object invoke0(Object proxy, Method method, Object[] args) {
 		if(Object.class  == method.getDeclaringClass()) {
 			String name = method.getName();
 			if("equals".equals(name)) {
@@ -242,5 +264,24 @@ public class DynamicQueryHandler implements InvocationHandler {
 	public Object getQueryObject(){
 		return this.proxyObject;
 	}
-	
+
+	private void rollbackOnException(DbmTransaction transaction, Throwable ex) throws TransactionException {
+		logger.debug("Initiating transaction rollback on application exception", ex);
+		try {
+			transaction.rollback();
+		}
+		catch (TransactionSystemException ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			ex2.initApplicationException(ex);
+			throw ex2;
+		}
+		catch (RuntimeException ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			throw ex2;
+		}
+		catch (Error err) {
+			logger.error("Application exception overridden by rollback error", ex);
+			throw err;
+		}
+	}
 }

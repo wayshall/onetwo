@@ -115,6 +115,4 @@ public interface BaseEntityManager extends QueryProvideManager {
 	
 	public <T> T narrowAs(Class<T> entityManagerClass);
 
-	public <T> T getRawManagerObject();
-	public <T> T getRawManagerObject(Class<T> rawClass);
 }

@@ -49,9 +49,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
 /****
@@ -68,10 +66,11 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	final private Date timestamp = new Date();
 	private boolean debug;
 
-	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id){
+	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id, DbmTransaction transaction){
 		Assert.notNull(sessionFactory);
 		this.sessionFactory = sessionFactory;
 		this.id = id;
+		this.transaction = transaction;
 		this.setDataSource(sessionFactory.getDataSource());
 	}
 	
@@ -95,6 +94,10 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	public void flush() {
 	}
 
+	public DbmTransaction getTransaction() {
+		return transaction;
+	}
+
 	@Override
 	public DbmTransaction beginTransaction() {
 		return beginTransaction(null);
@@ -104,24 +107,10 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 		if(transaction!=null){
 			throw new DbmException("the transaction has began in this session: " + id);
 		}
-		TransactionStatus status = null;
-		boolean isActualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
-		if(isActualTransactionActive){
-			status = TransactionAspectSupport.currentTransactionStatus();
-		}else{
-			if(definition==null){
-				definition = new DefaultTransactionDefinition();
-			}
-			status = sessionFactory.getTransactionManager().getTransaction(definition);
-		}
-		Connection connection = DataSourceUtils.getConnection(sessionFactory.getDataSource());
-		DbmTransactionImpl transaction = new DbmTransactionImpl(sessionFactory.getTransactionManager(), status, isActualTransactionActive);
-		transaction.setConnection(connection);
+		DbmSessionFactoryImpl sf = (DbmSessionFactoryImpl) this.sessionFactory;
+		DbmTransaction transaction = sf.createNewDbmTransaction(definition);
+		sf.registerSessionSynchronization(this);
 		
-		if(!isActualTransactionActive){
-			DbmSessionFactoryImpl sf = (DbmSessionFactoryImpl) this.sessionFactory;
-			sf.registerSessionSynchronization(this);
-		}
 		this.transaction = transaction;
 		return transaction;
 	}

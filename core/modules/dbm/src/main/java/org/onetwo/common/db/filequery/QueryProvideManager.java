@@ -9,7 +9,7 @@ import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 public interface QueryProvideManager {
 
 	public DbmQueryWrapper createSQLQuery(String sqlString, Class<?> entityClass);
-	public DbmQueryWrapper createQuery(String sqlString);
+//	public DbmQueryWrapper createQuery(String sqlString);
 	public FileNamedQueryManager getFileNamedQueryManager();
 	
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
@@ -21,4 +21,7 @@ public interface QueryProvideManager {
 //	public DbmTypeMapping getSqlTypeMapping();
 
 	public RowMapperFactory getRowMapperFactory();
+
+	public <T> T getRawManagerObject();
+	public <T> T getRawManagerObject(Class<T> rawClass);
 }

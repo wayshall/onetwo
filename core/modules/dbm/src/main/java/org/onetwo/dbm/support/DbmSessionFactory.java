@@ -26,6 +26,8 @@ public interface DbmSessionFactory {
 	RowMapperFactory getRowMapperFactory();
 
 	PlatformTransactionManager getTransactionManager();
+	
+	boolean isTransactionManagerEqualsCurrentTransactionManager();
 
 	DataSource getDataSource();
 

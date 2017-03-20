@@ -33,18 +33,22 @@ public class DbmTransactionSynchronization extends TransactionSynchronizationAda
 
 	@Override
 	public void beforeCommit(boolean readOnly) {
-		if(TransactionSynchronizationManager.isActualTransactionActive()){
+		/*if(TransactionSynchronizationManager.isActualTransactionActive()){
 			if(logger.isDebugEnabled()){
 				logger.debug("spring transaction synchronization committing for dbmSession: {}, and dbmSession flush.", this.sessionHolder.getSession());
 			}
 			this.sessionHolder.getSession().flush();
+		}*/
+		if(logger.isDebugEnabled()){
+			logger.debug("spring transaction synchronization committing for dbm session: {}, and dbm session flush.", this.sessionHolder.getSession());
 		}
+		this.sessionHolder.getSession().flush();
 	}
 
 	@Override
 	public void afterCompletion(int status) {
 		if(logger.isDebugEnabled()){
-			logger.debug("spring transaction synchronization closing for dbmSession: {}, and dbmSession flush.", this.sessionHolder.getSession());
+			logger.debug("spring transaction synchronization closing for dbm session: {}, and dbm session flush.", this.sessionHolder.getSession());
 		}
 		TransactionSynchronizationManager.unbindResource(this.sessionHolder.getSessionFactory());
 		this.sessionHolder.reset();

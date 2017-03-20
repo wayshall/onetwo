@@ -50,7 +50,7 @@ final public class Dbms {
 
 																							@Override
 																							public BaseEntityManager load(DataSource ds) throws Exception {
-																								return Dbms.newEntityManager(ds);
+																								return newEntityManager(ds);
 																							}
 																							
 																						});

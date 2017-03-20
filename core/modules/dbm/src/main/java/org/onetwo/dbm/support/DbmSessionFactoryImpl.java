@@ -21,6 +21,7 @@ import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
+import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +29,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactory {
@@ -124,20 +129,62 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction() 
 				&& !DataSourceUtils.isConnectionTransactional(sessionHolder.getConnection(), dataSource)){//multip ds
 //			sessionHolder.requested();
-			if(!TransactionSynchronizationManager.isSynchronizationActive()){
-				
-			}
 			return sessionHolder.getSession();
 		}
 		if(!TransactionSynchronizationManager.isSynchronizationActive()){
 			throw new DbmException("no transaction synchronization in current thread!");
 		}
 
-		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());
+		DbmTransaction transaction = createCurrentDbmTransaction();
+		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
 		session.setDebug(getDataBaseConfig().isLogSql());
 		registerSessionSynchronization(session);
 		
 		return session;
+	}
+	
+	public boolean isTransactionManagerEqualsCurrentTransactionManager(){
+		PlatformTransactionManager ctm = DbmTransactionSupports.currentPlatformTransactionManager();
+		return transactionManager.equals(ctm);
+	}
+	
+
+	private DbmTransaction createCurrentDbmTransaction() {
+		if(!TransactionSynchronizationManager.isActualTransactionActive()){
+			throw new DbmException("no transaction active in current thread!");
+		}
+
+		//检查status的ds或者tm是否和sessionFactory的匹配
+		DbmTransaction dt = null;
+		if(isTransactionManagerEqualsCurrentTransactionManager()){
+			TransactionStatus status = TransactionAspectSupport.currentTransactionStatus();
+			Connection connection = DataSourceUtils.getConnection(getDataSource());
+			DbmTransactionImpl transaction = new DbmTransactionImpl(transactionManager, status, true);
+			transaction.setConnection(connection);
+			dt = transaction;
+			
+		}else{
+			PlatformTransactionManager ctm = DbmTransactionSupports.currentPlatformTransactionManager();
+			throw new DbmException("the transactionManager["+transactionManager+"] is not equals the transactionManager["+ctm+"] in current thread ");
+		}
+		
+		return dt;
+	}
+	
+
+	DbmTransaction createNewDbmTransaction(TransactionDefinition definition) {
+		if(definition==null){
+			definition = new DefaultTransactionDefinition();
+		}
+		TransactionStatus status = transactionManager.getTransaction(definition);
+		
+		Connection connection = DataSourceUtils.getConnection(dataSource);
+		DbmTransactionImpl transaction = new DbmTransactionImpl(transactionManager, status, false);
+		transaction.setConnection(connection);
+		
+//		registerSessionSynchronization(session);
+		
+		return transaction;
 	}
 	
 	DbmTransactionSynchronization registerSessionSynchronization(DbmSession session){
@@ -160,7 +207,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	 */
 	@Override
 	public DbmSession openSession(){
-		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId());
+		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
 		session.setDebug(getDataBaseConfig().isLogSql());
 		return session;
 	}

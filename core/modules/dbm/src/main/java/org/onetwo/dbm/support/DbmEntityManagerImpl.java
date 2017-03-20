@@ -192,10 +192,10 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		return getCurrentSession().createAsDataQuery(extQuery);
 	}
 
-	@Override
+	/*@Override
 	public DbmQueryWrapper createQuery(String sqlString) {
 		return this.createSQLQuery(sqlString, null);
-	}
+	}*/
 
 	@Override
 	public DbmQueryWrapper createNamedQuery(String name) {
