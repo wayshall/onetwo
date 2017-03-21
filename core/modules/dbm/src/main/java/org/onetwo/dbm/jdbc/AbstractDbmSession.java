@@ -22,7 +22,15 @@ public class AbstractDbmSession {
 	protected DbmJdbcOperations dbmJdbcOperations;
 	
 	protected DataSource dataSource;
-	
+	private boolean debug;
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 
 //	@Resource(name="dataSource")
 	final public void setDataSource(DataSource dataSource) {

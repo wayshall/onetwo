@@ -13,6 +13,7 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.dbm.annotation.AutoWrapTransactional;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.exception.DbmException;
@@ -23,6 +24,9 @@ import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.slf4j.Logger;
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
@@ -127,20 +131,36 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	public DbmSession getCurrentSession(){
 		DbmSessionResourceHolder sessionHolder = (DbmSessionResourceHolder)TransactionSynchronizationManager.getResource(this);
 		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction() 
-				&& !DataSourceUtils.isConnectionTransactional(sessionHolder.getConnection(), dataSource)){//multip ds
+				&& DataSourceUtils.isConnectionTransactional(sessionHolder.getConnection(), dataSource)){//multip ds
 //			sessionHolder.requested();
 			return sessionHolder.getSession();
 		}
 		if(!TransactionSynchronizationManager.isSynchronizationActive()){
 			throw new DbmException("no transaction synchronization in current thread!");
 		}
-
-		DbmTransaction transaction = createCurrentDbmTransaction();
-		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
-		session.setDebug(getDataBaseConfig().isLogSql());
-		registerSessionSynchronization(session);
 		
-		return session;
+		if(TransactionSynchronizationManager.isActualTransactionActive()){//transaction exists in current thread
+			if(DbmTransactionSupports.currentTransactionInfo()==null){//can not get transaction info from thread
+				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+				session.setDebug(getDataBaseConfig().isLogSql());
+				registerSessionSynchronization(session);
+				return session;
+				
+			}else if(isTransactionManagerEqualsCurrentTransactionManager()){//if same transactionManager, use current thread TransactionStatus
+				DbmTransaction transaction = createCurrentDbmTransaction();
+				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
+				session.setDebug(getDataBaseConfig().isLogSql());
+				registerSessionSynchronization(session);
+				return session;
+			}
+		}
+		
+		//otherwise, create new session with DbmSessionTransactionAdvisor
+		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+		session.setDebug(getDataBaseConfig().isLogSql());
+		ProxyFactory pf = new ProxyFactory(session);
+		pf.addAdvisor(new DbmSessionTransactionAdvisor(session));
+		return (DbmSession)pf.getProxy();
 	}
 	
 	public boolean isTransactionManagerEqualsCurrentTransactionManager(){
@@ -150,9 +170,9 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 
 	private DbmTransaction createCurrentDbmTransaction() {
-		if(!TransactionSynchronizationManager.isActualTransactionActive()){
+		/*if(!TransactionSynchronizationManager.isActualTransactionActive()){
 			throw new DbmException("no transaction active in current thread!");
-		}
+		}*/
 
 		//检查status的ds或者tm是否和sessionFactory的匹配
 		DbmTransaction dt = null;

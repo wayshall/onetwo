@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.db.dquery.annotation.DbmPackages;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -34,16 +35,22 @@ import org.onetwo.dbm.exception.UpdateCountException;
 import org.onetwo.dbm.jdbc.JdbcUtils;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.spring.EnableDbm;
+import org.onetwo.dbm.support.DbmTransaction;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 
 final public class DbmUtils {
+	
+	private static final Logger logger = JFishLoggerFactory.getLogger(DbmUtils.class);
 	
 	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
 		if(effectiveCount!=expectCount)
@@ -245,6 +252,27 @@ final public class DbmUtils {
 			}
 		});
 		return packageNames;
+	}
+	
+
+	public static void rollbackOnException(DbmTransaction transaction, Throwable ex) throws TransactionException {
+		logger.debug("Initiating transaction rollback on application exception", ex);
+		try {
+			transaction.rollback();
+		}
+		catch (TransactionSystemException ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			ex2.initApplicationException(ex);
+			throw ex2;
+		}
+		catch (RuntimeException ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			throw ex2;
+		}
+		catch (Error err) {
+			logger.error("Application exception overridden by rollback error", ex);
+			throw err;
+		}
 	}
 
 	private DbmUtils(){

@@ -1,7 +1,6 @@
 package org.onetwo.dbm.support;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -46,10 +45,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 
 /****
@@ -64,7 +60,6 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	private DbmTransaction transaction;
 	final private long id;
 	final private Date timestamp = new Date();
-	private boolean debug;
 
 	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id, DbmTransaction transaction){
 		Assert.notNull(sessionFactory);
@@ -76,14 +71,6 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 	
 	public long getId() {
 		return id;
-	}
-
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
 	}
 
 	public DbmSessionFactory getSessionFactory() {

@@ -22,7 +22,7 @@ import org.onetwo.dbm.support.DbmEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 //@TransactionConfiguration(defaultRollback=true)
-@Transactional
+//@Transactional
 public class DbmDaoTest extends DbmBaseTest {
 	
 	@Resource
