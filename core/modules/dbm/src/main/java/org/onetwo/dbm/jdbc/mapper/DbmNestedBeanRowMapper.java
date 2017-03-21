@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
@@ -37,7 +36,7 @@ import com.google.common.collect.Maps;
 public class DbmNestedBeanRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private static ConversionService conversionService = new DefaultConversionService();
+	private static ConversionService conversionService = DbmUtils.CONVERSION_SERVICE;
 
 	public static ConversionService getConversionService() {
 		return conversionService;

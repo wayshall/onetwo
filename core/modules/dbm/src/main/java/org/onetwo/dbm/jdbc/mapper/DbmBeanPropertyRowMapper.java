@@ -19,7 +19,6 @@ import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
@@ -30,7 +29,7 @@ import org.springframework.util.ClassUtils;
 public class DbmBeanPropertyRowMapper<T> implements RowMapper<T> {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	protected ConversionService conversionService = new DefaultConversionService();
+	protected ConversionService conversionService = DbmUtils.CONVERSION_SERVICE;
 //	private DbmTypeMapping sqlTypeMapping;
 	protected JdbcResultSetGetter jdbcResultSetGetter;
 	

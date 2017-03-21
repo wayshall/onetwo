@@ -10,15 +10,15 @@ abstract public class AbstractDbmQueryWrapper implements DbmQueryWrapper{
 	
 	public static final int PARAMETER_START_INDEX = 0;
 
-	private boolean cacheable;
+//	private boolean cacheable;
 
-	public boolean isCacheable() {
+	/*public boolean isCacheable() {
 		return cacheable;
 	}
 
 	public void setCacheable(boolean cacheable) {
 		this.cacheable = cacheable;
-	}
+	}*/
 	
 	@SuppressWarnings("rawtypes")
 	public DbmQueryWrapper setPageParameter(final Page page) {

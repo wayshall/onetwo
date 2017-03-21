@@ -39,9 +39,9 @@ public interface DbmQueryWrapper {
 	
 //	public DataQuery setFlushMode(FlushModeType flushMode);
 	
-	public boolean isCacheable();
+	/*public boolean isCacheable();
 
-	public void setCacheable(boolean cacheable);
+	public void setCacheable(boolean cacheable);*/
 	
 	public void setRowMapper(RowMapper<?> rowMapper);
 }

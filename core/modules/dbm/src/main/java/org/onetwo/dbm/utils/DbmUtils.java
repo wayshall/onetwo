@@ -39,6 +39,8 @@ import org.onetwo.dbm.support.DbmTransaction;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
@@ -51,6 +53,8 @@ import com.google.common.collect.Lists;
 final public class DbmUtils {
 	
 	private static final Logger logger = JFishLoggerFactory.getLogger(DbmUtils.class);
+	
+	public final static ConversionService CONVERSION_SERVICE = new DefaultConversionService();
 	
 	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
 		if(effectiveCount!=expectCount)
