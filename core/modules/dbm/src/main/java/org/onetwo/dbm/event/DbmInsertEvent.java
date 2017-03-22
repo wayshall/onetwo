@@ -1,10 +1,10 @@
 package org.onetwo.dbm.event;
 
-public class DbmInsertEvent extends DbmEvent{
+public class DbmInsertEvent extends DbmSessionEvent{
 
 	private boolean fetchId;
 	
-	public DbmInsertEvent(Object object, DbmEventSource eventSource) {
+	public DbmInsertEvent(Object object, DbmSessionEventSource eventSource) {
 		super(object, DbmEventAction.insert, eventSource);
 	}
 

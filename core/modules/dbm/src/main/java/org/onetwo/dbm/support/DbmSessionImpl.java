@@ -21,10 +21,10 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.event.DbmDeleteEvent;
 import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
-import org.onetwo.dbm.event.DbmEvent;
+import org.onetwo.dbm.event.DbmSessionEvent;
 import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.event.DbmEventListener;
-import org.onetwo.dbm.event.DbmEventSource;
+import org.onetwo.dbm.event.DbmSessionEventSource;
 import org.onetwo.dbm.event.DbmExtQueryEvent;
 import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.event.DbmFindEvent;
@@ -54,7 +54,7 @@ import org.springframework.transaction.TransactionDefinition;
  *
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource, DbmSession {
+public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEventSource, DbmSession {
 
 	final private DbmSessionFactory sessionFactory;
 	private DbmTransaction transaction;
@@ -217,7 +217,7 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmEventSource
 		}
 	}*/
 	
-	protected void fireEvents(DbmEvent event){
+	protected void fireEvents(DbmSessionEvent event){
 		DbmEventListener[] listeners = getDialect().getDbmEventListenerManager().getListeners(event.getAction());
 		for(DbmEventListener listern : listeners){
 			listern.doEvent(event);

@@ -44,7 +44,7 @@ public class CachingDbmJdbcOperations implements DbmJdbcOperations {
 		try {
 			return (T)queryCache.get(key, valueLoader);
 		} catch (ExecutionException e) {
-			throw new DbmException("get data error for :"+method.getName(), e);a
+			throw new DbmException("execute error for :"+method.getName(), e);a
 		}
 	};
 	  

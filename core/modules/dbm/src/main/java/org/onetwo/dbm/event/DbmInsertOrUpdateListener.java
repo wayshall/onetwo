@@ -7,9 +7,9 @@ import org.springframework.dao.DuplicateKeyException;
 public class DbmInsertOrUpdateListener extends AbstractDbmEventListener {
 
 	@Override
-	protected int onInnerEventWithSingle(Object entity, DbmEvent event){
+	protected int onInnerEventWithSingle(Object entity, DbmSessionEvent event){
 		DbmInsertOrUpdateEvent insertOrUpdate = (DbmInsertOrUpdateEvent)event;
-		DbmEventSource es = insertOrUpdate.getEventSource();
+		DbmSessionEventSource es = insertOrUpdate.getEventSource();
 		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
 		int updateCount = 0;
 		

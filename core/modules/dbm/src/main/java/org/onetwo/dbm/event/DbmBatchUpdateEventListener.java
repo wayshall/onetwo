@@ -7,7 +7,7 @@ import org.onetwo.dbm.mapping.DbmMappedEntry;
 public class DbmBatchUpdateEventListener extends UpdateEventListener {
 
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		DbmMappedEntry entry = event.getEventSource().getMappedEntryManager().findEntry(event.getObject());
 		if(entry==null){
 			event.setUpdateCount(0);

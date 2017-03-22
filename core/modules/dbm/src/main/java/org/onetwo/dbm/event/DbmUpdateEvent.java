@@ -1,11 +1,11 @@
 package org.onetwo.dbm.event;
 
-public class DbmUpdateEvent extends DbmEvent{
+public class DbmUpdateEvent extends DbmSessionEvent{
 
 	private boolean dynamicUpdate;
 //	private boolean batchUpdate;
 	
-	public DbmUpdateEvent(Object object, DbmEventSource eventSource) {
+	public DbmUpdateEvent(Object object, DbmSessionEventSource eventSource) {
 		super(object, DbmEventAction.update, eventSource);
 	}
 	

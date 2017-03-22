@@ -14,6 +14,9 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
+import org.springframework.jdbc.core.CallableStatementCallback;
+import org.springframework.jdbc.core.CallableStatementCreator;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
@@ -22,6 +25,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
@@ -161,11 +165,6 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 		return super.update(psc, pss);
 	}
 	
-	@Override
-	public <T> T execute(PreparedStatementCreator psc, PreparedStatementCallback<T> action) throws DataAccessException {
-		return super.execute(psc, action);
-	}
-	
 	/*****
 	 * for query*
 	 * to execute
@@ -209,6 +208,31 @@ public class DbmJdbcTemplate extends JdbcTemplate implements DbmJdbcOperations {
 				}
 			}
 		});
+	}
+	
+
+	//-------------------------------------------------------------------------
+	// final execute call
+	//-------------------------------------------------------------------------
+	
+	@Override
+	public <T> T execute(PreparedStatementCreator psc, PreparedStatementCallback<T> action) throws DataAccessException {
+		return super.execute(psc, action);
+	}
+	
+	@Override
+	public <T> T execute(CallableStatementCreator csc, CallableStatementCallback<T> action) throws DataAccessException {
+		return super.execute(csc, action);
+	}
+	@Override
+	public <T> T execute(StatementCallback<T> action) throws DataAccessException {
+		return super.execute(action);
+	}
+	
+
+	@Override
+	public <T> T execute(ConnectionCallback<T> action) throws DataAccessException {
+		return super.execute(action);
 	}
 
 	@Override

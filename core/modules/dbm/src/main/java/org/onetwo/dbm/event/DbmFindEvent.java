@@ -1,8 +1,8 @@
 package org.onetwo.dbm.event;
 
-public class DbmFindEvent extends DbmEvent {
+public class DbmFindEvent extends DbmSessionEvent {
 
-	public DbmFindEvent(Object object, DbmEventSource eventSource) {
+	public DbmFindEvent(Object object, DbmSessionEventSource eventSource) {
 		super(object, DbmEventAction.find, eventSource);
 	}
 

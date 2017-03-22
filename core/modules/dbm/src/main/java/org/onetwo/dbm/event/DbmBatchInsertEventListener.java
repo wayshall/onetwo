@@ -33,12 +33,12 @@ public class DbmBatchInsertEventListener extends DbmInsertEventListener{
 		if(!LangUtils.isMultiple(entity)){
 			throw new DbmException("batch insert's args must be a Collection or Array!");
 		}
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		this.batchInsert(event, entry, es);
 	}
 	
-	protected void batchInsert(DbmInsertEvent event, DbmMappedEntry entry, DbmEventSource es) {
+	protected void batchInsert(DbmInsertEvent event, DbmMappedEntry entry, DbmSessionEventSource es) {
 		Object entity = event.getObject();
 		
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);

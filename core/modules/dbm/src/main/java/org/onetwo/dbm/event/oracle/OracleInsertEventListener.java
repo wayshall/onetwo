@@ -6,7 +6,7 @@ import java.util.List;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.event.DbmEventSource;
+import org.onetwo.dbm.event.DbmSessionEventSource;
 import org.onetwo.dbm.event.DbmInsertEvent;
 import org.onetwo.dbm.event.DbmInsertEventListener;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
@@ -40,7 +40,7 @@ public class OracleInsertEventListener extends DbmInsertEventListener {
 	 */
 	@Override
 	protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry) {
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		Object entity = event.getObject();
 		JdbcStatementContext<List<Object[]>> insert = entry.makeInsert(entity);
@@ -55,7 +55,7 @@ public class OracleInsertEventListener extends DbmInsertEventListener {
 	}
 	
 	public Long fetchIdentifyBeforeInsert(DbmInsertEvent event, DbmMappedEntry entry){
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		Long id = null;
 		try {
 			id = es.getDbmJdbcOperations().queryForObject(entry.getStaticSeqSql(), Long.class);

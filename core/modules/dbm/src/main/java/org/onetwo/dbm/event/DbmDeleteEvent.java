@@ -1,6 +1,6 @@
 package org.onetwo.dbm.event;
 
-public class DbmDeleteEvent extends DbmEvent{
+public class DbmDeleteEvent extends DbmSessionEvent{
 	
 	public static enum DeleteType {
 		byEntity,
@@ -8,7 +8,7 @@ public class DbmDeleteEvent extends DbmEvent{
 		deleteAll,
 	}
 
-	public DbmDeleteEvent(Object object, DbmEventSource eventSource) {
+	public DbmDeleteEvent(Object object, DbmSessionEventSource eventSource) {
 		super(object, DbmEventAction.delete, eventSource);
 	}
 

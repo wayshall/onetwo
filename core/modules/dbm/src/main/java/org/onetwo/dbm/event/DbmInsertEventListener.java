@@ -21,7 +21,7 @@ public class DbmInsertEventListener extends InsertEventListener{
 	}
 	
 	protected void doInsert(DbmInsertEvent event, DbmMappedEntry entry) {
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		this.beforeDoInsert(event, entry);
 		
 		Object entity = event.getObject();

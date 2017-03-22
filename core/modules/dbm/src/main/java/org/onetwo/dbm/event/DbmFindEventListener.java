@@ -11,10 +11,10 @@ public class DbmFindEventListener extends AbstractDbmEventListener {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		DbmFindEvent findEvent = (DbmFindEvent) event;
 		Object entity = event.getObject();
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 		findEvent.setJoined(entry.isJoined());
 

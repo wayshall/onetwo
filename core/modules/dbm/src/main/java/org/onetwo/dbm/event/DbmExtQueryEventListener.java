@@ -18,9 +18,9 @@ public class DbmExtQueryEventListener extends AbstractDbmEventListener {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		DbmExtQueryEvent extEvent = (DbmExtQueryEvent) event;
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 //		JFishMappedEntry entry = es.getMappedEntryManager().getEntry(event.getEntityClass());
 
 		Map<Object, Object> props = extEvent.getProperties()==null?new LinkedHashMap<Object, Object>():extEvent.getProperties();

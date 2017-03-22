@@ -6,23 +6,11 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.RegisterManager;
 import org.onetwo.common.utils.map.CollectionMap;
 
-public class DbmdbEventListenerManager implements RegisterManager<DbmEventAction, Collection<DbmEventListener>> /*DbEventListenerManager*/ {
+public class DbmEventListenerManager implements RegisterManager<DbmEventAction, Collection<DbmEventListener>> /*DbEventListenerManager*/ {
 
 //	private Map<JFishEventAction, ?> registerMap = ArrayListMultimap.create();
 	private static final DbmEventListener[] EMPTY_LISTENERS = new DbmEventListener[]{};
 	private CollectionMap<DbmEventAction, DbmEventListener> registerMap = CollectionMap.newListMap();
-	
-	/*protected JFishInsertOrUpdateListener[] insertOrUpdateEventListeners;
-	protected InsertEventListener[] insertEventListeners;
-	protected InsertEventListener[] batchInsertEventListeners;
-	protected UpdateEventListener[] batchUpdateEventListeners;
-	protected UpdateEventListener[] updateEventListeners;
-	protected JFishDeleteEventListener[] deleteEventListeners;
-	protected JFishFindEventListener[] findEventListeners;
-	protected JFishExtQueryEventListener[] extQueryEventListeners;*/
-
-//	protected JFishEventListener[] saveRefEventListeners;
-//	protected JFishEventListener[] dropRefEventListeners;
 	
 
 	@Override
@@ -30,7 +18,21 @@ public class DbmdbEventListenerManager implements RegisterManager<DbmEventAction
 		return registerMap;
 	}
 	
-	public DbmdbEventListenerManager registerListeners(DbmEventAction action, DbmEventListener...eventListeners){
+	/****
+	 * 覆盖已存在的listerner
+	 */
+	public DbmEventListenerManager register(DbmEventAction action, Collection<DbmEventListener> eventListeners){
+		getRegister().put(action, eventListeners);
+		return this;
+	}
+	
+	/****
+	 * 不覆盖已存在的listerner
+	 * @param action
+	 * @param eventListeners
+	 * @return
+	 */
+	public DbmEventListenerManager registerListeners(DbmEventAction action, DbmEventListener...eventListeners){
 		registerMap.putElements(action, eventListeners);
 		return this;
 	}

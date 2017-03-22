@@ -5,7 +5,7 @@ import java.util.Map;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.dbm.support.DbmSessionImplementor;
 
-public interface DbmEventSource extends DbmSessionImplementor {
+public interface DbmSessionEventSource extends DbmSessionImplementor {
 	
 	/*********
 	 * 保存对象和关联属性的对象到数据库，<br/>

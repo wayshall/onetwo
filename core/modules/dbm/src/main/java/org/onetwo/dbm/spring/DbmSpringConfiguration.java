@@ -18,7 +18,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
-import org.onetwo.dbm.jdbc.DbmJdbcTemplateAspectProxy;
+import org.onetwo.dbm.jdbc.DbmJdbcOperationsProxy;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.support.DbmEntityManager;
@@ -253,8 +253,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 
 		if(defaultDbmConfig().isLogSql()){
 			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
-			ajf.setProxyTargetClass(false);
-			ajf.addAspect(DbmJdbcTemplateAspectProxy.class);
+			ajf.setProxyTargetClass(true);
+			ajf.addAspect(DbmJdbcOperationsProxy.class);
 //			ajf.setTargetClass(JFishJdbcOperations.class);
 			return ajf.getProxy();
 		}

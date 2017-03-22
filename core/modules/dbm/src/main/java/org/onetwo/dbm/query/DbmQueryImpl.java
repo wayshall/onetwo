@@ -24,7 +24,7 @@ public class DbmQueryImpl implements DbmQuery {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private DbmSessionImplementor JFishDaoImplementor;
+	private DbmSessionImplementor dbmSessionImplementor;
 	private DBDialect dbDialect;
 	private String sqlString;
 //	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
@@ -38,10 +38,10 @@ public class DbmQueryImpl implements DbmQuery {
 	private RowMapper<?> rowMapper;
 //	private QType qtype;
 
-	public DbmQueryImpl(DbmSessionImplementor jFishDao, String sqlString, Class<?> resultClass) {
+	public DbmQueryImpl(DbmSessionImplementor session, String sqlString, Class<?> resultClass) {
 		super();
-		this.JFishDaoImplementor = jFishDao;
-		this.dbDialect = this.JFishDaoImplementor.getDialect();
+		this.dbmSessionImplementor = session;
+		this.dbDialect = this.dbmSessionImplementor.getDialect();
 		this.sqlString = sqlString;
 		this.resultClass = resultClass;
 		this.parameters = DbmQueryValue.create(null);
@@ -95,9 +95,9 @@ public class DbmQueryImpl implements DbmQuery {
 		T result = null;
 		
 		if(rowMapper!=null){
-			result = (T)this.JFishDaoImplementor.findUnique(params, rowMapper);
+			result = (T)this.dbmSessionImplementor.findUnique(params, rowMapper);
 		}else{
-			result = this.JFishDaoImplementor.findUnique(params);
+			result = this.dbmSessionImplementor.findUnique(params);
 		}
 		
 //		UtilTimerStack.pop(fname);
@@ -121,9 +121,9 @@ public class DbmQueryImpl implements DbmQuery {
 		DbmQueryValue params = this.getActualParameters(sql);
 		
 		if(rowMapper!=null){
-			result = (List<T>)this.JFishDaoImplementor.findList(params, rowMapper);
+			result = (List<T>)this.dbmSessionImplementor.findList(params, rowMapper);
 		}else{
-			result = this.JFishDaoImplementor.findList(params);
+			result = this.dbmSessionImplementor.findList(params);
 		}
 		
 		UtilTimerStack.pop(fname);
@@ -143,7 +143,7 @@ public class DbmQueryImpl implements DbmQuery {
 	}
 
 	public DbmSessionImplementor getJFishDaoImplementor() {
-		return JFishDaoImplementor;
+		return dbmSessionImplementor;
 	}
 
 	public DbmQueryValue getActualParameters(String sql) {
@@ -211,7 +211,7 @@ public class DbmQueryImpl implements DbmQuery {
 		int result = 0;
 		String sql = getSqlString();
 		DbmQueryValue params = getActualParameters(sql);
-		result = JFishDaoImplementor.executeUpdate(params);
+		result = dbmSessionImplementor.executeUpdate(params);
 		return result;
 	}
 

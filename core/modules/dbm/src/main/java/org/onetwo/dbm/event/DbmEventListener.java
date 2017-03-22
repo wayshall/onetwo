@@ -1,7 +1,7 @@
 package org.onetwo.dbm.event;
 
-public interface DbmEventListener {
+public interface DbmEventListener<S, E extends DbmEvent<S>> {
 	
-	public void doEvent(DbmEvent event);
+	public void doEvent(E event);
 
 }

@@ -8,13 +8,13 @@ import org.onetwo.dbm.mapping.DbmMappedEntry;
 abstract public class InsertEventListener extends AbstractDbmEventListener {
 	
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		this.onInsert((DbmInsertEvent)event);
 	}
 
 	public void onInsert(DbmInsertEvent event) {
 		Object entity = event.getObject();
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
 		event.setJoined(entry.isJoined());
 		

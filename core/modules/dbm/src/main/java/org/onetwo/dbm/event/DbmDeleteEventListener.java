@@ -11,10 +11,10 @@ import org.onetwo.dbm.mapping.JdbcStatementContext;
 public class DbmDeleteEventListener extends AbstractDbmEventListener {
 
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		DbmDeleteEvent deleteEvent = (DbmDeleteEvent) event;
 		Object entity = event.getObject();
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		DbmMappedEntry entry = es.getMappedEntryManager().findEntry(entity!=null?entity:event.getEntityClass());
 		if(entry==null)
 			entry = es.getMappedEntryManager().findEntry(entity);
@@ -25,7 +25,7 @@ public class DbmDeleteEventListener extends AbstractDbmEventListener {
 	
 	public void doDelete(DbmDeleteEvent deleteEvent, DbmMappedEntry entry){
 		Object entity = deleteEvent.getObject();
-		DbmEventSource es = deleteEvent.getEventSource();
+		DbmSessionEventSource es = deleteEvent.getEventSource();
 		
 		int count = 0;
 		if(deleteEvent.isDeleteAll()){

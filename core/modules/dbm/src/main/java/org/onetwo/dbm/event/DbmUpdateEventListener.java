@@ -24,7 +24,7 @@ public class DbmUpdateEventListener extends UpdateEventListener {
 	@Override
 	protected void doUpdate(DbmUpdateEvent event, DbmMappedEntry entry){
 		Object entity = event.getObject();
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 //		JdbcStatementContext<List<Object[]>> update = null;
 		int count = 0;
 		if(event.isDynamicUpdate()){
@@ -60,7 +60,7 @@ public class DbmUpdateEventListener extends UpdateEventListener {
 	 * @param singleEntity
 	 * @return
 	 */
-	private int updateSingleEntity(boolean dymanic, DbmEventSource es, DbmMappedEntry entry, Object singleEntity){
+	private int updateSingleEntity(boolean dymanic, DbmSessionEventSource es, DbmMappedEntry entry, Object singleEntity){
 		Object currentTransactionVersion = null;
 
 		if(entry.isVersionControll()){

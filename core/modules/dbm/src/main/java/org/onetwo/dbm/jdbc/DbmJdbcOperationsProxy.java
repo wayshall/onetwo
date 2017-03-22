@@ -1,11 +1,13 @@
 package org.onetwo.dbm.jdbc;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.onetwo.common.expr.HolderCharsScanner;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -20,18 +22,54 @@ import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 
 @Aspect
-public class DbmJdbcTemplateAspectProxy {
+public class DbmJdbcOperationsProxy {
 	
-	protected final Logger logger = JFishLoggerFactory.getLogger(DbmJdbcTemplateAspectProxy.class);
+	static enum JdbcOperationEventType {
+		UPDATE,
+		QUERY,
+		UNKNOW,
+	}
+	
+	public static class JdbcOperationEvent {
+		final private JdbcOperationEventType event;
+		final private ProceedingJoinPoint source;
+		
+		public JdbcOperationEvent(JdbcOperationEventType event, ProceedingJoinPoint source){
+			this.event = event;
+			this.source = source;
+		}
+		
+		public Method getSourceMethod(){
+			MethodSignature ms = (MethodSignature)this.source.getSignature();
+			return ms.getMethod();
+		}
+		public Object[] getMethodArgs(){
+			return this.source.getArgs();
+		}
+		
+	}
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(DbmJdbcOperationsProxy.class);
 	protected final HolderCharsScanner holder = HolderCharsScanner.holder("?");
 //	private static boolean printRelacedSql = true;
 	
+	final private EventBus jdbcOperationEventBus = new EventBus("DbmJdbcOperationsEventBus");
 	
 	
 	@Around("org.onetwo.dbm.jdbc.DbmPointcut.jdbcTemplate()")
 	public Object doProfiling(ProceedingJoinPoint pjp) throws Throwable{
+		MethodSignature ms = (MethodSignature)pjp.getSignature();
+		String methodName = ms.getMethod().getName().toLowerCase();
+		JdbcOperationEvent event = null;
+		if(methodName.startsWith("query")){
+			event = new JdbcOperationEvent(JdbcOperationEventType.QUERY, pjp);
+		}else if(methodName.contains("update")){
+			event = new JdbcOperationEvent(JdbcOperationEventType.UPDATE, pjp);
+		}
+		jdbcOperationEventBus.post(event);
 //		JdbcContext jdbcContext = JdbcContextHolder.getJdbcContex();
 		Context context = new Context(System.currentTimeMillis());
 //		context.setJdbcCountInThread(jdbcContext.increaseOperationCount());

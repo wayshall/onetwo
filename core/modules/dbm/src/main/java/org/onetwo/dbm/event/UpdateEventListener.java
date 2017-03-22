@@ -5,9 +5,9 @@ import org.onetwo.dbm.mapping.DbmMappedEntry;
 abstract public class UpdateEventListener extends AbstractDbmEventListener {
 	
 	@Override
-	public void doEvent(DbmEvent event) {
+	public void doEvent(DbmSessionEvent event) {
 		Object entity = event.getObject();
-		DbmEventSource es = event.getEventSource();
+		DbmSessionEventSource es = event.getEventSource();
 		DbmMappedEntry entry = es.getMappedEntryManager().getEntry(entity);
 
 		this.executeJFishEntityListener(true, event, entity, entry.getEntityListeners());

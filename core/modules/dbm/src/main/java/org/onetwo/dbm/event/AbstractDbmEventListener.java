@@ -11,26 +11,21 @@ import org.onetwo.common.utils.MathUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.SimpleArgsPreparedStatementCreator;
 import org.onetwo.dbm.mapping.DbmConfig;
+import org.onetwo.dbm.mapping.DbmMappedEntryMeta;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.EntrySQLBuilder;
-import org.onetwo.dbm.mapping.DbmMappedEntryMeta;
 import org.onetwo.dbm.mapping.JdbcStatementContext;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractDbmEventListener implements DbmEventListener {
+abstract public class AbstractDbmEventListener implements DbmEventListener<DbmSessionEventSource, DbmSessionEvent> {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	/*public void doEvent(JFishEvent event){
-		this.onInnerEvent(event);
-	}*/
 	
-//	abstract protected void onInnerEvent(JFishEvent event);
-	
-
-	public void doEvent(DbmEvent event) {
+	@Override
+	public void doEvent(DbmSessionEvent event) {
 		Object entity = event.getObject();
 		DbmInsertOrUpdateEvent insertOrUpdate = (DbmInsertOrUpdateEvent) event;
 
@@ -49,7 +44,7 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 		event.setUpdateCount(updateCount);
 	}
 	
-	protected int onInnerEventWithSingle(Object entity, DbmEvent event){
+	protected int onInnerEventWithSingle(Object entity, DbmSessionEvent event){
 		throw new UnsupportedOperationException();
 	}
 	
@@ -69,13 +64,13 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 		}
 	}
 	
-	protected boolean isUseBatchUpdate(List<?> args, DbmEventSource es){
+	protected boolean isUseBatchUpdate(List<?> args, DbmSessionEventSource es){
 		DbmConfig dbc = es.getDataBaseConfig();
 		return dbc.isUseBatchOptimize() && args.size()>dbc.getUseBatchThreshold();
 	}
 	
 
-	protected int executeJdbcUpdate(DbmEventSource es, JdbcStatementContext<List<Object[]>> update){
+	protected int executeJdbcUpdate(DbmSessionEventSource es, JdbcStatementContext<List<Object[]>> update){
 		return executeJdbcUpdate(update.getSql(), update.getValue(), es);
 	}
 	
@@ -87,7 +82,7 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 	 * @param es
 	 * @return
 	 */
-	protected int executeJdbcUpdate(String sql, List<Object[]> args, DbmEventSource es){
+	protected int executeJdbcUpdate(String sql, List<Object[]> args, DbmSessionEventSource es){
 		return executeJdbcUpdate(isUseBatchUpdate(args, es), sql, args, es);
 	}
 	
@@ -99,7 +94,7 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 	 * @param es
 	 * @return
 	 */
-	protected int executeJdbcUpdate(boolean userBatch, String sql, List<Object[]> args, DbmEventSource es){
+	protected int executeJdbcUpdate(boolean userBatch, String sql, List<Object[]> args, DbmSessionEventSource es){
 		int count = 0;
 		if(userBatch){
 //			int[] ups = es.getJFishJdbcTemplate().batchUpdate(sql, args);
@@ -123,7 +118,7 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 	}
 	
 
-	protected void executeJFishEntityListener(boolean before, DbmEvent jfishEvent, Object entities, List<DbmEntityListener> listeners){
+	protected void executeJFishEntityListener(boolean before, DbmSessionEvent jfishEvent, Object entities, List<DbmEntityListener> listeners){
 		if(LangUtils.isMultiple(entities)){
 			List<?> list = LangUtils.asList(entities);
 			for(Object entity : list){
@@ -134,7 +129,7 @@ abstract public class AbstractDbmEventListener implements DbmEventListener {
 		}
 	}
 
-	protected void executeJFishEntityListenerForSingle(boolean before, DbmEvent jfishEvent, Object entity, List<DbmEntityListener> listeners){
+	protected void executeJFishEntityListenerForSingle(boolean before, DbmSessionEvent jfishEvent, Object entity, List<DbmEntityListener> listeners){
 		if(LangUtils.isEmpty(listeners))
 			return ;
 		if(before){
