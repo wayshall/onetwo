@@ -61,7 +61,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	@Transactional
 	@Override
 	public int batchInsert(Collection<T> entities) {
-		return getBaseEntityManager().getRawManagerObject(DbmSessionFactory.class).getCurrentSession().batchInsert(entities);
+		return getBaseEntityManager().getRawManagerObject(DbmSessionFactory.class).getSession().batchInsert(entities);
 	}
 
 	@Transactional(readOnly=true)

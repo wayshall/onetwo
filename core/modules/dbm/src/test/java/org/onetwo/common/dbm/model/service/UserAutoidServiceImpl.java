@@ -44,7 +44,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int deleteAll(){
-		return this.sessionFactory.getCurrentSession().deleteAll(UserAutoidEntity.class);
+		return this.sessionFactory.getSession().deleteAll(UserAutoidEntity.class);
 	}
 	
 	/* (non-Javadoc)
@@ -67,7 +67,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 			
 			list.add(user);
 		}
-		int insertCount = sessionFactory.getCurrentSession().save(list);
+		int insertCount = sessionFactory.getSession().save(list);
 		return insertCount;
 	}
 	
@@ -76,7 +76,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public List<UserAutoidEntity> findUserAutoIdEntity(String userName, Date birthday){
-		return sessionFactory.getCurrentSession().findByProperties(UserAutoidEntity.class, CUtils.asMap(
+		return sessionFactory.getSession().findByProperties(UserAutoidEntity.class, CUtils.asMap(
 																"userName:like", userName,
 																"birthday", birthday
 																));
@@ -87,7 +87,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int update(List<UserAutoidEntity> users){
-		return sessionFactory.getCurrentSession().update(users);
+		return sessionFactory.getSession().update(users);
 	}
 	
 	/* (non-Javadoc)
@@ -95,7 +95,7 @@ public class UserAutoidServiceImpl implements UserAutoidService {
 	 */
 	@Override
 	public int delete(List<UserAutoidEntity> users){
-		return sessionFactory.getCurrentSession().delete(users);
+		return sessionFactory.getSession().delete(users);
 	}
 	
 	public int daoBatchInsert(String userNamePrefix, UserStatus status, Date birthday, int count){ 

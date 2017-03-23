@@ -6,6 +6,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.RegisterManager;
 import org.onetwo.common.utils.map.CollectionMap;
 
+@SuppressWarnings("rawtypes")
 public class DbmEventListenerManager implements RegisterManager<DbmEventAction, Collection<DbmEventListener>> /*DbEventListenerManager*/ {
 
 //	private Map<JFishEventAction, ?> registerMap = ArrayListMultimap.create();
@@ -43,6 +44,14 @@ public class DbmEventListenerManager implements RegisterManager<DbmEventAction, 
 			return EMPTY_LISTENERS;
 		}
 		return listenerList.toArray(new DbmEventListener[listenerList.size()]);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void fireEvents(DbmEvent event){
+		DbmEventListener[] listeners = getListeners(event.getAction());
+		for(DbmEventListener listern : listeners){
+			listern.doEvent(event);
+		}
 	}
 	
 }

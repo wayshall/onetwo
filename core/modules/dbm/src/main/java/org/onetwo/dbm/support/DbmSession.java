@@ -8,11 +8,11 @@ import java.util.Map;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.annotation.AutoWrapTransactional;
+import org.onetwo.dbm.annotation.DataBaseOperation;
 import org.onetwo.dbm.query.DbmQuery;
 
 public interface DbmSession {
-	
+	public boolean isProxyManagedTransaction();
 	public void flush();
 	public DbmSessionFactory getSessionFactory();
 	public DbmTransaction beginTransaction();
@@ -26,7 +26,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> int save(T entity);
 	
 	/*****
@@ -39,7 +39,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> int insert(T entity);
 	
 	/********
@@ -53,7 +53,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int update(Object entity);
 
 	/********
@@ -62,7 +62,7 @@ public interface DbmSession {
 	 * @param id
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findById(Class<T> entityClass, Serializable id);
 
 	/***********
@@ -71,10 +71,10 @@ public interface DbmSession {
 	 * @param id
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int delete(Class<?> entityClass, Object id);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int deleteAll(Class<?> entityClass);
 	
 	/*******
@@ -83,7 +83,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int delete(Object entity);
 	
 	/*****
@@ -109,7 +109,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> int justInsert(T entity);
 
 	/*********
@@ -117,7 +117,7 @@ public interface DbmSession {
 	 * @param entities
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> int batchInsert(Collection<T> entities);
 	
 	/*****
@@ -126,7 +126,7 @@ public interface DbmSession {
 	 * @param entities
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> int batchUpdate(Collection<T> entities);
 
 	/*******
@@ -134,7 +134,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int dymanicUpdate(Object entity);
 
 	/**********
@@ -144,7 +144,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(String sql, Map<String, ?> params, Class<T> type);
 	
 	/*****
@@ -154,7 +154,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(String sql, Object[] args, Class<T> type);
 	
 	/**********
@@ -164,7 +164,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(String sql, Object[] args, Class<T> type);
 	
 	/**********
@@ -174,7 +174,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(String sql, Map<String, ?> params, Class<T> type);
 	
 	/*****
@@ -182,13 +182,13 @@ public interface DbmSession {
 	 * @param query
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(DynamicQuery query);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public Number count(DbmQueryValue queryValue);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int executeUpdate(DynamicQuery query);
 
 	/*****
@@ -196,16 +196,16 @@ public interface DbmSession {
 	 * @param query
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(DynamicQuery query);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findAll(Class<T> entityClass);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties);
 	
 	/*****
@@ -214,10 +214,10 @@ public interface DbmSession {
 	 * @param properties
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties);
 	
 }

@@ -1,6 +1,5 @@
 package org.onetwo.dbm.jdbc;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +14,9 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.interceptor.DbmInterceptorChain;
+import org.onetwo.dbm.interceptor.DbmInterceptorManager;
+import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -22,55 +24,32 @@ import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 
 @Aspect
 public class DbmJdbcOperationsProxy {
 	
-	static enum JdbcOperationEventType {
-		UPDATE,
-		QUERY,
-		UNKNOW,
-	}
-	
-	public static class JdbcOperationEvent {
-		final private JdbcOperationEventType event;
-		final private ProceedingJoinPoint source;
-		
-		public JdbcOperationEvent(JdbcOperationEventType event, ProceedingJoinPoint source){
-			this.event = event;
-			this.source = source;
-		}
-		
-		public Method getSourceMethod(){
-			MethodSignature ms = (MethodSignature)this.source.getSignature();
-			return ms.getMethod();
-		}
-		public Object[] getMethodArgs(){
-			return this.source.getArgs();
-		}
-		
-	}
-	
 	protected final Logger logger = JFishLoggerFactory.getLogger(DbmJdbcOperationsProxy.class);
 	protected final HolderCharsScanner holder = HolderCharsScanner.holder("?");
 //	private static boolean printRelacedSql = true;
+//	private DbmEventListenerManager eventListenerManager;
+	final private DbmInterceptorManager interceptorManager;
+	final private DbmJdbcTemplate dbmJdbcTemplate;
 	
-	final private EventBus jdbcOperationEventBus = new EventBus("DbmJdbcOperationsEventBus");
-	
+
+	public DbmJdbcOperationsProxy(DbmInterceptorManager interceptorManager,
+			DbmJdbcTemplate dbmJdbcTemplate) {
+		super();
+		this.interceptorManager = interceptorManager;
+		this.dbmJdbcTemplate = dbmJdbcTemplate;
+	}
 	
 	@Around("org.onetwo.dbm.jdbc.DbmPointcut.jdbcTemplate()")
-	public Object doProfiling(ProceedingJoinPoint pjp) throws Throwable{
+	public Object invoke(ProceedingJoinPoint pjp) throws Throwable{
 		MethodSignature ms = (MethodSignature)pjp.getSignature();
-		String methodName = ms.getMethod().getName().toLowerCase();
-		JdbcOperationEvent event = null;
-		if(methodName.startsWith("query")){
-			event = new JdbcOperationEvent(JdbcOperationEventType.QUERY, pjp);
-		}else if(methodName.contains("update")){
-			event = new JdbcOperationEvent(JdbcOperationEventType.UPDATE, pjp);
-		}
-		jdbcOperationEventBus.post(event);
-//		JdbcContext jdbcContext = JdbcContextHolder.getJdbcContex();
+		DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.JDBC, dbmJdbcTemplate, ms.getMethod(), pjp.getArgs());
+		return chain.invoke();
+	}
+	public Object doProfilingo(ProceedingJoinPoint pjp) throws Throwable{
 		Context context = new Context(System.currentTimeMillis());
 //		context.setJdbcCountInThread(jdbcContext.increaseOperationCount());
 		try{
@@ -83,6 +62,18 @@ public class DbmJdbcOperationsProxy {
 		}
 			
 	}
+	
+	/*private void fireEvent(ProceedingJoinPoint pjp){
+		MethodSignature ms = (MethodSignature)pjp.getSignature();
+		String methodName = ms.getMethod().getName().toLowerCase();
+		JdbcOperationEvent event = null;
+		if(methodName.startsWith("query")){
+			event = new JdbcOperationEvent(DbmEventAction.jdbcAfterQuery, pjp);
+		}else if(methodName.contains("update")){
+			event = new JdbcOperationEvent(DbmEventAction.jdbcAfterUpdate, pjp);
+		}
+		eventListenerManager.fireEvents(event);
+	}*/
 
 	protected void afterProceed(Context context, ProceedingJoinPoint pjp){
 		this.printLog(context, pjp.getSignature().toString(), pjp.getArgs());

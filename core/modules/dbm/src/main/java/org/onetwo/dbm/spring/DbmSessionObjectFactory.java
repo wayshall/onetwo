@@ -16,7 +16,7 @@ public class DbmSessionObjectFactory implements ObjectFactory<DbmSession>{
 
 	@Override
 	public DbmSession getObject() throws BeansException {
-		return sessionFactory.getCurrentSession();
+		return sessionFactory.getSession();
 	}
 	
 	

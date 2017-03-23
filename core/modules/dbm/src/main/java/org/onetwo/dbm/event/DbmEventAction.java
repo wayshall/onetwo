@@ -1,7 +1,12 @@
 package org.onetwo.dbm.event;
 
+/****
+ * 同一个操作可能触发session和jdbc事件
+ * @author way
+ *
+ */
 public enum DbmEventAction {
-
+	//for dbm session event action
 	insertOrUpdate,
 	insert,
 	update,
@@ -14,4 +19,8 @@ public enum DbmEventAction {
 	batchUpdate
 //	saveRef,
 //	dropRef
+	
+	//for jdbc operation event
+	/*jdbcAfterUpdate,
+	jdbcAfterQuery*/
 }

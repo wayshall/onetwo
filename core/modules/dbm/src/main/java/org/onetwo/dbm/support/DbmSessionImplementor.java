@@ -11,7 +11,7 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.annotation.AutoWrapTransactional;
+import org.onetwo.dbm.annotation.DataBaseOperation;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -25,10 +25,10 @@ public interface DbmSessionImplementor extends DbmSession {
 	
 	public MappedEntryManager getMappedEntryManager();
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(String sql, Object[] args, RowMapper<T> row);
 	
 	/**********
@@ -37,15 +37,15 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(DbmQueryValue queryValue);
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T findUnique(DbmQueryValue queryValue, RowMapper<T> row);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(String sql, Object[] args, RowMapper<T> rowMapper);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 	
 
@@ -55,27 +55,27 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(DbmQueryValue queryValue);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> void findPage(Page<T> page, DbmQueryValue queryValue);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
 	public DBDialect getDialect();
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int executeUpdate(String sql, Map<String, ?> params);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int executeUpdate(String sql, Object...args);
 
-	@AutoWrapTransactional
+	@DataBaseOperation
 	public int executeUpdate(DbmQueryValue queryValue);
 
 	public DbmJdbcOperations getDbmJdbcOperations();

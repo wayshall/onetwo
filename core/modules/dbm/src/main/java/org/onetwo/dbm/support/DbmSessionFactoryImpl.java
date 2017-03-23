@@ -3,6 +3,7 @@ package org.onetwo.dbm.support;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
@@ -13,10 +14,10 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.dbm.annotation.AutoWrapTransactional;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.interceptor.DbmInterceptorManager;
 import org.onetwo.dbm.jdbc.mapper.JdbcDaoRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -25,9 +26,8 @@ import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCr
 import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.slf4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -62,11 +62,18 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 	private AtomicLong idGenerator = new AtomicLong(0);
 	
+	@Autowired
+	private DbmInterceptorManager interceptorManager;
+	
 	public DbmSessionFactoryImpl(ApplicationContext applicationContext, PlatformTransactionManager transactionManager,
 			DataSource dataSource) {
 		super();
 		this.transactionManager = transactionManager;
 		this.dataSource = dataSource;
+	}
+
+	public DbmInterceptorManager getInterceptorManager() {
+		return interceptorManager;
 	}
 
 	@Override
@@ -128,12 +135,30 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		return (RowMapper<T>)this.rowMapperFactory.createRowMapper(type);
 	}
 
-	public DbmSession getCurrentSession(){
+	
+	private DbmSession proxySession(DbmSession session){
+		ProxyFactory pf = new ProxyFactory(session);
+		pf.addAdvisor(new DbmSessionTransactionAdvisor(session, interceptorManager));
+		return (DbmSession)pf.getProxy();
+	}
+	
+	public Optional<DbmSession> getCurrentSession(){
 		DbmSessionResourceHolder sessionHolder = (DbmSessionResourceHolder)TransactionSynchronizationManager.getResource(this);
 		if(sessionHolder!=null && sessionHolder.isSynchronizedWithTransaction() 
 				&& DataSourceUtils.isConnectionTransactional(sessionHolder.getConnection(), dataSource)){//multip ds
-//			sessionHolder.requested();
-			return sessionHolder.getSession();
+			return Optional.of(sessionHolder.getSession());
+		}
+		return Optional.empty();
+	}
+	
+	public DbmSession getSession(){
+		return proxySession(getRawSession());
+	}
+	
+	public DbmSession getRawSession(){
+		Optional<DbmSession> sessionOpt = getCurrentSession();
+		if(sessionOpt.isPresent()){
+			return sessionOpt.get();
 		}
 		if(!TransactionSynchronizationManager.isSynchronizationActive()){
 			throw new DbmException("no transaction synchronization in current thread!");
@@ -157,10 +182,9 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		
 		//otherwise, create new session with DbmSessionTransactionAdvisor
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+		session.markProxyManagedTransaction();
 		session.setDebug(getDataBaseConfig().isLogSql());
-		ProxyFactory pf = new ProxyFactory(session);
-		pf.addAdvisor(new DbmSessionTransactionAdvisor(session));
-		return (DbmSession)pf.getProxy();
+		return session;
 	}
 	
 	public boolean isTransactionManagerEqualsCurrentTransactionManager(){
@@ -229,7 +253,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	public DbmSession openSession(){
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
 		session.setDebug(getDataBaseConfig().isLogSql());
-		return session;
+		return proxySession(session);
 	}
 	
 	protected long generateSessionId(){

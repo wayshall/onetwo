@@ -16,9 +16,10 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.interceptor.DbmInterceptorManager;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.DbmJdbcOperationsProxy;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.support.DbmEntityManager;
@@ -45,15 +46,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 //@EnableConfigurationProperties({DataBaseConfig.class})
 public class DbmSpringConfiguration implements ApplicationContextAware, InitializingBean, ImportAware {
-
-	/*volatile private static boolean dbmRepostoryScaned = false;
-	
-	public static boolean isDbmRepostoryScaned() {
-		return dbmRepostoryScaned;
-	}
-	public static void setDbmRepostoryScaned(boolean dbmRepostoryScaned) {
-		DbmSpringConfiguration.dbmRepostoryScaned = dbmRepostoryScaned;
-	}*/
 
 	private ApplicationContext applicationContext;
 
@@ -247,37 +239,23 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	@Autowired
-	public DbmJdbcOperations jdbcTemplate(DataSource dataSource){
-		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
-
-		if(defaultDbmConfig().isLogSql()){
-			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
-			ajf.setProxyTargetClass(true);
-			ajf.addAspect(DbmJdbcOperationsProxy.class);
-//			ajf.setTargetClass(JFishJdbcOperations.class);
-			return ajf.getProxy();
-		}
-		
-		return template;
+	public DbmInterceptorManager dbmInterceptorManager(){
+		DbmInterceptorManager interceptorManager = new DbmInterceptorManager();
+		return interceptorManager;
 	}
 	
-	/*@Bean
+	@Bean
 	@Autowired
-	public DbmNamedJdbcOperations namedJdbcTemplate(DataSource dataSource){
-		DbmNamedJdbcTemplate template = new DbmNamedJdbcTemplate(jdbcTemplate(dataSource));
-		template.setJdbcParameterSetter(dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
+	public DbmJdbcOperations dbmJdbcTemplate(DataSource dataSource){
+		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
 
-		if(logJdbcSql){
-			AspectJProxyFactory ajf = new AspectJProxyFactory(template);
-			ajf.setProxyTargetClass(false);
-			ajf.addAspect(JFishJdbcTemplateProxy.class);
-			return ajf.getProxy();
-		}
-		
-		return template;
-	}*/
-
+		AspectJProxyFactory ajf = new AspectJProxyFactory(template);
+		ajf.setProxyTargetClass(true);
+		ajf.addAspect(new DbmJdbcOperationsProxy(dbmInterceptorManager(), template));
+//		ajf.setTargetClass(JFishJdbcOperations.class);
+		return ajf.getProxy();
+	}
+	
 	@Bean
 	public SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry(){
 		return new SqlParamterPostfixFunctions();

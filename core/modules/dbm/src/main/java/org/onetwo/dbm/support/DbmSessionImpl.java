@@ -21,15 +21,14 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.event.DbmDeleteEvent;
 import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
-import org.onetwo.dbm.event.DbmSessionEvent;
 import org.onetwo.dbm.event.DbmEventAction;
-import org.onetwo.dbm.event.DbmEventListener;
-import org.onetwo.dbm.event.DbmSessionEventSource;
 import org.onetwo.dbm.event.DbmExtQueryEvent;
 import org.onetwo.dbm.event.DbmExtQueryEvent.ExtQueryType;
 import org.onetwo.dbm.event.DbmFindEvent;
 import org.onetwo.dbm.event.DbmInsertEvent;
 import org.onetwo.dbm.event.DbmInsertOrUpdateEvent;
+import org.onetwo.dbm.event.DbmSessionEvent;
+import org.onetwo.dbm.event.DbmSessionEventSource;
 import org.onetwo.dbm.event.DbmUpdateEvent;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.AbstractDbmSession;
@@ -60,6 +59,7 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	private DbmTransaction transaction;
 	final private long id;
 	final private Date timestamp = new Date();
+	private boolean proxyManagedTransaction;
 
 	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id, DbmTransaction transaction){
 		Assert.notNull(sessionFactory);
@@ -71,6 +71,14 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	
 	public long getId() {
 		return id;
+	}
+
+	public boolean isProxyManagedTransaction() {
+		return proxyManagedTransaction;
+	}
+
+	public void markProxyManagedTransaction() {
+		this.proxyManagedTransaction = true;
 	}
 
 	public DbmSessionFactory getSessionFactory() {
@@ -104,7 +112,8 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 
 	@Override
 	protected DbmJdbcOperations createDbmJdbcOperations(DataSource dataSource) {
-		return new DbmJdbcTemplate(dataSource, getServiceRegistry().getJdbcParameterSetter());
+//		return new DbmJdbcTemplate(dataSource, getServiceRegistry().getJdbcParameterSetter());
+		throw new UnsupportedOperationException();
 	}
 
 	/*@Override
@@ -218,10 +227,11 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	}*/
 	
 	protected void fireEvents(DbmSessionEvent event){
-		DbmEventListener[] listeners = getDialect().getDbmEventListenerManager().getListeners(event.getAction());
+		getDialect().getDbmEventListenerManager().fireEvents(event);
+		/*DbmEventListener[] listeners = getDialect().getDbmEventListenerManager().getListeners(event.getAction());
 		for(DbmEventListener listern : listeners){
 			listern.doEvent(event);
-		}
+		}*/
 	}
 	
 	@Override

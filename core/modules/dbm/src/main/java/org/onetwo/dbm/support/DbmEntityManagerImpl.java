@@ -55,7 +55,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 	
 	public DbmSessionImplementor getCurrentSession(){
-		return (DbmSessionImplementor)sessionFactory.getCurrentSession();
+		return (DbmSessionImplementor)sessionFactory.getSession();
 	}
 	
 	@Override
