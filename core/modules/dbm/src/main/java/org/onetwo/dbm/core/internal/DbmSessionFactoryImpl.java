@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -14,6 +14,12 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.dbm.core.DbmTransactionSynchronization;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.exception.DbmException;
@@ -22,7 +28,6 @@ import org.onetwo.dbm.jdbc.mapper.JdbcDaoRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.slf4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;

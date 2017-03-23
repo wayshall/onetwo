@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.dbm.DbmBaseTest;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
-import org.onetwo.dbm.support.Dbms;
-import org.onetwo.dbm.support.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.utils.Dbms;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UserAutoidServiceTest extends DbmBaseTest {

@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.spi;
 
 import java.util.Optional;
 
@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.interceptor.DbmInterceptorManager;

@@ -3,7 +3,7 @@ package org.onetwo.dbm.event;
 import java.util.Map;
 
 import org.onetwo.common.db.sqlext.SelectExtQuery;
-import org.onetwo.dbm.support.DbmSessionImplementor;
+import org.onetwo.dbm.core.spi.DbmSessionImplementor;
 
 public interface DbmSessionEventSource extends DbmSessionImplementor {
 	

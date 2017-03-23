@@ -23,7 +23,7 @@ import org.onetwo.common.dbm.model.vo.CompanyVO;
 import org.onetwo.common.dbm.model.vo.DepartmentVO;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangOps;
-import org.onetwo.dbm.support.DbmEntityManager;
+import org.onetwo.dbm.core.spi.DbmEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 //@Rollback(false)

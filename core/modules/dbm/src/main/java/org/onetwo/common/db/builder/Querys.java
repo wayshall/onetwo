@@ -4,7 +4,7 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.InnerBaseEntityManager;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.utils.Dbms;
 
 /****
  * alias for QueryBuilderFactory 

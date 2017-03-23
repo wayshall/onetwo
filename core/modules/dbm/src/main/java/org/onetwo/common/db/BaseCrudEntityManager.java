@@ -15,8 +15,8 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.support.DbmSession;
-import org.onetwo.dbm.support.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 

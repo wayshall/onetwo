@@ -3,6 +3,7 @@ package org.onetwo.dbm.query;
 import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.mapping.AbstractDbmMappedEntryImpl;
 import org.onetwo.dbm.mapping.AbstractMappedField;
 import org.onetwo.dbm.mapping.EntrySQLBuilder;
@@ -11,7 +12,6 @@ import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.MappedType;
 import org.onetwo.dbm.mapping.TableInfo;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
 public class DbmQueryableMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 

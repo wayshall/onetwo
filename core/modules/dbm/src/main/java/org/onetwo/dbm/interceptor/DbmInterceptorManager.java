@@ -38,11 +38,13 @@ public class DbmInterceptorManager implements InitializingBean {
 		
 		for(DbmInterceptor interceptor : this.interceptors){
 			DbmInterceptorFilter filter = AnnotationUtils.findAnnotationWithSupers(interceptor.getClass(), DbmInterceptorFilter.class);
+			InterceptorType[] types = null;
 			if(filter==null){
-				Stream.of(InterceptorType.values()).forEach(type->typeInterceptors.putElement(type, interceptor));
+				types = InterceptorType.values();
 			}else{
-				typeInterceptors.putElement(filter.type(), interceptor);
+				types = filter.type();
 			}
+			Stream.of(types).forEach(type->typeInterceptors.putElement(type, interceptor));
 		}
 	}
 	
@@ -56,23 +58,24 @@ public class DbmInterceptorManager implements InitializingBean {
 	
 	public Object invokeChain(InterceptorType type, Object target, Method method, Object... args){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
-		DbmInterceptorChain chain = createChain(inters, target, method, args);
+		DbmInterceptorChain chain = createChain(type, inters, target, method, args);
 		return chain.invoke();
 	}
 	
 	public DbmInterceptorChain createChain(InterceptorType type, Object target, Method method, Object... args){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
-		DbmInterceptorChain chain = createChain(inters, target, method, args);
+		DbmInterceptorChain chain = createChain(type, inters, target, method, args);
 		return chain;
 	}
 	
 	public DbmInterceptorChain createChain(InterceptorType type, Supplier<Object> actualInvoker){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
-		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(inters, actualInvoker);
+		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(type, inters, actualInvoker);
 		return chain;
 	}
-	public DbmInterceptorChain createChain(Collection<DbmInterceptor> interceptors, Object target, Method method, Object... args){
-		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(target, method, args, interceptors);
+	
+	public DbmInterceptorChain createChain(InterceptorType type, Collection<DbmInterceptor> interceptors, Object target, Method method, Object... args){
+		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(type, target, method, args, interceptors);
 		return chain;
 	}
 

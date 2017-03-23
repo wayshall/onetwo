@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
 public class DbmMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 	

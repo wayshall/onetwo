@@ -18,7 +18,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.utils.Dbms;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;

@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,6 +18,10 @@ import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.event.DbmDeleteEvent;
 import org.onetwo.dbm.event.DbmDeleteEvent.DeleteType;
@@ -33,7 +37,6 @@ import org.onetwo.dbm.event.DbmUpdateEvent;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.AbstractDbmSession;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.query.DbmQuery;

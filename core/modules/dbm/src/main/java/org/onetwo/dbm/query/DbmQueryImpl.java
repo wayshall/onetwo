@@ -8,8 +8,8 @@ import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.UtilTimerStack;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.dbm.core.spi.DbmSessionImplementor;
 import org.onetwo.dbm.dialet.DBDialect;
-import org.onetwo.dbm.support.DbmSessionImplementor;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
 

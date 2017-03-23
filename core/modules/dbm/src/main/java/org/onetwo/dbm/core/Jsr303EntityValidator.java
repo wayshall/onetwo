@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core;
 
 import javax.validation.Validator;
 

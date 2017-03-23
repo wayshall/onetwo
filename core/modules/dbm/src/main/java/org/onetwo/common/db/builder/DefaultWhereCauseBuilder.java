@@ -6,8 +6,8 @@ import org.onetwo.common.db.builder.QueryBuilderImpl.SubQueryBuilder;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
-import org.onetwo.dbm.support.DbmSessionFactory;
 
 public class DefaultWhereCauseBuilder implements WhereCauseBuilder {
 	final protected QueryBuilderImpl queryBuilder;

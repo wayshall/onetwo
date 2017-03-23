@@ -14,8 +14,8 @@ import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.db.CrudEntityManager;
-import org.onetwo.dbm.support.BaseModel;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.core.BaseModel;
+import org.onetwo.dbm.utils.Dbms;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
 

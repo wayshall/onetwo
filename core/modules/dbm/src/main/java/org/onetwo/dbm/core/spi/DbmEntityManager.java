@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.spi;
 
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.QueryBuilder;

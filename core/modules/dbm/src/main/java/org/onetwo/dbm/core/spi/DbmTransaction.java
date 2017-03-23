@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.spi;
 
 import java.sql.Connection;
 

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.dbm.core.spi.DbmSessionImplementor;
 import org.slf4j.Logger;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -15,7 +16,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * @author weishao
  *
  */
-public class AbstractDbmSession {
+abstract public class AbstractDbmSession implements DbmSessionImplementor {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	

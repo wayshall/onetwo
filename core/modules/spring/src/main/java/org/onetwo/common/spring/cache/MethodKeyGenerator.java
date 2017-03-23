@@ -13,7 +13,9 @@ public class MethodKeyGenerator extends SimpleKeyGenerator implements KeyGenerat
 	@Override
 	public Object generate(Object target, Method method, Object... params) {
 		List<Object> keyParamList = new ArrayList<Object>(3+params.length);
-		keyParamList.add(target);
+		if(target!=null){
+			keyParamList.add(target);
+		}
 		keyParamList.add(method);
 		keyParamList.addAll(Arrays.asList(params));
 		return generateKey(keyParamList.toArray());

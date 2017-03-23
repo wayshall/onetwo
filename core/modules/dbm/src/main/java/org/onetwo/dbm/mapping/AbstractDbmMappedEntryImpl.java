@@ -21,12 +21,12 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.annotation.DbmEntityListeners;
 import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.annotation.DbmValidatorEnabled;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.event.DbmEntityListener;
 import org.onetwo.dbm.event.DbmEventAction;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 

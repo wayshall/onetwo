@@ -1,10 +1,12 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.dbm.annotation.DataBaseOperation;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.onetwo.dbm.interceptor.DbmInterceptorChain;
 import org.onetwo.dbm.interceptor.DbmInterceptorManager;
 import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;

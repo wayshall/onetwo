@@ -29,6 +29,7 @@ import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.interceptor.DbmInterceptorChain;
@@ -36,7 +37,6 @@ import org.onetwo.dbm.interceptor.DbmInterceptorManager;
 import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
-import org.onetwo.dbm.support.DbmSessionFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 

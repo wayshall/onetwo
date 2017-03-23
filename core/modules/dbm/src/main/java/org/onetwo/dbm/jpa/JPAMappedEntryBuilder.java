@@ -27,6 +27,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.AbstractMappedField;
@@ -41,7 +42,6 @@ import org.onetwo.dbm.mapping.version.DateVersionableType;
 import org.onetwo.dbm.mapping.version.IntegerVersionableType;
 import org.onetwo.dbm.mapping.version.LongVersionableType;
 import org.onetwo.dbm.mapping.version.VersionableType;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 

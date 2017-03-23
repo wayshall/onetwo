@@ -6,7 +6,7 @@ import java.util.List;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.support.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSession;
 
 public class UserAutoidServiceNoSpringImpl implements UserAutoidService {
 	

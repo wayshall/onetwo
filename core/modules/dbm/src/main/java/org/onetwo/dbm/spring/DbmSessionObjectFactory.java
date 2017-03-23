@@ -1,7 +1,7 @@
 package org.onetwo.dbm.spring;
 
-import org.onetwo.dbm.support.DbmSession;
-import org.onetwo.dbm.support.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 

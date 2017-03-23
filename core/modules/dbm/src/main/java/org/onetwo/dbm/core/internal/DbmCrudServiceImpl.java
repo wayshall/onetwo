@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,6 +14,7 @@ import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.core.spi.DbmEntityManager;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.springframework.transaction.annotation.Transactional;
 

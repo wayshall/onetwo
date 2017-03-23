@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
@@ -52,6 +53,11 @@ public class DefaultDbmInterceptorChain implements DbmInterceptorChain {
 		this.targetArgs = null;
 	}
 	
+	private void checkState(String msg){
+		if(this.state!=STATE_INIT){
+			throw new IllegalStateException("illegal state for: "+msg);
+		}
+	}
 	public InterceptorType getType() {
 		return type;
 	}
@@ -69,6 +75,7 @@ public class DefaultDbmInterceptorChain implements DbmInterceptorChain {
 	}
 
 	public DefaultDbmInterceptorChain addInterceptorToHead(DbmInterceptor...interceptors){
+		this.checkState("addInterceptorToHead");
 		if(LangUtils.isEmpty(interceptors)){
 			return this;
 		}
@@ -77,6 +84,7 @@ public class DefaultDbmInterceptorChain implements DbmInterceptorChain {
 	}
 	
 	public DefaultDbmInterceptorChain addInterceptorToTail(DbmInterceptor...interceptors){
+		this.checkState("addInterceptorToTail");
 		if(LangUtils.isEmpty(interceptors)){
 			return this;
 		}
@@ -90,6 +98,7 @@ public class DefaultDbmInterceptorChain implements DbmInterceptorChain {
 	 * 调用此方法后会重新排序，因此addInterceptorToHead和addInterceptorToTail会失效
 	 */
 	public DefaultDbmInterceptorChain addInterceptor(DbmInterceptor...interceptors){
+		this.checkState("addInterceptor");
 		if(LangUtils.isEmpty(interceptors)){
 			return this;
 		}

@@ -1,7 +1,9 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.sql.Connection;
 
+import org.onetwo.dbm.core.spi.DbmSession;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.springframework.transaction.support.ResourceHolderSupport;
 
 public class DbmSessionResourceHolder extends ResourceHolderSupport {

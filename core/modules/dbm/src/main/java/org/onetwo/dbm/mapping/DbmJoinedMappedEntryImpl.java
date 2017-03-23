@@ -3,8 +3,8 @@ package org.onetwo.dbm.mapping;
 import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
-import org.onetwo.dbm.support.SimpleDbmInnerServiceRegistry;
 
 /****
  * 连接表映射？

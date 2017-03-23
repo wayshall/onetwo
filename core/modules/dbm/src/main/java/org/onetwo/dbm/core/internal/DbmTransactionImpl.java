@@ -1,7 +1,8 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.sql.Connection;
 
+import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 

@@ -1,6 +1,6 @@
 package org.onetwo.dbm.spring;
 
-import org.onetwo.dbm.support.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationEvent;
 

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DbmInterceptorFilter {
 	
-	InterceptorType type();
+	InterceptorType[] type();
 
 	enum InterceptorType {
 		SESSION,

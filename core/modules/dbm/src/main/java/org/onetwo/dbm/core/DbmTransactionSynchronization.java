@@ -1,5 +1,6 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core;
 
+import org.onetwo.dbm.core.internal.DbmSessionResourceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;

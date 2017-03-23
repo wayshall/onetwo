@@ -7,8 +7,8 @@ import java.util.List;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.core.BaseModel;
 import org.onetwo.dbm.exception.NotImplementedDbmOperationException;
-import org.onetwo.dbm.support.BaseModel;
 
 abstract public class RichModel<E, ID extends Serializable> extends BaseModel<E, ID> {
 

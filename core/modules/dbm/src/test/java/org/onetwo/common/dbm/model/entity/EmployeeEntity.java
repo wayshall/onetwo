@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
 import org.onetwo.common.db.CrudEntityManager;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.utils.Dbms;
 
 
 /*****

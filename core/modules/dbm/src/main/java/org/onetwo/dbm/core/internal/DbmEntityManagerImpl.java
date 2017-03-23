@@ -1,4 +1,4 @@
-package org.onetwo.dbm.support;
+package org.onetwo.dbm.core.internal;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -25,6 +25,9 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.dbm.core.spi.DbmEntityManager;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
+import org.onetwo.dbm.core.spi.DbmSessionImplementor;
 import org.onetwo.dbm.exception.EntityNotFoundException;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.query.DbmNamedFileQueryManagerImpl;

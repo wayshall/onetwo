@@ -6,7 +6,7 @@ import javassist.CtMethod;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.support.Dbms;
+import org.onetwo.dbm.utils.Dbms;
 import org.slf4j.Logger;
 
 public class StaticMethodsEnhancer implements ModelEnhancer {
