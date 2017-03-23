@@ -2,6 +2,7 @@ package org.onetwo.dbm.core.internal;
 
 import java.util.Optional;
 
+import org.onetwo.dbm.core.DbmJdbcOperationType.DatabaseOperationType;
 import org.onetwo.dbm.core.spi.CachableSession;
 import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
@@ -20,10 +21,14 @@ public class SessionCacheInterceptor implements DbmInterceptor {
 		}
 		
 		CachableSession session = (CachableSession)sessionOpt.get();
-		if(chain.isDatabaseUpdate()){
+		Optional<DatabaseOperationType> operationOpt = chain.getDatabaseOperationType();
+		if(operationOpt.isPresent()){
+			if(operationOpt.get()==DatabaseOperationType.QUERY){a
+				return session.getCaccheOrInvoke(chain);
+			}
+			chain.invoke();
 			session.flush();
-		}else if(chain.isDatabaseRead()){
-			return session.getCaccheOrInvoke(chain);
+			return chain.getResult();
 		}
 		return chain.invoke();
 	}

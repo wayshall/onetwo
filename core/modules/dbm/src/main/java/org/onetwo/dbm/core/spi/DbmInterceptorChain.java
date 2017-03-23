@@ -1,9 +1,12 @@
 package org.onetwo.dbm.core.spi;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
-import org.onetwo.dbm.core.internal.DefaultDbmInterceptorChain;
+import org.onetwo.dbm.core.DbmJdbcOperationType;
+import org.onetwo.dbm.core.DbmJdbcOperationType.DatabaseOperationType;
+import org.onetwo.dbm.core.internal.AbstractDbmInterceptorChain;
 
 public interface DbmInterceptorChain {
 	
@@ -19,13 +22,13 @@ public interface DbmInterceptorChain {
 	Method getTargetMethod();
 
 	Object[] getTargetArgs();
-	
-	boolean isDatabaseUpdate();
-	boolean isDatabaseRead();
 
-	DefaultDbmInterceptorChain addInterceptorToHead(DbmInterceptor...interceptors);
+	Optional<DbmJdbcOperationType> getJdbcOperationType();
+	Optional<DatabaseOperationType> getDatabaseOperationType();
+
+	AbstractDbmInterceptorChain addInterceptorToHead(DbmInterceptor...interceptors);
 	
-	DefaultDbmInterceptorChain addInterceptorToTail(DbmInterceptor...interceptors);
+	AbstractDbmInterceptorChain addInterceptorToTail(DbmInterceptor...interceptors);
 	
-	DefaultDbmInterceptorChain addInterceptor(DbmInterceptor...interceptors);
+	AbstractDbmInterceptorChain addInterceptor(DbmInterceptor...interceptors);
 }

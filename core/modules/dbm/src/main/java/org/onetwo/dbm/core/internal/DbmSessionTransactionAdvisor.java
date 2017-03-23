@@ -1,11 +1,14 @@
 package org.onetwo.dbm.core.internal;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collection;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.onetwo.dbm.annotation.DataBaseOperation;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.annotation.DbmJdbcOperationMark;
+import org.onetwo.dbm.core.internal.AbstractDbmInterceptorChain.SessionDbmInterceptorChain;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.onetwo.dbm.core.spi.DbmSession;
 import org.onetwo.dbm.core.spi.DbmTransaction;
@@ -15,7 +18,7 @@ import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 
 @SuppressWarnings("serial")
 public class DbmSessionTransactionAdvisor extends DefaultPointcutAdvisor {
-	final static private AnnotationMatchingPointcut AUTO_WRAP_TRANSACTIONAL_METHOD_POINTCUT = AnnotationMatchingPointcut.forMethodAnnotation(DataBaseOperation.class);
+	final static private AnnotationMatchingPointcut AUTO_WRAP_TRANSACTIONAL_METHOD_POINTCUT = AnnotationMatchingPointcut.forMethodAnnotation(DbmJdbcOperationMark.class);
 	
 	public DbmSessionTransactionAdvisor(DbmSession session, DbmInterceptorManager interceptorManager) {
 		super(AUTO_WRAP_TRANSACTIONAL_METHOD_POINTCUT, new DbmSessionTransactionAdvice(session, interceptorManager));
@@ -33,7 +36,8 @@ public class DbmSessionTransactionAdvisor extends DefaultPointcutAdvisor {
 
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
-			DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.SESSION, session, invocation.getMethod(), invocation.getArguments());
+			Collection<DbmInterceptor> inters = interceptorManager.getDbmSessionInterceptors(InterceptorType.SESSION);
+			DbmInterceptorChain chain = new SessionDbmInterceptorChain(session, invocation.getMethod(), invocation.getArguments(), inters);
 			if(session.getTransactionType()==SessionTransactionType.PROXY){
 				return invokeWithTransaction(chain);
 			}else{

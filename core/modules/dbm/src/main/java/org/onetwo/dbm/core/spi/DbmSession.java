@@ -8,8 +8,8 @@ import java.util.Map;
 import org.onetwo.common.db.DbmQueryValue;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.annotation.DataBaseOperation;
-import org.onetwo.dbm.annotation.DataBaseOperation.OperationType;
+import org.onetwo.dbm.annotation.DbmJdbcOperationMark;
+import org.onetwo.dbm.core.DbmJdbcOperationType;
 import org.onetwo.dbm.core.internal.SessionTransactionType;
 import org.onetwo.dbm.query.DbmQuery;
 
@@ -30,7 +30,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.SAVE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.SAVE)
 	public <T> int save(T entity);
 	
 	/*****
@@ -43,7 +43,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.INSERT)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.INSERT)
 	public <T> int insert(T entity);
 	
 	/********
@@ -57,7 +57,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int update(Object entity);
 
 	/********
@@ -66,7 +66,7 @@ public interface DbmSession {
 	 * @param id
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findById(Class<T> entityClass, Serializable id);
 
 	/***********
@@ -75,10 +75,10 @@ public interface DbmSession {
 	 * @param id
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.DELETE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.DELETE)
 	public int delete(Class<?> entityClass, Object id);
 
-	@DataBaseOperation(type=OperationType.DELETE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.DELETE)
 	public int deleteAll(Class<?> entityClass);
 	
 	/*******
@@ -87,7 +87,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.DELETE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.DELETE)
 	public int delete(Object entity);
 	
 	/*****
@@ -113,7 +113,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.INSERT)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.INSERT)
 	public <T> int justInsert(T entity);
 
 	/*********
@@ -121,7 +121,7 @@ public interface DbmSession {
 	 * @param entities
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.BATCH_INSERT)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.BATCH_INSERT)
 	public <T> int batchInsert(Collection<T> entities);
 	
 	/*****
@@ -130,7 +130,7 @@ public interface DbmSession {
 	 * @param entities
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.BATCH_UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.BATCH_UPDATE)
 	public <T> int batchUpdate(Collection<T> entities);
 
 	/*******
@@ -138,7 +138,7 @@ public interface DbmSession {
 	 * @param entity
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int dymanicUpdate(Object entity);
 
 	/**********
@@ -148,7 +148,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(String sql, Map<String, ?> params, Class<T> type);
 	
 	/*****
@@ -158,7 +158,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(String sql, Object[] args, Class<T> type);
 	
 	/**********
@@ -168,7 +168,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(String sql, Object[] args, Class<T> type);
 	
 	/**********
@@ -178,7 +178,7 @@ public interface DbmSession {
 	 * @param type
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(String sql, Map<String, ?> params, Class<T> type);
 	
 	/*****
@@ -186,13 +186,13 @@ public interface DbmSession {
 	 * @param query
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(DynamicQuery query);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public Number count(DbmQueryValue queryValue);
 
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int executeUpdate(DynamicQuery query);
 
 	/*****
@@ -200,16 +200,16 @@ public interface DbmSession {
 	 * @param query
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(DynamicQuery query);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findAll(Class<T> entityClass);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findByProperties(Class<T> entityClass, Map<Object, Object> properties);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public void findPageByProperties(Class<?> entityClass, Page<?> page, Map<Object, Object> properties);
 	
 	/*****
@@ -218,10 +218,10 @@ public interface DbmSession {
 	 * @param properties
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUniqueByProperties(Class<T> entityClass, Map<Object, Object> properties);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public Number countByProperties(Class<?> entityClass, Map<Object, Object> properties);
 	
 }

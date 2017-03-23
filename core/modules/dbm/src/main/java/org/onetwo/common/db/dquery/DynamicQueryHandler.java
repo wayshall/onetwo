@@ -30,7 +30,9 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.internal.AbstractDbmInterceptorChain.RepositoryDbmInterceptorChain;
 import org.onetwo.dbm.core.internal.DbmInterceptorManager;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
@@ -97,14 +99,16 @@ public class DynamicQueryHandler implements InvocationHandler {
 				throw new IllegalStateException(String.valueOf(method));
 			}
 		}
+
+		DynamicMethod dmethod = getDynamicMethod(method);
 		
 		DbmInterceptorManager interceptorManager = em.getRawManagerObject(DbmSessionFactory.class).getInterceptorManager();
-		DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.REPOSITORY, ()->invoke0(proxy, method, args));
+		Collection<DbmInterceptor> interceptors = interceptorManager.getDbmSessionInterceptors(InterceptorType.REPOSITORY);
+		DbmInterceptorChain chain = new RepositoryDbmInterceptorChain(proxy, dmethod, args, interceptors, ()->invoke0(proxy, dmethod, args));
 		return chain.invoke();
 	}
 	
-	public Object invoke0(Object proxy, Method method, Object[] args) {
-		DynamicMethod dmethod = getDynamicMethod(method);
+	public Object invoke0(Object proxy, DynamicMethod dmethod, Object[] args) {
 		try {
 			return this.doInvoke(proxy, dmethod, args);
 		}/* catch (HibernateException e) {
@@ -151,9 +155,12 @@ public class DynamicQueryHandler implements InvocationHandler {
 		}else{
 //			methodArgs = Langs.toArray(invokeContext.getParsedParams());
 			
-			if(Page.class.isAssignableFrom(resultClass)){
-				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
+			if(dmethod.isExecuteUpdate()){
+				DbmQueryWrapper dq = em.getFileNamedQueryManager().createQuery(invokeContext);
+				result = dq.executeUpdate();
 				
+			}else if(Page.class.isAssignableFrom(resultClass)){
+				Page<?> page = (Page<?>)args[dmethod.getPageParamter().getParameterIndex()];
 				result = em.getFileNamedQueryManager().findPage(page, invokeContext);
 				
 			}else if(Collection.class.isAssignableFrom(resultClass)){
@@ -169,10 +176,6 @@ public class DynamicQueryHandler implements InvocationHandler {
 			}else if(DbmQueryWrapper.class.isAssignableFrom(resultClass)){
 				DbmQueryWrapper dq = em.getFileNamedQueryManager().createQuery(invokeContext);
 				return dq;
-				
-			}else if(dmethod.isExecuteUpdate()){
-				DbmQueryWrapper dq = em.getFileNamedQueryManager().createQuery(invokeContext);
-				result = dq.executeUpdate();
 				
 			}else if(dmethod.isAsCountQuery()){
 //				parsedQueryName.setMappedEntity(dmethod.getResultClass());

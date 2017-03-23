@@ -11,9 +11,8 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.annotation.DataBaseOperation;
-import org.onetwo.dbm.annotation.DataBaseOperation.OperationType;
-import org.onetwo.dbm.core.internal.SessionTransactionType;
+import org.onetwo.dbm.annotation.DbmJdbcOperationMark;
+import org.onetwo.dbm.core.DbmJdbcOperationType;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -27,10 +26,10 @@ public interface DbmSessionImplementor extends DbmSession {
 	
 	public MappedEntryManager getMappedEntryManager();
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(String sql, Object[] args, RowMapper<T> row);
 	
 	/**********
@@ -39,15 +38,15 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(DbmQueryValue queryValue);
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T findUnique(DbmQueryValue queryValue, RowMapper<T> row);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(String sql, Object[] args, RowMapper<T> rowMapper);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 	
 
@@ -57,27 +56,27 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(DbmQueryValue queryValue);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> void findPage(Page<T> page, DbmQueryValue queryValue);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse);
 
-	@DataBaseOperation(type=OperationType.QUERY)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.QUERY)
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
 	public DBDialect getDialect();
 
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int executeUpdate(String sql, Map<String, ?> params);
 
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int executeUpdate(String sql, Object...args);
 
-	@DataBaseOperation(type=OperationType.UPDATE)
+	@DbmJdbcOperationMark(type=DbmJdbcOperationType.UPDATE)
 	public int executeUpdate(DbmQueryValue queryValue);
 
 	public DbmJdbcOperations getDbmJdbcOperations();

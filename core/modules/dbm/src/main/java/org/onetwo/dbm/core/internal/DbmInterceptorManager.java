@@ -58,13 +58,13 @@ public class DbmInterceptorManager implements InitializingBean {
 		return inters;
 	}
 	
-	public Object invokeChain(InterceptorType type, Object target, Method method, Object... args){
+	/*public Object invokeChain(InterceptorType type, Object target, Method method, Object... args){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
 		DbmInterceptorChain chain = createChain(type, inters, target, method, args);
 		return chain.invoke();
-	}
+	}*/
 	
-	public DbmInterceptorChain createChain(InterceptorType type, Object target, Method method, Object... args){
+	/*public DbmInterceptorChain createChain(InterceptorType type, Supplier<Object> actualInvoker, Object target, Method method, Object... args){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
 		DbmInterceptorChain chain = createChain(type, inters, target, method, args);
 		return chain;
@@ -72,13 +72,13 @@ public class DbmInterceptorManager implements InitializingBean {
 	
 	public DbmInterceptorChain createChain(InterceptorType type, Supplier<Object> actualInvoker){
 		Collection<DbmInterceptor> inters = getDbmSessionInterceptors(type);
-		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(type, inters, actualInvoker);
+		DbmInterceptorChain chain = new AbstractDbmInterceptorChain(type, inters, actualInvoker);
 		return chain;
 	}
 	
 	public DbmInterceptorChain createChain(InterceptorType type, Collection<DbmInterceptor> interceptors, Object target, Method method, Object... args){
-		DbmInterceptorChain chain = new DefaultDbmInterceptorChain(type, target, method, args, interceptors);
+		DbmInterceptorChain chain = new AbstractDbmInterceptorChain(type, target, method, args, interceptors);
 		return chain;
-	}
+	}*/
 
 }

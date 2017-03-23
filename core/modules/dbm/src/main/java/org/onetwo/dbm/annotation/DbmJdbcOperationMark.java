@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.onetwo.dbm.core.DbmJdbcOperationType;
+
 /*****
  * 标记session操作db相关方法
  * @author way
@@ -12,18 +14,9 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DataBaseOperation {
+public @interface DbmJdbcOperationMark {
 	
-	OperationType type();
+	DbmJdbcOperationType type();
 	
-	enum OperationType {
-		QUERY,
-		UPDATE,
-		INSERT,
-		SAVE,
-		DELETE,
-		EXECUTE,
-		BATCH_INSERT,
-		BATCH_UPDATE,
-	}
+
 }

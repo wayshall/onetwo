@@ -1,5 +1,6 @@
 package org.onetwo.dbm.jdbc;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,9 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.internal.AbstractDbmInterceptorChain.JdbcDbmInterceptorChain;
 import org.onetwo.dbm.core.internal.DbmInterceptorManager;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
@@ -46,7 +49,8 @@ public class DbmJdbcOperationsProxy {
 	@Around("org.onetwo.dbm.jdbc.DbmPointcut.jdbcTemplate()")
 	public Object invoke(ProceedingJoinPoint pjp) throws Throwable{
 		MethodSignature ms = (MethodSignature)pjp.getSignature();
-		DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.JDBC, dbmJdbcTemplate, ms.getMethod(), pjp.getArgs());
+		Collection<DbmInterceptor> inters = interceptorManager.getDbmSessionInterceptors(InterceptorType.JDBC);
+		DbmInterceptorChain chain = new JdbcDbmInterceptorChain(dbmJdbcTemplate, ms.getMethod(), pjp.getArgs(), inters);
 		return chain.invoke();
 	}
 	
