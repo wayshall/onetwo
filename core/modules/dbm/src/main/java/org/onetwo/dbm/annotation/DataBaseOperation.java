@@ -13,4 +13,17 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataBaseOperation {
+	
+	OperationType type();
+	
+	enum OperationType {
+		QUERY,
+		UPDATE,
+		INSERT,
+		SAVE,
+		DELETE,
+		EXECUTE,
+		BATCH_INSERT,
+		BATCH_UPDATE,
+	}
 }

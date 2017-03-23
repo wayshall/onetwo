@@ -12,6 +12,8 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.annotation.DataBaseOperation;
+import org.onetwo.dbm.annotation.DataBaseOperation.OperationType;
+import org.onetwo.dbm.core.internal.SessionTransactionType;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -25,10 +27,10 @@ public interface DbmSessionImplementor extends DbmSession {
 	
 	public MappedEntryManager getMappedEntryManager();
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> T findUnique(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> T findUnique(String sql, Object[] args, RowMapper<T> row);
 	
 	/**********
@@ -37,15 +39,15 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> T findUnique(DbmQueryValue queryValue);
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> T findUnique(DbmQueryValue queryValue, RowMapper<T> row);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> List<T> findList(String sql, Object[] args, RowMapper<T> rowMapper);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> List<T> findList(String sql, Map<String, ?> params, RowMapper<T> rowMapper);
 	
 
@@ -55,27 +57,27 @@ public interface DbmSessionImplementor extends DbmSession {
 	 * @param queryValue
 	 * @return
 	 */
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> List<T> findList(DbmQueryValue queryValue);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> void findPage(Page<T> page, DbmQueryValue queryValue);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> T find(DbmQueryValue queryValue, ResultSetExtractor<T> rse);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.QUERY)
 	public <T> List<T> findList(DbmQueryValue queryValue, RowMapper<T> rowMapper);
 	
 	public DBDialect getDialect();
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.UPDATE)
 	public int executeUpdate(String sql, Map<String, ?> params);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.UPDATE)
 	public int executeUpdate(String sql, Object...args);
 
-	@DataBaseOperation
+	@DataBaseOperation(type=OperationType.UPDATE)
 	public int executeUpdate(DbmQueryValue queryValue);
 
 	public DbmJdbcOperations getDbmJdbcOperations();

@@ -62,7 +62,7 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	private DbmTransaction transaction;
 	final private long id;
 	final private Date timestamp = new Date();
-	private boolean proxyManagedTransaction;
+	private SessionTransactionType transactionType;
 
 	public DbmSessionImpl(DbmSessionFactory sessionFactory, long id, DbmTransaction transaction){
 		Assert.notNull(sessionFactory);
@@ -76,12 +76,16 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 		return id;
 	}
 
-	public boolean isProxyManagedTransaction() {
-		return proxyManagedTransaction;
+	public boolean useContextTransactional() {
+		return transactionType == SessionTransactionType.CONTEXT_MANAGED;
 	}
 
-	public void markProxyManagedTransaction() {
-		this.proxyManagedTransaction = true;
+	public SessionTransactionType getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(SessionTransactionType mark) {
+		this.transactionType = mark;
 	}
 
 	public DbmSessionFactory getSessionFactory() {
@@ -102,14 +106,21 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	}
 	
 	public DbmTransaction beginTransaction(TransactionDefinition definition) {
+		if(this.transactionType==SessionTransactionType.CONTEXT_MANAGED || 
+				this.transactionType==SessionTransactionType.PROXY){
+			throw new DbmException("the dbm session["+id+"] cannot start transaction manul, because it's transactional type is: " + this.transactionType);
+		}
 		if(transaction!=null){
-			throw new DbmException("the transaction has began in this session: " + id);
+			throw new DbmException("the transaction has began in this dbm session: " + id);
 		}
 		DbmSessionFactoryImpl sf = (DbmSessionFactoryImpl) this.sessionFactory;
-		DbmTransaction transaction = sf.createNewDbmTransaction(definition);
+		DbmTransaction transaction = sf.startNewDbmTransaction(definition);
 		sf.registerSessionSynchronization(this);
 		
 		this.transaction = transaction;
+		if(this.transactionType==null){
+			this.transactionType = SessionTransactionType.MANUAL;
+		}
 		return transaction;
 	}
 

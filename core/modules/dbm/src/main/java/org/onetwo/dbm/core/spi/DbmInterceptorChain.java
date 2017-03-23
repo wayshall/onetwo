@@ -1,8 +1,9 @@
-package org.onetwo.dbm.interceptor;
+package org.onetwo.dbm.core.spi;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.internal.DefaultDbmInterceptorChain;
 
 public interface DbmInterceptorChain {
 	
@@ -18,6 +19,9 @@ public interface DbmInterceptorChain {
 	Method getTargetMethod();
 
 	Object[] getTargetArgs();
+	
+	boolean isDatabaseUpdate();
+	boolean isDatabaseRead();
 
 	DefaultDbmInterceptorChain addInterceptorToHead(DbmInterceptor...interceptors);
 	

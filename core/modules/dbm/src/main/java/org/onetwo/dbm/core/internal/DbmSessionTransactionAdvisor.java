@@ -5,11 +5,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.dbm.annotation.DataBaseOperation;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.onetwo.dbm.core.spi.DbmSession;
 import org.onetwo.dbm.core.spi.DbmTransaction;
-import org.onetwo.dbm.interceptor.DbmInterceptorChain;
-import org.onetwo.dbm.interceptor.DbmInterceptorManager;
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
@@ -35,7 +34,7 @@ public class DbmSessionTransactionAdvisor extends DefaultPointcutAdvisor {
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
 			DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.SESSION, session, invocation.getMethod(), invocation.getArguments());
-			if(session.isProxyManagedTransaction()){
+			if(session.getTransactionType()==SessionTransactionType.PROXY){
 				return invokeWithTransaction(chain);
 			}else{
 				return chain.invoke();

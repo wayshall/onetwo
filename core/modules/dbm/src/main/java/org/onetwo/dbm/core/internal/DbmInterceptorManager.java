@@ -1,4 +1,4 @@
-package org.onetwo.dbm.interceptor;
+package org.onetwo.dbm.core.internal;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -9,8 +9,10 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.utils.map.CollectionMap;
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter;
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

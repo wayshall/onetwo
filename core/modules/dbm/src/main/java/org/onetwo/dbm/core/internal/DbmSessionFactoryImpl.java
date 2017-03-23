@@ -23,7 +23,6 @@ import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.interceptor.DbmInterceptorManager;
 import org.onetwo.dbm.jdbc.mapper.JdbcDaoRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -172,6 +171,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		if(TransactionSynchronizationManager.isActualTransactionActive()){//transaction exists in current thread
 			if(DbmTransactionSupports.currentTransactionInfo()==null){//can not get transaction info from thread
 				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
 				registerSessionSynchronization(session);
 				return session;
@@ -179,6 +179,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 			}else if(isTransactionManagerEqualsCurrentTransactionManager()){//if same transactionManager, use current thread TransactionStatus
 				DbmTransaction transaction = createCurrentDbmTransaction();
 				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
+				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
 				registerSessionSynchronization(session);
 				return session;
@@ -187,7 +188,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		
 		//otherwise, create new session with DbmSessionTransactionAdvisor
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
-		session.markProxyManagedTransaction();
+		session.setTransactionType(SessionTransactionType.PROXY);
 		session.setDebug(getDataBaseConfig().isLogSql());
 		return session;
 	}
@@ -221,7 +222,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	}
 	
 
-	DbmTransaction createNewDbmTransaction(TransactionDefinition definition) {
+	DbmTransaction startNewDbmTransaction(TransactionDefinition definition) {
 		if(definition==null){
 			definition = new DefaultTransactionDefinition();
 		}
@@ -258,6 +259,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	public DbmSession openSession(){
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
 		session.setDebug(getDataBaseConfig().isLogSql());
+		session.setTransactionType(SessionTransactionType.MANUAL);
 		return proxySession(session);
 	}
 	

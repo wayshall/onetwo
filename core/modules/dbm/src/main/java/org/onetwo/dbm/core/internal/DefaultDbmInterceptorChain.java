@@ -1,4 +1,4 @@
-package org.onetwo.dbm.interceptor;
+package org.onetwo.dbm.core.internal;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -10,7 +10,9 @@ import java.util.function.Supplier;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 public class DefaultDbmInterceptorChain implements DbmInterceptorChain {

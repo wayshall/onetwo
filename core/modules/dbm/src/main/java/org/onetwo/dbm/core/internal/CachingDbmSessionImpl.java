@@ -1,9 +1,12 @@
 package org.onetwo.dbm.core.internal;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.onetwo.common.spring.cache.MethodKeyGenerator;
 import org.onetwo.dbm.core.spi.CachableSession;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
+import org.onetwo.dbm.core.spi.DbmSession;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -26,11 +29,19 @@ public class CachingDbmSessionImpl extends DbmSessionImpl implements CachableSes
 	}
 	
 	@Override
+	public Object getCaccheOrInvoke(DbmInterceptorChain chain){
+		Object key = generateCacheKey(null, chain.getTargetMethod(), chain.getTargetArgs());
+		Object value = getCacche(key);
+		if(value!=null){
+			return value;
+		}
+		return chain.invoke();
+	}
+	
 	public Object getCacche(Object key){
 		return sessionCaches.getIfPresent(key);
 	}
 	
-	@Override
 	public Object generateCacheKey(Object target, Method method, Object... params){
 		return keyGenerator.generate(target, method, params);
 	}

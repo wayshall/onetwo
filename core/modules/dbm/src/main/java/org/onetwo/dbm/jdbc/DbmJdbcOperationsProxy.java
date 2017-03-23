@@ -14,9 +14,9 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MathUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.interceptor.DbmInterceptorChain;
-import org.onetwo.dbm.interceptor.DbmInterceptorManager;
-import org.onetwo.dbm.interceptor.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
+import org.onetwo.dbm.core.internal.DbmInterceptorManager;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -49,6 +49,7 @@ public class DbmJdbcOperationsProxy {
 		DbmInterceptorChain chain = interceptorManager.createChain(InterceptorType.JDBC, dbmJdbcTemplate, ms.getMethod(), pjp.getArgs());
 		return chain.invoke();
 	}
+	
 	public Object doProfilingo(ProceedingJoinPoint pjp) throws Throwable{
 		Context context = new Context(System.currentTimeMillis());
 //		context.setJdbcCountInThread(jdbcContext.increaseOperationCount());
