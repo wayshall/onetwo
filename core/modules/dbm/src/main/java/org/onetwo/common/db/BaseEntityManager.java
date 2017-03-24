@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryBuilder;
-import org.onetwo.common.db.filequery.QueryProvideManager;
+import org.onetwo.common.db.filequery.spi.QueryProvideManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Page;
 

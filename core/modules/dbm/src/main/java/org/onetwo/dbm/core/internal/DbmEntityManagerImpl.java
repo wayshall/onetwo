@@ -16,8 +16,7 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
-import org.onetwo.common.db.filequery.FileNamedQueryManager;
-import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
@@ -46,7 +45,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	
 	private FileNamedQueryManager fileNamedQueryManager;
 //	private boolean watchSqlFile = false;
-	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
+//	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
 	public DbmEntityManagerImpl(DbmSessionFactory sessionFactory){
 		this.sessionFactory = sessionFactory;
@@ -346,15 +345,9 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		return getCurrentSession().countByProperties(entityClass, properties);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getRawManagerObject() {
-		return (T)sessionFactory;
-	}
-
-	@Override
-	public <T> T getRawManagerObject(Class<T> rawClass) {
-		return rawClass.cast(getRawManagerObject());
+	public DbmSessionFactory getSessionFactory() {
+		return sessionFactory;
 	}
 
 	public void setFileNamedQueryManager(FileNamedQueryManager fileNamedQueryFactory) {
@@ -362,14 +355,14 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	}
 
 
-	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry() {
+	/*public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry() {
 		return sqlParamterPostfixFunctionRegistry;
 	}
 
 	public void setSqlParamterPostfixFunctionRegistry(
 			SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry) {
 		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
-	}
+	}*/
 
 
 	@Override

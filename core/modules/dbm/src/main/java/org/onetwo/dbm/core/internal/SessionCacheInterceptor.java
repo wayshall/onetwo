@@ -13,6 +13,11 @@ public class SessionCacheInterceptor implements DbmInterceptor {
 	
 	private DbmSessionFactory sessionFactory;
 
+	public SessionCacheInterceptor(DbmSessionFactory sessionFactory) {
+		super();
+		this.sessionFactory = sessionFactory;
+	}
+
 	@Override
 	public Object intercept(DbmInterceptorChain chain) {
 		Optional<DbmSession> sessionOpt = sessionFactory.getCurrentSession();
@@ -23,7 +28,7 @@ public class SessionCacheInterceptor implements DbmInterceptor {
 		CachableSession session = (CachableSession)sessionOpt.get();
 		Optional<DatabaseOperationType> operationOpt = chain.getDatabaseOperationType();
 		if(operationOpt.isPresent()){
-			if(operationOpt.get()==DatabaseOperationType.QUERY){a
+			if(operationOpt.get()==DatabaseOperationType.QUERY){
 				return session.getCaccheOrInvoke(chain);
 			}
 			chain.invoke();

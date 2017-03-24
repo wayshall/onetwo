@@ -14,11 +14,12 @@ import javax.sql.DataSource;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.ParsedSqlContext;
-import org.onetwo.common.db.filequery.FileNamedSqlGenerator;
 import org.onetwo.common.db.filequery.ParsedSqlUtils;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
-import org.onetwo.common.db.filequery.QueryProvideManager;
+import org.onetwo.common.db.filequery.spi.FileNamedSqlGenerator;
+import org.onetwo.common.db.filequery.spi.QueryProvideManager;
+import org.onetwo.common.db.filequery.spi.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.profiling.TimeCounter;
@@ -34,7 +35,6 @@ import org.onetwo.dbm.core.internal.AbstractDbmInterceptorChain.RepositoryDbmInt
 import org.onetwo.dbm.core.internal.DbmInterceptorManager;
 import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
-import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
@@ -53,11 +53,11 @@ public class DynamicQueryHandler implements InvocationHandler {
 	private Object proxyObject;
 	private DbmJdbcOperations dbmJdbcOperations;
 	
-	public DynamicQueryHandler(QueryProvideManager em, LoadingCache<Method, DynamicMethod> methodCache, DbmJdbcOperations namedJdbcTemplate, Class<?>... proxiedInterfaces){
+	public DynamicQueryHandler(QueryProvideManager em, LoadingCache<Method, DynamicMethod> methodCache, Class<?>... proxiedInterfaces){
 		this.em = em;
 		this.methodCache = methodCache;
 		
-		this.dbmJdbcOperations = namedJdbcTemplate;
+		this.dbmJdbcOperations = em.getSessionFactory().getServiceRegistry().getDbmJdbcOperations();
 		this.proxyObject = Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), proxiedInterfaces, this);
 		
 	}
@@ -102,15 +102,20 @@ public class DynamicQueryHandler implements InvocationHandler {
 
 		DynamicMethod dmethod = getDynamicMethod(method);
 		
-		DbmInterceptorManager interceptorManager = em.getRawManagerObject(DbmSessionFactory.class).getInterceptorManager();
+//		return invoke0(proxy, dmethod, args);
+		return invokeWithInterceptor(proxy, dmethod, args);
+	}
+	
+	private Object invokeWithInterceptor(Object proxy, DynamicMethod dmethod, Object[] args){
+		DbmInterceptorManager interceptorManager = em.getSessionFactory().getInterceptorManager();
 		Collection<DbmInterceptor> interceptors = interceptorManager.getDbmSessionInterceptors(InterceptorType.REPOSITORY);
-		DbmInterceptorChain chain = new RepositoryDbmInterceptorChain(proxy, dmethod, args, interceptors, ()->invoke0(proxy, dmethod, args));
+		DbmInterceptorChain chain = new RepositoryDbmInterceptorChain(proxy, dmethod, args, interceptors, ()->invokeMethod(proxy, dmethod, args));
 		return chain.invoke();
 	}
 	
-	public Object invoke0(Object proxy, DynamicMethod dmethod, Object[] args) {
+	private Object invokeMethod(Object proxy, DynamicMethod dmethod, Object[] args) {
 		try {
-			return this.doInvoke(proxy, dmethod, args);
+			return this.dispatchInvoke(proxy, dmethod, args);
 		}/* catch (HibernateException e) {
 			throw (HibernateException) e;
 		}*/
@@ -135,8 +140,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Object doInvoke(Object proxy, DynamicMethod dmethod, Object[] args) throws Throwable {
-		MethodDynamicQueryInvokeContext invokeContext = new MethodDynamicQueryInvokeContext(dmethod, args);
+	public Object dispatchInvoke(Object proxy, DynamicMethod dmethod, Object[] args) throws Throwable {
+		MethodDynamicQueryInvokeContext invokeContext = new MethodDynamicQueryInvokeContext(em, dmethod, args);
 		
 		Class<?> resultClass = dmethod.getResultClass();
 //		JFishNamedFileQueryInfo parsedQueryName = (JFishNamedFileQueryInfo) em.getFileNamedQueryManager().getNamedQueryInfo(invokeContext);
@@ -219,7 +224,8 @@ public class DynamicQueryHandler implements InvocationHandler {
 		
 		BeanWrapper paramsContextBean = SpringUtils.newBeanMapWrapper(invokeContext.getParsedParams());
 		List<Map<String, Object>> batchValues = LangUtils.newArrayList(batchParameter.size());
-		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql(), em.getSqlParamterPostfixFunctionRegistry());
+		SqlParamterPostfixFunctionRegistry sqlFunc = em.getSessionFactory().getServiceRegistry().getSqlParamterPostfixFunctionRegistry();
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(sv.getParsedSql(), sqlFunc);
 		for(Object val : batchParameter){
 			Map<String, Object> paramValueMap = new HashMap<String, Object>();
 			BeanWrapper paramBean = SpringUtils.newBeanWrapper(val);
@@ -253,7 +259,7 @@ public class DynamicQueryHandler implements InvocationHandler {
 //		int[] counts = jdao.getNamedParameterJdbcTemplate().batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 		int[] counts = dbmJdbcTemplate.batchUpdate(sv.getParsedSql(), batchValues.toArray(new HashMap[0]));
 
-		t.stop(false);
+		t.stop();
 		
 		if(logger.isDebugEnabled()){
 			logger.debug("===>>> batch insert stop: {}", t.getMessage());

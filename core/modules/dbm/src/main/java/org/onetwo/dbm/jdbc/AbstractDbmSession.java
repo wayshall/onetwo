@@ -36,10 +36,10 @@ abstract public class AbstractDbmSession implements DbmSessionImplementor {
 //	@Resource(name="dataSource")
 	final public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
-		if (this.dbmJdbcOperations == null || dataSource != this.dbmJdbcOperations.getDataSource()) {
+		/*if (this.dbmJdbcOperations == null || dataSource != this.dbmJdbcOperations.getDataSource()) {
 			this.dbmJdbcOperations = createDbmJdbcOperations(dataSource);
 //			initTemplateConfig();
-		}
+		}*/
 	}
 
 	protected DbmJdbcOperations createDbmJdbcOperations(DataSource dataSource) {

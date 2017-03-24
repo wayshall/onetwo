@@ -13,9 +13,9 @@ public class FragmentTemplateParser implements TemplateHashModel {
 	
 	private final TemplateParser parser;
 	private final ParserContext parserContext;
-	private final DbmNamedFileQueryInfo query;
+	private final DbmNamedQueryInfo query;
 	
-	public FragmentTemplateParser(TemplateParser parser, ParserContext parserContext, DbmNamedFileQueryInfo query) {
+	public FragmentTemplateParser(TemplateParser parser, ParserContext parserContext, DbmNamedQueryInfo query) {
 		super();
 		this.parser = parser;
 		this.parserContext = parserContext;
@@ -24,7 +24,7 @@ public class FragmentTemplateParser implements TemplateHashModel {
 	
 	private boolean isNamespaceScope(String key){
 //		return key.startsWith(AbstractPropertiesManager.NAME_PREFIX);
-		return key.indexOf(NamespaceProperty.DOT_KEY)!=-1;
+		return key.indexOf(DbmNamedQueryInfo.DOT_KEY)!=-1;
 	}
 	
 	private String getQueryName(String key){
@@ -36,12 +36,12 @@ public class FragmentTemplateParser implements TemplateHashModel {
 	private void checkKeyIfNamespaceScope(String key){
 		String qname = getQueryName(key);
 		String subkey = key.substring(qname.length()+DOT.length());
-		if(!subkey.startsWith(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
-			throw new FileNamedQueryException("only can access "+DbmNamedFileQueryInfo.FRAGMENT_KEY+" of query, error key: " + key);
+		if(!subkey.startsWith(DbmNamedQueryInfo.FRAGMENT_KEY)){
+			throw new FileNamedQueryException("only can access "+DbmNamedQueryInfo.FRAGMENT_KEY+" of query, error key: " + key);
 		}
 	}
 	/****
-	 * {@link DbmNamedFileQueryInfo#getFragment()}
+	 * {@link DbmNamedQueryInfo#getFragment()}
 	 */
 	@Override
 	public TemplateModel get(String key) throws TemplateModelException {
@@ -53,7 +53,7 @@ public class FragmentTemplateParser implements TemplateHashModel {
 //			checkKeyIfNamespaceScope(subkey);
 //			value = (String)SpringUtils.newBeanWrapper(queryInfo).getPropertyValue(subkey);
 			checkKeyIfNamespaceScope(key);
-			value = query.getNamespaceInfo().isGlobal()?key:query.getNamespace()+"."+key;
+			value = query.getDbmNamedQueryFile().isGlobal()?key:query.getNamespace()+"."+key;
 		}else{
 //			checkKey(key);
 //			value = query.getAttrs().get(key);

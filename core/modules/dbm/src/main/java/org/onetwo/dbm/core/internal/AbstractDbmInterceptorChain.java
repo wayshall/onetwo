@@ -1,5 +1,6 @@
 package org.onetwo.dbm.core.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.db.dquery.DynamicMethod;
-import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
 import org.onetwo.dbm.annotation.DbmJdbcOperationMark;
@@ -18,6 +19,7 @@ import org.onetwo.dbm.core.DbmJdbcOperationType;
 import org.onetwo.dbm.core.DbmJdbcOperationType.DatabaseOperationType;
 import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmInterceptorChain;
+import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain {
@@ -118,11 +120,28 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 			if(actualInvoker!=null){
 				result = actualInvoker.get();
 			}else{
-				result = ReflectUtils.invokeMethod(targetMethod, targetObject, targetArgs);
+				if (!targetMethod.isAccessible()){
+					targetMethod.setAccessible(true);
+				}
+				try {
+					return targetMethod.invoke(targetObject, targetArgs);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw convertRuntimeException(e);
+				}
 			}
 			state = STATE_EXECUTED;
 		}
 		return result;
+	}
+	
+	private RuntimeException convertRuntimeException(Exception e){
+		if(e instanceof InvocationTargetException){
+			InvocationTargetException ite = (InvocationTargetException)e;
+			if(ite.getTargetException() instanceof NestedRuntimeException){
+				return (NestedRuntimeException)ite.getTargetException();
+			}
+		}
+		return new BaseException("invoke method error: " + targetMethod);
 	}
 
 	@Override

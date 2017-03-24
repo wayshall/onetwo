@@ -1,6 +1,8 @@
 package org.onetwo.dbm.utils;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
@@ -10,6 +12,7 @@ import org.onetwo.common.db.BaseCrudEntityManager;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.CrudEntityManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
@@ -18,9 +21,12 @@ import org.onetwo.dbm.core.internal.DbmEntityManagerImpl;
 import org.onetwo.dbm.core.internal.DbmSessionFactoryImpl;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -32,6 +38,7 @@ import com.google.common.cache.LoadingCache;
  *
  */
 final public class Dbms {
+	static final private Logger logger = JFishLoggerFactory.getLogger(Dbms.class);
 	
 	final private static LoadingCache<Class<?>, CrudEntityManager<?, ?>> CRUD_MANAGER_MAPPER = CacheBuilder.newBuilder()
 																						.weakKeys()
@@ -146,10 +153,31 @@ final public class Dbms {
 	
 	
 	public static DbmSessionFactory newSessionFactory(DataSource dataSource){
-		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(Springs.getInstance().getAppContext(), null, dataSource);
-		sf.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource)));
+		ApplicationContext appContext = Springs.getInstance().getAppContext();
+		DataSourceTransactionManager tm = getDataSourceTransactionManager(appContext, dataSource);
+		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(appContext, tm, dataSource);
+		sf.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(appContext, sf)));
 		sf.afterPropertiesSet();
 		return sf;
+	}
+	
+	public static DataSourceTransactionManager getDataSourceTransactionManager(ApplicationContext applicationContext, DataSource dataSource){
+		Map<String, DataSourceTransactionManager> tms = SpringUtils.getBeansAsMap(applicationContext, DataSourceTransactionManager.class);
+		Entry<String, DataSourceTransactionManager> tm = null;
+		for(Entry<String, DataSourceTransactionManager> entry : tms.entrySet()){
+			if(entry.getValue().getDataSource().equals(dataSource)){
+				tm = entry;
+				break;
+			}
+		}
+		if(tm!=null){
+			if(logger.isDebugEnabled()){
+				logger.debug("auto find DataSourceTransactionManager for current dataSource: {}", tm.getKey());
+			}
+			return tm.getValue();
+		}else{
+			throw new DbmException("no DataSourceTransactionManager configurate for dataSource: " + dataSource);
+		}
 	}
 
 	private Dbms(){

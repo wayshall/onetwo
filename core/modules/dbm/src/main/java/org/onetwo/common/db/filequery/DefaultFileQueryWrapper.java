@@ -9,6 +9,9 @@ import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.ParsedSqlContext;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper;
 import org.onetwo.common.db.filequery.ParsedSqlUtils.ParsedSqlWrapper.SqlParamterMeta;
+import org.onetwo.common.db.filequery.spi.FileNamedSqlGenerator;
+import org.onetwo.common.db.filequery.spi.QueryProvideManager;
+import org.onetwo.common.db.filequery.spi.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.QueryOrderByable;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -35,14 +38,14 @@ public class DefaultFileQueryWrapper extends AbstractDbmQueryWrapper implements 
 	private int maxRecords;
 	private Class<?> resultClass;
 	
-	protected DbmNamedFileQueryInfo info;
+	protected DbmNamedQueryInfo info;
 	private TemplateParser parser;
 	private ParserContext parserContext = ParserContext.create();
 	
 	private String[] ascFields;
 	private String[] desFields;
 
-	public DefaultFileQueryWrapper(QueryProvideManager baseEntityManager, DbmNamedFileQueryInfo info, boolean count, TemplateParser parser) {
+	public DefaultFileQueryWrapper(QueryProvideManager baseEntityManager, DbmNamedQueryInfo info, boolean count, TemplateParser parser) {
 		Assert.notNull(baseEntityManager);
 		this.baseEntityManager = baseEntityManager;
 		this.countQuery = count;
@@ -87,7 +90,8 @@ public class DefaultFileQueryWrapper extends AbstractDbmQueryWrapper implements 
 		String parsedSql = sqlAndValues.getParsedSql();
 		DbmQueryWrapper dataQuery = createDataQuery(parsedSql, resultClass);
 		
-		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql, baseEntityManager.getSqlParamterPostfixFunctionRegistry());
+		SqlParamterPostfixFunctionRegistry sqlFunc = baseEntityManager.getSessionFactory().getServiceRegistry().getSqlParamterPostfixFunctionRegistry();
+		ParsedSqlWrapper sqlWrapper = ParsedSqlUtils.parseSql(parsedSql, sqlFunc);
 		BeanWrapper paramBean = SpringUtils.newBeanMapWrapper(sqlAndValues.asMap());
 		for(SqlParamterMeta parameter : sqlWrapper.getParameters()){
 			if(!paramBean.isReadableProperty(parameter.getProperty()))

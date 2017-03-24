@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.ParsedSqlContext;
+import org.onetwo.common.db.filequery.spi.FileNamedSqlGenerator;
 import org.onetwo.common.db.sql.DynamicQuery;
 import org.onetwo.common.db.sql.DynamicQueryFactory;
 import org.onetwo.common.db.sqlext.ExtQueryUtils;
@@ -19,10 +20,10 @@ import org.slf4j.Logger;
  *
  */
 public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
-	public static final String PARSER_ACCESS_KEY = DbmNamedFileQueryInfo.FRAGMENT_KEY;
+	public static final String PARSER_ACCESS_KEY = DbmNamedQueryInfo.FRAGMENT_KEY;
 	
 	private static final Logger logger = JFishLoggerFactory.getLogger(DefaultFileNamedSqlGenerator.class);
-	protected DbmNamedFileQueryInfo info;
+	protected DbmNamedQueryInfo info;
 	protected boolean countQuery;
 	private TemplateParser parser;
 	private ParserContext parserContext;
@@ -36,7 +37,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
 	
 	
 	
-	public DefaultFileNamedSqlGenerator(DbmNamedFileQueryInfo info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(DbmNamedQueryInfo info, boolean countQuery,
 			TemplateParser parser, Map<Object, Object> params, DataBase dataBase) {
 		super();
 		this.info = info;
@@ -49,7 +50,7 @@ public class DefaultFileNamedSqlGenerator implements FileNamedSqlGenerator {
 		this.dataBase = dataBase;
 	}
 
-	public DefaultFileNamedSqlGenerator(DbmNamedFileQueryInfo info, boolean countQuery,
+	public DefaultFileNamedSqlGenerator(DbmNamedQueryInfo info, boolean countQuery,
 			TemplateParser parser, ParserContext parserContext,
 			Class<?> resultClass, String[] ascFields, String[] desFields,
 			Map<Object, Object> params, DataBase dataBase) {

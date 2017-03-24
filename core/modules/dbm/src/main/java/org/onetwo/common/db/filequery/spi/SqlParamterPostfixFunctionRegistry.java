@@ -1,4 +1,6 @@
-package org.onetwo.common.db.filequery;
+package org.onetwo.common.db.filequery.spi;
+
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunction;
 
 public interface SqlParamterPostfixFunctionRegistry {
 

@@ -8,9 +8,7 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
-import org.onetwo.common.db.filequery.FileNamedQueryManager;
-import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
-import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
@@ -19,18 +17,13 @@ import org.onetwo.dbm.core.Jsr303EntityValidator;
 import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.core.internal.DbmEntityManagerImpl;
-import org.onetwo.dbm.core.internal.DbmInterceptorManager;
 import org.onetwo.dbm.core.internal.DbmSessionFactoryImpl;
 import org.onetwo.dbm.core.spi.DbmEntityManager;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.jdbc.DbmJdbcOperations;
-import org.onetwo.dbm.jdbc.DbmJdbcOperationsProxy;
-import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.utils.DbmUtils;
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,11 +129,6 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Autowired
 	public DbmEntityManager dbmEntityManager(DbmSessionFactory sessionFactory) {
 		DbmEntityManagerImpl jem = new DbmEntityManagerImpl(sessionFactory);
-//		DbmDaoImplementor dbmDao = dbmDao();
-//		jem.setDbmDao(dbmDao);
-		jem.setSqlParamterPostfixFunctionRegistry(sqlParamterPostfixFunctionRegistry());
-		//在afterpropertiesset里查找，避免循环依赖
-//		jem.setFileNamedQueryFactory(fileNamedQueryFactory());
 
 		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
 		DbmDaoCreateEvent event = new DbmDaoCreateEvent(sessionFactory, registry);
@@ -166,8 +154,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	}
 	
 	@Bean
-	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DataSource dataSource){
-		DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, dataSource);
+	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DbmSessionFactory sessionFactory){
+		DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, sessionFactory);
 		SimpleDbmInnerServiceRegistry serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(context);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
@@ -236,29 +224,6 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 			ds = this.enableDbmAttributes.getDataSourceName();
 		}
 		return ds;
-	}
-	
-	@Bean
-	public DbmInterceptorManager dbmInterceptorManager(){
-		DbmInterceptorManager interceptorManager = new DbmInterceptorManager();
-		return interceptorManager;
-	}
-	
-	@Bean
-	@Autowired
-	public DbmJdbcOperations dbmJdbcTemplate(DataSource dataSource){
-		DbmJdbcTemplate template = new DbmJdbcTemplate(dataSource, dbmInnerServiceRegistry(dataSource).getJdbcParameterSetter());
-
-		AspectJProxyFactory ajf = new AspectJProxyFactory(template);
-		ajf.setProxyTargetClass(true);
-		ajf.addAspect(new DbmJdbcOperationsProxy(dbmInterceptorManager(), template));
-//		ajf.setTargetClass(JFishJdbcOperations.class);
-		return ajf.getProxy();
-	}
-	
-	@Bean
-	public SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry(){
-		return new SqlParamterPostfixFunctions();
 	}
 	
 }

@@ -1,9 +1,10 @@
-package org.onetwo.common.db.filequery;
+package org.onetwo.common.db.filequery.spi;
 
 import javax.sql.DataSource;
 
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DbmQueryWrapper;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 
 public interface QueryProvideManager {
@@ -12,7 +13,7 @@ public interface QueryProvideManager {
 //	public DbmQueryWrapper createQuery(String sqlString);
 	public FileNamedQueryManager getFileNamedQueryManager();
 	
-	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
+//	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
 	
 	public DataBase getDataBase();
 	
@@ -22,6 +23,6 @@ public interface QueryProvideManager {
 
 	public RowMapperFactory getRowMapperFactory();
 
-	public <T> T getRawManagerObject();
-	public <T> T getRawManagerObject(Class<T> rawClass);
+	public DbmSessionFactory getSessionFactory();
+//	public <T> T getRawManagerObject(Class<T> rawClass);
 }

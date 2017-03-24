@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 public class DbmInterceptorManager implements InitializingBean {
 	
 	@Autowired
-	private ApplicationContext applicationContext;
-	@Autowired
 	private List<DbmInterceptor> interceptors;
 	private CollectionMap<InterceptorType, DbmInterceptor> typeInterceptors = CollectionMap.newListMap();
 
@@ -56,6 +54,10 @@ public class DbmInterceptorManager implements InitializingBean {
 			inters = ImmutableList.of();
 		}
 		return inters;
+	}
+
+	public void setInterceptors(List<DbmInterceptor> interceptors) {
+		this.interceptors = interceptors;
 	}
 	
 	/*public Object invokeChain(InterceptorType type, Object target, Method method, Object... args){

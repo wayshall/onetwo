@@ -2,39 +2,25 @@ package org.onetwo.common.db.filequery;
 
 import java.util.List;
 
+import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
-import org.onetwo.common.spring.ftl.TemplateParser;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
+import org.onetwo.common.db.filequery.spi.FileNamedSqlGenerator;
 import org.onetwo.common.utils.LangUtils;
 
 abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryManager {
 
 //	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
-	private QueryProvideManager queryProvideManager;
+//	private QueryProvideManager queryProvideManager;
 	protected DbmNamedSqlFileManager sqlFileManager;
-	protected TemplateParser parser;
+	private DataBase dataBase;
 
-	public AbstractFileNamedQueryFactory(DbmNamedSqlFileManager sqlFileManager) {
-		super();
-//		this.fileNamedQueryFactoryListener = fileNamedQueryFactoryListener;
-		if(sqlFileManager!=null){
-			this.parser = sqlFileManager.getSqlStatmentParser();
-			this.sqlFileManager = sqlFileManager;
-		}
+	public AbstractFileNamedQueryFactory(DbmNamedSqlFileManager sqlFileManager, DataBase dataBase) {
+		this.sqlFileManager = sqlFileManager;
+		this.dataBase = dataBase;
 	}
 
-
-	/*public void initQeuryFactory(QueryProvideManager em){
-		this.createQueryable = em;
-//		this.sqlFileManager.build();
-		if(this.fileNamedQueryFactoryListener!=null)
-			this.fileNamedQueryFactoryListener.onInitialized(em, this);
-	}*/
-	
-	
-	public QueryProvideManager getCreateQueryable() {
-		return getQueryProvideManager();
-	}
 
 	@Override
 	public <E> E findOne(NamedQueryInvokeContext invokeContex) {
@@ -53,26 +39,33 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 	}*/
 
 	@Override
-	public DbmNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContex) {
+	public DbmNamedQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContex) {
 		String qname = invokeContex.getQueryName();
-		DbmNamedFileQueryInfo queryInfo = sqlFileManager.getNamedQueryInfo(qname);
+		DbmNamedQueryInfo queryInfo = sqlFileManager.getNamedQueryInfo(qname);
 		return queryInfo;
 	}
 	@Override
 	public FileNamedSqlGenerator createFileNamedSqlGenerator(NamedQueryInvokeContext invokeContext) {
-		DbmNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
-		FileNamedSqlGenerator g = new DefaultFileNamedSqlGenerator(nameInfo, false, parser, invokeContext.getParsedParams(), queryProvideManager.getDataBase());
+		DbmNamedQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
+		FileNamedSqlGenerator g = new DefaultFileNamedSqlGenerator(nameInfo, false, sqlFileManager.getSqlStatmentParser(), invokeContext.getParsedParams(), dataBase);
 		return g;
 	}
 
-
-	public QueryProvideManager getQueryProvideManager() {
+	/*public QueryProvideManager getQueryProvideManager() {
 		return queryProvideManager;
 	}
 
 
 	public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
 		this.queryProvideManager = queryProvideManager;
+	}*/
+
+	public DataBase getDataBase() {
+		return dataBase;
+	}
+
+	public void setDataBase(DataBase dataBase) {
+		this.dataBase = dataBase;
 	}
 
 

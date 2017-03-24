@@ -9,36 +9,47 @@ import javax.sql.DataSource;
 import javax.validation.Validator;
 
 import org.onetwo.common.db.DataBase;
+import org.onetwo.common.db.filequery.SqlParamterPostfixFunctions;
+import org.onetwo.common.db.filequery.spi.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.core.internal.DbmInterceptorManager;
+import org.onetwo.dbm.core.internal.SessionCacheInterceptor;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
+import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DbmetaFetcher;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.dialet.MySQLDialect;
 import org.onetwo.dbm.dialet.OracleDialect;
+import org.onetwo.dbm.jdbc.DbmJdbcOperations;
+import org.onetwo.dbm.jdbc.DbmJdbcOperationsProxy;
+import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
 import org.onetwo.dbm.jdbc.JdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.JdbcStatementParameterSetter;
 import org.onetwo.dbm.jdbc.SpringJdbcResultSetGetter;
 import org.onetwo.dbm.jdbc.SpringStatementParameterSetter;
 import org.onetwo.dbm.jdbc.mapper.DbmRowMapperFactory;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
-import org.onetwo.dbm.jpa.JPASequenceNameManager;
 import org.onetwo.dbm.jpa.JPAMappedEntryBuilder;
+import org.onetwo.dbm.jpa.JPASequenceNameManager;
 import org.onetwo.dbm.mapping.DbmConfig;
+import org.onetwo.dbm.mapping.DbmMappedEntryBuilder;
 import org.onetwo.dbm.mapping.DbmTypeMapping;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.mapping.EntityValidator;
-import org.onetwo.dbm.mapping.DbmMappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryBuilder;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.mapping.MultiMappedEntryListener;
 import org.onetwo.dbm.mapping.MutilMappedEntryManager;
 import org.onetwo.dbm.query.JFishSQLSymbolManagerImpl;
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -46,6 +57,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class SimpleDbmInnerServiceRegistry {
@@ -71,11 +83,7 @@ public class SimpleDbmInnerServiceRegistry {
 	}
 	private static SimpleDbmInnerServiceRegistry createServiceRegistry(DbmServiceRegistryCreateContext context){
 		SimpleDbmInnerServiceRegistry serviceRegistry = new SimpleDbmInnerServiceRegistry();
-		serviceRegistry.initialize(context.getDataSource());
-		Validator validator = context.getEntityValidator();
-		if(validator!=null){
-			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
-		}
+		serviceRegistry.initialize(context);
 		return serviceRegistry;
 	}
 	
@@ -94,7 +102,18 @@ public class SimpleDbmInnerServiceRegistry {
 	private JdbcResultSetGetter jdbcResultSetGetter;
 	private DbmTypeMapping typeMapping;
 	
-	public void initialize(DataSource dataSource){
+	
+
+	@Autowired(required=false)
+	private List<DbmInterceptor> interceptors;
+	private DbmInterceptorManager interceptorManager;
+	private DbmJdbcOperations dbmJdbcOperations;
+	
+	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
+	
+	public void initialize(DbmServiceRegistryCreateContext context){
+		DataSource dataSource = context.getDataSource();
+		
 		if(dataBaseConfig==null){
 			dataBaseConfig = new DefaultDbmConfig();
 		}
@@ -103,6 +122,9 @@ public class SimpleDbmInnerServiceRegistry {
 		}
 		if(jdbcResultSetGetter==null){
 			this.jdbcResultSetGetter = new SpringJdbcResultSetGetter();
+		}
+		if(sqlParamterPostfixFunctionRegistry==null){
+			this.sqlParamterPostfixFunctionRegistry = new SqlParamterPostfixFunctions();
 		}
 		if(typeMapping==null){
 			this.typeMapping = new DbmTypeMapping();
@@ -113,6 +135,10 @@ public class SimpleDbmInnerServiceRegistry {
 			this.databaseDialetManager.register(DataBase.Oracle.getName(), new OracleDialect());
 		}
 		
+		Validator validator = context.getEntityValidator();
+		if(validator!=null){
+			this.entityValidator = new Jsr303EntityValidator(validator);
+		}
 		
 //		super.initDao();
 		if(this.dialect==null){
@@ -129,7 +155,7 @@ public class SimpleDbmInnerServiceRegistry {
 		
 		//mappedEntryManager
 		if(mappedEntryManager==null){
-			MutilMappedEntryManager _mappedEntryManager = new MutilMappedEntryManager();
+			MutilMappedEntryManager entryManager = new MutilMappedEntryManager();
 //			this.mappedEntryManager.initialize();
 			
 			List<MappedEntryBuilder> builders = LangUtils.newArrayList();
@@ -141,8 +167,8 @@ public class SimpleDbmInnerServiceRegistry {
 			builder.initialize();
 			builders.add(builder);
 //			this.mappedEntryBuilders = ImmutableList.copyOf(builders);
-			_mappedEntryManager.setMappedEntryBuilder(ImmutableList.copyOf(builders));
-			this.mappedEntryManager = _mappedEntryManager;
+			entryManager.setMappedEntryBuilder(ImmutableList.copyOf(builders));
+			this.mappedEntryManager = entryManager;
 			
 		}
 		MultiMappedEntryListener ml = new MultiMappedEntryListener();
@@ -163,14 +189,40 @@ public class SimpleDbmInnerServiceRegistry {
 		if(this.sequenceNameManager==null){
 			this.sequenceNameManager = new JPASequenceNameManager();
 		}
+		
+		if(interceptors==null){
+			interceptors = Lists.newArrayList();
+		}
+		//add
+		if(this.interceptorManager==null){
+			List<DbmInterceptor> interceptors = Lists.newArrayList();
+			interceptors.add(new SessionCacheInterceptor(context.getSessionFactory()));
+			if(this.interceptors!=null){
+				interceptors.addAll(this.interceptors);
+			}
+			DbmInterceptorManager interceptorManager = new DbmInterceptorManager();
+			interceptorManager.setInterceptors(ImmutableList.copyOf(interceptors));
+			this.interceptorManager = interceptorManager;
+		}
+		if(this.dbmJdbcOperations==null){
+			DbmJdbcTemplate jdbcTemplate = new DbmJdbcTemplate(dataSource, getJdbcParameterSetter());
+			AspectJProxyFactory ajf = new AspectJProxyFactory(jdbcTemplate);
+			ajf.setProxyTargetClass(true);
+			ajf.addAspect(new DbmJdbcOperationsProxy(interceptorManager, jdbcTemplate));
+			this.dbmJdbcOperations = ajf.getProxy();
+		}
 	}
-	
 
 	public DBDialect getDialect() {
 		return dialect;
 	}
 
-
+	public DbmJdbcOperations getDbmJdbcOperations() {
+		return dbmJdbcOperations;
+	}
+	public void setDbmJdbcOperations(DbmJdbcOperations dbmJdbcOperations) {
+		this.dbmJdbcOperations = dbmJdbcOperations;
+	}
 	public void setJdbcParameterSetter(JdbcStatementParameterSetter jdbcParameterSetter) {
 		this.jdbcParameterSetter = jdbcParameterSetter;
 	}
@@ -180,7 +232,12 @@ public class SimpleDbmInnerServiceRegistry {
 		return jdbcParameterSetter;
 	}
 
-
+	public DbmInterceptorManager getInterceptorManager() {
+		return interceptorManager;
+	}
+	public void setInterceptorManager(DbmInterceptorManager interceptorManager) {
+		this.interceptorManager = interceptorManager;
+	}
 	public MappedEntryManager getMappedEntryManager() {
 		return mappedEntryManager;
 	}
@@ -247,19 +304,31 @@ public class SimpleDbmInnerServiceRegistry {
 	}
 
 	
+	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry() {
+		return sqlParamterPostfixFunctionRegistry;
+	}
+	public void setSqlParamterPostfixFunctionRegistry(
+			SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry) {
+		this.sqlParamterPostfixFunctionRegistry = sqlParamterPostfixFunctionRegistry;
+	}
+
+
 	public static class DbmServiceRegistryCreateContext {
-		final private DataSource dataSource;
+		final private DbmSessionFactory sessionFactory;
 		final private ApplicationContext applicationContext;
-		public DbmServiceRegistryCreateContext(DataSource dataSource) {
-			this(null, dataSource);
+		public DbmServiceRegistryCreateContext(DbmSessionFactory sessionFactory) {
+			this(null, sessionFactory);
 		}
-		public DbmServiceRegistryCreateContext(ApplicationContext applicationContext, DataSource dataSource) {
+		public DbmServiceRegistryCreateContext(ApplicationContext applicationContext, DbmSessionFactory sessionFactory) {
 			super();
-			this.dataSource = dataSource;
+			this.sessionFactory = sessionFactory;
 			this.applicationContext = applicationContext;
 		}
 		public DataSource getDataSource() {
-			return dataSource;
+			return sessionFactory.getDataSource();
+		}
+		public DbmSessionFactory getSessionFactory() {
+			return sessionFactory;
 		}
 		public ApplicationContext getApplicationContext() {
 			return applicationContext;
@@ -274,8 +343,9 @@ public class SimpleDbmInnerServiceRegistry {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result
-					+ ((dataSource == null) ? 0 : dataSource.hashCode());
+			result = prime
+					* result
+					+ ((sessionFactory == null) ? 0 : sessionFactory.hashCode());
 			return result;
 		}
 		@Override
@@ -287,10 +357,10 @@ public class SimpleDbmInnerServiceRegistry {
 			if (getClass() != obj.getClass())
 				return false;
 			DbmServiceRegistryCreateContext other = (DbmServiceRegistryCreateContext) obj;
-			if (dataSource == null) {
-				if (other.dataSource != null)
+			if (sessionFactory == null) {
+				if (other.sessionFactory != null)
 					return false;
-			} else if (!dataSource.equals(other.dataSource))
+			} else if (!sessionFactory.equals(other.sessionFactory))
 				return false;
 			return true;
 		}

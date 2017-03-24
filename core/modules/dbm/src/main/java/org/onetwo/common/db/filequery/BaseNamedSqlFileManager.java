@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.onetwo.common.db.filequery.spi.DbmNamedQueryFileListener;
+import org.onetwo.common.db.filequery.spi.NamedSqlFileManager;
+import org.onetwo.common.db.filequery.spi.SqlFileParser;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.watch.FileChangeListener;
@@ -24,7 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 
-public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> implements NamespacePropertiesManager<T>{
+public class BaseNamedSqlFileManager implements NamedSqlFileManager {
 
 	
 	public static final String COMMENT = "--";
@@ -35,47 +36,36 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 	public static final String EQUALS_MARK = "=";
 //	public static final String IGNORE_NULL_KEY = "ignore.null";
 
-	static protected final Logger logger = JFishLoggerFactory.getLogger(NamespacePropertiesFileManagerImpl.class);
+	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	private FileWatcher fileMonitor;
-	protected JFishPropertyConf<T> conf;
 	private long period = 1;
 	
-	private Map<String, PropertiesNamespaceInfo<T>> namespaceProperties = Maps.newHashMap();
+	private Map<String, DbmNamedQueryFile> namespaceProperties = Maps.newHashMap();
 //	private List<Properties> sqlfiles;
 //	private PropertiesWraper wrapper;
-	private Map<String, T> namedQueryCache = Maps.newConcurrentMap();
-	private SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();
-	final private NamespacePropertiesFileListener<T> listener;
+	private Map<String, DbmNamedQueryInfo> namedQueryCache = Maps.newConcurrentMap();
+	private SqlFileParser sqlFileParser = new DefaultSqlFileParser();
+	final private DbmNamedQueryFileListener listener;
 	
-	@SuppressWarnings("unchecked")
-	public NamespacePropertiesFileManagerImpl(JFishPropertyConf<T> conf, NamespacePropertiesFileListener<T> listener) {
-//		super(conf);
-		this.conf = conf;
-		if(conf!=null && conf.getPropertyBeanClass()==null){
-			Class<?> clz = ReflectUtils.getSuperClassGenricType(this.getClass(), NamespacePropertiesFileManagerImpl.class);
-			conf.setPropertyBeanClass((Class<T>)clz);
-		}
+	private boolean watchSqlFile;
+	
+	public BaseNamedSqlFileManager(boolean watchSqlFile, DbmNamedQueryFileListener listener) {
+		this.watchSqlFile = watchSqlFile;
 		this.listener = listener;
 	}
 	
-	public void setConf(JFishPropertyConf<T> conf) {
-		this.conf = conf;
-	}
-
-	public NamespacePropertiesFileListener<T> getListener() {
+	public DbmNamedQueryFileListener getListener() {
 		return listener;
 	}
 
-	protected JFishPropertyConf<T> getConf() {
-		return conf;
-	}
-
-
+	/****
+	 * 解释sql文件
+	 */
 	@Override
-	public PropertiesNamespaceInfo<T> buildSqlFile(ResourceAdapter<?> sqlFile){
+	public DbmNamedQueryFile buildSqlFile(ResourceAdapter<?> sqlFile){
 		Assert.notNull(sqlFile);
-		PropertiesNamespaceInfo<T> info = this.parseSqlFile(sqlFile, true);
+		DbmNamedQueryFile info = this.parseSqlFile(sqlFile, true);
 		this.buildSqlFileMonitor(sqlFile);
 
 		if(this.listener!=null){
@@ -120,7 +110,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 	 * @param sqlfileArray
 	 */
 	protected void buildSqlFileMonitor(ResourceAdapter<?>... sqlfileArray){
-		if(conf.isWatchSqlFile()){
+		if(watchSqlFile){
 			if(fileMonitor==null)
 				fileMonitor = FileWatcher.newWatcher(1);
 			this.watchFiles(sqlfileArray);
@@ -148,7 +138,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 			logger.warn("no file relaoded : " + file);
 			return ;
 		}*/
-		PropertiesNamespaceInfo<T> namepsaceInfo = this.parseSqlFile(file, false);
+		DbmNamedQueryFile namepsaceInfo = this.parseSqlFile(file, false);
 		logger.warn("file relaoded : " + file);
 		if(listener!=null){
 			listener.afterReload(file, namepsaceInfo);
@@ -159,7 +149,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		return GLOBAL_NS_KEY.equals(namespace) || !namespace.contains(".");
 	}
 	
-	protected Map<String, PropertiesNamespaceInfo<T>> parseSqlFiles(ResourceAdapter<?>[] sqlfileArray){
+	protected Map<String, DbmNamedQueryFile> parseSqlFiles(ResourceAdapter<?>[] sqlfileArray){
 		if(LangUtils.isEmpty(sqlfileArray)){
 			logger.info("no named sql file found.");
 			return Collections.emptyMap();
@@ -174,7 +164,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 	}
 
 
-	protected PropertiesNamespaceInfo<T> parseSqlFile(ResourceAdapter<?> f, boolean throwIfExist){
+	protected DbmNamedQueryFile parseSqlFile(ResourceAdapter<?> f, boolean throwIfExist){
 		logger.info("parse named sql file: {}", f.getName());
 		
 		String namespace = getFileNameNoJfishSqlPostfix(f);
@@ -184,39 +174,39 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		}
 		
 
-		PropertiesNamespaceInfo<T> np = null;
+		DbmNamedQueryFile namespaceInfo = null;
 		if(globalNamespace){
-			np = namespaceProperties.get(namespace);
-			if(np==null){
-				np = new GlobalNamespaceProperties<T>();
-				namespaceProperties.put(np.getKey(), np);
+			namespaceInfo = namespaceProperties.get(namespace);
+			if(namespaceInfo==null){
+				namespaceInfo = new GlobalNamespaceProperties();
+				namespaceProperties.put(namespaceInfo.getKey(), namespaceInfo);
 			}
 //			np.addAll(namedinfos, throwIfExist);
 		}else{
 			if(namespaceProperties.containsKey(namespace) && throwIfExist){
-				PropertiesNamespaceInfo<T> existNp = namespaceProperties.get(namespace);
+				DbmNamedQueryFile existNp = namespaceProperties.get(namespace);
 				throw new DbmException("sql namespace has already exist : " + namespace+", file: " + f+", exists file: "+ existNp.getSource());
 			}
-			np = new CommonNamespaceProperties<T>(namespace, f);
-			namespaceProperties.put(np.getKey(), np);
+			namespaceInfo = new CommonNamespaceProperties(namespace, f);
+			namespaceProperties.put(namespaceInfo.getKey(), namespaceInfo);
 		}
 		
-		buildNamedInfosToNamespaceFromResource(np, f);
+		buildNamedInfosToNamespaceFromResource(namespaceInfo, f);
 		/*if(namedinfos.isEmpty())
 			return null;*/
 
 //		namespacesMap.put(namespace, np);
-		for(T nsp : np.getNamedProperties()){
+		for(DbmNamedQueryInfo nsp : namespaceInfo.getNamedProperties()){
 			if(namedQueryCache.containsKey(nsp.getFullName()) && throwIfExist){
 				throw new FileNamedQueryException("cache file named query error, key is exists : " + nsp.getFullName());
 			}
 			putIntoCaches(nsp.getFullName(), nsp);
 		}
 		
-		return np;
+		return namespaceInfo;
 	}
 	
-	protected void putIntoCaches(String key, T nsp){
+	protected void putIntoCaches(String key, DbmNamedQueryInfo nsp){
 		logger.info("cache query : {}", key);
 		this.namedQueryCache.put(key, nsp);
 	}
@@ -236,9 +226,9 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 	 * @param np
 	 * @param file
 	 */
-	protected void buildNamedInfosToNamespaceFromResource(PropertiesNamespaceInfo<T> np, ResourceAdapter<?> file){
+	protected void buildNamedInfosToNamespaceFromResource(DbmNamedQueryFile np, ResourceAdapter<?> file){
 //		SqlFileParser<T> sqlFileParser = new DefaultSqlFileParser<>();a
-		sqlFileParser.parseToNamespaceProperty(conf, np, file);
+		sqlFileParser.parseToNamespaceProperty(np, file);
 		
 		//post process 
 	}
@@ -254,8 +244,8 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		});
 	}*/
 	@Override
-	public T getNamedQueryInfo(String fullname) {
-		T info = namedQueryCache.get(fullname);
+	public DbmNamedQueryInfo getNamedQueryInfo(String fullname) {
+		DbmNamedQueryInfo info = namedQueryCache.get(fullname);
 		return info;
 	}
 
@@ -271,41 +261,41 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder("named query : \n");
-		for(T info : this.namedQueryCache.values()){
+		for(DbmNamedQueryInfo info : this.namedQueryCache.values()){
 			sb.append(info).append(",\n");
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public PropertiesNamespaceInfo<T> getNamespaceProperties(String namespace) {
+	public DbmNamedQueryFile getNamespaceProperties(String namespace) {
 		return namespaceProperties.get(namespace);
 	}
 
-	public Collection<PropertiesNamespaceInfo<T>> getAllNamespaceProperties() {
+	public Collection<DbmNamedQueryFile> getAllNamespaceProperties() {
 		return namespaceProperties.values();
 	}
 	
-	final public void setSqlFileParser(SqlFileParser<T> sqlFileParser) {
+	final public void setSqlFileParser(SqlFileParser sqlFileParser) {
 		this.sqlFileParser = sqlFileParser;
 	}
 
 
 
-	public static class CommonNamespaceProperties<E extends NamespaceProperty> implements PropertiesNamespaceInfo<E> {
+	public static class CommonNamespaceProperties implements DbmNamedQueryFile {
 		private final String namespace;
 		private ResourceAdapter<?> source;
-		private Map<String, E> namedProperties;
+		private Map<String, DbmNamedQueryInfo> dbmNamedQueryInfoMap;
 		
 		public CommonNamespaceProperties(String namespace){
 			this.namespace = namespace;
-			this.namedProperties = LangUtils.newHashMap();
+			this.dbmNamedQueryInfoMap = LangUtils.newHashMap();
 		}
 		public CommonNamespaceProperties(String namespace, ResourceAdapter<?> source) {
 			super();
 			this.namespace = namespace;
 			this.source = source;
-			this.namedProperties = LangUtils.newHashMap();
+			this.dbmNamedQueryInfoMap = LangUtils.newHashMap();
 //			this.namedProperties = namedProperties;
 		}
 
@@ -323,34 +313,34 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		}
 
 		@Override
-		public Collection<E> getNamedProperties() {
-			return ImmutableList.copyOf(namedProperties.values());
+		public Collection<DbmNamedQueryInfo> getNamedProperties() {
+			return ImmutableList.copyOf(dbmNamedQueryInfoMap.values());
 		}
 
 		public ResourceAdapter<?> getSource() {
 			return source;
 		}
 		@Override
-		public E getNamedProperty(String name) {
-			return namedProperties.get(name);
+		public DbmNamedQueryInfo getNamedProperty(String name) {
+			return dbmNamedQueryInfoMap.get(name);
 		}
 		@Override
-		public void addAll(Map<String, E> namedInfos, boolean throwIfExist) {
-			for(Entry<String, E> entry : namedInfos.entrySet()){
+		public void addAll(Map<String, DbmNamedQueryInfo> namedInfos, boolean throwIfExist) {
+			for(Entry<String, DbmNamedQueryInfo> entry : namedInfos.entrySet()){
 				put(entry.getKey(), entry.getValue(), throwIfExist);
 			}
 		}
 		@Override
-		public void put(String name, E info, boolean throwIfExist) {
+		public void put(String name, DbmNamedQueryInfo info, boolean throwIfExist) {
 			Assert.hasText(name);
 			Assert.notNull(info);
-			if(throwIfExist && this.namedProperties.containsKey(name)){
-				NamespaceProperty exitProp = this.namedProperties.get(name);
+			if(throwIfExist && this.dbmNamedQueryInfoMap.containsKey(name)){
+				DbmNamedQueryInfo exitProp = this.dbmNamedQueryInfoMap.get(name);
 				throw new BaseException("int file["+info.getSrcfile()+"], sql key["+name+"] has already exist in namespace: " + namespace+", in file: "+ exitProp.getSrcfile());
 			}
-			this.namedProperties.put(name, info);
-			E newE = this.namedProperties.get(name);
-			logger.info("newE:"+newE);
+			this.dbmNamedQueryInfoMap.put(name, info);
+			/*DbmNamedQueryInfo newE = this.dbmNamedQueryInfoMap.get(name);
+			logger.info("newE:"+newE);*/
 		}
 		@Override
 		public boolean isGlobal() {
@@ -359,7 +349,7 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		
 	}
 
-	public class GlobalNamespaceProperties<E extends NamespaceProperty> extends CommonNamespaceProperties<E> {
+	public class GlobalNamespaceProperties extends CommonNamespaceProperties {
 		private final List<File> sources;
 		
 		private GlobalNamespaceProperties() {
@@ -379,65 +369,5 @@ public class NamespacePropertiesFileManagerImpl<T extends NamespaceProperty> imp
 		public boolean isGlobal() {
 			return true;
 		}
-	}
-	
-	/***
-	 * 配置信息
-	 * @author way
-	 *
-	 * @param <T>
-	 */
-	public static class JFishPropertyConf<T> {
-//		private String dir;
-//		private String overrideDir;
-		private ClassLoader classLoader = FileUtils.getClassLoader();
-		private Class<T> propertyBeanClass;
-		private boolean watchSqlFile;
-		private String postfix = SqlFileScanner.SQL_POSTFIX;
-		
-		/*public String getDir() {
-			return dir;
-		}
-		public void setDir(String dir) {
-			Assert.hasText(dir);
-			this.dir = dir;
-		}*/
-		/*public String getOverrideDir() {
-			return overrideDir;
-		}
-		public void setOverrideDir(String overrideDir) {
-			Assert.hasText(overrideDir);
-			this.overrideDir = overrideDir.toLowerCase();
-		}*/
-		public ClassLoader getClassLoader() {
-			return classLoader;
-		}
-		public void setClassLoader(ClassLoader classLoader) {
-			if(classLoader==null){
-				classLoader = FileUtils.getClassLoader();
-			}
-			this.classLoader = classLoader;
-		}
-		public Class<T> getPropertyBeanClass() {
-			return propertyBeanClass;
-		}
-		public void setPropertyBeanClass(Class<T> propertyBeanClass) {
-			Assert.notNull(propertyBeanClass);
-			this.propertyBeanClass = propertyBeanClass;
-		}
-		public boolean isWatchSqlFile() {
-			return watchSqlFile;
-		}
-		public void setWatchSqlFile(boolean watchSqlFile) {
-			this.watchSqlFile = watchSqlFile;
-		}
-		public String getPostfix() {
-			return postfix;
-		}/*
-		public void setPostfix(String postfix) {
-			Assert.hasText(postfix);
-			this.postfix = postfix;
-		}*/
-		
 	}
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.db.builder.QueryBuilder;
-import org.onetwo.common.db.filequery.SqlParamterPostfixFunctionRegistry;
+import org.onetwo.common.db.filequery.spi.SqlParamterPostfixFunctionRegistry;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.exception.BaseException;

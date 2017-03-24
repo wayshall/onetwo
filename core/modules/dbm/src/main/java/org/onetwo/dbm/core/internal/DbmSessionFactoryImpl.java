@@ -1,8 +1,6 @@
 package org.onetwo.dbm.core.internal;
 
 import java.sql.Connection;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,8 +9,6 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.core.DbmTransactionSynchronization;
 import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
@@ -28,13 +24,11 @@ import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
-import org.slf4j.Logger;
+import org.onetwo.dbm.utils.Dbms;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -45,7 +39,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactory {
 
-	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+//	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
@@ -66,7 +60,6 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 	private AtomicLong idGenerator = new AtomicLong(0);
 	
-	@Autowired
 	private DbmInterceptorManager interceptorManager;
 	
 	public DbmSessionFactoryImpl(ApplicationContext applicationContext, PlatformTransactionManager transactionManager,
@@ -80,38 +73,27 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		return interceptorManager;
 	}
 
+	public void setInterceptorManager(DbmInterceptorManager interceptorManager) {
+		this.interceptorManager = interceptorManager;
+	}
+
 	@Override
 	public void afterPropertiesSet() {
-		if(transactionManager==null){
-			Map<String, DataSourceTransactionManager> tms = SpringUtils.getBeansAsMap(applicationContext, DataSourceTransactionManager.class);
-			Entry<String, DataSourceTransactionManager> tm = null;
-			for(Entry<String, DataSourceTransactionManager> entry : tms.entrySet()){
-				if(entry.getValue().getDataSource().equals(dataSource)){
-					tm = entry;
-					break;
-				}
-			}
-			if(tm!=null){
-				this.transactionManager = tm.getValue();
-				if(logger.isDebugEnabled()){
-					logger.debug("auto find DataSourceTransactionManager for current dataSource: {}", tm.getKey());
-				}
-			}else{
-				throw new DbmException("no DataSourceTransactionManager configurate for dataSource: " + dataSource);
-			}
+		if(transactionManager==null && applicationContext!=null){
+			this.transactionManager = Dbms.getDataSourceTransactionManager(applicationContext, dataSource);
 		}
 		if(serviceRegistry==null){
-			DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, dataSource);
+			DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, this);
 			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(context);
 		}
 		
-		this.init();
+		this.initialize(serviceRegistry);
 	}
 	
-	protected void init() {
+	protected void initialize(SimpleDbmInnerServiceRegistry serviceRegistry) {
 		/*this.serviceRegistry = new SimpleDbmInnserServiceRegistry();
 		this.serviceRegistry.initialize(getDataSource(), packagesToScan);*/
-		SimpleDbmInnerServiceRegistry serviceRegistry = getServiceRegistry();
+//		SimpleDbmInnerServiceRegistry serviceRegistry = getServiceRegistry();
 		Assert.notNull(serviceRegistry);
 		
 		if(dataBaseConfig==null){
@@ -131,6 +113,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		if(this.rowMapperFactory==null){
 			this.rowMapperFactory = new JdbcDaoRowMapperFactory();
 		}
+		this.interceptorManager = serviceRegistry.getInterceptorManager();
 	}
 	
 	@Override
@@ -173,6 +156,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
 				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
+				session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
 				registerSessionSynchronization(session);
 				return session;
 				
@@ -181,6 +165,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
 				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
+				session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
 				registerSessionSynchronization(session);
 				return session;
 			}
@@ -190,6 +175,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
 		session.setTransactionType(SessionTransactionType.PROXY);
 		session.setDebug(getDataBaseConfig().isLogSql());
+		session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
 		return session;
 	}
 	
@@ -269,10 +255,6 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 
 	@Override
 	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
-		SimpleDbmInnerServiceRegistry registry = this.serviceRegistry;
-		if(registry==null){
-			this.serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(dataSource));
-		}
 		return serviceRegistry;
 	}
 

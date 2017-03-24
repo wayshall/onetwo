@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.db.DataBase;
-import org.onetwo.common.db.filequery.NamespacePropertiesManager;
 import org.onetwo.common.db.filequery.SpringBasedSqlFileScanner;
-import org.onetwo.common.db.filequery.SqlFileScanner;
+import org.onetwo.common.db.filequery.spi.NamedSqlFileManager;
+import org.onetwo.common.db.filequery.spi.SqlFileScanner;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -57,10 +57,9 @@ public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObje
 	public boolean registerQueryBeans() {
 		logger.info("start to register dao bean ....");
 		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(database.getName());
-		boolean scaned = false;
 		for(Entry<String, ResourceAdapter<?>> f: sqlfiles.entrySet()){
 			String className = f.getKey();
-			if(NamespacePropertiesManager.GLOBAL_NS_KEY.equalsIgnoreCase(className)){
+			if(NamedSqlFileManager.GLOBAL_NS_KEY.equalsIgnoreCase(className)){
 				continue;
 			}
 			if(registry.containsBeanDefinition(className)){
@@ -76,11 +75,8 @@ public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObje
 								.getBeanDefinition();
 			registry.registerBeanDefinition(className, beandef);
 			logger.info("register dao bean: {} -> {}", className, f.getValue().getFile());
-			if(!scaned){
-				scaned = true;
-			}
 		}
-		return scaned;
+		return true;
 		
 	}
 }

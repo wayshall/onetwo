@@ -5,15 +5,15 @@ import java.util.List;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
 import org.onetwo.common.db.filequery.AbstractFileNamedQueryFactory;
-import org.onetwo.common.db.filequery.DbmNamedFileQueryInfo;
+import org.onetwo.common.db.filequery.DbmNamedQueryInfo;
 import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
-import org.onetwo.common.db.filequery.NamespacePropertiesManager;
+import org.onetwo.common.db.filequery.spi.NamedSqlFileManager;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 
 
-public class DbmNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory {
+public class DbmNamedFileQueryManagerImpl extends AbstractFileNamedQueryFactory {
 
 
 	public DbmNamedFileQueryManagerImpl(DbmNamedSqlFileManager sqlFileManager) {
@@ -34,9 +34,9 @@ public class DbmNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory
 //		public JFishDataQuery createDataQuery(boolean count, String queryName, PlaceHolder type, Object... args){
 		Assert.notNull(invokeContext);
 
-		invokeContext.setParser(parser);
-		DbmNamedFileQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
-		DbmFileQueryWrapperImpl jq = new DbmFileQueryWrapperImpl(getCreateQueryable(), nameInfo, count, invokeContext);
+		invokeContext.setParser(getSqlFileManager().getSqlStatmentParser());
+		DbmNamedQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
+		DbmFileQueryWrapperImpl jq = new DbmFileQueryWrapperImpl(invokeContext.getQueryProvideManager(), nameInfo, count, invokeContext);
 
 		jq.setQueryAttributes(invokeContext.getParsedParams());
 //		jq.setRowMapper(rowMapper);
@@ -88,12 +88,6 @@ public class DbmNamedFileQueryManagerImpl extends  AbstractFileNamedQueryFactory
 			page.setResult(datalist);
 		}
 		return page;
-	}
-
-
-	@Override
-	public NamespacePropertiesManager<DbmNamedFileQueryInfo> getNamespacePropertiesManager() {
-		return sqlFileManager;
 	}
 
 }

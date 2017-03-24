@@ -3,7 +3,7 @@ package org.onetwo.common.db.filequery;
 import java.util.List;
 import java.util.Properties;
 
-import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
+import org.onetwo.common.db.filequery.spi.SqlFileParser;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
@@ -13,7 +13,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
-public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFileParser<T> {
+public class DefaultSqlFileParser implements SqlFileParser {
 
 	public static final String GLOBAL_NS_KEY = "global";
 	public static final String COMMENT = "--";
@@ -28,22 +28,22 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 	protected boolean debug = true;
 	
 	@Override
-	public void parseToNamespaceProperty(JFishPropertyConf<T> conf, PropertiesNamespaceInfo<T> np, ResourceAdapter<?> file) {
-		JFishPropertiesData jproperties = loadSqlFile(conf, file);
+	public void parseToNamespaceProperty(DbmNamedQueryFile np, ResourceAdapter<?> file) {
+		JFishPropertiesData jproperties = loadSqlFile(file);
 		if(jproperties==null){
 			return ;
 		}
 		logger.info("build [{}] sql file : {}", np.getNamespace(), file.getName());
 		try {
-			this.buildPropertiesAsNamedInfos(np, file, jproperties, conf.getPropertyBeanClass());
+			this.buildPropertiesAsNamedInfos(np, file, jproperties);
 		} catch (Exception e) {
 			throw new BaseException("build named info error in " + file.getName() + " : " + e.getMessage(), e);
 		}
 	}
-	protected JFishPropertiesData loadSqlFile(JFishPropertyConf<T> conf, ResourceAdapter<?> f){
+	protected JFishPropertiesData loadSqlFile(ResourceAdapter<?> f){
 //		String fname = FileUtils.getFileNameWithoutExt(f.getName());
-		if(!f.getName().endsWith(conf.getPostfix())){
-			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
+		if(!f.getName().endsWith(POSTFIX)){
+			logger.info("file["+f.getName()+" is not a ["+POSTFIX+"] file, ignore it.");
 			return null;
 		}
 		
@@ -143,7 +143,7 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 	 * @param beanClassOfProperty
 	 * @return
 	 */
-	protected void buildPropertiesAsNamedInfos(PropertiesNamespaceInfo<T> namespaceInfo, ResourceAdapter<?> resource, JFishPropertiesData jp, Class<T> beanClassOfProperty){
+	protected void buildPropertiesAsNamedInfos(DbmNamedQueryFile namespaceInfo, ResourceAdapter<?> resource, JFishPropertiesData jp){
 		JFishProperties wrapper = jp.getProperties();
 		List<String> keyNames = wrapper.sortedKeys();
 		if(debug){
@@ -152,7 +152,7 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 				logger.info(str);
 			}
 		}
-		T propBean = null;
+		DbmNamedQueryInfo propBean = null;
 		boolean newBean = true;
 		String preKey = null;
 //		String val = "";
@@ -165,7 +165,7 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 					extBuildNamedInfoBean(propBean);
 					namespaceInfo.put(propBean.getName(), propBean, true);
 				}
-				propBean = ReflectUtils.newInstance(beanClassOfProperty);
+				propBean = new DbmNamedQueryInfo();
 				String val = wrapper.getAndThrowIfEmpty(key);
 				/*if(key.endsWith(IGNORE_NULL_KEY)){
 					throw new BaseException("the query name["+key+"] cant be end with: " + IGNORE_NULL_KEY);
@@ -174,10 +174,10 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 				propBean.setValue(val);
 //				propBean.setNamespace(namespace);
 				newBean = false;
-				preKey = key+NamespaceProperty.DOT_KEY;
+				preKey = key+DbmNamedQueryInfo.DOT_KEY;
 				propBean.setSrcfile(resource);
 				propBean.setConfig(jp.getConfig());
-				propBean.setNamespaceInfo(namespaceInfo);
+				propBean.setDbmNamedQueryFile(namespaceInfo);
 			}else{
 				String val = wrapper.getProperty(key, "");
 				String prop = key.substring(preKey.length());
@@ -196,7 +196,7 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 		}
 		if(logger.isInfoEnabled()){
 			logger.info("================ {} named query start ================", namespaceInfo.getNamespace());
-			for(NamespaceProperty prop : namespaceInfo.getNamedProperties()){
+			for(DbmNamedQueryInfo prop : namespaceInfo.getNamedProperties()){
 				logger.info(prop.getName()+": \t"+prop);
 			}
 			logger.info("================ {} named query end ================", namespaceInfo.getNamespace());
@@ -204,11 +204,11 @@ public class DefaultSqlFileParser<T extends NamespaceProperty> implements SqlFil
 		
 //		return namedProperties;
 	}
-	protected void extBuildNamedInfoBean(T propBean){
+	protected void extBuildNamedInfoBean(DbmNamedQueryInfo propBean){
 	}
-	protected void setNamedInfoProperty(T bean, String prop, Object val){
-		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
+	protected void setNamedInfoProperty(DbmNamedQueryInfo bean, String prop, Object val){
+		if(prop.indexOf(DbmNamedQueryInfo.DOT_KEY)!=-1){
+			prop = StringUtils.toCamel(prop, DbmNamedQueryInfo.DOT_KEY, false);
 		}
 		try {
 			ReflectUtils.setExpr(bean, prop, val);

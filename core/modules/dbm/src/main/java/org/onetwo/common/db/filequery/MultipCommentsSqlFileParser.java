@@ -4,18 +4,18 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.db.filequery.NamespacePropertiesFileManagerImpl.JFishPropertyConf;
 import org.onetwo.common.db.filequery.SimpleSqlFileLineLexer.LineToken;
+import org.onetwo.common.db.filequery.spi.SqlDirectiveExtractor;
+import org.onetwo.common.db.filequery.spi.SqlFileParser;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.ResourceAdapter;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQueryInfo> {
+public class MultipCommentsSqlFileParser implements SqlFileParser {
 	
 	public static class SimpleDirectiveExtractor implements SqlDirectiveExtractor {
 		public static final String DIRECTIVE_PREFIX = SimpleSqlFileLineLexer.COMMENT + ">";//-->
@@ -47,9 +47,9 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQu
 	protected SqlDirectiveExtractor sqlDirectiveExtractor = new SimpleDirectiveExtractor();
 	
 	@Override
-	public void parseToNamespaceProperty(JFishPropertyConf<DbmNamedFileQueryInfo> conf, PropertiesNamespaceInfo<DbmNamedFileQueryInfo> np, ResourceAdapter<?> f) {
-		if(!f.getName().endsWith(conf.getPostfix())){
-			logger.info("file["+f.getName()+" is not a ["+conf.getPostfix()+"] file, ignore it.");
+	public void parseToNamespaceProperty(DbmNamedQueryFile namespaceInfo, ResourceAdapter<?> f) {
+		if(!f.getName().endsWith(POSTFIX)){
+			logger.info("file["+f.getName()+" is not a ["+POSTFIX+"] file, ignore it.");
 			return ;
 		}
 		SimpleSqlFileLineLexer lineLexer = new SimpleSqlFileLineLexer(createLineReader(f));
@@ -61,7 +61,7 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQu
 			
 			switch (token) {
 				case MULTIP_COMMENT:
-					this.parseQueryStatement(lineLexer, conf, np, f);
+					this.parseQueryStatement(lineLexer, namespaceInfo, f);
 					break;
 					
 				default:
@@ -75,37 +75,37 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQu
 		
 	}
 	
-	protected void parseQueryStatement(SimpleSqlFileLineLexer lineLexer, JFishPropertyConf<DbmNamedFileQueryInfo> conf, 
-										PropertiesNamespaceInfo<DbmNamedFileQueryInfo> np, ResourceAdapter<?> f){
+	protected void parseQueryStatement(SimpleSqlFileLineLexer lineLexer,
+										DbmNamedQueryFile namespaceInfo, ResourceAdapter<?> f){
 		List<String> comments = lineLexer.getLineBuf();
 		JFishProperties config = parseComments(comments);
 		//name
 		//没有发现 @name 属性的注释，抛错……
 //		String name = config.getAndThrowIfEmpty(DbmNamedFileQueryInfo.NAME_KEY);
-		String name = config.getProperty(DbmNamedFileQueryInfo.NAME_KEY);
+		String name = config.getProperty(DbmNamedQueryInfo.NAME_KEY);
 		//没有发现 @name 属性的注释，忽略
 		if(StringUtils.isBlank(name)){
 			scanSqlContent(lineLexer);
 			return ;
 		}
-		config.remove(DbmNamedFileQueryInfo.NAME_KEY);
+		config.remove(DbmNamedQueryInfo.NAME_KEY);
 		
-		DbmNamedFileQueryInfo bean = np.getNamedProperty(name);
+		DbmNamedQueryInfo bean = namespaceInfo.getNamedProperty(name);
 		String sqlPropertyName = "value";
 		if(bean==null){
-			bean = ReflectUtils.newInstance(conf.getPropertyBeanClass());
-			bean.setNamespaceInfo(np);
+			bean = new DbmNamedQueryInfo();
+			bean.setDbmNamedQueryFile(namespaceInfo);
 			bean.setSrcfile(f);
 
 			bean.setName(name);
 			bean.setConfig(config);
 
-			np.put(bean.getName(), bean, true);
+			namespaceInfo.put(bean.getName(), bean, true);
 
 			//别名
-			if(config.containsKey(DbmNamedFileQueryInfo.ALIAS_KEY)){
-				bean.setAliasList(config.getStringList(DbmNamedFileQueryInfo.ALIAS_KEY, ","));
-				config.remove(DbmNamedFileQueryInfo.ALIAS_KEY);
+			if(config.containsKey(DbmNamedQueryInfo.ALIAS_KEY)){
+				bean.setAliasList(config.getStringList(DbmNamedQueryInfo.ALIAS_KEY, ","));
+				config.remove(DbmNamedQueryInfo.ALIAS_KEY);
 			}
 			
 			/*if(config.containsKey(JFishNamedFileQueryInfo.MATCHER_KEY)){
@@ -115,23 +115,23 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQu
 				config.remove(JFishNamedFileQueryInfo.MATCHER_KEY);
 				
 			}*/
-			if(config.containsKey(DbmNamedFileQueryInfo.PROPERTY_KEY)
-					|| config.containsKey(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
+			if(config.containsKey(DbmNamedQueryInfo.PROPERTY_KEY)
+					|| config.containsKey(DbmNamedQueryInfo.FRAGMENT_KEY)){
 				throw new FileNamedQueryException("no parent query["+bean.getName()+"] found, the @property or @fragment tag must defined in a subquery, near at "
 						+ "line : " + lineLexer.getLineReader().getLineNumber());
 			}
 		}else{
-			if(config.containsKey(DbmNamedFileQueryInfo.PROPERTY_KEY)){
+			if(config.containsKey(DbmNamedQueryInfo.PROPERTY_KEY)){
 				//property:propertyName
-				sqlPropertyName = config.getProperty(DbmNamedFileQueryInfo.PROPERTY_KEY);
-				config.remove(DbmNamedFileQueryInfo.PROPERTY_KEY);
+				sqlPropertyName = config.getProperty(DbmNamedQueryInfo.PROPERTY_KEY);
+				config.remove(DbmNamedQueryInfo.PROPERTY_KEY);
 				
-			}else if(config.containsKey(DbmNamedFileQueryInfo.FRAGMENT_KEY)){
+			}else if(config.containsKey(DbmNamedQueryInfo.FRAGMENT_KEY)){
 				//fragment[fragmentValue]=sql
-				sqlPropertyName = DbmNamedFileQueryInfo.FRAGMENT_KEY + "[" + 
-															config.getProperty(DbmNamedFileQueryInfo.FRAGMENT_KEY)
+				sqlPropertyName = DbmNamedQueryInfo.FRAGMENT_KEY + "[" + 
+															config.getProperty(DbmNamedQueryInfo.FRAGMENT_KEY)
 																	+ "]";
-				config.remove(DbmNamedFileQueryInfo.FRAGMENT_KEY);
+				config.remove(DbmNamedQueryInfo.FRAGMENT_KEY);
 				
 			}else{
 				throw new FileNamedQueryException("named query["+name+"]'s  must be specify a @property or @fragment."
@@ -201,8 +201,8 @@ public class MultipCommentsSqlFileParser implements SqlFileParser<DbmNamedFileQu
 	}
 	
 	protected void setNamedInfoProperty(BeanWrapper beanBw, String prop, Object val){
-		if(prop.indexOf(NamespaceProperty.DOT_KEY)!=-1){
-			prop = org.onetwo.common.utils.StringUtils.toCamel(prop, NamespaceProperty.DOT_KEY, false);
+		if(prop.indexOf(DbmNamedQueryInfo.DOT_KEY)!=-1){
+			prop = org.onetwo.common.utils.StringUtils.toCamel(prop, DbmNamedQueryInfo.DOT_KEY, false);
 		}
 		beanBw.setPropertyValue(prop, val);
 		/*try {

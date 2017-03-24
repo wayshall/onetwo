@@ -1,9 +1,10 @@
-package org.onetwo.common.db.filequery;
+package org.onetwo.common.db.filequery.spi;
 
 import java.util.List;
 
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
+import org.onetwo.common.db.filequery.DbmNamedQueryInfo;
 import org.onetwo.common.utils.Page;
 
 /****
@@ -20,13 +21,13 @@ public interface FileNamedQueryManager {
 	 * @param invokeContext
 	 * @return
 	 */
-	public DbmNamedFileQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
+	public DbmNamedQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
 	/***
 	 * 通过queryName查找
 	 * @param queryName
 	 * @return
 	 */
-	public NamespacePropertiesManager<DbmNamedFileQueryInfo> getNamespacePropertiesManager();
+	public NamedSqlFileManager getNamespacePropertiesManager();
 
 	public DbmQueryWrapper createQuery(NamedQueryInvokeContext invokeContext);
 	

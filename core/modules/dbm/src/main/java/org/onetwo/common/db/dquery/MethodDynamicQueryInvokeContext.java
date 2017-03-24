@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.db.dquery.annotation.BatchObject;
+import org.onetwo.common.db.filequery.spi.QueryProvideManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.common.utils.LangUtils;
@@ -16,8 +17,9 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 	final private Object[] parameterValues;
 	final private Map<Object, Object> parsedParams;
 	private TemplateParser parser;
+	final private QueryProvideManager queryProvideManager;
 	
-	public MethodDynamicQueryInvokeContext(DynamicMethod dynamicMethod, Object[] parameterValues) {
+	public MethodDynamicQueryInvokeContext(QueryProvideManager manager, DynamicMethod dynamicMethod, Object[] parameterValues) {
 		super();
 		this.dynamicMethod = dynamicMethod;
 		this.parameterValues = parameterValues;
@@ -25,6 +27,12 @@ public class MethodDynamicQueryInvokeContext implements NamedQueryInvokeContext 
 //		this.parsedParams = ImmutableMap.copyOf(dynamicMethod.toMapByArgs(parameterValues));
 		Map<Object, Object> methodParams = dynamicMethod.toMapByArgs(parameterValues);
 		this.parsedParams = Collections.unmodifiableMap(methodParams);
+		this.queryProvideManager = manager;
+	}
+
+	@Override
+	public QueryProvideManager getQueryProvideManager() {
+		return queryProvideManager;
 	}
 
 	public String getQueryName() {

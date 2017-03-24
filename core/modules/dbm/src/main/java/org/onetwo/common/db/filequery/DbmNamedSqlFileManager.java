@@ -1,38 +1,41 @@
 package org.onetwo.common.db.filequery;
 
+import org.onetwo.common.db.filequery.spi.DbmNamedQueryFileListener;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.onetwo.dbm.exception.FileNamedQueryException;
 
 /****
- * sql文件管理
+ * sql文件查询对象管理
+ * 管理每个sql文件的查询对象
  * @author weishao
  *
  * @param <T>
  */
-public class DbmNamedSqlFileManager extends NamespacePropertiesFileManagerImpl<DbmNamedFileQueryInfo> {
-	
+public class DbmNamedSqlFileManager extends BaseNamedSqlFileManager {
+
+	public static final StringTemplateLoaderFileSqlParser FILE_SQL_PARSER = new StringTemplateLoaderFileSqlParser();
 
 	public static DbmNamedSqlFileManager createNamedSqlFileManager(boolean watchSqlFile) {
-		StringTemplateLoaderFileSqlParser<DbmNamedFileQueryInfo> listener = new StringTemplateLoaderFileSqlParser<DbmNamedFileQueryInfo>();
+		StringTemplateLoaderFileSqlParser listener = FILE_SQL_PARSER;
 		listener.initialize();
-		DbmNamedSqlFileManager sqlfileMgr = new DbmNamedSqlFileManager(new DialetNamedSqlConf(watchSqlFile), listener, listener);
+		DbmNamedSqlFileManager sqlfileMgr = new DbmNamedSqlFileManager(watchSqlFile, listener, listener);
 //		sqlfileMgr.setDataSource(dataSource);
 		return sqlfileMgr;
 	}
 	
 	
-	public static final String ATTRS_KEY = DbmNamedFileQueryInfo.FRAGMENT_DOT_KEY;
+	public static final String ATTRS_KEY = DbmNamedQueryInfo.FRAGMENT_DOT_KEY;
 	private TemplateParser sqlStatmentParser;
 	
 
-	public DbmNamedSqlFileManager(DialetNamedSqlConf conf, TemplateParser sqlStatmentParser, NamespacePropertiesFileListener<DbmNamedFileQueryInfo> listener) {
-		super(conf, listener);
+	public DbmNamedSqlFileManager(boolean watchSqlFile, TemplateParser sqlStatmentParser, DbmNamedQueryFileListener listener) {
+		super(watchSqlFile, listener);
 //		this.databaseType = conf.getDatabaseType();
 		this.setSqlFileParser(new MultipCommentsSqlFileParser());
 		this.sqlStatmentParser = sqlStatmentParser;
 	}
 
-	protected void putIntoCaches(String key, DbmNamedFileQueryInfo nsp){
+	protected void putIntoCaches(String key, DbmNamedQueryInfo nsp){
 		super.putIntoCaches(key, nsp);
 		nsp.getAliasList().forEach(aliasName->{
 			/*try {
@@ -50,24 +53,24 @@ public class DbmNamedSqlFileManager extends NamespacePropertiesFileManagerImpl<D
 		return sqlStatmentParser;
 	}
 
-	protected void extBuildNamedInfoBean(DbmNamedFileQueryInfo propBean){
+	protected void extBuildNamedInfoBean(DbmNamedQueryInfo propBean){
 //		propBean.setDataBaseType(getDatabaseType());
 	}
 
-	public DbmNamedFileQueryInfo getNamedQueryInfo(String name) {
-		DbmNamedFileQueryInfo info = super.getNamedQueryInfo(name);
+	public DbmNamedQueryInfo getNamedQueryInfo(String name) {
+		DbmNamedQueryInfo info = super.getNamedQueryInfo(name);
 		if(info==null)
 			throw new FileNamedQueryException("namedQuery not found : " + name);
 		return info;
 	}
 	
-	public static class DialetNamedSqlConf extends JFishPropertyConf<DbmNamedFileQueryInfo> {
+	/*public static class DialetNamedSqlConf extends JFishPropertyConf<DbmNamedQueryInfo> {
 //		private DataBase databaseType;
 		
 		public DialetNamedSqlConf(boolean watchSqlFile){
 			setWatchSqlFile(watchSqlFile);
-			setPropertyBeanClass(DbmNamedFileQueryInfo.class);
+			setPropertyBeanClass(DbmNamedQueryInfo.class);
 		}
 
-	}
+	}*/
 }
