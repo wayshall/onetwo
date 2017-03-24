@@ -11,7 +11,7 @@ public interface QueryProvideManager {
 
 	public DbmQueryWrapper createSQLQuery(String sqlString, Class<?> entityClass);
 //	public DbmQueryWrapper createQuery(String sqlString);
-	public FileNamedQueryManager getFileNamedQueryManager();
+	public FileNamedQueryFactory getFileNamedQueryManager();
 	
 //	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry();
 	

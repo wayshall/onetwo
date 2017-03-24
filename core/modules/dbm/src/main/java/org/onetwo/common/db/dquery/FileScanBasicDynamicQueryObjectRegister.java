@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.filequery.SpringBasedSqlFileScanner;
 import org.onetwo.common.db.filequery.spi.NamedSqlFileManager;
 import org.onetwo.common.db.filequery.spi.SqlFileScanner;
@@ -24,19 +23,20 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObjectRegister {
+	static private LoadingCache<Method, DynamicMethod> methodCache = CacheBuilder.newBuilder()
+			.build(new CacheLoader<Method, DynamicMethod>() {
+				@Override
+				public DynamicMethod load(Method method) throws Exception {
+					return DynamicMethod.newDynamicMethod(method);
+				}
+			});
+	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private SqlFileScanner sqlFileScanner = new SpringBasedSqlFileScanner(ClassUtils.getDefaultClassLoader());
 
-	private LoadingCache<Method, DynamicMethod> methodCache = CacheBuilder.newBuilder()
-																.build(new CacheLoader<Method, DynamicMethod>() {
-																	@Override
-																	public DynamicMethod load(Method method) throws Exception {
-																		return DynamicMethod.newDynamicMethod(method);
-																	}
-																});
-
-	private DataBase database;
+	//不再根据数据库扫描，数据库类型根据接口的信息读取，扫描时无法确认……
+//	private DataBase database;
 	private BeanDefinitionRegistry registry;
 //	private ApplicationContext applicationContext;
 	
@@ -48,15 +48,15 @@ public class FileScanBasicDynamicQueryObjectRegister implements DynamicQueryObje
 		this.registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
 	}
 
-	public void setDatabase(DataBase database) {
+	/*public void setDatabase(DataBase database) {
 		this.database = database;
-	}
+	}*/
 
 
 	@Override
 	public boolean registerQueryBeans() {
 		logger.info("start to register dao bean ....");
-		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(database.getName());
+		Map<String, ResourceAdapter<?>> sqlfiles = sqlFileScanner.scanMatchSqlFiles(null);
 		for(Entry<String, ResourceAdapter<?>> f: sqlfiles.entrySet()){
 			String className = f.getKey();
 			if(NamedSqlFileManager.GLOBAL_NS_KEY.equalsIgnoreCase(className)){

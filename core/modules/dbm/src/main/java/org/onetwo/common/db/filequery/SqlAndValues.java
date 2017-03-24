@@ -49,6 +49,7 @@ public class SqlAndValues implements ParsedSqlContext {
 	 * List Or Map
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getValues(){
 		return (T) values;

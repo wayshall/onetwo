@@ -95,7 +95,7 @@ public class JDKDynamicProxyCreator implements InitializingBean, ApplicationCont
 			throw new FileNamedQueryException("no QueryProvideManager found!");
 		}
 		
-		DbmNamedSqlFileManager namedSqlFileManager = (DbmNamedSqlFileManager)queryProvideManager.getFileNamedQueryManager().getNamespacePropertiesManager();
+		DbmNamedSqlFileManager namedSqlFileManager = (DbmNamedSqlFileManager)queryProvideManager.getFileNamedQueryManager().getNamedSqlFileManager();
 		Assert.notNull(namedSqlFileManager);
 		
 		ResourceAdapter<?> sqlFile = getSqlFile(queryProvideManager.getDataSource());

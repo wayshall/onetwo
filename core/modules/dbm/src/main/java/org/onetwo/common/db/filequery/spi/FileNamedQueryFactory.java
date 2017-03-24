@@ -12,7 +12,7 @@ import org.onetwo.common.utils.Page;
  * @author wayshall
  *
  */
-public interface FileNamedQueryManager {
+public interface FileNamedQueryFactory {
 	
 //	public void initQeuryFactory(QueryProvideManager createQueryable);
 	
@@ -23,11 +23,9 @@ public interface FileNamedQueryManager {
 	 */
 	public DbmNamedQueryInfo getNamedQueryInfo(NamedQueryInvokeContext invokeContext);
 	/***
-	 * 通过queryName查找
-	 * @param queryName
 	 * @return
 	 */
-	public NamedSqlFileManager getNamespacePropertiesManager();
+	public NamedSqlFileManager getNamedSqlFileManager();
 
 	public DbmQueryWrapper createQuery(NamedQueryInvokeContext invokeContext);
 	

@@ -16,7 +16,7 @@ import org.onetwo.common.db.EntityManagerProvider;
 import org.onetwo.common.db.builder.QueryBuilder;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.filequery.DbmNamedSqlFileManager;
-import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryFactory;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.db.sqlext.SelectExtQuery;
@@ -29,7 +29,7 @@ import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.core.spi.DbmSessionImplementor;
 import org.onetwo.dbm.exception.EntityNotFoundException;
 import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
-import org.onetwo.dbm.query.DbmNamedFileQueryManagerImpl;
+import org.onetwo.dbm.query.DbmNamedFileQueryFactory;
 import org.onetwo.dbm.query.DbmQuery;
 import org.onetwo.dbm.query.DbmQueryWrapperImpl;
 import org.springframework.beans.factory.DisposableBean;
@@ -43,7 +43,7 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 //	private JFishList<JFishEntityManagerLifeCycleListener> emListeners;
 //	private ApplicationContext applicationContext;
 	
-	private FileNamedQueryManager fileNamedQueryManager;
+	private FileNamedQueryFactory fileNamedQueryFactory;
 //	private boolean watchSqlFile = false;
 //	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
@@ -88,11 +88,10 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 //		this.entityManagerWraper = jfishDao.getEntityManagerWraper();
 		//不在set方法里设置，避免循环依赖
 //		this.fileNamedQueryFactory = SpringUtils.getBean(applicationContext, FileNamedQueryFactory.class);
-		
+		//每个sessionFatory对应一个DbmNamedSqlFileManager，避免多sf时查找到别的sf的namedQuery
 		DbmNamedSqlFileManager sqlFileManager = DbmNamedSqlFileManager.createNamedSqlFileManager(sessionFactory.getDataBaseConfig().isWatchSqlFile());
-		DbmNamedFileQueryManagerImpl fq = new DbmNamedFileQueryManagerImpl(sqlFileManager);
-		fq.setQueryProvideManager(this);
-		this.fileNamedQueryManager = fq;
+		DbmNamedFileQueryFactory fq = new DbmNamedFileQueryFactory(sqlFileManager);
+		this.fileNamedQueryFactory = fq;
 			
 	}
 
@@ -225,8 +224,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 	
 
 	@Override
-	public FileNamedQueryManager getFileNamedQueryManager() {
-		return this.fileNamedQueryManager;
+	public FileNamedQueryFactory getFileNamedQueryManager() {
+		return this.fileNamedQueryFactory;
 	}
 
 	@Override
@@ -350,8 +349,8 @@ public class DbmEntityManagerImpl extends BaseEntityManagerAdapter implements Db
 		return sessionFactory;
 	}
 
-	public void setFileNamedQueryManager(FileNamedQueryManager fileNamedQueryFactory) {
-		this.fileNamedQueryManager = fileNamedQueryFactory;
+	public void setFileNamedQueryManager(FileNamedQueryFactory fileNamedQueryFactory) {
+		this.fileNamedQueryFactory = fileNamedQueryFactory;
 	}
 
 

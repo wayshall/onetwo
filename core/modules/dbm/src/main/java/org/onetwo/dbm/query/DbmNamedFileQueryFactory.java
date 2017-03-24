@@ -13,10 +13,10 @@ import org.onetwo.common.utils.Page;
 import org.springframework.jdbc.core.RowMapper;
 
 
-public class DbmNamedFileQueryManagerImpl extends AbstractFileNamedQueryFactory {
+public class DbmNamedFileQueryFactory extends AbstractFileNamedQueryFactory {
 
 
-	public DbmNamedFileQueryManagerImpl(DbmNamedSqlFileManager sqlFileManager) {
+	public DbmNamedFileQueryFactory(DbmNamedSqlFileManager sqlFileManager) {
 		super(sqlFileManager);
 	}
 

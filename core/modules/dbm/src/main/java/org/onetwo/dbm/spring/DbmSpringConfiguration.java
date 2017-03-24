@@ -8,7 +8,7 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
-import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryFactory;
 import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
@@ -144,7 +144,7 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 
 	@Bean
 	@Autowired
-	public FileNamedQueryManager fileNamedQueryFactory(DbmEntityManager entityManager){
+	public FileNamedQueryFactory fileNamedQueryFactory(DbmEntityManager entityManager){
 		/*JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 //		fq.initQeuryFactory(createQueryable);

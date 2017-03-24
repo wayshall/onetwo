@@ -5,20 +5,27 @@ import java.util.List;
 import org.onetwo.common.db.DataBase;
 import org.onetwo.common.db.DbmQueryWrapper;
 import org.onetwo.common.db.dquery.NamedQueryInvokeContext;
-import org.onetwo.common.db.filequery.spi.FileNamedQueryManager;
+import org.onetwo.common.db.filequery.spi.FileNamedQueryFactory;
 import org.onetwo.common.db.filequery.spi.FileNamedSqlGenerator;
+import org.onetwo.common.db.filequery.spi.NamedSqlFileManager;
 import org.onetwo.common.utils.LangUtils;
 
-abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryManager {
+abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryFactory {
 
 //	private FileNamedQueryFactoryListener fileNamedQueryFactoryListener;
 //	private QueryProvideManager queryProvideManager;
 	protected DbmNamedSqlFileManager sqlFileManager;
-	private DataBase dataBase;
+//	private DataBase dataBase;
 
-	public AbstractFileNamedQueryFactory(DbmNamedSqlFileManager sqlFileManager, DataBase dataBase) {
+	public AbstractFileNamedQueryFactory(DbmNamedSqlFileManager sqlFileManager) {
 		this.sqlFileManager = sqlFileManager;
-		this.dataBase = dataBase;
+//		this.dataBase = dataBase;
+	}
+
+
+	@Override
+	public NamedSqlFileManager getNamedSqlFileManager() {
+		return sqlFileManager;
 	}
 
 
@@ -46,6 +53,7 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 	}
 	@Override
 	public FileNamedSqlGenerator createFileNamedSqlGenerator(NamedQueryInvokeContext invokeContext) {
+		DataBase dataBase = invokeContext.getQueryProvideManager().getSessionFactory().getDialect().getDbmeta().getDataBase();
 		DbmNamedQueryInfo nameInfo = getNamedQueryInfo(invokeContext);
 		FileNamedSqlGenerator g = new DefaultFileNamedSqlGenerator(nameInfo, false, sqlFileManager.getSqlStatmentParser(), invokeContext.getParsedParams(), dataBase);
 		return g;
@@ -59,15 +67,6 @@ abstract public class AbstractFileNamedQueryFactory implements FileNamedQueryMan
 	public void setQueryProvideManager(QueryProvideManager queryProvideManager) {
 		this.queryProvideManager = queryProvideManager;
 	}*/
-
-	public DataBase getDataBase() {
-		return dataBase;
-	}
-
-	public void setDataBase(DataBase dataBase) {
-		this.dataBase = dataBase;
-	}
-
 
 	public DbmNamedSqlFileManager getSqlFileManager() {
 		return sqlFileManager;
