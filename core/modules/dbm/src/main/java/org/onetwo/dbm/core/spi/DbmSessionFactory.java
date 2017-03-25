@@ -6,7 +6,6 @@ import javax.sql.DataSource;
 
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.core.internal.DbmInterceptorManager;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
@@ -40,7 +39,7 @@ public interface DbmSessionFactory {
 	 */
 	DbmSession openSession();
 
-	SimpleDbmInnerServiceRegistry getServiceRegistry();
+	DbmInnerServiceRegistry getServiceRegistry();
 
 	RowMapperFactory getRowMapperFactory();
 

@@ -14,11 +14,12 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.core.Jsr303EntityValidator;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.core.internal.DbmEntityManagerImpl;
 import org.onetwo.dbm.core.internal.DbmSessionFactoryImpl;
+import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.core.spi.DbmEntityManager;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -137,31 +138,31 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 		return jem;
 	}
 	
-	@Bean
+	/*@Bean
 	public DataQueryFilterListener dataQueryFilterListener(){
 		return new DataQueryFilterListener();
-	}
+	}*/
 
-	@Bean
+	/*@Bean
 	@Autowired
 	public FileNamedQueryFactory fileNamedQueryFactory(DbmEntityManager entityManager){
-		/*JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
+		JFishNamedSqlFileManager sqlFileManager = JFishNamedSqlFileManager.createNamedSqlFileManager(defaultDataBaseConfig().isWatchSqlFile());
 		JFishNamedFileQueryManagerImpl fq = new JFishNamedFileQueryManagerImpl(sqlFileManager);
 //		fq.initQeuryFactory(createQueryable);
 		fq.setQueryProvideManager(jfishEntityManager());
-		return fq;*/
+		return fq;
 		return entityManager.getFileNamedQueryManager();
-	}
+	}*/
 	
-	@Bean
-	public SimpleDbmInnerServiceRegistry dbmInnerServiceRegistry(DbmSessionFactory sessionFactory){
+	/*@Bean
+	public DbmInnerServiceRegistry dbmInnerServiceRegistry(DbmSessionFactory sessionFactory){
 		DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, sessionFactory);
 		SimpleDbmInnerServiceRegistry serviceRegistry = SimpleDbmInnerServiceRegistry.obtainServiceRegistry(context);
 		if(validator!=null){
 			serviceRegistry.setEntityValidator(new Jsr303EntityValidator(validator));
 		}
 		return serviceRegistry;
-	}
+	}*/
 	
 	private Collection<String> getAllDbmPackageNames(){
 		Collection<String> packageNames = DbmUtils.getAllDbmPackageNames(applicationContext);

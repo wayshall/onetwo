@@ -13,16 +13,16 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 
-public class JFishExtQueryImpl extends SelectExtQueryImpl {
+public class DbmExtQueryImpl extends SelectExtQueryImpl {
 
-	DbmMappedEntry entry;
+	private DbmMappedEntry entry;
 	
-	public JFishExtQueryImpl(DbmMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
+	public DbmExtQueryImpl(DbmMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager) {
 		super(entityClass, alias, params, symbolManager);
 		this.entry = entry;
 	}
 
-	public JFishExtQueryImpl(DbmMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
+	public DbmExtQueryImpl(DbmMappedEntry entry, Class<?> entityClass, String alias, Map<?, ?> params, SQLSymbolManager symbolManager, List<ExtQueryListener> listeners) {
 		super(entityClass, alias, params, symbolManager, listeners);
 		this.entry = entry;
 	}

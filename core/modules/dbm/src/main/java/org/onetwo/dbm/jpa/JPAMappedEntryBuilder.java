@@ -27,7 +27,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.AbstractMappedField;
@@ -59,7 +59,7 @@ public class JPAMappedEntryBuilder extends DbmMappedEntryBuilder {
 		versionTypes = Collections.unmodifiableMap(tem);
 	}
 	
-	public JPAMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public JPAMappedEntryBuilder(DbmInnerServiceRegistry serviceRegistry) {
 		super(serviceRegistry);
 	}
 

@@ -126,6 +126,11 @@
        <optional>true</optional>
     </dependency>
     
+    <dependency>
+	    <groupId>org.springframework.data</groupId>
+	    <artifactId>spring-data-commons</artifactId>
+    </dependency>
+    
     <!-- for test -->
     <dependency>
         <groupId>org.codehaus.groovy</groupId>

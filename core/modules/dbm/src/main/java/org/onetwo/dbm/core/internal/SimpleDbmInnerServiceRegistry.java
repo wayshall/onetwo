@@ -1,9 +1,10 @@
-package org.onetwo.dbm.core;
+package org.onetwo.dbm.core.internal;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 import javax.validation.Validator;
@@ -17,8 +18,8 @@ import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.core.internal.DbmInterceptorManager;
-import org.onetwo.dbm.core.internal.SessionCacheInterceptor;
+import org.onetwo.dbm.core.Jsr303EntityValidator;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.dialet.AbstractDBDialect.DBMeta;
@@ -60,7 +61,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class SimpleDbmInnerServiceRegistry {
+public class SimpleDbmInnerServiceRegistry implements DbmInnerServiceRegistry {
 
 	final private static LoadingCache<DbmServiceRegistryCreateContext, SimpleDbmInnerServiceRegistry> SERVICE_REGISTRY_MAPPER = CacheBuilder.newBuilder()
 																						.weakKeys()
@@ -111,36 +112,51 @@ public class SimpleDbmInnerServiceRegistry {
 	
 	private SqlParamterPostfixFunctionRegistry sqlParamterPostfixFunctionRegistry;
 	
+	private ApplicationContext applicationContext;
+	
+	private <T> T initializeComponent(T component, Class<T> componentClass, Supplier<T> initializer){
+		if(component!=null){
+			return component;
+		}
+		if(applicationContext==null){
+			return initializer.get();
+		}
+		T componentBean = SpringUtils.getBean(applicationContext, componentClass);
+		if(componentBean==null){
+			componentBean = initializer.get();
+		}
+		return componentBean;
+	}
+	
+	@Override
 	public void initialize(DbmServiceRegistryCreateContext context){
 		DataSource dataSource = context.getDataSource();
+		this.applicationContext = context.getApplicationContext();
 		
-		if(dataBaseConfig==null){
-			dataBaseConfig = new DefaultDbmConfig();
-		}
-		if(jdbcParameterSetter==null){
-			this.jdbcParameterSetter = new SpringStatementParameterSetter();
-		}
-		if(jdbcResultSetGetter==null){
-			this.jdbcResultSetGetter = new SpringJdbcResultSetGetter();
-		}
-		if(sqlParamterPostfixFunctionRegistry==null){
-			this.sqlParamterPostfixFunctionRegistry = new SqlParamterPostfixFunctions();
-		}
-		if(typeMapping==null){
-			this.typeMapping = new DbmTypeMapping();
-		}
-		if(databaseDialetManager==null){
-			this.databaseDialetManager = new DefaultDatabaseDialetManager();
-			this.databaseDialetManager.register(DataBase.MySQL.getName(), new MySQLDialect());
-			this.databaseDialetManager.register(DataBase.Oracle.getName(), new OracleDialect());
-		}
+		dataBaseConfig = initializeComponent(dataBaseConfig, DbmConfig.class, ()->new DefaultDbmConfig());
 		
-		Validator validator = context.getEntityValidator();
-		if(validator!=null){
-			this.entityValidator = new Jsr303EntityValidator(validator);
-		}
+		jdbcParameterSetter = initializeComponent(jdbcParameterSetter, JdbcStatementParameterSetter.class, ()->new SpringStatementParameterSetter());
 		
-//		super.initDao();
+		jdbcResultSetGetter = initializeComponent(jdbcResultSetGetter, JdbcResultSetGetter.class, ()->new SpringJdbcResultSetGetter());
+		
+		sqlParamterPostfixFunctionRegistry = initializeComponent(sqlParamterPostfixFunctionRegistry, SqlParamterPostfixFunctionRegistry.class, ()->new SqlParamterPostfixFunctions());
+		typeMapping = initializeComponent(typeMapping, DbmTypeMapping.class, ()->new DbmTypeMapping());
+		
+		databaseDialetManager = initializeComponent(databaseDialetManager, DefaultDatabaseDialetManager.class, ()->{
+			DefaultDatabaseDialetManager databaseDialetManager = new DefaultDatabaseDialetManager();
+			databaseDialetManager.register(DataBase.MySQL.getName(), new MySQLDialect());
+			databaseDialetManager.register(DataBase.Oracle.getName(), new OracleDialect());
+			return databaseDialetManager;
+		});
+
+		entityValidator = initializeComponent(entityValidator, EntityValidator.class, ()->{
+			Validator validator = SpringUtils.getBean(applicationContext, Validator.class);
+			if(validator!=null){
+				return new Jsr303EntityValidator(validator);
+			}
+			return null;
+		});
+
 		if(this.dialect==null){
 			DBMeta dbmeta = DbmetaFetcher.create(dataSource).getDBMeta();
 //			this.dialect = JFishSpringUtils.getMatchDBDiaclet(applicationContext, dbmeta);
@@ -152,9 +168,8 @@ public class SimpleDbmInnerServiceRegistry {
 			this.dialect.getDbmeta().setVersion(dbmeta.getVersion());
 			this.dialect.initialize();
 		}
-		
-		//mappedEntryManager
-		if(mappedEntryManager==null){
+
+		mappedEntryManager = initializeComponent(mappedEntryManager, MappedEntryManager.class, ()->{
 			MutilMappedEntryManager entryManager = new MutilMappedEntryManager();
 //			this.mappedEntryManager.initialize();
 			
@@ -168,28 +183,25 @@ public class SimpleDbmInnerServiceRegistry {
 			builders.add(builder);
 //			this.mappedEntryBuilders = ImmutableList.copyOf(builders);
 			entryManager.setMappedEntryBuilder(ImmutableList.copyOf(builders));
-			this.mappedEntryManager = entryManager;
 			
-		}
-		MultiMappedEntryListener ml = new MultiMappedEntryListener();
-		mappedEntryManager.setMappedEntryManagerListener(ml);
+			MultiMappedEntryListener ml = new MultiMappedEntryListener();
+			entryManager.setMappedEntryManagerListener(ml);
+			return entryManager;
+		});
 		
 		//init sql symbol
-		if(sqlSymbolManager==null){
+		sqlSymbolManager = initializeComponent(sqlSymbolManager, SQLSymbolManager.class, ()->{
 			JFishSQLSymbolManagerImpl newSqlSymbolManager = JFishSQLSymbolManagerImpl.create();
 //			newSqlSymbolManager.setDialect(dialect);
 			newSqlSymbolManager.setMappedEntryManager(mappedEntryManager);
 			newSqlSymbolManager.setListeners(Arrays.asList(new DataQueryFilterListener()));
-			this.sqlSymbolManager = newSqlSymbolManager;
-		}
+			return newSqlSymbolManager;
+		});
 		
 //		this.mappedEntryManager = SpringUtils.getHighestOrder(applicationContext, MappedEntryManager.class);
-		this.rowMapperFactory = new DbmRowMapperFactory(mappedEntryManager, jdbcResultSetGetter);
+		rowMapperFactory = initializeComponent(rowMapperFactory, RowMapperFactory.class, ()->new DbmRowMapperFactory(mappedEntryManager, jdbcResultSetGetter));
+		sequenceNameManager = initializeComponent(sequenceNameManager, SequenceNameManager.class, ()->new JPASequenceNameManager());
 
-		if(this.sequenceNameManager==null){
-			this.sequenceNameManager = new JPASequenceNameManager();
-		}
-		
 		if(interceptors==null){
 			interceptors = Lists.newArrayList();
 		}
@@ -213,10 +225,12 @@ public class SimpleDbmInnerServiceRegistry {
 		}
 	}
 
+	@Override
 	public DBDialect getDialect() {
 		return dialect;
 	}
 
+	@Override
 	public DbmJdbcOperations getDbmJdbcOperations() {
 		return dbmJdbcOperations;
 	}
@@ -228,62 +242,75 @@ public class SimpleDbmInnerServiceRegistry {
 	}
 
 
+	@Override
 	public JdbcStatementParameterSetter getJdbcParameterSetter() {
 		return jdbcParameterSetter;
 	}
 
+	@Override
 	public DbmInterceptorManager getInterceptorManager() {
 		return interceptorManager;
 	}
 	public void setInterceptorManager(DbmInterceptorManager interceptorManager) {
 		this.interceptorManager = interceptorManager;
 	}
+	@Override
 	public MappedEntryManager getMappedEntryManager() {
 		return mappedEntryManager;
 	}
 
+	@Override
 	public SQLSymbolManager getSqlSymbolManager() {
 		return sqlSymbolManager;
 	}
 
+	@Override
 	public SequenceNameManager getSequenceNameManager() {
 		return sequenceNameManager;
 	}
 
+	@Override
 	public DefaultDatabaseDialetManager getDatabaseDialetManager() {
 		return databaseDialetManager;
 	}
 
+	@Override
 	public DbmConfig getDataBaseConfig() {
 		return dataBaseConfig;
 	}
 
+	@Override
 	public RowMapperFactory getRowMapperFactory() {
 		return rowMapperFactory;
 	}
 
+	@Override
 	public <T> T getService(Class<T> clazz) {
 		Assert.notNull(clazz);
 		return clazz.cast(getService(clazz.getName()));
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getService(String name) {
 		Assert.hasText(name);
 		return (T) services.get(name);
 	}
 
-	public <T> SimpleDbmInnerServiceRegistry register(T service) {
+	@Override
+	public <T> DbmInnerServiceRegistry register(T service) {
 		return register(service.getClass().getName(), service);
 	}
 
-	public <T> SimpleDbmInnerServiceRegistry register(String name, T service) {
+	@Override
+	public <T> DbmInnerServiceRegistry register(String name, T service) {
 		Assert.hasText(name);
 		Assert.notNull(service);
 		services.put(name, service);
 		return this;
 	}
 
+	@Override
 	public EntityValidator getEntityValidator() {
 		return entityValidator;
 	}
@@ -294,6 +321,7 @@ public class SimpleDbmInnerServiceRegistry {
 	}
 
 
+	@Override
 	public DbmTypeMapping getTypeMapping() {
 		return typeMapping;
 	}
@@ -304,6 +332,7 @@ public class SimpleDbmInnerServiceRegistry {
 	}
 
 	
+	@Override
 	public SqlParamterPostfixFunctionRegistry getSqlParamterPostfixFunctionRegistry() {
 		return sqlParamterPostfixFunctionRegistry;
 	}
@@ -316,9 +345,6 @@ public class SimpleDbmInnerServiceRegistry {
 	public static class DbmServiceRegistryCreateContext {
 		final private DbmSessionFactory sessionFactory;
 		final private ApplicationContext applicationContext;
-		public DbmServiceRegistryCreateContext(DbmSessionFactory sessionFactory) {
-			this(null, sessionFactory);
-		}
 		public DbmServiceRegistryCreateContext(ApplicationContext applicationContext, DbmSessionFactory sessionFactory) {
 			super();
 			this.sessionFactory = sessionFactory;
@@ -332,12 +358,6 @@ public class SimpleDbmInnerServiceRegistry {
 		}
 		public ApplicationContext getApplicationContext() {
 			return applicationContext;
-		}
-		public Validator getEntityValidator(){
-			if(applicationContext==null){
-				return null;
-			}
-			return SpringUtils.getBean(applicationContext, Validator.class);
 		}
 		@Override
 		public int hashCode() {

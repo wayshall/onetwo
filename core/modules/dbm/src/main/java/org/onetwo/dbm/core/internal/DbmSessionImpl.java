@@ -18,7 +18,7 @@ import org.onetwo.common.db.sqlext.SelectExtQuery;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.core.spi.DbmSession;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.core.spi.DbmTransaction;
@@ -575,7 +575,7 @@ public class DbmSessionImpl extends AbstractDbmSession implements DbmSessionEven
 	}
 
 
-	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
+	public DbmInnerServiceRegistry getServiceRegistry() {
 		return sessionFactory.getServiceRegistry();
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 public class DbmMappedEntryImpl extends AbstractDbmMappedEntryImpl implements DbmMappedEntry {
@@ -22,7 +22,7 @@ public class DbmMappedEntryImpl extends AbstractDbmMappedEntryImpl implements Db
 	private EntrySQLBuilderImpl staticCreateSeqSqlBuilder;
 	private EntrySQLBuilderImpl staticSelectVersionSqlBuilder;
 	
-	public DbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public DbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, DbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 

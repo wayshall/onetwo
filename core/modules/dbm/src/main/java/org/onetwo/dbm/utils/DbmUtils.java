@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.convert.Types;
@@ -28,6 +30,7 @@ import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.JFishProperty;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.core.spi.DbmTransaction;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
@@ -41,12 +44,16 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.Lists;
 
@@ -56,6 +63,11 @@ final public class DbmUtils {
 	
 	public final static ConversionService CONVERSION_SERVICE = new DefaultConversionService();
 	
+	private static final String CHAINED_TRANSACTION_MANAGER = "org.springframework.data.transaction.ChainedTransactionManager";
+	
+	public static boolean isChanedTransactionManagerPresent(){
+		return ClassUtils.isPresent(CHAINED_TRANSACTION_MANAGER, ClassUtils.getDefaultClassLoader());
+	}
 	public static void throwIfEffectiveCountError(String errorMsg, int expectCount, int effectiveCount){
 		if(effectiveCount!=expectCount)
 			throw new UpdateCountException(errorMsg, expectCount, effectiveCount);
@@ -277,6 +289,62 @@ final public class DbmUtils {
 			logger.error("Application exception overridden by rollback error", ex);
 			throw err;
 		}
+	}
+	
+
+	/*****
+	 * find the {@link PlatformTransactionManager} from {@link ApplicationContext} by {@link DataSource}
+	 * @param applicationContext
+	 * @param dataSource
+	 * @return
+	 */
+	public static PlatformTransactionManager getDataSourceTransactionManager(ApplicationContext applicationContext, DataSource dataSource){
+		if(DbmUtils.isChanedTransactionManagerPresent()){
+			List<ChainedTransactionManager> chaineds = SpringUtils.getBeans(applicationContext, ChainedTransactionManager.class);
+			for(ChainedTransactionManager chain : chaineds){
+				if(isChanedTMContainDataSource(chain, dataSource)){
+					return chain;
+				}
+			}
+		}
+		Map<String, DataSourceTransactionManager> tms = SpringUtils.getBeansAsMap(applicationContext, DataSourceTransactionManager.class);
+		Entry<String, DataSourceTransactionManager> tm = null;
+		for(Entry<String, DataSourceTransactionManager> entry : tms.entrySet()){
+			if(isSameDataSource(entry.getValue(), dataSource)){
+				tm = entry;
+				break;
+			}
+		}
+		if(tm!=null){
+			if(logger.isDebugEnabled()){
+				logger.debug("auto find DataSourceTransactionManager for current dataSource: {}", tm.getKey());
+			}
+			return tm.getValue();
+		}else{
+			throw new DbmException("no DataSourceTransactionManager configurate for dataSource: " + dataSource);
+		}
+	}
+	
+	public static boolean isSameDataSource(DataSourceTransactionManager tm, DataSource dataSource){
+		return tm.getDataSource().equals(dataSource);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static boolean isChanedTMContainDataSource(ChainedTransactionManager chained, DataSource dataSource){
+		List<PlatformTransactionManager> lists = (List<PlatformTransactionManager>)ReflectUtils.getFieldValue(chained, "transactionManagers");
+		if(LangUtils.isEmpty(lists)){
+			return false;
+		}
+		for(PlatformTransactionManager tm : lists){
+			if(!DataSourceTransactionManager.class.isInstance(tm)){
+				continue;
+			}
+			DataSourceTransactionManager dtm = (DataSourceTransactionManager)tm;
+			if(isSameDataSource(dtm, dataSource)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private DbmUtils(){

@@ -20,7 +20,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.annotation.DbmColumn;
 import org.onetwo.dbm.annotation.DbmEntity;
 import org.onetwo.dbm.annotation.DbmQueryable;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.dialet.AbstractDBDialect.StrategyType;
 import org.onetwo.dbm.dialet.DBDialect;
 import org.onetwo.dbm.exception.DbmException;
@@ -44,13 +44,13 @@ public class DbmMappedEntryBuilder implements MappedEntryBuilder, RegisterManage
 	private MappedEntryBuilderListenerManager listenerManager;
 	
 	final private Map<String, MappedEntryBuilderListener> builderListeners = new LinkedHashMap<>();
-	protected final SimpleDbmInnerServiceRegistry serviceRegistry;
+	protected final DbmInnerServiceRegistry serviceRegistry;
 
 	public Map<String, MappedEntryBuilderListener> getRegister() {
 		return builderListeners;
 	}
 
-	public DbmMappedEntryBuilder(SimpleDbmInnerServiceRegistry serviceRegistry){
+	public DbmMappedEntryBuilder(DbmInnerServiceRegistry serviceRegistry){
 		this.serviceRegistry = serviceRegistry;
 		this.dialect = this.serviceRegistry.getDialect();
 	}

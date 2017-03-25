@@ -11,8 +11,8 @@ import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.core.DbmTransactionSynchronization;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
+import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.core.spi.DbmSession;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.core.spi.DbmTransaction;
@@ -24,9 +24,11 @@ import org.onetwo.dbm.jdbc.mapper.RowMapperFactory;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
+import org.onetwo.dbm.utils.DbmUtils;
 import org.onetwo.dbm.utils.Dbms;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -43,6 +45,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
+	@Autowired
 	private ApplicationContext applicationContext;
 	
 
@@ -55,7 +58,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 	private DefaultDatabaseDialetManager databaseDialetManager;
 	protected DbmConfig dataBaseConfig;
-	private SimpleDbmInnerServiceRegistry serviceRegistry;
+	private DbmInnerServiceRegistry serviceRegistry;
 	protected String[] packagesToScan;
 	
 	private AtomicLong idGenerator = new AtomicLong(0);
@@ -80,7 +83,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	@Override
 	public void afterPropertiesSet() {
 		if(transactionManager==null && applicationContext!=null){
-			this.transactionManager = Dbms.getDataSourceTransactionManager(applicationContext, dataSource);
+			this.transactionManager = DbmUtils.getDataSourceTransactionManager(applicationContext, dataSource);
 		}
 		if(serviceRegistry==null){
 			DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, this);
@@ -90,7 +93,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		this.initialize(serviceRegistry);
 	}
 	
-	protected void initialize(SimpleDbmInnerServiceRegistry serviceRegistry) {
+	protected void initialize(DbmInnerServiceRegistry serviceRegistry) {
 		/*this.serviceRegistry = new SimpleDbmInnserServiceRegistry();
 		this.serviceRegistry.initialize(getDataSource(), packagesToScan);*/
 //		SimpleDbmInnerServiceRegistry serviceRegistry = getServiceRegistry();
@@ -254,11 +257,11 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	}
 
 	@Override
-	public SimpleDbmInnerServiceRegistry getServiceRegistry() {
+	public DbmInnerServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
 	}
 
-	public void setServiceRegistry(SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public void setServiceRegistry(DbmInnerServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
 

@@ -21,7 +21,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.annotation.DbmEntityListeners;
 import org.onetwo.dbm.annotation.DbmFieldListeners;
 import org.onetwo.dbm.annotation.DbmValidatorEnabled;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.event.DbmEntityFieldListener;
 import org.onetwo.dbm.event.DbmEntityListener;
 import org.onetwo.dbm.event.DbmEventAction;
@@ -74,7 +74,7 @@ abstract public class AbstractDbmMappedEntryImpl implements DbmMappedEntry {
 		this(annotationInfo, null);
 	}*/
 	
-	public AbstractDbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public AbstractDbmMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, DbmInnerServiceRegistry serviceRegistry) {
 		this.entityClass = annotationInfo.getSourceClass();
 		this.annotationInfo = annotationInfo;
 		this.sqlTypeMapping = serviceRegistry.getTypeMapping();

@@ -3,7 +3,7 @@ package org.onetwo.dbm.mapping;
 import java.util.Collection;
 
 import org.onetwo.common.annotation.AnnotationInfo;
-import org.onetwo.dbm.core.SimpleDbmInnerServiceRegistry;
+import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.mapping.SQLBuilderFactory.SqlBuilderType;
 
 /****
@@ -18,7 +18,7 @@ public class DbmJoinedMappedEntryImpl extends AbstractDbmMappedEntryImpl impleme
 	private EntrySQLBuilderImpl staticDeleteSqlBuilder;
 	private EntrySQLBuilderImpl staticFetchAllSqlBuilder;
 	
-	public DbmJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, SimpleDbmInnerServiceRegistry serviceRegistry) {
+	public DbmJoinedMappedEntryImpl(AnnotationInfo annotationInfo, TableInfo tableInfo, DbmInnerServiceRegistry serviceRegistry) {
 		super(annotationInfo, tableInfo, serviceRegistry);
 	}
 	

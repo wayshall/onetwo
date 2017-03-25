@@ -32,7 +32,7 @@ public class JFishSQLSymbolManagerImpl extends DefaultSQLSymbolManagerImpl {
 		if(mappedEntryManager!=null){
 			entry = this.mappedEntryManager.getEntry(entityClass);
 		}
-		SelectExtQuery q = new JFishExtQueryImpl(entry, entityClass, alias, properties, this, this.getListeners());
+		SelectExtQuery q = new DbmExtQueryImpl(entry, entityClass, alias, properties, this, this.getListeners());
 		q.initQuery();
 		return q;
 	}
