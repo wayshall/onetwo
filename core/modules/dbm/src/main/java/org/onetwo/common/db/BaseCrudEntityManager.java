@@ -26,9 +26,6 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	protected Class<T> entityClass;
 	protected volatile BaseEntityManager baseEntityManager;
 
-	public BaseCrudEntityManager(Class<T> entityClass){
-		this(entityClass, Springs.getInstance().getBean(BaseEntityManager.class));
-	}
 	
 	public BaseCrudEntityManager(Class<T> entityClass, BaseEntityManager baseEntityManager){
 		if(entityClass==null){
@@ -40,8 +37,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	}
 	
 	public BaseCrudEntityManager(BaseEntityManager baseEntityManager){
-		this((Class<T>)null);
-		this.baseEntityManager = baseEntityManager;
+		this((Class<T>)null, baseEntityManager);
 	}
 
 	public BaseEntityManager getBaseEntityManager() {

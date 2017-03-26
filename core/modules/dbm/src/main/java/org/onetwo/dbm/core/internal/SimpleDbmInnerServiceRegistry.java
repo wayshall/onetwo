@@ -28,6 +28,7 @@ import org.onetwo.dbm.dialet.DbmetaFetcher;
 import org.onetwo.dbm.dialet.DefaultDatabaseDialetManager;
 import org.onetwo.dbm.dialet.MySQLDialect;
 import org.onetwo.dbm.dialet.OracleDialect;
+import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.jdbc.DbmJdbcOperations;
 import org.onetwo.dbm.jdbc.DbmJdbcOperationsProxy;
 import org.onetwo.dbm.jdbc.DbmJdbcTemplate;
@@ -130,6 +131,13 @@ public class SimpleDbmInnerServiceRegistry implements DbmInnerServiceRegistry {
 	
 	@Override
 	public void initialize(DbmServiceRegistryCreateContext context){
+		try {
+			initialize0(context);
+		} catch (Exception e) {
+			throw new DbmException("initialize dbm component error.", e);
+		}
+	}
+	public void initialize0(DbmServiceRegistryCreateContext context) throws Exception{
 		DataSource dataSource = context.getDataSource();
 		this.applicationContext = context.getApplicationContext();
 		
@@ -214,6 +222,7 @@ public class SimpleDbmInnerServiceRegistry implements DbmInnerServiceRegistry {
 			}
 			DbmInterceptorManager interceptorManager = new DbmInterceptorManager();
 			interceptorManager.setInterceptors(ImmutableList.copyOf(interceptors));
+			interceptorManager.afterPropertiesSet();
 			this.interceptorManager = interceptorManager;
 		}
 		if(this.dbmJdbcOperations==null){

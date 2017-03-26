@@ -1,10 +1,8 @@
 package org.onetwo.dbm.core.internal;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.onetwo.common.annotation.AnnotationUtils;
@@ -12,14 +10,15 @@ import org.onetwo.common.utils.map.CollectionMap;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
 import org.onetwo.dbm.core.spi.DbmInterceptor;
-import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 
 import com.google.common.collect.ImmutableList;
 
+@Order(value=Ordered.HIGHEST_PRECEDENCE)
 public class DbmInterceptorManager implements InitializingBean {
 	
 	@Autowired

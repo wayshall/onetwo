@@ -20,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 abstract public class DbmCrudServiceImpl<T, PK extends Serializable> extends BaseCrudEntityManager<T, PK> {
 
-	
+	public DbmCrudServiceImpl() {
+		this((Class<T>)null);
+	}
 	public DbmCrudServiceImpl(Class<T> entityClass) {
-		super(entityClass);
+		super(entityClass, null);
 	}
 
 	protected DbmCrudServiceImpl(BaseEntityManager baseEntityManager) {

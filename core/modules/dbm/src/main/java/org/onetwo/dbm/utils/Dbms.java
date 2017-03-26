@@ -119,7 +119,7 @@ final public class Dbms {
 	 * @return
 	 */
 	public static <E, ID  extends Serializable> CrudEntityManager<E, ID> newCrudManager(Class<E> entityClass){
-		return new BaseCrudEntityManager<>(entityClass);
+		return new BaseCrudEntityManager<>(entityClass, null);
 	}
 	
 	static Pair<String, BeanDefinition> createCrudEntityManagerBeanBeanDefinition(Class<?> entityClass){

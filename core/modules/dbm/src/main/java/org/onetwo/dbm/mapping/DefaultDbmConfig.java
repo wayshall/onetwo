@@ -22,6 +22,8 @@ public class DefaultDbmConfig implements DbmConfig {
 	private String dataSource;
 	
 	private EnableDbmAttributes enableDbmAttributes;
+	
+	private boolean enableSessionCache;
 
 	public DefaultDbmConfig(){
 	}
@@ -46,6 +48,14 @@ public class DefaultDbmConfig implements DbmConfig {
 	@Override
 	public void onEnableDbmAttributes(EnableDbmAttributes attributes) {
 		this.enableDbmAttributes = attributes;
+	}
+
+	public boolean isEnableSessionCache() {
+		return enableSessionCache;
+	}
+
+	public void setEnableSessionCache(boolean enableSessionCache) {
+		this.enableSessionCache = enableSessionCache;
 	}
 
 	public EnableDbmAttributes getEnableDbmAttributes() {

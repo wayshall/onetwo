@@ -25,7 +25,6 @@ import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.onetwo.dbm.utils.DbmUtils;
-import org.onetwo.dbm.utils.Dbms;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +141,18 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	}
 	
 	public DbmSession getSession(){
-		return proxySession(getRawSession());
+		DbmSession session = getRawSession();
+		return proxySession(session);
+	}
+	
+	private DbmSessionImpl createDbmSession(DbmTransaction transaction){
+		DbmSessionImpl session = null;
+		if(getDataBaseConfig().isEnableSessionCache()){
+			session = new DbmCacheSessionImpl(this, generateSessionId(), transaction);
+		}else{
+			session = new DbmSessionImpl(this, generateSessionId(), transaction);
+		}
+		return session;
 	}
 	
 	public DbmSession getRawSession(){
@@ -156,7 +166,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		
 		if(TransactionSynchronizationManager.isActualTransactionActive()){//transaction exists in current thread
 			if(DbmTransactionSupports.currentTransactionInfo()==null){//can not get transaction info from thread
-				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+				DbmSessionImpl session = createDbmSession(null);
 				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
 				session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
@@ -165,7 +175,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 				
 			}else if(isTransactionManagerEqualsCurrentTransactionManager()){//if same transactionManager, use current thread TransactionStatus
 				DbmTransaction transaction = createCurrentDbmTransaction();
-				DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), transaction);
+				DbmSessionImpl session = createDbmSession(transaction);
 				session.setTransactionType(SessionTransactionType.CONTEXT_MANAGED);
 				session.setDebug(getDataBaseConfig().isLogSql());
 				session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
@@ -175,7 +185,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		}
 		
 		//otherwise, create new session with DbmSessionTransactionAdvisor
-		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+		DbmSessionImpl session = createDbmSession(null);
 		session.setTransactionType(SessionTransactionType.PROXY);
 		session.setDebug(getDataBaseConfig().isLogSql());
 		session.setDbmJdbcOperations(getServiceRegistry().getDbmJdbcOperations());
@@ -246,7 +256,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	 */
 	@Override
 	public DbmSession openSession(){
-		DbmSessionImpl session = new DbmSessionImpl(this, generateSessionId(), null);
+		DbmSessionImpl session = createDbmSession(null);
 		session.setDebug(getDataBaseConfig().isLogSql());
 		session.setTransactionType(SessionTransactionType.MANUAL);
 		return proxySession(session);

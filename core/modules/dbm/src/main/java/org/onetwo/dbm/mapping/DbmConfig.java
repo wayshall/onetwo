@@ -4,6 +4,7 @@ import org.onetwo.dbm.spring.EnableDbmAttributes;
 
 public interface DbmConfig {
 
+	public boolean isEnableSessionCache();
 	public EnableDbmAttributes getEnableDbmAttributes();
 	public void onEnableDbmAttributes(EnableDbmAttributes attributes);
 
