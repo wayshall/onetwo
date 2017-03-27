@@ -3,6 +3,7 @@ package org.onetwo.common.dbm.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.onetwo.common.base.DbmSessionCacheTest;
 import org.onetwo.common.dbm.BaseCrudEntityManagerTest;
 import org.onetwo.common.dbm.BatchInsertTest;
 import org.onetwo.common.dbm.DbmDaoTest;
@@ -19,6 +20,7 @@ import org.onetwo.common.dbm.TransactionalListenerTest;
 	BaseCrudEntityManagerTest.class,
 	DbmNestedMappingTest.class,
 	TransactionalListenerTest.class,
+	DbmSessionCacheTest.class,
 //	RichModelTest.class
 })
 public class DbmTestCase {

@@ -27,7 +27,7 @@ abstract public class SpringCmdRunner extends CmdRunner {
 //		SpringConfigApplicationContext context = new SpringConfigApplicationContext();
 		AbstractRefreshableConfigApplicationContext context = createApplicationContext();
 //		context.setConfigLocation("");
-		Springs.initApplication(context);
+		Springs.initApplicationIfNotInitialized(context);
 		initApplicationContext(context);
 		context.refresh();
 		this.afterInitApplicationContext(context);

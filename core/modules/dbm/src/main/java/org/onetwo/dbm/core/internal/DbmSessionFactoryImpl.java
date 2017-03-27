@@ -1,6 +1,7 @@
 package org.onetwo.dbm.core.internal;
 
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -9,6 +10,7 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.sql.SequenceNameManager;
 import org.onetwo.common.db.sqlext.SQLSymbolManager;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.dbm.core.DbmTransactionSynchronization;
 import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
@@ -25,11 +27,13 @@ import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.utils.DbmTransactionSupports;
 import org.onetwo.dbm.utils.DbmUtils;
+import org.slf4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -40,7 +44,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactory {
 
-//	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
@@ -64,6 +68,8 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 	
 	private DbmInterceptorManager interceptorManager;
 	
+	private boolean autoCreatedTransactionManager;
+	
 	public DbmSessionFactoryImpl(ApplicationContext applicationContext, PlatformTransactionManager transactionManager,
 			DataSource dataSource) {
 		super();
@@ -79,10 +85,22 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 		this.interceptorManager = interceptorManager;
 	}
 
+	public boolean isAutoCreatedTransactionManager() {
+		return autoCreatedTransactionManager;
+	}
+
 	@Override
 	public void afterPropertiesSet() {
 		if(transactionManager==null && applicationContext!=null){
-			this.transactionManager = DbmUtils.getDataSourceTransactionManager(applicationContext, dataSource);
+			this.transactionManager = DbmUtils.getDataSourceTransactionManager(applicationContext, dataSource, ()->{
+				if(logger.isWarnEnabled()){
+					logger.warn("no transaction manager found for [], dbm auto create a new DataSourceTransactionManager and you must manager transaction manual, "
+							+ "but explicit configurate spring transaction interceptor is recommended",
+							dataSource);
+				}
+				autoCreatedTransactionManager = true;
+				return new DataSourceTransactionManager(dataSource);
+			});
 		}
 		if(serviceRegistry==null){
 			DbmServiceRegistryCreateContext context = new DbmServiceRegistryCreateContext(applicationContext, this);
@@ -184,7 +202,7 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 			}
 		}
 		
-		//otherwise, create new session with DbmSessionTransactionAdvisor
+		//otherwise, create new session with proxy transaction that by DbmSessionTransactionAdvisor
 		DbmSessionImpl session = createDbmSession(null);
 		session.setTransactionType(SessionTransactionType.PROXY);
 		session.setDebug(getDataBaseConfig().isLogSql());
@@ -326,6 +344,16 @@ public class DbmSessionFactoryImpl implements InitializingBean, DbmSessionFactor
 
 	public void setPackagesToScan(String[] packagesToScan) {
 		this.packagesToScan = packagesToScan;
+	}
+
+	@Override
+	public String toString() {
+		return "DbmSessionFactoryImpl [transactionManager="
+				+ transactionManager + ", dataSource=" + dataSource
+				+ ", dialect=" + dialect + ", packagesToScan="
+				+ Arrays.toString(packagesToScan)
+				+ ", autoCreatedTransactionManager="
+				+ autoCreatedTransactionManager + "]";
 	}
 
 }

@@ -15,7 +15,8 @@ public interface DbmInterceptorChain {
 	Object invoke();
 
 	Object getResult();
-
+	
+	Throwable getThrowable();
 
 	Object getTargetObject();
 

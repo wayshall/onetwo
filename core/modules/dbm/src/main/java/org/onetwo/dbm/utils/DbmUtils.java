@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -235,6 +236,9 @@ final public class DbmUtils {
 		List<String> packageNames = new ArrayList<String>();
 		SpringUtils.scanAnnotationPackages(beanFactory, EnableDbm.class, (beanDef, beanClass)->{
 			EnableDbm enableDbm = beanClass.getAnnotation(EnableDbm.class);
+			if(enableDbm==null){
+				return ;
+			}
 			String[] modelPacks = enableDbm.packagesToScan();
 			if(ArrayUtils.isNotEmpty(modelPacks)){
 				for(String pack : modelPacks){
@@ -257,6 +261,9 @@ final public class DbmUtils {
 		List<String> packageNames = new ArrayList<String>();
 		SpringUtils.scanAnnotationPackages(beanFactory, DbmPackages.class, (beanDef, beanClass)->{
 			DbmPackages dbmPackages = beanClass.getAnnotation(DbmPackages.class);
+			if(dbmPackages==null){
+				return ;
+			}
 			String[] modelPacks = dbmPackages.value();
 			if(ArrayUtils.isNotEmpty(modelPacks)){
 				for(String pack : modelPacks){
@@ -298,7 +305,7 @@ final public class DbmUtils {
 	 * @param dataSource
 	 * @return
 	 */
-	public static PlatformTransactionManager getDataSourceTransactionManager(ApplicationContext applicationContext, DataSource dataSource){
+	public static PlatformTransactionManager getDataSourceTransactionManager(ApplicationContext applicationContext, DataSource dataSource, Supplier<PlatformTransactionManager> notFoudCallback){
 		if(DbmUtils.isChanedTransactionManagerPresent()){
 			List<ChainedTransactionManager> chaineds = SpringUtils.getBeans(applicationContext, ChainedTransactionManager.class);
 			for(ChainedTransactionManager chain : chaineds){
@@ -321,6 +328,9 @@ final public class DbmUtils {
 			}
 			return tm.getValue();
 		}else{
+			if(notFoudCallback!=null){
+				return notFoudCallback.get();
+			}
 			throw new DbmException("no DataSourceTransactionManager configurate for dataSource: " + dataSource);
 		}
 	}

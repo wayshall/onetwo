@@ -7,7 +7,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
@@ -152,20 +156,41 @@ public class AnnotationUtils {
 	}
 	
 	public static <T extends Annotation> T findAnnotationWithStopClass(Class<?> clazz, Method method, Class<T> annotationClass, Class<?>...stopClass) {
+		return findAnnotationWithStopClass(true, clazz, method, annotationClass, stopClass);
+	}
+	public static <T extends Annotation> T findAnnotationWithStopClass(boolean findInClass, Class<?> clazz, Method method, Class<T> annotationClass, Class<?>...stopClass) {
+		Objects.requireNonNull(method);
+		if(LangUtils.isEmpty(stopClass)){
+			stopClass = DEFAULT_STOP_CLASS;
+		}
 		T annotation = null;
 		if (method != null)
 			annotation = method.getAnnotation(annotationClass);
-		if (annotation == null)
+		if (annotation == null && findInClass)
 			annotation = clazz.getAnnotation(annotationClass);
 		if (annotation == null) {
-			Class<?> parent = clazz.getSuperclass();
-			if (parent == null || ArrayUtils.contains(stopClass, parent))
-				return null;
+			Class<?> superClass = clazz.getSuperclass();
+			Set<Class<?>> superClasses = new LinkedHashSet<Class<?>>();
+			superClasses.add(superClass);
+			Class<?>[] clsArray = clazz.getInterfaces();
+			if(!LangUtils.isEmpty(clsArray)){
+				Collections.addAll(superClasses, clsArray);
+			}
+			for(Class<?> parent : superClasses){
+				if (parent == null || ArrayUtils.contains(stopClass, parent)){
+					continue;
+				}
 
-			Method parentMethod = null;
-			if (method != null)
-				parentMethod = findMethod(parent, method.getName(), method.getParameterTypes());
-			return findAnnotationWithStopClass(parent, parentMethod, annotationClass, stopClass);
+				Method parentMethod = findMethod(parent, method.getName(), method.getParameterTypes());
+				if(parentMethod==null){
+//					throw new BaseException("parent method["+method.getName()+"] not found in class: " + parent);
+					continue;
+				}
+				annotation = findAnnotationWithStopClass(findInClass, parent, parentMethod, annotationClass, stopClass);
+				if(annotation!=null){
+					return annotation;
+				}
+			}
 		}
 		return annotation;
 	}

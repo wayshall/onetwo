@@ -26,7 +26,8 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 	
 	public static final int STATE_INIT = 0;
 	public static final int STATE_EXECUTING = 1;
-	public static final int STATE_EXECUTED = 2;
+	public static final int STATE_FINISH = 2;
+	public static final int STATE_EXCEPTION = -1;
 
 	final private Object targetObject;
 	final private Method targetMethod;
@@ -37,9 +38,10 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 	private LinkedList<DbmInterceptor> interceptors;
 	private Iterator<DbmInterceptor> iterator;
 	private Object result;
+	private Throwable throwable;
 	private int state = STATE_INIT;
 	
-//	final private InterceptorType type;
+	private InterceptorType type;
 
 	public AbstractDbmInterceptorChain(Object targetObject, Method targetMethod,
 			Object[] targetArgs, Collection<DbmInterceptor> interceptors) {
@@ -54,7 +56,14 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 		this.interceptors = new LinkedList<DbmInterceptor>(interceptors);
 		this.actualInvoker = actualInvoker;
 	}
-
+	
+	protected void setType(InterceptorType type) {
+		this.type = type;
+	}
+	@Override
+	public InterceptorType getType() {
+		return type;
+	}
 	private void checkState(String msg){
 		if(this.state!=STATE_INIT){
 			throw new IllegalStateException("illegal state for: "+msg);
@@ -124,12 +133,14 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 					targetMethod.setAccessible(true);
 				}
 				try {
-					return targetMethod.invoke(targetObject, targetArgs);
+					result = targetMethod.invoke(targetObject, targetArgs);
+					state = STATE_FINISH;
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					state = STATE_EXCEPTION;
+					throwable = e;
 					throw convertRuntimeException(e);
 				}
 			}
-			state = STATE_EXECUTED;
 		}
 		return result;
 	}
@@ -148,23 +159,24 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 	public Object getResult() {
 		return result;
 	}
+	
+	@Override
+	public Throwable getThrowable() {
+		return throwable;
+	}
 
 	public static class JdbcDbmInterceptorChain extends AbstractDbmInterceptorChain {
 		private Optional<DbmJdbcOperationType> dbmJdbcOperationType;
 
 		public JdbcDbmInterceptorChain(Object targetObject, Method targetMethod, Object[] targetArgs, Collection<DbmInterceptor> interceptors) {
 			super(targetObject, targetMethod, targetArgs, interceptors);
-		}
-
-		@Override
-		public InterceptorType getType() {
-			return InterceptorType.JDBC;
+			this.setType(InterceptorType.JDBC);
 		}
 
 		@Override
 		public Optional<DbmJdbcOperationType> getJdbcOperationType() {
 			if(dbmJdbcOperationType==null){
-				DbmJdbcOperationMark operation = AnnotationUtils.findAnnotation(getTargetMethod(), DbmJdbcOperationMark.class, false);
+				DbmJdbcOperationMark operation = AnnotationUtils.findAnnotationWithStopClass(getTargetObject().getClass(), getTargetMethod(), DbmJdbcOperationMark.class);
 				Optional<DbmJdbcOperationType> dbmJdbcOperationType = operation==null?Optional.empty():Optional.ofNullable(operation.type());
 				this.dbmJdbcOperationType = dbmJdbcOperationType;
 				return dbmJdbcOperationType;
@@ -183,11 +195,7 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 
 		public SessionDbmInterceptorChain(Object targetObject, Method targetMethod, Object[] targetArgs, Collection<DbmInterceptor> interceptors) {
 			super(targetObject, targetMethod, targetArgs, interceptors);
-		}
-
-		@Override
-		public InterceptorType getType() {
-			return InterceptorType.SESSION;
+			this.setType(InterceptorType.SESSION);
 		}
 		
 	}
@@ -199,11 +207,7 @@ abstract public class AbstractDbmInterceptorChain implements DbmInterceptorChain
 		public RepositoryDbmInterceptorChain(Object targetObject, DynamicMethod dynamicMethod, Object[] targetArgs, Collection<DbmInterceptor> interceptors, Supplier<Object> actualInvoker) {
 			super(targetObject, dynamicMethod.getMethod(), targetArgs, interceptors, actualInvoker);
 			this.dynamicMethod = dynamicMethod;
-		}
-
-		@Override
-		public InterceptorType getType() {
-			return InterceptorType.REPOSITORY;
+			this.setType(InterceptorType.REPOSITORY);
 		}
 
 		@Override

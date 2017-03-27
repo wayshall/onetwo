@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.onetwo.common.base.DbmBaseTest;
 import org.onetwo.common.dbm.model.dao.CompanyDao;
 import org.onetwo.common.dbm.model.entity.CompanyEntity;
 import org.onetwo.common.dbm.model.entity.DepartmentEntity;

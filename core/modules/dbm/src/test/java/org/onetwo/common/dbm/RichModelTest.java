@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
+import org.onetwo.common.base.DbmRichModelBaseTest;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity;
 import org.onetwo.common.dbm.model.entity.UserAutoidEntity.UserStatus;
 import org.onetwo.common.dbm.richmodel.UserAutoidModel;

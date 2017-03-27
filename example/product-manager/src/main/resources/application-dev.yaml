@@ -3,7 +3,7 @@ server:
     contextPath: /product-manager
 spring: 
     datasource: 
-        url: jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8
+        url: jdbc:mysql://localhost:3306/product_manager?useUnicode=true&amp;characterEncoding=UTF-8
         username: root
         password: root
         driver-class-name: com.mysql.jdbc.Driver

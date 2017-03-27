@@ -18,6 +18,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.ClassUtils;
 
@@ -70,8 +71,9 @@ public class Springs {
 		instance.printBeanNames();
 		if(ConfigurableApplicationContext.class.isInstance(webappContext))
 			((ConfigurableApplicationContext)webappContext).registerShutdownHook();
+		webappContext.publishEvent(new SpringsInitEvent(webappContext));
 	}
-
+	
 	public ApplicationContext getAppContext() {
 		return appContext;
 	}
@@ -252,5 +254,15 @@ public class Springs {
 		}
 		return ch;
 	}
+	
+	public static class SpringsInitEvent extends ApplicationContextEvent {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -198889043881295697L;
 
+		public SpringsInitEvent(ApplicationContext source) {
+			super(source);
+		}
+	}
 }

@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.base.DbmBaseTest;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;

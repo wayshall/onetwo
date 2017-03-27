@@ -1,15 +1,17 @@
 package projects.manager.utils;
 
 import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.ext.permission.api.annotation.ProxyMenu;
+import org.onetwo.plugins.admin.AdminModule;
 
 
 public interface Products {
 	String name = "产品管理系统";
 	String appCode = Products.class.getSimpleName();
 	
-	/*@ProxyMenu(value=AdminModule.class)
+	@ProxyMenu(value=AdminModule.class)
 	public interface AdminMgr {
-	}*/
+	}
 	
 	public interface SystemMgr {
 		String name = "系统管理";

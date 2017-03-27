@@ -9,5 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CompanySerivceImpl extends DbmCrudServiceImpl<CompanyEntity, Long>{
 	
-	
+	public CompanyEntity findByName(String name){
+		CompanyEntity dbCompany = findOne("name", name);
+		dbCompany = findOne("name", name);
+		dbCompany = findOne("name", name);
+		dbCompany = findOne("name", name);
+		return dbCompany;
+	}
 }

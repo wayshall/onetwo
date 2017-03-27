@@ -12,7 +12,7 @@ import projects.manager.utils.Products;
 
 @Configuration
 @EnableUrlSecurity
-@EnableOAuth2Sso
+//@EnableOAuth2Sso
 public class AppContextConfig extends DefaultUrlSecurityConfigurer {
 
 	public AppContextConfig(AccessDecisionManager accessDecisionManager) {

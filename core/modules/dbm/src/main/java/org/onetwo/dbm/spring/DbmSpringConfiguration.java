@@ -8,18 +8,11 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.dquery.DynamicQueryObjectRegisterListener;
-import org.onetwo.common.db.filequery.spi.FileNamedQueryFactory;
-import org.onetwo.common.db.filter.annotation.DataQueryFilterListener;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.core.Jsr303EntityValidator;
 import org.onetwo.dbm.core.internal.DbmEntityManagerImpl;
 import org.onetwo.dbm.core.internal.DbmSessionFactoryImpl;
-import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry;
-import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.core.spi.DbmEntityManager;
-import org.onetwo.dbm.core.spi.DbmInnerServiceRegistry;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
 import org.onetwo.dbm.mapping.DbmConfig;
@@ -28,7 +21,6 @@ import org.onetwo.dbm.utils.DbmUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -129,13 +121,11 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	@Bean
 	@Autowired
 	public DbmEntityManager dbmEntityManager(DbmSessionFactory sessionFactory) {
-		DbmEntityManagerImpl jem = new DbmEntityManagerImpl(sessionFactory);
+		DbmEntityManagerImpl dbmEntityManager = new DbmEntityManagerImpl(sessionFactory);
 
-		BeanDefinitionRegistry registry = SpringUtils.getBeanDefinitionRegistry(applicationContext);
-		DbmDaoCreateEvent event = new DbmDaoCreateEvent(sessionFactory, registry);
-		this.applicationContext.publishEvent(event);
+		DbmEntityManagerCreateEvent.publish(applicationContext, dbmEntityManager);
 		
-		return jem;
+		return dbmEntityManager;
 	}
 	
 	/*@Bean
@@ -221,8 +211,8 @@ public class DbmSpringConfiguration implements ApplicationContextAware, Initiali
 	
 	private String getDataSourceName(){
 		String ds = defaultDbmConfig().getDataSource();
-		if(StringUtils.isBlank(ds)){
-			ds = this.enableDbmAttributes.getDataSourceName();
+		if(StringUtils.isBlank(ds) && enableDbmAttributes!=null){
+			ds = enableDbmAttributes.getDataSourceName();
 		}
 		return ds;
 	}

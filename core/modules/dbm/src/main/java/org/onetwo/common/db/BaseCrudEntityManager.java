@@ -205,7 +205,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	@Transactional(readOnly=true)
 	@Override
 	public List<T> findListByExample(Object example) {
-		return Querys.from(baseEntityManager, entityClass)
+		return Querys.from(getBaseEntityManager(), entityClass)
 				.where()
 				.addFields(example)
 				.ignoreIfNull()
@@ -217,7 +217,7 @@ public class BaseCrudEntityManager<T, PK extends Serializable> implements CrudEn
 	@Transactional(readOnly=true)
 	@Override
 	public Page<T> findPageByExample(Page<T> page, Object example) {
-		return Querys.from(baseEntityManager, entityClass)
+		return Querys.from(getBaseEntityManager(), entityClass)
 						.where()
 						.addFields(example)
 						.ignoreIfNull()

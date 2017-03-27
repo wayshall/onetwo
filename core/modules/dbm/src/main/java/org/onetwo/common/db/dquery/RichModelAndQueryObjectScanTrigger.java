@@ -14,6 +14,7 @@ import org.onetwo.dbm.richmodel.PackageScanedProcessor;
 import org.onetwo.dbm.richmodel.RichModel;
 import org.onetwo.dbm.richmodel.RichModelCheckProcessor;
 import org.onetwo.dbm.richmodel.RichModelEnhanceProcessor;
+import org.onetwo.dbm.spring.EnableDbm;
 import org.onetwo.dbm.utils.DbmUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -39,6 +40,8 @@ public class RichModelAndQueryObjectScanTrigger implements BeanFactoryPostProces
 //	private ApplicationContext applicationContext;
 	private String[] packagesToScan;
 	
+	private boolean enableRichModel = true;
+	
 	public RichModelAndQueryObjectScanTrigger(BeanDefinitionRegistry registry) {
 		this.registry = registry;
 	}
@@ -60,9 +63,19 @@ public class RichModelAndQueryObjectScanTrigger implements BeanFactoryPostProces
 		}
 		this.packagesToScan = packs.toArray(new String[0]);
 
+		SpringUtils.scanAnnotationPackages(beanFactory, EnableDbm.class, (beanDef, beanClass)->{
+			if(logger.isInfoEnabled()){
+				logger.info("found EnableDbm class: {}", beanClass);
+			}
+			EnableDbm enableDbm = beanClass.getAnnotation(EnableDbm.class);
+			enableRichModel = enableDbm.enableRichModel();
+		});
+		
 		if(ArrayUtils.isNotEmpty(packagesToScan)){
 			
-			this.enhanceRichModel();
+			if(enableRichModel){
+				this.enhanceRichModel();
+			}
 			
 			AnnotationScanBasicDynamicQueryObjectRegister register = new AnnotationScanBasicDynamicQueryObjectRegister(registry);
 			register.setPackagesToScan(packagesToScan);

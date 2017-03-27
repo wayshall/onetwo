@@ -7,13 +7,14 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.dquery.annotation.DbmPackages;
+import org.onetwo.common.spring.Springs.SpringsInitEvent;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
-import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.controller.WebAdminBaseController;
 import org.onetwo.plugins.admin.entity.AdminPermission;
@@ -29,21 +30,25 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @AutoConfigureAfter(DbmContextAutoConfig.class)
 @ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
+@DbmPackages("org.onetwo.plugins.admin.dao")
+@Order(value=Ordered.LOWEST_PRECEDENCE)
 public class WebAdminPluginContext implements InitializingBean {
 	
 //	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired(required=false)
-	private SecurityConfig securityConfig;
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
 
@@ -52,23 +57,25 @@ public class WebAdminPluginContext implements InitializingBean {
 	 */
 	@Autowired
 	private BaseEntityManager baseEntityManager;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	public WebAdminPluginContext(){
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(securityConfig!=null){
-			String targetUrl = "/web-admin/index";
-//			logger.info("targetUrl: "+targetUrl);
-			this.securityConfig.setAfterLoginUrl(targetUrl);
-		}
 	}
 	
 	
 	@Bean
 	public WebAdminPlugin webAdminPlugin(){
 		return new WebAdminPlugin();
+	}
+	
+	@Bean
+	static public ApplicationListener<SpringsInitEvent> webAdminApplicationListener(){
+		return new WebAdminApplicationListener();
 	}
 	
 

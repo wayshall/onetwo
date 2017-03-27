@@ -18,11 +18,11 @@ import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry;
 import org.onetwo.dbm.core.internal.SimpleDbmInnerServiceRegistry.DbmServiceRegistryCreateContext;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.dbm.spring.DbmEntityManagerCreateEvent;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -57,6 +57,9 @@ final public class Dbms {
 
 																							@Override
 																							public BaseEntityManager load(DataSource ds) throws Exception {
+																								if(obtainBaseEntityManager().getSessionFactory().getDataSource().equals(ds)){
+																									return obtainBaseEntityManager();
+																								}
 																								return newEntityManager(ds);
 																							}
 																							
@@ -97,6 +100,7 @@ final public class Dbms {
 		DbmEntityManagerImpl entityManager = new DbmEntityManagerImpl(sf);
 		try {
 			entityManager.afterPropertiesSet();
+			DbmEntityManagerCreateEvent.publish(Springs.getInstance().getAppContext(), entityManager);
 		} catch (Exception e) {
 			throw new DbmException("init CrudEntityManager error: " +e.getMessage());
 		}
@@ -126,6 +130,7 @@ final public class Dbms {
 		String beanName = CrudEntityManager.class.getSimpleName()+"-"+entityClass.getName();
 		BeanDefinition beandef = BeanDefinitionBuilder.rootBeanDefinition(BaseCrudEntityManager.class)
 				.addConstructorArgValue(entityClass)
+				.addConstructorArgValue(null)
 				.setScope(BeanDefinition.SCOPE_SINGLETON)
 //				.setRole(BeanDefinition.ROLE_APPLICATION)
 				.getBeanDefinition();
@@ -150,8 +155,7 @@ final public class Dbms {
 	
 	public static DbmSessionFactory newSessionFactory(DataSource dataSource){
 		ApplicationContext appContext = Springs.getInstance().getAppContext();
-		PlatformTransactionManager tm = DbmUtils.getDataSourceTransactionManager(appContext, dataSource);
-		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(appContext, tm, dataSource);
+		DbmSessionFactoryImpl sf = new DbmSessionFactoryImpl(appContext, null, dataSource);
 		sf.setServiceRegistry(SimpleDbmInnerServiceRegistry.obtainServiceRegistry(new DbmServiceRegistryCreateContext(appContext, sf)));
 		sf.afterPropertiesSet();
 		return sf;

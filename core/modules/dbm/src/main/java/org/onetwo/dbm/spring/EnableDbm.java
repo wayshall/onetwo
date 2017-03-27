@@ -24,4 +24,6 @@ public @interface EnableDbm {
 	 * @return
 	 */
 	String[] packagesToScan() default {};
+	
+	boolean enableRichModel() default true;
 }
