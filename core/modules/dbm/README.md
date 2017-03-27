@@ -1,7 +1,7 @@
 #dbm#
 ------
-基于spring jdbc实现的简单orm   
-交流群：  8060215
+基于spring jdbc实现的轻量级orm   
+交流群：  604158262
 
 ##目录
 - [特色](https://github.com/wayshall/onetwo/blob/master/core/modules/dbm/README.md#特色)

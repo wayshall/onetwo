@@ -1,7 +1,7 @@
 # security模块
 ------
 基于spring security实现的动态rbac和基于Java代码的权限管理   
-交流群：  8060215
+交流群：  604158262
 
    
 
