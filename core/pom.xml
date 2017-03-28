@@ -45,7 +45,6 @@
                 <module>modules/common</module>
                 <module>modules/jackson</module>
                 <module>modules/spring</module>
-                <module>modules/dbm</module>
                 <module>modules/web</module>
                 <module>modules/boot</module>
                 <module>modules/security</module>
@@ -69,7 +68,6 @@
                 <module>modules/common</module>
 				<module>modules/jackson</module>
 				<module>modules/spring</module>
-                <module>modules/dbm</module>
 				<module>modules/web</module>
                 <module>modules/boot</module>
                 <module>modules/security</module>
