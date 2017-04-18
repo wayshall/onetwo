@@ -129,9 +129,9 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 	
 	private long getMessageDiff(MessageExt msg){
 		try {
-			long offset = msg.getQueueOffset();
-			String maxOffset = msg.getProperty(MessageConst.PROPERTY_MAX_OFFSET);
-			long diff = Long.parseLong(maxOffset)-offset;
+			long offset = msg.getQueueOffset();//消息自身的offset
+			String maxOffset = msg.getProperty(MessageConst.PROPERTY_MAX_OFFSET);//当前最大的消息offset
+			long diff = Long.parseLong(maxOffset)-offset;//消费当前消息时积压了多少消息未消费
 			return diff;
 		} catch (Exception e) {
 			return 0;

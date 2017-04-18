@@ -33,9 +33,12 @@ import org.onetwo.dbm.exception.DbmException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /************
  * 异常处理
@@ -69,6 +72,13 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
+	
+	private ResponseEntityExceptionHandler responseEntityExceptionHandler = new ResponseEntityExceptionHandler(){};
+	/***
+	 * WebRequest inject by WebApplicationContextUtils#registerWebApplicationScopes WebRequestObjectFactory
+	 */
+	@Autowired(required=false)
+	private WebRequest webRequest;
 	
 //	protected String defaultRedirect;
 	
@@ -256,13 +266,23 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if (viewName != null) {
 			// Apply HTTP status code for error views, if specified.
 			// Only apply it if we're processing a top-level request.
-			Integer statusCode = determineStatusCode(request, viewName);
+			Integer statusCode = determineStatusCode(ex, request, viewName);
 			if (statusCode != null) {
 				applyStatusCodeIfPossible(request, response, statusCode);
 			}
 			return getModelAndView(viewName, ex, request);
 		}
 		return null;
+	}
+	
+	
+	protected Integer determineStatusCode(Exception ex, HttpServletRequest request, String viewName) {
+		Integer statusCode = super.determineStatusCode(request, viewName);
+		if(statusCode==null){
+			ResponseEntity<Object> reponse = responseEntityExceptionHandler.handleException(ex, webRequest);
+			statusCode = reponse.getStatusCodeValue();
+		}
+		return statusCode;
 	}
 	
 	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
