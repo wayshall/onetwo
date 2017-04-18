@@ -20,8 +20,8 @@ import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 public class BootWebCommonAutoConfig {
@@ -91,7 +92,7 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnMissingBean(BootWebExceptionResolver.class)
+	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
 //	@Autowired
 	public BootWebExceptionResolver bootWebExceptionResolver(){
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
