@@ -74,6 +74,12 @@
 		<artifactId>ant</artifactId>
       <optional>true</optional>
 	</dependency>
+    
+    <dependency>
+      <groupId>io.reactivex</groupId>
+      <artifactId>rxjava</artifactId>
+      <optional>true</optional>
+    </dependency>
 	
     <dependency>
         <groupId>org.slf4j</groupId>

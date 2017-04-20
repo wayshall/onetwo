@@ -1,7 +1,6 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +45,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * @author wayshall
  *
  */
-public class BootWebExceptionResolver extends SimpleMappingExceptionResolver implements InitializingBean {
+public class BootWebExceptionResolver extends SimpleMappingExceptionResolver implements InitializingBean, ExceptionMessageFinder {
 //	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
 
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
@@ -102,7 +101,10 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(request, response, handlerMethod, model, ex);
+		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		String viewName = determineViewName(ex, request);
+		errorMessage.setViewName(viewName);
+		
 		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
 		
 		this.processAfterLog(request, response, handlerMethod, ex);
@@ -149,112 +151,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected String getUnknowError(){
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
-	protected ErrorMessage getErrorMessage(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, ModelMap model, Exception ex){
-		String errorCode = "";
-		String errorMsg = "";
-		Object[] errorArgs = null;
-		
-//		String defaultViewName = ExceptionView.UNDEFINE;
-		boolean detail = true;
-//		boolean authentic = false;
-		ErrorMessage error = new ErrorMessage(ex);
-		
-		boolean findMsgByCode = true;
-		/*if(ex instanceof MaxUploadSizeExceededException){
-			defaultViewName = ExceptionView.UNDEFINE;
-			errorCode = MAX_UPLOAD_SIZE_ERROR;//MvcError.MAX_UPLOAD_SIZE_ERROR;
-//			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
-		}else */
-		if(ex instanceof LoginException){
-//			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-		}else if(ex instanceof AuthenticationException){
-//			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
-			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
-			errorCode = codeMark.getCode();
-			errorArgs = codeMark.getArgs();
-//			errorMsg = ex.getMessage();
-			
-			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
-			detail = !bootSiteConfig.isProduct();
-		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
-//			defaultViewName = ExceptionView.UNDEFINE;
-			errorCode = JFishErrorCode.ORM_ERROR;
-			
-//			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
-		}else if(ex instanceof BaseException){
-//			defaultViewName = ExceptionView.UNDEFINE;
-			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-			
-//			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
-		}/*else if(TypeMismatchException.class.isInstance(ex)){
-			defaultViewName = ExceptionView.UNDEFINE;
-			//errorMsg = "parameter convert error!";
-		}*/else if(ex instanceof ConstraintViolationException){
-			ConstraintViolationException cex = (ConstraintViolationException) ex;
-			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
-			errorMsg = ValidatorUtils.toMessages(constrants);
-			findMsgByCode = false;
-		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
-			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
-		}*//*else if(BeanCreationException.class.isInstance(ex)){
-			
-		}*/
-		else{
-			errorCode = SystemErrorCode.UNKNOWN;
-		}
-		
-		/*if(StringUtils.isBlank(errorCode)){
-			errorCode = ex.getClass().getName();
-		}*/
-
-		if(findMsgByCode){
-//			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
-				errorMsg = findMessageByThrowable(ex, errorArgs);
-			}else{
-				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
-			}
-//			defaultViewName = ExceptionView.CODE_EXCEPTON;
-//			defaultViewName = ExceptionView.UNDEFINE;
-		}
-		
-		if(StringUtils.isBlank(errorMsg)){
-			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
-		}
-		
-		/*String viewName = null;
-		
-		if(StringUtils.isBlank(viewName)){
-			viewName = findInSiteConfig(ex); 
-			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
-		}*/
-		String viewName = determineViewName(ex, request);
-		
-		//always true if not production
-		detail = bootSiteConfig.isProduct()?detail:true;
-		error.setCode(errorCode);
-		error.setMesage(errorMsg);
-		error.setDetail(detail);
-		error.setViewName(viewName);
-//		error.setAuthentic(authentic);
-		return error;
-	}
 	
-	public String findMessageByErrorCode(String errorCode, Object...errorArgs){
-		String errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-		return errorMsg;
-	}
 	
-	public String findMessageByThrowable(Throwable e, Object...errorArgs){
-		String errorMsg = findMessageByErrorCode(e.getClass().getName(), errorArgs);
-		if(StringUtils.isBlank(errorMsg)){
-			errorMsg = findMessageByErrorCode(e.getClass().getSimpleName(), errorArgs);
-		}
-		return errorMsg;
-	}
 	protected String getPreurl(HttpServletRequest request){
 		String preurl = StringUtils.isBlank(request.getParameter(PRE_URL))?BootWebUtils.requestUri():request.getParameter(PRE_URL);
 //		return encode(preurl);
@@ -295,7 +193,11 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
 	}
-	
+
+	@Override
+	public ExceptionMessageAccessor getExceptionMessageAccessor() {
+		return this.exceptionMessageAccessor;
+	}
 	/*@Deprecated
 	private String findInSiteConfig(Exception ex){
 		Class<?> eclass = ex.getClass();
@@ -309,99 +211,5 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		return viewName;
 	}*/
 
-	protected String getMessage(String code, Object[] args, String defaultMessage, Locale locale){
-		if(this.exceptionMessageAccessor==null)
-			return "";
-		try {
-//			return this.exceptionMessage.getMessage(code, args, defaultMessage, locale);
-			return this.exceptionMessageAccessor.getMessage(code, args, defaultMessage, locale);
-		} catch (Exception e) {
-			logger.error("getMessage error :" + e.getMessage(), e);
-		}
-		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-	}
-	
-	protected Locale getLocale(){
-//		return JFishWebUtils.getLocale();
-		return BootUtils.getDefaultLocale();
-//		return LocaleContextHolder.getLocale();
-	}
 
-	protected String getMessage(String code, Object[] args) {
-		if(this.exceptionMessageAccessor==null)
-			return "";
-		try {
-//			return this.exceptionMessage.getMessage(code, args, getLocale());
-			return this.exceptionMessageAccessor.getMessage(code, args);
-		} catch (Exception e) {
-			logger.error("getMessage error :" + e.getMessage(), e);
-		}
-		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-		
-	}
-
-	public static class ErrorMessage {
-		private String code;
-		private String mesage;
-		boolean detail;
-//		private boolean authentic = false;
-		private String viewName;
-		
-		final private Throwable throwable;
-		
-		
-		public ErrorMessage(Throwable throwable) {
-			super();
-			this.throwable = throwable;
-		}
-		/*public ErrorMessage(String code, String mesage, boolean detail) {
-			super();
-			this.code = code;
-			this.mesage = mesage;
-			this.detail = detail;
-		}*/
-		public String getCode() {
-			return code;
-		}
-		public String getMesage() {
-			return mesage;
-		}
-		public boolean isDetail() {
-			return detail;
-		}
-		public String getViewName() {
-			return viewName;
-		}
-		public void setViewName(String viewName) {
-			this.viewName = viewName;
-		}
-		
-		public Throwable getThrowable() {
-			return throwable;
-		}
-		
-		public void setCode(String code) {
-			this.code = code;
-		}
-		public void setMesage(String mesage) {
-			this.mesage = mesage;
-		}
-		public void setDetail(boolean detail) {
-			this.detail = detail;
-		}
-		public boolean isNotLoginException() {
-			return NotLoginException.class.isInstance(throwable);
-		}
-		public boolean isNoPermissionException() {
-			return NoAuthorizationException.class.isInstance(throwable);
-		}
-		/*
-		public void setAuthentic(boolean authentic) {
-			this.authentic = authentic;
-		}*/
-		public String toString(){
-			return LangUtils.append(code, ":", mesage);
-		}
-		
-	}
 }

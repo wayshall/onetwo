@@ -16,6 +16,7 @@ public class Consoler {
 	public static class ExitAction implements ConsoleAction {
 		@Override
 		public void execute(String in) {
+			System.out.println("system will be exit, goodby!");
 			System.exit(0);
 		}
 	}
@@ -31,8 +32,12 @@ public class Consoler {
 		try {
 			String input = null;
 			while((input = consoleReader.readLine())!=null){
-				if(input.equals(in))
+				if(input.equals(in)){
+					System.out.println("execute command: " + input);
 					action.execute(input);
+				}else{
+					System.out.println("no match command: " + input);
+				}
 			}
 		} catch (IOException e) {
 			LangUtils.throwBaseException("console error: " + e.getMessage());
