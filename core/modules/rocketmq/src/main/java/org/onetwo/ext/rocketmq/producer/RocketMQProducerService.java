@@ -25,7 +25,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private String namesrvAddr;
-	private String groupName;
+	private String groupName = "defaultProduerGroup";
 	private DefaultMQProducer defaultMQProducer;
 //	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private Consumer<Throwable> errorHandler = null;
@@ -36,6 +36,9 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		Assert.hasText(groupName);
+//		Assert.hasText(namesrvAddr);
+		
 		DefaultMQProducer defaultMQProducer = new DefaultMQProducer(groupName);
 		defaultMQProducer.setNamesrvAddr(namesrvAddr);
 		defaultMQProducer.setVipChannelEnabled(false);

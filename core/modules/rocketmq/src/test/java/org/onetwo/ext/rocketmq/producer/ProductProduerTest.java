@@ -1,4 +1,4 @@
-package org.onetwo.ext.rocketmq;
+package org.onetwo.ext.rocketmq.producer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

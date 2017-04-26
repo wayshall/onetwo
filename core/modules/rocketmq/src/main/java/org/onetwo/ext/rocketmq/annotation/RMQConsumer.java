@@ -1,4 +1,4 @@
-package org.onetwo.ext.rocketmq.consumer.annotation;
+package org.onetwo.ext.rocketmq.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

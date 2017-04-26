@@ -111,6 +111,7 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 		}
 		
 		BoundValueOperations<String, SecurityContext> bondOps = getSessionBoundOps(sid);
+		//当前spring-data-redis版本不支持setex，分成两个操作
 		bondOps.set(context);
 		setSecurityContextExpireTime(request);
 	}

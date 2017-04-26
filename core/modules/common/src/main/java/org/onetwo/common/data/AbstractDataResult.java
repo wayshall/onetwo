@@ -60,13 +60,22 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 			return false;
 		}
 	}
-	
+	/****
+	 * 
+	 * 指示客户端是否只提取result里的data作为返回结果
+	 * 客户端用拦截的方式统一处理时需要用到，客户端拦截器可以根据这个提示获取data内容作为下层ui组件数据的输入
+	 * @author wayshall
+	 * @return
+	 */
 	public boolean isExtractableData() {
 		return extractableData;
 	}
 
 	/***
+	 * 
 	 * 指示客户端是否只提取result里的data作为返回结果
+	 * 客户端用拦截的方式统一处理时需要用到，客户端拦截器可以根据这个提示获取data内容作为下层ui组件数据的输入
+	 * @author wayshall
 	 * @param extractableData
 	 */
 	public void setExtractableData(boolean extractableData) {
@@ -75,6 +84,7 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 
 	/****
 	 * 指示客户端是否只显示message内容即可
+	 * 客户端用拦截的方式统一处理时需要用到，客户端拦截器可以根据这个提示只弹出提示信息，无需继续传递结果给下层的ui
 	 * @return
 	 */
 	public boolean isMessageOnly() {

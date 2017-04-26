@@ -1,4 +1,4 @@
-package org.onetwo.ext.rocketmq;
+package org.onetwo.ext.rocketmq.consumer;
 
 import org.onetwo.ext.rocketmq.consumer.AppMQConsumer;
 import org.onetwo.ext.rocketmq.consumer.ConsumerMeta;

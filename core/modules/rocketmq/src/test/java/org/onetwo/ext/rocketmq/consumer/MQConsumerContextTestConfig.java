@@ -1,12 +1,15 @@
-package org.onetwo.ext.rocketmq;
+package org.onetwo.ext.rocketmq.consumer;
 
-import org.onetwo.ext.rocketmq.consumer.RocketMQPushConsumerStarter;
+import org.onetwo.ext.rocketmq.annotation.EnableRocketMQ;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes=MQProducerContextTestConfig.class)
+//@ContextConfiguration(classes=MQProducerContextTestConfig.class)
 @PropertySource(value="classpath:config.properties")
+@EnableRocketMQ
+@Configuration
 public class MQConsumerContextTestConfig {
 	
 	/*@Bean
@@ -22,10 +25,10 @@ public class MQConsumerContextTestConfig {
 		return new ProductTestAppMQConsumer();
 	}
 	
-	@Bean
+/*	@Bean
 	public RocketMQPushConsumerStarter rocketMQPushConsumerStarter(){
 		RocketMQPushConsumerStarter starter = new RocketMQPushConsumerStarter();
 		return starter;
 	}
-
+*/
 }

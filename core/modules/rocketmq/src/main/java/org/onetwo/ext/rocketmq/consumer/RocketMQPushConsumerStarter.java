@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.ext.rocketmq.consumer.annotation.RMQConsumer;
-import org.onetwo.ext.rocketmq.consumer.annotation.RMQSubscribe;
+import org.onetwo.ext.rocketmq.annotation.RMQConsumer;
+import org.onetwo.ext.rocketmq.annotation.RMQSubscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -17,10 +17,8 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,13 +32,11 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Component
 public class RocketMQPushConsumerStarter implements InitializingBean, DisposableBean {
 
 	private final Logger logger = LoggerFactory.getLogger(RocketMQPushConsumerStarter.class);
 
-	@Value("${mq.namesrvAddr}")
-	private String namesrvAddr;// = WebApplication.getProperty("mq.namesrvAddr");
+	private String namesrvAddr;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -55,7 +51,7 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("mq consumer init. namesrvAddr: {}", namesrvAddr);
-		Assert.hasText(namesrvAddr, "namesrvAddr can not be empty!");
+//		Assert.hasText(namesrvAddr, "namesrvAddr can not be empty!");
 
 		Map<String, AppMQConsumer> consumerBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, AppMQConsumer.class);
 		List<AppMQConsumer> consumerBeanList = Lists.newArrayList(consumerBeans.values());
