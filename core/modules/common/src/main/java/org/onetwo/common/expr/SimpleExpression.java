@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
@@ -211,6 +212,19 @@ public class SimpleExpression implements Expression {
 			return result;
 	}
 
+
+	static class JFishPropertiesProvider implements ValueProvider {
+		final private JFishProperties props;
+		public JFishPropertiesProvider(JFishProperties props) {
+			this.props = props;
+		}
+		@Override
+		public String findString(String var) {
+			String result = props.getProperty(var, "");
+			return result;
+		}
+	}
+	
 	static class MapValueProvider implements ValueProvider {
 		final private Map<String, Object> context;
 		public MapValueProvider(Map<String, Object> context) {
@@ -247,10 +261,13 @@ public class SimpleExpression implements Expression {
 	protected ValueProvider getValueProvider(Object provider){
 		Assert.notNull(provider, "provider can not be null!");
 		
-		if(provider instanceof ValueProvider)
+		if(provider instanceof ValueProvider){
 			return (ValueProvider) provider;
 		
-		else if(provider instanceof Map){
+		}else if(provider instanceof JFishProperties){
+			return new JFishPropertiesProvider((JFishProperties)provider);
+			
+		}else if(provider instanceof Map){
 			return new MapValueProvider((Map<String, Object>)provider);
 			
 		}else if(provider instanceof List){

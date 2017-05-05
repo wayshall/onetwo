@@ -8,7 +8,8 @@ import java.util.Properties;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
-import org.onetwo.common.spring.converter.JFishStringToEnumConverterFactory;
+import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
+import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgs;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
@@ -89,7 +90,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
-		registry.addConverterFactory(new JFishStringToEnumConverterFactory());
+		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
+		registry.addConverterFactory(new IntegerToEnumConverterFactory());
 	}
 
 }

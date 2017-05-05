@@ -137,6 +137,9 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	
 	final public void setConfigs(Properties...configs){
 		clear();
+		if(LangUtils.isEmpty(configs)){
+			return ;
+		}
 		for(Properties conf : configs){
 //			this.config.putAll(conf);
 			Enumeration<String> names = (Enumeration<String>)conf.propertyNames();

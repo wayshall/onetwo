@@ -47,6 +47,8 @@ import org.onetwo.common.utils.func.Closure2;
 import org.onetwo.common.utils.map.BaseMap;
 import org.slf4j.Logger;
 
+import com.google.common.collect.Maps;
+
 
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
@@ -859,6 +861,16 @@ public class ReflectUtils {
 
 	public static Map<String, Object> toMap(Object obj) {
 		return toMap(true, obj);
+	}
+
+	public static Map<String, Object> toMap(Class<? extends Annotation> annoClass, Annotation anno) {
+		Method[] methods = annoClass.getDeclaredMethods();
+		Map<String, Object> attrs = Maps.newHashMap();
+		for(Method method : methods){
+			Object val = ReflectUtils.invokeMethod(method, anno);
+			attrs.put(method.getName(), val);
+		}
+		return attrs;
 	}
 
 	public static Map<String, Object> toMap(boolean ignoreNull, Object obj) {

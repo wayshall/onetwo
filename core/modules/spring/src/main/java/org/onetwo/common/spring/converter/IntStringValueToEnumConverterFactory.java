@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.util.Assert;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class JFishStringToEnumConverterFactory implements ConverterFactory<String, Enum> {
+public class IntStringValueToEnumConverterFactory implements ConverterFactory<String, Enum> {
 
 	public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
 		Class<?> enumType = targetType;

@@ -5,7 +5,7 @@ import java.util.List;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 
-public class Types {
+final public class Types {
 
 	private static final Convertor instance = new DefaultTypeConvertors();
 	private static final Logger logger = JFishLoggerFactory.getLogger(Types.class);
@@ -75,5 +75,8 @@ public class Types {
 	
 	public static Convertor convertor() {
 		return instance;
+	}
+	
+	private Types(){
 	}
 }

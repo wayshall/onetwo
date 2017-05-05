@@ -56,6 +56,7 @@ public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
+	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
@@ -757,7 +758,6 @@ public class LangUtils {
 	}
 	
 
-	public static final String UTF8 = "utf-8";
 	public static byte[] getBytes(String source){
 		return getBytes(source, UTF8);
 	}

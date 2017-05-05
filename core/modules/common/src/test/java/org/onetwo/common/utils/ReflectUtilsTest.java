@@ -293,7 +293,5 @@ public class ReflectUtilsTest {
 		
 //		System.out.println(user.getAddress().getDetail());
 	}
-	
-	
 
 }

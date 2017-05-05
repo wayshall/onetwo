@@ -1,7 +1,10 @@
 package org.onetwo.common.utils;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.onetwo.common.date.DateUtils;
 
 public class SimpleTest {
 	
@@ -20,6 +23,13 @@ public class SimpleTest {
 		
 		String res = Integer.toString(35, 36);
 		System.out.println("res:"+res);
+		
+		String date = DateUtils.formatDateTime(new Date(1481943274299L));
+		System.out.println("date:"+date);
+		
+		double d = Double.NaN;
+		System.out.println("nan: "+(Double.NaN==d));
+		System.out.println("nan: "+(Double.valueOf(Double.NaN).equals(d)));
 	}
 
 }
