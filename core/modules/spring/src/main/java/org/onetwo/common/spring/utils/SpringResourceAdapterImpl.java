@@ -23,7 +23,7 @@ public class SpringResourceAdapterImpl extends ResourceAdapterImpl<Resource> {
 		super(resource, postfix);
 	}
 	
-
+	@Override
 	public boolean exists(){
 		return this.resource.exists();
 	}

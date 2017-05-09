@@ -39,6 +39,11 @@ public class Page<T> implements Serializable {
 		page.setPageNo(pageNo);
 		return page;
 	}
+	public static <E> Page<E> create(Integer pageNo, Class<E> clazz){
+		Page<E> page = new Page<>();
+		page.setPageNo(pageNo);
+		return page;
+	}
 	public static <E> Page<E> create(Integer pageNo, Integer pageSize){
 		Page<E> page = new Page<>();
 		page.setPageNo(pageNo);
@@ -212,10 +217,13 @@ public class Page<T> implements Serializable {
 		this.totalCount = totalCount;
 	}
 	
-	public void setNoLimited(){
-		setAutoCount(false);
+	public Page<T> noLimited(){
+		/*setAutoCount(false);
 		setFirst(-1);
-		setPageSize(-1);
+		setPageSize(-1);*/
+		setAutoCount(false);
+		setPagination(false);
+		return this;
 	}
 	
 	public void setLimited(int start, int count){

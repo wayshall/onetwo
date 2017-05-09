@@ -22,6 +22,14 @@ public class ResourceAdapterImpl<T> implements ResourceAdapter<T> {
 		this.postfix = postfix;
 	}
 
+	@Override
+	public boolean exists() {
+		if(resource instanceof File){
+			File file = (File) resource;
+			return file.exists();
+		}
+		return false;
+	}
 
 	public String getPostfix() {
 		if(StringUtils.isBlank(postfix)){

@@ -16,6 +16,8 @@ public interface ResourceAdapter<T> {
 	
 	public String getPostfix();
 	
+	public boolean exists();
+	
 //	public boolean isURL();
 
 }
