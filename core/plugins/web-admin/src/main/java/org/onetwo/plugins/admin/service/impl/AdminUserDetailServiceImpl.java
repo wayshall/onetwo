@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.plugins.admin.dao.AdminPermissionDao;

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;

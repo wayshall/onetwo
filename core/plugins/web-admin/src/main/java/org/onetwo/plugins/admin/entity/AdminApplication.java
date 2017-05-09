@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.onetwo.common.db.CrudEntityManager;
+import org.onetwo.common.db.spi.CrudEntityManager;
 import org.onetwo.dbm.core.BaseModel;
 import org.onetwo.dbm.utils.Dbms;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenEdit;

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.exception.ServiceException;

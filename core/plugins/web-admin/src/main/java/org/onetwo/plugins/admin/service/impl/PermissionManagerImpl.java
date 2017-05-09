@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import org.onetwo.common.db.BaseEntityManager;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
 import org.onetwo.common.spring.copier.CopyUtils;
