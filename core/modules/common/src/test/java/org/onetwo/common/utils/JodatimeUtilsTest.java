@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -16,6 +17,16 @@ import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 
 public class JodatimeUtilsTest {
+	
+	@Test
+	public void testMorningInterval(){
+		DateTime dateTime = DateTime.now();
+		DateTime morningStart = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 9, 0);
+		DateTime morningEnd = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 12, 0);
+		Interval interval = new Interval(morningStart, morningEnd);
+        assertThat(interval.getStart().toString(DateUtils.DATE_TIME)).isEqualTo("2017-05-10 09:00:00");
+        assertThat(interval.getEnd().toString(DateUtils.DATE_TIME)).isEqualTo("2017-05-10 12:00:00");
+	}
 	
 	@Test
 	public void testBetween(){

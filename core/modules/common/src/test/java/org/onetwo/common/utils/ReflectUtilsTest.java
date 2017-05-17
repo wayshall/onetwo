@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -24,6 +26,8 @@ public class ReflectUtilsTest {
 		Type type = UserEntity.class.getGenericSuperclass();
 		System.out.println("super type: " +type);
 		System.out.println("getCanonicalName: " +long.class.getCanonicalName());
+		
+		assertThat(ReflectUtils.findMethod(UserEntity.class, "getId").getName()).isEqualTo("getId");
 
 		Class<?>[] intes = UserEntity.class.getInterfaces();
 		for(Class c :intes){

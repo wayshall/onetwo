@@ -1,13 +1,11 @@
 package org.onetwo.common.spring.validator;
 
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 public class ValidatorWrapper {
 	
@@ -17,10 +15,12 @@ public class ValidatorWrapper {
 	}
 
 	private final Validator validator;
+	private final SpringValidatorAdapter adapter;
 
 	private ValidatorWrapper(Validator validator) {
 		super();
 		this.validator = validator;
+		this.adapter = new SpringValidatorAdapter(validator);
 	}
 
 	public Validator getValidator() {
@@ -28,8 +28,9 @@ public class ValidatorWrapper {
 	}
 
 	public <T> void validate(T object, BindingResult bindResult, Class<?>... groups){
-		Set<ConstraintViolation<T>> constrains = getValidator().validate(object, groups);
-		ValidatorUtils.addConstraintViolations(constrains, bindResult);
+		/*Set<ConstraintViolation<T>> constrains = getValidator().validate(object, groups);
+		ValidatorUtils.addConstraintViolations(constrains, bindResult);*/
+		this.adapter.validate(object, bindResult, (Object[])groups);
 	}
 	
 	public ValidationBindingResult validate(Object object, Class<?>... groups){
@@ -44,4 +45,5 @@ public class ValidatorWrapper {
 			throw new ValidationException(validations.getErrorMessagesAsString());
 		}
 	}
+	
 }

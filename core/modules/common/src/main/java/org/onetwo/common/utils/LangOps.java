@@ -29,6 +29,12 @@ final public class LangOps {
 				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
 //		 return Collections.EMPTY_MAP;
 	}
+	public static <K, V> Map<K, V> kvArrayToMap(K[] keys, V[] values){
+		 return Stream.iterate(0, i->i+1)
+				 .limit(keys.length)
+				 .map(i->new Object[]{keys[i], values[i]})
+				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
+	}
 	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();

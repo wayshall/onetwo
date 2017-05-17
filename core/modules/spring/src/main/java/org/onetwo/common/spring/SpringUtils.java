@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
@@ -543,17 +544,26 @@ final public class SpringUtils {
 		return targetClass;
 	}
 	
-	public static void scanAnnotationPackages(ApplicationContext applicationContext, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
+	public static boolean scanAnnotation(ApplicationContext applicationContext, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
 		ListableBeanFactory beanFactory = (ListableBeanFactory)applicationContext.getAutowireCapableBeanFactory();
-		scanAnnotationPackages(beanFactory, annoClass, consumer);
+		return scanAnnotation(beanFactory, annoClass, consumer);
 	}
-	public static void scanAnnotationPackages(ListableBeanFactory beanFactory, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
+	/****
+	 * 
+	 * @author wayshall
+	 * @param beanFactory
+	 * @param annoClass
+	 * @param consumer
+	 * @return 如果找到指定注解的bean，则返回true，否则返回false
+	 */
+	public static boolean scanAnnotation(ListableBeanFactory beanFactory, Class<? extends Annotation> annoClass, BiConsumer<Object, Class<?>> consumer){
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(annoClass);
 		for(String beanName : beanNames){
 			Object bean = beanFactory.getBean(beanName);
 			Class<?> beanClass = SpringUtils.getTargetClass(bean);
 			consumer.accept(bean, beanClass);
 		}
+		return ArrayUtils.isNotEmpty(beanNames);
 	}
 	
 }

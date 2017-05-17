@@ -68,7 +68,7 @@ public class JFishProfiles {
     @Configuration
     @Profile(Environment.DEV)
 //        @PropertySource(name=APP_CONFIG_NAME, value={"conf/application.properties", "conf/application-dev.properties"})
-    static class DevConcfig {
+    public static class DevConcfig {
 
         	@Bean(name=APP_CONFIG_BEAN_NAME)
             public static PropertyPlaceholderConfigurer applicationConfig() {

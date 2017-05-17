@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,12 @@ public class LangOpsTest {
 		Assert.assertEquals(Integer.valueOf(1), map.get("key1"));
 		Assert.assertEquals("value2", map.get("key2"));
 		Assert.assertFalse(map.containsKey("key3"));
+		
+		String[] keys = new String[]{"test1", "test3"};
+		Map<String, Integer> arrayMap = LangOps.kvArrayToMap(keys, 
+															new Integer[]{111, 333});
+		assertThat(arrayMap.size()).isEqualTo(keys.length);
+		assertThat(arrayMap).containsKeys(keys[0], keys[1]);
 	}
 	
 	@Test

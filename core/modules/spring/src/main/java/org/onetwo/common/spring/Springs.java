@@ -79,6 +79,10 @@ public class Springs {
 	}
 	
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	public <T> void autoInject(T bean) {
 		autoInject(bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
 	}

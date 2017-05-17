@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.utils.StringUtils;
@@ -136,7 +137,7 @@ public class PropConfig implements VariableSupporter {
 		return config.formatVariable(key, values);
 	}
 
-	public Map<String, String> getPropertiesStartWith(String keyStartWith) {
+	public Properties getPropertiesStartWith(String keyStartWith) {
 		return config.getPropertiesStartWith(keyStartWith);
 	}
 

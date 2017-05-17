@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -41,7 +40,6 @@ import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public class JFishProperties extends Properties implements VariableSupporter {
@@ -59,10 +57,10 @@ public class JFishProperties extends Properties implements VariableSupporter {
 		
 	};
 
-	private ReturnableClosure<String, Map<String, String>> startWithBlock = new ReturnableClosure<String, Map<String, String>>() {
+	/*private ReturnableClosure<String, Properties> startWithBlock = new ReturnableClosure<String, Properties>() {
 		@Override
-		public Map<String, String> execute(String keyStartWith) {
-			Map<String, String> values = LangUtils.newHashMap();
+		public Properties execute(String keyStartWith) {
+			Properties values = new Properties();
 			for(Enumeration<String> ekey = configNames(); ekey.hasMoreElements();){
 				String key = ekey.nextElement();
 				if(key.startsWith(keyStartWith)){
@@ -71,10 +69,9 @@ public class JFishProperties extends Properties implements VariableSupporter {
 					values.put(key, val);
 				}
 			}
-//			return values;
-			return ImmutableMap.copyOf(values);
+			return values;
 		}
-	};
+	};*/
 	
 	private ReturnableClosure<String[], List<String>> splitBlock = new ReturnableClosure<String[], List<String>>() {
 
@@ -253,8 +250,27 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 
 	
-	public Map<String, String> getPropertiesStartWith(String keyStartWith) {
-		return getFromCache(keyStartWith, startWithBlock, keyStartWith);
+	public Properties getPropertiesStartWith(String prefix) {
+		return getPropertiesStartWith(prefix, true);
+	}
+	public Properties getPropertiesStartWith(String prefix, boolean stripPrefix) {
+		return getFromCache(prefix, new ReturnableClosure<String, Properties>() {
+			@Override
+			public Properties execute(String keyStartWith) {
+				Properties values = new Properties();
+				for(Enumeration<String> ekey = configNames(); ekey.hasMoreElements();){
+					String key = ekey.nextElement();
+					if(key.startsWith(keyStartWith)){
+						String val = getVariable(key);
+						if(stripPrefix){
+							key = key.substring(keyStartWith.length());
+						}
+						values.put(key, val);
+					}
+				}
+				return values;
+			}
+		}, prefix);
 	}
 
 	protected <K, T> T getFromCache(String key, final ReturnableClosure<K, T> block, final K k) {

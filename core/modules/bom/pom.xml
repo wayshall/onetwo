@@ -287,9 +287,9 @@
 	</dependency>
 	
 	<dependency>
-	   <groupId>javassist</groupId>
+	   <groupId>org.javassist</groupId>
 	   <artifactId>javassist</artifactId>
-	   <version>3.12.1.GA</version>
+	   <version>3.20.0-GA</version>
 	</dependency>
 	
 	<dependency>
@@ -367,10 +367,16 @@
         <version>${javatuples.version}</version>
     </dependency>
 	
-	<dependency>
+	<!-- <dependency>
 	  <groupId>javax.persistence</groupId>
 	  <artifactId>com.springsource.javax.persistence</artifactId>
       <version>${jpa.version}</version>
+	</dependency> -->
+	
+	<dependency>
+	   <groupId>org.hibernate.javax.persistence</groupId>
+	   <artifactId>hibernate-jpa-2.1-api</artifactId>
+	   <version>1.0.0.Final</version>
 	</dependency>
 	
 	
