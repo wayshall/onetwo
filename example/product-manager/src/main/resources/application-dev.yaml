@@ -11,7 +11,7 @@ jfish:
     security:
         logoutUrl: /logout
         syncPermissionData: true
-siteConfig:
+site:
     uploadImageAccessPath: http://localhost/img/manager
     upload:
         #storeType: ftp

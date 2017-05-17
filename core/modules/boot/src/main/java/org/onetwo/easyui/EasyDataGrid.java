@@ -20,7 +20,7 @@ public class EasyDataGrid<T> {
 		EasyDataGrid<E> page = new EasyDataGrid<>(rows);
 		return page;
 	}
-	public static <E, S> EasyDataGrid<E> create(List<E> rows, Page<S> p){
+	public static <E> EasyDataGrid<E> create(List<E> rows, Page<?> p){
 		EasyDataGrid<E> epage = new EasyDataGrid<>(rows);
 		epage.setPage(p.getPageNo());
 		epage.setPageSize(p.getPageSize());

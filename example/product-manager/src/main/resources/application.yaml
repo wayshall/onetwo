@@ -9,7 +9,7 @@ jfish:
             json: application/json
             xls: application/vnd.ms-excel
             xml: application/xml
-siteConfig:
+site:
     name: 后台管理系统
     config:
         profile:

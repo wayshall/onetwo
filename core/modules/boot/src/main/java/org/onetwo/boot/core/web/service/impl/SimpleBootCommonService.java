@@ -8,13 +8,11 @@ import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.StoringFileContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
-@Service
 public class SimpleBootCommonService implements BootCommonService {
 	@Autowired
 	private FileStorer<?> fileStorer;

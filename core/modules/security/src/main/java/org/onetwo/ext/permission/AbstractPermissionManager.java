@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
@@ -42,6 +43,9 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		Assert.notEmpty(parsers);
 	}
 
+	protected MenuInfoParser<P> getTopMenuInfoParser(){
+		return parsers.get(0);
+	}
 
 	public void setParsers(List<MenuInfoParser<P>> parsers) {
 		this.parsers = parsers;
