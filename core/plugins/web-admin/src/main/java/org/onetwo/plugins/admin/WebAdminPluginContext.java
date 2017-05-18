@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.module.dbm.DbmContextAutoConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.dquery.annotation.DbmPackages;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -26,7 +25,6 @@ import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -41,7 +39,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
-@AutoConfigureAfter(DbmContextAutoConfig.class)
 @ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
 @DbmPackages("org.onetwo.plugins.admin.dao")
 @Order(value=Ordered.LOWEST_PRECEDENCE)

@@ -37,8 +37,9 @@
 	<profiles>
 	
       <profile>
-        <id>part</id>
+        <id>dbm</id>
         <modules>
+                <module>../../dbm</module>
         </modules>
         <build>
             <plugins>
