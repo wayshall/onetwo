@@ -17,12 +17,6 @@ public class WebException extends ServiceException{
 		super(msg, code);
 	}
 
-
-	public WebException(String msg, Throwable cause, String code) {
-		super(msg, cause, code);
-	}
-
-
 	public WebException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
