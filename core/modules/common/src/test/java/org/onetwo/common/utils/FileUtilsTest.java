@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URL;
@@ -14,6 +16,22 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.list.JFishList;
 
 public class FileUtilsTest {
+	
+	@Test
+	public void testBomAndZwsp() throws Exception{
+		String str = "testC​,string";
+		boolean res = FileUtils.hasZWSP(str);
+		assertThat(res).isEqualTo(res);
+		assertThat(str.length()).isEqualTo(13);
+		
+		int zwspValue = str.codePointAt(5);
+		String unicodeStr = FileUtils.toUnicodeString(zwspValue);
+		System.out.println("zwsValue:"+zwspValue+", unicodeStr:"+unicodeStr);
+		assertThat(unicodeStr).isEqualTo(FileUtils.toUnicodeString(FileUtils.UNICODE_ZERO_WIDTH_SPACE.codePointAt(0)));
+		
+		String unicodeString = FileUtils.convertZWSP2Unicode(str);
+		System.out.println("unicoeString:"+unicodeString);
+	}
 	
 	@Test
 	public void testAnsi(){

@@ -53,6 +53,8 @@ public class FileUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(FileUtils.class);
 
 	public static final String UTF8_BOM = "\uFEFF";
+	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b";
+	public static final char UNICODE_ZERO_WIDTH_SPACE_CHAR = UNICODE_ZERO_WIDTH_SPACE.charAt(0);
 	
 	public static final String UTF8 = "utf-8";
 	public static final String DEFAULT_CHARSET = UTF8;
@@ -73,7 +75,6 @@ public class FileUtils {
 
 	private FileUtils() {
 	}
-
 
 	public static boolean delete(File file){
 		return file.delete();
@@ -1293,6 +1294,34 @@ public class FileUtils {
 		}
 		return zipfile;
 	}
+
+	public static boolean hasBOM(String str){
+		return str.contains(UTF8_BOM);
+	}
+
+	public static boolean hasZWSP(String str){
+		return str.contains(UNICODE_ZERO_WIDTH_SPACE);
+	}
+
+	public static boolean isZWSP(char ch){
+		return UNICODE_ZERO_WIDTH_SPACE_CHAR == ch;
+	}
+
+	public static String convertZWSP2Unicode(String str){
+		StringBuilder buf = new StringBuilder(str.length()+10);
+		for(char ch : str.toCharArray()){
+			if(isZWSP(ch)){
+				buf.append(toUnicodeString(ch));
+			}else{
+				buf.append(ch);
+			}
+		}
+		return buf.toString();
+	}
+	public static String toUnicodeString(int ch){
+		return String.format ("\\u%04x", ch);
+	}
+	
 	
 	public static String getJavaIoTmpdir(){
 		return getJavaIoTmpdir(false);
