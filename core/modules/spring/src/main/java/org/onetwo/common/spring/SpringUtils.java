@@ -565,5 +565,4 @@ final public class SpringUtils {
 		}
 		return ArrayUtils.isNotEmpty(beanNames);
 	}
-	
 }

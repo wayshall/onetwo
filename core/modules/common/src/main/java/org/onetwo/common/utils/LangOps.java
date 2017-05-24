@@ -29,6 +29,7 @@ final public class LangOps {
 				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
 //		 return Collections.EMPTY_MAP;
 	}
+	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> kvArrayToMap(K[] keys, V[] values){
 		 return Stream.iterate(0, i->i+1)
 				 .limit(keys.length)

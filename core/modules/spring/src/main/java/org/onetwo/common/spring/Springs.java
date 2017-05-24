@@ -52,9 +52,7 @@ public class Springs {
 	}
 
 	public static Springs getInstance() {
-		if(!instance.initialized){
-			throw new BaseException("application context has not init ...");
-		}
+		instance.checkInitialized();
 		return instance;
 	}
 
@@ -75,10 +73,18 @@ public class Springs {
 	}
 	
 	public ApplicationContext getAppContext() {
+		checkInitialized();
 		return appContext;
 	}
 	
 
+
+	public void checkInitialized() {
+		if(!isInitialized()){
+			throw new BaseException("application context has not init ...");
+		}
+	}
+	
 	public boolean isInitialized() {
 		return initialized;
 	}
@@ -88,6 +94,7 @@ public class Springs {
 	}
 
 	public <T> void autoInject(T bean, int autowireMode) {
+		checkInitialized();
 		SpringUtils.injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, autowireMode);
 	}
 
@@ -100,6 +107,7 @@ public class Springs {
 	}
 
 	public Object getBean(String beanName, boolean throwIfError) {
+		checkInitialized();
 		if(!getAppContext().containsBean(beanName)){
 			if(throwIfError)
 				throw new BaseException("not bean["+beanName+"] found! ");
@@ -150,6 +158,7 @@ public class Springs {
 	}
 
 	public <T> T getBean(Class<T> clazz, boolean throwIfError) {
+		checkInitialized();
 		try {
 			return instance.appContext.getBean(clazz);
 		} catch (BeansException e) {

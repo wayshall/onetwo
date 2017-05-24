@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Lists;
 
 /*****
- * ConcurrentRunnable.create().repeate(parties, ()->{
+ * ConcurrentRunnable.create(parties, ()->{
 			//run task
 		})
 		.start()
@@ -17,11 +17,18 @@ import com.google.common.collect.Lists;
  *
  */
 public class ConcurrentRunnable {
-	public static ConcurrentRunnable create(){
-		return new ConcurrentRunnable();
+	public static ConcurrentRunnable create(int repeate, Runnable runnable){
+		return new ConcurrentRunnable().concurrentRun(repeate, runnable);
 	}
 	
+	/****
+	 * 主线程等待一组线程里的每个线程countDown
+	 */
 	private CountDownLatch latch;
+	/***
+	 * 并通过CyclicBarrier把所有的线程阻塞到任务执行之前，直到所有线程都准备好
+	 * 线程互相等待
+	 */
 	private CyclicBarrier barrier;
 	private volatile boolean started;
 	
@@ -30,8 +37,8 @@ public class ConcurrentRunnable {
 	private ConcurrentRunnable() {
 		super();
 	}
-	public ConcurrentRunnable repeate(int repeate, Runnable runnable){
-		for (int i = 0; i < repeate; i++) {
+	public ConcurrentRunnable concurrentRun(int concurrentSize, Runnable runnable){
+		for (int i = 0; i < concurrentSize; i++) {
 			this.runnables.add(runnable);
 		}
 		return this;
@@ -41,6 +48,11 @@ public class ConcurrentRunnable {
 		return this;
 	}
 	
+	/****
+	 * 启动所有线程
+	 * @author wayshall
+	 * @return
+	 */
 	public ConcurrentRunnable start(){
 		int size = runnables.size();
 		latch = new CountDownLatch(size);
@@ -62,6 +74,10 @@ public class ConcurrentRunnable {
 		return this;
 	}
 	
+	/****
+	 * 等待所有线程任务执行完
+	 * @author wayshall
+	 */
 	public void await(){
 		if(!started)
 			throw new RuntimeException("ConcurrentRunnable has not started!");
