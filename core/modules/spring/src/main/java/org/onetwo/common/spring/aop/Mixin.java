@@ -17,10 +17,11 @@ public @interface Mixin {
 	 * @return
 	 */
 	Class<?> value();
-	MixinInitor initor() default MixinInitor.REFLECTION;
+	MixinFrom from() default MixinFrom.DEFAULLT;
 
-	enum MixinInitor {
+	enum MixinFrom {
 		SPRING,
-		REFLECTION
+		REFLECTION,
+		DEFAULLT
 	}
 }

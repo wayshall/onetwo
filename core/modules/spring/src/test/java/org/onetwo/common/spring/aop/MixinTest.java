@@ -30,7 +30,7 @@ public class MixinTest {
 	public void testMixin(){
 		SimpleObject obj = new SimpleObject();
 		
-		final SimpleObject fobj = Mixins.mixin(obj, Freezable.class);
+		final SimpleObject fobj = Mixins.of(obj, Freezable.class);
 		((Freezable)fobj).freeze();
 		
 		assertThatExceptionOfType(IllegalStateException.class)
@@ -40,7 +40,7 @@ public class MixinTest {
 				.withMessage("locked");
 		
 
-		obj = Mixins.mixins(obj, Human.class, Bird.class);
+		obj = Mixins.of(obj, Human.class, Bird.class);
 		String talkWord = ((Human)obj).talk();
 		assertThat(talkWord).isEqualTo("hello world");
 

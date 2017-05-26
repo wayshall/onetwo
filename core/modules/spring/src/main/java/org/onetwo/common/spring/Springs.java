@@ -52,7 +52,6 @@ public class Springs {
 	}
 
 	public static Springs getInstance() {
-		instance.checkInitialized();
 		return instance;
 	}
 
