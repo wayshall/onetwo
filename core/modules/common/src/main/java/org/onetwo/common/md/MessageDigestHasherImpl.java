@@ -1,42 +1,43 @@
-package org.onetwo.common.encrypt;
+package org.onetwo.common.md;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.binary.Base64;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
-public class MDEncryptImpl implements MDEncrypt {
+import com.google.common.base.Charsets;
+
+public class MessageDigestHasherImpl implements MessageDigestHasher {
 //	public static final String BASE64_POSTFIX = "-B64";
 	
 	private String algorithm;
 	private MessageDigest md;
 	
 	private String charset;
-	private boolean base64;
+//	private boolean base64;
 	private int size;
-	
+	private CodeType codeType = CodeType.HEX;
 //	private boolean isDev = false;
+	
+	private boolean withLabel;
 
-	MDEncryptImpl(String algorithm, int size){
-		this(algorithm, size, false);
+	MessageDigestHasherImpl(String algorithm, int size){
+		this(algorithm, size, Charsets.UTF_8.toString());
 	}
 
-	MDEncryptImpl(String algorithm, int size, boolean base64){
-		this(algorithm, size, base64, "UTF-8");
-	}
-	MDEncryptImpl(String algorithm, int size, boolean base64, String charset){
+	MessageDigestHasherImpl(String algorithm, int size, String charset){
 		this.algorithm = algorithm.trim();
 		try {
 			this.md = MessageDigest.getInstance(this.algorithm);
 			this.size = size;
-			this.base64 = base64;
+//			this.base64 = base64;
 			this.charset = charset;
 		} catch (NoSuchAlgorithmException e) {
-			LangUtils.throwServiceException(e);
+			throw new BaseException("no suche algorithm found: " + this.algorithm, e);
 		}
 	}
 	
@@ -44,42 +45,17 @@ public class MDEncryptImpl implements MDEncrypt {
 		return size;
 	}
 
-	public String getLabel(boolean withSalt){
-		return "{"+(withSalt?"S":"")+algorithm+"}";
-	}
 	
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+
+	public void setCodeType(CodeType codeType) {
+		this.codeType = codeType;
+	}
+
 	protected byte[] getBytes(final String str){
 		return LangUtils.getBytes(str, charset);
-	}
-	
-	protected String encode(byte[] bytes){
-		String result = "";
-		if(base64){
-			result = LangUtils.newString(Base64.encodeBase64(bytes), charset);
-		}
-		else{
-			result = LangUtils.toHex(bytes);
-		}
-		return result;
-	}
-	
-	protected byte[] decode(String str){
-		byte[] result = null;
-		if(base64){
-			result = Base64.decodeBase64(getBytes(str));
-		}else{
-			result = LangUtils.hex2Bytes(str);
-		}
-		return result;
-	}
-	
-	protected String appendLabel(String encryptStr, boolean withSalt){
-		if(!isWithLabel())
-			return encryptStr;
-		String lable = getLabel(withSalt);
-		if(encryptStr.startsWith(lable))
-			return encryptStr;
-		return getLabel(withSalt)+encryptStr;
 	}
 	
 	protected byte[] randomSalt(){
@@ -97,53 +73,48 @@ public class MDEncryptImpl implements MDEncrypt {
 		return bytes;
 	}
 	
-	public String encrypt(String source){
-		String encryptStr = encrypt(getBytes(source), null);
-//		return encrypt(getBytes(source), randomSalt());
-		return appendLabel(encryptStr, false);
+	@Override
+	public String hash(String source){
+		return hash(getBytes(source), null);
 	}
 
 	/*****
 	 * byte[] = digest(source+salt)+salt;
 	 * String = hex(byte[]);
 	 */
-	public String encryptWithSalt(String source, int saltLength){
-		String encryptStr = encrypt(getBytes(source), randomSalt(saltLength));
-		return appendLabel(encryptStr, true);
+	@Override
+	public String hashWithRandomSalt(String source, int saltLength){
+		return hash(getBytes(source), randomSalt(saltLength));
 	}
-	public String encryptWithSalt(String source, byte[] salt){
-		byte[] digest = _encryptBytesOnly(getBytes(source), salt);
-		String encryptString = encode(digest);
-		return appendLabel(encryptString, true);
+	@Override
+	public String hashWithSalt(String source, byte[] salt){
+		return hash(getBytes(source), salt);
 	}
-	public String encryptWithSalt(String source, String salt){
-		return encryptWithSalt(source, getBytes(salt));
+	@Override
+	public String hashWithSalt(String source, String salt){
+		return hashWithSalt(source, getBytes(salt));
 	}
-	
-	public String encryptWithSalt(String source){
-		String encryptStr = encrypt(getBytes(source), randomSalt());
-		return appendLabel(encryptStr, true);
-	}
-	
-	public String encrypt(byte[] source, byte[] salt){
-		byte[] digest = encryptBytes(source, salt);
+
+	/*public String encrypt(byte[] source, byte[] salt){
+		byte[] digest = hash(source, salt);
 //		byte[] digest = _encryptBytesOnly(source, salt);
 //		System.out.println("encrypt:" + encode(digest));
 //		digest = mergeSalt(digest, salt);
 		String encryptString = encode(digest);
 		return encryptString;
-	}
+	}*/
 	
 	/****
 	 * byte[] = digest(source+salt)+salt
 	 */
-	public byte[] encryptBytes(byte[] source, byte[] salt){
-		byte[] dg = _encryptBytesOnly(source, salt);
+	public String hash(byte[] source, byte[] salt){
+		byte[] dg = hashAsBytesOnly(source, salt);
 		boolean hasSalt = (salt!=null && salt.length>0);
 		if(hasSalt){
 			dg = mergeSalt(dg, salt);
 		}
-		return dg;
+		String encoded = codeType.encode(dg, charset);
+		return appendLabel(encoded, hasSalt);
 	}
 	
 	/*****
@@ -152,7 +123,7 @@ public class MDEncryptImpl implements MDEncrypt {
 	 * @param salt
 	 * @return
 	 */
-	synchronized public byte[] _encryptBytesOnly(byte[] source, byte[] salt){
+	synchronized private byte[] hashAsBytesOnly(byte[] source, byte[] salt){
 		boolean hasSalt = (salt!=null && salt.length>0);
 		byte[] dg = null;
 		md.reset();
@@ -172,7 +143,7 @@ public class MDEncryptImpl implements MDEncrypt {
 	 * byte(entryHexString)=> hash = entry + salt, 得到salt 
 	 * boolean: digest(source+salt) == hash
 	 */
-	public boolean checkEncrypt(String source, String encrypt){
+	public boolean checkHash(String source, String encrypt){
 //		LangUtils.println(isDev, "checkEncrypt start=============================>>>");
 		Assert.hasText(source);
 		if(StringUtils.isBlank(encrypt))
@@ -181,12 +152,13 @@ public class MDEncryptImpl implements MDEncrypt {
 		byte[] hash;
 		
 		String trimLable = encrypt;
-		String label = MDEncryptUtils.getLabel(encrypt);
-		if(StringUtils.isBlank(label) && LangUtils.isHexString(encrypt)){
-			hash = LangUtils.hex2Bytes(trimLable);
+		String label = MessageDigestHashUtils.getLabel(encrypt);
+		if(StringUtils.isBlank(label)){
+			hash = codeType.decode(trimLable, charset);
 		}else{
-			trimLable = MDEncryptUtils.trimLabel(encrypt);
-			hash = decode(trimLable);
+			trimLable = MessageDigestHashUtils.trimLabel(encrypt);
+//			hash = decode(trimLable);
+			hash = codeType.decode(trimLable, charset);
 		}
 		byte[][] decodeBytes = splitSalt(hash, size);
 		hash = decodeBytes[0];
@@ -195,32 +167,35 @@ public class MDEncryptImpl implements MDEncrypt {
 		if(hash==null)
 			return false;
 		
-		byte[] sourceEncoded = _encryptBytesOnly(getBytes(source), salt);
+		byte[] sourceEncoded = hashAsBytesOnly(getBytes(source), salt);
 		valid = MessageDigest.isEqual(hash, sourceEncoded);
 //		LangUtils.println(isDev, "checkEncrypt end=============================>>>");
 		
 		return valid;
 	}
 	
-
-	public boolean checkEncrypt(String source, String saltStr, String encrypt){
+	/****
+	 * 
+	 */
+	public boolean checkHash(String source, String saltStr, String encrypt){
 		Assert.hasText(source);
 		if(StringUtils.isBlank(encrypt))
 			return false;
-		byte[] hash;
 		
+		byte[] hash;
 		String trimLable = encrypt;
-		String label = MDEncryptUtils.getLabel(encrypt);
-		if(StringUtils.isBlank(label) && LangUtils.isHexString(encrypt)){
-			hash = LangUtils.hex2Bytes(trimLable);
+		String label = MessageDigestHashUtils.getLabel(encrypt);
+		if(StringUtils.isBlank(label)){
+			hash = codeType.decode(trimLable, charset);
 		}else{
-			trimLable = MDEncryptUtils.trimLabel(encrypt);
-			hash = decode(trimLable);
+			trimLable = MessageDigestHashUtils.trimLabel(encrypt);
+//			hash = decode(trimLable);
+			hash = codeType.decode(trimLable, charset);
 		}
 		if(hash==null)
 			return false;
 		
-		byte[] sourceEncoded = _encryptBytesOnly(getBytes(source), getBytes(saltStr));
+		byte[] sourceEncoded = hashAsBytesOnly(getBytes(source), getBytes(saltStr));
 		return MessageDigest.isEqual(hash, sourceEncoded);
 	}
 	
@@ -243,9 +218,25 @@ public class MDEncryptImpl implements MDEncrypt {
 		byte[][] encryptSalt = {encrypt, salt};
 		return encryptSalt;
 	}
+
+	private String getLabel(boolean withSalt){
+		return "{"+(withSalt?"S":"")+algorithm+"}";
+	}
+	private String appendLabel(String encryptStr, boolean withSalt){
+		if(!isWithLabel())
+			return encryptStr;
+		String lable = getLabel(withSalt);
+		if(encryptStr.startsWith(lable))
+			return encryptStr;
+		return getLabel(withSalt)+encryptStr;
+	}
 	
 	public boolean isWithLabel(){
-		return true;
+		return withLabel;
+	}
+
+	void setWithLabel(boolean withLabel) {
+		this.withLabel = withLabel;
 	}
 	
 }

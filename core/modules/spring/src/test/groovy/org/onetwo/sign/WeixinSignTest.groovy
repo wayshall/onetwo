@@ -1,7 +1,7 @@
 package org.onetwo.sign
 
 import org.junit.Test;
-import org.onetwo.common.encrypt.MDFactory;
+import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.ParamUtils;
 import org.onetwo.common.xml.XmlUtils;
 
@@ -34,7 +34,7 @@ class WeixinSignTest {
 		println("obj: ${obj}")
 		String toParamString = ParamUtils.comparableKeyMapToParamString(obj)
 		println("toParamString: ${toParamString}")
-		boolean res = MDFactory.createMD5().checkEncrypt(toParamString, "398DFBD65C8550ABACD7583B50A04F40")
+		boolean res = Hashs.createMD5().checkHash(toParamString, "398DFBD65C8550ABACD7583B50A04F40")
 		println("res: ${res}")
 	}
 	

@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.encrypt.MDFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
@@ -170,7 +170,7 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testGenerateToken(){
-		String token2 = MDFactory.MD5.encrypt("wayshall");
+		String token2 = Hashs.MD5.hash("wayshall");
 		System.out.println("token:" + LangUtils.generateToken("wayshall"));
 	}
 	

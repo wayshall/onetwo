@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 import org.onetwo.common.annotation.BeanOrder;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
-import org.onetwo.common.encrypt.MDFactory;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.BusinessException;
 import org.onetwo.common.exception.ExceptionCodeMark;
@@ -47,6 +46,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.md.Hashs;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
@@ -1516,7 +1516,7 @@ public class LangUtils {
 	public static String generateToken(String... strs) {
 		Object[] objs = strs;
 		String s = appendNotBlank(objs);
-		s = MDFactory.MD5.encrypt(s + System.currentTimeMillis() + getRadomString(6));
+		s = Hashs.MD5.hash(s + System.currentTimeMillis() + getRadomString(6));
 		return s;
 	}
 	

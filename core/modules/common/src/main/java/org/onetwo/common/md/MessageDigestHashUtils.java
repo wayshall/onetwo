@@ -1,10 +1,10 @@
-package org.onetwo.common.encrypt;
+package org.onetwo.common.md;
 
 import org.apache.commons.codec.binary.Base64;
 import org.onetwo.common.utils.LangUtils;
 
-abstract public class MDEncryptUtils {
-
+abstract public class MessageDigestHashUtils {
+	
 	/***
 	 * 
 	 * @param encryptStr
@@ -48,20 +48,6 @@ abstract public class MDEncryptUtils {
 	
 	public static String encode(byte[] bytes, String charset){
 		return LangUtils.newString(Base64.encodeBase64(bytes), charset);
-	}
-
-	public static void main(String[] args){
-		String str = "{sha}asdfasdf";
-
-		String s = "345asdfafasdsfsadfas";
-		String r = encode(s);
-		System.out.println(s.length()+"->"+r.length()+":"+r);
-		s = "345asdasdfasdfafafasdsfsadfas";
-		r = encode(s);
-		System.out.println(s.length()+"->"+r.length()+":"+r);
-		s = "3445w345asdfafasghklihdfgnh9t78dsfsadfas";
-		r = encode(s);
-		System.out.println(s.length()+"->"+r.length()+":"+r);
 	}
 
 }
