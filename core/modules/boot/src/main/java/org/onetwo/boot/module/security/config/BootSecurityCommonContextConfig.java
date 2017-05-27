@@ -5,7 +5,9 @@ import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 
 /****
  * boot security的通用配置
+ * jfish.security.redis 启动redis存储session
  * @author way
  *
  */
@@ -53,6 +56,11 @@ public class BootSecurityCommonContextConfig{
 	@ConditionalOnMissingBean(SecurityWebExceptionResolver.class)
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
+	}
+	
+	@ConditionalOnProperty(name="hostName", prefix="jfish.security.redis")
+	@Configuration
+	public static class BootRedisContextConfig extends RedisContextConfig {
 	}
 	
 }

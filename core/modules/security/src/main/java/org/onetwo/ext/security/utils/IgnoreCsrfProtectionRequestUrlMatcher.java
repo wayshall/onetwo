@@ -1,8 +1,7 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class IgnoreCsrfProtectionRequestUrlMatcher implements RequestMatcher {

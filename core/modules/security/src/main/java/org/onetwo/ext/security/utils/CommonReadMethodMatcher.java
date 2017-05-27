@@ -1,4 +1,4 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.utils;
 
 import java.util.regex.Pattern;
 

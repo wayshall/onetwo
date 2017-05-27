@@ -3,7 +3,6 @@ package org.onetwo.ext.security.utils;
 import java.util.Set;
 
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.ext.security.CommonReadMethodMatcher;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.matcher.MutipleRequestMatcher;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

@@ -1,5 +1,7 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.utils;
 
+import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
+import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;

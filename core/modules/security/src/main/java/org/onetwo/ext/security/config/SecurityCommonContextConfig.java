@@ -2,8 +2,8 @@ package org.onetwo.ext.security.config;
 
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.security.AjaxAuthenticationHandler;
-import org.onetwo.ext.security.AjaxSupportedAccessDeniedHandler;
+import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.mvc.args.SecurityArgumentResolver;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecuritySessionUserManager;

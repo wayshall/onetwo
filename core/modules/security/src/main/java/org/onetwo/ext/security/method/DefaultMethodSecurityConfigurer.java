@@ -3,9 +3,9 @@ package org.onetwo.ext.security.method;
 import lombok.Getter;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.ext.security.AjaxAuthenticationHandler;
-import org.onetwo.ext.security.IgnoreCsrfProtectionRequestUrlMatcher;
+import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.matcher.MatcherUtils;
+import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
@@ -42,6 +44,12 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	@Getter
 	@Autowired
 	private SecurityConfig securityConfig;
+	
+	//redis
+	@Autowired(required=false)
+	private SecurityContextRepository securityContextRepository;
+	@Autowired(required=false)
+	private LogoutSuccessHandler logoutSuccessHandler;
 	
 
     @Override
@@ -86,6 +94,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		CsrfConfigurer<HttpSecurity> csrf = http.csrf();
 		if(securityConfig.getCsrf().isDisable()){
 			csrf.disable();
+			return ;
 		}
 		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getIgnoringPaths())){
 			csrf.ignoringAntMatchers(securityConfig.getCsrf().getIgnoringPaths());
@@ -98,6 +107,12 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	}
 	
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
+		if(securityContextRepository!=null){
+			http.securityContext().securityContextRepository(securityContextRepository);
+		}
+		if(logoutSuccessHandler!=null){
+			http.logout().logoutSuccessHandler(logoutSuccessHandler);
+		}
 		http
 			.formLogin()
 			.loginPage(securityConfig.getLoginUrl()).permitAll()

@@ -1,23 +1,22 @@
-package org.onetwo.ext.security.url;
+package org.onetwo.ext.security;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.ext.security.EnableSecurity;
+import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.onetwo.ext.security.EnableSecurity.ConfigOptions;
 import org.onetwo.ext.security.config.PermissionContextConfig;
 import org.onetwo.ext.security.method.MethodBasedSecurityConfig;
-import org.springframework.context.annotation.ImportSelector;
+import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 
-public class SecurityImportSelector implements ImportSelector {
-
+public class SecurityImportSelector extends AbstractImportSelector<EnableSecurity> {
+	
 	@Override
-	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-		Map<String, Object> attributes = importingClassMetadata.getAnnotationAttributes(EnableSecurity.class.getName(), false);
+	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		ConfigOptions mode = (ConfigOptions)attributes.get("mode");
 		List<String> classNames = new ArrayList<>();
 		if(mode==ConfigOptions.URL){
@@ -37,8 +36,7 @@ public class SecurityImportSelector implements ImportSelector {
 		if(enableJavaStylePermissionManage){
 			classNames.add(PermissionContextConfig.class.getName());
 		}
-		return classNames.toArray(new String[0]);
+		return classNames;
 	}
-	
 
 }

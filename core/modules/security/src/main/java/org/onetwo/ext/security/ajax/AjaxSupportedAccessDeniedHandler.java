@@ -1,4 +1,4 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.ajax;
 
 import java.io.IOException;
 import java.net.URLEncoder;
