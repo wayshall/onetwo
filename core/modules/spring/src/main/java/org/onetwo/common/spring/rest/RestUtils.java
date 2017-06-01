@@ -1,14 +1,17 @@
 package org.onetwo.common.spring.rest;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
+import org.onetwo.common.utils.ParamUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -16,6 +19,8 @@ public final class RestUtils {
 	
 	private RestUtils(){}
 
+	public static final String CLASS_OK_HTTP_CLIENT = "okhttp3.OkHttpClient";
+	
 	public static final String LIST_LEFT = "[";
 	public static final String LIST_RIGHT = "]";
 	public static final String DOT_ACCESOR = ".";
@@ -27,7 +32,7 @@ public final class RestUtils {
 	public static final HttpHeaders JSON_HEADER;
 	public static final HttpHeaders TEXT_HEADER;
 
-	private static final BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().build();
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
 	
 	static{
 		FORM_HEADER = createHeader(MediaType.APPLICATION_FORM_URLENCODED);
@@ -47,9 +52,16 @@ public final class RestUtils {
 		
 	}
 	
+	public static boolean isOkHttpPresent(){
+		return ClassUtils.isPresent(CLASS_OK_HTTP_CLIENT, null);
+	}
+	
 
 //	@SuppressWarnings("unchecked")
 	public static HttpEntity<?> createFormEntity(final Object obj){
+		return createFormEntity(obj, BEAN_TO_MAP_CONVERTOR);
+	}
+	public static HttpEntity<?> createFormEntity(final Object obj, BeanToMapConvertor convertor){
 		Assert.notNull(obj);
 		if(HttpEntity.class.isInstance(obj)){
 			return (HttpEntity<?>)obj;
@@ -62,10 +74,23 @@ public final class RestUtils {
 	}
 	
 	public static MultiValueMap<String, Object> toMultiValueMap(final Object obj){
+		return toMultiValueMap(obj, BEAN_TO_MAP_CONVERTOR);
+	}
+	public static MultiValueMap<String, Object> toMultiValueMap(final Object obj, BeanToMapConvertor convertor){
 		final MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 //		appendMultiValueMap(params, "", obj);
-		beanToMapConvertor.flatObject("", obj, (key, value, ctx)->params.set(key, value));
+		convertor.flatObject("", obj, (key, value, ctx)->params.set(key, value));
 		return params;
+	}
+	
+	public static String propertiesToParamString(Object request){
+		return keysToParamString(toMultiValueMap(request));
+	}
+	
+	public static String keysToParamString(MultiValueMap<String, Object> params){
+		return ParamUtils.toParamString(params, (BiFunction<Object, Object, String>)(k, v)->{
+			return k+"={"+k+"}";
+		});
 	}
 	
 	public static HttpHeaders createHeader(MediaType mediaType){

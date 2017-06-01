@@ -6,11 +6,14 @@ import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Configuration
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
@@ -22,4 +25,13 @@ public class BootMSContextAutoConfig extends BootWebCommonAutoConfig {
 	public BootMSContextAutoConfig(){
 	}
 
+	/***
+	 * 异常解释
+	 * @return
+	 */
+	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
+	public ResponseEntityExceptionHandler bootWebExceptionResolver(){
+		BootWebExceptionHandler handler = new BootWebExceptionHandler();
+		return handler;
+	}
 }

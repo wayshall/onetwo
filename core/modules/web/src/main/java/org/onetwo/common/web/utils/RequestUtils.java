@@ -8,6 +8,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.ParamUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
@@ -239,23 +240,11 @@ public final class RequestUtils {
 		return request.getHeader("referer");
 	}
 	public static String appendParam(String action, String name, String value){
-		String result = action;
-		if (action.indexOf("?")!=-1){
-			result += "&"+name+"="+value;
-		}else{
-			result += "?"+name+"="+value;
-		}
-		return result;
+		return ParamUtils.appendParam(action, name, value);
 	}
 	
 	public static String appendParamString(String action, String paramstr){
-		String result = action;
-		if (action.indexOf("?")!=-1){
-			result += "&"+paramstr;
-		}else{
-			result += "?"+paramstr;
-		}
-		return result;
+		return ParamUtils.appendParamString(action, paramstr);
 	}
 	
 	public static boolean isServlet3(){

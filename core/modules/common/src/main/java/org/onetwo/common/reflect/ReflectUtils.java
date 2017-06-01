@@ -78,7 +78,7 @@ public class ReflectUtils {
 	
 	private static final BaseMap<Class<?>, Class<?>> BASE_TYPE_MAPPER;
 	
-	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = new BeanToMapConvertor();
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
 	private static final BeanToMapConvertor BEAN_TO_MAP_IGNORE_NULL_CONVERTOR = BeanToMapBuilder.newBuilder()
 																								.propertyAcceptor((p, v)->v!=null)
 																								.build();

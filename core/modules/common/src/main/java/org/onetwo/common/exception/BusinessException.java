@@ -31,6 +31,10 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 		this.initErrorCode(code);
 	}
 
+	@Override
+	public Integer getStatusCode() {
+		return null;
+	}
 
 	public BusinessException(String msg, Throwable cause, String code) {
 		super(msg, cause);

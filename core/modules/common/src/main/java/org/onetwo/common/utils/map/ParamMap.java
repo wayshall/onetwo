@@ -126,7 +126,7 @@ public class ParamMap extends CollectionMap<Object, Object>{
 			}
 		}
 		return sb.toString();*/
-		return ParamUtils.mapToParamString(this);
+		return ParamUtils.toParamString(this);
 	}
 	
 }

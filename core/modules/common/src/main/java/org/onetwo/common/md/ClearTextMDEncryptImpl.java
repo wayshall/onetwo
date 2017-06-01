@@ -31,7 +31,7 @@ public class ClearTextMDEncryptImpl implements MessageDigestHasher{
 
 	@Override
 	public String hashWithRandomSalt(String source, int length) {
-		throw new UnsupportedOperationException();
+		return hash(source);
 	}
 
 	@Override
@@ -40,15 +40,15 @@ public class ClearTextMDEncryptImpl implements MessageDigestHasher{
 	}
 	@Override
     public boolean checkHash(String source, String saltStr, String encrypt) {
-		throw new UnsupportedOperationException();
+		return checkHash(source, saltStr, encrypt);
     }
 	@Override
     public String hashWithSalt(String source, byte[] salt) {
-		throw new UnsupportedOperationException();
+		return hash(source);
     }
 	@Override
     public String hashWithSalt(String source, String salt) {
-		throw new UnsupportedOperationException();
+		return hash(source);
     }
 
 }

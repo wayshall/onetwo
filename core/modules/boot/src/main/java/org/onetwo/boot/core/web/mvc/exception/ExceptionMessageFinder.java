@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
@@ -20,6 +21,9 @@ import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.exception.DbmException;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 public interface ExceptionMessageFinder {
 
@@ -49,6 +53,7 @@ public interface ExceptionMessageFinder {
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
 			errorArgs = codeMark.getArgs();
+			error.setHttpStatus(HttpStatus.valueOf(codeMark.getStatusCode()));
 //			errorMsg = ex.getMessage();
 			
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
@@ -71,6 +76,11 @@ public interface ExceptionMessageFinder {
 			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
 			errorMsg = ValidatorUtils.toMessages(constrants);
 			findMsgByCode = false;
+		}else if(ex instanceof BindException){
+			BindingResult br = ((BindException)ex).getBindingResult();
+			errorMsg = ValidatorUtils.asString(br);
+			findMsgByCode = false;
+			detail = false;
 		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}*//*else if(BeanCreationException.class.isInstance(ex)){
@@ -172,6 +182,7 @@ public interface ExceptionMessageFinder {
 		private String code;
 		private String mesage;
 		boolean detail;
+		private HttpStatus httpStatus;
 //		private boolean authentic = false;
 		private String viewName;
 		
@@ -223,12 +234,18 @@ public interface ExceptionMessageFinder {
 		public boolean isNoPermissionException() {
 			return NoAuthorizationException.class.isInstance(throwable);
 		}
+		public HttpStatus getHttpStatus() {
+			return httpStatus;
+		}
+		public void setHttpStatus(HttpStatus httpStatus) {
+			this.httpStatus = httpStatus;
+		}
 		/*
 		public void setAuthentic(boolean authentic) {
 			this.authentic = authentic;
 		}*/
 		public String toString(){
-			return LangUtils.append(code, ":", mesage);
+			return ReflectionToStringBuilder.toString(this);
 		}
 		
 	}

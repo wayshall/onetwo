@@ -35,6 +35,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	
 	protected String code;
 	private Object[] args;
+	private Integer statusCode;
 
 	public ServiceException() {
 		super();
@@ -52,6 +53,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	public ServiceException(ErrorType exceptionType, Throwable cause) {
 		super(exceptionType.getErrorMessage(), cause);
 		initErrorCode(exceptionType.getErrorCode());
+		this.statusCode = exceptionType.getStatusCode();
 	}
 
 	public ServiceException(String msg, Throwable cause) {
@@ -98,6 +100,12 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		super(cause);
 	}
 	
+	public Integer getStatusCode() {
+		return statusCode;
+	}
+	public void setStatusCode(Integer statusCode) {
+		this.statusCode = statusCode;
+	}
 	protected void setErrorCode(){
 		this.code = ServiceErrorCode.BASE_CODE;
 	}

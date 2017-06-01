@@ -1,34 +1,21 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.exception.AuthenticationException;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ExceptionCodeMark;
-import org.onetwo.common.exception.LoginException;
-import org.onetwo.common.exception.NoAuthorizationException;
-import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
-import org.onetwo.common.exception.SystemErrorCode.JFishErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.dbm.exception.DbmException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

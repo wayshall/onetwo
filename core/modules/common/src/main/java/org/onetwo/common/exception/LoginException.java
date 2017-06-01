@@ -13,9 +13,8 @@ public class LoginException extends ServiceException {
 	public LoginException(String message) {
 		super(message);
 	}
-
-	public LoginException(String message, String code) {
-		super(message, code);
+	public LoginException(ErrorType exceptionType) {
+		super(exceptionType);
 	}
 
 	public LoginException(Throwable cause) {
