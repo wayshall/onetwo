@@ -8,13 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.utils.ModelAttr;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.data.Result;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.MapResultBuilder;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -34,19 +31,19 @@ import com.google.common.collect.Lists;
  *
  */
 public class BootJsonView extends MappingJackson2JsonView implements InitializingBean {
+
+	public static final DataResultWrapper DATA_RESULT_WRAPPER = new DefaultDataResultWrapper();
+	
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 
-	/*public static final String FILTER_KEYS = ":filterKeys";
-	public static final String JSON_DATAS = ":jsonDatas";*/
-	
-//	private static final Logger logger = JFishLoggerFactory.getLogger(BootJsonView.class);
-	
 	private boolean wrapModelAsDataResult = true;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
 //	@Autowired
 //	private BootJFishConfig bootJFishConfig;
+	
+	private DataResultWrapper dataResultWrapper = DATA_RESULT_WRAPPER;
 	
 	public BootJsonView(){
 //		this.configJson();
@@ -114,7 +111,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		}
 
 		if(wrapModelAsDataResult)
-			result = wrapAsDataResultIfNeed(result);
+			result = dataResultWrapper.wrapResult(result);
 		return processData(result);
 	}
 	
@@ -128,41 +125,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		return data;
 	}
 	
-	private Result<?, ?> wrapAsDataResultIfNeed(Object result){
-		if(Result.class.isInstance(result)){
-			return (Result<?, ?>)result;
-		}
-		if(Map.class.isInstance(result)){
-			@SuppressWarnings("unchecked")
-			MapResultBuilder dataResult = createMapResultBuilder((Map<String, Object>) result);
-			return dataResult.buildResult();
-		}else{
-			SimpleDataResult<Object> dataResult = SimpleDataResult.success("", result);
-			return dataResult;
-		}
-	}
 	
-	private MapResultBuilder createMapResultBuilder(Map<String, Object> map){
-		MapResultBuilder dataResult = WebResultCreator.creator().map().success();
-		for(Entry<String, Object> entry : map.entrySet()){
-			if(BindingResult.class.isInstance(entry.getValue())){
-				BindingResult br = (BindingResult) entry.getValue();
-				if(br.hasErrors()){
-					dataResult.error();
-				}
-				
-			}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
-				dataResult.success(entry.getValue().toString());
-				
-			}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
-				dataResult.error(entry.getValue().toString());
-				
-			}else{
-				dataResult.put(entry.getKey(), entry.getValue());
-			}
-		}
-		return dataResult;
-	}
 	
 	protected Object delegateSpringFilterModel(Map<String, Object> model) {
 		return super.filterModel(model);

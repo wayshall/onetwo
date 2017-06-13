@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.onetwo.common.exception.BaseException;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
@@ -43,12 +44,17 @@ public abstract class Proxys {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T intercept(List<Class<?>> proxiedInterfaces, MethodInterceptor methodInterceptor){
+	public static <T> T interceptInterfaces(List<Class<?>> proxiedInterfaces, MethodInterceptor methodInterceptor){
 		ProxyFactory pf = new ProxyFactory();
 		/*pf.setOptimize(true);
 		pf.setProxyTargetClass(true);*/
 		pf.addAdvisor(new DefaultPointcutAdvisor(Pointcut.TRUE, methodInterceptor));
-		proxiedInterfaces.forEach(pf::addInterface);
+		proxiedInterfaces.forEach(interf->{
+			if(!interf.isInterface()){
+				throw new BaseException(interf + " is not a interface");
+			}
+			pf.addInterface(interf);
+		});
 		return (T) pf.getProxy();
 	}
 	

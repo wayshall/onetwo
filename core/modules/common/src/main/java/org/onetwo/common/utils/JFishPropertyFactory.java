@@ -1,6 +1,6 @@
 package org.onetwo.common.utils;
 
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 
 
 
@@ -17,7 +17,7 @@ public final class JFishPropertyFactory {
 	
 	public static JFishProperty create(Class<?> beanClass, String exp, boolean isfield){
 		String pname = "create JFishProperty";
-		UtilTimerStack.push(pname);
+		TimeProfileStack.push(pname);
 		JFishProperty jp = null;
 		String[] paths = StringUtils.split(exp, ".");
 		Class<?> parentBeanClass = beanClass;
@@ -37,7 +37,7 @@ public final class JFishPropertyFactory {
 				}
 			}
 		}
-		UtilTimerStack.pop(pname);
+		TimeProfileStack.pop(pname);
 		return jp;
 	}
 

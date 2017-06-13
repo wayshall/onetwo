@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.rest;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
@@ -33,6 +34,10 @@ public final class RestUtils {
 	public static final HttpHeaders TEXT_HEADER;
 
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
+	private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = BeanToMapBuilder.newBuilder()
+																						.propertyAcceptor((p, v)->v!=null)
+																						.valueConvertor((p, v)->v.toString())
+																						.build();
 	
 	static{
 		FORM_HEADER = createHeader(MediaType.APPLICATION_FORM_URLENCODED);
@@ -52,14 +57,14 @@ public final class RestUtils {
 		
 	}
 	
-	public static boolean isOkHttpPresent(){
+	public static boolean isOkHttp3Present(){
 		return ClassUtils.isPresent(CLASS_OK_HTTP_CLIENT, null);
 	}
 	
 
 //	@SuppressWarnings("unchecked")
 	public static HttpEntity<?> createFormEntity(final Object obj){
-		return createFormEntity(obj, BEAN_TO_MAP_CONVERTOR);
+		return createFormEntity(obj, STRING_VALUE_CONVERTOR);
 	}
 	public static HttpEntity<?> createFormEntity(final Object obj, BeanToMapConvertor convertor){
 		Assert.notNull(obj);
@@ -69,17 +74,32 @@ public final class RestUtils {
 		
 		HttpHeaders formHeader = FORM_HEADER;//createHeader(MediaType.APPLICATION_FORM_URLENCODED);
 		
-		final MultiValueMap<String, Object> params = toMultiValueMap(obj);
+		final MultiValueMap<String, Object> params = toMultiValueMap(obj, convertor);
 		return new HttpEntity<MultiValueMap<String, ?>>(params, formHeader);
 	}
 	
 	public static MultiValueMap<String, Object> toMultiValueMap(final Object obj){
 		return toMultiValueMap(obj, BEAN_TO_MAP_CONVERTOR);
 	}
-	public static MultiValueMap<String, Object> toMultiValueMap(final Object obj, BeanToMapConvertor convertor){
-		final MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+	
+	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj){
+		return toMultiValueMap(obj, STRING_VALUE_CONVERTOR);
+	}
+	/*public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		convertor.flatObject("", obj, (key, value, ctx)->{
+			if(value==null){
+				return ;
+			}
+			params.add(key, value.toString());
+		});
+		return params;
+	}*/
+	@SuppressWarnings("unchecked")
+	public static <V> MultiValueMap<String, V> toMultiValueMap(final Object obj, BeanToMapConvertor convertor){
+		final MultiValueMap<String, V> params = new LinkedMultiValueMap<>();
 //		appendMultiValueMap(params, "", obj);
-		convertor.flatObject("", obj, (key, value, ctx)->params.set(key, value));
+		convertor.flatObject("", obj, (key, value, ctx)->params.set(key, (V)value));
 		return params;
 	}
 	
@@ -87,7 +107,7 @@ public final class RestUtils {
 		return keysToParamString(toMultiValueMap(request));
 	}
 	
-	public static String keysToParamString(MultiValueMap<String, Object> params){
+	public static String keysToParamString(Map<String, ?> params){
 		return ParamUtils.toParamString(params, (BiFunction<Object, Object, String>)(k, v)->{
 			return k+"={"+k+"}";
 		});

@@ -146,14 +146,15 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant</artifactId>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
       <optional>true</optional>
     </dependency>
         
      <dependency>
        <groupId>com.squareup.okhttp3</groupId>
        <artifactId>okhttp</artifactId>
+       <optional>true</optional>
      </dependency>
 	
 	<dependency>

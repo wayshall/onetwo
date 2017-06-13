@@ -1,10 +1,14 @@
 package org.onetwo.common.proxy;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 
 public class BaseMethodParameter extends MethodParameter {
 	protected final Parameter parameter;
@@ -17,6 +21,12 @@ public class BaseMethodParameter extends MethodParameter {
 	public BaseMethodParameter(Method method, int parameterIndex) {
 		super(method, parameterIndex);
 		this.parameter = method.getParameters()[parameterIndex];
+	}
+	
+	public AnnotationAttributes getAnnotationAttributes(Class<? extends Annotation> annotationClass){
+		Assert.notNull(annotationClass);
+		Annotation anno = getParameterAnnotation(annotationClass);
+		return AnnotationUtils.getAnnotationAttributes(null, anno);
 	}
 
 	public Parameter getParameter() {

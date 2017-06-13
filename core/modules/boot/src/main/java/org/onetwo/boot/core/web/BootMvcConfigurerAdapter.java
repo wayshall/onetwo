@@ -8,8 +8,8 @@ import java.util.Properties;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
-import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
+import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgs;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -92,6 +93,19 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void addFormatters(FormatterRegistry registry) {
 		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
+	}
+
+	/***
+	 * WebMvcConfigurationSupport.getMessageConverters
+	 */
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+	}
+	
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
+		/*AutoWrapJackson2HttpMessageConverter bootJson = new AutoWrapJackson2HttpMessageConverter();
+		CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, bootJson);*/
 	}
 
 }

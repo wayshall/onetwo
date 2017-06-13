@@ -5,15 +5,18 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.validation.annotation.Validated;
 
 public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	protected final Method method;
 	protected final List<T> parameters;
 	protected final Class<?> declaringClass;
-	
-	
+
 	public AbstractMethodResolver(Method method) {
 		super();
 		this.method = method;
@@ -21,6 +24,10 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 		this.declaringClass = method.getDeclaringClass();
 	}
 	
+	public Class<?> getMethodReturnType() {
+		return method.getReturnType();
+	}
+
 	public boolean isGenericReturnType(){
 		return (method.getGenericReturnType() instanceof ParameterizedType);
 	}
@@ -31,6 +38,21 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
+	}
+
+	public void validateArgements(ValidatorWrapper validatorWrapper, Object[] args){
+		if(validatorWrapper==null){
+			return ;
+		}
+		for(T parameter : parameters){
+			Object paramValue = args[parameter.getParameterIndex()];
+			if(parameter.hasParameterAnnotation(Validated.class)){
+				Validated validated = parameter.getParameterAnnotation(Validated.class);
+				validatorWrapper.throwIfValidateFailed(paramValue, validated.value());
+			}else if(parameter.hasParameterAnnotation(Valid.class)){
+				validatorWrapper.throwIfValidateFailed(paramValue);
+			}
+		}
 	}
 
 	final protected List<T> createMethodParameters(Method method){

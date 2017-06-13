@@ -54,11 +54,13 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -564,5 +566,33 @@ final public class SpringUtils {
 			consumer.accept(bean, beanClass);
 		}
 		return ArrayUtils.isNotEmpty(beanNames);
+	}
+	
+	public static AnnotationAttributes getAnnotationAttributes(AnnotationMetadata metadata, Class<?> annoType){
+		//support @AliasFor
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annoType.getName(), false));
+		return attributes;
+	}
+	
+	/***
+	 * 
+	 * @author wayshall
+	 * @param applicationContext
+	 * @param value
+	 * @return
+	 */
+	public static String resolvePlaceholders(Object applicationContext, String value){
+		if (StringUtils.hasText(value)
+				&& applicationContext instanceof ConfigurableApplicationContext) {
+			return resolvePlaceholders((ConfigurableApplicationContext)applicationContext, value);
+		}
+		return value;
+	}
+	
+	public static String resolvePlaceholders(ConfigurableApplicationContext applicationContext, String value){
+		if (StringUtils.hasText(value)) {
+			return applicationContext.getEnvironment().resolvePlaceholders(value);
+		}
+		return value;
 	}
 }

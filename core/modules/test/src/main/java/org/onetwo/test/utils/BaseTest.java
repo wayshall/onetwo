@@ -3,7 +3,7 @@ package org.onetwo.test.utils;
 import java.util.List;
 import java.util.Map;
 
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.CUtils;
 
@@ -35,11 +35,11 @@ public class BaseTest {
 	
 	public <T> List<T> times(String method, int count, boolean printTime){
 		if(printTime){
-			UtilTimerStack.push(method);
+			TimeProfileStack.push(method);
 		}
 		List<T> result = ReflectUtils.times(this, method, count, false);
 		if(printTime){
-			UtilTimerStack.pop(method);
+			TimeProfileStack.pop(method);
 		}
 		return result;
 	}

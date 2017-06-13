@@ -7,22 +7,22 @@ import org.onetwo.common.utils.ParamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.OkHttpClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-public class JFishRestTemplate extends RestTemplate {
+public class ExtRestTemplate extends RestTemplate {
 	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
 
-	public JFishRestTemplate(){
-		this(RestUtils.isOkHttpPresent()?new OkHttpClientHttpRequestFactory():null);
+	public ExtRestTemplate(){
+		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
 	}
 	
-	public JFishRestTemplate(ClientHttpRequestFactory requestFactory){
+	public ExtRestTemplate(ClientHttpRequestFactory requestFactory){
 		super();
 		for(HttpMessageConverter<?> converter : this.getMessageConverters()){
 			if(MappingJackson2HttpMessageConverter.class.isInstance(converter)){

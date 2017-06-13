@@ -7,6 +7,7 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
+import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.redis.RedisContextConfig;
@@ -38,6 +39,11 @@ public class BootSecurityCommonContextConfig{
 	public SecurityConfig getSecurityConfig() {
 		return bootSecurityConfig;
 	}*/
+	
+	@Bean
+	public ExtRestTemplate extRestTemplate(){
+		return new ExtRestTemplate();
+	}
 
 	@Bean
 	public LoggerInterceptor loggerInterceptor(){

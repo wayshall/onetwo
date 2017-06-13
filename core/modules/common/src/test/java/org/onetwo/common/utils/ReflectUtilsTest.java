@@ -13,7 +13,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 import org.onetwo.common.reflect.CopyConfig;
 import org.onetwo.common.reflect.ReflectUtils;
 
@@ -185,7 +185,7 @@ public class ReflectUtilsTest {
 
 //	@Test
 	public void testPerform2(){
-		UtilTimerStack.setActive(true);
+		TimeProfileStack.setActive(true);
 		int count = 4;
 		for(int i=0; i<count; i++){
 			this.testPerform();
@@ -197,18 +197,18 @@ public class ReflectUtilsTest {
 		String exp = null;
 		
 		exp = "ognl";
-		UtilTimerStack.push(exp);
+		TimeProfileStack.push(exp);
 		for(int i=0; i<count; i++){
 			testGetOgnl();
 		}
-		UtilTimerStack.pop(exp);
+		TimeProfileStack.pop(exp);
 		
 		exp = "exp";
-		UtilTimerStack.push(exp);
+		TimeProfileStack.push(exp);
 		for(int i=0; i<count; i++){
 			testGetExp();
 		}
-		UtilTimerStack.pop(exp);
+		TimeProfileStack.pop(exp);
 	}
 	
 	@Test

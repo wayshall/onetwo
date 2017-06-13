@@ -3,7 +3,7 @@ package org.onetwo.common.web.view.ftl;
 import java.io.IOException;
 import java.util.Map;
 
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
@@ -21,12 +21,12 @@ public class ProfileDirective implements TemplateDirectiveModel {
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 		if(params.containsKey(PARAMS_ACTIVE)){
 			boolean active = DirectivesUtils.getParameterByString(params, PARAMS_ACTIVE, "false").equals("true");
-			UtilTimerStack.setActive(active);
+			TimeProfileStack.setActive(active);
 		}
 		String name = DirectivesUtils.getRequiredParameterByString(params, "name");
-		UtilTimerStack.push(name);
+		TimeProfileStack.push(name);
 		body.render(env.getOut());
-		UtilTimerStack.pop(name);
+		TimeProfileStack.pop(name);
 	}
 
 }

@@ -19,6 +19,10 @@ final public class ClassUtils {
 
 	private ClassUtils(){
 	}
+	
+	public static String getCleanedClassName(String innerClassName) {
+		return innerClassName.replaceAll("\\$", ".");
+	}
 
 	public static ClassLoader getDefaultClassLoader(){
 		ClassLoader cld = null;

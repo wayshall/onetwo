@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -155,7 +156,7 @@ public class BeanToMapConvertor {
 	 * @param obj
 	 */
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
-		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(k), v));
+		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(c.getName()), v));
 	}
 	
 	/****
@@ -167,10 +168,11 @@ public class BeanToMapConvertor {
 	 * @param valuePutter
 	 */
 	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter){
-		flatObject(prefixName, obj, valuePutter, null);
+		flatObject(prefixName==null?"":prefixName, obj, valuePutter, null);
 	}
 	@SuppressWarnings("unchecked")
 	private <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
+		Objects.requireNonNull(prefixName);
 		if(isMappableValue(obj)){
 			valuePutter.put(prefixName, obj, keyContext);
 		}else if(Map.class.isInstance(obj)){

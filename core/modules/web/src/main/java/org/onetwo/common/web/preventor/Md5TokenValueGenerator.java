@@ -9,7 +9,7 @@ public class Md5TokenValueGenerator implements TokenValueGenerator {
 	
 	@Override
 	public String generatedTokenValue(RequestToken token) {
-		return encrypt.hashWithRandomSalt(token.getValue());
+		return encrypt.hashWithRandomSalt(token.getValue(), -1);
 	}
 
 	@Override

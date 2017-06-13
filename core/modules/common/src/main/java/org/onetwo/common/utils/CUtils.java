@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.RandomAccess;
 import java.util.Set;
@@ -28,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.IndexableReturnableClosure;
@@ -614,6 +616,27 @@ final public class CUtils {
 		return Collections.unmodifiableList(list);*/
 		return StreamSupport.stream(it.spliterator(), false)
 							.collect(Collectors.toList());
+	}
+	
+	public static <T> Optional<Pair<Integer, T>> findByClass(List<?> list, Class<T> targetClass){
+		int size = list.size();
+		for (int i = 0; i < size; i++) {
+			Object element = list.get(i);
+			if(element!=null && targetClass.isAssignableFrom(element.getClass())){
+				Pair res = Pair.of(i, (T)element);
+				return Optional.of(res);
+			}
+		}
+		return Optional.empty();
+	}
+	
+	public static void replaceOrAdd(List list, Class targetClass, Object element){
+		Optional<Pair<Integer, Object>> jsonConvertor = CUtils.findByClass(list, targetClass);
+		if(jsonConvertor.isPresent()){
+			list.set(jsonConvertor.get().getKey(), element);
+		}else{
+			list.add(element);
+		}
 	}
 	
 	private CUtils(){

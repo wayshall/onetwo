@@ -5,7 +5,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.onetwo.common.log.MyLoggerFactory;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
@@ -79,14 +79,14 @@ abstract public class AbstractDirective implements TemplateDirectiveModel {
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 		if(params.containsKey(PARAMS_PROFILE)){
 			boolean profile = DirectivesUtils.getParameterByBoolean(params, PARAMS_PROFILE, false);
-			UtilTimerStack.active(profile);
+			TimeProfileStack.active(profile);
 		}
 		String name = DirectivesUtils.getParameterByString(params, "name", getDirectiveName());
-		UtilTimerStack.push(name);
+		TimeProfileStack.push(name);
 		
 		this.render(env, params, loopVars, body);
 		
-		UtilTimerStack.pop(name);
+		TimeProfileStack.pop(name);
 	}
 
 	abstract public void render(Environment env, Map<?, ?> params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException ;

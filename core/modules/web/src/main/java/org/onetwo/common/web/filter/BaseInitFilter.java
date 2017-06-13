@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.profiling.UtilTimerStack;
+import org.onetwo.common.profiling.TimeProfileStack;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -55,7 +55,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		siteConfig = Springs.getInstance().getBean(SiteConfig.class);
 		Assert.notNull(siteConfig, "siteConfig not initialize yet!");
 		this.preventXssRequest = siteConfig.getConfig(PREVENT_XSS_REQUEST, false, boolean.class);
-		UtilTimerStack.active(siteConfig.getConfig(TIME_PROFILER, false, boolean.class));
+		TimeProfileStack.active(siteConfig.getConfig(TIME_PROFILER, false, boolean.class));
 	}
 	
 	protected void setPreventXssRequest(boolean preventXssRequest) {
@@ -75,9 +75,9 @@ public class BaseInitFilter extends IgnoreFiler {
 			return ;
 		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(push){
-			UtilTimerStack.push(url);
+			TimeProfileStack.push(url);
 		}else{
-			UtilTimerStack.pop(url);
+			TimeProfileStack.pop(url);
 		}
 	}
 	

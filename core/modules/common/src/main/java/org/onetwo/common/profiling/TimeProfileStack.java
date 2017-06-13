@@ -5,10 +5,11 @@ import org.slf4j.Logger;
 
 
 /****
+ * StopWatch
  * copy from struts 2
  *
  */
-public class UtilTimerStack
+public class TimeProfileStack
 {
 
     // A reference to the current ProfilingTimerBean
@@ -34,7 +35,7 @@ public class UtilTimerStack
 
     static {
     	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
-        active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY));
+        active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY, "true"));
 		timeLogger = new Slf4jTimeLogger(logger);
     }
 
@@ -44,11 +45,11 @@ public class UtilTimerStack
 	}
 
 	public static void setOuputer(TimeLogger ouputer) {
-		UtilTimerStack.timeLogger = ouputer;
+		TimeProfileStack.timeLogger = ouputer;
 	}
 
 	public static void setNanoTime(boolean nanoTime) {
-		UtilTimerStack.nanoTime = nanoTime;
+		TimeProfileStack.nanoTime = nanoTime;
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class UtilTimerStack
             {
                 printTimes(currentTimer);
                 current.set(null); //prevent printing multiple times
-                getOuputer().log(UtilTimerStack.class, "Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
+                getOuputer().log(TimeProfileStack.class, "Unmatched Timer.  Was expecting " + currentTimer.getResource() + ", instead got " + name);
             }
         }
 
@@ -128,7 +129,7 @@ public class UtilTimerStack
      */
     private static void printTimes(ProfilingTimerBean currentTimer)
     {
-    	getOuputer().log(UtilTimerStack.class, currentTimer.getPrintable(getMinTime()));
+    	getOuputer().log(TimeProfileStack.class, currentTimer.getPrintable(getMinTime()));
     }
 
     /**
@@ -177,7 +178,7 @@ public class UtilTimerStack
         else
         	System.clearProperty(ACTIVATE_PROPERTY);
 
-        UtilTimerStack.active = active; 
+        TimeProfileStack.active = active; 
     }
 
 
@@ -218,12 +219,12 @@ public class UtilTimerStack
      * @throws Exception
      */
     public static <T> T profile(String name, ProfilingBlock<T> block) throws Exception {
-    	UtilTimerStack.push(name);
+    	TimeProfileStack.push(name);
     	try {
     		return block.doProfiling();
     	}
     	finally {
-    		UtilTimerStack.pop(name);
+    		TimeProfileStack.pop(name);
     	}
     }
     
