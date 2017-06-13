@@ -858,7 +858,12 @@ public class ReflectUtils {
 		return getIntro(clazz).getPropertyArray();
 	}
 
-
+	/****
+	 * 把对象转为map，对象的属性名称为key，对应属性的值为value
+	 * @author wayshall
+	 * @param obj
+	 * @return
+	 */
 	public static Map<String, Object> toMap(Object obj) {
 		return toMap(true, obj);
 	}
@@ -916,6 +921,13 @@ public class ReflectUtils {
 		}
 	}
 	
+	/***
+	 * 实例化一个UserEntity对象，并把map的值设置到UserEntity对象
+	 * @author wayshall
+	 * @param map
+	 * @param beanClass
+	 * @return
+	 */
 	public static <T> T fromMap(Map<String, Object> map, Class<T> beanClass){
 		T bean = newInstance(beanClass);
 		if(LangUtils.isEmpty(map))
@@ -926,6 +938,14 @@ public class ReflectUtils {
 		return bean;
 	}
 
+	/****
+	 * 把src对应字段的值复制到dest
+	 * @author wayshall
+	 * @param src
+	 * @param dest
+	 * @param seperator
+	 * @param ignoreNull
+	 */
 	public static void copyFields(Object src, Object dest, char seperator, boolean ignoreNull){
 		Map<String, String> mappedFields = ReflectUtils.mappedFields(src.getClass(), dest.getClass(), seperator);
 		Object fvalue = null;
@@ -933,10 +953,16 @@ public class ReflectUtils {
 			fvalue = getFieldValue(src, field.getKey());
 			if(fvalue==null && ignoreNull)
 				continue;
-			setBeanFieldValue(field.getValue(), dest, fvalue);
+			setFieldValue(dest, field.getValue(), fvalue);
 		}
 	}
 
+	/****
+	 * 找出source和target的交集属性，并从source复制到target
+	 * @author wayshall
+	 * @param source
+	 * @param target
+	 */
 	public static void copy(Object source, Object target) {
 		copy(source, target, true);
 	}
@@ -947,7 +973,11 @@ public class ReflectUtils {
 
 	
 	public static void copyExcludes(Object source, Object target, String...excludeNames) {
-		copy(source, target, CopyConfig.create().throwIfError(true).ignoreIfNoSetMethod(true).ignoreFields(excludeNames));
+		copy(source, target, CopyConfig.create()
+										.throwIfError(true)
+										.ignoreIfNoSetMethod(true)
+										.ignoreFields(excludeNames)
+			);
 	}
 	
 	public static void copyIgnoreBlank(Object source, Object target, String...ignoreFields) {
@@ -1676,15 +1706,16 @@ public class ReflectUtils {
 	}
 	
 	/*****
-	 * 
+	 * 返回src和dest实例字段的交集，如果src的字段名称包含有分隔符separator，则把分隔符转为驼峰格式的名称再查找交集<br/>
+	 * 如src有字段field_name1，而target有字段fieldName1，则转为fieldName1，并匹配target对应的字段fieldName1
 	 * @param srcClass
 	 * @param destClass
 	 * @param separator src单词之间的分隔符
 	 * @return
 	 */
 	public static Map<String, String> mappedFields(Class<?> srcClass, Class<?> destClass, char separator){
-		Collection<String> srcFields = ReflectUtils.findInstanceFieldNames(srcClass, Set.class);
-		Collection<String> desctFields = ReflectUtils.findInstanceFieldNames(destClass, Set.class);
+		Collection<String> srcFields = findInstanceFieldNames(srcClass, Set.class);
+		Collection<String> desctFields = findInstanceFieldNames(destClass, Set.class);
 //		Collection<String> mapFields = srcFields.size()<desctFields.size()?srcFields:desctFields;
 		Map<String, String> mappingFields = LangUtils.newHashMap();
 //		String s = String.valueOf(separator);
@@ -1843,7 +1874,7 @@ public class ReflectUtils {
 			if(conf.isIgnoreOther(prop, value)){
 				return;
 			}
-			ReflectUtils.setProperty(target, prop, value, conf.isThrowIfError(), conf.isIgnoreIfNoSetMethod());
+			setProperty(target, prop, value, conf.isThrowIfError(), conf.isIgnoreIfNoSetMethod());
 		}
 	};
 	

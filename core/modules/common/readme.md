@@ -1,8 +1,8 @@
-#common 
-交流群：  8060215    
+# common 
+交流群：  604158262    
 一些通用功能，使用频繁的工具类的封装
 
-##maven
+## maven
 ```xml
 
 <dependency>
@@ -12,16 +12,40 @@
 </dependency>
 
 ```
-##常用工具类
-###LangUtils 一些常用的工具方法集合
-###ReflectUtils 反射相关工具类
-###DateUtils 日期相关工具类
-###FileUtils 文件相关工具类
-###Types 简单的值转换
+## 常用工具类
+### LangUtils 一些常用的工具方法集合
+### ReflectUtils 反射相关工具类
+   
+```java   
+//根据属性交集，复制对象
+ReflectUtils.copy(source, target);
+
+//根据配置，复制对象
+ReflectUtils.copy(source, target, CopyConfig.create().throwIfError(true));
+
+//忽略值为null或者blank的属性
+ReflectUtils.copyIgnoreBlank(source, target);
+
+//把对象转为map，对象的属性名称为key，对应属性的值为value
+Map<String, Object> map = ReflectUtils.toMap(user);
+
+//更多定制转换规则
+BeanToMapBuilder.newBuilder()
+				.enableUnderLineStyle()
+				.build()
+				.toMap(user)
+
+//实例化一个UserEntity对象，并把map的值设置到UserEntity对象
+UserEntity user = ReflectUtils.fromMap(map, UserEntity.class);
+```
+
+### DateUtils 日期相关工具类
+### FileUtils 文件相关工具类
+### Types 简单的值转换
 ```java   
 Long val = Types.convertValue("1", Long.class);  
 ```
-###MoneyConvertUtils 金额转为大写中文
+### MoneyConvertUtils 金额转为大写中文
 ```java   
 String result = MoneyConvertUtils.convert(3.3)   
 Integer[] values = Types.asArray("1,2,3", Integer.class)

@@ -55,6 +55,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder.SuggestionBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -470,7 +471,8 @@ public class SimpleSearchQueryBuilder {
 	    public <T> T mapAggregation(String name, Class<T> clazz) {
 	    	return mapAggregation(name, agg->{
 	    		T target = ReflectUtils.newInstance(clazz);
-	    		ReflectUtils.copy(target, agg);
+//	    		ReflectUtils.copy(target, agg);
+	    		CopyUtils.copy(target, agg);
 	    		return target;
 	    	});
 	    }
@@ -479,7 +481,8 @@ public class SimpleSearchQueryBuilder {
 	    	List<? extends Bucket> buckets = getBuckets(agg);
 	    	List<T> datas = buckets.stream().map(bucket->{
 	    		T target = ReflectUtils.newInstance(clazz);
-	    		ReflectUtils.copy(target, (Bucket)bucket);
+//	    		ReflectUtils.copy(target, (Bucket)bucket);
+	    		CopyUtils.copy(target, agg);
 	    		return target;
 	    	})
 	    	.collect(Collectors.toList());

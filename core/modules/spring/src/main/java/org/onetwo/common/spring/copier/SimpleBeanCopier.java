@@ -35,7 +35,7 @@ public class SimpleBeanCopier {
 	private PropertyNameConvertor propertyNameConvertor = NOTHING_CONVERTOR;
 //	private final T target;
 //	private boolean ignoreNull;
-	private PropertyFilter propertyFilter = SimplePropertyFilters.IGNORE_NULL;
+	private PropertyFilter propertyFilter = SimplePropertyFilters.COPY_ALL;
 	private PropertyValueCopier propertyValueCopier = COMMON_PROPERTY_VALUE_COPIER;
 
 	public SimpleBeanCopier() {
