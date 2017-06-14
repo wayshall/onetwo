@@ -140,16 +140,17 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			invokeMethod.validateArgements(validatorWrapper, invocation.getArguments());
 			
 			ResponseEntity<?> responseEntity = null;
-			String path = invokeMethod.parsePath();
-			path = getFullPath(path);
-			path = processUrlBeforeRequest(invokeMethod, path);
+			String actualUrl = getFullPath(invokeMethod.getPath());
+			actualUrl = processUrlBeforeRequest(invokeMethod, actualUrl);
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			
 			Object[] args = invocation.getArguments();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			Map<String, Object> uriVariables = invokeMethod.toMap(invocation.getArguments());
-			String paramString = RestUtils.keysToParamString(uriVariables);
-			String actualUrl = ParamUtils.appendParamString(path, paramString);
+			if(!uriVariables.isEmpty()){
+				String paramString = RestUtils.keysToParamString(uriVariables);
+				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
+			}
 
 			if(logger.isInfoEnabled()){
 				logger.info("rest url : {}, urlVariables: {}", actualUrl, uriVariables);

@@ -2,6 +2,7 @@ package org.onetwo.common.apiclient;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +57,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	}
 
 	public Map<String, Object> toMap(Object[] args){
+		if(LangUtils.isEmpty(args)){
+			return Collections.emptyMap();
+		}
 		Map<String, Object> values = LangUtils.newHashMap(parameters.size());
 		
 		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
@@ -102,7 +106,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		});
 	}
 
-	public String parsePath() {
+	public String getPath() {
 		return path;
 	}
 
