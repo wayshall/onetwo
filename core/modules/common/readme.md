@@ -8,7 +8,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-common</artifactId>
-    <version>4.3.9-SNAPSHOT</version>
+    <version>4.6.0-SNAPSHOT</version>
 </dependency>
 
 ```

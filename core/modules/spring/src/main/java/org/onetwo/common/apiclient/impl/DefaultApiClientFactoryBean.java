@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import org.onetwo.common.apiclient.AbstractApiClientFactoryBean;
 import org.onetwo.common.apiclient.ApiClientMethod;
-import org.onetwo.common.apiclient.AbstractApiClientFactoryBean.DefaultApiMethodInterceptor;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

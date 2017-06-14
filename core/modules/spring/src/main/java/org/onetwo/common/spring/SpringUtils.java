@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -54,6 +56,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
@@ -572,6 +575,23 @@ final public class SpringUtils {
 		//support @AliasFor
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annoType.getName(), false));
 		return attributes;
+	}
+
+	public static Optional<AnnotationAttributes> getAnnotationAttributes(Method method, Class<? extends Annotation> annoClass, boolean searchOnClass){
+		AnnotationAttributes attrs = null;
+		if(searchOnClass){
+			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(method, annoClass);
+			if(attrs==null){
+				Class<?> clazz = method.getDeclaringClass();
+				attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(clazz, annoClass);
+			}
+		}else{
+			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(method, annoClass);
+		}
+		return Optional.ofNullable(attrs);
+	}
+	public static Optional<AnnotationAttributes> getAnnotationAttributes(Method method, Class<? extends Annotation> annoClass){
+		return getAnnotationAttributes(method, annoClass, false);
 	}
 	
 	/***

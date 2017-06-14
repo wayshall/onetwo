@@ -2,7 +2,10 @@ package org.onetwo.common.apiclient;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.exception.ApiClientException;
@@ -12,9 +15,10 @@ import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,15 +40,15 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	public ApiClientMethod(Method method) {
 		super(method);
-		AnnotationAttributes requestMapping = AnnotatedElementUtils.getMergedAnnotationAttributes(method, RequestMapping.class);
-		if(requestMapping==null){
+		Optional<AnnotationAttributes> requestMapping = SpringUtils.getAnnotationAttributes(method, RequestMapping.class);
+		if(!requestMapping.isPresent()){
 			throw new ApiClientException("@RequestMapping not found on method: " + method.toGenericString());
 		}
 		
-		String[] paths = requestMapping.getStringArray("value");
+		String[] paths = requestMapping.get().getStringArray("value");
 		path = LangUtils.isEmpty(paths)?"":paths[0];
 		
-		RequestMethod[] methods = (RequestMethod[])requestMapping.get("method");
+		RequestMethod[] methods = (RequestMethod[])requestMapping.get().get("method");
 		requestMethod = LangUtils.isEmpty(methods)?RequestMethod.GET:methods[0];
 		
 
@@ -54,13 +58,30 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	public Map<String, Object> toMap(Object[] args){
 		Map<String, Object> values = LangUtils.newHashMap(parameters.size());
 		
+		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
+												.filter(p->{
+													return !p.hasMethodAnnotation(RequestBody.class);
+												})
+												.collect(Collectors.toList());
 		Object pvalue = null;
-		for(ApiClientMethodParameter parameter : parameters){
+		for(ApiClientMethodParameter parameter : urlVariableParameters){
 			pvalue = args[parameter.getParameterIndex()];
 			handleArg(values, parameter, pvalue);
 		}
 		
 		return values;
+	}
+	
+	public Object getRequestBody(Object[] args){
+		Optional<ApiClientMethodParameter> requestBodyParameter = parameters.stream()
+												.filter(p->{
+													return !p.hasMethodAnnotation(RequestBody.class);
+												})
+												.findFirst();
+		if(requestBodyParameter.isPresent()){
+			return args[requestBodyParameter.get().getParameterIndex()];
+		}
+		return null;
 	}
 	
 

@@ -1,15 +1,19 @@
 package org.onetwo.common.proxy;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.validation.annotation.Validated;
 
 public abstract class AbstractMethodResolver<T extends MethodParameter> {
@@ -22,6 +26,10 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 		this.method = method;
 		this.parameters = createMethodParameters(method);
 		this.declaringClass = method.getDeclaringClass();
+	}
+	
+	public final Optional<AnnotationAttributes> getAnnotationAttributes(Class<? extends Annotation> annoClass){
+		return SpringUtils.getAnnotationAttributes(method, annoClass);
 	}
 	
 	public Class<?> getMethodReturnType() {

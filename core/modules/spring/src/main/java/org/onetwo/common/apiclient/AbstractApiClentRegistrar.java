@@ -29,6 +29,10 @@ import org.springframework.util.StringUtils;
  */
 abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
 
+	public static final String ATTRS_BASE_URL = "baseUrl";
+	public static final String ATTRS_NAME = "name";
+	public static final String ATTRS_PATH = "path";
+	
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private ResourceLoader resourceLoader;
@@ -108,7 +112,7 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	
 
 	final protected String resolveName(AnnotationAttributes attributes, String defName) {
-		String name = attributes.getString("name");
+		String name = attributes.getString(ATTRS_NAME);
 		if (!StringUtils.hasText(name)) {
 			name = defName;
 		}
@@ -117,7 +121,7 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	}
 	
 	final protected String resolveUrl() {
-		String url = resolve(annotationMetadataHelper.getAttributes().getString("baseUrl"));
+		String url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
 		if (StringUtils.hasText(url)) {
 			if (!url.contains("://")) {
 				url = "http://" + url;
@@ -133,7 +137,7 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	}
 
 	final protected String resolvePath(AnnotationAttributes attributes) {
-		String path = resolve(attributes.getString("path"));
+		String path = resolve(attributes.getString(ATTRS_PATH));
 		if (StringUtils.hasText(path)) {
 			path = path.trim();
 			if (!path.startsWith("/")) {

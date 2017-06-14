@@ -1,8 +1,5 @@
 package org.onetwo.common.exception;
 
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ErrorType;
-import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.utils.StringUtils;
 
 /*********
@@ -87,6 +84,10 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 	
 	public Integer getStatusCode() {
 		return statusCode;
+	}
+	@Override
+	public String toString() {
+		return "ApiClientException [" + code + ", " + getMessage() +  "]";
 	}
 
 }
