@@ -19,7 +19,9 @@ public class DefaultApiClientFactoryBean extends AbstractApiClientFactoryBean<Ap
 																.build(new CacheLoader<Method, ApiClientMethod>() {
 																	@Override
 																	public ApiClientMethod load(Method method) throws Exception {
-																		return new ApiClientMethod(method);
+																		ApiClientMethod apiMethod = new ApiClientMethod(method);
+																		apiMethod.initialize();
+																		return apiMethod;
 																	}
 																});
 

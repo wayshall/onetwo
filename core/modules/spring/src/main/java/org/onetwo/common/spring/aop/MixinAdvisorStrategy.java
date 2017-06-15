@@ -3,10 +3,11 @@ package org.onetwo.common.spring.aop;
 import org.springframework.aop.Advisor;
 
 /**
+ * mixin策略
  * @author wayshall
  * <br/>
  */
-public interface MixinAdvisorFactory {
+public interface MixinAdvisorStrategy {
 	
 	boolean isMixinInterface(Class<?> mixinInterface);
 

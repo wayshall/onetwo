@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.onetwo.common.apiclient.ApiClientConstants.ApiClientError;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
@@ -35,25 +36,50 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																	.build();
 	
 //	final private AnnotationAttributes requestMappingAttributes;
-	final private RequestMethod requestMethod;
-	final private String path;
-	final private Class<?> componentType;
+	private RequestMethod requestMethod;
+	private String path;
+	private Class<?> componentType;
+	
+	private Optional<String> acceptHeader;
+	private Optional<String> contentType;
+	private String[] headers;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
+		componentType = ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
+	}
+	
+	public void initialize(){
+		if(!ApiClientUtils.isRequestMappingPresent()){
+			throw new ApiClientException(ApiClientError.REQUEST_MAPPING_NOT_FOUND);
+		}
 		Optional<AnnotationAttributes> requestMapping = SpringUtils.getAnnotationAttributes(method, RequestMapping.class);
 		if(!requestMapping.isPresent()){
-			throw new ApiClientException("@RequestMapping not found on method: " + method.toGenericString());
+			throw new ApiClientException(ApiClientError.REQUEST_MAPPING_NOT_FOUND, method);
 		}
 		
-		String[] paths = requestMapping.get().getStringArray("value");
+		AnnotationAttributes reqestMappingAttrs = requestMapping.get();
+		String[] paths = reqestMappingAttrs.getStringArray("value");
 		path = LangUtils.isEmpty(paths)?"":paths[0];
+		this.acceptHeader = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("produces"));
+		this.contentType = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("consumes"));
+		this.headers = reqestMappingAttrs.getStringArray("headers");
 		
-		RequestMethod[] methods = (RequestMethod[])requestMapping.get().get("method");
+		RequestMethod[] methods = (RequestMethod[])reqestMappingAttrs.get("method");
 		requestMethod = LangUtils.isEmpty(methods)?RequestMethod.GET:methods[0];
-		
 
-		componentType = ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
+	}
+
+	public String[] getHeaders() {
+		return headers;
+	}
+
+	public Optional<String> getAcceptHeader() {
+		return acceptHeader;
+	}
+
+	public Optional<String> getContentType() {
+		return contentType;
 	}
 
 	public Map<String, Object> toMap(Object[] args){
@@ -64,7 +90,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		
 		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
 												.filter(p->{
-													return !p.hasMethodAnnotation(RequestBody.class);
+													return !p.hasParameterAnnotation(RequestBody.class);
 												})
 												.collect(Collectors.toList());
 		Object pvalue = null;
@@ -79,7 +105,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	public Object getRequestBody(Object[] args){
 		Optional<ApiClientMethodParameter> requestBodyParameter = parameters.stream()
 												.filter(p->{
-													return !p.hasMethodAnnotation(RequestBody.class);
+													return p.hasParameterAnnotation(RequestBody.class);
 												})
 												.findFirst();
 		if(requestBodyParameter.isPresent()){
@@ -124,7 +150,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return new ApiClientMethodParameter(method, parameter, parameterIndex);
 	}
 
-	static class ApiClientMethodParameter extends BaseMethodParameter {
+	public static class ApiClientMethodParameter extends BaseMethodParameter {
 
 		public ApiClientMethodParameter(Method method, Parameter parameter, int parameterIndex) {
 			super(method, parameter, parameterIndex);

@@ -25,6 +25,10 @@ import java.io.OutputStreamWriter;
 import java.util.BitSet;
 
 /**
+ * copy from catalina
+ * 
+ * 
+ * 
  *
  * This class is very similar to the java.net.URLEncoder class.
  *

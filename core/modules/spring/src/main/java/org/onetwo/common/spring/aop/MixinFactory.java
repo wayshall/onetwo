@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 使用不同的mixin策略创建mixin对象
  * @author wayshall
  * <br/>
  */
 public class MixinFactory {
 	
 	
-	private MixinAdvisorFactory advisorFactory = new AnnotationMixinAdvisorFactory();
+	private MixinAdvisorStrategy advisorStrategy = new AnnotationMixinAdvisorStrategy();
 	
 	public boolean isMixinInterface(Class<?> interfaceClass){
-		return advisorFactory.isMixinInterface(interfaceClass);
+		return advisorStrategy.isMixinInterface(interfaceClass);
 	}
 	
 	public List<Class<?>> extractMixinInterfaces(Collection<Class<?>> interfaceClass){
@@ -30,11 +31,11 @@ public class MixinFactory {
 	}
 
 	public <T> T of(Object obj, Class<?>... mixinInterfaces){
-		return Mixins.of(obj, advisorFactory, mixinInterfaces);
+		return Mixins.of(obj, advisorStrategy, mixinInterfaces);
 	}
 
-	public void setAdvisorFactory(MixinAdvisorFactory advisorFactory) {
-		this.advisorFactory = advisorFactory;
+	public void setAdvisorStrategy(MixinAdvisorStrategy advisorFactory) {
+		this.advisorStrategy = advisorFactory;
 	}
 	
 }

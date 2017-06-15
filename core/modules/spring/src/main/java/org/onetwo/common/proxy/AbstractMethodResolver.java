@@ -47,6 +47,12 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
 	}
+	
+	public Optional<T> findParameterByType(Class<?> targetParamType){
+		return parameters.stream()
+					.filter(p->targetParamType.isAssignableFrom(p.getParameterType()))
+					.findFirst();
+	}
 
 	public void validateArgements(ValidatorWrapper validatorWrapper, Object[] args){
 		if(validatorWrapper==null){

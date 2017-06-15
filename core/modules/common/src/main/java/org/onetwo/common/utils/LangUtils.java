@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,8 +135,7 @@ public class LangUtils {
 		
 		@Override
 		public Object ifArray(Object[] array) {
-			int length = Array.getLength(array);
-			return length==0?null:Array.get(array, 0);
+			return array.length==0?null:array[0];
 		}
 
 		@Override
@@ -1003,10 +1003,10 @@ public class LangUtils {
 		return (T)judgeType(obj, FirstObject);
 	}
 	
-	public static <T> T getFirst(Object obj, Class<T> clazz){
+	public static <T> Optional<T> getFirstOptional(Object obj){
 		if(obj==null)
-			return null;
-		return (T)judgeType(obj, FirstObject);
+			return Optional.empty();
+		return Optional.ofNullable((T)judgeType(obj, FirstObject));
 	}
 	
 	public static <T> T getFirstOrCreate(Object obj, Class<T> clazz){

@@ -19,14 +19,13 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		return new ServiceException(formatMsg, cause);
 	}
 
-	public static ServiceException formatCodeMessage(String code, Object...args){
-		return formatCodeMessage(null, code, args);
-	}
-	public static ServiceException formatCodeMessage(Throwable cause, String code, Object...args){
-		ServiceException se = new ServiceException(cause, code);
-		se.setArgs(args);
+	public static ServiceException formatMessage(ErrorType exceptionType, Object...args){
+		String formatMsg = String.format(exceptionType.getErrorMessage(), args);
+		ServiceException se = new ServiceException(formatMsg, exceptionType.getErrorCode());
+		se.exceptionType = exceptionType;
 		return se;
 	}
+
 
 	/**
 	 *  
@@ -36,6 +35,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	protected String code;
 	private Object[] args;
 	private Integer statusCode;
+	private ErrorType exceptionType;
 
 	public ServiceException() {
 		super();
@@ -54,13 +54,16 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		super(exceptionType.getErrorMessage(), cause);
 		initErrorCode(exceptionType.getErrorCode());
 		this.statusCode = exceptionType.getStatusCode();
+		this.exceptionType = exceptionType;
 	}
 
 	public ServiceException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 
-
+	public ErrorType getExceptionType() {
+		return exceptionType;
+	}
 	public ServiceException(String msg) {
 		super(msg);
 	}
@@ -76,6 +79,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		if(StringUtils.isNotBlank(code))
 			this.code = code;//appendBaseCode(code);
 	}
+	@Override
 	public String getCode() {
 		if(StringUtils.isBlank(code))
 			return getDefaultCode();

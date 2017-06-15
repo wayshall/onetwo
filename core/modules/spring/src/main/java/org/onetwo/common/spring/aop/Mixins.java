@@ -33,7 +33,7 @@ public class Mixins {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T of(Object obj, MixinAdvisorFactory factory, Class<?>... mixinInterfaces){
+	public static <T> T of(Object obj, MixinAdvisorStrategy factory, Class<?>... mixinInterfaces){
 		List<Advisor> advisors = Stream.of(mixinInterfaces)
 										.filter(factory::isMixinInterface)
 										.map(factory::createAdvisor)

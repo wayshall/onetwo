@@ -14,7 +14,7 @@ import org.springframework.util.ClassUtils;
  * @author wayshall
  * <br/>
  */
-public class ClassNamePostfixMixinAdvisorFactory implements MixinAdvisorFactory {
+public class ClassNamePostfixMixinAdvisorStrategy implements MixinAdvisorStrategy {
 	
 	private static final String IMPLEMENTOR_POSTFIX = "Impl";
 	

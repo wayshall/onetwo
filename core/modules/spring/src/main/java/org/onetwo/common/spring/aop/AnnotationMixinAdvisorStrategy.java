@@ -7,7 +7,7 @@ import org.springframework.core.annotation.AnnotationUtils;
  * @author wayshall
  * <br/>
  */
-public class AnnotationMixinAdvisorFactory extends ClassNamePostfixMixinAdvisorFactory implements MixinAdvisorFactory {
+public class AnnotationMixinAdvisorStrategy extends ClassNamePostfixMixinAdvisorStrategy implements MixinAdvisorStrategy {
 	
 	@Override
 	public boolean isMixinInterface(Class<?> interfaceClass) {
