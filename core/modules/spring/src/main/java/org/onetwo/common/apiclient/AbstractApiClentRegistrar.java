@@ -3,6 +3,7 @@ package org.onetwo.common.apiclient;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.stream.Stream;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -10,6 +11,7 @@ import org.onetwo.common.spring.context.AnnotationMetadataHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -62,18 +64,26 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	 * @return
 	 */
 	abstract protected Class<? extends Annotation> getApiClientTagAnnotationClass();
-
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	
+	public AnnotationMetadataHelper getAnnotationMetadataHelper(AnnotationMetadata importingClassMetadata){
+		AnnotationMetadataHelper annotationMetadataHelper = this.annotationMetadataHelper;
 		if(annotationMetadataHelper==null){
-			AnnotationMetadataHelper annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
+			annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
 			annotationMetadataHelper.setResourceLoader(resourceLoader);
 			annotationMetadataHelper.setClassLoader(classLoader);
 			this.annotationMetadataHelper = annotationMetadataHelper;
 		}
-		
+		return annotationMetadataHelper;
+	}
+	
+	protected Stream<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
+		return getAnnotationMetadataHelper(importingClassMetadata).scanBeanDefinitions(getApiClientTagAnnotationClass());
+	}
+
+	@Override
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Class<? extends Annotation> clientTagClass = getApiClientTagAnnotationClass();
-		annotationMetadataHelper.scanBeanDefinitions(clientTagClass)
+		scanBeanDefinitions(importingClassMetadata)
 								.filter(AnnotatedBeanDefinition.class::isInstance)
 								.forEach(bd->{
 									AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) bd;

@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.context;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.IgnoreAnnotationClassPathScanningCandidateComponentProvider;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -50,7 +52,7 @@ public class AnnotationMetadataHelper {
 		this.attributes = attributes;
 	}
 	
-	public Stream<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass){
+	public Stream<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){
 		ClassPathScanningCandidateComponentProvider scanner = createAnnotationScanner(classLoader, annoClass);
 		if(resourceLoader!=null){
 			scanner.setResourceLoader(resourceLoader);
@@ -63,6 +65,9 @@ public class AnnotationMetadataHelper {
 			}
 		}*/
 		Set<String> basePackages = getBasePackages();
+		if(!LangUtils.isEmpty(extraPackagesToScans)){
+			basePackages.addAll(Arrays.asList(extraPackagesToScans));
+		}
 		return basePackages.stream()
 							.flatMap(pack->scanner.findCandidateComponents(pack).stream());
 	}
