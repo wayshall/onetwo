@@ -27,8 +27,9 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 
 	@Override
 	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType){
+		Object resposne = responseEntity.getBody();
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
-			return responseEntity.getBody();
+			return resposne;
 		}
 		throw new RestClientException("error response: " + responseEntity.getStatusCodeValue());
 	}

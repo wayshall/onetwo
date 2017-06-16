@@ -35,6 +35,10 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	public Class<?> getMethodReturnType() {
 		return method.getReturnType();
 	}
+	
+	public boolean isReturnVoid(){
+		return getMethodReturnType() == void.class;
+	}
 
 	public boolean isGenericReturnType(){
 		return (method.getGenericReturnType() instanceof ParameterizedType);

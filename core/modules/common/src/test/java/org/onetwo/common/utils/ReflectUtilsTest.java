@@ -28,6 +28,8 @@ public class ReflectUtilsTest {
 		System.out.println("getCanonicalName: " +long.class.getCanonicalName());
 		
 		assertThat(ReflectUtils.findMethod(UserEntity.class, "getId").getName()).isEqualTo("getId");
+		Method method = ReflectUtils.findMethod(UserEntity.class, "setId");
+		assertThat(method.getReturnType()).isEqualTo(void.class);
 
 		Class<?>[] intes = UserEntity.class.getInterfaces();
 		for(Class c :intes){

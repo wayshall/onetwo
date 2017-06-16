@@ -14,6 +14,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class BootFirstInterceptor extends WebInterceptorAdapter {
 	
+
+	/*final protected static LoadingCache<HandlerMethod, ApiClientMethod> API_METHOD_CACHES = CacheBuilder.newBuilder()
+																.build(new CacheLoader<HandlerMethod, ApiClientMethod>() {
+																	@Override
+																	public ApiClientMethod load(HandlerMethod method) throws Exception {
+																		ApiClientMethod apiMethod = new ApiClientMethod(method);
+																		apiMethod.initialize();
+																		return apiMethod;
+																	}
+																});*/
 	
 //	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private static final String CONTROLLER_TIME_KEY = "mvc execute";
