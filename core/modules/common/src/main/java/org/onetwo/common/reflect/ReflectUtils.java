@@ -857,6 +857,12 @@ public class ReflectUtils {
 		return props;*/
 		return getIntro(clazz).getPropertyArray();
 	}
+	
+
+	public static Map<String, Field> getFieldsAsMap(Class<?> clazz){
+		return getIntro(clazz).getFieldMaps();
+	}
+	
 
 	/****
 	 * 把对象转为map，对象的属性名称为key，对应属性的值为value

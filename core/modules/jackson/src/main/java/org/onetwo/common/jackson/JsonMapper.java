@@ -17,6 +17,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -207,15 +208,18 @@ public class JsonMapper {
 	 * @param params propertyName, propertyType
 	 * @return
 	 */
-	public <T> T fromJsonWith(String json, Class<?> type, Object...params){
+	public <T> T fromJsonWith(String json, Class<?> type, Class<?>...parameterTypes){
 		if(StringUtils.isBlank(json))
 			return null;
 		Assert.notNull(type);
 		try {
-			TypeBindings bindings = new TypeBindings(typeFactory, type);
-			Map<String, Class<?>> attrsMap = CUtils.asMap(params);
-			attrsMap.forEach((k, v)->bindings.addBinding(k, typeFactory.constructType(v)));
-			return objectMapper.readValue(json, typeFactory.constructType(type, bindings));
+			if(LangUtils.isEmpty(parameterTypes)){
+				return objectMapper.readValue(json, typeFactory.constructType(type));
+			}else{
+				return objectMapper.readValue(json, typeFactory.constructParametricType(type, parameterTypes));
+			}
+			/*Map<String, Class<?>> attrsMap = CUtils.asMap(params);
+			attrsMap.forEach((k, v)->bindings..addBinding(k, typeFactory.constructType(v)));*/
 		} catch (Exception e) {
 			throw new JsonException("parse json to "+type+" error : " + json, e);
 		}

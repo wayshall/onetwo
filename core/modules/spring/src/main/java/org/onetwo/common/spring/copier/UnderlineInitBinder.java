@@ -5,7 +5,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-abstract public interface UnderlineInitBinder {
+public interface UnderlineInitBinder {
 	
 	static public void resetDataBinder(WebDataBinder binder){
 		ConversionService conversionService = binder.getConversionService();

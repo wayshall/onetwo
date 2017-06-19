@@ -11,7 +11,7 @@ import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.Page;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.type.TypeBindings;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class JsonMapperParameterizedTest {
@@ -132,9 +132,10 @@ public class JsonMapperParameterizedTest {
 		System.out.println("json: " + str);
 		
 		TypeFactory tf = mapper.getObjectMapper().getTypeFactory();
-		TypeBindings binding = new TypeBindings(tf, JsonParametericData.class);
-		binding.addBinding("datas", tf.constructParametricType(List.class, TestJsonBean.class));
-		Object result = mapper.getObjectMapper().readValue(str, tf.constructType(JsonParametericData.class, binding));
+//		TypeBindings binding = new TypeBindings(tf, JsonParametericData.class);
+		JavaType javaType = tf.constructType(JsonParametericData.class);
+//		binding.addBinding("datas", tf.constructParametricType(List.class, TestJsonBean.class));
+		Object result = mapper.getObjectMapper().readValue(str, tf.constructType(JsonParametericData.class));
 		
 		Assert.assertTrue(JsonParametericData.class.isInstance(result));
 		JsonParametericData resultList = (JsonParametericData) result;

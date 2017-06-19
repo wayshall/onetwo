@@ -56,7 +56,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 
 		this.doLog(WebHolder.getRequest().orElse(null), null, ex, errorMessage.isDetail());
 		HttpHeaders headers = new HttpHeaders();
-		return super.handleExceptionInternal(ex, result, headers, errorMessage.getHttpStatus(), request);
+		HttpStatus status = errorMessage.getHttpStatus();
+		return super.handleExceptionInternal(ex, result, headers, status, request);
 	}
 	
 	@Override
@@ -72,7 +73,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	protected ErrorMessage handleException(Exception ex){
 		logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
 		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
-		if(errorMessage.getHttpStatus()!=null){
+		if(errorMessage.getHttpStatus()==null){
 			errorMessage.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		

@@ -264,6 +264,7 @@ public class Intro<T> {
 	public PropertyDescriptor[] getPropertyArray(){
 		return getPropertyDescriptors().values().toArray(new PropertyDescriptor[propertyDescriptors.size()]);
 	}
+	
 
 	public PropertyDescriptor getProperty(String propName){
 		return getPropertyDescriptors().get(propName);
