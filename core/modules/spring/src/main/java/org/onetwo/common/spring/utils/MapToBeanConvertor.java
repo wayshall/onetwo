@@ -1,14 +1,19 @@
 package org.onetwo.common.spring.utils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.function.Function;
 
+import lombok.Builder;
+
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.FieldName;
+import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
 import com.google.common.cache.CacheBuilder;
@@ -19,24 +24,27 @@ import com.google.common.cache.LoadingCache;
  * @author wayshall
  * <br/>
  */
+@Builder
 public class MapToBeanConvertor {
 
-
-	final protected static LoadingCache<PropertyContext, String> API_METHOD_CACHES = CacheBuilder.newBuilder()
+	final private static Logger logger = JFishLoggerFactory.getLogger(MapToBeanConvertor.class);
+	
+	final protected static LoadingCache<PropertyContext, String> PROPERTIES_CACHES = CacheBuilder.newBuilder()
+																.weakKeys()
 																.build(new CacheLoader<PropertyContext, String>() {
 																	@Override
 																	public String load(PropertyContext pc) throws Exception {
-																		Method method = pc.propertyDescriptor.getReadMethod();
-																		FieldName fn = method.getAnnotation(FieldName.class);
-																		if(fn==null){
-																			fn = ReflectUtils.getIntro(method);
-																		}
-																		return apiMethod;
+																		return pc.getName();
 																	}
 																});
 	
 	private static Function<PropertyContext, String> DEFAULT_KEY_CONVERTOR = pd->{
-		return API_METHOD_CACHES.get(pd);
+		try {
+			return PROPERTIES_CACHES.get(pd);
+		} catch (Exception e) {
+			logger.error("get map key error for property: {}", pd.getName());
+			return pd.getName();
+		}
 	};
 
 	private Function<PropertyContext, String> keyConvertor = DEFAULT_KEY_CONVERTOR;
@@ -59,7 +67,16 @@ public class MapToBeanConvertor {
 		return bean;
 	}
 	
+	public void setKeyConvertor(Function<PropertyContext, String> keyConvertor) {
+		this.keyConvertor = keyConvertor;
+	}
+
 	protected String getMapKey(PropertyContext pc){
+		Function<PropertyContext, String> keyConvertor = this.keyConvertor;
+		if(keyConvertor==null){
+			keyConvertor = DEFAULT_KEY_CONVERTOR;
+			this.keyConvertor = keyConvertor;
+		}
 		return keyConvertor.apply(pc);
 	}
 	
@@ -70,6 +87,18 @@ public class MapToBeanConvertor {
 			super();
 			this.beanClass = beanClass;
 			this.propertyDescriptor = propertyDescriptor;
+		}
+		
+		public String getName(){
+			Method method = propertyDescriptor.getReadMethod();
+			FieldName fn = method.getAnnotation(FieldName.class);
+			if(fn==null){
+				Field field = ReflectUtils.getIntro(getBeanClass()).getField(propertyDescriptor.getName());
+				if(field!=null){
+					fn = field.getAnnotation(FieldName.class);
+				}
+			}
+			return fn==null?propertyDescriptor.getName():fn.value();
 		}
 		
 		public Class<?> getBeanClass() {

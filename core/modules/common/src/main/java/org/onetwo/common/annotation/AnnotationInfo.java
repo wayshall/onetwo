@@ -62,4 +62,37 @@ public class AnnotationInfo {
 		return null;*/
 		return (T)this.annotationMap.get(annoClass);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((annotationMap == null) ? 0 : annotationMap.hashCode());
+		result = prime * result
+				+ ((sourceClass == null) ? 0 : sourceClass.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AnnotationInfo other = (AnnotationInfo) obj;
+		if (annotationMap == null) {
+			if (other.annotationMap != null)
+				return false;
+		} else if (!annotationMap.equals(other.annotationMap))
+			return false;
+		if (sourceClass == null) {
+			if (other.sourceClass != null)
+				return false;
+		} else if (!sourceClass.equals(other.sourceClass))
+			return false;
+		return true;
+	}
 }

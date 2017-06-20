@@ -85,7 +85,7 @@ final public class SpringUtils {
 	private static String ACTIVE_PROFILES = "spring.profiles.active";
 //	private static String CLASSPATH = "classpath:";
 
-	private static final MapToBeanConvertor MAP_TO_BEAN = new MapToBeanConvertor();
+	private static final MapToBeanConvertor MAP_TO_BEAN = MapToBeanConvertor.builder().build();
 	
 	private static final FormattingConversionService CONVERSION_SERVICE = new DefaultFormattingConversionService();
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()

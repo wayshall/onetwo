@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -503,35 +505,45 @@ public class ReflectUtils {
 	}
 
 	public static Method findMethod(boolean ignoreIfNotfound, Class objClass, String name, Class... paramTypes) {
+		Optional<Method> methodOpt = findMethod(objClass, method->{
+			if (!method.isBridge() && name.equals(method.getName()) && (LangUtils.isEmpty(paramTypes) || matchParameterTypes(paramTypes, method.getParameterTypes()))) {
+				return true;
+			}
+			return false;
+		});
+		if(methodOpt.isPresent()){
+			return methodOpt.get();
+		}else if(ignoreIfNotfound){
+			return null;
+		}
+		throw new BaseException("can not find the method : [class=" + objClass + ", methodName=" + name + ", paramTypes=" + LangUtils.toString(paramTypes) + "]");
+	}
+	
+	public static Optional<Method> findMethod(Class objClass, Function<Method, Boolean> filter) {
 		Assert.notNull(objClass, "objClass must not be null");
-		Assert.notNull(name, "Method name must not be null");
 		try {
 			Class searchType = objClass;
 			while (!Object.class.equals(searchType) && searchType != null) {
-				Method[] methods = (searchType.isInterface() ? searchType
-						.getMethods() : searchType.getDeclaredMethods());
+				Method[] methods = (searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods());
 				for (int i = 0; i < methods.length; i++) {
 					Method method = methods[i];
-					// System.out.println("====>>>method:"+method+" parent: " +
-					// method.isBridge());
 					// if (name.equals(method.getName()) && (paramTypes == null
 					// || Arrays.equals(paramTypes,
 					// method.getParameterTypes()))) {
-					if (!method.isBridge() && name.equals(method.getName()) && (LangUtils.isEmpty(paramTypes) || matchParameterTypes(paramTypes, method.getParameterTypes()))) {
-						// System.out.println("====>>>method match");
-						return method;
+					if (filter.apply(method)) {
+						return Optional.of(method);
 					}
 				}
 				searchType = searchType.getSuperclass();
 			}
 		} catch (Exception e) {
-			if (ignoreIfNotfound)
-				return null;
 			handleReflectionException(e);
 		}
-		if (ignoreIfNotfound)
+		/*if (ignoreIfNotfound)
 			return null;
 		throw new BaseException("can not find the method : [class=" + objClass + ", methodName=" + name + ", paramTypes=" + LangUtils.toString(paramTypes) + "]");
+		*/
+		return Optional.empty();
 	}
 
 	/***********
