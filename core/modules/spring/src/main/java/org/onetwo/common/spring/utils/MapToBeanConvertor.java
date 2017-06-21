@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import lombok.Builder;
@@ -16,9 +17,8 @@ import org.onetwo.common.utils.FieldName;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * @author wayshall
@@ -29,25 +29,13 @@ public class MapToBeanConvertor {
 
 	final private static Logger logger = JFishLoggerFactory.getLogger(MapToBeanConvertor.class);
 	
-	final protected static LoadingCache<PropertyContext, String> PROPERTIES_CACHES = CacheBuilder.newBuilder()
+	final protected static Cache<PropertyContext, String> PROPERTIES_CACHES = CacheBuilder.newBuilder()
 																.weakKeys()
-																.build(new CacheLoader<PropertyContext, String>() {
-																	@Override
-																	public String load(PropertyContext pc) throws Exception {
-																		return pc.getName();
-																	}
-																});
+																.build();
 	
-	private static Function<PropertyContext, String> DEFAULT_KEY_CONVERTOR = pd->{
-		try {
-			return PROPERTIES_CACHES.get(pd);
-		} catch (Exception e) {
-			logger.error("get map key error for property: {}", pd.getName());
-			return pd.getName();
-		}
-	};
-
-	private Function<PropertyContext, String> keyConvertor = DEFAULT_KEY_CONVERTOR;
+	final protected Cache<PropertyContext, String> propertyCaches = PROPERTIES_CACHES;
+	
+	private Function<PropertyContext, String> keyConvertor;
 	
 	public <T> T toBean(Map<String, Object> propValues, Class<T> beanClass){
 		Assert.notNull(beanClass);
@@ -72,15 +60,21 @@ public class MapToBeanConvertor {
 	}
 
 	protected String getMapKey(PropertyContext pc){
-		Function<PropertyContext, String> keyConvertor = this.keyConvertor;
-		if(keyConvertor==null){
-			keyConvertor = DEFAULT_KEY_CONVERTOR;
-			this.keyConvertor = keyConvertor;
+		try {
+			return propertyCaches.get(pc, ()->{
+				Function<PropertyContext, String> keyConvertor = this.keyConvertor;
+				if(keyConvertor==null){
+					return pc.getName();
+				}
+				return keyConvertor.apply(pc);
+			});
+		} catch (ExecutionException e) {
+			logger.error("get map key error for property: {}", pc.getName());
+			return pc.getName();
 		}
-		return keyConvertor.apply(pc);
 	}
 	
-	protected static class PropertyContext {
+	public static class PropertyContext {
 		final private Class<?> beanClass;
 		final private PropertyDescriptor propertyDescriptor;
 		public PropertyContext(Class<?> beanClass, PropertyDescriptor propertyDescriptor) {

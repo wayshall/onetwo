@@ -235,12 +235,7 @@ public class Intro<T> {
 				fieldMaps = Collections.emptyMap();
 				return ;
 			}
-			Field[] fields = clazz.getDeclaredFields();
-			Map<String, Field> maps = new LinkedHashMap<String, Field>(fields.length);
-			for(Field field : fields){
-				maps.put(field.getName(), field);
-			}
-			this.fieldMaps = ImmutableMap.copyOf(maps);
+			this.fieldMaps = ImmutableMap.copyOf(ReflectUtils.getAllFields(clazz));
 		}finally{
 			this._fieldLock.unlock();
 		}

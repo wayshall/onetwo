@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1128,10 +1129,6 @@ public class ReflectUtils {
 		for (Class cls : classes) {
 			fs = cls.getDeclaredFields();
 			for (Field f : fs) {
-				/*
-				 * if(f.toGenericString().indexOf("class$Lcom$yooyo$zjk$BaseEntity")!=-1){
-				 * System.out.println("test:"+f.toGenericString()); }
-				 */
 				if (filterString != null
 						&& StringUtils.indexOfAny(f.toString(), filterString) != -1)
 					continue;
@@ -1905,6 +1902,21 @@ public class ReflectUtils {
 		Field field = findField(clazz, name);
 		fn = field.getAnnotation(FieldName.class);
 		return fn;
+	}
+	
+
+	
+	public static Map<String, Field> getAllFields(Class<?> clazz){
+		Map<String, Field> maps = new LinkedHashMap<String, Field>();
+		Class<?> searchType = clazz;
+		while(!Object.class.equals(searchType) && searchType != null){
+			Field[] fields = searchType.getDeclaredFields();
+			for(Field field : fields){
+				maps.put(field.getName(), field);
+			}
+			searchType = searchType.getSuperclass();
+		}
+		return maps;
 	}
 
 	public static void main(String[] args) {
