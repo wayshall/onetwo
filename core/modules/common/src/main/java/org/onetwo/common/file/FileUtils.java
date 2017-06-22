@@ -400,26 +400,33 @@ public class FileUtils {
 	}
 	
 	public static List<String> readAsListWithMap(String fileName, String charset, final Map<String, Object> context){
-		final List<String> datas = new ArrayList<String>();
-		BufferedReader br = null;
-		try{
-			br = asBufferedReader(fileName, charset);
-			reader(br, new FileLineCallback() {
-				
-				@Override
-				public boolean doWithLine(String line, int lineIndex) {
-					if(LangUtils.isNotEmpty(context) && PLACE_HODER_EXP.isExpresstion(line)){
-						line = PLACE_HODER_EXP.parseByProvider(line, context);
-					}
-					datas.add(line);
-					return true;
-				}
-			});
-		}catch(Exception e){
-			LangUtils.throwBaseException("read file["+fileName+"] error : " + e.getMessage(), e);
-		}finally{
-			close(br);
+		InputStream in = null;
+		try {
+			String classpath = getResourcePath(fileName);
+			File file = new File(classpath);
+			in = new FileInputStream(file);
+			return readAsListWithMap(in, charset, context);
+		} catch (Exception e) {
+			in = getResourceAsStream(fileName);
+			return readAsListWithMap(in, charset, context);
+		} finally{
+			close(in);
 		}
+	}
+	
+	public static List<String> readAsListWithMap(InputStream in, String charset, final Map<String, Object> context){
+		final List<String> datas = new ArrayList<String>();
+		BufferedReader br = asBufferedReader(in, charset);
+		reader(br, new FileLineCallback() {
+			@Override
+			public boolean doWithLine(String line, int lineIndex) {
+				if(LangUtils.isNotEmpty(context) && PLACE_HODER_EXP.isExpresstion(line)){
+					line = PLACE_HODER_EXP.parseByProvider(line, context);
+				}
+				datas.add(line);
+				return true;
+			}
+		});
 		return datas;
 	}
 	
@@ -455,6 +462,10 @@ public class FileUtils {
 
 	public static String readAsString(String fileName){
 		return readAsString(fileName, DEFAULT_CHARSET);
+	}
+
+	public static String readAsString(InputStream in){
+		return StringUtils.join(readAsList(in), "");
 	}
 	
 	public static String readAsString(String fileName, String charset){

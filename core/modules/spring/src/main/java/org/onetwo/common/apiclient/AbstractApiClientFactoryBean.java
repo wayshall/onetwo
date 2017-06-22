@@ -20,6 +20,8 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -174,25 +176,31 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
 			RequestContextData context = new RequestContextData(requestMethod, actualUrl, uriVariables, responseType);
-			if(requestMethod==RequestMethod.POST){
-				Object requestBody = invokeMethod.getRequestBody(args);
-				context.setRequestBody(requestBody);
-			}
-			
-			context.doWithRequestCallback(request->{
+
+			context.doWithHeaderCallback(headers->{
 				invokeMethod.getAcceptHeader().ifPresent(accept->{
-					request.getHeaders().set(ACCEPT, accept);
+					headers.set(ACCEPT, accept);
 				});
 				invokeMethod.getContentType().ifPresent(contentType->{
-					request.getHeaders().set(CONTENT_TYPE, contentType);
+					headers.set(CONTENT_TYPE, contentType);
 				});
 				if(!LangUtils.isEmpty(invokeMethod.getHeaders())){
 					for (String header : invokeMethod.getHeaders()) {
 						int index = header.indexOf('=');
-						request.getHeaders().set(header.substring(0, index), header.substring(index + 1).trim());
+						headers.set(header.substring(0, index), header.substring(index + 1).trim());
 					}
 				}
 			});
+			
+			if(requestMethod==RequestMethod.POST){
+				//根据consumers 设置header，以指定messageConvertor
+				Object requestBody = invokeMethod.getRequestBody(args);
+				HttpHeaders headers = new HttpHeaders();
+				context.getHeaderCallback().accept(headers);
+				HttpEntity<?> requestEntity = new HttpEntity<>(requestBody, headers);
+				context.setRequestBody(requestEntity);
+			}
+			
 
 			return context;
 		}

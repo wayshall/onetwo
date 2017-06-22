@@ -3,8 +3,8 @@ package org.onetwo.common.apiclient;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
@@ -17,7 +17,7 @@ public class RequestContextData {
 	final private Class<?> responseType;
 	private Object requestBody;
 	final private Map<String, Object> uriVariables;
-	private Consumer<ClientHttpRequest> requestCallback;
+	private Consumer<HttpHeaders> headerCallback;
 	
 	public RequestContextData(RequestMethod requestMethod, String requestUrl, Map<String, Object> uriVariables, Class<?> responseType) {
 		super();
@@ -46,12 +46,12 @@ public class RequestContextData {
 	public void setRequestBody(Object requestBody) {
 		this.requestBody = requestBody;
 	}
-	public RequestContextData doWithRequestCallback(Consumer<ClientHttpRequest> requestCallback) {
-		this.requestCallback = requestCallback;
+	public RequestContextData doWithHeaderCallback(Consumer<HttpHeaders> headerCallback) {
+		this.headerCallback = headerCallback;
 		return this;
 	}
-	public Consumer<ClientHttpRequest> getRequestCallback() {
-		return requestCallback;
+	public Consumer<HttpHeaders> getHeaderCallback() {
+		return headerCallback;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class RequestContextData {
 				+ ", requestUrl=" + requestUrl + ", responseType="
 				+ responseType + ", requestBody=" + requestBody
 				+ ", uriVariables=" + uriVariables + ", requestCallback="
-				+ requestCallback + "]";
+				+ headerCallback + "]";
 	}
 
 }

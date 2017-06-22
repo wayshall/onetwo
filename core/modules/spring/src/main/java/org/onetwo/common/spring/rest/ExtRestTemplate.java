@@ -10,6 +10,7 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.ParamUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,13 +71,13 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			default:
 				throw new RestClientException("unsupported method: " + method);
 		}
-		if(context.getRequestCallback()!=null){
-			rc = wrapRequestCallback(rc, context.getRequestCallback());
+		if(context.getHeaderCallback()!=null){
+			rc = wrapRequestCallback(rc, context.getHeaderCallback());
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
 	
-	public <T> RequestCallback wrapRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<ClientHttpRequest> callback) {
+	public <T> RequestCallback wrapRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
 		return new ProcessHeaderRequestCallback(acceptHeaderRequestCallback, callback);
 	}
 	
@@ -112,9 +113,9 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 	protected static class ProcessHeaderRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
-		private final Consumer<ClientHttpRequest> callback;
+		private final Consumer<HttpHeaders> callback;
 
-		public ProcessHeaderRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<ClientHttpRequest> callback) {
+		public ProcessHeaderRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
 			this.callback = callback;
@@ -122,8 +123,14 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
+			this.callback.accept(request.getHeaders());
+			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
+				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
+				if(requestEntity!=null){
+					this.callback.accept(requestEntity.getHeaders());
+				}
+			}*/
 			this.acceptHeaderRequestCallback.doWithRequest(request);
-			this.callback.accept(request);
 		}
 		
 	}

@@ -1,5 +1,6 @@
 package org.onetwo.ext.security.redis;
 
+import org.onetwo.common.spring.condition.OnMissingBean;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +21,7 @@ public class RedisContextConfig {
     @Autowired
     private SecurityConfig securityConfig;
     
-    @Autowired(required=false)
+    /*@Autowired(required=false)
     private JedisConnectionFactory jedisConnectionFactory;
     
 	@Bean
@@ -28,6 +29,20 @@ public class RedisContextConfig {
     	if(jedisConnectionFactory!=null){
     		return jedisConnectionFactory;
     	}
+		int port = securityConfig.getRedis().getPort();
+		String hostName = securityConfig.getRedis().getHostName();
+		JedisConnectionFactory jf = new JedisConnectionFactory();
+		jf.setPort(port);
+		jf.setHostName(hostName);
+		if(securityConfig.getRedis().getPool()!=null){
+			jf.setPoolConfig(securityConfig.getRedis().getPool());
+		}
+		return jf;
+    }*/
+    
+    @Bean
+    @OnMissingBean(JedisConnectionFactory.class)
+    public JedisConnectionFactory securityRedisConnectionFactory() throws Exception {
 		int port = securityConfig.getRedis().getPort();
 		String hostName = securityConfig.getRedis().getHostName();
 		JedisConnectionFactory jf = new JedisConnectionFactory();
