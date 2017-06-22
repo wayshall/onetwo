@@ -18,6 +18,13 @@ public class EncryptCoderTest {
 		String dencryptContent = LangUtils.newString(dencryptData);
 		Assert.assertEquals(content, dencryptContent);
 		
+		/*aes = EncryptCoderFactory.aesCbcCoder("BSAiqt48pdcZFp5yJVmqR2VYeeaE4HTxxa0mZdC96CF=");
+		encryptData = aes.encrypt(aes.getKey(), LangUtils.getBytes(content));
+		dencryptData = aes.dencrypt(aes.getKey(), encryptData);
+		
+		dencryptContent = LangUtils.newString(dencryptData);
+		Assert.assertEquals(content, dencryptContent);*/
+		
 	}
 	
 	@Test

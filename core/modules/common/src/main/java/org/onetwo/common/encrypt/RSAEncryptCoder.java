@@ -55,6 +55,10 @@ public class RSAEncryptCoder extends AbstractEncryptCoder<KeyPair> {
 	}
 	
 	public KeyPair generatedKey(){
+		return generatedKey(size);
+	}
+	
+	public KeyPair generatedKey(int size){
 		KeyPairGenerator kpg;
 		try {
 			kpg = KeyPairGenerator.getInstance(RSA_KEY);

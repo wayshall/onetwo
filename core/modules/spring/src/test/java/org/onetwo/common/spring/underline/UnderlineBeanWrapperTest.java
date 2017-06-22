@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.spring.copier.Cloneable;
-import org.onetwo.common.spring.copier.ConvertUnderlineProperty;
+import org.onetwo.common.spring.copier.ConvertToCamelProperty;
 import org.onetwo.common.spring.copier.UnderlineBeanWrapper;
 import org.onetwo.common.spring.underline.CopyUtilsTest.CapitalBean2;
 
@@ -29,7 +29,7 @@ public class UnderlineBeanWrapperTest {
 		
 	}
 	
-	@ConvertUnderlineProperty
+	@ConvertToCamelProperty
 	public static class UnderlineAnnotationBean {
 		private long id;
 		private String userName;

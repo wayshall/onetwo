@@ -9,31 +9,39 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.onetwo.common.exception.BaseException;
 
-public class AESEncryptCoder extends AbstractEncryptCoder<SecretKey> {
+public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 
 	private static final String AES_KEY = "AES";
-	private static final int AES_DEFAULT_LENGTH = 128;
-	private static final String AES_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+	public static final int AES_DEFAULT_LENGTH = 128;
+	private static final String AES_ECB_ALGORITHM = "AES/ECB/PKCS5Padding";
+	public static final String AES_CBC_ALGORITHM = "AES/CBC/NoPadding";
 	
 //	private final int size = AES_DEFAULT_LENGTH;
 	private byte[] key;
-	private final int size;
+//	private final int size;
+	private String cipher = AES_ECB_ALGORITHM;
 	
 
 	public AESEncryptCoder(){
-		this(AES_DEFAULT_LENGTH, true);
+		this(true);
 	}
 	public AESEncryptCoder(boolean generatedSecretKey){
-		this(AES_DEFAULT_LENGTH, generatedSecretKey);
-	}
-	public AESEncryptCoder(int size, boolean generatedSecretKey){
-		this.size = size;
 		if(generatedSecretKey){
 			key = generatedKey().getEncoded();
 		}
 	}
+	
+	public AESEncryptCoder(String cipher, byte[] key) {
+		super();
+		this.cipher = cipher;
+		this.key = key;
+	}
 
 	public SecretKey generatedKey(){
+		return generatedKey(AES_DEFAULT_LENGTH);
+	}
+	
+	public SecretKey generatedKey(int size){
 		KeyGenerator keyGenerator = null;
 		try {
 			keyGenerator = KeyGenerator.getInstance(AES_KEY);
@@ -46,9 +54,8 @@ public class AESEncryptCoder extends AbstractEncryptCoder<SecretKey> {
 		return skey;
 	}
 	
-	@Override
 	protected String getAlgorithmCipher() {
-		return AES_CIPHER_ALGORITHM;
+		return cipher;
 	}
 
 	/* (non-Javadoc)
@@ -64,7 +71,7 @@ public class AESEncryptCoder extends AbstractEncryptCoder<SecretKey> {
 	 */
 	@Override
 	public byte[] encrypt(byte[] encryptKey, byte[] byteContent){
-		return aes(encryptKey, Cipher.ENCRYPT_MODE, byteContent);
+		return doCipher(encryptKey, Cipher.ENCRYPT_MODE, byteContent);
 	}
 	
 	/* (non-Javadoc)
@@ -72,14 +79,33 @@ public class AESEncryptCoder extends AbstractEncryptCoder<SecretKey> {
 	 */
 	@Override
 	public byte[] dencrypt(byte[] dencryptKey, byte[] byteContent){
-		return aes(dencryptKey, Cipher.DECRYPT_MODE, byteContent);
+		return doCipher(dencryptKey, Cipher.DECRYPT_MODE, byteContent);
 	}
-	
-	private byte[] aes(byte[] key, int opmode, byte[] byteContent){
+
+	protected void init(Cipher cipher, byte[] key, int opmode) throws Exception{
 		//构造密匙
 		SecretKeySpec skeySpec = new SecretKeySpec(key, AES_KEY);
-//		SecretKeySpec skeySpec = new SecretKeySpec(skeyEncoded, AES_KEY);
-		//密码器
-		return doCipher(skeySpec, opmode, byteContent);
+		cipher.init(opmode, skeySpec);
+		/*if(AES_CBC_ALGORITHM.equalsIgnoreCase(getAlgorithmCipher())){
+			IvParameterSpec iv = new IvParameterSpec(key, 0, 16);
+			cipher.init(opmode, skeySpec, iv);
+		}else{
+			cipher.init(opmode, skeySpec);
+		}*/
 	}
+	
+	protected byte[] doCipher(byte[] key, int opmode, byte[] byteContent){
+		//密码器
+		Cipher aesCipher = null;
+		byte[] result = null;
+		try{
+			aesCipher = Cipher.getInstance(getAlgorithmCipher());
+			init(aesCipher, key, opmode);
+			result = aesCipher.doFinal(byteContent);
+		}catch (Exception e) {
+			throw new BaseException("Cipher error: " + e.getMessage() , e);
+		}
+		return result;
+	}
+	
 }

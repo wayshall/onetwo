@@ -10,7 +10,7 @@ import org.springframework.beans.TypeMismatchException;
 
 public class UnderlineBeanWrapper extends BeanWrapperImpl {
 	
-	private boolean needTransformPropertyName;
+	private boolean needTransformPropertyName = true;
 	private char spliter = '_';
 	
 	public UnderlineBeanWrapper() {
@@ -42,7 +42,11 @@ public class UnderlineBeanWrapper extends BeanWrapperImpl {
 	
 	protected void setIntrospectionClass(Class<?> clazz) {
 		super.setIntrospectionClass(clazz);
-		this.needTransformPropertyName = clazz.getAnnotation(ConvertUnderlineProperty.class)!=null;
+		ConvertToCamelProperty anno = clazz.getAnnotation(ConvertToCamelProperty.class);
+		if(anno!=null){
+			this.needTransformPropertyName = anno.value();
+			this.spliter = anno.spliter();
+		}
 	}
 
 	@Override

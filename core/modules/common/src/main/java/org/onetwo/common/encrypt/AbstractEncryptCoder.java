@@ -20,11 +20,15 @@ abstract public class AbstractEncryptCoder<T> implements EncryptCoder<T>{
 		byte[] result = null;
 		try{
 			aesCipher = Cipher.getInstance(getAlgorithmCipher());
-			aesCipher.init(opmode, skeySpec);
+			init(aesCipher, opmode, skeySpec);
 			result = aesCipher.doFinal(byteContent);
 		}catch (Exception e) {
 			throw new BaseException("Cipher error: " + e.getMessage() , e);
 		}
 		return result;
+	}
+	
+	protected void init(Cipher cipher, int opmode, Key skeySpec) throws Exception{
+		cipher.init(opmode, skeySpec);
 	}
 }
