@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,33 +39,33 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		boolean executed = executeInterceptors(handler, inter->{
-			inter.preHandle(request, response, handler);
+		boolean executed = executeInterceptors(handler, (hmethod, inter)->{
+			inter.preHandle(request, response, hmethod);
 		});
 		return executed;
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		executeInterceptors(handler, inter->{
-			inter.postHandle(request, response, handler, modelAndView);
+		executeInterceptors(handler, (hmethod, inter)->{
+			inter.postHandle(request, response, hmethod, modelAndView);
 		});
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		executeInterceptors(handler, inter->{
-			inter.afterCompletion(request, response, handler, ex);
+		executeInterceptors(handler, (hmethod, inter)->{
+			inter.afterCompletion(request, response, hmethod, ex);
 		});
 	}
 	
-	private boolean executeInterceptors(Object handler, Consumer<MvcInterceptor> consumer){
+	private boolean executeInterceptors(Object handler, BiConsumer<HandlerMethod, MvcInterceptor> consumer){
 		HandlerMethod hmethod = getHandlerMethod(handler);
 		if(hmethod==null){
 			return false;
 		}
 		getInterceptorMeta(hmethod.getMethod()).ifPresent(meta->{
-			meta.getInterceptors().forEach(consumer);
+			meta.getInterceptors().forEach(inter->consumer.accept(hmethod, inter));
 		});
 		return true;
 	}
@@ -93,8 +93,10 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				List<? extends MvcInterceptor> interceptors = Stream.of(interClasses)
 																	.flatMap(cls->SpringUtils.getBeans(applicationContext, cls).stream())
 																	.collect(Collectors.toList());
-				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
-				interceptorMetaCaces.put(hm.getMethod(), meta);
+				if(!interceptors.isEmpty()){
+					HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
+					interceptorMetaCaces.put(hm.getMethod(), meta);
+				}
 			}
 		}
 	}

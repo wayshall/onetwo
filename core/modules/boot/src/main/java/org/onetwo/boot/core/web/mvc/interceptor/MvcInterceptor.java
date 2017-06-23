@@ -3,6 +3,7 @@ package org.onetwo.boot.core.web.mvc.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -12,10 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public interface MvcInterceptor {
 	
-	void preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) ;
+	void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) ;
 
-	void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) ;
+	void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, ModelAndView modelAndView) ;
 	
-	void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) ;
+	void afterCompletion(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, Exception ex) ;
 	
 }
