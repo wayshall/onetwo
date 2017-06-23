@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.aop.MixinableInterfaceCreator;
 import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
@@ -164,7 +166,13 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		protected Object[] processArgumentsBeforeRequest(MethodInvocation invocation, M invokeMethod){
-			return invocation.getArguments();
+			Object[] args = invocation.getArguments();
+			for(ApiClientMethodParameter param : invokeMethod.getParameters()){
+				if(param.isInjectProperties()){
+					SpringUtils.injectAndInitialize(applicationContext, args[param.getParameterIndex()]);
+				}
+			}
+			return args;
 		}
 		
 		protected RequestContextData createRequestContextData(Object[] args, M invokeMethod){

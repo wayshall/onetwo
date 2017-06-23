@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.apiclient.ApiClientConstants.ApiClientError;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
+import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
@@ -152,8 +153,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 
 	public static class ApiClientMethodParameter extends BaseMethodParameter {
 
+		private boolean injectProperties;
+		
 		public ApiClientMethodParameter(Method method, Parameter parameter, int parameterIndex) {
 			super(method, parameter, parameterIndex);
+			this.injectProperties = parameter.isAnnotationPresent(InjectProperties.class);
 		}
 
 		@Override
@@ -166,6 +170,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			}else{
 				return String.valueOf(getParameterIndex());
 			}
+		}
+
+		public boolean isInjectProperties() {
+			return injectProperties;
 		}
 	}
 

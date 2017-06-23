@@ -340,6 +340,10 @@ final public class SpringUtils {
 	}
 	
 
+	public static <T> void autowireBean(ApplicationContext appContext, T existingBean){
+		appContext.getAutowireCapableBeanFactory().autowireBean(existingBean);
+	}
+
 	public static <T> void injectAndInitialize(ApplicationContext appContext, T bean) {
 		injectAndInitialize(appContext.getAutowireCapableBeanFactory(), bean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
 	}

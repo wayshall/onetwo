@@ -3,6 +3,8 @@ package org.onetwo.common.apiclient.impl;
 import java.lang.annotation.Annotation;
 
 import org.onetwo.common.apiclient.AbstractApiClentRegistrar;
+import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
+import org.onetwo.common.apiclient.annotation.RestApiClient;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;

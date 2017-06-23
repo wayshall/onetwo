@@ -1,4 +1,4 @@
-package org.onetwo.common.apiclient.impl;
+package org.onetwo.common.apiclient.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
