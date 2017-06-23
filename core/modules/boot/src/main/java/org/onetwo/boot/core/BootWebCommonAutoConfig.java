@@ -15,6 +15,7 @@ import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
@@ -103,6 +105,11 @@ public class BootWebCommonAutoConfig {
 	@Bean
 	public BootFirstInterceptor bootFirstInterceptor(){
 		return new BootFirstInterceptor();
+	}
+	
+	@Bean
+	public HandlerInterceptor mvcInterceptorManager(){
+		return new MvcInterceptorManager();
 	}
 
 	@Bean
