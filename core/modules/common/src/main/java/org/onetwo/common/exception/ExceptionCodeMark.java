@@ -1,8 +1,12 @@
 package org.onetwo.common.exception;
 
+import java.util.Optional;
+
 public interface ExceptionCodeMark extends ExceptionMessageArgs {
 
 	String getCode();
-	Integer getStatusCode();
+	default Optional<Integer> getStatusCode() {
+		return Optional.empty();
+	}
 //	boolean isDefaultErrorCode();
 }

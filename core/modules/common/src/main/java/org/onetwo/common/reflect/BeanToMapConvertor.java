@@ -168,6 +168,7 @@ public class BeanToMapConvertor {
 	 * @param valuePutter
 	 */
 	public <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter){
+//		PropertyContext ctx = new PropertyContext(obj, null, prefixName);
 		flatObject(prefixName==null?"":prefixName, obj, valuePutter, null);
 	}
 	@SuppressWarnings("unchecked")
@@ -248,7 +249,7 @@ public class BeanToMapConvertor {
 		}
 		public String getName() {
 			String name = this.name;
-			if(enableFieldNameAnnotation){
+			if(enableFieldNameAnnotation && source!=null){
 				FieldName fn = ReflectUtils.getFieldNameAnnotation(source.getClass(), name);
 				if(fn!=null){
 					name = fn.value();

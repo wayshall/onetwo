@@ -1,23 +1,29 @@
 package org.onetwo.common.spring.rest;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
+import org.slf4j.Logger;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RequestCallback;
@@ -27,6 +33,8 @@ import org.springframework.web.client.RestTemplate;
 
 public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
 
 	public ExtRestTemplate(){
@@ -35,13 +43,14 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	public ExtRestTemplate(ClientHttpRequestFactory requestFactory){
 		super();
-		for(HttpMessageConverter<?> converter : this.getMessageConverters()){
-			if(MappingJackson2HttpMessageConverter.class.isInstance(converter)){
-				((MappingJackson2HttpMessageConverter)converter).setObjectMapper(JsonMapper.IGNORE_NULL.getObjectMapper());
-				break;
-			}
-			
-		}
+		CUtils.findByClass(this.getMessageConverters(), MappingJackson2HttpMessageConverter.class)
+				.ifPresent(p->{
+					MappingJackson2HttpMessageConverter convertor = p.getValue();
+					convertor.setObjectMapper(JsonMapper.IGNORE_NULL.getObjectMapper());
+					convertor.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
+																	MediaType.APPLICATION_JSON_UTF8,
+																	MediaType.TEXT_PLAIN));
+				});;
 		if(requestFactory!=null){
 			this.setRequestFactory(requestFactory);
 //			this.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -57,15 +66,30 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		RequestCallback rc = null;
 		HttpMethod method = context.getHttpMethod();
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = null;
+		HttpHeaders headers = null;
+		HttpEntity<?> requestEntity = null;
 		
 		switch (method) {
 			case GET:
-				rc = super.acceptHeaderRequestCallback(context.getResponseType());
+//				rc = super.acceptHeaderRequestCallback(context.getResponseType());
+//				responseExtractor = responseEntityExtractor(context.getResponseType());
+				//根据consumers 设置header，以指定messageConvertor
+				headers = new HttpHeaders();
+				context.getHeaderCallback().accept(headers);
+				requestEntity = new HttpEntity<>(headers);
+				
+				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
 				responseExtractor = responseEntityExtractor(context.getResponseType());
 				break;
 			case POST:
 			case PATCH:
-				rc = super.httpEntityCallback(context.getRequestBody(), context.getResponseType());
+				//根据consumers 设置header，以指定messageConvertor
+				Object requestBody = context.getRequestBodySupplier().get();
+				headers = new HttpHeaders();
+				context.getHeaderCallback().accept(headers);
+				requestEntity = new HttpEntity<>(requestBody, headers);
+				
+				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
 				responseExtractor = responseEntityExtractor(context.getResponseType());
 				break;
 			default:
@@ -75,6 +99,14 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			rc = wrapRequestCallback(rc, context.getHeaderCallback());
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
+	}
+	
+	@Override
+	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
+		if(logger.isInfoEnabled()){
+			logger.info("actual rest request: {} - {}", method, url);
+		}
+		return super.doExecute(url, method, requestCallback, responseExtractor);
 	}
 	
 	public <T> RequestCallback wrapRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {

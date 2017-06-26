@@ -53,7 +53,9 @@ public interface ExceptionMessageFinder {
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
 			errorArgs = codeMark.getArgs();
-			error.setHttpStatus(HttpStatus.valueOf(codeMark.getStatusCode()));
+			codeMark.getStatusCode().ifPresent(sc->{
+				error.setHttpStatus(HttpStatus.valueOf(sc));
+			});
 //			errorMsg = ex.getMessage();
 			
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();

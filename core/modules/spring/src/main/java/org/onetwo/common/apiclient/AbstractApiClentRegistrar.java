@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  */
 abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
 
+	public static final String ATTRS_URL = "url";
 	public static final String ATTRS_BASE_URL = "baseUrl";
 	public static final String ATTRS_NAME = "name";
 	public static final String ATTRS_PATH = "path";
@@ -91,8 +92,8 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 									Assert.isTrue(annotationMetadata.isInterface(),
 											"@"+clientTagClass.getSimpleName()+" can only be specified on an interface");
 
-									AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(annotationMetadata, clientTagClass);
-									registerApiClient(registry, annotationMetadata, attributes);
+									AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, clientTagClass);
+									registerApiClient(registry, annotationMetadata, tagAttributes);
 								});;
 	}
 	
@@ -104,14 +105,14 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	 */
 	abstract protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes);
 
-	protected void registerApiClient(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
+	protected void registerApiClient(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes tagAttributes) {
 		String className = annotationMetadata.getClassName();
 		if(logger.isInfoEnabled()){
 			logger.info("register api client: {}", className);
 		}
-		String name = resolveName(attributes, className);
+		String name = resolveName(tagAttributes, className);
 		
-		BeanDefinitionBuilder definition = createApiClientFactoryBeanBuilder(annotationMetadata, attributes);
+		BeanDefinitionBuilder definition = createApiClientFactoryBeanBuilder(annotationMetadata, tagAttributes);
 		
 		String alias = name + getApiClientTagAnnotationClass().getSimpleName();
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
@@ -130,8 +131,11 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 		return name;
 	}
 	
-	final protected String resolveUrl() {
-		String url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
+	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
+		String url = resolve(tagAttributes.getString(ATTRS_URL));
+		if(!StringUtils.hasText(url)){
+			url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
+		}
 		if (StringUtils.hasText(url)) {
 			if (!url.contains("://")) {
 				url = "http://" + url;

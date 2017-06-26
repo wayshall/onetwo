@@ -3,9 +3,11 @@ package org.onetwo.common.web.utils;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ParamUtils;
@@ -299,6 +301,51 @@ public final class RequestUtils {
         }
         return size;
     }
+	
+
+	public static String getReuqestFullUrl(HttpServletRequest request){
+		String url = RequestUtils.buildFullRequestUrl(request.getScheme(), request.getServerName(), request.getServerPort(), request.getRequestURI(), request.getQueryString());
+		return url;
+	}
+	
+
+	public static String buildFullRequestUrl(String scheme, String serverName, int serverPort, String requestURI, String queryString) {
+
+		scheme = scheme.toLowerCase();
+
+		StringBuilder url = new StringBuilder();
+		url.append(scheme).append("://").append(serverName);
+
+		// Only add port if not default
+		if ("http".equals(scheme)) {
+			if (serverPort != 80) {
+				url.append(":").append(serverPort);
+			}
+		}
+		else if ("https".equals(scheme)) {
+			if (serverPort != 443) {
+				url.append(":").append(serverPort);
+			}
+		}
+
+		// Use the requestURI as it is encoded (RFC 3986) and hence suitable for
+		// redirects.
+		url.append(requestURI);
+
+		if (queryString != null) {
+			url.append("?").append(queryString);
+		}
+
+		return url.toString();
+	}
+	
+	public static Optional<HttpSession> getSession(HttpServletRequest request){
+		if(request==null){
+			return Optional.empty();
+		}
+		HttpSession session = request.getSession();
+		return Optional.ofNullable(session);
+	}
 	
 	private RequestUtils(){
 	}

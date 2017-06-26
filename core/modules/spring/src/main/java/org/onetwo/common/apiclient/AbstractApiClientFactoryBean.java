@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.onetwo.common.apiclient.ApiClientConstants.ApiClientError;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
+import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
@@ -22,8 +24,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -160,9 +160,13 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				logger.info("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
 			}
 			
-			ResponseEntity<Object> responseEntity = restExecutor.execute(context);
-			Object response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
-			return response;
+			try {
+				ResponseEntity<Object> responseEntity = restExecutor.execute(context);
+				Object response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
+				return response;
+			} catch (Exception e) {
+				throw new ApiClientException(ApiClientError.EXECUTE_REST_ERROR, invokeMethod.getDeclaringClass(), e);
+			}
 		}
 		
 		protected Object[] processArgumentsBeforeRequest(MethodInvocation invocation, M invokeMethod){
@@ -198,18 +202,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 						headers.set(header.substring(0, index), header.substring(index + 1).trim());
 					}
 				}
+			})
+			.requestBodySupplier(()->{
+				return invokeMethod.getRequestBody(args);
 			});
 			
-			if(requestMethod==RequestMethod.POST){
-				//根据consumers 设置header，以指定messageConvertor
-				Object requestBody = invokeMethod.getRequestBody(args);
-				HttpHeaders headers = new HttpHeaders();
-				context.getHeaderCallback().accept(headers);
-				HttpEntity<?> requestEntity = new HttpEntity<>(requestBody, headers);
-				context.setRequestBody(requestEntity);
-			}
-			
-
 			return context;
 		}
 		

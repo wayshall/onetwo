@@ -129,7 +129,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				Enum<?> e = (Enum<?>)v;
 				v = e.name();
 			}
-			values.put(ctx.getName(), v);
+			if(ctx!=null){
+				values.put(ctx.getName(), v);
+			}else{
+				values.put(k, v);
+			}
 		});
 	}
 

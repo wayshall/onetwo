@@ -1,6 +1,7 @@
 package org.onetwo.common.exception;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.onetwo.common.utils.StringUtils;
 
@@ -27,6 +28,12 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		this.statusCode = exceptionType.getStatusCode();
 	}
 
+	public ApiClientException(ErrorType exceptionType, Class<?> interfaceClass, Throwable cause) {
+		super(String.format(exceptionType.getErrorMessage(), interfaceClass.getName()), cause);
+		initErrorCode(exceptionType.getErrorCode());
+		this.statusCode = exceptionType.getStatusCode();
+	}
+
 	public ApiClientException(ErrorType exceptionType, Throwable cause) {
 		super(exceptionType.getErrorMessage(), cause);
 		initErrorCode(exceptionType.getErrorCode());
@@ -49,8 +56,8 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		return args;
 	}
 	
-	public Integer getStatusCode() {
-		return statusCode;
+	public Optional<Integer> getStatusCode() {
+		return Optional.ofNullable(statusCode);
 	}
 	@Override
 	public String toString() {

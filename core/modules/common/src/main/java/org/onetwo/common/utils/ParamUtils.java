@@ -8,12 +8,17 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
-import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 
 public abstract class ParamUtils {
 
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
+																					.enableFieldNameAnnotation()
+																					.build();
+	
     public static String objectToParamString(Object obj){
-    	return comparableKeyMapToParamString(ReflectUtils.getBeanToMapConvertor().toFlatMap(obj));
+    	return comparableKeyMapToParamString(BEAN_TO_MAP_CONVERTOR.toFlatMap(obj));
     }
 
     public static <T extends Comparable<T>> String comparableKeyMapToParamString(Map<T, ?> params){

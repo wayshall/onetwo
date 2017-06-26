@@ -31,7 +31,7 @@ public class RestApiClentRegistrar extends AbstractApiClentRegistrar {
 		String className = annotationMetadata.getClassName();
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(DefaultApiClientFactoryBean.class);
 
-		definition.addPropertyValue("url", resolveUrl());
+		definition.addPropertyValue("url", resolveUrl(attributes));
 		definition.addPropertyValue("path", resolvePath(attributes));
 //		definition.addPropertyValue("name", name);
 		definition.addPropertyValue("interfaceClass", className);

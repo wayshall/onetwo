@@ -15,4 +15,5 @@ public @interface RestApiClient {
 	
 	String name() default "";
 	String path() default "";
+	String url() default "";
 }
