@@ -1,6 +1,6 @@
 package org.onetwo.ext.security.mvc.args;
 
-import org.onetwo.common.spring.mvc.annotation.BootMvcArgs;
+import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.core.MethodParameter;
@@ -12,7 +12,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-@BootMvcArgs
+@BootMvcArgumentResolver
 public class SecurityArgumentResolver implements HandlerMethodArgumentResolver {
 	
 //	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());

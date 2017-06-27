@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -39,9 +38,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
 @Import({BootContextConfig.class, PluginContextConfig.class})
-//@Import({BootContextConfig.class, PluginContextConfig.class, FixGroovyWebConfiguration.class})
-//@Import({BootContextConfig.class})
-@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
+//@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
 @ConditionalOnClass(CommonWebFilterInitializer.class)
 public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());

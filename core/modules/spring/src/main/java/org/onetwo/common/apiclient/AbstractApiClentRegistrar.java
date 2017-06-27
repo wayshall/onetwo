@@ -1,101 +1,27 @@
 package org.onetwo.common.apiclient;
 
-import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.stream.Stream;
 
-import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.context.AnnotationMetadataHelper;
-import org.slf4j.Logger;
+import org.onetwo.common.spring.context.AbstractImportRegistrar;
 import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
+abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
 
 	public static final String ATTRS_URL = "url";
 	public static final String ATTRS_BASE_URL = "baseUrl";
 	public static final String ATTRS_NAME = "name";
 	public static final String ATTRS_PATH = "path";
-	
-	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
-	private ResourceLoader resourceLoader;
-	private ClassLoader classLoader;
-	private AnnotationMetadataHelper annotationMetadataHelper;
-	
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
-	
-	/****
-	 * EnableWechatClient
-	 * 
-	 * @author wayshall
-	 * @return
-	 */
-	abstract protected Class<? extends Annotation> getImportingAnnotationClass();
-	
-	/****
-	 * 
-	 * @author wayshall
-	 * @return
-	 */
-	abstract protected Class<? extends Annotation> getApiClientTagAnnotationClass();
-	
-	public AnnotationMetadataHelper getAnnotationMetadataHelper(AnnotationMetadata importingClassMetadata){
-		AnnotationMetadataHelper annotationMetadataHelper = this.annotationMetadataHelper;
-		if(annotationMetadataHelper==null){
-			annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
-			annotationMetadataHelper.setResourceLoader(resourceLoader);
-			annotationMetadataHelper.setClassLoader(classLoader);
-			this.annotationMetadataHelper = annotationMetadataHelper;
-		}
-		return annotationMetadataHelper;
-	}
-	
-	protected Stream<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
-		return getAnnotationMetadataHelper(importingClassMetadata).scanBeanDefinitions(getApiClientTagAnnotationClass());
-	}
-
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		Class<? extends Annotation> clientTagClass = getApiClientTagAnnotationClass();
-		scanBeanDefinitions(importingClassMetadata)
-								.filter(AnnotatedBeanDefinition.class::isInstance)
-								.forEach(bd->{
-									AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) bd;
-									AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-									Assert.isTrue(annotationMetadata.isInterface(),
-											"@"+clientTagClass.getSimpleName()+" can only be specified on an interface");
-
-									AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, clientTagClass);
-									registerApiClient(registry, annotationMetadata, tagAttributes);
-								});;
-	}
 	
 
 	/***
@@ -105,32 +31,15 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 	 */
 	abstract protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes);
 
-	protected void registerApiClient(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes tagAttributes) {
-		String className = annotationMetadata.getClassName();
-		if(logger.isInfoEnabled()){
-			logger.info("register api client: {}", className);
-		}
-		String name = resolveName(tagAttributes, className);
-		
-		BeanDefinitionBuilder definition = createApiClientFactoryBeanBuilder(annotationMetadata, tagAttributes);
-		
-		String alias = name + getApiClientTagAnnotationClass().getSimpleName();
-		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
-		beanDefinition.setPrimary(true);
-		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[] { alias });
-		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
-	}
-	
 
-	final protected String resolveName(AnnotationAttributes attributes, String defName) {
-		String name = attributes.getString(ATTRS_NAME);
-		if (!StringUtils.hasText(name)) {
-			name = defName;
-		}
-		name = resolve(name);
-		return name;
+	@Override
+	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(
+			AnnotationMetadata annotationMetadata,
+			AnnotationAttributes attributes) {
+		return createApiClientFactoryBeanBuilder(annotationMetadata, attributes);
 	}
-	
+
+
 	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
 		String url = resolve(tagAttributes.getString(ATTRS_URL));
 		if(!StringUtils.hasText(url)){
@@ -164,7 +73,4 @@ abstract public class AbstractApiClentRegistrar implements ImportBeanDefinitionR
 		return path;
 	}
 
-	final protected String resolve(String value) {
-		return SpringUtils.resolvePlaceholders(resourceLoader, value);
-	}
 }

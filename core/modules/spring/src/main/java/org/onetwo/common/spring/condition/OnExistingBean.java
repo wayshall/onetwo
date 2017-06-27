@@ -16,11 +16,11 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnBeanCondition.class)
-public @interface OnMissingBean {
+public @interface OnExistingBean {
 	
 	/***
-	 * and 
-	 * 查找所有指定类型的bean，结果为空时，才匹配成功
+	 * or 
+	 * 查找所有指定类型的bean，结果不为空即为匹配成功
 	 * @author wayshall
 	 * @return
 	 */

@@ -41,7 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
-import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
@@ -108,7 +107,7 @@ public class BootWebCommonAutoConfig {
 	}
 	
 	@Bean
-	public HandlerInterceptor mvcInterceptorManager(){
+	public MvcInterceptorManager mvcInterceptorManager(){
 		return new MvcInterceptorManager();
 	}
 

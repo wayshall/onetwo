@@ -18,7 +18,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix="jfish")
 @Data
 public class BootJFishConfig {
-	public static final String ENABLE_JFISH_AUTO_CONFIG = "jfish.autoConfig";
+//	public static final String ENABLE_JFISH_AUTO_CONFIG = "jfish.autoConfig";
 	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
 	public static final String VALUE_AUTO_CONFIG_DISABLED = "disabled";

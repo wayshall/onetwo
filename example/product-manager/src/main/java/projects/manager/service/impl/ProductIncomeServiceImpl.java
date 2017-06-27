@@ -4,8 +4,8 @@ package projects.manager.service.impl;
 import java.math.BigDecimal;
 import java.util.Collection;
 
-import org.onetwo.common.db.BaseEntityManager;
 import org.onetwo.common.db.builder.Querys;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;

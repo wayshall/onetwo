@@ -1,7 +1,5 @@
 package org.onetwo.common.apiclient.impl;
 
-import java.lang.annotation.Annotation;
-
 import org.onetwo.common.apiclient.AbstractApiClentRegistrar;
 import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
 import org.onetwo.common.apiclient.annotation.RestApiClient;
@@ -14,17 +12,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author wayshall
  * <br/>
  */
-public class RestApiClentRegistrar extends AbstractApiClentRegistrar {
-
-	@Override
-	protected Class<? extends Annotation> getImportingAnnotationClass() {
-		return EnableRestApiClient.class;
-	}
-
-	@Override
-	protected Class<? extends Annotation> getApiClientTagAnnotationClass() {
-		return RestApiClient.class;
-	}
+public class RestApiClentRegistrar extends AbstractApiClentRegistrar<EnableRestApiClient, RestApiClient> {
 
 	@Override
 	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {

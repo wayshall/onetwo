@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
-import org.onetwo.common.db.dquery.annotation.DbmPackages;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.Springs.SpringsInitEvent;
+import org.onetwo.dbm.spring.EnableDbmRepository;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
@@ -40,7 +40,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
-@DbmPackages("org.onetwo.plugins.admin.dao")
+//@DbmPackages("org.onetwo.plugins.admin.dao")
+@EnableDbmRepository("org.onetwo.plugins.admin.dao")
 @Order(value=Ordered.LOWEST_PRECEDENCE)
 public class WebAdminPluginContext implements InitializingBean {
 	

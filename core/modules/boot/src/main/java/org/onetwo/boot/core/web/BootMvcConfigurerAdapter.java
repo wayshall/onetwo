@@ -10,7 +10,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
-import org.onetwo.common.spring.mvc.annotation.BootMvcArgs;
+import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,7 +56,7 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		argumentResolvers.add(new ListParameterArgumentResolver());
 		if(this.argumentResolverList!=null){
 			argumentResolverList.forEach(arg->{
-				if(arg.getClass().getAnnotation(BootMvcArgs.class)!=null){
+				if(arg.getClass().getAnnotation(BootMvcArgumentResolver.class)!=null){
 					argumentResolvers.add(arg);
 				}
 			});
