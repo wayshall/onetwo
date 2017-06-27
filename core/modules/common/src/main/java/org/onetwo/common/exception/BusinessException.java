@@ -1,5 +1,7 @@
 package org.onetwo.common.exception;
 
+import java.util.Optional;
+
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
@@ -32,8 +34,8 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 	}
 
 	@Override
-	public Integer getStatusCode() {
-		return null;
+	public Optional<Integer> getStatusCode() {
+		return Optional.empty();
 	}
 
 	public BusinessException(String msg, Throwable cause, String code) {

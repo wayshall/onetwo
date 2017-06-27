@@ -71,8 +71,12 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	protected ErrorMessage handleException(Exception ex){
-		logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
 		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		if(errorMessage.isDetail()){
+			logger.error("request error:", ex);
+		}else{
+			logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
+		}
 		if(errorMessage.getHttpStatus()==null){
 			errorMessage.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

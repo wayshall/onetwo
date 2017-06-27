@@ -103,7 +103,7 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 			fieldOpt = Optional.of(new JFishPropertyInfoImpl(getBeanClass(), field));
 			this.correspondingJFishProperty = fieldOpt;
 		}
-		return this.correspondingJFishProperty;
+		return fieldOpt;
 	}
 
 	@Override

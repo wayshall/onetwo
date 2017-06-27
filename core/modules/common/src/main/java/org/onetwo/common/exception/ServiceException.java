@@ -1,5 +1,7 @@
 package org.onetwo.common.exception;
 
+import java.util.Optional;
+
 import org.onetwo.common.utils.StringUtils;
 
 /*********
@@ -104,8 +106,8 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		super(cause);
 	}
 	
-	public Integer getStatusCode() {
-		return statusCode;
+	public Optional<Integer> getStatusCode() {
+		return Optional.ofNullable(statusCode);
 	}
 	public void setStatusCode(Integer statusCode) {
 		this.statusCode = statusCode;

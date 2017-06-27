@@ -111,7 +111,7 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 			fieldOpt = Optional.of(new JFishFieldInfoImpl(getBeanClass(), field));
 			this.correspondingJFishProperty = fieldOpt;
 		}
-		return this.correspondingJFishProperty;
+		return fieldOpt;
 	}
 
 	public List<Annotation> getAnnotations() {
