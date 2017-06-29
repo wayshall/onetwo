@@ -1,5 +1,7 @@
 package org.onetwo.common.apiclient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.onetwo.common.apiclient.api.WeatherClient;
 import org.onetwo.common.apiclient.response.WeatherResponse;
@@ -18,6 +20,7 @@ public class WeatherClientTest extends ApicientBaseTests {
 	public void test(){
 		WeatherResponse res = this.weatherClient.getWeather("101010100");
 		System.out.println("res: " + res);
+		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
 	}
 
 }

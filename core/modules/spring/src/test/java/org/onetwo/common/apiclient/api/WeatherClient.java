@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @author wayshall
  * <br/>
  */
-@RestApiClient
+@RestApiClient(url="http://www.weather.com.cn/data")
 public interface WeatherClient {
 	
 	@GetMapping(value="/sk/{cityid}.html")
-	WeatherResponse getWeather(@PathVariable("cityid") String cityid);
+	WeatherResponse getWeather(@PathVariable String cityid);
 
 }

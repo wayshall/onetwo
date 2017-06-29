@@ -27,7 +27,7 @@ public class ApicientBaseTests {
 	
 	@Configuration
 	@JFishProfile
-	@EnableRestApiClient(baseUrl="http://www.weather.com.cn/data")
+	@EnableRestApiClient(baseUrl="")
 	public static class ApiclientBaseTestInnerContextConfig {
 	}
 
