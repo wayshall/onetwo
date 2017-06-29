@@ -2,13 +2,12 @@ package org.onetwo.common.spring.rest;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
-import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -43,14 +41,15 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	public ExtRestTemplate(ClientHttpRequestFactory requestFactory){
 		super();
-		CUtils.findByClass(this.getMessageConverters(), MappingJackson2HttpMessageConverter.class)
+		/*CUtils.findByClass(this.getMessageConverters(), MappingJackson2HttpMessageConverter.class)
 				.ifPresent(p->{
 					MappingJackson2HttpMessageConverter convertor = p.getValue();
 					convertor.setObjectMapper(JsonMapper.IGNORE_NULL.getObjectMapper());
 					convertor.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
 																	MediaType.APPLICATION_JSON_UTF8,
 																	MediaType.TEXT_PLAIN));
-				});;
+				});*/
+		CUtils.replaceOrAdd(getMessageConverters(), MappingJackson2HttpMessageConverter.class, new ApiclientJackson2HttpMessageConverter());
 		if(requestFactory!=null){
 			this.setRequestFactory(requestFactory);
 //			this.setRequestFactory(new HttpComponentsClientHttpRequestFactory());

@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.converter;
 
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.reflect.TypeResolver;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.util.Assert;
@@ -27,8 +28,9 @@ public class IntStringValueToEnumConverterFactory implements ConverterFactory<St
 		}
 
 		public T convert(String source) {
-			if(IntValueEnum.class.isAssignableFrom(enumType)){
-				int value = Types.convertValue(source, Integer.class);
+			if(ValueEnum.class.isAssignableFrom(enumType)){
+				Class<T> genericClass = (Class<T>)TypeResolver.resolveRawArgument(ValueEnum.class, enumType);
+				T value = Types.convertValue(source, genericClass);
 				return Types.asValue(value, enumType);
 				/*Method staticMehtod = ReflectUtils.findMethod(enumType, "valueOf", int.class);
 				Object val;

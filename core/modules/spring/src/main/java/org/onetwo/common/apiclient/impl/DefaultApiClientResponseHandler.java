@@ -1,8 +1,10 @@
-package org.onetwo.common.apiclient;
+package org.onetwo.common.apiclient.impl;
 
 import java.beans.PropertyDescriptor;
 import java.util.Map;
 
+import org.onetwo.common.apiclient.ApiClientMethod;
+import org.onetwo.common.apiclient.ApiClientResponseHandler;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.JFishProperty;

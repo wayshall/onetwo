@@ -1,4 +1,4 @@
-package org.onetwo.common.apiclient;
+package org.onetwo.common.apiclient.utils;
 
 import org.onetwo.common.exception.ErrorType;
 

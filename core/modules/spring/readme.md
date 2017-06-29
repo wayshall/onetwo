@@ -8,10 +8,13 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-spring</artifactId>
-    <version>4.3.9-SNAPSHOT</version>
+    <version>4.6.1-SNAPSHOT</version>
 </dependency>
 
 ```
+
+## rest client
+
 ##工具类
 ###BeanCopierBuilder 复制JavaBean
 ```java   

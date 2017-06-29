@@ -8,9 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.onetwo.common.apiclient.ApiClientConstants.ApiClientError;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
+import org.onetwo.common.apiclient.utils.ApiClientUtils;
+import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientError;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
@@ -19,13 +20,18 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.converter.ValueEnum;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author wayshall
@@ -83,11 +89,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return contentType;
 	}
 
-	public Map<String, Object> toMap(Object[] args){
+	public Map<String, Object> getUrlParameters(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
 		}
-		Map<String, Object> values = LangUtils.newHashMap(parameters.size());
+		Map<String, Object> values = Maps.newHashMapWithExpectedSize(parameters.size());
 		
 		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
 												.filter(p->{
@@ -96,6 +102,26 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												.collect(Collectors.toList());
 		Object pvalue = null;
 		for(ApiClientMethodParameter parameter : urlVariableParameters){
+			pvalue = args[parameter.getParameterIndex()];
+			handleArg(values, parameter, pvalue);
+		}
+		
+		return values;
+	}
+
+	public Map<String, Object> getPathVariables(Object[] args){
+		if(LangUtils.isEmpty(args)){
+			return Collections.emptyMap();
+		}
+		Map<String, Object> values = Maps.newHashMapWithExpectedSize(parameters.size());
+		
+		List<ApiClientMethodParameter> pathVariables = parameters.stream()
+												.filter(p->{
+													return p.hasParameterAnnotation(PathVariable.class);
+												})
+												.collect(Collectors.toList());
+		Object pvalue = null;
+		for(ApiClientMethodParameter parameter : pathVariables){
 			pvalue = args[parameter.getParameterIndex()];
 			handleArg(values, parameter, pvalue);
 		}
@@ -127,7 +153,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
 			if(v instanceof Enum){
 				Enum<?> e = (Enum<?>)v;
-				v = e.name();
+				if(e instanceof ValueEnum){
+					v = ((ValueEnum<?>)e).getValue();
+				}else{//默认使用name
+					v = e.name();
+				}
 			}
 			if(ctx!=null){
 				values.put(ctx.getName(), v);
@@ -166,14 +196,21 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 
 		@Override
 		public String getParameterName() {
-			RequestParam name = getParameterAnnotation(RequestParam.class);
-			if(name!=null){
-				return name.value();
-			}else if(parameter!=null && parameter.isNamePresent()){
-				return parameter.getName();
-			}else{
-				return String.valueOf(getParameterIndex());
+			String pname = super.getParameterName();
+			if(StringUtils.isNotBlank(pname)){
+				return pname;
 			}
+			pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElse(null);
+			if(StringUtils.isBlank(pname)){
+				pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+			}
+			if(StringUtils.isBlank(pname) && parameter!=null && parameter.isNamePresent()){
+				pname = parameter.getName();
+			}else{
+				pname = String.valueOf(getParameterIndex());
+			}
+			this.setParameterName(pname);
+			return pname;
 		}
 
 		public boolean isInjectProperties() {

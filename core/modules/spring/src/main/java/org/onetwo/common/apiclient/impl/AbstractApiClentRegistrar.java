@@ -1,9 +1,13 @@
-package org.onetwo.common.apiclient;
+package org.onetwo.common.apiclient.impl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.onetwo.common.apiclient.RestExecutor;
+import org.onetwo.common.apiclient.RestExecutorFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
+import org.onetwo.common.spring.context.AnnotationMetadataHelper;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.ResourceLoaderAware;
@@ -22,7 +26,26 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	public static final String ATTRS_BASE_URL = "baseUrl";
 	public static final String ATTRS_NAME = "name";
 	public static final String ATTRS_PATH = "path";
+	public static final String ATTRS_REST_EXECUTOR_FACTORY = "restExecutorFactory";
 	
+	private RestExecutor restExecutor;
+	
+	@Override
+	protected void afterCreateAnnotationMetadataHelper(AnnotationMetadataHelper annotationMetadataHelper){
+		Class<?> restExecutorFacotryClass = (Class<?>)annotationMetadataHelper.getAttributes().get(ATTRS_REST_EXECUTOR_FACTORY);
+		RestExecutorFactory factory = null;
+		if(restExecutorFacotryClass==null || restExecutorFacotryClass==RestExecutorFactory.class){
+			factory = new DefaultRestExecutorFactory();
+		}else{
+			factory = (RestExecutorFactory)ReflectUtils.newInstance(restExecutorFacotryClass);
+		}
+		this.restExecutor = factory.createRestExecutor();
+	}
+	
+	public RestExecutor getRestExecutor() {
+		return restExecutor;
+	}
+
 
 	/***
 	 * 

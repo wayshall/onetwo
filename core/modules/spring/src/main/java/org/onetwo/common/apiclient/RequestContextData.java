@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,18 +17,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 public class RequestContextData {
 	final private HttpMethod httpMethod;
-	final private String requestUrl;
+	private String requestUrl;
 	final private Class<?> responseType;
 //	private Object requestBody;
 	final private Map<String, Object> uriVariables;
+	@Getter
+	final private Map<String, Object> pathVariables;
 	private Consumer<HttpHeaders> headerCallback;
 	private Supplier<Object> requestBodySupplier;
 	
-	public RequestContextData(RequestMethod requestMethod, String requestUrl, Map<String, Object> uriVariables, Class<?> responseType) {
+	@Builder
+	public RequestContextData(RequestMethod requestMethod, Map<String, Object> pathVariables, Map<String, Object> uriVariables, Class<?> responseType) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
-		this.requestUrl = requestUrl;
 		this.uriVariables = uriVariables;
+		this.pathVariables = pathVariables;
 		this.responseType = responseType;
 	}
 	
@@ -35,6 +41,9 @@ public class RequestContextData {
 
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
+	}
+	public void setRequestUrl(String url) {
+		this.requestUrl = url;
 	}
 	public String getRequestUrl() {
 		return requestUrl;

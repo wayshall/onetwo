@@ -1,19 +1,23 @@
-package org.onetwo.common.apiclient;
+package org.onetwo.common.apiclient.impl;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.onetwo.common.apiclient.ApiClientConstants.ApiClientError;
+import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
+import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.RequestContextData;
+import org.onetwo.common.apiclient.RestExecutor;
+import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientError;
 import org.onetwo.common.exception.ApiClientException;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.aop.MixinableInterfaceCreator;
 import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
-import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.cache.LoadingCache;
@@ -39,7 +44,6 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	private static final String ACCEPT = "Accept";
 	private static final String CONTENT_TYPE = "Content-Type";
 	
-	final private static ExtRestTemplate API_REST_TEMPLATE = new ExtRestTemplate();
 	
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -56,7 +60,6 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	
 	protected Object apiObject;
 
-	@Autowired(required=false)
 	protected RestExecutor restExecutor;
 	@Autowired(required=false)
 	protected ValidatorWrapper validatorWrapper;
@@ -70,9 +73,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(restExecutor==null){
-			restExecutor = API_REST_TEMPLATE;
-		}
+		Assert.notNull(restExecutor);
+		
 		MethodInterceptor apiClient = createApiMethodInterceptor();
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
@@ -143,14 +145,6 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			super(methodCache);
 		}
 		
-		protected String processUrlBeforeRequest(String actualUrl, M invokeMethod, Map<String, Object> uriVariables){
-			if(!uriVariables.isEmpty()){
-				String paramString = RestUtils.keysToParamString(uriVariables);
-				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
-			}
-			return actualUrl;
-		}
-		
 		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
@@ -180,14 +174,19 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		protected RequestContextData createRequestContextData(Object[] args, M invokeMethod){
-			Map<String, Object> uriVariables = invokeMethod.toMap(args);
-			String actualUrl = getFullPath(invokeMethod.getPath());
-			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, uriVariables);
-
+			Map<String, Object> uriVariables = invokeMethod.getUrlParameters(args);
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
-			RequestContextData context = new RequestContextData(requestMethod, actualUrl, uriVariables, responseType);
+			RequestContextData context = RequestContextData.builder()
+															.requestMethod(requestMethod)
+															.uriVariables(uriVariables)
+															.responseType(responseType)
+															.build();
+			
+			String actualUrl = getFullPath(invokeMethod.getPath());
+			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
+			context.setRequestUrl(actualUrl);
 
 			context.doWithHeaderCallback(headers->{
 				invokeMethod.getAcceptHeader().ifPresent(accept->{
@@ -208,6 +207,19 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			});
 			
 			return context;
+		}
+		
+		protected String processUrlBeforeRequest(final String url, M invokeMethod, RequestContextData context){
+			String actualUrl = url;
+			if(LangUtils.isNotEmpty(context.getPathVariables())){
+				actualUrl = ExpressionFacotry.newStrSubstitutor("{", "}", context.getPathVariables()).replace(actualUrl);
+			}
+			Map<String, Object> uriVariables = context.getUriVariables();
+			if(!uriVariables.isEmpty()){
+				String paramString = RestUtils.keysToParamString(uriVariables);
+				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
+			}
+			return actualUrl;
 		}
 		
 	}

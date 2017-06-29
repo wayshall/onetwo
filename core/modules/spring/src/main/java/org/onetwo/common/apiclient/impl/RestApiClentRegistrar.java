@@ -1,6 +1,5 @@
 package org.onetwo.common.apiclient.impl;
 
-import org.onetwo.common.apiclient.AbstractApiClentRegistrar;
 import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
 import org.onetwo.common.apiclient.annotation.RestApiClient;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -23,6 +22,7 @@ public class RestApiClentRegistrar extends AbstractApiClentRegistrar<EnableRestA
 		definition.addPropertyValue("path", resolvePath(attributes));
 //		definition.addPropertyValue("name", name);
 		definition.addPropertyValue("interfaceClass", className);
+		definition.addPropertyValue("restExecutor", getRestExecutor());
 //		definition.addPropertyValue("decode404", attributes.get("decode404"));
 //		definition.addPropertyValue("fallback", attributes.get("fallback"));
 		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);

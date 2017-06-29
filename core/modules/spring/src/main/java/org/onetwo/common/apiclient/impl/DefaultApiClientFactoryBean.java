@@ -2,7 +2,6 @@ package org.onetwo.common.apiclient.impl;
 
 import java.lang.reflect.Method;
 
-import org.onetwo.common.apiclient.AbstractApiClientFactoryBean;
 import org.onetwo.common.apiclient.ApiClientMethod;
 
 import com.google.common.cache.CacheBuilder;

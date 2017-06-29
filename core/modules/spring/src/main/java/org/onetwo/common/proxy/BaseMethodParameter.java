@@ -3,7 +3,9 @@ package org.onetwo.common.proxy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Optional;
 
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -42,7 +44,17 @@ public class BaseMethodParameter extends MethodParameter {
 		String name = super.getParameterName();
 		if(StringUtils.isBlank(name) && this.parameter.isNamePresent()){
 			name = this.parameter.getName();
+			this.setParameterName(name);
 		}
 		return name;
+	}
+	
+
+	public <A extends Annotation> Optional<A> getOptionalParameterAnnotation(Class<A> annotationType) {
+		return Optional.ofNullable(super.getParameterAnnotation(annotationType));
+	}
+	
+	public void setParameterName(String parameterName){
+		ReflectUtils.setFieldValue(this, "parameterName", parameterName);
 	}
 }

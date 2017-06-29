@@ -83,9 +83,13 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 			annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
 			annotationMetadataHelper.setResourceLoader(resourceLoader);
 			annotationMetadataHelper.setClassLoader(classLoader);
+			this.afterCreateAnnotationMetadataHelper(annotationMetadataHelper);
 			this.annotationMetadataHelper = annotationMetadataHelper;
 		}
 		return annotationMetadataHelper;
+	}
+	
+	protected void afterCreateAnnotationMetadataHelper(AnnotationMetadataHelper annotationMetadataHelper){
 	}
 	
 	protected Stream<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
