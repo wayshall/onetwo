@@ -19,7 +19,6 @@ public class WeatherClientTest extends ApicientBaseTests {
 	@Test
 	public void test(){
 		WeatherResponse res = this.weatherClient.getWeather("101010100");
-		System.out.println("res: " + res);
 		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
 	}
 

@@ -28,7 +28,7 @@
 
 ### 创建自定义的rest client接口
 
-比如创建一个调用 http://www.weather.com.cn/data/sk/101010100.html 的rest client
+比如创建一个获取天气预报（ http://www.weather.com.cn/data/sk/101010100.html ） 的rest client
 
 对应接口代码如下：
 ```Java
@@ -85,18 +85,15 @@ public class WeatherResponse {
 使用的时候，只需要直接把接口用spring的方式直接注入示例即可使用，如：
 ```Java
 
-public class MenuServiceTest {
+public class WeatherClientTest  {
 	
 	@Autowired
-	MenuService menuService;
+	WeatherClient weatherClient;
 	
 	@Test
-	public void testCreateMenu() throws IOException{
-		String classPath = "menu_create.json";
-
-		CreateMenuRequest request = ....;
-		WechatResponse res = menuService.create(request);
-		assertThat(res.isSuccess()).isTrue();
+	public void test(){
+		WeatherResponse res = this.weatherClient.getWeather("101010100");
+		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
 	}
 
 }
@@ -104,25 +101,28 @@ public class MenuServiceTest {
 
 ## 工具类
 ### BeanCopierBuilder 复制JavaBean
+志在提供一个可定制更灵活的bean复制工具。若
 ```java   
 BeanA src = new BeanA();
 BeanB target = new BeanB();
-BeanCopierBuilder.fromObject(src)
-    			.to(target);   
+BeanCopierBuilder.fromObject(src).to(target);   
 
-BeanC c = BeanCopierBuilder.fromObject(src)
-    						.to(BeanC.class); 
+BeanC c = BeanCopierBuilder.fromObject(src).to(BeanC.class); 
 ```
 如果两个bean之间的属性名称不同，但有特定的转换规则，则可以自定义PropertyNameConvertor，下面示例的属性名称转换器，会把srcBean里的驼峰命名的属性名称转换成下划线风格的属性名称，再复制：
 ```java   
 UnderlineBean target = new UnderlineBean();
 BeanCopierBuilder.fromObject(srcBean)
-				.propertyNameConvertor(CopyUtils.UNDERLINE_CONVERTOR)
-				.to(target);  
+		.propertyNameConvertor(CopyUtils.UNDERLINE_CONVERTOR)
+		.to(target);  
 ```
 ### BeanToMapBuilder bean转成map
+把一个pojo转换为map，其中pojo的属性名作为key，属性值作为对象
 ```java
 Map<String, Object> map = BeanToMapBuilder.newBuilder().build().toMap(obj)   
 //如果obj是个带有“复杂”对象属性的对象，则可以使用toFlatMap递归解释嵌套属性
 Map<String, Object> map = BeanToMapBuilder.newBuilder().build().toFlatMap(obj)   
 ```
+
+## 其他……
+待补充。。。
