@@ -13,7 +13,8 @@
 
 ```
 
-## rpc接口风格的 rest client
+## 本地接口风格的 rest client
+基于spring RestTemplate上封装的本地接口风格的rest client
 
 ### 注解启用
 在spring配置类（即有@Configuration注解的类）上加上注解@EnableRestApiClient 即可。
