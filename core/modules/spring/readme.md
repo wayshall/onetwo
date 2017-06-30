@@ -1,8 +1,8 @@
-#spring 
+# spring 
 交流群：  604158262    
 依赖到spring相关的封装
 
-##maven
+## maven
 ```xml
 
 <dependency>
@@ -102,8 +102,8 @@ public class MenuServiceTest {
 }
 ```
 
-##工具类
-###BeanCopierBuilder 复制JavaBean
+## 工具类
+### BeanCopierBuilder 复制JavaBean
 ```java   
 BeanA src = new BeanA();
 BeanB target = new BeanB();
@@ -120,7 +120,7 @@ BeanCopierBuilder.fromObject(srcBean)
 				.propertyNameConvertor(CopyUtils.UNDERLINE_CONVERTOR)
 				.to(target);  
 ```
-###BeanToMapBuilder bean转成map
+### BeanToMapBuilder bean转成map
 ```java
 Map<String, Object> map = BeanToMapBuilder.newBuilder().build().toMap(obj)   
 //如果obj是个带有“复杂”对象属性的对象，则可以使用toFlatMap递归解释嵌套属性
