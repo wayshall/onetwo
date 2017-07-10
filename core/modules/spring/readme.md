@@ -2,6 +2,15 @@
 交流群：  604158262    
 依赖到spring相关的封装
 
+## 目录
+- [本地接口风格的 rest client](https://github.com/wayshall/onetwo/tree/master/core/modules/spring#本地接口风格的-rest-client)
+- [工具类](#工具类)
+
+
+## 要求
+JDK 1.8+
+spring 4.0+
+
 ## maven
 ```xml
 
