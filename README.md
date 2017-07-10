@@ -4,11 +4,6 @@
 spring-boot技术交流群：  604158262
 
 
-## 捐赠
-如果你觉得这个项目帮到了你，请用支付宝打赏一杯咖啡吧~~~   
-
-![支付宝](doc/alipay2.jpg) 
-
 
 ## 环境要求
 JDK8+
@@ -65,3 +60,9 @@ boot模块，基于boot和freemarker上封装了一点点的插件机制。
 
 ## [web-admin插件](https://github.com/wayshall/onetwo/tree/master/core/plugins/web-admin)
 基于boot模块的插件机制，使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
+
+
+## 捐赠
+如果你觉得这个项目帮到了你，请用支付宝打赏一杯咖啡吧~~~   
+
+![支付宝](doc/alipay2.jpg) 
