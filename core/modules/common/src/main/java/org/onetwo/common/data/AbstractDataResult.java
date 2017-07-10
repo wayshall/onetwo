@@ -1,5 +1,8 @@
 package org.onetwo.common.data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
@@ -11,10 +14,24 @@ import org.onetwo.common.utils.StringUtils;
 abstract public class AbstractDataResult<T> implements Result<String, T>{
 	public static final String SUCCESS = "SUCCESS";
 	
+	private static final Set<String> SUCESS_VALUES = new HashSet<String>();
+	public static void addSucessValues(String value) {
+		if(value==null){
+			return ;
+		}
+		SUCESS_VALUES.add(value);
+	}
+	static {
+		addSucessValues(SUCCESS);
+		addSucessValues("0");
+		addSucessValues("1");
+	}
+	
 	public static final String ERROR = "ERROR";
 	public static final String ERR = "ERR";
 	public static final String EXCEPTION_POSTFIX = "Exception";
 	
+
 	private String code = SUCCESS;//0,1;
 	private String message;//
 	/***
@@ -48,17 +65,22 @@ abstract public class AbstractDataResult<T> implements Result<String, T>{
 	 * @return
 	 */
 	public boolean isSuccess(){
-		return !isError();
+		if(code!=null){
+			return SUCESS_VALUES.contains(code);
+		}else{
+			return true;
+		}
 	}
 
 	public boolean isError(){
-		if(code!=null){
+		return !isSuccess();
+		/*if(code!=null){
 			return code.endsWith(EXCEPTION_POSTFIX) || 
 					code.toUpperCase().startsWith(ERR) || 
 					code.toUpperCase().startsWith(ERROR);
 		}else{
 			return false;
-		}
+		}*/
 	}
 	/****
 	 * 

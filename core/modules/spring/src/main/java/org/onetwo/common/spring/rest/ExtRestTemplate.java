@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.rest;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -11,6 +12,7 @@ import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConvert
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
@@ -21,9 +23,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
@@ -35,8 +39,18 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
 
+	@SuppressWarnings("rawtypes")
+	private ExtRestErrorHandler extErrorHandler;
+	private Type extErrorResultType;
+
 	public ExtRestTemplate(){
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
+	}
+	
+	public void setExtErrorHandler(ExtRestErrorHandler<?> extErrorHandler) {
+//		this.extErrorResultType = GenericTypeResolver.resolveTypeArgument(ExtRestErrorHandler.class, extErrorHandler.getClass());
+		this.extErrorResultType = TypeResolver.resolveRawArgument(ExtRestErrorHandler.class, extErrorHandler.getClass());
+		this.extErrorHandler = extErrorHandler;
 	}
 	
 	public ExtRestTemplate(ClientHttpRequestFactory requestFactory){
@@ -54,6 +68,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			this.setRequestFactory(requestFactory);
 //			this.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 		}
+		this.setErrorHandler(new OnExtRestErrorHandler());
 	}
 
 	public void setBeanToMapConvertor(BeanToMapConvertor beanToMapConvertor) {
@@ -163,6 +178,24 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			}*/
 			this.acceptHeaderRequestCallback.doWithRequest(request);
 		}
-		
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	//AccessTokenErrorHandler
+	public class OnExtRestErrorHandler extends DefaultResponseErrorHandler {
+		@Override
+		public void handleError(ClientHttpResponse response) throws IOException {
+			ResponseExtractor<ResponseEntity<Object>> responseExtractor = null;
+			if(extErrorResultType!=null){
+				responseExtractor = responseEntityExtractor(extErrorResultType);
+			}
+			if (responseExtractor != null) {
+				ResponseEntity<?> errorData = responseExtractor.extractData(response);
+				extErrorHandler.onError(errorData.getBody());
+			}else{
+				super.handleError(response);
+			}
+		}
 	}
 }

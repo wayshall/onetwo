@@ -17,7 +17,6 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
@@ -32,7 +31,6 @@ import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.spring.utils.MapToBeanConvertor;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -323,18 +321,17 @@ final public class SpringUtils {
         return null;
     }
 	
-	public static BeanDefinition createBeanDefinition(Class<?> beanClass, Object...params){
-		Map<String, Object> props = LangUtils.asMap(params);
+	public static BeanDefinition createBeanDefinition(Class<?> beanClass, Object[] constructorArgs, Map<String, Object> properties){
 		BeanDefinitionBuilder bdb = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
-		if(LangUtils.isEmpty(props))
-			return bdb.getBeanDefinition();
-		for(Entry<String, Object> entry : props.entrySet()){
-			/*try {
+		if(constructorArgs!=null){
+			for(Object arg :constructorArgs){
+				bdb.addConstructorArgValue(arg);
+			}
+		}
+		if(LangUtils.isNotEmpty(properties)){
+			for(Entry<String, Object> entry : properties.entrySet()){
 				bdb.addPropertyValue(entry.getKey(), entry.getValue());
-			} catch (Exception e) {
-				throw new BaseException("createBeanDefinition error: " + e.getMessage());
-			}*/
-			bdb.addPropertyValue(entry.getKey(), entry.getValue());
+			}
 		}
 		return bdb.getBeanDefinition();
 	}
@@ -362,6 +359,16 @@ final public class SpringUtils {
 	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
+	
+	/***
+	 * register and get bean
+	 * @author wayshall
+	 * @param context
+	 * @param beanName
+	 * @param beanClass
+	 * @param params
+	 * @return
+	 */
 	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
@@ -371,17 +378,17 @@ final public class SpringUtils {
 	}
 	
 
-	public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
+	/*public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
 	}
 	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
 		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		return registerBeanDefinition(bdr, beanName, beanClass, params);
-	}
+	}*/
 	
 
-	public static BeanDefinitionRegistry getBeanDefinitionRegistry(BeanFactory context, boolean throwIfNull){
+	/*public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object context, boolean throwIfNull){
 		BeanDefinitionRegistry bdr = null;
 		if(ApplicationContext.class.isInstance(context)){
 			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
@@ -396,7 +403,7 @@ final public class SpringUtils {
 		if(bdr==null && throwIfNull)
 			throw new BaseException("this context can not rigister spring bean : " + context);
 		return bdr;
-	}
+	}*/
 	
 	/****
 	 * 注册bean定义
@@ -406,27 +413,14 @@ final public class SpringUtils {
 	 * @param params
 	 * @return
 	 */
-	public static BeanDefinition registerBeanDefinition(BeanDefinitionRegistry bdr, String beanName, Class<?> beanClass, Object...params){
+	public static BeanDefinition registerBeanDefinition(Object context, String beanName, Class<?> beanClass, Object...params){
+		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
 		if(StringUtils.isBlank(beanName)){
 			beanName = StringUtils.uncapitalize(beanClass.getSimpleName());
 		}
-		BeanDefinition bd = createBeanDefinition(beanClass, params);
+		BeanDefinition bd = createBeanDefinition(beanClass, null, LangUtils.asMap(params));
 		bdr.registerBeanDefinition(beanName, bd);
 		return bd;
-	}
-	
-	public static void registerBean(ApplicationContext configurableApplicationContext, String beanName, Class<?> beanClass, Object[] constructorArg, Object...params){
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry)configurableApplicationContext.getAutowireCapableBeanFactory();
-		
-		Map<String, Object> props = LangOps.arrayToMap(params);
-		BeanDefinitionBuilder bdb = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
-		for(Entry<String, Object> entry : props.entrySet()){
-			bdb.addPropertyValue(entry.getKey(), entry.getValue());
-		}
-		if(constructorArg!=null){
-			Stream.of(constructorArg).forEach(arg->bdb.addConstructorArgValue(arg));
-		}
-		registry.registerBeanDefinition(beanName, bdb.getBeanDefinition());
 	}
 	
 	/*****
@@ -446,6 +440,9 @@ final public class SpringUtils {
 		return sbr;
 	}
 	public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object applicationContext){
+		return getBeanDefinitionRegistry(applicationContext, true);
+	}
+	public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object applicationContext, boolean throwIfNull){
 		if(BeanDefinitionRegistry.class.isInstance(applicationContext)){
 			return (BeanDefinitionRegistry) applicationContext;
 		}
@@ -454,7 +451,11 @@ final public class SpringUtils {
 			bf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
 		if(bf==null || !BeanDefinitionRegistry.class.isInstance(bf)){
-			return null;
+			if(throwIfNull){
+				throw new BaseException("this context can not rigister spring bean : " + applicationContext);
+			}else{
+				return null;
+			}
 		}
 		BeanDefinitionRegistry sbr = (BeanDefinitionRegistry) bf;
 		return sbr;

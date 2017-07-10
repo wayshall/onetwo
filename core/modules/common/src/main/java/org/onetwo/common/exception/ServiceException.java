@@ -14,17 +14,22 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 
 	public static ServiceException formatMessage(String msg, Object...args){
 		String formatMsg = String.format(msg, args);
-		return new ServiceException(formatMsg);
+		ServiceException se =  new ServiceException(formatMsg);
+		se.setArgs(args);
+		return se;
 	}
 	public static ServiceException formatMessage(Throwable cause, String msg, Object...args){
 		String formatMsg = String.format(msg, args);
-		return new ServiceException(formatMsg, cause);
+		ServiceException se = new ServiceException(formatMsg, cause);
+		se.setArgs(args);
+		return se;
 	}
 
 	public static ServiceException formatMessage(ErrorType exceptionType, Object...args){
 		String formatMsg = String.format(exceptionType.getErrorMessage(), args);
 		ServiceException se = new ServiceException(formatMsg, exceptionType.getErrorCode());
 		se.exceptionType = exceptionType;
+		se.setArgs(args);
 		return se;
 	}
 
