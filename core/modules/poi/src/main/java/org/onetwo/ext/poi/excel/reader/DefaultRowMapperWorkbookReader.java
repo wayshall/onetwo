@@ -47,6 +47,12 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 		return (List<T>)map.values().iterator().next();
 	}
 	
+	public <T> List<T> readSheet(InputStream in, int sheetIndex){
+		Workbook workbook = createWorkbook(in);
+		Map<String, List<Object>> map = readData(workbook, sheetIndex, 1);
+		return (List<T>)map.values().iterator().next();
+	}
+	
 	/*@Override
 	public <T> List<T> readFirstSheet(InputStream in, boolean excel2007) {
 		Workbook workbook = createWorkbook(in, excel2007);

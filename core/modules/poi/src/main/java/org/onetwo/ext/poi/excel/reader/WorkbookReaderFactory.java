@@ -245,7 +245,7 @@ public abstract class WorkbookReaderFactory {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public static WorkbookReader getWorkbookReader(Class clazz, int dataRowStartIndex, Object...propertyMapper){
+	public static WorkbookReader createWorkbookReader(Class clazz, int dataRowStartIndex, Object...propertyMapper){
 		WorkbookReader wb = new DefaultRowMapperWorkbookReader(new BeanRowMapper(dataRowStartIndex, clazz, ExcelUtils.asMap(propertyMapper), convertors));
 		return wb;
 	}

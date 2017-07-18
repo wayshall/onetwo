@@ -624,7 +624,7 @@ final public class SpringUtils {
 		return value;
 	}
 	
-	public static <T> T toBean(Map<String, Object> propValues, Class<T> beanClass){
+	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
 		return MAP_TO_BEAN.toBean(propValues, beanClass);
 	}
 

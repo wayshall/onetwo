@@ -188,12 +188,12 @@ public class CopyUtils {
     	return BEAN_COPIER.fromObject(src, target);
     }
 
-    public static <T> BeanCopierBuilder<T> copyFrom(T target){
-    	return BeanCopierBuilder.fromObject(target);
+    public static <T> BeanCopierBuilder<T> copyFrom(T src){
+    	return BeanCopierBuilder.fromObject(src);
     }
 
-    public static <T> ListCopierBuilder<T> copyFrom(Iterable<T> target){
-    	return ListCopierBuilder.from(target);
+    public static <T> ListCopierBuilder<T> copyFrom(Iterable<T> src){
+    	return ListCopierBuilder.from(src);
     }
 
     /*public static <T, R> ListCopierBuilder2<T, R> from2(Iterable<T> target){

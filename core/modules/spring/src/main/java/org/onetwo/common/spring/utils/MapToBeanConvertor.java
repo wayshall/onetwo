@@ -37,7 +37,7 @@ public class MapToBeanConvertor {
 	
 	private Function<PropertyContext, String> keyConvertor;
 	
-	public <T> T toBean(Map<String, Object> propValues, Class<T> beanClass){
+	public <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
 		Assert.notNull(beanClass);
 		Assert.notNull(propValues);
 		T bean = ReflectUtils.newInstance(beanClass);

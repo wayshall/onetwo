@@ -11,6 +11,7 @@ public interface WorkbookReader {
 	public <T> List<T> readFirstSheet(String path);
 	public <T> List<T> readFirstSheet(File file);
 	public <T> List<T> readFirstSheet(InputStream in);
+	public <T> List<T> readSheet(InputStream in, int sheetIndex);
 //	public <T> List<T> readFirstSheet(InputStream in, boolean excel2007);
 	
 	public Map<String, List<Object>> readData(String path);

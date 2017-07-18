@@ -147,6 +147,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 //		int cellCount = row.getPhysicalNumberOfCells();
 		int cellCount = row.getLastCellNum();
 		
+		if(this.mapperType==null){
+			autoMapperType(names);
+		}
+		
 		T bean = newBean();
 		BeanWrapper bw = ExcelUtils.newBeanWrapper(bean);
 		
