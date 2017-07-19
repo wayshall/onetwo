@@ -63,7 +63,10 @@ public class AdminUserServiceImpl {
         }
         
         String newPwd = adminUser.getPassword();
+        //不允许修改
         adminUser.setPassword(null);
+        adminUser.setId(null);
+        adminUser.setUserName(null);
         ReflectUtils.copyIgnoreBlank(adminUser, dbAdminUser);
         
         //如果密码不为空，修改密码

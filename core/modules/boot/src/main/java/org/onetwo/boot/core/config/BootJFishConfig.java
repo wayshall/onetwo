@@ -5,6 +5,7 @@ import java.util.Properties;
 import lombok.Data;
 import lombok.Setter;
 
+import org.onetwo.common.propconf.JFishProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -34,6 +35,7 @@ public class BootJFishConfig {
 //	private DefaultDataBaseConfig dbm = new DefaultDataBaseConfig();
 	
 	private MvcConfig mvc = new MvcConfig();
+	private JFishProperties plugin = new JFishProperties();
 	/*private JsonConfig json = new JsonConfig();
 	private Properties mediaTypes;*/
 	
@@ -85,7 +87,5 @@ public class BootJFishConfig {
 		}
 
 	}
-	
-	
-	
+
 }

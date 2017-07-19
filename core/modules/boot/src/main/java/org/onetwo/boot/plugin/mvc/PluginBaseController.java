@@ -1,5 +1,6 @@
 package org.onetwo.boot.plugin.mvc;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.plugin.core.PluginManager;
@@ -13,6 +14,8 @@ abstract public class PluginBaseController extends AbstractBaseController {
 	
 	@Autowired
 	private PluginManager pluginManager;
+	@Autowired
+	private BootJFishConfig bootJFishConfig;
 	
 	abstract protected WebPlugin getPlugin();
 	
@@ -23,7 +26,12 @@ abstract public class PluginBaseController extends AbstractBaseController {
 
 	@Override
 	protected String getViewName(String viewName){
-		String moduleMv = pluginManager.getPluginTemplateBasePath(getPlugin().getPluginMeta().getName()) + StringUtils.appendStartWithSlash(viewName);
+		String pluginName = getPlugin().getPluginMeta().getName();
+		String templatePath = bootJFishConfig.getPlugin().getProperty(pluginName+".templatePath");
+		if(StringUtils.isBlank(templatePath)){
+			templatePath = pluginManager.getPluginTemplateBasePath(pluginName);
+		}
+		String moduleMv = templatePath + StringUtils.appendStartWithSlash(viewName);
 		return moduleMv;
 	}
 }
