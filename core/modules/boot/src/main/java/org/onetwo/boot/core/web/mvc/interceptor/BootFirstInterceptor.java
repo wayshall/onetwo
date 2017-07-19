@@ -46,6 +46,7 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 		if(isProfile())
 			TimeProfileStack.push(CONTROLLER_TIME_KEY);
 		
+		//set to request attribute, key: helper
 		BootWebHelper helper = BootWebUtils.webHelper(request);
 		helper.setControllerHandler(handlerMethod);
 		

@@ -3,7 +3,6 @@ package org.onetwo.boot.plugin.ftl;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.ftl.ClassPathTldsLoader;
 import org.onetwo.common.spring.SpringUtils;
@@ -19,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 @Configuration
 public class WebFtlsContextConfig {
@@ -40,7 +40,7 @@ public class WebFtlsContextConfig {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(FreeMarkerConfig.class)
+	@ConditionalOnMissingBean({FreeMarkerConfig.class, FreeMarkerViewResolver.class})
 	public FreeMarkerConfigurer freeMarkerConfigurer() {
 		PluginFreeMarkerConfigurer configurer = new PluginFreeMarkerConfigurer();
 		applyProperties(configurer);

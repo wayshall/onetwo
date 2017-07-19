@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -31,9 +31,14 @@ import org.springframework.core.Ordered;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
+/****
+ * ui模式扩展配置
+ * 如自定义的corsfilter， PluginContextConfig
+ * @author wayshall
+ *
+ */
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
@@ -97,6 +102,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	 */
 	@Bean
 	@ConditionalOnBean(name = CorsFilter.CORS_FILTER_NAME)
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue="true", matchIfMissing=false)
 	public FilterRegistrationBean corsFilterRegistration(@Qualifier(CorsFilter.CORS_FILTER_NAME) Filter filter){
 		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
