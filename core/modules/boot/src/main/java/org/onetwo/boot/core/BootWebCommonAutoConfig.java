@@ -14,6 +14,7 @@ import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
@@ -60,7 +62,17 @@ public class BootWebCommonAutoConfig {
 	public void init(){
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
-	
+
+	/***
+	 * 异常解释
+	 * @return
+	 */
+//	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
+	@Bean
+	public ResponseEntityExceptionHandler responseEntityExceptionHandler(){
+		BootWebExceptionHandler handler = new BootWebExceptionHandler();
+		return handler;
+	}
 	
 	@Bean
 	public FilterRegistrationBean requestContextFilter(){

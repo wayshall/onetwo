@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -71,7 +73,10 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	protected ErrorMessage handleException(Exception ex){
-		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);;
+		if(errorMessage==null){
+			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		}
 		if(errorMessage.isDetail()){
 			logger.error("request error:", ex);
 		}else{

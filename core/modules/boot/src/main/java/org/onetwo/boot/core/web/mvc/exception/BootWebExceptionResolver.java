@@ -21,6 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -35,6 +37,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class BootWebExceptionResolver extends SimpleMappingExceptionResolver implements InitializingBean, ExceptionMessageFinder {
 //	public static final String MAX_UPLOAD_SIZE_ERROR = "MVC_MAX_UPLOAD_SIZE_ERROR";
 
+	public static final String ERROR_MESSAGE_OBJECT_KEY = "__ERROR_MESSAGE_OBJECT__";
+	
 	private static final String EXCEPTION_STATCK_KEY = "__exceptionStack__";
 	private static final String ERROR_CODE_KEY = "__errorCode__";
 	private static final String PRE_URL = "preurl";
@@ -81,10 +85,13 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 //		defaultRedirect = BaseSiteConfig.getInstance().getLoginUrl();
 	}
 	
-	
-	protected void processAfterLog(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
-	}
 
+	protected void beforeReturnModelAndView(HttpServletRequest request, Object handlerMethod, ModelAndView mv, ErrorMessage errorMessage){
+		RequestContextHolder.getRequestAttributes().setAttribute(ERROR_MESSAGE_OBJECT_KEY, errorMessage, RequestAttributes.SCOPE_REQUEST);
+		if(mv!=null){
+			this.doLog(request, handlerMethod, errorMessage.getException(), errorMessage.isDetail());
+		}
+	}
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
@@ -92,9 +99,6 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		String viewName = determineViewName(ex, request);
 		errorMessage.setViewName(viewName);
 		
-		this.doLog(request, handlerMethod, ex, errorMessage.isDetail());
-		
-		this.processAfterLog(request, response, handlerMethod, ex);
 		
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		
@@ -104,6 +108,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 							.buildResult();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			ModelAndView mv = new ModelAndView("error", model);
+			beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);
 			return mv;
 //			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
 			//return null for post exceptionHandler to process
@@ -116,7 +121,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			model.put(AbstractBaseController.MESSAGE_TYPE, AbstractBaseController.MESSAGE_TYPE_ERROR);
 		}
 		if(BootWebUtils.isRedirect(errorMessage.getViewName())){
-			return this.createModelAndView(errorMessage.getViewName(), model, request, response, ex);
+			ModelAndView mv = this.createModelAndView(errorMessage.getViewName(), model, request, response, ex);
+			beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);
+			return mv;
 		}
 
 		String eInfo = "";
@@ -132,7 +139,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		model.put(EXCEPTION_STATCK_KEY, eInfo);
 		model.put(ERROR_CODE_KEY, errorMessage.getCode());
 		
-		return createModelAndView(errorMessage.getViewName(), model, request, response, ex);
+		ModelAndView mv = createModelAndView(errorMessage.getViewName(), model, request, response, ex);
+		beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);
+		return mv;
 	}
 
 	protected String getUnknowError(){

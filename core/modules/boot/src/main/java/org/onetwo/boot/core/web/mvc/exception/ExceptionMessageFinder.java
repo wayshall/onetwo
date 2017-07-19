@@ -188,12 +188,12 @@ public interface ExceptionMessageFinder {
 //		private boolean authentic = false;
 		private String viewName;
 		
-		final private Throwable throwable;
+		final private Exception exception;
 		
 		
-		public ErrorMessage(Throwable throwable) {
+		public ErrorMessage(Exception throwable) {
 			super();
-			this.throwable = throwable;
+			this.exception = throwable;
 		}
 		/*public ErrorMessage(String code, String mesage, boolean detail) {
 			super();
@@ -217,8 +217,8 @@ public interface ExceptionMessageFinder {
 			this.viewName = viewName;
 		}
 		
-		public Throwable getThrowable() {
-			return throwable;
+		public Exception getException() {
+			return exception;
 		}
 		
 		public void setCode(String code) {
@@ -231,10 +231,10 @@ public interface ExceptionMessageFinder {
 			this.detail = detail;
 		}
 		public boolean isNotLoginException() {
-			return NotLoginException.class.isInstance(throwable);
+			return NotLoginException.class.isInstance(exception);
 		}
 		public boolean isNoPermissionException() {
-			return NoAuthorizationException.class.isInstance(throwable);
+			return NoAuthorizationException.class.isInstance(exception);
 		}
 		public HttpStatus getHttpStatus() {
 			return httpStatus;

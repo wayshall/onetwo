@@ -59,7 +59,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	 * @return
 	 */
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
+//	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
 //	@Autowired
 	public BootWebExceptionResolver bootWebExceptionResolver(){
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
