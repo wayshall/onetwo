@@ -1,9 +1,13 @@
 package org.onetwo.ext.security.utils;
 
+import java.util.concurrent.TimeUnit;
+
 import lombok.Data;
 import lombok.ToString;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.ext.security.jwt.JwtUtils;
 
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -42,6 +46,7 @@ public class SecurityConfig {
 	private RedisConfig redis = new RedisConfig();
 	private CookieConfig cookie = new CookieConfig();
 	private RbacConfig rbac = new RbacConfig();
+	private JwtConfig jwt = new JwtConfig();
 	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
@@ -112,5 +117,16 @@ public class SecurityConfig {
 	@Data
 	public static class RbacConfig {
 		private String resourceQuery;
+	}
+	
+	@Data
+	public static class JwtConfig {
+		String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
+		String signingKey;
+		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
+		
+		public boolean isEnabled(){
+			return StringUtils.isNotBlank(signingKey);
+		}
 	}
 }

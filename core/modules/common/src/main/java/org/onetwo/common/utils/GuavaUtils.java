@@ -2,6 +2,8 @@ package org.onetwo.common.utils;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -29,6 +31,11 @@ public final class GuavaUtils {
 	
 	public static Iterable<String> splitAsIterable(String str, String splitChar) {
 		return StringUtils.isBlank(str)?EMPTY_ITERABLE:Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str);
+	}
+	
+	public static Stream<String> splitAsStream(String str, String splitChar) {
+		Iterable<String> it = StringUtils.isBlank(str)?EMPTY_ITERABLE:Splitter.on(splitChar).trimResults().omitEmptyStrings().split(str);
+		return StreamSupport.stream(it.spliterator(), false);
 	}
 	
 	public static String join(Iterable<?> strs, String joiner) {

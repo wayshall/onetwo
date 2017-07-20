@@ -9,6 +9,7 @@ import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecuritySessionUserManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,8 @@ public class SecurityCommonContextConfig implements InitializingBean{
 //	abstract public SecurityConfig getSecurityConfig();
 	@Autowired
 	private SecurityConfig securityConfig;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	
 	@Override
@@ -75,6 +78,10 @@ public class SecurityCommonContextConfig implements InitializingBean{
 		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().getLoginUrl(), 
 																			getSecurityConfig().getAfterLoginUrl(),
 																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
+		if(securityConfig.getJwt().isEnabled()){
+			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
+			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
+		}
 		return handler;
 	}
 }

@@ -6,7 +6,6 @@ import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.context.SecurityContextRepository;
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 

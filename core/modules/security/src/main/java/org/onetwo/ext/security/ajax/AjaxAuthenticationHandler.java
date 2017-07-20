@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.WebResultCreator;
@@ -15,8 +16,12 @@ import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.onetwo.ext.security.jwt.JwtTokenInfo;
+import org.onetwo.ext.security.jwt.JwtTokenService;
+import org.onetwo.ext.security.jwt.JwtUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,6 +31,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
@@ -48,7 +54,12 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	private String authenticationFailureUrl;
 //	private boolean alwaysUse = false;
 //	private MessageSourceAccessor exceptionMessageAccessor;
-	private RequestCache requestCache = new HttpSessionRequestCache();
+	private RequestCache requestCache = new NullRequestCache();
+	
+	private boolean useJwtToken;
+	@Autowired(required=false)
+	private JwtTokenService jwtTokenService;
+	private String jwtAuthHeader;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -73,24 +84,55 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	}*/
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(useJwtToken){
+			if(jwtTokenService==null){
+				throw new BaseException("not jwtTokenService found!");
+			}
+			if(StringUtils.isBlank(jwtAuthHeader)){
+				jwtAuthHeader = JwtUtils.DEFAULT_HEADER_KEY;
+			}
+		}
 		if(authenticationFailureUrl!=null){
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl);
 	    }else{
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler();
 	    }
-		SavedRequestAwareAuthenticationSuccessHandler srHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+		
+		SimpleUrlAuthenticationSuccessHandler srHandler = null;
+		if(isAlwaysUseDefaultTargetUrl()){
+			srHandler = new SimpleUrlAuthenticationSuccessHandler();
+		}else{
+			this.requestCache = new HttpSessionRequestCache();
+			SavedRequestAwareAuthenticationSuccessHandler savedHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+		    //set HttpSessionRequestCache to save pre request url
+			savedHandler.setRequestCache(requestCache);
+			srHandler = savedHandler;
+		}
 	    if(getDefaultTargetUrl()!=null){
 	    	srHandler.setDefaultTargetUrl(getDefaultTargetUrl());
 	    	srHandler.setAlwaysUseDefaultTargetUrl(isAlwaysUseDefaultTargetUrl());
 	    }
-	    //set HttpSessionRequestCache to save pre request url
-	    srHandler.setRequestCache(requestCache);
         this.successHandler = srHandler;
 	}
+	
 	@Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
-            ServletException {
-		if(RequestUtils.isAjaxRequest(request)){
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+		SavedRequest saveRequest = this.requestCache.getRequest(request, response);
+		if(saveRequest!=null){
+			this.requestCache.removeRequest(request, response);
+		}
+		
+		if(useJwtToken){
+			JwtTokenInfo token = this.jwtTokenService.generateToken(authentication);
+//			response.addHeader(jwtAuthHeader, token.getToken());
+			SimpleDataResult<?> rs = WebResultCreator.creator()
+													.success("登录成功！")
+													.data(token)
+													.buildResult();
+			String text = mapper.toJson(rs);
+			ResponseUtils.renderJsonByAgent(request, response, text);
+			
+		}else if(RequestUtils.isAjaxRequest(request)){
 			String redirectUrl = this.getDefaultTargetUrl();
 			String targetUrlParameter = getTargetUrlParameter();
 			if (isAlwaysUseDefaultTargetUrl()
@@ -98,7 +140,6 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 							.getParameter(targetUrlParameter)))) {
 				redirectUrl = determineTargetUrl(request, response);
 			}else{
-				SavedRequest saveRequest = this.requestCache.getRequest(request, response);
 				redirectUrl = saveRequest.getRedirectUrl();
 				clearAuthenticationAttributes(request);
 			}
@@ -149,5 +190,14 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	
 	public void setAuthenticationFailureUrl(String authenticationFailureUrl) {
 		this.authenticationFailureUrl = authenticationFailureUrl;
+	}
+	public void setUseJwtToken(boolean useJwtToken) {
+		this.useJwtToken = useJwtToken;
+	}
+	public void setJwtTokenService(JwtTokenService jwtTokenService) {
+		this.jwtTokenService = jwtTokenService;
+	}
+	public void setJwtAuthHeader(String jwtAuthHeader) {
+		this.jwtAuthHeader = jwtAuthHeader;
 	}
 }

@@ -10,6 +10,7 @@ import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.jwt.JwtContxtConfig;
 import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /****
@@ -70,10 +72,16 @@ public class BootSecurityCommonContextConfig{
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
 	}
-	
+
 	@ConditionalOnProperty(name="hostName", prefix="jfish.security.redis")
 	@Configuration
 	public static class BootRedisContextConfig extends RedisContextConfig {
+	}
+
+	@ConditionalOnProperty(name="signingKey", prefix="jfish.security.jwt")
+	@Configuration
+	@ConditionalOnMissingBean(SecurityContextRepository.class)
+	public static class BootJwtContxtConfig extends JwtContxtConfig {
 	}
 	
 }
