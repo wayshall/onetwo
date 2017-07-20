@@ -43,3 +43,4 @@ application-product.yaml
 /core/modules/dbm/*.iml
 /core/release.properties
 /core/modules/common/src/test/java/org/onetwo/common/drawtest
+/core/deploy-all.bat
