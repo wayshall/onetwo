@@ -88,6 +88,19 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 		}
 		return sid;
 	}
+
+	private void saveSessionCookies(HttpServletRequest request, HttpServletResponse response, String cookieSessionId) {
+        Cookie sessionCookie = new Cookie(cookieName, cookieSessionId);
+        configCookie(request, sessionCookie);
+        response.addCookie(sessionCookie);
+    }
+	
+	protected void clearSessionCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie sessionCookie = new Cookie(cookieName, null);
+        configCookie(request, sessionCookie);
+        sessionCookie.setMaxAge(0);
+		response.addCookie(sessionCookie);
+    }
 	
 	private BoundValueOperations<String, SecurityContext> getSessionBoundOps(String sid){
 //		String sid = getSessionId(httpSession);
@@ -101,8 +114,7 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 		if(StringUtils.isBlank(sid)){
 			SaveToSessionResponseWrapper responseWrapper = WebUtils.getNativeResponse(response, SaveToSessionResponseWrapper.class);
 			sid = responseWrapper.getSid();
-			Cookie cookie = newSessionCookie(request, sid);
-			response.addCookie(cookie);
+			saveSessionCookies(request, response, sid);
 		}
 		
 		LoginUserDetails loginUser = SecurityUtils.getCurrentLoginUser(context);
@@ -130,8 +142,7 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 		if(StringUtils.isBlank(sid)){
 			return ;
 		}
-		Cookie cookie = newClearSessionCookie(request);
-		response.addCookie(cookie);
+		clearSessionCookie(request, response);
 		
 		String skey = getSecuritySessionKey(sid);
 		redisTemplate.delete(skey);
@@ -198,18 +209,6 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 		return isRedisContainsContext(request);
 	}
 
-	private Cookie newSessionCookie(HttpServletRequest request, String cookieSessionId) {
-        Cookie sessionCookie = new Cookie(cookieName, cookieSessionId);
-        configCookie(request, sessionCookie);
-        return sessionCookie;
-    }
-	
-	private Cookie newClearSessionCookie(HttpServletRequest request) {
-        Cookie sessionCookie = new Cookie(cookieName, null);
-        configCookie(request, sessionCookie);
-        sessionCookie.setMaxAge(0);
-        return sessionCookie;
-    }
 	
 	private void configCookie(HttpServletRequest request, Cookie sessionCookie){
 		if(isServlet3){
