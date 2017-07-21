@@ -85,7 +85,7 @@
     <div id="assigRoleButtons" >
     	<a href="#" id="btnCascadeCheck" class="easyui-linkbutton" iconCls="" onclick="">设置级联选中</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="assignPermissions();">保存</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="closeAssignRole();">关闭</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="closeAssignPermission();">关闭</a>
     </div>   
                  
     <script type="text/javascript">
@@ -124,7 +124,7 @@
     	onLoadSuccess: helper.loadTreeErrorHandler()
     });
 
-    function closeAssignRole(){
+    function closeAssignPermission(){
         $('#assignPermission').dialog('close');
     }
     
@@ -138,6 +138,7 @@
         param.permissionCodes = permissionCodes;
         param = $.param(param, true);
         $.post(url, param, helper.remoteMessageHandler(function(){
+        	closeAssignPermission();
         	$('#selectApp').dialog('open');
         }));
     };

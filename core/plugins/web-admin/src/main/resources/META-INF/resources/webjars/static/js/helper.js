@@ -126,6 +126,21 @@ helper.page = {
 	//for helper.extendMethod()
 	helper.waitingMsgState = false;
 	$.extend(helper, {
+		/***
+		 * config {
+		 *  datagrid: '#dataGrid',
+        	resetForm: '#dataForm',
+        	closeDialog: '#addDataDialog',
+        	callback: function(data){}
+        }
+		 */
+		ajaxPut: function(url, config){
+			config = config || {};
+			var mergeParams = config.params || {};
+			mergeParams['_method'] = 'put';
+			helper.showWaitingMsg(config.waitingMsg);
+			$.post(url, mergeParams, helper.processJsonDataResult(config));
+		},
 		
 		gotoTopPage: function(){
 			var current = window;
@@ -235,9 +250,10 @@ helper.page = {
                 	 cb(selectedNodes[0]);
              };
 	     },
-	     
+	     //处理ajax的json结果，显示处理结果信息，如果没有callback，则清除选择和刷新列表
 	     processJsonDataResult: function(config, cb){
 	    	 var _config = config || {};
+	    	 var cb = cb || config.callback;
 	    	 return function(data){
 	             if(!!!data.success){
 	            	 $.messager.progress('close');
@@ -251,6 +267,10 @@ helper.page = {
 	             }else{
                      $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
                      $(_config.datagrid || _config.treegrid).easyGrid('reload');
+                     
+                     $(_config.resetForm).form('reset');
+                     if(_config.closeDialog)
+                    	 $(_config.closeDialog).dialog('close');
 	             }
 		     }
 	     },

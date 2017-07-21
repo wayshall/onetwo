@@ -149,6 +149,10 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 														int rs = o1.getSort().compareTo(o2.getSort());
 														if(rs!=0)
 															return rs;
+														//长的优先
+														rs = o2.getPathMatcher().getPattern().length() - o1.getPathMatcher().getPattern().length();
+														if(rs!=0)
+															return rs;
 														return -o1.getPathMatcher().getPattern().compareTo(o2.getPathMatcher().getPattern());
 													})
 													.collect(Collectors.toList());
