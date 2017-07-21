@@ -30,7 +30,10 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 			}
 		})
 		.anyRequest()
-		.fullyAuthenticated();
+		//其它未标记管理的功能的默认权限
+		.authenticated()//需要登录
+//		.fullyAuthenticated()//需要登录，并且不是rememberme的方式登录
+		;
 		
 		webConfigure(http);
 		defaultConfigure(http);

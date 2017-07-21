@@ -165,12 +165,12 @@ public class BootWebCommonAutoConfig {
 	@ConditionalOnBean(AbstractBaseController.class)
 	public FileStorer<?> fileStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
-		StoreType type = config.getStoreType();
+		StoreType type = config.getStoreType();//site.upload.storeType
 		
 		if(type==StoreType.LOCAL){
 			SimpleFileStorer fs = new SimpleFileStorer();
-			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setAppContextDir(config.getAppContextDir());
+			fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
+			fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
 			return fs;
 		}else if(type==StoreType.FTP){
 			FtpConfig ftpConfig = new FtpConfig();
@@ -188,6 +188,14 @@ public class BootWebCommonAutoConfig {
 		throw new IllegalArgumentException("type: " + type);
 	}
 	
+	/****
+	 * 通过配置site.upload.fileStorePath启用
+	 * site.upload.storeType存储方式：本地或者ftp
+	 * site.upload.fileStorePath本地路径
+	 * site.upload.appContextDir应用子目录
+	 * @author wayshall
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
