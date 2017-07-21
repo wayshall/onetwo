@@ -30,7 +30,7 @@ public class Page<T> implements Serializable {
 		page.pagination = p.pagination;
 		if(mapper!=null){
 			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
-			page.result.addAll(rs);
+			page.setResult(rs);
 		}
 		return page;
 	}

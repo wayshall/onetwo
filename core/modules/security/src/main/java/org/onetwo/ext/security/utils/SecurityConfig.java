@@ -65,11 +65,15 @@ public class SecurityConfig {
 	
 	@Data
 	public class RememberMeConfig {
-		private String key = "@#%AS%&DF_=PJ}{EB23+42342*()*^%$)_(*%^)";
+		private String key;
 		/**
 		 * 30 days
 		 */
-		private int tokenValiditySeconds = 60*60*24*30;
+		private int tokenValiditySeconds = 60*60*24*7;
+		
+		public boolean isEnabled(){
+			return StringUtils.isNotBlank(key);
+		}
 	}
 
 

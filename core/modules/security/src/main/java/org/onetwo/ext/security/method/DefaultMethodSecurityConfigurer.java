@@ -138,11 +138,15 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			.exceptionHandling()
 			.accessDeniedPage("/access?error=true")
 			.accessDeniedHandler(ajaxSupportedAccessDeniedHandler)
-		.and()
-			.rememberMe()
-			.tokenValiditySeconds(securityConfig.getRememberMe().getTokenValiditySeconds())
-			//must be config
-			.key(securityConfig.getRememberMe().getKey());
+		;
+		
+		if(securityConfig.getRememberMe().isEnabled()){
+			http
+				.rememberMe()
+				.tokenValiditySeconds(securityConfig.getRememberMe().getTokenValiditySeconds())
+				//must be config
+				.key(securityConfig.getRememberMe().getKey());
+		}
 		configureCsrf(http);
 	}
 
