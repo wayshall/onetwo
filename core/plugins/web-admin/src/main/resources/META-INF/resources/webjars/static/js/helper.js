@@ -251,6 +251,14 @@ helper.page = {
              };
 	     },
 	     //处理ajax的json结果，显示处理结果信息，如果没有callback，则清除选择和刷新列表
+	     /***
+	      * config: {
+	      		datagrid:
+	      		resetForm:
+	      		closeDialog:
+	      		callback:
+	      * }
+	      */
 	     processJsonDataResult: function(config, cb){
 	    	 var _config = config || {};
 	    	 var cb = cb || config.callback;
@@ -366,6 +374,66 @@ helper.page = {
                         $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
 	                    $(_config.datagrid || _config.treegrid).easyGrid('reload');
                     }));
+                 }
+             });
+	     },
+	     
+	     gridSelectionsRemoteHandler: function(config){
+	    	return function(){
+	    		helper.doGridSelectionsRemoteAction(config);
+	    	} 
+	     },
+	     /****
+	      * config: {
+	       		url: '',
+	       		datagrid: '#dataGrid',
+		       	idField: 'id',
+		       	paramIdName: 'ids',
+		       	params: {},
+		       	confirmMessage: ''
+	      * }
+	      */
+	     doGridSelectionsRemoteAction : function(config){
+	    	 var _config = config || {};
+             if(!_config.url){
+                 $.messager.alert('警告','没有配置提交地址！','warning');
+            	 return ;
+             }
+             
+             var selectedNodes = $(_config.datagrid || _config.treegrid).getGridSelections();
+             if(selectedNodes.length<1){
+                 $.messager.alert('警告','请至少选择一条数据！','warning');
+                 return ;
+             }
+
+         	var params = helper.getCsrfParams() || {};
+             if(_config.idField){
+            	 var idValues = $.map(selectedNodes, function(e){
+                     return e[_config.idField];
+                 });
+            	 var paramIdName = _config.paramIdName || _config.idField+'s';
+            	 params[paramIdName] = idValues;
+             }
+         	$.extend(params, config.params || {});
+
+        	params._method = params._method || 'post';
+
+         	$.messager.confirm('警告', config.confirmMessage || '确定要执行此操作？', function(rs){
+                 if (rs){
+                 	helper.showWaitingMsg();
+                    /*$.post(_config.url, params, helper.processJsonDataResult(_config, function(){
+                    	//clearSelections, easyui bug，删除子节点后，如果不清楚，getSelections依然会返回子节点
+                        $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
+	                    $(_config.datagrid || _config.treegrid).easyGrid('reload');
+                    }));*/
+                    var type = params._method.toLowerCase()==='get'?params._method:'post';
+                	params = $.param(params, true);
+                    console.log('.....param:'+params)
+                    $.ajax(_config.url, {
+                    	type: type,
+                    	data: params,
+                    	success: helper.processJsonDataResult(_config)
+                    });
                  }
              });
 	     }
