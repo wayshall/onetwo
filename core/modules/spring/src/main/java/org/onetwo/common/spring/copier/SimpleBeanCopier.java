@@ -73,11 +73,23 @@ public class SimpleBeanCopier {
 		for(PropertyDescriptor property : properties){
 			/*if(property.getWriteMethod()==null)
 				continue ;*/
-			//if no writable
-			if(!targetBeanWrapper.isWritableProperty(property.getName())){
+			String targetPropertyName = property.getName();
+			//if target no writable
+			if(!targetBeanWrapper.isWritableProperty(targetPropertyName)){
 				continue;
 			}
-			Object srcValue = getPropertyValue(srcBean, property);
+			
+			//if src no property
+			if(!isSrcHasProperty(srcBean, targetPropertyName)){
+				if(propertyNameConvertor!=null){
+					targetPropertyName = propertyNameConvertor.convert(targetPropertyName);
+				}
+				if(!isSrcHasProperty(srcBean, targetPropertyName)){
+					continue;
+				}
+			}
+			
+			Object srcValue = getPropertyValue(srcBean, targetPropertyName);
 			if(propertyFilter!=null && !propertyFilter.isCopiable(property, srcValue)){
 				continue;
 			}
@@ -85,6 +97,15 @@ public class SimpleBeanCopier {
 			this.propertyValueCopier.copyPropertyValue(this, targetBeanWrapper, property, srcValue);
     	}
 		return target;
+	}
+	
+	private boolean isSrcHasProperty(BeanWrapper srcBean, String targetPropertyName){
+		if(srcBean.getWrappedInstance() instanceof Map){
+			Map<?, ?> map = (Map<?, ?>)srcBean.getWrappedInstance();
+			return map.containsKey(targetPropertyName);
+		}else{
+			return srcBean.isReadableProperty(targetPropertyName);
+		}
 	}
 
 	protected void setPropertyValue0(BeanWrapper targetBeanWrapper, String propertyName, Object value) {
@@ -107,19 +128,7 @@ public class SimpleBeanCopier {
 		return cloneable;
 	}
 
-	private Object getPropertyValue(BeanWrapper srcBean, PropertyDescriptor property){
-		String targetPropertyName = property.getName();
-		Object srcValue = null;
-		if(propertyNameConvertor!=null){
-			srcValue = getPropertyValue(srcBean, targetPropertyName);
-			if(srcValue==null){
-    			srcValue = getPropertyValue(srcBean, propertyNameConvertor.convert(targetPropertyName));
-			}
-		}else{
-			srcValue = getPropertyValue(srcBean, targetPropertyName);
-		}
-		return srcValue;
-	}
+	
 
 	/***
 	 * 如果原对象没有目标对象的属性，则返回null
@@ -132,7 +141,9 @@ public class SimpleBeanCopier {
 		if(srcBean.getWrappedInstance() instanceof Map){
 			Map<?, ?> map = (Map<?, ?>)srcBean.getWrappedInstance();
 			srcValue = map.get(targetPropertyName);
-		}else if(srcBean.isReadableProperty(targetPropertyName)){
+		}/*else if(srcBean.isReadableProperty(targetPropertyName)){
+			srcValue = srcBean.getPropertyValue(targetPropertyName);
+		}*/else{
 			srcValue = srcBean.getPropertyValue(targetPropertyName);
 		}
 		return srcValue;

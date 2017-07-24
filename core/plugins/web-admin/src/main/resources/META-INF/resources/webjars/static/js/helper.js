@@ -428,7 +428,39 @@ helper.page = {
                     }));*/
                     var type = params._method.toLowerCase()==='get'?params._method:'post';
                 	params = $.param(params, true);
-                    console.log('.....param:'+params)
+                    $.ajax(_config.url, {
+                    	type: type,
+                    	data: params,
+                    	success: helper.processJsonDataResult(_config)
+                    });
+                 }
+             });
+	     },
+
+	     /****
+	      * config: {
+	       		url: '',
+		       	params: {_method: 'put'},
+		       	confirmMessage: ''
+	      * }
+	      */
+	     doRemoteAction : function(config){
+	    	 var _config = config || {};
+             if(!_config.url){
+                 $.messager.alert('警告','没有配置提交地址！','warning');
+            	 return ;
+             }
+             
+         	var params = helper.getCsrfParams() || {};
+         	$.extend(params, config.params || {});
+
+        	params._method = params._method || 'post';
+
+         	$.messager.confirm('警告', config.confirmMessage || '确定要执行此操作？', function(rs){
+                 if (rs){
+                 	helper.showWaitingMsg();
+                    var type = params._method.toLowerCase()==='get'?params._method:'post';
+                	params = $.param(params, true);
                     $.ajax(_config.url, {
                     	type: type,
                     	data: params,

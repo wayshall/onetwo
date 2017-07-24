@@ -106,7 +106,10 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
+		
+		registry.removeConvertible(String.class, Enum.class);
 		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
+		
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
 	}
 
