@@ -6,24 +6,20 @@ package org.onetwo.common.utils;
  * <br/>
  */
 public class PageRequest {
-	protected int pageNo = 1;
+	protected int page = 1;
 	protected int pageSize = 20;
-	private boolean pagination = true;
 	
 	public <E> Page<E> toPageObject(){
-		Page<E> p = Page.create(pageNo, pageSize);
-		p.setPagination(pagination);
-		return p;
+		return Page.create(page, pageSize);
 	}
 
-	public int getPageNo() {
-		return pageNo;
+	public int getPage() {
+		return page;
 	}
 
-	public void setPageNo(int pageNo) {
-		this.pageNo = pageNo;
+	public void setPage(int page) {
+		this.page = page;
 	}
-
 
 	public int getPageSize() {
 		return pageSize;
@@ -31,14 +27,6 @@ public class PageRequest {
 
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
-	}
-
-	public boolean isPagination() {
-		return pagination;
-	}
-
-	public void setPagination(boolean pagination) {
-		this.pagination = pagination;
 	}
 
 }

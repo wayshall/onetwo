@@ -10,14 +10,11 @@ import org.onetwo.common.utils.Page;
  */
 @Data
 public class PageRequest {
-	private int page = 1;
-	private int rows = 20;
-	private boolean pagination = true;
+	protected int page = 1;
+	protected int rows = 20;
 	
 	public <E> Page<E> toPageObject(){
-		Page<E> p = Page.create(page, rows);
-		p.setPagination(pagination);
-		return p;
+		return Page.create(page, rows);
 	}
 
 }
