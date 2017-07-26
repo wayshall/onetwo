@@ -147,9 +147,8 @@
 				<module>modules/spring</module>
                 <module>../../dbm</module>
 				<module>modules/web</module>
-                <module>modules/security</module>
-                <module>../../onetwo-wechat</module>
                 <module>modules/boot</module>
+                <module>modules/security</module>
                 <module>modules/test</module>
 				
 				<module>plugins/parent</module>

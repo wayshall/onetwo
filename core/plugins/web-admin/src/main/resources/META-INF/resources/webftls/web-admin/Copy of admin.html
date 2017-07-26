@@ -1,35 +1,47 @@
-<@extends parent="easyui-js.html">
-     
-    <@override name="charset">
-        <meta charset="UTF-8">
-    </@override>
-    
-    <@override name="title">
-    ${adminTitle}
-    </@override>
-    
-    
-    <@override name="style">
-       <style type="text/css">  
-		    html,body  
-		    {  
-		        height:100%;  
-		        margin:0 auto;  
-		    }  
-		</style>
-    </@override>
-    
-    <@override name="main-content">
+<#assign security = JspTaglibs["http://www.springframework.org/security/tags"]/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${adminTitle}</title>
+    <link rel="stylesheet" type="text/css" href="${siteConfig.webjarsJsPath}/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${siteConfig.webjarsJsPath}/easyui/themes/icon.css">
+    <script type="text/javascript" src="${siteConfig.webjarsJsPath}/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="${siteConfig.webjarsJsPath}/easyui/jquery.easyui.min.js"></script>
+    <style type="text/css">  
+    html,body  
+    {  
+        height:100%;  
+        margin:0 auto;  
+    }  
+</style>
+
+<script>
+
+$(function(){
+    $('#logoutButton').click(function(){
+    	$.messager.confirm('系统提示！', '确定注销？', function(rs){
+            if(rs){
+                $("#logoutForm").submit();
+                return false;
+            }
+        });
+    });
+});
+</script>
+
+</head>
+<body>
     <div class="easyui-layout" style="width:100%;height:100%;">
         <div data-options="region:'north'" style="height:50px">
             <div style="display: inline;">
-                <div style="padding: 10px;position: relative; float: left;">欢迎你，${loginUserInfo.userName}!</div>
-                <div style="float:right; margin-right: 20px;padding: 10px;">
-                    <form id="logoutForm" action="${securityConfig.userLogoutUrl}" method="post">
-                        <@security.csrfInput/>
-                        <a id="logoutButton" href="javascript:void(0);" class="easyui-linkbutton" style="width:80px" >注&nbsp;销</a>
-                    </form>
-                </div>
+            	<div style="padding: 10px;position: relative; float: left;">欢迎你，${loginUserInfo.userName}!</div>
+	            <div style="float:right; margin-right: 20px;padding: 10px;">
+	                <form id="logoutForm" action="${securityConfig.userLogoutUrl}" method="post">
+	                    <@security.csrfInput/>
+	                    <a id="logoutButton" href="javascript:void(0);" class="easyui-linkbutton" style="width:80px" >注&nbsp;销</a>
+	                </form>
+	            </div>
             </div>
         </div>
         <!-- <div data-options="region:'east',split:true" title="East" style="width:180px;">
@@ -39,9 +51,9 @@
             <div class="easyui-accordion" data-options="fit:true,border:false">
                 <#list menus as menu>
                 <div title="${menu.name}" style="padding:10px;">
-                        <ul id="menu_${menu.id}" class="easyui-tree">
-                        </ul>
-                    </div>
+				        <ul id="menu_${menu.id}" class="easyui-tree">
+				        </ul>
+				    </div>
                 </#list>
             </div>
         </div>
@@ -52,36 +64,21 @@
             </div>
         </div>
     </div>
-    </@override>
-</@extends>
-
-
+</body>
+</html>
 <script>
-
-
-$(function(){
-    $('#logoutButton').click(function(){
-        $.messager.confirm('系统提示！', '确定注销？', function(rs){
-            if(rs){
-                $("#logoutForm").submit();
-                return false;
-            }
-        });
-    });
-});
-
 function addTab(title, url){
-    if(!url)
-        return ;
-    url = '${siteConfig.baseURL}'+ url;
+	if(!url)
+		return ;
+	url = '${siteConfig.baseURL}'+ url;
     if ($('#mainContent').tabs('exists', title)){
         var tab = $('#mainContent').tabs('select', title);
         //tab.find("iframe").get(0).contentDocument.location.reload();
         var frame = tab.find("iframe").get(0);
         /* if(url.indexOf('?')>0){
-            url = url+'&_frameReload=true';
+        	url = url+'&_frameReload=true';
         }else{
-            url = url+'?_frameReload=true';
+        	url = url+'?_frameReload=true';
         } */
         frame.src = url;
     } else {
@@ -98,8 +95,8 @@ function addTab(title, url){
     $('#menu_${menu.id}').tree({
         data: ${menu.toJson()},
         onClick: function(node){
-            console.dir(node);
-            addTab(node.name, node.url);
+        	console.dir(node);
+        	addTab(node.name, node.url);
         }
     });
 </#list>
