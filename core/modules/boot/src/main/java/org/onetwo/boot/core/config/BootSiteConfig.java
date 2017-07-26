@@ -55,8 +55,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String cssPath;
 	private String imagePath;
 	
+	
+	private ImageServer imageServer = new ImageServer();
+	
 	//uploaded file access path
-	private String uploadImageAccessPath;
 
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
@@ -161,15 +163,20 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		return baseURL;
 	}
 	
-
-	public String getUploadImageAccessPath() {
-		return uploadImageAccessPath;
+	public ImageServer getImageServer() {
+		return imageServer;
 	}
 
-	public void setUploadImageAccessPath(String uploadImageAccessPath) {
-		this.uploadImageAccessPath = uploadImageAccessPath;
+	public void setImageServer(ImageServer imageServer) {
+		this.imageServer = imageServer;
 	}
 
+	@Data
+	static public class ImageServer {
+		String basePath;
+		boolean useLoadBalance;
+		int serverCount = 2;
+	}
 
 	@Data
 	static public class UploadConfig {
