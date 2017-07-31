@@ -1,7 +1,8 @@
 package org.onetwo.plugins.admin.controller;
 
+import org.onetwo.boot.core.web.view.XResponseView;
 import org.onetwo.common.utils.Page;
-import org.onetwo.easyui.EasyDataGrid;
+import org.onetwo.easyui.EasyViews.EasyGridView;
 import org.onetwo.easyui.PageRequest;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.UserMgr;
@@ -24,11 +25,13 @@ public class AdminUserController extends WebAdminBaseController {
     
     @ByPermissionClass(UserMgr.class)
     @RequestMapping(method=RequestMethod.GET)
+    @XResponseView(value="easyui", wrapper=EasyGridView.class)
     public ModelAndView index(PageRequest easyPage, AdminUser adminUser){
         return responsePageOrData("/admin-user-index", ()->{
         			Page<AdminUser> page = easyPage.toPageObject();//Page.create(easyPage.getPage(), easyPage.getPageSize());
         			adminUserServiceImpl.findPage(page, adminUser);
-                    return EasyDataGrid.create(page);
+//                    return EasyDataGrid.create(page);
+        			return page;
                 });
     }
     

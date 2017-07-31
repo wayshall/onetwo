@@ -23,6 +23,9 @@ helper.page = {
 			}
 			return data;
 		},
+		headers: {
+			'x-response-view': 'easyui'
+		},
 		/*error: function (request, textStatus, errorThrown){
 			alert(errorThrown)
 			console.dir(request)

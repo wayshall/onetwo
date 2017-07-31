@@ -32,7 +32,7 @@ public class RolePermissionController extends WebAdminBaseController {
 	@RequestMapping(value="{roleId}", method=RequestMethod.GET)
 	public ModelAndView show(String appCode, @PathVariable("roleId") long roleId){
 		List<String> rolePerms = this.adminRoleServiceImpl.findAppPermissionCodesByRoleIds(appCode, roleId);
-		List<AdminPermission> perms = adminRoleServiceImpl.findAppPermissions(appCode);
+		List<AdminPermission> allPerms = adminRoleServiceImpl.findAppPermissions(appCode);
 		EasyChildrenTreeModel treeModel = EasyModel.newChildrenTreeBuilder(AdminPermission.class)
 				 .mapId("code")
 				 .mapText("name")
@@ -41,7 +41,7 @@ public class RolePermissionController extends WebAdminBaseController {
 					 return rolePerms.contains(src.getCode());
 				 })
 				 .mapIsStateOpen(src->true)
-				 .build(perms, null);
+				 .build(allPerms, null);
 		
 		return responseData(Arrays.asList(treeModel));
 	}

@@ -16,10 +16,12 @@ import org.springframework.validation.BindingResult;
  * <br/>
  */
 public class DefaultDataResultWrapper implements DataResultWrapper {
-
+	
+	
 	@Override
-	public Result<?, ?> wrapResult(Object data) {
-		return wrapAsDataResultIfNeed(data);
+	public Object wrapResult(final Object data) {
+		Object newData = wrapAsDataResultIfNeed(data);
+		return newData;
 	}
 	
 	private Result<?, ?> wrapAsDataResultIfNeed(Object result){

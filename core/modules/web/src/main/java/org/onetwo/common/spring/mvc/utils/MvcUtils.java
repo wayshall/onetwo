@@ -21,7 +21,8 @@ public class MvcUtils {
 				mv.addAllObjects((Map<String, ?>)models[0]);
 				
 			}else if(DataWrapper.class.isInstance(models[0])){
-				mv.addObject(models[0]);
+//				mv.addObject(models[0]);
+				mv.addObject(DataWrapper.DEFAULT_NAME, models[0]);
 				
 			}else if(ModelAttr.class.isInstance(models[0])){
 				ModelAttr attr = (ModelAttr) models[0];
@@ -38,7 +39,8 @@ public class MvcUtils {
 			
 			for (int i = 0; i < models.length; i++) {
 				if(DataWrapper.class.isInstance(models[i])){
-					mv.addObject(models[i]);
+//					mv.addObject(models[i]);
+					mv.addObject(DataWrapper.DEFAULT_NAME, models[i]);
 					
 				}else if(ModelAttr.class.isInstance(models[i])){
 					ModelAttr attr = (ModelAttr) models[i];

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,7 +126,11 @@ public final class BootWebUtils {
 	
 	public static <T> T req(String name){
 //		return (T)RequestContextHolder.getRequestAttributes().getAttribute(name, RequestAttributes.SCOPE_REQUEST);
-		return (T)WebHolder.getRequest().get().getAttribute(name);
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if(!req.isPresent()){
+			return null;
+		}
+		return (T)req.get().getAttribute(name);
 	}
 	
 	public boolean isGridSearchFormSubmit(){

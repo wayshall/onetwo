@@ -1,8 +1,6 @@
 package org.onetwo.common.date;
 
-import java.text.DateFormatSymbols;
-import java.text.FieldPosition;
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,54 +81,6 @@ abstract public class DateUtils {
 	public static final int UNIT_MINUTE = 60 * 1000;
 	public static final int UNIT_HOUR = 60 * 60 * 1000;
 
-	/*public static final Map<String, SimpleDateFormat> values = new LinkedHashMap<String, SimpleDateFormat>() {
-		{
-			put(Date_Time, YYYY_MM_DD_HH_MM_SS);
-			put(Date_Only, YYYY_MM_DD);
-			put(Time_Only, HH_MM_SS);
-			put(DateTime, YYYYMMDDHHMMSS);
-			put(DateOnly, YYYYMMDD);
-			put(TimeOnly, HHMMSS);
-		}
-	};*/
-
-	/**********
-	 * 
-	 * @param pattern
-	 * @param sync 
-	 * @return
-	 */
-	/*@Deprecated
-	public static SimpleDateFormat createDateFormat(String pattern, boolean sync){
-		SimpleDateFormat df = null;
-		if(sync){
-			df = new SimpleDateFormat(pattern){
-	
-				@Override
-				public synchronized Date parse(String source) throws ParseException {
-					return super.parse(source);
-				}
-
-				@Override
-				public synchronized StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition){
-					return super.format(date, toAppendTo, fieldPosition);
-				}
-				
-				public synchronized void set2DigitYearStart(Date startDate){
-					super.set2DigitYearStart(startDate);
-				}
-				
-				public synchronized void setDateFormatSymbols(DateFormatSymbols newFormatSymbols){
-					super.setDateFormatSymbols(newFormatSymbols);
-				}
-				
-			};
-			df.setTimeZone(TimeZone.getDefault());
-		}else{
-			df = createDateFormat(pattern);
-		}
-		return df;
-	}*/
 	
 	public static SimpleDateFormat createDateFormat(String pattern){
 		Assert.hasText(pattern);

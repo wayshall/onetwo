@@ -39,10 +39,6 @@ public class MappableMap extends HashMap<String, Object>{
 	    return this;
 	}
 	
-	public <E> MappingBuilder<E> mapFrom(Object sourceObject){
-	    return new MappingBuilder<E>(this, sourceObject);
-	}
-	
 	/***
 	 * 
 	 * @author way
@@ -108,31 +104,6 @@ public class MappableMap extends HashMap<String, Object>{
 		R mapping(T sourceObject);
 	}
 	
-	public static class MappingBuilder<T> {
-		final private Object sourceObject;
-		final private List<MappingInfo<T>> mappingInfos = new ArrayList<>();
-		final private MappableMap mappingObject;
-		public MappingBuilder(MappableMap mappingObject, Object sourceObject) {
-	        super();
-	        this.sourceObject = sourceObject;
-	        this.mappingObject = mappingObject;
-        }
-		
-		public MappingBuilder<T> mapping(String sourceName, String targetName){
-			this.mappingInfos.add(new MappingInfo<T>(sourceName, targetName));
-			return this;
-		}
-
-		
-		public MappableMap bindValues(){
-		    mappingInfos.stream().forEach(maping->{
-		    	Object value = ReflectUtils.getPropertyValue(sourceObject, maping.jsonFieldName);
-		    	mappingObject.put(maping.objectFieldName, value);
-		    });
-		    return mappingObject;
-		}
-		
-	}
 	
 	/***
 	 * 
