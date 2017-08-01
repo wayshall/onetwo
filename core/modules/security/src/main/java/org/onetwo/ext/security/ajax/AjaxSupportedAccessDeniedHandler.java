@@ -54,12 +54,16 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException,
 			ServletException {
+		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(RequestUtils.isAjaxRequest(request)){
-			SimpleResultBuilder builder = WebResultCreator.creator().error("操作失败："+accessDeniedException.getMessage());
+			SimpleResultBuilder builder = WebResultCreator.creator()
+															.error("操作失败："+accessDeniedException.getMessage()+
+																	", at "+request.getRequestURI())
+															.data(url);
 			
 			SimpleDataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).buildResult();
 			String text = mapper.toJson(rs);
-			logger.info("AccessDenied, render json: {}", text);
+			logger.info("[] AccessDenied, render json: {}", url, text);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else if(!response.isCommitted() && StringUtils.isNotBlank(redirectErrorUrl)) {
 			String rurl = redirectErrorUrl;
@@ -71,10 +75,10 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message=";
 			rurl += URLEncoder.encode(accessDeniedException.getMessage(), Charsets.UTF_8.name());//encode value, otherwise will redirect failed
 
-			logger.info("AccessDenied, redirect to {}", rurl);
+			logger.info("{} AccessDenied, redirect to {}", url, rurl);
 			response.sendRedirect(rurl);
 		}else{
-			logger.info("AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", errorPage);
+			logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
 			this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
 		}
 	}

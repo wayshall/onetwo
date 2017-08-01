@@ -1,7 +1,6 @@
 package org.onetwo.plugins.admin.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,12 +8,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import org.onetwo.dbm.jpa.BaseEntity;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name="data_dictionary")
 @Data
-public class DataDictionary implements Serializable {
+@EqualsAndHashCode(callSuper=true)
+public class DataDictionary extends BaseEntity implements Serializable {
 	@Id
     private String code;
     private String name;
@@ -27,6 +30,4 @@ public class DataDictionary implements Serializable {
     private Boolean enumValue;
     private Integer sort;
     private String remark;
-    private Date createAt;
-    private Date updateAt;
 }

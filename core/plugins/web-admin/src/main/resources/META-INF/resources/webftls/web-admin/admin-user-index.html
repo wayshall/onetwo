@@ -150,6 +150,7 @@
                 $('#assignRole').dialog('open');
                 
                 var url = '${siteConfig.baseURL}/web-admin/userRole/'+row.id+'.json';
+                $('#roleIds').combobox('clear');
                 $('#roleIds').combobox('reload', url);
            })
         },

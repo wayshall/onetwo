@@ -27,10 +27,16 @@
         admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
     left join 
         admin_user_role aur on aur.ROLE_ID = arp.ROLE_ID
-    where aur.USER_ID =:userId and ap.hidden=0
+    left join
+        admin_role ar on ar.ID = aur.ROLE_ID
+    where 
+        aur.USER_ID =:userId 
+        and ap.hidden=0 
+        and  ar.`STATUS`='NORMAL' 
     [#if appCode?has_content]
-    and ap.APP_CODE=:appCode
+        and ap.APP_CODE=:appCode
     [/#if]
+    
 
 
 /***
@@ -107,9 +113,14 @@
         admin_permission ap
     left join 
         admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
-    where arp.ROLE_ID = :roleId and ap.hidden=0
+    left join
+        admin_role ar on ar.ID = arp.ROLE_ID
+    where 
+        arp.ROLE_ID = :roleId 
+        and ap.hidden=0 
+        and  ar.`STATUS`='NORMAL' 
     [#if appCode?has_content]
-    and ap.APP_CODE=:appCode
+     and ap.APP_CODE=:appCode 
     [/#if]
 
 /***

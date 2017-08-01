@@ -12,7 +12,6 @@ import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.plugins.admin.AdminModule.RoleMgr.AssignPermission;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 import org.onetwo.plugins.admin.service.impl.AdminRoleServiceImpl;
-import org.onetwo.plugins.admin.service.impl.PermissionManagerImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class RolePermissionController extends WebAdminBaseController {
 	@Resource
 	private AdminRoleServiceImpl adminRoleServiceImpl;
-	@Resource
-	private PermissionManagerImpl permissionManagerImpl;
 	
 
 	@ByPermissionClass(AssignPermission.class)

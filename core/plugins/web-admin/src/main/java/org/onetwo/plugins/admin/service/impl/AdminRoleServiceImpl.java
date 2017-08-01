@@ -98,6 +98,9 @@ public class AdminRoleServiceImpl {
     
     public void deleteById(Long id){
         AdminRole adminRole = loadById(id);
+        if(adminRoleDao.countRolePermisssion(adminRole.getAppCode(), adminRole.getId())>0){
+        	throw new ServiceException("该角色有权限关联，无法删除！");
+        }
         adminRole.setStatus(CommonStatus.DELETE.name());
         baseEntityManager.update(adminRole);
     }

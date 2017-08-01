@@ -40,10 +40,8 @@
             <tr>
                 <th field="id" checkbox="true"></th>
                 <th field="name" >角色名</th>
-                <th field="status" >状态</th>
+                <th field="statusName" >状态</th>
                 <th field="remark" >角色描述</th>
-                <th field="createAt" >创建时间</th>
-                <th field="updateAt" >更新时间</th>
             </tr>
         </thead>
       </table>
@@ -158,6 +156,7 @@
                     pagination: true,
                     singleSelect: true,
                     url: '${siteConfig.baseURL}/web-admin/application.json',
+                    loadFilter: helper.defaultOnError(),
                     method: 'get'
                 }); 
             })

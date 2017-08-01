@@ -171,6 +171,15 @@ helper.page = {
             return data;
 		},
 		
+		defaultOnError: function(defResult){
+			return function(data){
+            	if(data.error && data.error===true){
+            		return defResult || [];
+            	}
+            	return data;
+            }
+		},
+		
 		submitEasyForm: function(config){
 	    	 var _config = $.extend({}, {
 	    		 autoClear: true,
