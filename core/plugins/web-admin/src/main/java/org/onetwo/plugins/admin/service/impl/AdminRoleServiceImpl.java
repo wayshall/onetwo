@@ -101,8 +101,12 @@ public class AdminRoleServiceImpl {
         if(adminRoleDao.countRolePermisssion(adminRole.getAppCode(), adminRole.getId())>0){
         	throw new ServiceException("该角色有权限关联，无法删除！");
         }
-        adminRole.setStatus(CommonStatus.DELETE.name());
-        baseEntityManager.update(adminRole);
+        if(adminRoleDao.countUserRole(adminRole.getId())>0){
+        	throw new ServiceException("该角色有用户关联，无法删除！");
+        }
+//        adminRole.setStatus(CommonStatus.DELETE.name());
+//        baseEntityManager.update(adminRole);
+        baseEntityManager.remove(adminRole);
     }
     
     public List<AdminRole> findRolesByUser(long userId){
@@ -117,6 +121,9 @@ public class AdminRoleServiceImpl {
     
     public void saveUserRoles(long userId, Long... roleIds){
     	this.adminRoleDao.deleteUserRoles(userId);
+    	if(LangUtils.isEmpty(roleIds)){
+    		return ;
+    	}
     	Stream.of(roleIds).forEach(roleId->adminRoleDao.insertUserRole(userId, roleId));
     }
     

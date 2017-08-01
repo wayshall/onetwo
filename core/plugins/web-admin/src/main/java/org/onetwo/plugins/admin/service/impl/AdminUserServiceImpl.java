@@ -12,6 +12,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.security.utils.LoginUserDetails;
+import org.onetwo.plugins.admin.dao.AdminRoleDao;
 import org.onetwo.plugins.admin.entity.AdminUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,8 @@ public class AdminUserServiceImpl {
     private BaseEntityManager baseEntityManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AdminRoleDao adminRoleDao;
 
     
     public void findPage(Page<AdminUser> page, AdminUser adminUser){
@@ -86,9 +89,9 @@ public class AdminUserServiceImpl {
     
     public void deleteById(Long id){
         AdminUser adminUser = loadById(id);
-        if(adminUser==null){
-            throw new ServiceException("找不到数据:" + id);
+        if(!adminRoleDao.findRolesByUser(adminUser.getId()).isEmpty()){
+        	throw new ServiceException("该用户有角色关联，无法删除！请先清除用户关联的角色！");
         }
-        baseEntityManager.removeById(AdminUser.class, id);
+        baseEntityManager.remove(adminUser);
     }
 }
