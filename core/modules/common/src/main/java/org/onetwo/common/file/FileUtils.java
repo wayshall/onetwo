@@ -515,19 +515,27 @@ public class FileUtils {
 		return fileName;
 	}
 	
+	/***
+	 * \\ -> /
+	 * 加  / 结尾
+	 * @author wayshall
+	 * @param path
+	 * @return
+	 */
 	public static String convertDir(String path){
 		if(StringUtils.isBlank(path))
 			return LangUtils.EMPTY_STRING;
+		// \\ -> /
 		String dir = replaceBackSlashToSlash(path);
-		int index = dir.indexOf(COLON_DB_SLASH_HEAD);
+		int index = dir.indexOf(COLON_DB_SLASH_HEAD);// ://
 		if(index==-1){
-			if(dir.contains(DB_SLASH_HEAD)){
+			if(dir.contains(DB_SLASH_HEAD)){ // //-> /
 				dir = dir.replace(DB_SLASH_HEAD, SLASH);
 			}
 		}else{
 			String head = dir.substring(0, index+COLON_DB_SLASH_HEAD.length());
 			String spath = dir.substring(head.length());
-			if(spath.contains(DB_SLASH_HEAD)){
+			if(spath.contains(DB_SLASH_HEAD)){// //-> /
 				spath = spath.replace(DB_SLASH_HEAD, SLASH);
 			}
 			dir = head + spath;
@@ -535,6 +543,12 @@ public class FileUtils {
 		return StringUtils.appendEndWith(dir, SLASH);
 	}
 	
+	/***
+	 * \\ -> /
+	 * @author wayshall
+	 * @param path
+	 * @return
+	 */
 	public static String replaceBackSlashToSlash(String path){
 		Assert.hasText(path);
 		path = path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;

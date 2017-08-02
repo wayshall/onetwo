@@ -5,13 +5,22 @@ import org.onetwo.common.utils.StringUtils;
 
 public interface StoreFilePathStrategy {
 
-	static public String getModuleDir(String storeBaseDir, String appContextDir, StoringFileContext ctx){
-		String baseDir = FileUtils.convertDir(storeBaseDir) + FileUtils.convertDir(appContextDir);
+	static public String getAppModulePath(String storeBaseDir, String appContextDir, StoringFileContext ctx){
+		String baseDir = FileUtils.convertDir(appContextDir);
+		baseDir = StringUtils.appendStartWith(baseDir, FileUtils.SLASH);
 		if(StringUtils.isNotBlank(ctx.getModule())){
 			baseDir += FileUtils.convertDir(ctx.getModule());
 		}
 		return baseDir;
 	}
 	
-	String getStoreFilePath(String storeBaseDir, String appContextDir, StoringFileContext context);
+	/****
+	 * local store path
+	 * @author wayshall
+	 * @param storeBaseDir
+	 * @param appContextDir
+	 * @param context
+	 * @return
+	 */
+	FileStoredMeta getStoreFilePath(String storeBaseDir, String appContextDir, StoringFileContext context);
 }

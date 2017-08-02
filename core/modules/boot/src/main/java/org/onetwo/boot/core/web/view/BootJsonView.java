@@ -15,14 +15,12 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.data.Result;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +44,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
 	public static final String X_RESPONSE_VIEW = "x-response-view";
 	
-	protected final Logger log = JFishLoggerFactory.getLogger(getClass());
+//	protected final Logger log = JFishLoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -188,9 +186,6 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	}
 	
 	protected Optional<Object> getResponseViewFromAnnotation(final Object data){
-		if(log.isInfoEnabled()){
-			log.info("getResponseViewFromAnnotation for: {}", data);
-		}
 		if(!enableResponseView){
 			return Optional.empty();
 		}
@@ -199,8 +194,8 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 			return Optional.empty();
 		}
 		
-		if(log.isInfoEnabled()){
-			log.info("x-response-view: {}", responseView.get());
+		if(logger.isInfoEnabled()){
+			logger.info("x-response-view: " + responseView.get());
 		}
 		BootWebHelper helper = BootWebUtils.webHelper();
 		if(helper==null || helper.getControllerHandler()==null){
@@ -212,9 +207,6 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 													.filter(v->v.value().equals(responseView.get()))
 													.findFirst();
 		if(matchView.isPresent()){
-			if(log.isInfoEnabled()){
-				log.info("use view wrapper[{}] for response view : {}", matchView.get().wrapper(), responseView.get());
-			}
 			DataResultWrapper wrapper = ReflectUtils.newInstance(matchView.get().wrapper());
 			Object newData = wrapper.wrapResult(data);
 			return Optional.ofNullable(newData);

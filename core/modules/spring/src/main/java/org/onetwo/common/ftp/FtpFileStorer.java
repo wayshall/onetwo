@@ -1,5 +1,6 @@
 package org.onetwo.common.ftp;
 
+import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
@@ -17,13 +18,13 @@ public class FtpFileStorer extends SimpleFileStorer  {
 		this.ftpConfig = ftpConfig;
 //		this.ftpClientManager = new FtpClientManager(ftpConfig);
 	}
-
-	protected void doStoring(String storePath, StoringFileContext context){
+	@Override
+	protected void doStoring(SimpleFileStoredMeta meta, StoringFileContext context){
 		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
 		try {
 			ftpClientManager.init();
 			ftpClientManager.login(loginParam);
-			ftpClientManager.upload(storePath, context.getInputStream());
+			ftpClientManager.upload(meta.getStoredServerLocalPath(), context.getInputStream());
 		} finally {
 			ftpClientManager.destroy();
 		}

@@ -13,9 +13,18 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
 		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 
+		// /appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+		String moduelPath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
+		moduelPath = moduelPath + now.formatAsDate()+"/"+newfn;
+		
 		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String baseDir = StoreFilePathStrategy.getModuleDir(storeBaseDir, appContextDir, ctx);
-		return baseDir + now.formatAsDate()+"/"+newfn;
+		String baseDir = storeBaseDir + moduelPath;
+		
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(baseDir);
+		meta.setSotredFileName(newfn);
+		meta.setAccessablePath(moduelPath);
+//		meta.setFullAccessablePath(fullAccessablePath);
+		return meta;
 	};
 	
 //	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
@@ -24,20 +33,19 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
-		String storePath = getStoreDir(context);
-		doStoring(storePath, context);
-		String returnPath = StringUtils.substringAfter(storePath, storeBaseDir);
+		SimpleFileStoredMeta meta = getStoreDir(context);
+		doStoring(meta, context);
 		/*if(StringUtils.isNotBlank(appContextDir)){
 			returnPath = StringUtils.trimEndWith(appContextDir, "/") + returnPath;
 		}*/
-		return new SimpleFileStoredMeta(returnPath);
+		return meta;
 	}
 	
-	protected void doStoring(String storePath, StoringFileContext context){
-		FileUtils.writeInputStreamTo(context.getInputStream(), storePath);
+	protected void doStoring(SimpleFileStoredMeta meta, StoringFileContext context){
+		FileUtils.writeInputStreamTo(context.getInputStream(), meta.getStoredServerLocalPath());
 	}
 	
-	protected String getStoreDir(StoringFileContext context){
+	protected SimpleFileStoredMeta getStoreDir(StoringFileContext context){
 //		Assert.notNull(context.getStoreFilePathStrategy(), "strategy can not be null");
 		if(StringUtils.isBlank(storeBaseDir)){
 			throw new BaseException("store dir must be config, but blank ");
@@ -46,8 +54,8 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		if(strategy==null){
 			strategy = SIMPLE_STORE_STRATEGY;
 		}
-		String storePath = strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
-		return storePath;
+		SimpleFileStoredMeta meta = (SimpleFileStoredMeta)strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
+		return meta;
 	}
 
 	public void setStoreBaseDir(String storeDir){

@@ -4,23 +4,51 @@ import java.io.File;
 
 public class SimpleFileStoredMeta implements FileStoredMeta{
 
-	private String storedPath;
-	private File storeFile;
+	private String accessablePath;
+	private String fullAccessablePath;
+	private String storedServerLocalPath;
+	private String sotredFileName;
 	
-	public SimpleFileStoredMeta(String storedPath) {
+	public SimpleFileStoredMeta(String storedServerLocalPath) {
 		super();
-		this.storedPath = storedPath;
-		this.storeFile = new File(storedPath);
+		this.storedServerLocalPath = storedServerLocalPath;
 	}
 
 	@Override
-	public String getStoredPath() {
-		return storedPath;
+	public String getAccessablePath() {
+		return accessablePath;
 	}
 
-	@Override
 	public File toFile() {
-		return storeFile;
+		return new File(accessablePath);
+	}
+
+	public String getFullAccessablePath() {
+		return fullAccessablePath;
+	}
+
+	public void setFullAccessablePath(String fullAccessablePath) {
+		this.fullAccessablePath = fullAccessablePath;
+	}
+
+	public String getStoredServerLocalPath() {
+		return storedServerLocalPath;
+	}
+
+	public void setStoredServerLocalPath(String storedServerLocalPath) {
+		this.storedServerLocalPath = storedServerLocalPath;
+	}
+
+	public String getSotredFileName() {
+		return sotredFileName;
+	}
+
+	public void setSotredFileName(String sotredFileName) {
+		this.sotredFileName = sotredFileName;
+	}
+
+	public void setAccessablePath(String accessablePath) {
+		this.accessablePath = accessablePath;
 	}
 
 }
