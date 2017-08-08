@@ -29,6 +29,8 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
+	public static final String DEFAULT_PLUGIN_FTL_LOCATION = "classpath:META-INF/resources/webftls/";
+	
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 	private Map<String, Object> freemarkerVariablesHoder;
 	private Map<String, Object> extFreemarkerVariables = new HashMap<String, Object>();
@@ -87,7 +89,7 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	}
 	
 	protected TemplateLoader findPluginTemplateLoader(WebPlugin plugin){
-		String templateLoaderPath = "classpath:META-INF/resources/webftls/"+plugin.getPluginMeta().getName();
+		String templateLoaderPath = DEFAULT_PLUGIN_FTL_LOCATION + plugin.getPluginMeta().getName();
 		TemplateLoader loader = getTemplateLoaderForPath(templateLoaderPath);
 		if(logger.isDebugEnabled()){
 			logger.debug("add template loader from path : " + templateLoaderPath);
