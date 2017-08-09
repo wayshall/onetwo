@@ -16,6 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.PortMapperImpl;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 /****
@@ -30,11 +31,23 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	@Autowired
 	private SecurityConfig securityConfig;
 	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
+
+	private boolean forceHttps;
+	private Integer httpsPort;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(defaultAuthenticationEntryPoint==null)
-			defaultAuthenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(securityConfig.getLoginUrl());
+		if(defaultAuthenticationEntryPoint==null){
+			LoginUrlAuthenticationEntryPoint entryPoint = new LoginUrlAuthenticationEntryPoint(securityConfig.getLoginUrl());
+			entryPoint.setForceHttps(forceHttps);
+			entryPoint.setPortMapper(new PortMapperImpl(){
+				public Integer lookupHttpsPort(Integer httpPort) {
+					Integer port = super.lookupHttpsPort(httpPort);
+					return port==null?httpsPort:port;
+				}
+			});
+			this.defaultAuthenticationEntryPoint = entryPoint;
+		}
 	}
 
 	@Override
@@ -52,6 +65,14 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 
 	public void setDefaultAuthenticationEntryPoint(AuthenticationEntryPoint defaultAuthenticationEntryPoint) {
 		this.defaultAuthenticationEntryPoint = defaultAuthenticationEntryPoint;
+	}
+
+	public void setForceHttps(boolean forceHttps) {
+		this.forceHttps = forceHttps;
+	}
+
+	public void setHttpsPort(Integer httpsPort) {
+		this.httpsPort = httpsPort;
 	}
 
 }

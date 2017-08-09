@@ -26,6 +26,10 @@ public class SecurityConfig {
 	
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
+	/***
+	 * LogoutConfigurer#logoutSuccessUrl default value
+	 */
+	private String logoutSuccessUrl = "/login?logout";
 	private String loginProcessUrl = LOGIN_PROCESS_PATH;
 	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
 	
@@ -35,6 +39,9 @@ public class SecurityConfig {
 	private String redirectErrorUrl;
 	//AccessDenied errorPage
 	private String errorPage = "/error";
+	
+	private boolean forceHttps;
+	private Integer httpsPort;
 	
 	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();

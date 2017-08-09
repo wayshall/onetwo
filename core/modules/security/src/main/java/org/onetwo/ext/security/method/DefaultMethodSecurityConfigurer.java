@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -32,6 +33,10 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	@Getter
 	@Autowired
 	private AccessDeniedHandler ajaxSupportedAccessDeniedHandler;
+	
+	@Autowired(required=false)
+	private AuthenticationEntryPoint authenticationEntryPoint;
+	
 
 	@Getter
 	@Autowired
@@ -125,6 +130,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
+			.logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll()
 		.and()
 			.httpBasic()
 			.disable()
@@ -138,6 +144,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			.exceptionHandling()
 			.accessDeniedPage("/access?error=true")
 			.accessDeniedHandler(ajaxSupportedAccessDeniedHandler)
+			.authenticationEntryPoint(authenticationEntryPoint)
 		;
 		
 		if(securityConfig.getRememberMe().isEnabled()){

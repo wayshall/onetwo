@@ -4,6 +4,7 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.mvc.args.SecurityArgumentResolver;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecuritySessionUserManager;
@@ -83,5 +84,13 @@ public class SecurityCommonContextConfig implements InitializingBean{
 			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
 		}
 		return handler;
+	}
+	
+	@Bean
+	public AjaxSupportedAuthenticationEntryPoint ajaxSupportedAuthenticationEntryPoint(){
+		AjaxSupportedAuthenticationEntryPoint ep = new AjaxSupportedAuthenticationEntryPoint();
+		ep.setForceHttps(securityConfig.isForceHttps());
+		ep.setHttpsPort(securityConfig.getHttpsPort());
+		return ep;
 	}
 }
