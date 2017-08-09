@@ -11,6 +11,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.core.context.SecurityContext;
 
+/***
+ * set jfish.security.redis to enable redis context
+ * @see BootRedisContextConfig
+ * @author wayshall
+ *
+ */
 @Configuration
 public class RedisContextConfig {
 	

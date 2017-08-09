@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
+ * set jfish.security.jwt.signingKey to enable jwt
+ * @see BootJwtContxtConfig 
+ * 
  * @author wayshall
  * <br/>
  */
