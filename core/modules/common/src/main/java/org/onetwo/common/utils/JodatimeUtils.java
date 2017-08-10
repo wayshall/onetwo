@@ -15,18 +15,24 @@ public class JodatimeUtils {
 	
 	public static String[] DATE_PATTERNS = new String[]{"yyyy-MM-dd"};
 	public static String PATTERN_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
-	
+
 	public static DateTime atStartOfDate(Date date){
+		return atStartOfDate(date, 0);
+	}
+	public static DateTime atStartOfDate(Date date, int plusDays){
 		Objects.requireNonNull(date);
 //		DateTime dt = new DateTime(date).withTimeAtStartOfDay();
-		DateTime dt = new DateTime(date).millisOfDay().withMinimumValue();
+		DateTime dt = new DateTime(date).plusDays(plusDays).millisOfDay().withMinimumValue();
 		return dt;
 	}
 	
 	public static DateTime atEndOfDate(Date date){
+		return atEndOfDate(date, 0);
+	}
+	public static DateTime atEndOfDate(Date date, int plusDays){
 		Objects.requireNonNull(date);
 //		DateTime dt = new DateTime(date).withTimeAtStartOfDay().plusDays(1).minusMillis(1);
-		DateTime dt = new DateTime(date).millisOfDay().withMaximumValue();
+		DateTime dt = new DateTime(date).plusDays(plusDays).millisOfDay().withMaximumValue();
 		return dt;
 	}
 	

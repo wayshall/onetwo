@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.DataResultWrapper;
-import org.onetwo.common.data.Result;
 import org.onetwo.common.spring.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.mvc.utils.WebResultCreator.MapResultBuilder;
 import org.springframework.validation.BindingResult;
@@ -24,9 +24,9 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 		return newData;
 	}
 	
-	private Result<?, ?> wrapAsDataResultIfNeed(Object result){
-		if(Result.class.isInstance(result)){
-			return (Result<?, ?>)result;
+	private DataResult<?> wrapAsDataResultIfNeed(Object result){
+		if(DataResult.class.isInstance(result)){
+			return (DataResult<?>)result;
 		}
 		if(Map.class.isInstance(result)){
 			@SuppressWarnings("unchecked")

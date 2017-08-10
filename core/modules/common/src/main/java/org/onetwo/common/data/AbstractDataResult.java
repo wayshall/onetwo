@@ -11,8 +11,8 @@ import org.onetwo.common.utils.StringUtils;
 
 
 @SuppressWarnings("serial")
-abstract public class AbstractDataResult<T> implements Result<String, T>{
-	public static final String SUCCESS = "SUCCESS";
+abstract public class AbstractDataResult<T> implements DataResult<T>{
+//	public static final String SUCCESS = "SUCCESS";
 	
 	private static final Set<String> SUCESS_VALUES = new HashSet<String>();
 	public static void addSucessValues(String value) {

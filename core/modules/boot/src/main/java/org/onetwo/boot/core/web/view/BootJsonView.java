@@ -13,7 +13,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResultWrapper;
-import org.onetwo.common.data.Result;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
@@ -110,7 +110,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		
 		List<Entry<String, Object>> entryList = Lists.newArrayList(model.entrySet());
 		for(Map.Entry<String, Object> entry : entryList){
-			if(Result.class.isInstance(entry.getValue())){
+			if(DataResult.class.isInstance(entry.getValue())){
 				result = entry.getValue();
 //				result = processData(result); //Result 特殊类型无需另外处理
 				return result;

@@ -326,7 +326,7 @@ abstract public class AbstractBaseController {
 
 	/***
 	 * SimpleResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.DataResult Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
 	 * 
 	 * @return
 	 */

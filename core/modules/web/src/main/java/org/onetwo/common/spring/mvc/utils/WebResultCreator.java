@@ -40,7 +40,7 @@ final public class WebResultCreator {
 	}
 	/***
 	 * SimpleResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.DataResult Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
 	 * 
 	 * @return
 	 */
@@ -67,7 +67,7 @@ final public class WebResultCreator {
 	/****
 	 * 
 	 * ListResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain org.onetwo.common.data.AbstractDataResult.ListResult ListResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.DataResult Result} ({@linkplain org.onetwo.common.data.AbstractDataResult.ListResult ListResult}) 类型返回
 	 * 
 	 * @return
 	 */
@@ -87,7 +87,7 @@ final public class WebResultCreator {
 	/***
 	 * 
 	 * MapResultBuilder
-	 * 把数据包装为{@linkplain org.onetwo.common.data.Result Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
+	 * 把数据包装为{@linkplain org.onetwo.common.data.DataResult Result} ({@linkplain org.onetwo.common.result.MapResult MapResult}) 类型返回
 	 * 
 	 * @return
 	 */
