@@ -28,6 +28,14 @@ public class Mixins {
 		return DEFAULT_MIXIN_FACTORY.extractNotMixinInterfaces(interfaceClass);
 	}
 
+	/****
+	 * mixin mixinInterfaces ot target object
+	 * 混入接口的实现类寻找策略可由MixinAdvisorStrategy指定
+	 * @author wayshall
+	 * @param obj
+	 * @param mixinInterfaces
+	 * @return
+	 */
 	public static <T> T of(Object obj, Class<?>... mixinInterfaces){
 		return DEFAULT_MIXIN_FACTORY.of(obj, mixinInterfaces);
 	}
