@@ -38,7 +38,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 * 
 	面向某些领域时，指示客户端是否只提取result里的data作为返回结果
 	 */
-	private boolean extractableData = false;
+	private Boolean extractableData;
 	
 	public AbstractDataResult(){
 		this.code = SUCCESS;
@@ -89,7 +89,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 * @author wayshall
 	 * @return
 	 */
-	public boolean isExtractableData() {
+	public Boolean isExtractableData() {
 		return extractableData;
 	}
 
@@ -100,7 +100,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 * @author wayshall
 	 * @param extractableData
 	 */
-	public void setExtractableData(boolean extractableData) {
+	public void setExtractableData(Boolean extractableData) {
 		this.extractableData = extractableData;
 	}
 
@@ -109,7 +109,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 * 客户端用拦截的方式统一处理时需要用到，客户端拦截器可以根据这个提示只弹出提示信息，无需继续传递结果给下层的ui
 	 * @return
 	 */
-	public boolean isMessageOnly() {
+	public Boolean isMessageOnly() {
 		return StringUtils.isNotBlank(message) && getData()==null;
 	}
 

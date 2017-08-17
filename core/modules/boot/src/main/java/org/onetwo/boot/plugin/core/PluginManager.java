@@ -15,4 +15,5 @@ public interface PluginManager {
 //	public String getPluginTemplateBasePath(WebPlugin webPlugin);
 	public String getPluginTemplateBasePath(String pluginName);
 
+	public Optional<WebPlugin> getCurrentWebPlugin();
 }

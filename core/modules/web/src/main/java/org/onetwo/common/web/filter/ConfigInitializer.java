@@ -15,6 +15,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class ConfigInitializer  {
 	public static final String SITE_CONFIG_NAME = "siteConfig";
+	public static final String SITE_CONFIG_NAME_ALIAS = "site";
 	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -47,6 +48,7 @@ public class ConfigInitializer  {
 			siteConfig = webConfigProvider.initWebConfig(servletContext);
 			Assert.notNull(siteConfig);
 			context.setAttribute(SITE_CONFIG_NAME, siteConfig);
+			context.setAttribute(SITE_CONFIG_NAME_ALIAS, siteConfig);
 //			context.setAttribute(WEB_CONFIG_NAME, webConfigProvider.createWebConfig(config));
 			logger.info("find webConfigProvider : {}", webConfigProvider);
 			

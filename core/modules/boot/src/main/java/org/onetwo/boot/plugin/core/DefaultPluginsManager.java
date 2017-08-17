@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.onetwo.boot.plugin.ftl.PluginNameParser;
+import org.onetwo.boot.plugin.mvc.PluginContextHolder;
 import org.onetwo.boot.plugin.mvc.annotation.WebPluginController;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
@@ -89,6 +90,11 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	@Override
 	public WebPlugin getPlugin(String pluginName) {
 		return pluginMapping.get(pluginName);
+	}
+	
+	@Override
+	public Optional<WebPlugin> getCurrentWebPlugin(){
+		return PluginContextHolder.get().map(c->c.getPlugin());
 	}
 	
 }

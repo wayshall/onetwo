@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
@@ -59,6 +59,8 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	
 	public BootJsonView(){
 //		this.configJson();
+		JsonMapper jsonMapper = JsonMapper.ignoreNull();
+		this.setObjectMapper(jsonMapper.getObjectMapper());
 	}
 
 	public void setEnableResponseView(boolean enableResponseView) {

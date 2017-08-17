@@ -7,16 +7,13 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +31,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
@@ -92,7 +88,7 @@ public class JsonMapper {
 	public JsonMapper(Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-		setDateFormat(DateUtils.DATE_TIME);
+//		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
