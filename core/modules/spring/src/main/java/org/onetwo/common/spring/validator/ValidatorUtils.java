@@ -23,6 +23,13 @@ public final class ValidatorUtils {
 	
 	private final static String MESSAGE_SEPERATOR = "; ";
 	
+
+	public static interface ValidGroup {
+		public static interface ValidAnyTime {}
+		public static interface ValidWhenNew {}
+		public static interface ValidWhenEdit {}
+	}
+	
 	private ValidatorUtils(){}
 
 	

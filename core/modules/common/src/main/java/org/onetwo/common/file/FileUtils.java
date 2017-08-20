@@ -1132,12 +1132,6 @@ public class FileUtils {
 				throw new RuntimeException("can't create output dir:"+outDir.getPath());
 	}
 	
-	public static File getMavenProjectDir(){
-		String baseDirPath = FileUtils.getResourcePath("");
-		File baseDir = new File(baseDirPath);
-		baseDir = baseDir.getParentFile().getParentFile();
-		return baseDir;
-	}
 	
 	public static <T> ResourceAdapter<T> adapterResource(T resource){
 		return new ResourceAdapterImpl<T>(resource);
@@ -1355,6 +1349,23 @@ public class FileUtils {
 	public static String getJavaIoTmpdir(boolean convert){
 		String dir = System.getProperty("java.io.tmpdir");
 		return convert?convertDir(dir):dir;
+	}
+	
+
+	public static File getMavenProjectDir(){
+		String baseDirPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();//FileUtils.getResourcePath("");
+		File baseDir = new File(baseDirPath);
+		if(baseDir.getName().contains("classes")){
+			baseDir = baseDir.getParentFile().getParentFile();
+		}else{
+			baseDir = baseDir.getParentFile();
+		}
+		return baseDir;
+	}
+	
+	public String getMavenProjectMainDir(){
+		String mainDir = getMavenProjectDir().getPath() + "/src/main";
+		return mainDir;
 	}
 	
 	public static void main(String[] args) {

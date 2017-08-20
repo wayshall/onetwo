@@ -30,7 +30,6 @@ public class AdminUserController extends WebAdminBaseController {
         return responsePageOrData("/admin-user-index", ()->{
         			Page<AdminUser> page = easyPage.toPageObject();//Page.create(easyPage.getPage(), easyPage.getPageSize());
         			adminUserServiceImpl.findPage(page, adminUser);
-//                    return EasyDataGrid.create(page);
         			return page;
                 });
     }

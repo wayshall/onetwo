@@ -374,8 +374,9 @@ final public class CUtils {
 			for (int i = 0; i < length; i++) {
 				list.add(Array.get(array, i));
 			}
-		}else
+		}else{
 			list = tolist(array, trimNull);
+		}
 		
 		if (excludeClasses!=null && excludeClasses.length>0)
 			strip(list, (Object[]) excludeClasses);
