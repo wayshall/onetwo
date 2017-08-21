@@ -15,11 +15,11 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 	protected String getServerFullPath(String subPath){
 		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
 		if(config==null || config.getImageServer()==null){
-			return "";
+			return subPath;
 		}
 		ImageServer server = config.getImageServer();
 		if(StringUtils.isBlank(server.getBasePath())){
-			return "";
+			return subPath;
 		}
 		String path = server.getBasePath();
 		if(server.isUseLoadBalance()){

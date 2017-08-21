@@ -17,6 +17,18 @@ public class BootStandardServletMultipartResolver extends StandardServletMultipa
 	
 	private int maxUploadSize = -1;
 
+
+	@Override
+	public boolean isMultipart(HttpServletRequest request) {
+		// fixed StandardServletMultipartResolver
+		String method = request.getMethod().toLowerCase();
+		if (!"post".equals(method) && !"put".equals(method)) {
+			return false;
+		}
+		String contentType = request.getContentType();
+		return (contentType != null && contentType.toLowerCase().startsWith("multipart/"));
+	}
+	
 	@Override
 	public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
 		if(maxUploadSize>=0){

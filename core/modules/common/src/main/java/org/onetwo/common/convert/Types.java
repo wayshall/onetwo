@@ -26,6 +26,20 @@ final public class Types {
 			return defValue;
 		}
 	}
+
+
+	public static <T> T asLong(Object source) {
+		return convertor().convert(source, Long.class);
+	}
+
+	public static <T> T asInteger(Object source) {
+		return convertor().convert(source, Integer.class);
+	}
+
+	public static <T> T asString(Object source) {
+		return convertor().convert(source, String.class);
+	}
+	
 	public static <T> T asValue(Object source, Class<T> clazz) {
 //		return asValue(source, clazz, null);
 		return convertor().convert(source, clazz);
