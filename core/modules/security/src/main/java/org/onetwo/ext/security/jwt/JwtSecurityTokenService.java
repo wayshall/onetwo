@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
  * @author wayshall
  * <br/>
  */
-public interface JwtTokenService {
+public interface JwtSecurityTokenService {
 
-	JwtTokenInfo generateToken(Authentication authentication);
+	JwtSecurityTokenInfo generateToken(Authentication authentication);
 
 	Authentication createAuthentication(String token) throws BadCredentialsException;
 

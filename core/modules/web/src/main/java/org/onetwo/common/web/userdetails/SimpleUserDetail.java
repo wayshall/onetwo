@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 
 @SuppressWarnings("serial")
-public class SimpleUserDetail implements SsoTokenable, UserDetail, Serializable {
+public class SimpleUserDetail implements SsoTokenable, UserDetail, UserRoot, Serializable {
 	
 	private long userId;
 	private String userName;

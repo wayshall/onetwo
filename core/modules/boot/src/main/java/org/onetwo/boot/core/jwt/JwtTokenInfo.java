@@ -1,4 +1,4 @@
-package org.onetwo.ext.security.jwt;
+package org.onetwo.boot.core.jwt;
 
 import lombok.Builder;
 import lombok.Value;

@@ -20,16 +20,16 @@ public class JwtContxtConfig {
 	@Autowired
 	private SecurityConfig securityConfig;
 	
-	@OnMissingBean(JwtTokenService.class)
+	@OnMissingBean(JwtSecurityTokenService.class)
 	@Bean
-	public JwtTokenService jwtTokenService(){
-		JwtTokenService ts = new DefaultJwtTokenService();
+	public JwtSecurityTokenService jwtTokenService(){
+		JwtSecurityTokenService ts = new DefaultJwtSecurityTokenService();
 		return ts;
 	}
 	
 	@Bean
 	@Autowired
-	public SecurityContextRepository securityContextRepository(JwtTokenService jwtTokenService){
+	public SecurityContextRepository securityContextRepository(JwtSecurityTokenService jwtTokenService){
 		JwtSecurityContextRepository jwt = new JwtSecurityContextRepository();
 		jwt.setJwtTokenService(jwtTokenService);
 		jwt.setAuthHeaderName(securityConfig.getJwt().getAuthHeader());

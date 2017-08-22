@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,7 +57,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 													.code(errorMessage.getCode())
 													.buildResult();
 
-		this.doLog(WebHolder.getRequest().orElse(null), null, ex, errorMessage.isDetail());
+//		this.doLog(WebHolder.getRequest().orElse(null), null, ex, errorMessage.isDetail());
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = errorMessage.getHttpStatus();
 		return super.handleExceptionInternal(ex, result, headers, status, request);
@@ -78,7 +79,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
 		}
 		if(errorMessage.isDetail()){
-			logger.error("request error:", ex);
+			Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
+			String path = reqOpt.isPresent()?RequestUtils.getServletPath(reqOpt.get()):"";
+			logger.error("request ["+path+"] error:", ex);
 		}else{
 			logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
 		}

@@ -2,14 +2,13 @@ package org.onetwo.common.web.userdetails;
 
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 
 
-public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, RoleIdDetail, PermissionDetail, Serializable {
+public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
@@ -105,13 +104,9 @@ public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, 
 
 	@Override
 	public boolean isSystemRootUser() {
-		return getRoleIds()!=null && getRoleIds().contains(SYSTEM_ROOT_ROLE_ID);
+		return getUserId() == ROOT_USER_ID;
 	}
 
-	@Override
-	public List<Long> getRoleIds() {
-		return Collections.EMPTY_LIST;
-	}
 
 	public String getNickName() {
 		return nickName;

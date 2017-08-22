@@ -57,6 +57,12 @@
         </dependency>
         
         <dependency>
+          <groupId>io.jsonwebtoken</groupId>
+          <artifactId>jjwt</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-cas</artifactId>
             <exclusions>

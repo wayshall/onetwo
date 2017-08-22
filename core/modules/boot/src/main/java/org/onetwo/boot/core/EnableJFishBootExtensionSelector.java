@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
+import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
@@ -33,6 +34,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}else if(appcationType==AppcationType.WEB_UI){
 			classNames.add(BootWebUIContextAutoConfig.class.getName());
 		}
+
+		classNames.add(JwtContextConfig.class.getName());
 		
 		classNames.add(OAuth2SsoClientAutoContextConfig.class.getName());
 		classNames.add(WechatAutoConfiguration.class.getName());

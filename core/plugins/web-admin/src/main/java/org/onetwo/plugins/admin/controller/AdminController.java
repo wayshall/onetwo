@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.UserRoot;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.springframework.stereotype.Controller;
@@ -38,7 +39,7 @@ public class AdminController extends WebAdminBaseController {
 			else
 				throw new NotLoginException();*/
 			throw new NotLoginException();
-		}else if(userDetail.isSystemRootUser()){
+		}else if(UserRoot.class.isInstance(userDetail) && ((UserRoot)userDetail).isSystemRootUser()){
 			menus = menuItemRepository.findAllMenus();
 //			throw new UnsupportedOperationException("not implements yet!");
 		}else{

@@ -16,9 +16,9 @@ import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
-import org.onetwo.ext.security.jwt.JwtTokenInfo;
-import org.onetwo.ext.security.jwt.JwtTokenService;
-import org.onetwo.ext.security.jwt.JwtUtils;
+import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
+import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
+import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	
 	private boolean useJwtToken;
 	@Autowired(required=false)
-	private JwtTokenService jwtTokenService;
+	private JwtSecurityTokenService jwtTokenService;
 	private String jwtAuthHeader;
 
 	public AjaxAuthenticationHandler(){
@@ -89,7 +89,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				throw new BaseException("not jwtTokenService found!");
 			}
 			if(StringUtils.isBlank(jwtAuthHeader)){
-				jwtAuthHeader = JwtUtils.DEFAULT_HEADER_KEY;
+				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 			}
 		}
 		if(authenticationFailureUrl!=null){
@@ -123,7 +123,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		}
 		
 		if(useJwtToken){
-			JwtTokenInfo token = this.jwtTokenService.generateToken(authentication);
+			JwtSecurityTokenInfo token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
 			SimpleDataResult<?> rs = WebResultCreator.creator()
 													.success("登录成功！")
@@ -194,7 +194,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public void setUseJwtToken(boolean useJwtToken) {
 		this.useJwtToken = useJwtToken;
 	}
-	public void setJwtTokenService(JwtTokenService jwtTokenService) {
+	public void setJwtTokenService(JwtSecurityTokenService jwtTokenService) {
 		this.jwtTokenService = jwtTokenService;
 	}
 	public void setJwtAuthHeader(String jwtAuthHeader) {

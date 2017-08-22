@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author wayshall
  * <br/>
  */
-public class DefaultJwtTokenService implements JwtTokenService {
+public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 	
 	@Autowired
 	private SecurityConfig securityConfig;
@@ -36,7 +36,7 @@ public class DefaultJwtTokenService implements JwtTokenService {
 	}
 	
 	@Override
-	public JwtTokenInfo generateToken(Authentication authentication){
+	public JwtSecurityTokenInfo generateToken(Authentication authentication){
 		if(authentication==null){
 			return null;
 		}
@@ -50,14 +50,14 @@ public class DefaultJwtTokenService implements JwtTokenService {
 		Date expirationDate = issuteAt.plusSeconds(getExpirationInSeconds().intValue()).toDate();
 		String token = Jwts.builder()
 							.setSubject(userDetails.getUsername())
-							.claim(JwtUtils.CLAIM_USER_ID, userDetails.getUserId())
-							.claim(JwtUtils.CLAIM_AUTHORITIES, authoritiesString)
+							.claim(JwtSecurityUtils.CLAIM_USER_ID, userDetails.getUserId())
+							.claim(JwtSecurityUtils.CLAIM_AUTHORITIES, authoritiesString)
 							.setIssuedAt(issuteAt.toDate())
 							.setExpiration(expirationDate)
 							.signWith(SignatureAlgorithm.HS512, securityConfig.getJwt().getSigningKey())
 							.compact();
 		
-		return JwtTokenInfo.builder()
+		return JwtSecurityTokenInfo.builder()
 							.token(token)
 							.build();
 	}
@@ -69,7 +69,7 @@ public class DefaultJwtTokenService implements JwtTokenService {
 		if(expireation.isBeforeNow()){
 			return null;
 		}
-		String authorityString = claims.get(JwtUtils.CLAIM_AUTHORITIES).toString();
+		String authorityString = claims.get(JwtSecurityUtils.CLAIM_AUTHORITIES).toString();
 		List<GrantedAuthority> authorities = GuavaUtils.splitAsStream(authorityString, ",").map(auth->{
 			return new SimpleGrantedAuthority(auth);
 		})
@@ -80,7 +80,7 @@ public class DefaultJwtTokenService implements JwtTokenService {
 	}
 
 	protected Authentication buildAuthentication(Claims claims, List<GrantedAuthority> authes){
-		UserDetails userDetail = new LoginUserDetails(Long.parseLong(claims.get(JwtUtils.CLAIM_USER_ID).toString()), 
+		UserDetails userDetail = new LoginUserDetails(Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString()), 
 													claims.getSubject(), "", authes);
 		Authentication token = new UsernamePasswordAuthenticationToken(userDetail, "", userDetail.getAuthorities());
 		return token;

@@ -37,6 +37,7 @@
 	<mail.version>1.4.5</mail.version>
 	
 	<shiro.version>1.2.3</shiro.version>
+    <jjwt.version>0.7.0</jjwt.version>
 	<groovy.version>2.3.10</groovy.version>
 	
 	<mybatis.version>3.3.0</mybatis.version>
@@ -487,6 +488,12 @@
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-spring</artifactId>
       <version>${shiro.version}</version>
+    </dependency>
+        
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>${jjwt.version}</version>
     </dependency>
     
     <dependency>

@@ -6,7 +6,7 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
-public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetail, Serializable {
+public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, Serializable {
 	
 	private long userId;
 	private String userName;

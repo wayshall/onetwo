@@ -7,7 +7,7 @@ import lombok.ToString;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.ext.security.jwt.JwtUtils;
+import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -132,7 +132,7 @@ public class SecurityConfig {
 	
 	@Data
 	public static class JwtConfig {
-		String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
+		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
 		

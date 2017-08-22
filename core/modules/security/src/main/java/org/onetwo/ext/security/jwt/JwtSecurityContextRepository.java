@@ -20,9 +20,9 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 	
 	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private JwtTokenService jwtTokenService;
+	private JwtSecurityTokenService jwtTokenService;
 	private boolean updateTokenOnResponse;
-	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
+	private String authHeaderName = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 
 	@Override
 	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
@@ -53,7 +53,7 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 		}
 		
 		if(response.getHeaders(authHeaderName)==null){
-			JwtTokenInfo token = jwtTokenService.generateToken(context.getAuthentication());
+			JwtSecurityTokenInfo token = jwtTokenService.generateToken(context.getAuthentication());
 			response.addHeader(authHeaderName, token.getToken());
 
 			if(logger.isDebugEnabled()){
@@ -66,7 +66,7 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 	public boolean containsContext(HttpServletRequest request) {
 		return false;
 	}
-	public void setJwtTokenService(JwtTokenService jwtTokenService) {
+	public void setJwtTokenService(JwtSecurityTokenService jwtTokenService) {
 		this.jwtTokenService = jwtTokenService;
 	}
 	public void setUpdateTokenOnResponse(boolean updateTokenOnResponse) {

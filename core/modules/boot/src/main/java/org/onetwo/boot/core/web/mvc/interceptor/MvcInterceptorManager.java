@@ -84,11 +84,9 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
-			AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getMethod(), Interceptor.class);
-			if(attrs==null){
-				attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getBeanType(), Interceptor.class);
-			}
-			if(attrs!=null){
+			Optional<AnnotationAttributes> attrsOpt = findInterceptorAttrs(hm);
+			if(attrsOpt.isPresent()){
+				AnnotationAttributes attrs = attrsOpt.get();
 				Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
 				List<? extends MvcInterceptor> interceptors = Stream.of(interClasses)
 																	.flatMap(cls->SpringUtils.getBeans(applicationContext, cls).stream())
@@ -99,6 +97,22 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				}
 			}
 		}
+	}
+	
+	private Optional<AnnotationAttributes> findInterceptorAttrs(HandlerMethod hm){
+		AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getMethod(), Interceptor.class);
+		if(attrs!=null){
+			return Optional.of(attrs);
+		}
+		Class<?> clazz = hm.getBeanType();
+		while(clazz!=Object.class){
+			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(clazz, Interceptor.class);
+			if(attrs!=null){
+				return Optional.of(attrs);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return Optional.empty();
 	}
 
 	@Override

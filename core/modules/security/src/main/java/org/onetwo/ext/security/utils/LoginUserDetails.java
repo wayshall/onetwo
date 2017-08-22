@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import org.onetwo.common.web.userdetails.SsoTokenable;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.UserRoot;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 @SuppressWarnings("serial")
-public class LoginUserDetails extends User implements UserDetail, SsoTokenable {
-	public static final long ROOT_USER_ID = 1;
+public class LoginUserDetails extends User implements UserDetail, SsoTokenable, UserRoot {
 
 	final private long userId;
 	private String token;

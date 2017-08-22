@@ -2,6 +2,8 @@ package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,16 +26,34 @@ import org.onetwo.common.utils.StringUtils;
  *
  */
 public class BeanToMapConvertor {
-	
+	private static final String GROOVY_META = "groovy.lang.MetaClass";
 	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
 
 		@Override
 		public Boolean apply(PropertyDescriptor prop, Object val) {
 			String clsName = prop.getPropertyType().getName();
-			if(clsName.startsWith("groovy.lang.MetaClass") ){
+			if(clsName.startsWith(GROOVY_META) ){
 				return false;
 			}
 			return val!=null;
+		}
+		
+	}
+	
+	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+		
+		private Collection<String> excludeProperties;
+		
+		public ExcludePropertyAcceptor(Collection<String> excludeProperties){
+			this.excludeProperties = excludeProperties;
+		}
+
+		@Override
+		public Boolean apply(PropertyDescriptor prop, Object val) {
+			if(excludeProperties.contains(prop.getName())){
+				return false;
+			}
+			return super.apply(prop, val);
 		}
 		
 	}
@@ -277,6 +297,10 @@ public class BeanToMapConvertor {
 
 		public BeanToMapBuilder propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
 			this.propertyAcceptor = propertyAcceptor;
+			return this;
+		}
+		public BeanToMapBuilder excludeProperties(String... properties) {
+			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
 			return this;
 		}
 
