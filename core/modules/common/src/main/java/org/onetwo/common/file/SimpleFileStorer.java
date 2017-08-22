@@ -20,7 +20,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
 		String baseDir = storeBaseDir + moduelPath;
 		
-		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(baseDir);
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), baseDir);
 		meta.setSotredFileName(newfn);
 		meta.setAccessablePath(moduelPath);
 //		meta.setFullAccessablePath(fullAccessablePath);

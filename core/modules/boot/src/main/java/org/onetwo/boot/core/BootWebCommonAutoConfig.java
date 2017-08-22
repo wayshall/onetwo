@@ -10,7 +10,6 @@ import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
-import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
@@ -18,8 +17,6 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
-import org.onetwo.boot.core.web.service.BootCommonService;
-import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
@@ -33,9 +30,7 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +39,11 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/***
+ * web环境的通用配置
+ * @author wayshall
+ *
+ */
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
@@ -63,6 +63,7 @@ public class BootWebCommonAutoConfig {
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
+	
 	/***
 	 * 异常解释
 	 * @return
@@ -160,9 +161,17 @@ public class BootWebCommonAutoConfig {
 	}
 	
 
+	/****
+	 * 通过配置site.upload.fileStorePath启用
+	 * site.upload.storeType存储方式：本地或者ftp
+	 * site.upload.fileStorePath本地路径
+	 * site.upload.appContextDir应用子目录
+	 * @author wayshall
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(FileStorer.class)
-	@ConditionalOnBean(AbstractBaseController.class)
+//	@ConditionalOnBean(AbstractBaseController.class)
 	public FileStorer<?> fileStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		StoreType type = config.getStoreType();//site.upload.storeType
@@ -188,19 +197,4 @@ public class BootWebCommonAutoConfig {
 		throw new IllegalArgumentException("type: " + type);
 	}
 	
-	/****
-	 * 通过配置site.upload.fileStorePath启用
-	 * site.upload.storeType存储方式：本地或者ftp
-	 * site.upload.fileStorePath本地路径
-	 * site.upload.appContextDir应用子目录
-	 * @author wayshall
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnMissingBean(BootCommonService.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
-	public BootCommonService bootCommonService(){
-		SimpleBootCommonService service = new SimpleBootCommonService();
-		return service;
-	}
 }

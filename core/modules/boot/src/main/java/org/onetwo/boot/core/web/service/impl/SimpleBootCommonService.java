@@ -3,6 +3,7 @@ package org.onetwo.boot.core.web.service.impl;
 import java.io.IOException;
 
 import org.onetwo.boot.core.web.service.BootCommonService;
+import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -17,6 +18,9 @@ public class SimpleBootCommonService implements BootCommonService {
 	@Autowired
 	private FileStorer<?> fileStorer;
 	
+	@Autowired(required=false)
+	private FileStorerListener fileStorerListener;
+	
 	private StoringFileContext create(String module, MultipartFile file){
 		try {
 			return new StoringFileContext(module, file.getInputStream(), file.getOriginalFilename());
@@ -30,6 +34,10 @@ public class SimpleBootCommonService implements BootCommonService {
 		Assert.notNull(file);
 		Assert.notNull(fileStorer);
 		StoringFileContext context = create(module, file);
-		return fileStorer.write(context);
+		FileStoredMeta meta = fileStorer.write(context);
+		if(fileStorerListener!=null){
+			fileStorerListener.afterFileStored(meta);
+		}
+		return meta;
 	}
 }

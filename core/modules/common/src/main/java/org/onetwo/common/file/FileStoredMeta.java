@@ -31,6 +31,8 @@ public interface FileStoredMeta {
 	 */
 	String getSotredFileName();
 	
+	String getOriginalFilename();
+	
 	
 //	public File toFile();
 	

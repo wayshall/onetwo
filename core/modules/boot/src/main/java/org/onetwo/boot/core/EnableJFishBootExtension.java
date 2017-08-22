@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 public @interface EnableJFishBootExtension {
 	
 	AppcationType appcationType() default AppcationType.WEB_SERVICE;
+	boolean enableCommonService() default true;
 	
 	enum AppcationType {
 		WEB_SERVICE,

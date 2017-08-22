@@ -2,10 +2,7 @@ package org.onetwo.boot.core;
 
 import javax.validation.Validator;
 
-import org.onetwo.boot.core.config.BootBusinessConfig;
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.springframework.beans.BeanUtils;
@@ -19,9 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.ClassUtils;
 
+/****
+ * 非web环境的配置
+ * @author wayshall
+ *
+ */
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@EnableConfigurationProperties({BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
+@EnableConfigurationProperties({BootJFishConfig.class})
 public class BootContextConfig {
 	
 	

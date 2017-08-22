@@ -8,15 +8,22 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	private String fullAccessablePath;
 	private String storedServerLocalPath;
 	private String sotredFileName;
+	private String originalFilename;
 	
-	public SimpleFileStoredMeta(String storedServerLocalPath) {
+	public SimpleFileStoredMeta(String originalFilename, String storedServerLocalPath) {
 		super();
+		this.originalFilename = originalFilename;
 		this.storedServerLocalPath = storedServerLocalPath;
 	}
 
 	@Override
 	public String getAccessablePath() {
 		return accessablePath;
+	}
+
+	@Override
+	public String getOriginalFilename() {
+		return originalFilename;
 	}
 
 	public File toFile() {

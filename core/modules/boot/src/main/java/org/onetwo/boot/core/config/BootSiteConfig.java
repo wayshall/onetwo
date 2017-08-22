@@ -39,6 +39,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -185,6 +186,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		private String fileStorePath;
 		private String appContextDir;
 		private int maxUploadSize = 1024*1024*50; //50m
+		boolean storeFileMetaToDatabase;
 		
 		//ftp
 		private String ftpEncoding = LangUtils.UTF8;
