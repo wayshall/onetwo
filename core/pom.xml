@@ -63,9 +63,12 @@
 	  <profile>
     	<id>release</id>
     	<modules>
+                <module>modules/bom</module>
                 <module>modules/common</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
                 <module>modules/boot</module>
-                <module>../../dbm</module>
+                <module>plugins/web-admin</module>
 	  	</modules>
         <build>
             <plugins>

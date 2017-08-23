@@ -101,18 +101,10 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	
 	private Optional<AnnotationAttributes> findInterceptorAttrs(HandlerMethod hm){
 		AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getMethod(), Interceptor.class);
-		if(attrs!=null){
-			return Optional.of(attrs);
+		if(attrs==null){
+			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getBeanType(), Interceptor.class);
 		}
-		Class<?> clazz = hm.getBeanType();
-		while(clazz!=Object.class){
-			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(clazz, Interceptor.class);
-			if(attrs!=null){
-				return Optional.of(attrs);
-			}
-			clazz = clazz.getSuperclass();
-		}
-		return Optional.empty();
+		return Optional.ofNullable(attrs);
 	}
 
 	@Override
