@@ -106,6 +106,22 @@ helper.page = {
 			$(this).datagrid('selectRow',index);// 关键在这里  
 		    var row = $(this).datagrid('getSelected');
 		    return row;
+		},
+		
+		kindeditor: function(opts){
+			var config = opts || {
+				   items: ['source', '|', 'undo', 'redo', '|', 'preview','|', 
+				           'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 
+				           'formatblock', 'forecolor', 'bold', 'image'
+				          ],
+		           uploadJson : '${siteConfig.baseURL}/web-admin/kindeditor/upload',
+		           fileManagerJson : '',
+		           allowFileManager : false
+			   };
+			var e = $(this).get();
+			KindEditor.ready(function(K) {
+			   window.editor = K.create(e, config);
+			});
 		}
 		
 	});
