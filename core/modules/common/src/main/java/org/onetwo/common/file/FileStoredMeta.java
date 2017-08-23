@@ -33,6 +33,8 @@ public interface FileStoredMeta {
 	
 	String getOriginalFilename();
 	
+	String getBizModule();
+	
 	
 //	public File toFile();
 	

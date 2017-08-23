@@ -48,8 +48,12 @@ public class UploadResourceEntity extends BaseEntity  {
     @NotNull
     @NotBlank
     @Length(max=10)
-    @SafeHtml
     private String fileType;
+    
+    /***
+     * 业务模块
+     */
+    private String bizModule;
     
     /***
      * 原始文件名称

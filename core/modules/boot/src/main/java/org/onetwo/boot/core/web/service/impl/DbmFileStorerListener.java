@@ -28,6 +28,7 @@ public class DbmFileStorerListener implements FileStorerListener {
 		resource.setFilePath(meta.getAccessablePath());
 		resource.setOriginName(meta.getOriginalFilename());
 		resource.setFileType(FileUtils.getExtendName(meta.getOriginalFilename()));
+		resource.setBizModule(meta.getBizModule());
 		baseEntityManager.save(resource);
 	}
 	

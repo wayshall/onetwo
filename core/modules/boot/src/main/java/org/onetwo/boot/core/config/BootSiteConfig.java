@@ -66,6 +66,9 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	
 	@Getter
 	private UploadConfig upload = new UploadConfig();
+
+	@Getter
+	EditorConfig kindeditor = new EditorConfig();
 	
 	
 
@@ -173,32 +176,44 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	}
 
 	@Data
-	static public class ImageServer {
+	public class ImageServer {
 		String basePath;
 		boolean useLoadBalance;
 		int serverCount = 2;
 	}
 
 	@Data
-	static public class UploadConfig {
+	public class UploadConfig {
 		
-		private StoreType storeType = StoreType.LOCAL;
-		private String fileStorePath;
-		private String appContextDir;
-		private int maxUploadSize = 1024*1024*50; //50m
+		StoreType storeType = StoreType.LOCAL;
+		String fileStorePath;
+		String appContextDir;
+		int maxUploadSize = 1024*1024*50; //50m
 		boolean storeFileMetaToDatabase;
 		
 		//ftp
-		private String ftpEncoding = LangUtils.UTF8;
-		private String ftpServer;
-		private int ftpPort = 21;
-		private String ftpUser;
-		private String ftpPassword;
-//		private String ftpBaseDir;
+		String ftpEncoding = LangUtils.UTF8;
+		String ftpServer;
+		int ftpPort = 21;
+		String ftpUser;
+		String ftpPassword;
+//		String ftpBaseDir;
 		
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
 		}*/
+	}
+
+	@Data
+	public class EditorConfig {
+		String imageBasePath;
+		
+		public String getImageBasePath(){
+			if(StringUtils.isBlank(imageBasePath)){
+				return imageServer.getBasePath();
+			}
+			return imageBasePath;
+		}
 	}
 	
 	public static enum StoreType {

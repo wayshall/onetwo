@@ -23,6 +23,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), baseDir);
 		meta.setSotredFileName(newfn);
 		meta.setAccessablePath(moduelPath);
+		meta.setBizModule(ctx.getModule());
 //		meta.setFullAccessablePath(fullAccessablePath);
 		return meta;
 	};

@@ -187,6 +187,12 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		return Optional.empty();
 	}
 	
+	/***
+	 * 待优化: 可在启动时检测和缓存，类似拦截器
+	 * @author wayshall
+	 * @param data
+	 * @return
+	 */
 	protected Optional<Object> getResponseViewFromAnnotation(final Object data){
 		if(!enableResponseView){
 			return Optional.empty();

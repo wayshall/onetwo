@@ -14,6 +14,7 @@ import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
+import org.onetwo.plugins.admin.controller.KindeditorController;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.controller.WebAdminBaseController;
 import org.onetwo.plugins.admin.entity.AdminPermission;
@@ -74,6 +75,12 @@ public class WebAdminPluginContext implements InitializingBean {
 	@Bean
 	static public ApplicationListener<SpringsInitEvent> webAdminApplicationListener(){
 		return new WebAdminApplicationListener();
+	}
+	
+	@Bean
+	@ConditionalOnProperty(value="site.kindeditor.imageBasePath", matchIfMissing=false)
+	public KindeditorController kindeditorController(){
+		return new KindeditorController();
 	}
 	
 

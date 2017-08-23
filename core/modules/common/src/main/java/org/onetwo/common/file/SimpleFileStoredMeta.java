@@ -9,11 +9,20 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	private String storedServerLocalPath;
 	private String sotredFileName;
 	private String originalFilename;
+	private String bizModule;
 	
 	public SimpleFileStoredMeta(String originalFilename, String storedServerLocalPath) {
 		super();
 		this.originalFilename = originalFilename;
 		this.storedServerLocalPath = storedServerLocalPath;
+	}
+
+	public String getBizModule() {
+		return bizModule;
+	}
+
+	public void setBizModule(String bizModule) {
+		this.bizModule = bizModule;
 	}
 
 	@Override

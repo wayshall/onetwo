@@ -1,6 +1,7 @@
 package org.onetwo.plugins.admin.utils;
 
 final public class WebConstant {
+	public static final String UPLOAD_MODULE_KINDEDITOR = "kindeditor";
 
 	public static final String SEQ_TABLE_NAME = "SEQ_TABLES";
 //	public static final String METHOD_CACHE_ETERNAL = "METHOD_CACHE_ETERNAL";
